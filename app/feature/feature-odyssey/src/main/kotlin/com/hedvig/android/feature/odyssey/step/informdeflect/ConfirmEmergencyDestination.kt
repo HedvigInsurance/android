@@ -28,7 +28,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -42,10 +41,13 @@ import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.android.ui.claimflow.WarningTextWithIcon
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_SELECT_CATEGORY
+import hedvig.resources.general_continue_button
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ConfirmEmergencyDestination(
@@ -106,7 +108,7 @@ private fun ConfirmEmergencyScreen(
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .wrapContentWidth(),
-          text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
+          text = stringResource(Res.string.CLAIMS_SELECT_CATEGORY),
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -148,7 +150,7 @@ private fun ConfirmEmergencyScreen(
     }
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = stringResource(id = R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       isLoading = uiState.isLoading,
       onClick = onSubmit,
       enabled = !uiState.isLoading,

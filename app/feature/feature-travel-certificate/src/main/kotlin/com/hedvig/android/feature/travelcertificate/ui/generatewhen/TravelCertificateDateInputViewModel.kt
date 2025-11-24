@@ -21,7 +21,9 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.core.common.android.validation.validateEmail
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
+import hedvig.resources.travel_certificate_email_empty_error
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.StringResource
 
 internal class TravelCertificateDateInputViewModel(
   contractId: String?,
@@ -88,7 +91,7 @@ internal class TravelCertificateDateInputPresenter(
       mutableStateOf<TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?>(null)
     }
 
-    var invalidEmailErrorMessage by remember { mutableStateOf<Int?>(null) }
+    var invalidEmailErrorMessage by remember { mutableStateOf<StringResource?>(null) }
 
     CollectEvents { event ->
 
@@ -117,9 +120,9 @@ internal class TravelCertificateDateInputPresenter(
           invalidEmailErrorMessage = null
         } else {
           invalidEmailErrorMessage = if (successScreenContent.details.email.isNullOrEmpty()) {
-            R.string.travel_certificate_email_empty_error
+            Res.string.travel_certificate_email_empty_error
           } else {
-            R.string.PROFILE_MY_INFO_INVALID_EMAIL
+            Res.string.PROFILE_MY_INFO_INVALID_EMAIL
           }
         }
       }
@@ -283,7 +286,7 @@ internal sealed interface TravelCertificateDateInputUiState {
     val datePickerState: HedvigDatePickerState,
     val daysValid: Int,
     val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?,
-    val errorMessageRes: Int?,
+    val errorMessageRes: StringResource?,
   ) : TravelCertificateDateInputUiState
 }
 

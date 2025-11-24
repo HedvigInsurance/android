@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
@@ -35,9 +34,15 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository.ReferralError
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_save_button
+import hedvig.resources.referrals_change_change_code
+import hedvig.resources.referrals_change_code_sheet_general_error
+import hedvig.resources.referrals_empty_code_headline
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditCodeBottomSheet(
@@ -64,14 +69,14 @@ internal fun EditCodeBottomSheet(
 
     ClearErrorOnNewInputEffect({ textFieldValue }, showedReferralCodeSubmissionError)
     HedvigText(
-      text = stringResource(R.string.referrals_change_change_code),
+      text = stringResource(Res.string.referrals_change_change_code),
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth().semantics { heading() },
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextField(
       textValue = textFieldValue,
-      labelText = stringResource(R.string.referrals_empty_code_headline),
+      labelText = stringResource(Res.string.referrals_empty_code_headline),
       onValueChange = { textFieldValue = it },
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       errorState = if (referralCodeUpdateError == null) {
@@ -87,7 +92,7 @@ internal fun EditCodeBottomSheet(
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = stringResource(R.string.general_save_button),
+      text = stringResource(Res.string.general_save_button),
       onClick = {
         showedReferralCodeSubmissionError()
         focusManager.clearFocus()
@@ -99,7 +104,7 @@ internal fun EditCodeBottomSheet(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       onClick = { sheetState.dismiss() },
       buttonSize = ButtonDefaults.ButtonSize.Large,
       modifier = Modifier.fillMaxWidth(),
@@ -161,5 +166,5 @@ private fun ClearErrorOnNewInputEffect(
 
 @Composable
 private fun ForeverRepository.ReferralError.toErrorMessage(): String {
-  return message ?: stringResource(R.string.referrals_change_code_sheet_general_error)
+  return message ?: stringResource(Res.string.referrals_change_code_sheet_general_error)
 }

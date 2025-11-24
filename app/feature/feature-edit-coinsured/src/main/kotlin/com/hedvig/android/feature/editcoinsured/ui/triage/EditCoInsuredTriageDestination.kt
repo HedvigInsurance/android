@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,7 +32,12 @@ import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsu
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_COINSURED
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditCoInsuredTriageDestination(
@@ -126,7 +130,7 @@ private fun SuccessScreen(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )
@@ -134,7 +138,7 @@ private fun SuccessScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.HC_QUICK_ACTIONS_EDIT_COINSURED),
+      text = stringResource(Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -144,7 +148,7 @@ private fun SuccessScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
+      text = stringResource(Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -165,7 +169,7 @@ private fun SuccessScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      stringResource(id = R.string.general_continue_button),
+      stringResource(Res.string.general_continue_button),
       enabled = uiState.selected != null,
       modifier = Modifier
         .fillMaxWidth()

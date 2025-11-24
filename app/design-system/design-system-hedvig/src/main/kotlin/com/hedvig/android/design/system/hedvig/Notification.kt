@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -77,8 +76,10 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextS
 import com.hedvig.android.design.system.hedvig.tokens.NotificationsTokens
 import com.hedvig.android.design.system.internals.InternalSnackBar
 import com.hedvig.android.design.system.internals.SnackBarColors
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_NOTIFICATION_CARD
 import kotlin.collections.listOf
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HedvigNotificationCard(
@@ -112,7 +113,7 @@ fun HedvigNotificationCard(
 ) {
   val padding = if (withIcon) paddingWithIcon else paddingNoIcon
   val description = when (priority) {
-    Attention, Error, Info -> stringResource(R.string.TALKBACK_NOTIFICATION_CARD)
+    Attention, Error, Info -> stringResource(Res.string.TALKBACK_NOTIFICATION_CARD)
     Campaign, InfoInline, NeutralToast, FancyInfo -> ""
   }
 

@@ -12,11 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
-import hedvig.resources.R
+import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FeatureAddonBanner(
@@ -97,7 +98,7 @@ private fun PreviewAddonBanner() {
         title = "Travel Plus",
         description = "Extended travel insurance with extra coverage for your travels",
         labels = listOf("Popular", "60 days"),
-        buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+        buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
         onButtonClick = {},
       )
     }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,11 +29,16 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.Closed
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CLAIM_STATUS_CARD
+import hedvig.resources.claim_casetype_insurance_case
+import hedvig.resources.claim_status_claim_details_button
+import hedvig.resources.claim_status_detail_submitted
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ClaimStatusCard(
@@ -42,7 +46,7 @@ fun ClaimStatusCard(
   onClick: (claimId: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val description = stringResource(R.string.TALKBACK_CLAIM_STATUS_CARD)
+  val description = stringResource(Res.string.TALKBACK_CLAIM_STATUS_CARD)
   HedvigCard(
     onClick = { onClick(uiState.id) },
     modifier = modifier
@@ -53,7 +57,7 @@ fun ClaimStatusCard(
     Column {
       ClaimStatusCardContent(uiState, Modifier.padding(16.dp))
       HedvigButton(
-        text = stringResource(R.string.claim_status_claim_details_button),
+        text = stringResource(Res.string.claim_status_claim_details_button),
         onClick = { onClick(uiState.id) },
         enabled = true,
         buttonStyle = Secondary,
@@ -69,7 +73,7 @@ fun ClaimStatusCard(
 
 @Composable
 fun ClaimStatusCard(uiState: ClaimStatusCardUiState, modifier: Modifier = Modifier) {
-  val description = stringResource(R.string.TALKBACK_CLAIM_STATUS_CARD)
+  val description = stringResource(Res.string.TALKBACK_CLAIM_STATUS_CARD)
   HedvigCard(
     modifier = modifier
       .semantics(mergeDescendants = true) {
@@ -87,7 +91,7 @@ fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, modifier: Modifier =
     Spacer(modifier = Modifier.height(16.dp))
     HedvigText(
       text = uiState.claimType?.lowercase()?.replaceFirstChar { it.uppercase() }
-        ?: stringResource(R.string.claim_casetype_insurance_case),
+        ?: stringResource(Res.string.claim_casetype_insurance_case),
       style = HedvigTheme.typography.bodySmall,
       modifier = Modifier.padding(horizontal = 2.dp),
     )
@@ -101,7 +105,7 @@ fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, modifier: Modifier =
             TimeZone.currentSystemDefault(),
           ).toJavaLocalDateTime(),
         )
-      "${stringResource(R.string.claim_status_detail_submitted)} $formattedDate"
+      "${stringResource(Res.string.claim_status_detail_submitted)} $formattedDate"
     }
     HedvigText(
       text = subtext,

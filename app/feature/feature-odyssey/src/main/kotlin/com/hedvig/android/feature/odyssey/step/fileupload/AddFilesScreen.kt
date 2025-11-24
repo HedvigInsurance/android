@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.hedvig.android.core.uidata.UiFile
@@ -26,7 +25,11 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.claim_status_detail_add_more_files
+import hedvig.resources.claim_status_detail_uploaded_files_info_title
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddFilesScreen(
@@ -45,7 +48,7 @@ internal fun AddFilesScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    topAppBarText = stringResource(R.string.claim_status_detail_uploaded_files_info_title),
+    topAppBarText = stringResource(Res.string.claim_status_detail_uploaded_files_info_title),
     errorSnackbarState = ErrorSnackbarState(
       error = uiState.errorMessage != null,
       showedError = showedError,
@@ -80,7 +83,7 @@ private fun BelowContent(
   Column {
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.claim_status_detail_add_more_files),
+      text = stringResource(Res.string.claim_status_detail_add_more_files),
       enabled = true,
       buttonStyle = Secondary,
       onClick = onAddMoreFilesClick,
@@ -88,7 +91,7 @@ private fun BelowContent(
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = onContinueClick,
       isLoading = isLoading,
       enabled = !isLoading,

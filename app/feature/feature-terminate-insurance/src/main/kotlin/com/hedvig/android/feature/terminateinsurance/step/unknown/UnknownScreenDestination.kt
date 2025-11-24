@@ -8,7 +8,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -18,7 +17,13 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.EMBARK_UPDATE_APP_BODY
+import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
+import hedvig.resources.EMBARK_UPDATE_APP_TITLE
+import hedvig.resources.general_close_button
+import hedvig.resources.general_error
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun UnknownScreenDestination(
@@ -44,9 +49,9 @@ private fun UnknownScreenScreen(
 ) {
   TerminationInfoScreen(
     windowSizeClass = windowSizeClass,
-    title = stringResource(R.string.general_error),
-    headerText = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
-    bodyText = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
+    title = stringResource(Res.string.general_error),
+    headerText = stringResource(Res.string.EMBARK_UPDATE_APP_TITLE),
+    bodyText = stringResource(Res.string.EMBARK_UPDATE_APP_BODY),
     navigateUp = navigateUp,
   ) {
     Column(
@@ -55,13 +60,13 @@ private fun UnknownScreenScreen(
     ) {
       HedvigButton(
         modifier = Modifier.fillMaxWidth(),
-        text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+        text = stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON),
         enabled = true,
         onClick = openPlayStore,
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        text = stringResource(R.string.general_close_button),
+        text = stringResource(Res.string.general_close_button),
         modifier = Modifier.fillMaxWidth(),
         buttonSize = Large,
         onClick = navigateBack,

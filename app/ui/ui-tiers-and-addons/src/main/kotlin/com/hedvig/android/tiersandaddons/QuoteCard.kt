@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
@@ -75,8 +74,19 @@ import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import hedvig.resources.TALKBACK_PREVIOUSLY
+import hedvig.resources.TIER_FLOW_PRICE_LABEL_CURRENCY
+import hedvig.resources.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE
+import hedvig.resources.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE
+import hedvig.resources.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE
+import hedvig.resources.TIER_FLOW_SUMMARY_SHOW_DETAILS
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_close_button
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 
 @Serializable
 data class QuoteDisplayItem(
@@ -162,7 +172,7 @@ fun QuoteCard(
       )
       Spacer(Modifier.height(16.dp))
       HedvigButtonGhostWithBorder(
-        text = stringResource(R.string.TIER_FLOW_SUMMARY_SHOW_DETAILS),
+        text = stringResource(Res.string.TIER_FLOW_SUMMARY_SHOW_DETAILS),
         onClick = { quoteDetailsBottomSheetState.show() },
         enabled = true,
         modifier = Modifier.fillMaxWidth(),
@@ -185,7 +195,7 @@ fun QuoteCard(
 @Composable
 fun AddonQuoteCardDocumentsSection(documentsDisplayNameUrls: List<Pair<String, String>>) {
   Column(Modifier.semantics(true) {}) {
-    HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+    HedvigText(stringResource(Res.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
     Column(
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
@@ -217,7 +227,7 @@ fun AddonQuoteCardDocumentsSection(documentsDisplayNameUrls: List<Pair<String, S
             val density = LocalDensity.current
             Icon(
               imageVector = HedvigIcons.ArrowNorthEast,
-              contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+              contentDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
               tint = HedvigTheme.colorScheme.fillPrimary,
               modifier = Modifier
                 .wrapContentSize(Alignment.Center)
@@ -247,7 +257,7 @@ private fun QuoteDetailsBottomSheet(
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
       onClick = quoteDetailsBottomSheetState::dismiss,
@@ -342,7 +352,7 @@ private fun QuoteDetails(
   ) {
     if (displayItems.isNotEmpty()) {
       Column(Modifier.semantics(true) {}) {
-        HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
+        HedvigText(stringResource(Res.string.TIER_FLOW_SUMMARY_OVERVIEW_SUBTITLE))
         for (displayItem in displayItems) {
           InfoRow(displayItem.title, displayItem.value)
         }
@@ -351,7 +361,7 @@ private fun QuoteDetails(
     if (insurableLimits.isNotEmpty()) {
       Column(modifier = Modifier.semantics(true) {}) {
         HedvigText(
-          stringResource(R.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE),
+          stringResource(Res.string.TIER_FLOW_SUMMARY_COVERAGE_SUBTITLE),
         )
         Column {
           for (insurableLimit in insurableLimits) {
@@ -365,7 +375,7 @@ private fun QuoteDetails(
     }
     if (documents.isNotEmpty()) {
       Column(modifier = Modifier.semantics(true) {}) {
-        HedvigText(stringResource(R.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
+        HedvigText(stringResource(Res.string.TIER_FLOW_SUMMARY_DOCUMENTS_SUBTITLE))
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
           for (document in documents) {
             val uriHandler = LocalUriHandler.current
@@ -373,7 +383,7 @@ private fun QuoteDetails(
               modifier = Modifier
                 .fillMaxWidth()
                 .clip(HedvigTheme.shapes.cornerXSmall)
-                .clickable(onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)) {
+                .clickable(onClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK)) {
                   uriHandler.openUri(document.url)
                 },
             ) {
@@ -431,11 +441,11 @@ fun DiscountCostBreakdown(costBreakdown: List<CostBreakdownEntry>, modifier: Mod
           LocalTextStyle.current
         }
         val displayValue = when (val displayValue = item.displayValue) {
-          is Currency -> stringResource(R.string.TIER_FLOW_PRICE_LABEL_CURRENCY, displayValue.value)
+          is Currency -> stringResource(Res.string.TIER_FLOW_PRICE_LABEL_CURRENCY, displayValue.value)
           is Text -> displayValue.value
         }
         val strikeThroughDescription = stringResource(
-          R.string.TALKBACK_PREVIOUSLY,
+          Res.string.TALKBACK_PREVIOUSLY,
           "${item.displayName}, $displayValue",
         )
         HorizontalItemsWithMaximumSpaceTaken(
@@ -465,7 +475,7 @@ private fun TotalPriceRow(premium: UiMoney, previousPremium: UiMoney?, modifier:
     modifier = modifier,
     spaceBetween = 8.dp,
     startSlot = {
-      HedvigText(text = stringResource(R.string.TIER_FLOW_TOTAL))
+      HedvigText(text = stringResource(Res.string.TIER_FLOW_TOTAL))
     },
     endSlot = {
       val premiumPerMonthDescription = premium.getPerMonthDescription()
@@ -476,7 +486,7 @@ private fun TotalPriceRow(premium: UiMoney, previousPremium: UiMoney?, modifier:
         if (previousPremium != null && previousPremium != premium) {
           HedvigText(
             text = stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               previousPremium,
             ),
             textAlign = TextAlign.End,
@@ -488,7 +498,7 @@ private fun TotalPriceRow(premium: UiMoney, previousPremium: UiMoney?, modifier:
         }
         HedvigText(
           text = stringResource(
-            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
             premium,
           ),
           textAlign = TextAlign.End,

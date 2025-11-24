@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -92,8 +91,23 @@ import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAdd
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.ADDON_FLOW_COVER_BUTTON
+import hedvig.resources.ADDON_FLOW_PRICE_LABEL
+import hedvig.resources.ADDON_FLOW_SELECT_BUTTON
+import hedvig.resources.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER
+import hedvig.resources.ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE
+import hedvig.resources.ADDON_FLOW_SELECT_SUBOPTION_TITLE
+import hedvig.resources.ADDON_FLOW_SUBTITLE
+import hedvig.resources.ADDON_FLOW_TITLE
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import hedvig.resources.open_chat
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CustomizeTravelAddonDestination(
@@ -207,19 +221,19 @@ private fun FailureScreen(
     ) {
       Spacer(Modifier.weight(1f))
       val buttonText = if (errorMessage == null) {
-        stringResource(R.string.GENERAL_RETRY)
+        stringResource(Res.string.GENERAL_RETRY)
       } else {
-        stringResource(R.string.open_chat)
+        stringResource(Res.string.open_chat)
       }
       HedvigErrorSection(
         onButtonClick = if (errorMessage == null) reload else navigateToChat,
-        subTitle = errorMessage ?: stringResource(R.string.GENERAL_ERROR_BODY),
+        subTitle = errorMessage ?: stringResource(Res.string.GENERAL_ERROR_BODY),
         modifier = Modifier.fillMaxSize(),
         buttonText = buttonText,
       )
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
-        stringResource(R.string.general_close_button),
+        stringResource(Res.string.general_close_button),
         onClick = dropUnlessResumed { popBackStack() },
         buttonSize = Large,
         modifier = Modifier.fillMaxWidth(),
@@ -250,7 +264,7 @@ private fun CustomizeTravelAddonScreenContent(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )
@@ -258,8 +272,8 @@ private fun CustomizeTravelAddonScreenContent(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-      stringResource(R.string.ADDON_FLOW_TITLE),
-      stringResource(R.string.ADDON_FLOW_SUBTITLE),
+      stringResource(Res.string.ADDON_FLOW_TITLE),
+      stringResource(Res.string.ADDON_FLOW_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -275,7 +289,7 @@ private fun CustomizeTravelAddonScreenContent(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       enabled = true,
       onClick = dropUnlessResumed {
         submitToSummary()
@@ -286,7 +300,7 @@ private fun CustomizeTravelAddonScreenContent(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       modifier = Modifier.fillMaxWidth(),
       buttonSize = Large,
       onClick = { popAddonFlow() },
@@ -333,18 +347,18 @@ private fun CustomizeTravelAddonCard(
         // Locked option if there is nothing else to chose from
         isEnabled = isDropdownEnabled,
         style = Label(
-          label = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
+          label = stringResource(Res.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
           items = addonSimpleItems,
         ),
         size = Small,
         containerColor = HedvigTheme.colorScheme.surfacePrimary,
         // there is always one option chosen, should never be shown anyway
-        hintText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
+        hintText = stringResource(Res.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
         chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
         modifier = Modifier.accessibilityForDropdown(
-          labelText = stringResource(R.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
+          labelText = stringResource(Res.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
           selectedValue = uiState.currentlyChosenOption.displayName,
           isEnabled = isDropdownEnabled,
         ),
@@ -357,8 +371,8 @@ private fun CustomizeTravelAddonCard(
           onCancelButtonClick = {
             onDismissRequest()
           },
-          title = stringResource(R.string.ADDON_FLOW_SELECT_SUBOPTION_TITLE),
-          subTitle = stringResource(R.string.ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE),
+          title = stringResource(Res.string.ADDON_FLOW_SELECT_SUBOPTION_TITLE),
+          subTitle = stringResource(Res.string.ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE),
           addonOptions = uiState.travelAddonOffer.addonOptions,
           currentlyChosenOptionInDialog = uiState.currentlyChosenOptionInDialog,
           onChooseOptionInDialog = { option -> onChooseOptionInDialog(option) },
@@ -367,7 +381,7 @@ private fun CustomizeTravelAddonCard(
       Spacer(Modifier.height(16.dp))
       HedvigButtonGhostWithBorder(
         modifier = Modifier.fillMaxWidth(),
-        text = stringResource(R.string.ADDON_FLOW_COVER_BUTTON),
+        text = stringResource(Res.string.ADDON_FLOW_COVER_BUTTON),
         onClick = dropUnlessResumed {
           onNavigateToTravelInsurancePlusExplanation(
             uiState.currentlyChosenOption.addonVariant.perils.map {
@@ -401,7 +415,7 @@ private fun HeaderInfoWithCurrentPrice(
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           HighlightLabel(
-            labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, chosenOptionPremiumExtra),
+            labelText = stringResource(Res.string.ADDON_FLOW_PRICE_LABEL, chosenOptionPremiumExtra),
             size = HighLightSize.Small,
             color = Grey(MEDIUM),
             modifier = Modifier
@@ -471,7 +485,7 @@ private fun DropdownContent(
       textEndContent = { id ->
         val addon = addonOptions.first { it.addonId == id.id }
         HighlightLabel(
-          labelText = stringResource(R.string.ADDON_FLOW_PRICE_LABEL, addon.itemCost.monthlyNet),
+          labelText = stringResource(Res.string.ADDON_FLOW_PRICE_LABEL, addon.itemCost.monthlyNet),
           size = HighLightSize.Small,
           color = Grey(MEDIUM),
         )
@@ -479,14 +493,14 @@ private fun DropdownContent(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.ADDON_FLOW_SELECT_BUTTON),
+      text = stringResource(Res.string.ADDON_FLOW_SELECT_BUTTON),
       onClick = onContinueButtonClick,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       modifier = Modifier.fillMaxWidth(),
       buttonSize = Large,
       onClick = onCancelButtonClick,

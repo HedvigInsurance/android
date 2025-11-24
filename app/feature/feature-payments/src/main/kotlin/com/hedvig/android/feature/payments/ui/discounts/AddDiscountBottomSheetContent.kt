@@ -13,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -25,7 +24,13 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults.TextFieldSize
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.PAYMENTS_ADD_CAMPAIGN_CODE
+import hedvig.resources.PAYMENTS_ADD_CODE_BUTTON_LABEL
+import hedvig.resources.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER
+import hedvig.resources.Res
+import hedvig.resources.general_cancel_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddDiscountBottomSheetContent(
@@ -38,7 +43,7 @@ internal fun AddDiscountBottomSheetContent(
   Column {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(id = R.string.PAYMENTS_ADD_CAMPAIGN_CODE),
+      text = stringResource(Res.string.PAYMENTS_ADD_CAMPAIGN_CODE),
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -56,13 +61,13 @@ internal fun AddDiscountBottomSheetContent(
       onValueChange = {
         discountCodeInput = it
       },
-      labelText = stringResource(id = R.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER),
+      labelText = stringResource(Res.string.REFERRAL_ADDCOUPON_INPUTPLACEHOLDER),
       modifier = Modifier.fillMaxWidth(),
     )
 
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(id = R.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
+      text = stringResource(Res.string.PAYMENTS_ADD_CODE_BUTTON_LABEL),
       enabled = discountCodeInput.isNotBlank(),
       modifier = Modifier.fillMaxWidth(),
       onClick = {
@@ -72,7 +77,7 @@ internal fun AddDiscountBottomSheetContent(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
       onClick = onDismiss,
@@ -89,7 +94,7 @@ private fun AddDiscountBottomSheetPreview() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddDiscountBottomSheetContent(
         isLoading = false,
-        errorMessage = stringResource(id = R.string.something_went_wrong),
+        errorMessage = stringResource(Res.string.something_went_wrong),
         onAddDiscount = {},
         onDismiss = {},
       )

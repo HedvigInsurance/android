@@ -31,7 +31,6 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -56,9 +55,18 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_LABEL
+import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_TITLE
+import hedvig.resources.AUTHENTICATION_BANKID_OPEN_BUTTON
+import hedvig.resources.DEMO_MODE_START
+import hedvig.resources.SETTINGS_LOGIN_ROW
+import hedvig.resources.TALKBACK_QR_CODE_DESCRIPTION
+import hedvig.resources.bankid_missing_login_email_button
+import hedvig.resources.general_error
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SwedishLoginDestination(
@@ -94,12 +102,12 @@ private fun SwedishLoginScreen(
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.SETTINGS_LOGIN_ROW),
+    topAppBarText = stringResource(Res.string.SETTINGS_LOGIN_ROW),
   ) {
     var showStartDemoDialog by remember { mutableStateOf(false) }
     if (showStartDemoDialog) {
       HedvigAlertDialog(
-        title = "${stringResource(R.string.DEMO_MODE_START)}?",
+        title = "${stringResource(Res.string.DEMO_MODE_START)}?",
         text = null,
         onDismissRequest = { showStartDemoDialog = false },
         onConfirmClick = enterDemoMode,
@@ -146,7 +154,7 @@ private fun SwedishLoginScreen(
         ) {
           Column {
             HedvigErrorSection(
-              title = stringResource(R.string.general_error),
+              title = stringResource(Res.string.general_error),
               subTitle = uiState.message,
               onButtonClick = retry,
             )
@@ -181,7 +189,7 @@ private fun SwedishLoginScreen(
           horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier.padding(horizontal = 16.dp),
         ) {
-          val qrCodeDescription = stringResource(R.string.TALKBACK_QR_CODE_DESCRIPTION)
+          val qrCodeDescription = stringResource(Res.string.TALKBACK_QR_CODE_DESCRIPTION)
           QRCode(
             autoStartToken = uiState.bankIdLiveQrCodeData,
             modifier = Modifier
@@ -194,12 +202,12 @@ private fun SwedishLoginScreen(
           )
           Spacer(Modifier.height(32.dp))
           HedvigText(
-            text = stringResource(R.string.AUTHENTICATION_BANKID_LOGIN_TITLE),
+            text = stringResource(Res.string.AUTHENTICATION_BANKID_LOGIN_TITLE),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
           )
           HedvigText(
-            text = stringResource(R.string.AUTHENTICATION_BANKID_LOGIN_LABEL),
+            text = stringResource(Res.string.AUTHENTICATION_BANKID_LOGIN_LABEL),
             textAlign = TextAlign.Center,
             color = HedvigTheme.colorScheme.textSecondary,
             modifier = Modifier.fillMaxWidth(),
@@ -209,7 +217,7 @@ private fun SwedishLoginScreen(
         Spacer(Modifier.weight(1f))
         if (bankIdState.canOpenBankId) {
           HedvigButton(
-            text = stringResource(R.string.AUTHENTICATION_BANKID_OPEN_BUTTON),
+            text = stringResource(Res.string.AUTHENTICATION_BANKID_OPEN_BUTTON),
             onClick = bankIdState::tryOpenBankId,
             enabled = true,
             buttonStyle = ButtonDefaults.ButtonStyle.Primary,
@@ -221,7 +229,7 @@ private fun SwedishLoginScreen(
           Spacer(Modifier.height(8.dp))
         }
         HedvigTextButton(
-          text = stringResource(R.string.bankid_missing_login_email_button),
+          text = stringResource(Res.string.bankid_missing_login_email_button),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),

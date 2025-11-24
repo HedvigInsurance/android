@@ -14,7 +14,26 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_COINSURED
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_PAYMENTS_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
+import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
@@ -47,8 +66,8 @@ internal class GetQuickLinksUseCase(
           add(
             StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
-              titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
-              hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+              titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+              hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
             ),
           )
         }
@@ -56,8 +75,8 @@ internal class GetQuickLinksUseCase(
           add(
             StandaloneQuickLink(
               quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTermination,
-              titleRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
-              hintTextRes = R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+              titleRes = Res.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+              hintTextRes = Res.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
             ),
           )
         }
@@ -66,8 +85,8 @@ internal class GetQuickLinksUseCase(
         add(
           QuickAction.MultiSelectExpandedLink(
             links = linksToExpand,
-            titleRes = R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
+            titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE,
+            hintTextRes = Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_SUBTITLE,
           ),
         )
       }
@@ -75,8 +94,8 @@ internal class GetQuickLinksUseCase(
         add(
           StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeAddress,
-            titleRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
+            titleRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_TITLE,
+            hintTextRes = Res.string.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE,
           ),
         )
       }
@@ -84,8 +103,8 @@ internal class GetQuickLinksUseCase(
         add(
           StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
-            titleRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
+            titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
+            hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
           ),
         )
       }
@@ -93,8 +112,8 @@ internal class GetQuickLinksUseCase(
         add(
           StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate,
-            titleRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
+            titleRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE,
+            hintTextRes = Res.string.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE,
           ),
         )
       }
@@ -104,8 +123,8 @@ internal class GetQuickLinksUseCase(
             quickLinkDestination = InnerHelpCenterDestination.FirstVet(
               sections = memberActionOptions.firstVetAction.sections,
             ),
-            titleRes = R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE,
+            titleRes = Res.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE,
+            hintTextRes = Res.string.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE,
           ),
         )
       }
@@ -118,8 +137,8 @@ internal class GetQuickLinksUseCase(
               emergencyUrl = deflectPartner.url,
               preferredPartnerImageHeight = deflectPartner.preferredImageHeight,
             ),
-            titleRes = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
-            hintTextRes = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
+            titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
+            hintTextRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
           ),
         )
       }
@@ -131,8 +150,8 @@ private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveC
   StandaloneQuickLink? {
   if (this.size > 1) {
     return StandaloneQuickLink(
-      titleRes = R.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
-      hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+      titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+      hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
       quickLinkDestination = ChooseInsuranceForEditCoInsured,
     )
   } else if (this.size == 1) {
@@ -140,14 +159,14 @@ private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveC
     return if (contract.coInsured?.any { it.hasMissingInfo } == true) {
       StandaloneQuickLink(
         quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(this.first().id),
-        titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-        hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+        hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
       )
     } else {
       StandaloneQuickLink(
         quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(this.first().id),
-        titleRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-        hintTextRes = R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+        hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
       )
     }
   } else {

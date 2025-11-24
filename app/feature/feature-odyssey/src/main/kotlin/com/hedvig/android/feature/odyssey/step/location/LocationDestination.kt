@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -27,7 +26,10 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.odyssey.ui.LocationWithDialog
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.claims_incident_screen_location
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun LocationDestination(
@@ -76,7 +78,7 @@ private fun LocationScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.claims_incident_screen_location),
+      text = stringResource(Res.string.claims_incident_screen_location),
       style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
@@ -91,7 +93,7 @@ private fun LocationScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = submitLocation,
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,

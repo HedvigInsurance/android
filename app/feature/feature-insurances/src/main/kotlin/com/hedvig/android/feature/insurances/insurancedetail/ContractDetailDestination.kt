@@ -35,7 +35,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -78,8 +77,17 @@ import com.hedvig.android.feature.insurances.insurancedetail.documents.Documents
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CONTRACT_DETAILS_ERROR
+import hedvig.resources.MY_DOCUMENTS_INSURANCE_CERTIFICATE
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.general_back_button
+import hedvig.resources.insurance_details_view_tab_1_title
+import hedvig.resources.insurance_details_view_tab_2_title
+import hedvig.resources.insurance_details_view_tab_3_title
+import hedvig.resources.insurance_details_view_title
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ContractDetailDestination(
@@ -134,7 +142,7 @@ private fun ContractDetailScreen(
       costBreakdownBottomSheetState,
     )
     TopAppBarWithBack(
-      title = stringResource(R.string.insurance_details_view_title),
+      title = stringResource(Res.string.insurance_details_view_title),
       onClick = navigateUp,
     )
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -185,8 +193,8 @@ private fun ContractDetailScreen(
 
         ContractDetailsUiState.NoContractFound -> {
           HedvigErrorSection(
-            subTitle = stringResource(R.string.CONTRACT_DETAILS_ERROR),
-            buttonText = stringResource(R.string.general_back_button),
+            subTitle = stringResource(Res.string.CONTRACT_DETAILS_ERROR),
+            buttonText = stringResource(Res.string.general_back_button),
             onButtonClick = navigateBack,
             modifier = Modifier
               .fillMaxSize()
@@ -257,7 +265,7 @@ private fun ContractDetailScreen(
                       displayItems = buildList {
                         add(
                           contract.displayName to stringResource(
-                            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                            Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                             contract.basePremium.toString(),
                           ),
                         )
@@ -265,7 +273,7 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                                 addon.premium.toString(),
                               ),
                           )
@@ -358,7 +366,7 @@ private fun EstablishedInsuranceContract.getAllDocuments(): List<InsuranceVarian
   addAll(currentInsuranceAgreement.productVariant.documents)
   if (currentInsuranceAgreement.certificateUrl != null) {
     val certificate = InsuranceVariantDocument(
-      stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
+      stringResource(Res.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
       url = currentInsuranceAgreement.certificateUrl,
       type = InsuranceVariantDocument.InsuranceDocumentType.PRE_SALE_INFO_EU_STANDARD,
     )
@@ -370,9 +378,9 @@ private fun EstablishedInsuranceContract.getAllDocuments(): List<InsuranceVarian
 private fun PagerSelector(pagerState: PagerState, modifier: Modifier = Modifier) {
   HedvigTabRow(
     tabTitles = listOf(
-      stringResource(R.string.insurance_details_view_tab_1_title),
-      stringResource(R.string.insurance_details_view_tab_2_title),
-      stringResource(R.string.insurance_details_view_tab_3_title),
+      stringResource(Res.string.insurance_details_view_tab_1_title),
+      stringResource(Res.string.insurance_details_view_tab_2_title),
+      stringResource(Res.string.insurance_details_view_tab_3_title),
     ),
     tabRowState = rememberHedvigTabRowState(pagerState),
     selectIndicatorAnimationSpec = horizontalPagerSpringSpec(IntOffset.VisibilityThreshold),

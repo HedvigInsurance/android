@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -20,7 +19,12 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.HC_CHAT_ANSWER
+import hedvig.resources.HC_CHAT_BUTTON
+import hedvig.resources.HC_CHAT_GO_TO_INBOX
+import hedvig.resources.HC_CHAT_QUESTION
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun StillNeedHelpSection(
@@ -41,18 +45,18 @@ internal fun StillNeedHelpSection(
     ) {
       Spacer(modifier = Modifier.height(32.dp))
       HedvigText(
-        text = stringResource(R.string.HC_CHAT_QUESTION),
+        text = stringResource(Res.string.HC_CHAT_QUESTION),
         textAlign = TextAlign.Center,
       )
       HedvigText(
-        text = stringResource(R.string.HC_CHAT_ANSWER),
+        text = stringResource(Res.string.HC_CHAT_ANSWER),
         textAlign = TextAlign.Center,
         color = HedvigTheme.colorScheme.textSecondary,
       )
       Spacer(modifier = Modifier.height(16.dp))
       if (showNavigateToInboxButton) {
         HedvigButton(
-          text = stringResource(R.string.HC_CHAT_GO_TO_INBOX),
+          text = stringResource(Res.string.HC_CHAT_GO_TO_INBOX),
           onClick = onNavigateToInbox,
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Primary,
@@ -61,7 +65,7 @@ internal fun StillNeedHelpSection(
         Spacer(Modifier.height(8.dp))
       }
       HedvigButton(
-        text = stringResource(R.string.HC_CHAT_BUTTON),
+        text = stringResource(Res.string.HC_CHAT_BUTTON),
         onClick = onNavigateToNewConversation,
         enabled = true,
         buttonStyle = if (showNavigateToInboxButton) {

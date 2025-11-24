@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,8 +57,27 @@ import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import com.hedvig.android.feature.payments.ui.discounts.ForeverExplanationBottomSheet
-import hedvig.resources.R
+import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYMENTS_AUTOGIRO_LABEL
+import hedvig.resources.PAYMENTS_BANK_LABEL
+import hedvig.resources.PAYMENTS_IN_PROGRESS
+import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION
+import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
+import hedvig.resources.PAYMENTS_PAYMENT_DUE
+import hedvig.resources.PAYMENTS_PAYMENT_FAILED
+import hedvig.resources.PAYMENTS_PAYMENT_METHOD
+import hedvig.resources.PAYMENTS_PAYMENT_SUCCESSFUL
+import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
+import hedvig.resources.PAYMENTS_REFERRALS_INFO_TITLE
+import hedvig.resources.Res
+import hedvig.resources.general_close_button
+import hedvig.resources.payment_details_receipt_card_total
+import hedvig.resources.payments_carried_adjustment
+import hedvig.resources.payments_carried_adjustment_info
+import hedvig.resources.payments_settlement_adjustment
+import hedvig.resources.payments_settlement_adjustment_info
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PaymentDetailsDestination(viewModel: PaymentDetailsViewModel, navigateUp: () -> Unit) {
@@ -109,7 +127,7 @@ private fun MemberChargeDetailsScreen(
       HedvigScaffold(
         topAppBarText = when {
           uiState.paymentDetails.memberCharge.status == MemberCharge.MemberChargeStatus.PENDING -> {
-            stringResource(R.string.PAYMENTS_PROCESSING_PAYMENT)
+            stringResource(Res.string.PAYMENTS_PROCESSING_PAYMENT)
           }
 
           else -> {
@@ -140,13 +158,13 @@ private fun MemberChargeDetailsScreen(
               modifier = Modifier.fillMaxWidth(),
               horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-              HedvigText(text = stringResource(id = R.string.payments_carried_adjustment))
+              HedvigText(text = stringResource(Res.string.payments_carried_adjustment))
               HedvigText(text = it.toString())
             }
             Spacer(modifier = Modifier.height(8.dp))
             HedvigNotificationCard(
               priority = NotificationDefaults.NotificationPriority.Info,
-              message = stringResource(id = R.string.payments_carried_adjustment_info),
+              message = stringResource(Res.string.payments_carried_adjustment_info),
             )
             Spacer(modifier = Modifier.height(16.dp))
           }
@@ -157,13 +175,13 @@ private fun MemberChargeDetailsScreen(
               modifier = Modifier.fillMaxWidth(),
               horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-              HedvigText(text = stringResource(id = R.string.payments_settlement_adjustment))
+              HedvigText(text = stringResource(Res.string.payments_settlement_adjustment))
               HedvigText(text = it.toString())
             }
             Spacer(modifier = Modifier.height(8.dp))
             HedvigNotificationCard(
               priority = NotificationDefaults.NotificationPriority.Info,
-              message = stringResource(id = R.string.payments_settlement_adjustment_info),
+              message = stringResource(Res.string.payments_settlement_adjustment_info),
             )
             Spacer(modifier = Modifier.height(16.dp))
           }
@@ -173,7 +191,7 @@ private fun MemberChargeDetailsScreen(
               spaceBetween = 8.dp,
               startSlot = {
                 HedvigText(
-                  stringResource(R.string.PAYMENTS_REFERRALS_INFO_TITLE),
+                  stringResource(Res.string.PAYMENTS_REFERRALS_INFO_TITLE),
                   modifier = Modifier.wrapContentSize(Alignment.CenterStart),
                 )
               },
@@ -206,12 +224,12 @@ private fun MemberChargeDetailsScreen(
                 // we don't have Checkmark icon in the new NotificationCards. so I've put  withIcon = false here
                 withIcon = false,
                 style = NotificationDefaults.InfoCardStyle.Default,
-                message = stringResource(id = R.string.PAYMENTS_PAYMENT_SUCCESSFUL),
+                message = stringResource(Res.string.PAYMENTS_PAYMENT_SUCCESSFUL),
                 modifier = Modifier.fillMaxWidth(),
               )
 
             MemberCharge.MemberChargeStatus.PENDING -> HedvigNotificationCard(
-              message = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
+              message = stringResource(Res.string.PAYMENTS_IN_PROGRESS),
               style = NotificationDefaults.InfoCardStyle.Default,
               priority = NotificationDefaults.NotificationPriority.Info,
               withIcon = true,
@@ -223,7 +241,7 @@ private fun MemberChargeDetailsScreen(
               val nextOrFutureCharge = nextCharge ?: uiState.paymentDetails.upComingCharge
               HedvigNotificationCard(
                 message = stringResource(
-                  id = R.string.PAYMENTS_PAYMENT_FAILED,
+                  Res.string.PAYMENTS_PAYMENT_FAILED,
                   nextOrFutureCharge
                     ?.let {
                       dateTimeFormatter.format(it.dueDate.toJavaLocalDate())
@@ -241,7 +259,7 @@ private fun MemberChargeDetailsScreen(
           Spacer(Modifier.height(8.dp))
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
-              HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+              HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
             },
             endSlot = {
               Icon(
@@ -264,7 +282,7 @@ private fun MemberChargeDetailsScreen(
             spaceBetween = 8.dp,
             modifier = Modifier.padding(vertical = 16.dp),
             startSlot = {
-              HedvigText(stringResource(R.string.payment_details_receipt_card_total))
+              HedvigText(stringResource(Res.string.payment_details_receipt_card_total))
             },
             endSlot = {
               Row(
@@ -290,7 +308,7 @@ private fun MemberChargeDetailsScreen(
           HorizontalDivider()
           HorizontalItemsWithMaximumSpaceTaken(
             startSlot = {
-              HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_DUE))
+              HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_DUE))
             },
             endSlot = {
               HedvigText(
@@ -309,11 +327,11 @@ private fun MemberChargeDetailsScreen(
             is PaymentDetails.PaymentsInfo.Active -> {
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {
-                  HedvigText(stringResource(id = R.string.PAYMENTS_PAYMENT_METHOD))
+                  HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
                 },
                 endSlot = {
                   HedvigText(
-                    text = stringResource(id = R.string.PAYMENTS_AUTOGIRO_LABEL),
+                    text = stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL),
                     textAlign = TextAlign.End,
                     modifier = Modifier.fillMaxWidth(),
                     color = HedvigTheme.colorScheme.textSecondary,
@@ -326,7 +344,7 @@ private fun MemberChargeDetailsScreen(
 
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {
-                  HedvigText(stringResource(id = R.string.PAYMENTS_ACCOUNT))
+                  HedvigText(stringResource(Res.string.PAYMENTS_ACCOUNT))
                 },
                 endSlot = {
                   HedvigText(
@@ -342,7 +360,7 @@ private fun MemberChargeDetailsScreen(
               HorizontalDivider()
 
               HorizontalItemsWithMaximumSpaceTaken(
-                startSlot = { HedvigText(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },
+                startSlot = { HedvigText(stringResource(Res.string.PAYMENTS_BANK_LABEL)) },
                 endSlot = {
                   HedvigText(
                     text = paymentsInfo.displayName,
@@ -369,14 +387,14 @@ private fun PaymentdetailsExplanationBottomSheet(
   HedvigBottomSheet(
     hedvigBottomSheetState = paymentdetailsExplanationBottomSheetState,
   ) {
-    HedvigText(text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
+    HedvigText(text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
     HedvigText(
-      text = stringResource(id = R.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
+      text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
       color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
       onClick = paymentdetailsExplanationBottomSheetState::dismiss,

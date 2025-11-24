@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -47,7 +46,24 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_LABEL
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_TITLE
+import hedvig.resources.SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE
+import hedvig.resources.SUBMIT_CLAIM_TOWING_A1
+import hedvig.resources.SUBMIT_CLAIM_TOWING_A2
+import hedvig.resources.SUBMIT_CLAIM_TOWING_A3
+import hedvig.resources.SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL
+import hedvig.resources.SUBMIT_CLAIM_TOWING_INFO_LABEL
+import hedvig.resources.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON
+import hedvig.resources.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL
+import hedvig.resources.SUBMIT_CLAIM_TOWING_Q1
+import hedvig.resources.SUBMIT_CLAIM_TOWING_Q2
+import hedvig.resources.SUBMIT_CLAIM_TOWING_Q3
+import hedvig.resources.SUBMIT_CLAIM_TOWING_TITLE
+import hedvig.resources.open_chat
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectTowingDestination(
@@ -81,11 +97,11 @@ private fun DeflectTowingScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_TITLE),
+    topAppBarText = stringResource(Res.string.SUBMIT_CLAIM_TOWING_TITLE),
   ) {
     Spacer(Modifier.height(8.dp))
     HedvigNotificationCard(
-      message = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_INFO_LABEL),
+      message = stringResource(Res.string.SUBMIT_CLAIM_TOWING_INFO_LABEL),
       priority = Info,
       modifier = Modifier
         .fillMaxWidth()
@@ -93,7 +109,7 @@ private fun DeflectTowingScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(id = R.string.SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -115,14 +131,14 @@ private fun DeflectTowingScreen(
             PartnerImage(partner, imageLoader, Modifier.padding(16.dp))
             Spacer(Modifier.height(16.dp))
             HedvigText(
-              text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
+              text = stringResource(Res.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL),
               textAlign = TextAlign.Center,
               modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(16.dp))
             val context = LocalContext.current
             HedvigButton(
-              text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
+              text = stringResource(Res.string.SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON),
               enabled = true,
               buttonSize = Medium,
               onClick = dropUnlessResumed {
@@ -154,12 +170,12 @@ private fun DeflectTowingScreen(
     }
     Spacer(Modifier.height(24.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(id = R.string.SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL),
+      text = stringResource(Res.string.SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       color = HedvigTheme.colorScheme.textSecondary,
     )
@@ -170,14 +186,14 @@ private fun DeflectTowingScreen(
     )
     Spacer(Modifier.height(32.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
     )
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
+      text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
       textAlign = TextAlign.Center,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
@@ -186,7 +202,7 @@ private fun DeflectTowingScreen(
     )
     Spacer(Modifier.height(24.dp))
     HedvigButton(
-      text = stringResource(R.string.open_chat),
+      text = stringResource(Res.string.open_chat),
       enabled = true,
       buttonSize = Small,
       onClick = dropUnlessResumed { onNavigateToNewConversation() },
@@ -204,9 +220,9 @@ private fun DeflectTowingScreen(
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }
   val faqList = listOf(
-    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q1) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A1),
-    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q2) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A2),
-    stringResource(R.string.SUBMIT_CLAIM_TOWING_Q3) to stringResource(R.string.SUBMIT_CLAIM_TOWING_A3),
+    stringResource(Res.string.SUBMIT_CLAIM_TOWING_Q1) to stringResource(Res.string.SUBMIT_CLAIM_TOWING_A1),
+    stringResource(Res.string.SUBMIT_CLAIM_TOWING_Q2) to stringResource(Res.string.SUBMIT_CLAIM_TOWING_A2),
+    stringResource(Res.string.SUBMIT_CLAIM_TOWING_Q3) to stringResource(Res.string.SUBMIT_CLAIM_TOWING_A3),
   )
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     faqList.forEachIndexed { index, faqItem ->

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,7 +18,11 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.feature.profile.tab.ProfileRow
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.INSURANCE_EVIDENCE_DOCUMENT_TITLE
+import hedvig.resources.PROFILE_ROW_TRAVEL_CERTIFICATE
+import hedvig.resources.profile_certificates_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CertificatesDestination(
@@ -50,7 +53,7 @@ private fun CertificatesScreen(
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.profile_certificates_title),
+    topAppBarText = stringResource(Res.string.profile_certificates_title),
   ) {
     when (uiState) {
       CertificatesState.Failure -> {
@@ -85,7 +88,7 @@ private fun ColumnScope.CertificatesRows(
 ) {
   if (uiState.isTravelCertificateAvailable) {
     ProfileRow(
-      title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+      title = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
       icon = HedvigIcons.MultipleDocuments,
       onClick = dropUnlessResumed { onNavigateToTravelCertificate() },
       isLoading = false,
@@ -93,7 +96,7 @@ private fun ColumnScope.CertificatesRows(
   }
   if (uiState.isInsuranceEvidenceAvailable) {
     ProfileRow(
-      title = stringResource(R.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
+      title = stringResource(Res.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
       icon = HedvigIcons.MultipleDocuments,
       onClick = dropUnlessResumed { onNavigateToInsuranceEvidence() },
       isLoading = false,
@@ -104,13 +107,13 @@ private fun ColumnScope.CertificatesRows(
 @Composable
 private fun ColumnScope.CertificatesRowsPlaceholder() {
   ProfileRow(
-    title = stringResource(R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+    title = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
     icon = HedvigIcons.MultipleDocuments,
     onClick = {},
     isLoading = true,
   )
   ProfileRow(
-    title = stringResource(R.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
+    title = stringResource(Res.string.INSURANCE_EVIDENCE_DOCUMENT_TITLE),
     icon = HedvigIcons.MultipleDocuments,
     onClick = { },
     isLoading = true,

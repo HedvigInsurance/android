@@ -25,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
@@ -50,6 +49,14 @@ import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import org.jetbrains.compose.resources.stringResource
+import hedvig.resources.CLAIMS_PAYOUT_SUCCESS_LABEL
+import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
+import hedvig.resources.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION
+import hedvig.resources.claims_payout_progress_title
+import hedvig.resources.general_close_button
+import hedvig.resources.open_chat
+import hedvig.resources.something_went_wrong
 
 @Composable
 internal fun SingleItemPayoutDestination(
@@ -113,8 +120,8 @@ private fun BoxScope.ErrorContent(
     modifier = Modifier.align(Alignment.Center),
   ) {
     EmptyState(
-      text = stringResource(hedvig.resources.R.string.something_went_wrong),
-      description = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE),
+      text = stringResource(hedvig.resources.Res.string.something_went_wrong),
+      description = stringResource(hedvig.resources.Res.string.NETWORK_ERROR_ALERT_MESSAGE),
       modifier = Modifier.fillMaxWidth(),
     )
   }
@@ -130,7 +137,7 @@ private fun BoxScope.ErrorContent(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         HedvigButton(
-          text = stringResource(hedvig.resources.R.string.open_chat),
+          text = stringResource(hedvig.resources.Res.string.open_chat),
           onClick = onNavigateToNewConversation,
           enabled = allowInteraction,
           buttonStyle = Secondary,
@@ -138,7 +145,7 @@ private fun BoxScope.ErrorContent(
           modifier = Modifier.weight(1f),
         )
         HedvigButton(
-          text = stringResource(hedvig.resources.R.string.general_close_button),
+          text = stringResource(hedvig.resources.Res.string.general_close_button),
           onClick = exitFlow,
           enabled = allowInteraction,
           buttonStyle = Secondary,
@@ -147,7 +154,7 @@ private fun BoxScope.ErrorContent(
         )
       }
       HedvigButton(
-        text = stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
+        text = stringResource(hedvig.resources.Res.string.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION),
         onClick = retryPayout,
         enabled = allowInteraction,
         modifier = Modifier.fillMaxWidth(),
@@ -167,7 +174,7 @@ private fun BoxScope.LoadingContent(show: Boolean) {
       modifier = Modifier.padding(16.dp),
     ) {
       HedvigText(
-        text = stringResource(hedvig.resources.R.string.claims_payout_progress_title),
+        text = stringResource(hedvig.resources.Res.string.claims_payout_progress_title),
         style = HedvigTheme.typography.headlineSmall,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth(),
@@ -207,7 +214,7 @@ private fun BoxScope.PaidOutContent(
       )
       Spacer(Modifier.height(16.dp))
       HedvigText(
-        text = stringResource(hedvig.resources.R.string.CLAIMS_PAYOUT_SUCCESS_LABEL),
+        text = stringResource(hedvig.resources.Res.string.CLAIMS_PAYOUT_SUCCESS_LABEL),
         style = HedvigTheme.typography.bodySmall.copy(
           color = HedvigTheme.colorScheme.textSecondary,
           textAlign = TextAlign.Center,
@@ -226,7 +233,7 @@ private fun BoxScope.PaidOutContent(
       .padding(16.dp),
   ) {
     HedvigTextButton(
-      text = stringResource(hedvig.resources.R.string.general_close_button),
+      text = stringResource(hedvig.resources.Res.string.general_close_button),
       onClick = onDoneAfterPayout,
       enabled = status is PayoutUiState.Status.PaidOut,
       modifier = Modifier.fillMaxWidth(),

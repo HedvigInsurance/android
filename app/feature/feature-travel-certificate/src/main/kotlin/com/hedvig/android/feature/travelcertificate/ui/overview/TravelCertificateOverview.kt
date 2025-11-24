@@ -11,7 +11,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -29,8 +28,17 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewUiState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CERTIFICATES_EMAIL_SENT
+import hedvig.resources.GENERAL_DOWNLOAD
+import hedvig.resources.GENERAL_SHOW
+import hedvig.resources.general_done_button
+import hedvig.resources.travel_certificate_download_recommendation
+import hedvig.resources.travel_certificate_download_travel_certificate
+import hedvig.resources.travel_certificate_share_travel_certificate
+import hedvig.resources.travel_certificate_travel_certificate_ready_description
 import java.io.File
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelCertificateOverviewDestination(
@@ -91,14 +99,14 @@ internal fun TravelCertificateOverview(
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
         EmptyState(
-          text = stringResource(R.string.CERTIFICATES_EMAIL_SENT),
-          description = stringResource(R.string.travel_certificate_travel_certificate_ready_description),
+          text = stringResource(Res.string.CERTIFICATES_EMAIL_SENT),
+          description = stringResource(Res.string.travel_certificate_travel_certificate_ready_description),
           iconStyle = SUCCESS,
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
-          message = stringResource(R.string.travel_certificate_download_recommendation),
+          message = stringResource(Res.string.travel_certificate_download_recommendation),
           priority = NotificationPriority.Info,
           modifier = Modifier
             .fillMaxWidth()
@@ -107,9 +115,9 @@ internal fun TravelCertificateOverview(
         Spacer(modifier = Modifier.height(16.dp))
         HedvigButton(
           text = if (uiState.travelCertificateUri != null) {
-            stringResource(R.string.travel_certificate_share_travel_certificate)
+            stringResource(Res.string.travel_certificate_share_travel_certificate)
           } else {
-            stringResource(R.string.travel_certificate_download_travel_certificate)
+            stringResource(Res.string.travel_certificate_download_travel_certificate)
           },
           onClick = {
             if (uiState.travelCertificateUri != null) {
@@ -119,9 +127,9 @@ internal fun TravelCertificateOverview(
             }
           },
           onClickLabel = if (uiState.travelCertificateUri != null) {
-            stringResource(R.string.GENERAL_SHOW)
+            stringResource(Res.string.GENERAL_SHOW)
           } else {
-            stringResource(R.string.GENERAL_DOWNLOAD)
+            stringResource(Res.string.GENERAL_DOWNLOAD)
           },
           enabled = true,
           modifier = Modifier
@@ -130,7 +138,7 @@ internal fun TravelCertificateOverview(
         )
         Spacer(modifier = Modifier.height(8.dp))
         HedvigTextButton(
-          text = stringResource(id = R.string.general_done_button),
+          text = stringResource(Res.string.general_done_button),
           onClick = navigateUp,
           modifier = Modifier
             .fillMaxWidth()

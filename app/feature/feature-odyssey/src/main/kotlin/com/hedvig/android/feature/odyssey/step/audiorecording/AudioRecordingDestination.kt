@@ -22,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -51,9 +50,16 @@ import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiStat
 import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.ScreenMode
 import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
+import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
+import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
+import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
+import hedvig.resources.general_continue_button
 import java.io.File
 import kotlin.time.Clock
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AudioRecordingDestination(
@@ -133,8 +139,8 @@ private fun AudioRecordingScreen(
   FreeTextOverlay(
     freeTextMaxLength = 2000,
     freeTextValue = if (uiState is WhatHappenedUiState.FreeTextDescription) uiState.freeText else null,
-    freeTextHint = stringResource(R.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-    freeTextTitle = stringResource(R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
     freeTextOnCancelClick = {
       onCloseFullScreenEditText()
     },
@@ -246,9 +252,9 @@ private fun FreeTextInputSection(
     FreeTextDisplay(
       onClick = { onLaunchFullScreenEditText() },
       freeTextValue = uiState.freeText,
-      freeTextPlaceholder = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+      freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
       supportingText = if (uiState.errorType is WhatHappenedUiState.FreeTextErrorType.TooShort) {
-        stringResource(R.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, uiState.errorType.minLength)
+        stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, uiState.errorType.minLength)
       } else {
         null
       },
@@ -257,14 +263,14 @@ private fun FreeTextInputSection(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       onClick = submitFreeText,
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.CLAIMS_USE_AUDIO_RECORDING),
+      text = stringResource(Res.string.CLAIMS_USE_AUDIO_RECORDING),
       onClick = showAudioRecording,
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
@@ -307,7 +313,7 @@ private fun AudioRecordingSection(
   }
   if (showPermissionDialog) {
     PermissionDialog(
-      permissionDescription = stringResource(R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
+      permissionDescription = stringResource(Res.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
       isPermanentlyDeclined = !shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO),
       onDismiss = { showPermissionDialog = false },
       okClick = recordAudioPermissionState::launchPermissionRequest,

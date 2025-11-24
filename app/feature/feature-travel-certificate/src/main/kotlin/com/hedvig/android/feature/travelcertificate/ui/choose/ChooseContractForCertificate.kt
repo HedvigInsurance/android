@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -27,7 +26,10 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.travelcertificate.data.ContractEligibleWithAddress
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractUiState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_continue_button
+import hedvig.resources.travel_certificate_select_contract_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChooseContractForCertificateDestination(
@@ -71,7 +73,7 @@ private fun ChooseContractForCertificate(
       ) {
         Spacer(Modifier.height(8.dp))
         FlowHeading(
-          stringResource(R.string.travel_certificate_select_contract_title),
+          stringResource(Res.string.travel_certificate_select_contract_title),
           null,
           Modifier
             .fillMaxWidth()
@@ -94,7 +96,7 @@ private fun ChooseContractForCertificate(
         )
         Spacer(modifier = Modifier.height(16.dp))
         HedvigButton(
-          text = stringResource(id = R.string.general_continue_button),
+          text = stringResource(Res.string.general_continue_button),
           onClick = { selectedContractId?.let { onContinue(it) } },
           enabled = selectedContractId != null,
           modifier = Modifier

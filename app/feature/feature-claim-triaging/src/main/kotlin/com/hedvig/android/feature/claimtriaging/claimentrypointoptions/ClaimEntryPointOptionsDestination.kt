@@ -20,7 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
@@ -40,7 +39,14 @@ import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.ui.claimflow.WarningTextWithIcon
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_SELECT_CATEGORY
+import hedvig.resources.CLAIMS_TRIAGING_WHAT_ITEM_TITLE
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION
+import hedvig.resources.claims_continue_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ClaimEntryPointOptionsDestination(
@@ -87,8 +93,8 @@ private fun ClaimEntryPointOptionsScreen(
 ) {
   if (uiState.startClaimErrorMessage != null) {
     ErrorDialog(
-      title = stringResource(R.string.something_went_wrong),
-      message = stringResource(R.string.GENERAL_ERROR_BODY),
+      title = stringResource(Res.string.something_went_wrong),
+      message = stringResource(Res.string.GENERAL_ERROR_BODY),
       onDismiss = showedStartClaimError,
     )
   }
@@ -100,7 +106,7 @@ private fun ClaimEntryPointOptionsScreen(
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.CLAIMS_TRIAGING_WHAT_ITEM_TITLE),
+      text = stringResource(Res.string.CLAIMS_TRIAGING_WHAT_ITEM_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier
         .fillMaxWidth()
@@ -114,7 +120,7 @@ private fun ClaimEntryPointOptionsScreen(
       exit = fadeOut(),
     ) {
       Column {
-        val description = stringResource(R.string.TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION)
+        val description = stringResource(Res.string.TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION)
         WarningTextWithIcon(
           modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -124,7 +130,7 @@ private fun ClaimEntryPointOptionsScreen(
               contentDescription = description
               liveRegion = LiveRegionMode.Assertive
             },
-          text = stringResource(R.string.CLAIMS_SELECT_CATEGORY),
+          text = stringResource(Res.string.CLAIMS_SELECT_CATEGORY),
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -138,7 +144,7 @@ private fun ClaimEntryPointOptionsScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = stringResource(R.string.claims_continue_button),
+      text = stringResource(Res.string.claims_continue_button),
       onClick = onContinue,
       isLoading = uiState.isLoading,
       enabled = uiState.canContinue,

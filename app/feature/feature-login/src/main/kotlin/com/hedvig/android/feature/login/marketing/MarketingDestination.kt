@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -54,7 +53,15 @@ import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundVideo
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.MARKETING_GET_HEDVIG
+import hedvig.resources.PROFILE_ABOUT_APP_VERSION
+import hedvig.resources.SETTINGS_LANGUAGE_TITLE
+import hedvig.resources.SETTINGS_LOGIN_ROW
+import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import hedvig.resources.general_done_button
+import hedvig.resources.market_language_screen_choose_language_label
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun MarketingDestination(
@@ -141,7 +148,7 @@ private fun MarketingScreen(
             ),
         ) {
           HedvigButton(
-            text = stringResource(R.string.SETTINGS_LOGIN_ROW),
+            text = stringResource(Res.string.SETTINGS_LOGIN_ROW),
             enabled = uiState is MarketingUiState.Success,
             onClick = {
               (uiState as? MarketingUiState.Success)?.run {
@@ -152,9 +159,9 @@ private fun MarketingScreen(
               .fillMaxWidth()
               .testTag("login_button"),
           )
-          val linkRoleDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK)
+          val linkRoleDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK)
           HedvigTextButton(
-            text = stringResource(R.string.MARKETING_GET_HEDVIG),
+            text = stringResource(Res.string.MARKETING_GET_HEDVIG),
             onClickLabel = linkRoleDescription,
             modifier = Modifier.fillMaxWidth(),
             enabled = uiState is MarketingUiState.Success,
@@ -168,7 +175,7 @@ private fun MarketingScreen(
         }
       }
       if (uiState is MarketingUiState.Success) {
-        val description = stringResource(R.string.market_language_screen_choose_language_label)
+        val description = stringResource(Res.string.market_language_screen_choose_language_label)
         IconButton(
           onClick = preferencesSheetState::show,
           modifier = Modifier
@@ -195,7 +202,7 @@ private fun ColumnScope.PreferencesSheetContent(
   dismissSheet: () -> Unit,
 ) {
   HedvigText(
-    text = stringResource(R.string.SETTINGS_LANGUAGE_TITLE),
+    text = stringResource(Res.string.SETTINGS_LANGUAGE_TITLE),
     textAlign = TextAlign.Center,
     modifier = Modifier
       .semantics { heading() }
@@ -207,7 +214,7 @@ private fun ColumnScope.PreferencesSheetContent(
     options = Language.entries.map { language ->
       RadioOption(
         id = RadioOptionId(language.name),
-        text = stringResource(language.label),
+        text = androidx.compose.ui.res.stringResource(language.label),
         iconResource = IconResource.Vector(language.flag()),
       )
     },
@@ -218,7 +225,7 @@ private fun ColumnScope.PreferencesSheetContent(
   )
   Spacer(Modifier.height(8.dp))
   HedvigButton(
-    text = stringResource(R.string.general_done_button),
+    text = stringResource(Res.string.general_done_button),
     onClick = dismissSheet,
     enabled = true,
     modifier = Modifier
@@ -227,7 +234,7 @@ private fun ColumnScope.PreferencesSheetContent(
   )
   Spacer(Modifier.height(16.dp))
   HedvigText(
-    text = "${stringResource(R.string.PROFILE_ABOUT_APP_VERSION)}: $appVersionName",
+    text = "${stringResource(Res.string.PROFILE_ABOUT_APP_VERSION)}: $appVersionName",
     style = HedvigTheme.typography.finePrint.copy(color = HedvigTheme.colorScheme.textSecondary),
     textAlign = TextAlign.Center,
     modifier = Modifier

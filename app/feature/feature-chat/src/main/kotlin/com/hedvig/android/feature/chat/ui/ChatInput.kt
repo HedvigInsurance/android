@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -65,7 +64,15 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.logger.logcat
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHAT_INPUT_PLACEHOLDER
+import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
+import hedvig.resources.TALKBACK_ADD_DOCUMENTS
+import hedvig.resources.TALKBACK_ADD_IMAGES
+import hedvig.resources.TALKBACK_OPEN_SENDING_OPTIONS
+import hedvig.resources.TALKBACK_TAKE_PHOTO
+import hedvig.resources.TALKBACK_WRITE_HERE
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChatInput(
@@ -165,9 +172,9 @@ private fun ChatInput(
             .padding(start = 12.dp),
         ) { innerTextField ->
           if (text.isEmpty()) {
-            val description = stringResource(R.string.TALKBACK_WRITE_HERE)
+            val description = stringResource(Res.string.TALKBACK_WRITE_HERE)
             HedvigText(
-              text = stringResource(R.string.CHAT_INPUT_PLACEHOLDER),
+              text = stringResource(Res.string.CHAT_INPUT_PLACEHOLDER),
               style = HedvigTheme.typography.bodySmall.copy(color = LocalContentColor.current),
               modifier = Modifier.alpha(0.60f).semantics {
                 contentDescription = description
@@ -194,7 +201,7 @@ private fun ChatInput(
         ) {
           Icon(
             imageVector = HedvigIcons.ChevronUp,
-            contentDescription = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+            contentDescription = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
             tint = HedvigTheme.colorScheme.fillBlack,
             modifier = Modifier.size(16.dp),
           )
@@ -235,21 +242,21 @@ private fun ChatOptions(
         ChatClickableSquare(
           onClick = takePicture,
           imageVector = HedvigIcons.Camera,
-          contentDescription = stringResource(R.string.TALKBACK_TAKE_PHOTO),
+          contentDescription = stringResource(Res.string.TALKBACK_TAKE_PHOTO),
           chatShape = shape,
           outlineColor = outlineColor,
         )
         ChatClickableSquare(
           onClick = selectMedia,
           imageVector = HedvigIcons.Image,
-          contentDescription = stringResource(R.string.TALKBACK_ADD_IMAGES),
+          contentDescription = stringResource(Res.string.TALKBACK_ADD_IMAGES),
           chatShape = shape,
           outlineColor = outlineColor,
         )
         ChatClickableSquare(
           onClick = selectFile,
           imageVector = HedvigIcons.Document,
-          contentDescription = stringResource(R.string.TALKBACK_ADD_DOCUMENTS),
+          contentDescription = stringResource(Res.string.TALKBACK_ADD_DOCUMENTS),
           chatShape = shape,
           outlineColor = outlineColor,
         )
@@ -259,7 +266,7 @@ private fun ChatOptions(
         onClick = expandChatOptions,
         modifier = Modifier.size(buttonSize),
       ) {
-        val description = stringResource(R.string.TALKBACK_OPEN_SENDING_OPTIONS)
+        val description = stringResource(Res.string.TALKBACK_OPEN_SENDING_OPTIONS)
         Icon(
           imageVector = HedvigIcons.ChevronRight,
           contentDescription = description,

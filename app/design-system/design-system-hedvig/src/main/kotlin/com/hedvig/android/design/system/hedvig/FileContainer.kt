@@ -9,7 +9,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
@@ -19,7 +18,9 @@ import coil.request.ImageRequest
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.FILE_UPLOAD_IMAGE
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FileContainer(
@@ -44,7 +45,7 @@ internal fun FileContainer(
           }
         }
         .build(),
-      contentDescription = stringResource(R.string.FILE_UPLOAD_IMAGE),
+      contentDescription = stringResource(Res.string.FILE_UPLOAD_IMAGE),
       imageLoader = imageLoader,
       contentScale = ContentScale.Crop,
       transform = { state ->

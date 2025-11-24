@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -45,7 +44,9 @@ import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_INSURANCE_CARD
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HedvigCard(
@@ -95,7 +96,7 @@ fun InsuranceCard(
   fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
   backgroundImageUrl: String? = null,
 ) {
-  val description = stringResource(R.string.TALKBACK_INSURANCE_CARD)
+  val description = stringResource(Res.string.TALKBACK_INSURANCE_CARD)
   Box(
     modifier
       .clip(HedvigTheme.shapes.cornerXLarge)

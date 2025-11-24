@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -41,8 +40,14 @@ import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.DASHBOARD_OPEN_CHAT
+import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
+import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
+import hedvig.resources.TIER_FLOW_PROCESSING
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun StartChangeTierFlowDestination(
@@ -84,7 +89,7 @@ private fun StartChangeTierFlowScreen(
     }
 
     Loading -> HedvigFullScreenCenterAlignedLinearProgress(
-      title = stringResource(R.string.TIER_FLOW_PROCESSING),
+      title = stringResource(Res.string.TIER_FLOW_PROCESSING),
     )
 
     is Success -> {
@@ -132,7 +137,7 @@ internal fun DeflectScreen(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      stringResource(id = R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+      stringResource(Res.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
       enabled = true,
       modifier = Modifier
         .fillMaxWidth()
@@ -141,7 +146,7 @@ internal fun DeflectScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+      text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -177,7 +182,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
         ) {
           Spacer(Modifier.weight(1f))
           EmptyState(
-            text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+            text = stringResource(Res.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
             iconStyle = INFO,
             buttonStyle = NoButton,
             description = null,
@@ -185,7 +190,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
           )
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
-            stringResource(R.string.general_close_button),
+            stringResource(Res.string.general_close_button),
             onClick = popBackStack,
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),

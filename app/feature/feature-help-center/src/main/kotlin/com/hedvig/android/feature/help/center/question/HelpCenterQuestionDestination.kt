@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -46,7 +45,15 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionUiState
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionUiState.Success
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.HC_ANSWER_TITLE
+import hedvig.resources.HC_QUESTION_NOT_FOUND
+import hedvig.resources.HC_QUESTION_TITLE
+import hedvig.resources.HC_TITLE
+import hedvig.resources.general_back_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HelpCenterQuestionDestination(
@@ -83,23 +90,23 @@ private fun HelpCenterQuestionScreen(
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
-        title = stringResource(R.string.HC_TITLE),
+        title = stringResource(Res.string.HC_TITLE),
         onClick = onNavigateUp,
       )
       when (val state = uiState) {
         Failure -> {
           FailureScreen(
             onClick = onReload,
-            errorText = stringResource(R.string.GENERAL_ERROR_BODY),
-            buttonText = stringResource(R.string.GENERAL_RETRY),
+            errorText = stringResource(Res.string.GENERAL_ERROR_BODY),
+            buttonText = stringResource(Res.string.GENERAL_RETRY),
           )
         }
 
         NoQuestionFound -> {
           FailureScreen(
             onClick = dropUnlessResumed { onNavigateBack() },
-            errorText = stringResource(R.string.HC_QUESTION_NOT_FOUND),
-            buttonText = stringResource(R.string.general_back_button),
+            errorText = stringResource(Res.string.HC_QUESTION_NOT_FOUND),
+            buttonText = stringResource(Res.string.general_back_button),
           )
         }
 
@@ -158,7 +165,7 @@ private fun HelpCenterQuestionScreen(
     ) {
       Spacer(Modifier.height(16.dp))
       HelpCenterSection(
-        title = stringResource(id = R.string.HC_QUESTION_TITLE),
+        title = stringResource(Res.string.HC_QUESTION_TITLE),
         chipContainerColor = HighlightColor.Blue(LIGHT),
         content = {
           HedvigText(
@@ -169,7 +176,7 @@ private fun HelpCenterQuestionScreen(
       )
       Spacer(Modifier.height(32.dp))
       HelpCenterSection(
-        title = stringResource(R.string.HC_ANSWER_TITLE),
+        title = stringResource(Res.string.HC_ANSWER_TITLE),
         chipContainerColor = HighlightColor.Green(LIGHT),
         content = {
           ProvideTextStyle(

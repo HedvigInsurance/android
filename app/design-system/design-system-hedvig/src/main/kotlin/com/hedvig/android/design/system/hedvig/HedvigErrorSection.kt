@@ -12,18 +12,21 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HedvigErrorSection(
   onButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
-  title: String = stringResource(R.string.something_went_wrong),
-  subTitle: String? = stringResource(R.string.GENERAL_ERROR_BODY),
-  buttonText: String = stringResource(R.string.GENERAL_RETRY),
+  title: String = stringResource(Res.string.something_went_wrong),
+  subTitle: String? = stringResource(Res.string.GENERAL_ERROR_BODY),
+  buttonText: String = stringResource(Res.string.GENERAL_RETRY),
   windowInsets: WindowInsets = WindowInsets.safeDrawing,
 ) {
   Column(

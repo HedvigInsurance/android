@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -21,21 +20,25 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_close_button
+import hedvig.resources.referrals_info_sheet_body
+import hedvig.resources.referrals_info_sheet_headline
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ForeverExplanationBottomSheet(sheetState: HedvigBottomSheetState<UiMoney>) {
   HedvigBottomSheet(sheetState) { discount ->
     HedvigText(
-      text = stringResource(id = R.string.referrals_info_sheet_headline),
+      text = stringResource(Res.string.referrals_info_sheet_headline),
       modifier = Modifier
         .fillMaxWidth()
         .semantics { heading() },
     )
     Spacer(Modifier.height(8.dp))
-    val voiceOverDescription = stringResource(id = R.string.referrals_info_sheet_body, discount.getDescription())
+    val voiceOverDescription = stringResource(Res.string.referrals_info_sheet_body, discount.getDescription())
     HedvigText(
-      text = stringResource(id = R.string.referrals_info_sheet_body, discount.toString()),
+      text = stringResource(Res.string.referrals_info_sheet_body, discount.toString()),
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
         .fillMaxWidth()
@@ -45,7 +48,7 @@ internal fun ForeverExplanationBottomSheet(sheetState: HedvigBottomSheetState<Ui
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       buttonSize = Large,
       onClick = { sheetState.dismiss() },
       modifier = Modifier.fillMaxWidth(),

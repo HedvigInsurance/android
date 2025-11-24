@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -27,7 +26,12 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.EMBARK_UPDATE_APP_BODY
+import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
+import hedvig.resources.EMBARK_UPDATE_APP_TITLE
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun UnknownScreenDestination(openPlayStore: () -> Unit, closeUnknownScreenDestination: () -> Unit) {
@@ -48,8 +52,8 @@ private fun UnknownScreenScreen(openPlayStore: () -> Unit, closeUnknownScreenDes
     ) {
       Spacer(Modifier.height(16.dp))
       EmptyState(
-        text = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
-        description = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
+        text = stringResource(Res.string.EMBARK_UPDATE_APP_TITLE),
+        description = stringResource(Res.string.EMBARK_UPDATE_APP_BODY),
         iconStyle = ERROR,
         modifier = Modifier
           .weight(1f)
@@ -58,14 +62,14 @@ private fun UnknownScreenScreen(openPlayStore: () -> Unit, closeUnknownScreenDes
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+        text = stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON),
         onClick = dropUnlessResumed { openPlayStore() },
         enabled = true,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
-        text = stringResource(R.string.general_close_button),
+        text = stringResource(Res.string.general_close_button),
         onClick = closeUnknownScreenDestination,
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       )

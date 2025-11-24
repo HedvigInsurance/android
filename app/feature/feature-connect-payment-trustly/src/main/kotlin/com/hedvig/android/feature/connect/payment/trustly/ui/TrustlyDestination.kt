@@ -20,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -47,8 +46,14 @@ import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebView
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClient
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_done_button
+import hedvig.resources.pay_in_confirmation_direct_debit_headline
+import hedvig.resources.pay_in_error_body
+import hedvig.resources.pay_in_explainer_direct_debit_headline
+import hedvig.resources.something_went_wrong
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 
 @Serializable
 data object TrustlyDestination : Destination
@@ -96,15 +101,15 @@ private fun TrustlyScreen(
       TrustlyUiState.FailedToConnectCard -> {
         HedvigErrorSection(
           onButtonClick = retryConnectingCard,
-          title = stringResource(R.string.something_went_wrong),
-          subTitle = stringResource(R.string.pay_in_error_body),
+          title = stringResource(Res.string.something_went_wrong),
+          subTitle = stringResource(Res.string.pay_in_error_body),
         )
       }
 
       TrustlyUiState.FailedToStartSession -> {
         HedvigErrorSection(
           onButtonClick = retryConnectingCard,
-          title = stringResource(R.string.something_went_wrong),
+          title = stringResource(Res.string.something_went_wrong),
           subTitle = null,
         )
       }
@@ -116,9 +121,9 @@ private fun TrustlyScreen(
         ) {
           EmptyState(
             iconStyle = SUCCESS,
-            text = stringResource(R.string.pay_in_confirmation_direct_debit_headline),
+            text = stringResource(Res.string.pay_in_confirmation_direct_debit_headline),
             description = null,
-            buttonStyle = Button(stringResource(R.string.general_done_button), finishTrustlyFlow),
+            buttonStyle = Button(stringResource(Res.string.general_done_button), finishTrustlyFlow),
           )
         }
       }
@@ -142,7 +147,7 @@ private fun TrustlyBrowser(
 
   Column {
     TopAppBarWithBack(
-      title = stringResource(R.string.pay_in_explainer_direct_debit_headline),
+      title = stringResource(Res.string.pay_in_explainer_direct_debit_headline),
       onClick = navigateUp,
     )
     Box(

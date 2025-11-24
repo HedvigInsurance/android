@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -29,8 +28,13 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL
+import hedvig.resources.claims_incident_screen_date_of_incident
+import hedvig.resources.claims_item_screen_date_of_incident_button
+import hedvig.resources.general_continue_button
 import java.util.Locale
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DateOfOccurrenceDestination(
@@ -77,7 +81,7 @@ private fun DateOfOccurrenceScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.claims_incident_screen_date_of_incident),
+      text = stringResource(Res.string.claims_incident_screen_date_of_incident),
       style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
@@ -86,18 +90,18 @@ private fun DateOfOccurrenceScreen(
     DatePickerWithDialog(
       uiState = uiState.datePickerUiState,
       canInteract = uiState.canSubmit,
-      startText = stringResource(R.string.claims_item_screen_date_of_incident_button),
+      startText = stringResource(Res.string.claims_item_screen_date_of_incident_button),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigNotificationCard(
-      message = stringResource(R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
+      message = stringResource(Res.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
       priority = Info,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = submitSelectedDate,
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,

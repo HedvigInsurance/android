@@ -22,7 +22,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -56,8 +55,20 @@ import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Tex
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Unknown
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.ui.formattedChatDateTime
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHAT_CONVERSATION_HISTORY_TITLE
+import hedvig.resources.CHAT_CONVERSATION_INBOX
+import hedvig.resources.CHAT_CONVERSATION_QUESTION_TITLE
+import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.CHAT_SENDER_MEMBER
+import hedvig.resources.CHAT_SENT_A_FILE
+import hedvig.resources.CHAT_SENT_A_MESSAGE
+import hedvig.resources.HEDVIG_NAME_TEXT
+import hedvig.resources.TALKBACK_CONVERSATION_DESCRIPTION
+import hedvig.resources.claim_status_bar_closed
+import hedvig.resources.home_claim_card_pill_claim
 import kotlin.time.Clock
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InboxDestination(
@@ -87,7 +98,7 @@ private fun InboxScreen(
   ) {
     Column {
       TopAppBarWithBack(
-        title = stringResource(R.string.CHAT_CONVERSATION_INBOX),
+        title = stringResource(Res.string.CHAT_CONVERSATION_INBOX),
         onClick = navigateUp,
       )
       when (uiState) {
@@ -151,9 +162,9 @@ private fun ConversationCard(
   modifier: Modifier = Modifier,
 ) {
   val title = when (conversation.header) {
-    Header.Legacy -> stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE)
-    is Header.ClaimConversation -> stringResource(R.string.home_claim_card_pill_claim)
-    Header.ServiceConversation -> stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE)
+    Header.Legacy -> stringResource(Res.string.CHAT_CONVERSATION_HISTORY_TITLE)
+    is Header.ClaimConversation -> stringResource(Res.string.home_claim_card_pill_claim)
+    Header.ServiceConversation -> stringResource(Res.string.CHAT_CONVERSATION_QUESTION_TITLE)
   }
   val subtitle = when (val header = conversation.header) {
     Header.Legacy -> null
@@ -162,7 +173,7 @@ private fun ConversationCard(
   }
   val formattedVoiceDescription = formatInstantForTalkBack(LocalContext.current, conversation.lastMessageTimestamp)
   val cardVoiceDescription = stringResource(
-    R.string.TALKBACK_CONVERSATION_DESCRIPTION,
+    Res.string.TALKBACK_CONVERSATION_DESCRIPTION,
     "$title, ${subtitle ?: ""}",
     formattedVoiceDescription,
   )
@@ -200,13 +211,13 @@ private fun ConversationCard(
           Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
             if (conversation.hasNewMessages) {
               HighlightLabel(
-                stringResource(R.string.CHAT_NEW_MESSAGE),
+                stringResource(Res.string.CHAT_NEW_MESSAGE),
                 HighLightSize.Small,
                 HighlightColor.Blue(HighlightShade.LIGHT),
               )
             } else if (conversation.isClosed) {
               HighlightLabel(
-                stringResource(R.string.claim_status_bar_closed),
+                stringResource(Res.string.claim_status_bar_closed),
                 HighLightSize.Small,
                 HighlightColor.Grey(HighlightShade.LIGHT),
               )
@@ -233,15 +244,15 @@ private fun ConversationCard(
         Spacer(Modifier.height(8.dp))
         val sender = stringResource(
           when (latestMessage.sender) {
-            Sender.MEMBER -> R.string.CHAT_SENDER_MEMBER
-            Sender.HEDVIG -> R.string.HEDVIG_NAME_TEXT
-            Sender.AUTOMATION -> R.string.HEDVIG_NAME_TEXT
+            Sender.MEMBER -> Res.string.CHAT_SENDER_MEMBER
+            Sender.HEDVIG -> Res.string.HEDVIG_NAME_TEXT
+            Sender.AUTOMATION -> Res.string.HEDVIG_NAME_TEXT
           },
         )
         val message = when (latestMessage) {
           is Text -> latestMessage.text
-          is File -> stringResource(R.string.CHAT_SENT_A_FILE)
-          is Unknown -> stringResource(R.string.CHAT_SENT_A_MESSAGE)
+          is File -> stringResource(Res.string.CHAT_SENT_A_FILE)
+          is Unknown -> stringResource(Res.string.CHAT_SENT_A_MESSAGE)
         }
         HedvigText(
           text = "$sender: $message",

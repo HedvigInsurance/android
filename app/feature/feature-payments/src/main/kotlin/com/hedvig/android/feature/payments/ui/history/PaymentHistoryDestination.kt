@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -36,9 +35,13 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.feature.payments.data.MemberCharge
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.PAYMENTS_HISTORY_INFO
+import hedvig.resources.PAYMENTS_NO_HISTORY_DATA
+import hedvig.resources.PAYMENT_HISTORY_TITLE
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PaymentHistoryDestination(
@@ -115,14 +118,14 @@ private fun PaymentHistorySuccessScreen(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(R.string.PAYMENT_HISTORY_TITLE),
+    topAppBarText = stringResource(Res.string.PAYMENT_HISTORY_TITLE),
     navigateUp = navigateUp,
   ) {
     when (paymentHistory) {
       PaymentHistory.NoHistoryData -> {
         Spacer(Modifier.weight(1f))
         HedvigInformationSection(
-          title = stringResource(R.string.PAYMENTS_NO_HISTORY_DATA),
+          title = stringResource(Res.string.PAYMENTS_NO_HISTORY_DATA),
           modifier = Modifier.fillMaxSize(),
         )
         Spacer(Modifier.weight(1f))
@@ -165,7 +168,7 @@ private fun PaymentHistorySuccessScreen(
         }
         if (paymentHistory.showInfoAboutOlderCharges) {
           HedvigNotificationCard(
-            message = stringResource(id = R.string.PAYMENTS_HISTORY_INFO),
+            message = stringResource(Res.string.PAYMENTS_HISTORY_INFO),
             priority = NotificationDefaults.NotificationPriority.Info,
             modifier = Modifier.padding(horizontal = 16.dp),
           )

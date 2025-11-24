@@ -25,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -41,7 +40,14 @@ import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import com.hedvig.android.design.system.internals.BottomSheet
 import com.hedvig.android.design.system.internals.rememberInternalHedvigBottomSheetState
 import eu.wewox.modalsheet.ExperimentalSheetApi
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.PRICE_DETAILS_TITLE
+import hedvig.resources.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS
+import hedvig.resources.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HedvigBottomSheetPriceBreakdown(
@@ -56,7 +62,7 @@ fun HedvigBottomSheetPriceBreakdown(
     if (data != null) {
       Column {
         HedvigText(
-          text = stringResource(R.string.PRICE_DETAILS_TITLE),
+          text = stringResource(Res.string.PRICE_DETAILS_TITLE),
           modifier = Modifier.semantics {
             heading()
           },
@@ -90,17 +96,17 @@ fun HedvigBottomSheetPriceBreakdown(
           Spacer(Modifier.height(16.dp))
         }
         val netPriceDescription = stringResource(
-          R.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS,
+          Res.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS,
           data.totalNet.getPerMonthDescription(),
         )
         val grossPriceDescription = stringResource(
-          R.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
+          Res.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
           data.totalGross.getPerMonthDescription(),
         )
         Spacer(Modifier.height(16.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
-            HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+            HedvigText(stringResource(Res.string.TIER_FLOW_TOTAL))
           },
           endSlot = {
             Row(
@@ -110,7 +116,7 @@ fun HedvigBottomSheetPriceBreakdown(
               if (data.totalGross != data.totalNet) {
                 HedvigText(
                   stringResource(
-                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                     data.totalGross,
                   ),
                   style = HedvigTheme.typography.bodySmall.copy(
@@ -124,7 +130,7 @@ fun HedvigBottomSheetPriceBreakdown(
               }
               HedvigText(
                 stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   data.totalNet,
                 ),
                 modifier = Modifier.semantics {
@@ -137,7 +143,7 @@ fun HedvigBottomSheetPriceBreakdown(
         )
         Spacer(Modifier.height(32.dp))
         HedvigTextButton(
-          text = stringResource(id = R.string.general_close_button),
+          text = stringResource(Res.string.general_close_button),
           enabled = true,
           modifier = Modifier.fillMaxWidth(),
           onClick = {

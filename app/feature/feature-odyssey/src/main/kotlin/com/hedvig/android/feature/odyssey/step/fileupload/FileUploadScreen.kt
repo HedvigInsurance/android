@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
@@ -25,7 +24,12 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_FILE_UPLOAD_INFO
+import hedvig.resources.CLAIMS_FILE_UPLOAD_TITLE
+import hedvig.resources.claims_skip_button
+import hedvig.resources.file_upload_upload_files
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FileUploadScreen(
@@ -48,7 +52,7 @@ internal fun FileUploadScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.CLAIMS_FILE_UPLOAD_TITLE),
+      text = stringResource(Res.string.CLAIMS_FILE_UPLOAD_TITLE),
       style = HedvigTheme.typography.headlineMedium.copy(
         lineBreak = LineBreak.Heading,
       ),
@@ -57,13 +61,13 @@ internal fun FileUploadScreen(
     Spacer(Modifier.height(32.dp))
     Spacer(Modifier.weight(1f))
     HedvigNotificationCard(
-      message = stringResource(id = R.string.CLAIMS_FILE_UPLOAD_INFO),
+      message = stringResource(Res.string.CLAIMS_FILE_UPLOAD_INFO),
       priority = Info,
       modifier = sideSpacingModifier,
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = stringResource(R.string.file_upload_upload_files),
+      text = stringResource(Res.string.file_upload_upload_files),
       onClick = submitFiles,
       isLoading = uiState.isLoading,
       enabled = !uiState.isLoading,
@@ -71,7 +75,7 @@ internal fun FileUploadScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.claims_skip_button),
+      text = stringResource(Res.string.claims_skip_button),
       onClick = onContinue,
       enabled = !uiState.isLoading,
       modifier = sideSpacingModifier.fillMaxWidth(),

@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -32,7 +31,12 @@ import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Minus
 import com.hedvig.android.design.system.hedvig.tokens.PerilCommonTokens
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE
+import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND
+import hedvig.resources.TALKBACK_EXPANDABLE_STATE_COLLAPSED
+import hedvig.resources.TALKBACK_EXPANDABLE_STATE_EXPANDED
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ExpandablePlusCard(
@@ -43,10 +47,10 @@ fun ExpandablePlusCard(
   expandedContent: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val collapsedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
-  val expandedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
-  val collapseClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
-  val expandClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
+  val collapsedStateDescription = stringResource(Res.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
+  val expandedStateDescription = stringResource(Res.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
+  val collapseClickLabel = stringResource(Res.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
+  val expandClickLabel = stringResource(Res.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
   Surface(
     modifier = modifier
       .clip(PerilCommonTokens.ContainerShape.value)

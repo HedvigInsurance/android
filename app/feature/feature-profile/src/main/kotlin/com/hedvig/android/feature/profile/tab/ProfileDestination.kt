@@ -42,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -80,7 +79,19 @@ import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_YES
+import hedvig.resources.LOGOUT_BUTTON
+import hedvig.resources.PROFILE_ABOUT_ROW
+import hedvig.resources.PROFILE_LOGOUT_DIALOG_MESSAGE
+import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
+import hedvig.resources.PROFILE_TITLE
+import hedvig.resources.general_cancel_button
+import hedvig.resources.profile_appSettingsSection_row_headline
+import hedvig.resources.profile_certificates_title
+import hedvig.resources.profile_claim_history_title
+import hedvig.resources.sas_integration_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ProfileDestination(
@@ -148,12 +159,12 @@ private fun ProfileScreen(
   var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
   if (showLogoutDialog) {
     HedvigAlertDialog(
-      title = stringResource(id = R.string.PROFILE_LOGOUT_DIALOG_MESSAGE),
+      title = stringResource(Res.string.PROFILE_LOGOUT_DIALOG_MESSAGE),
       onDismissRequest = { showLogoutDialog = false },
       onConfirmClick = onLogout,
       text = null,
-      confirmButtonLabel = stringResource(R.string.GENERAL_YES),
-      dismissButtonLabel = stringResource(id = R.string.general_cancel_button),
+      confirmButtonLabel = stringResource(Res.string.GENERAL_YES),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
     )
   }
 
@@ -177,7 +188,7 @@ private fun ProfileScreen(
           },
       ) {
         HedvigText(
-          text = stringResource(id = R.string.PROFILE_TITLE),
+          text = stringResource(Res.string.PROFILE_TITLE),
           style = HedvigTheme.typography.headlineSmall,
         )
       }
@@ -220,7 +231,7 @@ private fun ProfileScreen(
         }
       }
       HedvigRedTextButton(
-        text = stringResource(R.string.LOGOUT_BUTTON),
+        text = stringResource(Res.string.LOGOUT_BUTTON),
         onClick = {
           showLogoutDialog = true
         },
@@ -281,25 +292,25 @@ private fun ProfileRows(
 @Composable
 private fun ColumnScope.ProfileItemRowsPlaceholders() {
   ProfileRow(
-    title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
+    title = stringResource(Res.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
   )
   ProfileRow(
-    title = stringResource(R.string.profile_certificates_title),
+    title = stringResource(Res.string.profile_certificates_title),
     icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
   )
   ProfileRow(
-    title = stringResource(R.string.PROFILE_ABOUT_ROW),
+    title = stringResource(Res.string.PROFILE_ABOUT_ROW),
     icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
   )
   ProfileRow(
-    title = stringResource(R.string.profile_appSettingsSection_row_headline),
+    title = stringResource(Res.string.profile_appSettingsSection_row_headline),
     icon = HedvigIcons.InfoFilled,
     isLoading = true,
     onClick = {},
@@ -319,7 +330,7 @@ private fun ColumnScope.ProfileItemRows(
 ) {
   val horizontalDividerModifier = Modifier.horizontalDivider(DividerPosition.Bottom, horizontalPadding = 16.dp)
   ProfileRow(
-    title = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
+    title = stringResource(Res.string.PROFILE_MY_INFO_ROW_TITLE),
     icon = HedvigIcons.ID,
     onClick = navigateToContactInfo,
     isLoading = false,
@@ -327,7 +338,7 @@ private fun ColumnScope.ProfileItemRows(
   )
   if (profileUiState.certificatesAvailable) {
     ProfileRow(
-      title = stringResource(R.string.profile_certificates_title),
+      title = stringResource(Res.string.profile_certificates_title),
       icon = HedvigIcons.MultipleDocuments,
       onClick = dropUnlessResumed { navigateToCertificates() },
       isLoading = false,
@@ -336,7 +347,7 @@ private fun ColumnScope.ProfileItemRows(
   }
   if (profileUiState.euroBonus != null) {
     ProfileRow(
-      title = stringResource(R.string.sas_integration_title),
+      title = stringResource(Res.string.sas_integration_title),
       icon = HedvigIcons.Eurobonus,
       onClick = navigateToEurobonus,
       isLoading = false,
@@ -345,7 +356,7 @@ private fun ColumnScope.ProfileItemRows(
   }
   if (profileUiState.showClaimHistory) {
     ProfileRow(
-      title = stringResource(R.string.profile_claim_history_title),
+      title = stringResource(Res.string.profile_claim_history_title),
       icon = HedvigIcons.Clock,
       onClick = dropUnlessResumed { navigateToClaimHistory() },
       isLoading = false,
@@ -353,14 +364,14 @@ private fun ColumnScope.ProfileItemRows(
     )
   }
   ProfileRow(
-    title = stringResource(R.string.PROFILE_ABOUT_ROW),
+    title = stringResource(Res.string.PROFILE_ABOUT_ROW),
     icon = HedvigIcons.InfoOutline,
     onClick = navigateToAboutApp,
     isLoading = false,
     modifier = horizontalDividerModifier,
   )
   ProfileRow(
-    title = stringResource(R.string.profile_appSettingsSection_row_headline),
+    title = stringResource(Res.string.profile_appSettingsSection_row_headline),
     icon = HedvigIcons.Settings,
     onClick = navigateToSettings,
     isLoading = false,

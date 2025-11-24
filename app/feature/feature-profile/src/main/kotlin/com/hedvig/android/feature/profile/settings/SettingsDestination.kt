@@ -24,7 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.PermissionStatus
@@ -54,7 +53,26 @@ import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_SUBSCRIBED
+import hedvig.resources.GENERAL_UNSUBSCRIBED
+import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_OFF
+import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_ON
+import hedvig.resources.SETTINGS_NOTIFICATIONS_TITLE
+import hedvig.resources.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE
+import hedvig.resources.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON
+import hedvig.resources.SETTINGS_SCREEN_EMAIL_PREFERENCES
+import hedvig.resources.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION
+import hedvig.resources.SETTINGS_THEME_DARK
+import hedvig.resources.SETTINGS_THEME_LIGHT
+import hedvig.resources.SETTINGS_THEME_SYSTEM_DEFAULT
+import hedvig.resources.SETTINGS_THEME_TITLE
+import hedvig.resources.SETTINGS_TITLE
+import hedvig.resources.general_close_button
+import hedvig.resources.language_picker_modal_title
+import hedvig.resources.not_selected
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SettingsDestination(
@@ -96,7 +114,7 @@ private fun SettingsScreen(
   }
   val context = LocalContext.current
   HedvigScaffold(
-    topAppBarText = stringResource(R.string.SETTINGS_TITLE),
+    topAppBarText = stringResource(Res.string.SETTINGS_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
   ) {
@@ -133,11 +151,11 @@ private fun SettingsScreen(
         HedvigBigCard(
           onClick = { startAndroidNotificationSettingsActivity(context) },
           inputText = if (notificationPermissionState.status.isGranted) {
-            stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_ON)
+            stringResource(Res.string.PROFILE_NOTIFICATIONS_STATUS_ON)
           } else {
-            stringResource(id = R.string.PROFILE_NOTIFICATIONS_STATUS_OFF)
+            stringResource(Res.string.PROFILE_NOTIFICATIONS_STATUS_OFF)
           },
-          labelText = stringResource(id = R.string.SETTINGS_NOTIFICATIONS_TITLE),
+          labelText = stringResource(Res.string.SETTINGS_NOTIFICATIONS_TITLE),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -175,7 +193,7 @@ private fun SettingsScreen(
           horizontalArrangement = Arrangement.Center,
         ) {
           HedvigRedTextButton(
-            text = stringResource(R.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
+            text = stringResource(Res.string.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON),
             onClick = onTerminateAccountClicked,
             modifier = Modifier
               .padding(horizontal = 16.dp),
@@ -198,11 +216,11 @@ internal fun LanguageWithDialog(
   var showLanguagePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showLanguagePickerDialog) {
     SingleSelectDialog(
-      title = stringResource(R.string.language_picker_modal_title),
+      title = stringResource(Res.string.language_picker_modal_title),
       options = languageOptions.map { language ->
         RadioOption(
           id = RadioOptionId(language.name),
-          text = stringResource(language.label),
+          text = androidx.compose.ui.res.stringResource(language.label),
         )
       },
       selectedOption = RadioOptionId(selectedLanguage.name),
@@ -215,8 +233,8 @@ internal fun LanguageWithDialog(
 
   HedvigBigCard(
     onClick = { showLanguagePickerDialog = true },
-    labelText = stringResource(id = R.string.language_picker_modal_title),
-    inputText = stringResource(selectedLanguage.label),
+    labelText = stringResource(Res.string.language_picker_modal_title),
+    inputText = androidx.compose.ui.res.stringResource(selectedLanguage.label),
     enabled = enabled,
     modifier = modifier,
   )
@@ -240,10 +258,10 @@ internal fun EmailSubscriptionWithDialog(
         onConfirmUnsubscribeClick()
         showSubscriptionPrefDialog = false
       },
-      dismissButtonLabel = stringResource(R.string.general_close_button),
-      confirmButtonLabel = stringResource(R.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
-      title = stringResource(R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
-      text = stringResource(R.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
+      dismissButtonLabel = stringResource(Res.string.general_close_button),
+      confirmButtonLabel = stringResource(Res.string.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE),
+      title = stringResource(Res.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      text = stringResource(Res.string.SETTINGS_SCREEN_UNSUBSCRIBE_DESCRIPTION),
     )
   }
   Column {
@@ -255,18 +273,18 @@ internal fun EmailSubscriptionWithDialog(
           onSubscribeClick()
         }
       },
-      labelText = stringResource(id = R.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
+      labelText = stringResource(Res.string.SETTINGS_SCREEN_EMAIL_PREFERENCES),
       inputText = if (isSubscribedToEmails) {
-        stringResource(id = R.string.GENERAL_SUBSCRIBED)
+        stringResource(Res.string.GENERAL_SUBSCRIBED)
       } else {
-        stringResource(id = R.string.GENERAL_UNSUBSCRIBED)
+        stringResource(Res.string.GENERAL_UNSUBSCRIBED)
       },
       enabled = enabled,
       modifier = modifier,
     )
     AnimatedVisibility(visible = hasError) {
       HedvigText(
-        text = stringResource(id = R.string.something_went_wrong),
+        text = stringResource(Res.string.something_went_wrong),
         style = HedvigTheme.typography.bodySmall,
         color = HedvigTheme.colorScheme.signalRedText,
         modifier = Modifier.padding(horizontal = 32.dp),
@@ -285,7 +303,7 @@ internal fun ThemeWithDialog(
   var showThemePickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showThemePickerDialog) {
     SingleSelectDialog(
-      title = stringResource(R.string.SETTINGS_THEME_TITLE),
+      title = stringResource(Res.string.SETTINGS_THEME_TITLE),
       options = Theme.entries.map { theme ->
         RadioOption(
           id = RadioOptionId(theme.name),
@@ -301,7 +319,7 @@ internal fun ThemeWithDialog(
   }
   HedvigBigCard(
     onClick = { showThemePickerDialog = true },
-    labelText = stringResource(R.string.SETTINGS_THEME_TITLE),
+    labelText = stringResource(Res.string.SETTINGS_THEME_TITLE),
     inputText = stringResource(selectedTheme.getLabel()),
     enabled = enabled,
     modifier = modifier,
@@ -327,10 +345,10 @@ private fun startAndroidNotificationSettingsActivity(context: Context) {
 }
 
 fun Theme?.getLabel() = when (this) {
-  Theme.LIGHT -> R.string.SETTINGS_THEME_LIGHT
-  Theme.DARK -> R.string.SETTINGS_THEME_DARK
-  Theme.SYSTEM_DEFAULT -> R.string.SETTINGS_THEME_SYSTEM_DEFAULT
-  null -> R.string.not_selected
+  Theme.LIGHT -> Res.string.SETTINGS_THEME_LIGHT
+  Theme.DARK -> Res.string.SETTINGS_THEME_DARK
+  Theme.SYSTEM_DEFAULT -> Res.string.SETTINGS_THEME_SYSTEM_DEFAULT
+  null -> Res.string.not_selected
 }
 
 private fun Theme.apply() = when (this) {

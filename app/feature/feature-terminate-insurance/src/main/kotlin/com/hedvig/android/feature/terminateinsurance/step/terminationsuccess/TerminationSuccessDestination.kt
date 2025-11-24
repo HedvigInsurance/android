@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -29,9 +28,14 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TERMINATE_CONTRACT_TERMINATION_COMPLETE
+import hedvig.resources.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE
+import hedvig.resources.TERMINATION_FLOW_SUCCESS_TITLE
+import hedvig.resources.general_done_button
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: () -> Unit) {
@@ -58,20 +62,20 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       EmptyState(
-        text = stringResource(id = R.string.TERMINATION_FLOW_SUCCESS_TITLE),
+        text = stringResource(Res.string.TERMINATION_FLOW_SUCCESS_TITLE),
         description = terminationDate?.let {
           stringResource(
-            R.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE,
+            Res.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE,
             rememberHedvigDateTimeFormatter().format(terminationDate.toJavaLocalDate()),
           )
-        } ?: stringResource(id = R.string.TERMINATE_CONTRACT_TERMINATION_COMPLETE),
+        } ?: stringResource(Res.string.TERMINATE_CONTRACT_TERMINATION_COMPLETE),
         iconStyle = SUCCESS,
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
 
       HedvigButton(
-        text = stringResource(id = R.string.general_done_button),
+        text = stringResource(Res.string.general_done_button),
         enabled = true,
         onClick = onDone,
         modifier = Modifier

@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -33,7 +32,12 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Failure
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_SUBMIT
+import hedvig.resources.travel_certificate_missing_coinsured_button
+import hedvig.resources.travel_certificate_missing_coinsured_info
+import hedvig.resources.travel_certificate_who_is_traveling
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelCertificateTravellersInputDestination(
@@ -90,7 +94,7 @@ private fun TravelCertificateTravellersInput(
         ) {
           Spacer(Modifier.height(8.dp))
           FlowHeading(
-            stringResource(id = R.string.travel_certificate_who_is_traveling),
+            stringResource(Res.string.travel_certificate_who_is_traveling),
             null,
             Modifier
               .fillMaxWidth()
@@ -122,10 +126,10 @@ private fun TravelCertificateTravellersInput(
           if (uiState.coInsuredHasMissingInfo) {
             Spacer(Modifier.height(16.dp))
             HedvigNotificationCard(
-              message = stringResource(R.string.travel_certificate_missing_coinsured_info),
+              message = stringResource(Res.string.travel_certificate_missing_coinsured_info),
               priority = NotificationPriority.Info,
               style = InfoCardStyle.Button(
-                buttonText = stringResource(R.string.travel_certificate_missing_coinsured_button),
+                buttonText = stringResource(Res.string.travel_certificate_missing_coinsured_button),
                 onButtonClick = dropUnlessResumed { onNavigateToCoInsuredAddInfo() },
               ),
               modifier = Modifier
@@ -135,7 +139,7 @@ private fun TravelCertificateTravellersInput(
           }
           Spacer(Modifier.height(16.dp))
           HedvigButton(
-            text = stringResource(R.string.GENERAL_SUBMIT),
+            text = stringResource(Res.string.GENERAL_SUBMIT),
             onClick = {
               if (uiState.hasAtLeastOneTraveler) {
                 onGenerateTravelCertificate()

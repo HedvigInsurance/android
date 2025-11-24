@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,7 +33,17 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_LABEL
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_TITLE
+import hedvig.resources.SUBMIT_CLAIM_PARTNER_TITLE
+import hedvig.resources.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON
+import hedvig.resources.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL
+import hedvig.resources.SUBMIT_CLAIM_PESTS_HOW_IT_WORKS_LABEL
+import hedvig.resources.SUBMIT_CLAIM_PESTS_INFO_LABEL
+import hedvig.resources.open_chat
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectPestsDestination(
@@ -74,7 +83,7 @@ private fun DeflectPestsScreen(
   ) {
     Spacer(Modifier.height(8.dp))
     HedvigNotificationCard(
-      message = stringResource(R.string.SUBMIT_CLAIM_PESTS_INFO_LABEL),
+      message = stringResource(Res.string.SUBMIT_CLAIM_PESTS_INFO_LABEL),
       priority = Info,
       modifier = Modifier
         .fillMaxWidth()
@@ -82,7 +91,7 @@ private fun DeflectPestsScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_PARTNER_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_PARTNER_TITLE),
       modifier = Modifier.padding(horizontal = 20.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -104,7 +113,7 @@ private fun DeflectPestsScreen(
             PartnerImage(partner, imageLoader, Modifier.padding(16.dp))
             Spacer(Modifier.height(8.dp))
             HedvigText(
-              text = stringResource(R.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL),
+              text = stringResource(Res.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL),
               textAlign = TextAlign.Center,
               style = LocalTextStyle.current.copy(
                 lineBreak = LineBreak.Heading,
@@ -113,7 +122,7 @@ private fun DeflectPestsScreen(
             )
             Spacer(Modifier.height(16.dp))
             HedvigButton(
-              text = stringResource(R.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON),
+              text = stringResource(Res.string.SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON),
               enabled = true,
               buttonSize = Medium,
               onClick = dropUnlessResumed {
@@ -137,25 +146,25 @@ private fun DeflectPestsScreen(
     }
     Spacer(Modifier.height(24.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_PESTS_HOW_IT_WORKS_LABEL),
+      text = stringResource(Res.string.SUBMIT_CLAIM_PESTS_HOW_IT_WORKS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(32.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
     )
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
+      text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
       textAlign = TextAlign.Center,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
@@ -164,7 +173,7 @@ private fun DeflectPestsScreen(
     )
     Spacer(Modifier.height(24.dp))
     HedvigButton(
-      text = stringResource(R.string.open_chat),
+      text = stringResource(Res.string.open_chat),
       onClick = dropUnlessResumed { onNavigateToNewConversation() },
       buttonSize = Small,
       enabled = true,

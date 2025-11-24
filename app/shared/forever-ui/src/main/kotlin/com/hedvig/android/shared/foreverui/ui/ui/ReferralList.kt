@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.withoutPlacement
@@ -35,7 +34,13 @@ import com.hedvig.android.shared.foreverui.ui.data.ReferralState.IN_PROGRESS
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.TERMINATED
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.UNKNOWN
 import com.hedvig.android.shared.foreverui.ui.data.ReferredByInfo
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.FOREVER_REFERRAL_LIST_LABEL
+import hedvig.resources.FOREVER_TAB_TOTAL_DISCOUNT_LABEL
+import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
+import hedvig.resources.REFERRAL_TERMINATED_STATUS_LABEL
+import hedvig.resources.referalls_invitee_states_invited_you
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ReferralList(
@@ -47,7 +52,7 @@ internal fun ReferralList(
 ) {
   Column(modifier) {
     HedvigText(
-      text = stringResource(id = R.string.FOREVER_REFERRAL_LIST_LABEL),
+      text = stringResource(Res.string.FOREVER_REFERRAL_LIST_LABEL),
       modifier = Modifier.padding(vertical = 16.dp),
     )
     if (referredByInfo != null) {
@@ -72,7 +77,7 @@ internal fun ReferralList(
         .fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      HedvigText(stringResource(id = R.string.FOREVER_TAB_TOTAL_DISCOUNT_LABEL))
+      HedvigText(stringResource(Res.string.FOREVER_TAB_TOTAL_DISCOUNT_LABEL))
       Row {
         HedvigText(
           text = grossPriceAmount?.toString() ?: "-",
@@ -124,7 +129,7 @@ private fun ReferralRow(
           )
           Spacer(modifier = Modifier.width(8.dp))
           HedvigText(
-            text = stringResource(R.string.referalls_invitee_states_invited_you),
+            text = stringResource(Res.string.referalls_invitee_states_invited_you),
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
             fontSize = HedvigTheme.typography.label.fontSize,
           )
@@ -138,21 +143,21 @@ private fun ReferralRow(
 
       IN_PROGRESS -> {
         HedvigText(
-          text = stringResource(id = R.string.REFERRAL_PENDING_STATUS_LABEL),
+          text = stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL),
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
 
       TERMINATED -> {
         HedvigText(
-          text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
+          text = stringResource(Res.string.REFERRAL_TERMINATED_STATUS_LABEL),
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
 
       UNKNOWN -> {
         HedvigText(
-          text = stringResource(id = R.string.REFERRAL_TERMINATED_STATUS_LABEL),
+          text = stringResource(Res.string.REFERRAL_TERMINATED_STATUS_LABEL),
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }

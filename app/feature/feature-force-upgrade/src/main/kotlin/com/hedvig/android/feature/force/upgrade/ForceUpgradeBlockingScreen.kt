@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,7 +24,11 @@ import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.EMBARK_UPDATE_APP_BODY
+import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
+import hedvig.resources.EMBARK_UPDATE_APP_TITLE
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ForceUpgradeBlockingScreen(goToPlayStore: () -> Unit) {
@@ -45,12 +48,12 @@ private fun UpgradeApp(goToPlayStore: () -> Unit) {
       .widthIn(max = 400.dp),
   ) {
     HedvigText(
-      text = stringResource(R.string.EMBARK_UPDATE_APP_TITLE),
+      text = stringResource(Res.string.EMBARK_UPDATE_APP_TITLE),
       style = HedvigTheme.typography.headlineLarge,
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.EMBARK_UPDATE_APP_BODY),
+      text = stringResource(Res.string.EMBARK_UPDATE_APP_BODY),
       textAlign = TextAlign.Center,
       style = HedvigTheme.typography.bodySmall.copy(
         lineBreak = LineBreak.Heading,
@@ -58,7 +61,7 @@ private fun UpgradeApp(goToPlayStore: () -> Unit) {
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.EMBARK_UPDATE_APP_BUTTON),
+      text = stringResource(Res.string.EMBARK_UPDATE_APP_BUTTON),
       onClick = dropUnlessResumed { goToPlayStore() },
       enabled = true,
       buttonSize = Medium,

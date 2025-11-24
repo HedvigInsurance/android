@@ -15,7 +15,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -25,7 +24,12 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_PLEDGE_SLIDE_LABEL
+import hedvig.resources.HONESTY_PLEDGE_DESCRIPTION
+import hedvig.resources.HONESTY_PLEDGE_TITLE
+import hedvig.resources.general_cancel_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HonestyPledgeDestination(
@@ -60,8 +64,8 @@ private fun HonestyPledgeScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     FlowHeading(
-      stringResource(R.string.HONESTY_PLEDGE_TITLE),
-      stringResource(R.string.HONESTY_PLEDGE_DESCRIPTION),
+      stringResource(Res.string.HONESTY_PLEDGE_TITLE),
+      stringResource(Res.string.HONESTY_PLEDGE_DESCRIPTION),
       sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -74,7 +78,7 @@ private fun HonestyPledgeScreen(
           openNotificationPermissionStep()
         }
       },
-      text = stringResource(R.string.CLAIMS_PLEDGE_SLIDE_LABEL),
+      text = stringResource(Res.string.CLAIMS_PLEDGE_SLIDE_LABEL),
       modifier = Modifier
         .widthIn(max = 450.dp)
         .fillMaxWidth()
@@ -85,7 +89,7 @@ private fun HonestyPledgeScreen(
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       onClick = closeClaimFlow,
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))

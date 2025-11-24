@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -47,7 +46,9 @@ import com.hedvig.android.design.system.hedvig.tokens.RedStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryAltStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SecondaryStyleButtonTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeButtonTokens
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_LOADING_STATE_BUTTON
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HedvigButton(
@@ -84,7 +85,7 @@ fun HedvigButton(
         LayoutWithoutPlacement(
           sizeAdjustingContent = { HedvigText(text = text, modifier = Modifier.withoutPlacement()) },
         ) {
-          val desc = stringResource(R.string.TALKBACK_LOADING_STATE_BUTTON)
+          val desc = stringResource(Res.string.TALKBACK_LOADING_STATE_BUTTON)
           ThreeDotsLoading(
             stableColor = buttonColors.activeLoadingIndicatorColor,
             temporaryColor = buttonColors.inactiveLoadingIndicatorColor,

@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -42,7 +41,16 @@ import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.NoTop
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.Success
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.HC_ALL_QUESTION_TITLE
+import hedvig.resources.HC_COMMON_QUESTIONS_TITLE
+import hedvig.resources.HC_TITLE
+import hedvig.resources.HC_TOPIC_NOT_FOUND
+import hedvig.resources.HC_TOPIC_NO_QUESTIONS
+import hedvig.resources.general_back_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HelpCenterTopicDestination(
@@ -84,7 +92,7 @@ private fun HelpCenterTopicScreen(
     val title = if (state is Success) {
       state.topic.title
     } else {
-      stringResource(R.string.HC_TITLE)
+      stringResource(Res.string.HC_TITLE)
     }
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
@@ -95,16 +103,16 @@ private fun HelpCenterTopicScreen(
         Failure -> {
           FailureScreen(
             onClick = onReload,
-            errorText = stringResource(R.string.GENERAL_ERROR_BODY),
-            buttonText = stringResource(R.string.GENERAL_RETRY),
+            errorText = stringResource(Res.string.GENERAL_ERROR_BODY),
+            buttonText = stringResource(Res.string.GENERAL_RETRY),
           )
         }
 
         NoTopicFound -> {
           FailureScreen(
             onClick = dropUnlessResumed { onNavigateBack() },
-            errorText = stringResource(R.string.HC_TOPIC_NOT_FOUND),
-            buttonText = stringResource(R.string.general_back_button),
+            errorText = stringResource(Res.string.HC_TOPIC_NOT_FOUND),
+            buttonText = stringResource(Res.string.general_back_button),
           )
         }
 
@@ -158,9 +166,9 @@ private fun HelpCenterTopicScreen(
     if (commonQuestions.isEmpty() && allQuestions.isEmpty()) {
       HedvigErrorSection(
         onButtonClick = dropUnlessResumed { onNavigateBack() },
-        title = stringResource(id = R.string.HC_TOPIC_NO_QUESTIONS),
+        title = stringResource(Res.string.HC_TOPIC_NO_QUESTIONS),
         subTitle = null,
-        buttonText = stringResource(R.string.general_back_button),
+        buttonText = stringResource(Res.string.general_back_button),
         modifier = Modifier
           .fillMaxSize()
           .padding(16.dp)
@@ -183,7 +191,7 @@ private fun HelpCenterTopicScreen(
           if (commonQuestions.isNotEmpty()) {
             HelpCenterSectionWithClickableRows(
               modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-              title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+              title = stringResource(Res.string.HC_COMMON_QUESTIONS_TITLE),
               chipContainerColor = HighlightColor.Blue(LIGHT),
               items = commonQuestions,
               itemText = { it.question },
@@ -196,7 +204,7 @@ private fun HelpCenterTopicScreen(
           if (allQuestions.isNotEmpty()) {
             HelpCenterSectionWithClickableRows(
               modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-              title = stringResource(id = R.string.HC_ALL_QUESTION_TITLE),
+              title = stringResource(Res.string.HC_ALL_QUESTION_TITLE),
               chipContainerColor = HighlightColor.Purple(LIGHT),
               items = allQuestions,
               itemText = { it.question },

@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -31,9 +30,14 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTime
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
-import hedvig.resources.R
+import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_FROM
+import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
+import hedvig.resources.CONTRACT_EDIT_INFO
+import hedvig.resources.GENERAL_REMOVE
+import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InsuredRow(
@@ -79,7 +83,7 @@ internal fun InsuredRow(
             Spacer(Modifier.height(4.dp))
             HighlightLabel(
               labelText = stringResource(
-                id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
+                Res.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
                 dateTimeFormatter.format(activatesOn.toJavaLocalDate()),
               ),
               size = Small,
@@ -90,7 +94,7 @@ internal fun InsuredRow(
             Spacer(Modifier.height(4.dp))
             HighlightLabel(
               labelText = stringResource(
-                id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
+                Res.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
                 dateTimeFormatter.format(terminatesOn.toJavaLocalDate()),
               ),
               size = Small,
@@ -122,12 +126,12 @@ internal fun InsuredRow(
           }
 
           allowEdit && hasMissingInfo -> {
-            HedvigText(stringResource(id = R.string.CONTRACT_EDIT_INFO))
+            HedvigText(stringResource(Res.string.CONTRACT_EDIT_INFO))
           }
 
           !allowEdit -> Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.GENERAL_REMOVE),
+            contentDescription = stringResource(Res.string.GENERAL_REMOVE),
             modifier = Modifier.size(16.dp),
           )
 

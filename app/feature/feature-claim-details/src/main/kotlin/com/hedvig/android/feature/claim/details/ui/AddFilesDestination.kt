@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
@@ -43,7 +42,16 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
-import hedvig.resources.R
+import hedvig.resources.CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE
+import hedvig.resources.CLAIMS_YOUR_CLAIM
+import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
+import hedvig.resources.Res
+import hedvig.resources.claim_status_detail_add_more_files
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddFilesDestination(
@@ -128,10 +136,10 @@ private fun AddFilesScreen(
   var fileToRemoveId by remember { mutableStateOf<String?>(null) }
   if (fileToRemoveId != null) {
     HedvigAlertDialog(
-      title = stringResource(id = R.string.GENERAL_ARE_YOU_SURE),
-      text = stringResource(id = R.string.CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE),
-      confirmButtonLabel = stringResource(id = R.string.REMOVE_CONFIRMATION_BUTTON),
-      dismissButtonLabel = stringResource(id = R.string.general_cancel_button),
+      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(Res.string.CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE),
+      confirmButtonLabel = stringResource(Res.string.REMOVE_CONFIRMATION_BUTTON),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
       onDismissRequest = {
         fileToRemoveId = null
       },
@@ -145,7 +153,7 @@ private fun AddFilesScreen(
     ErrorDialog(
       message = uiState.errorMessage,
       onDismiss = onDismissError,
-      title = stringResource(R.string.something_went_wrong),
+      title = stringResource(Res.string.something_went_wrong),
     )
   }
 
@@ -156,7 +164,7 @@ private fun AddFilesScreen(
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         onClick = navigateUp,
-        title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+        title = stringResource(Res.string.CLAIMS_YOUR_CLAIM),
       )
       DynamicFilesGridBetweenOtherThings(
         belowGridContent = {
@@ -190,7 +198,7 @@ private fun BelowGridContent(
   Column {
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.claim_status_detail_add_more_files),
+      text = stringResource(Res.string.claim_status_detail_add_more_files),
       onClick = onAddMoreFilesButtonClick,
       modifier = Modifier.fillMaxWidth(),
       buttonStyle = Secondary,
@@ -198,7 +206,7 @@ private fun BelowGridContent(
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = onContinueButtonClick,
       modifier = Modifier.fillMaxWidth(),
       isLoading = isLoading,

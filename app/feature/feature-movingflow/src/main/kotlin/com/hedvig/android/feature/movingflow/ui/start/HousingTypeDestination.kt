@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -39,7 +38,16 @@ import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.Content
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError.GenericError
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError.UserPresentable
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
+import hedvig.resources.CHANGE_ADDRESS_APARTMENT_RENT_LABEL
+import hedvig.resources.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE
+import hedvig.resources.CHANGE_ADDRESS_VILLA_LABEL
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.general_continue_button
+import hedvig.resources.insurance_details_change_address_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HousingTypeDestination(
@@ -91,11 +99,11 @@ private fun HousingTypeScreen(
             HedvigErrorSection(
               onButtonClick = onDismissStartError,
               title = when (uiState) {
-                is GenericError -> stringResource(R.string.something_went_wrong)
+                is GenericError -> stringResource(Res.string.something_went_wrong)
                 is UserPresentable -> uiState.message
               },
               subTitle = when (uiState) {
-                is GenericError -> stringResource(R.string.GENERAL_ERROR_BODY)
+                is GenericError -> stringResource(Res.string.GENERAL_ERROR_BODY)
                 is UserPresentable -> null
               },
             )
@@ -121,8 +129,8 @@ private fun StartContentScreen(
 ) {
   Column(modifier.padding(horizontal = 16.dp)) {
     FlowHeading(
-      stringResource(R.string.insurance_details_change_address_button),
-      stringResource(R.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
+      stringResource(Res.string.insurance_details_change_address_button),
+      stringResource(Res.string.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
@@ -141,7 +149,7 @@ private fun StartContentScreen(
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(R.string.general_continue_button),
+        text = stringResource(Res.string.general_continue_button),
         onClick = onSubmitHousingType,
         enabled = !uiState.buttonLoading,
         isLoading = uiState.buttonLoading,
@@ -154,9 +162,9 @@ private fun StartContentScreen(
 }
 
 internal fun HousingType.stringResource() = when (this) {
-  HousingType.ApartmentRent -> R.string.CHANGE_ADDRESS_APARTMENT_RENT_LABEL
-  HousingType.ApartmentOwn -> R.string.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
-  HousingType.Villa -> R.string.CHANGE_ADDRESS_VILLA_LABEL
+  HousingType.ApartmentRent -> Res.string.CHANGE_ADDRESS_APARTMENT_RENT_LABEL
+  HousingType.ApartmentOwn -> Res.string.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
+  HousingType.Villa -> Res.string.CHANGE_ADDRESS_VILLA_LABEL
 }
 
 @HedvigPreview

@@ -18,7 +18,9 @@ import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
 import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
 import kotlinx.coroutines.test.runTest
 import octopus.AvailableSelfServiceOnContractsQuery
 import octopus.type.buildAgreement
@@ -82,8 +84,8 @@ class GetQuickLinksUseCaseTest {
             it.links.contains(
               QuickAction.StandaloneQuickLink(
                 quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
-                titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
-                hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+                titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+                hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
               ),
             )
           }
@@ -113,8 +115,8 @@ class GetQuickLinksUseCaseTest {
             it.links.contains(
               QuickAction.StandaloneQuickLink(
                 quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkChangeTier,
-                titleRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
-                hintTextRes = R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
+                titleRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE,
+                hintTextRes = Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE,
               ),
             )
           }

@@ -24,7 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.compose.ui.globalSharedElement
@@ -41,7 +40,11 @@ import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.navigation.compose.LocalNavAnimatedVisibilityScope
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.claims_alert_body
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * An opinionated scaffold to make it easier to make screens for the Claim flow.
@@ -61,8 +64,8 @@ fun ClaimFlowScaffold(
   var showCloseClaimsFlowDialog by rememberSaveable { mutableStateOf(false) }
   if (showCloseClaimsFlowDialog) {
     HedvigAlertDialog(
-      title = stringResource(R.string.GENERAL_ARE_YOU_SURE),
-      text = stringResource(R.string.claims_alert_body),
+      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(Res.string.claims_alert_body),
       onDismissRequest = { showCloseClaimsFlowDialog = false },
       onConfirmClick = closeClaimFlow,
     )
@@ -85,7 +88,7 @@ fun ClaimFlowScaffold(
               content = {
                 Icon(
                   imageVector = HedvigIcons.Close,
-                  contentDescription = stringResource(R.string.general_close_button),
+                  contentDescription = stringResource(Res.string.general_close_button),
                 )
               },
             )

@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
@@ -18,7 +17,8 @@ import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_NOT_SURE
 import java.util.Locale
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
@@ -26,6 +26,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DatePickerWithDialog(
@@ -42,7 +43,7 @@ fun DatePickerWithDialog(
       onConfirmRequest = { showDatePicker = false },
       dismissButton = {
         HedvigTextButton(
-          text = stringResource(R.string.GENERAL_NOT_SURE),
+          text = stringResource(Res.string.GENERAL_NOT_SURE),
           onClick = {
             uiState.clearDateSelection()
             showDatePicker = false
@@ -104,7 +105,6 @@ class DatePickerUiState(
     datePickerState.selectedDateMillis = null
   }
 }
-
 
 @HedvigPreview
 @Composable

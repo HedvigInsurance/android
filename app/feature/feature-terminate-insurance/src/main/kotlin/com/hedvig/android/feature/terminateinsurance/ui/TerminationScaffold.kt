@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
@@ -34,9 +33,21 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CONTRACT_STATUS_TO_BE_TERMINATED
+import hedvig.resources.TERMINATION_A_01
+import hedvig.resources.TERMINATION_A_02
+import hedvig.resources.TERMINATION_A_03
+import hedvig.resources.TERMINATION_FLOW_CANCELLATION_TITLE
+import hedvig.resources.TERMINATION_FLOW_CANCEL_INFO_TITLE
+import hedvig.resources.TERMINATION_Q_01
+import hedvig.resources.TERMINATION_Q_02
+import hedvig.resources.TERMINATION_Q_03
+import hedvig.resources.TOAST_READ_MORE
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationScaffold(
@@ -60,7 +71,7 @@ internal fun TerminationScaffold(
           content = {
             Icon(
               imageVector = HedvigIcons.InfoOutline,
-              contentDescription = stringResource(R.string.TOAST_READ_MORE),
+              contentDescription = stringResource(Res.string.TOAST_READ_MORE),
             )
           },
         )
@@ -72,13 +83,13 @@ internal fun TerminationScaffold(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )
     },
   ) {
-    content(stringResource(id = R.string.TERMINATION_FLOW_CANCELLATION_TITLE))
+    content(stringResource(Res.string.TERMINATION_FLOW_CANCELLATION_TITLE))
   }
 }
 
@@ -88,20 +99,20 @@ private fun CommonQuestions(modifier: Modifier = Modifier) {
   val listOfQuestions = buildList {
     add(
       AccordionData(
-        stringResource(id = R.string.TERMINATION_Q_01),
-        stringResource(id = R.string.TERMINATION_A_01),
+        stringResource(Res.string.TERMINATION_Q_01),
+        stringResource(Res.string.TERMINATION_A_01),
       ),
     )
     add(
       AccordionData(
-        stringResource(id = R.string.TERMINATION_Q_02),
-        stringResource(id = R.string.TERMINATION_A_02),
+        stringResource(Res.string.TERMINATION_Q_02),
+        stringResource(Res.string.TERMINATION_A_02),
       ),
     )
     add(
       AccordionData(
-        stringResource(id = R.string.TERMINATION_Q_03),
-        stringResource(id = R.string.TERMINATION_A_03),
+        stringResource(Res.string.TERMINATION_Q_03),
+        stringResource(Res.string.TERMINATION_A_03),
       ),
     )
   }
@@ -115,7 +126,7 @@ private fun CommonQuestions(modifier: Modifier = Modifier) {
 private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<String>) {
   HedvigBottomSheet(sheetState) { text ->
     HedvigText(
-      text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TITLE),
+      text = stringResource(Res.string.TERMINATION_FLOW_CANCEL_INFO_TITLE),
       modifier = Modifier
         .fillMaxWidth(),
     )
@@ -129,7 +140,7 @@ private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<String>) {
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       onClick = sheetState::dismiss,
-      text = stringResource(id = R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       enabled = true,
       buttonStyle = Ghost,
       modifier = Modifier.fillMaxWidth(),
@@ -143,7 +154,7 @@ private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<String>) {
 private fun terminationDateText(terminationDate: LocalDate): String {
   val formatter = rememberHedvigDateTimeFormatter()
   val formattedDate = formatter.format(terminationDate.toJavaLocalDate())
-  return stringResource(R.string.CONTRACT_STATUS_TO_BE_TERMINATED, formattedDate)
+  return stringResource(Res.string.CONTRACT_STATUS_TO_BE_TERMINATED, formattedDate)
 }
 
 @HedvigPreview

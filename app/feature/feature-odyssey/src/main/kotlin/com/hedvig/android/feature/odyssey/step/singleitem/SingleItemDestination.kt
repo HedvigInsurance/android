@@ -25,7 +25,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -39,6 +38,8 @@ import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemModel.New
 import com.hedvig.android.data.claimflow.ItemProblem
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -60,12 +61,23 @@ import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.BothDialogAndC
 import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustCustomModel
 import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustModelDialog
 import com.hedvig.android.feature.odyssey.step.summary.displayName
-import com.hedvig.android.design.system.hedvig.DatePickerUiState
-import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_SINGLE_ITEM_DETAILS
+import hedvig.resources.CLAIMS_SINGLE_ITEM_NOTICE_LABEL
+import hedvig.resources.CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL
+import hedvig.resources.SINGLE_ITEM_INFO_BRAND
+import hedvig.resources.claims_item_enter_model_name
+import hedvig.resources.claims_item_model_other
+import hedvig.resources.claims_item_screen_date_of_purchase_button
+import hedvig.resources.claims_item_screen_model_button
+import hedvig.resources.claims_item_screen_type_of_damage_button
+import hedvig.resources.claims_payout_purchase_price
+import hedvig.resources.general_continue_button
+import hedvig.resources.general_save_button
 import java.util.Locale
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SingleItemDestination(
@@ -119,7 +131,7 @@ private fun SingleItemScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.CLAIMS_SINGLE_ITEM_DETAILS),
+      text = stringResource(Res.string.CLAIMS_SINGLE_ITEM_DETAILS),
       style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
@@ -207,9 +219,9 @@ private fun SingleItemScreen(
     HedvigNotificationCard(
       message = stringResource(
         if (uiState.purchasePriceApplicable) {
-          R.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL
+          Res.string.CLAIMS_SINGLE_ITEM_NOTICE_LABEL
         } else {
-          R.string.CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL
+          Res.string.CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL
         },
       ),
       priority = Info,
@@ -217,7 +229,7 @@ private fun SingleItemScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = submitSelections,
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
@@ -262,9 +274,9 @@ private fun Models(
   }
   HedvigBigCard(
     onClick = { showDialog = true },
-    labelText = stringResource(R.string.claims_item_screen_model_button),
+    labelText = stringResource(Res.string.claims_item_screen_model_button),
     inputText = if (uiState.selectedItemModel is ItemModel.New) {
-      stringResource(id = R.string.claims_item_model_other)
+      stringResource(Res.string.claims_item_model_other)
     } else {
       uiState.selectedItemModel?.displayName(resources)
     },
@@ -281,7 +293,7 @@ private fun SelectDialogWithFreeTextField(
 ) {
   val resources = LocalContext.current.resources
   SingleSelectDialog(
-    title = stringResource(R.string.claims_item_screen_model_button),
+    title = stringResource(Res.string.claims_item_screen_model_button),
     options = uiState.availableItemModels.map { model ->
       RadioOption(
         id = RadioOptionId(model.asKnown()?.itemModelId ?: "id"),
@@ -311,7 +323,7 @@ private fun Brands(
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     SingleSelectDialog(
-      title = stringResource(R.string.SINGLE_ITEM_INFO_BRAND),
+      title = stringResource(Res.string.SINGLE_ITEM_INFO_BRAND),
       options = uiState.availableItemBrands.map { itemBrand ->
         RadioOption(
           id = RadioOptionId(itemBrand.asKnown()?.itemBrandId ?: "id"),
@@ -328,7 +340,7 @@ private fun Brands(
 
   HedvigBigCard(
     onClick = { showDialog = true },
-    labelText = stringResource(R.string.SINGLE_ITEM_INFO_BRAND),
+    labelText = stringResource(Res.string.SINGLE_ITEM_INFO_BRAND),
     inputText = uiState.selectedItemBrand?.displayName(resources),
     modifier = modifier,
     enabled = enabled,
@@ -340,7 +352,7 @@ private fun DateOfPurchase(uiState: DatePickerUiState, canInteract: Boolean, mod
   DatePickerWithDialog(
     uiState = uiState,
     canInteract = canInteract,
-    startText = stringResource(R.string.claims_item_screen_date_of_purchase_button),
+    startText = stringResource(Res.string.claims_item_screen_date_of_purchase_button),
     modifier = modifier,
   )
 }
@@ -350,7 +362,7 @@ private fun PriceOfPurchase(uiState: PurchasePriceUiState, canInteract: Boolean,
   val focusRequester = remember { FocusRequester() }
   MonetaryAmountInput(
     value = uiState.uiMoney.amount?.toString() ?: "",
-    hintText = stringResource(R.string.claims_payout_purchase_price),
+    hintText = stringResource(Res.string.claims_payout_purchase_price),
     canInteract = canInteract,
     onInput = { uiState.updateAmount(it) },
     currency = uiState.uiMoney.currencyCode.name,
@@ -368,7 +380,7 @@ private fun CustomModelInput(initialValue: String, onInput: (String?) -> Unit, m
     onValueChange = { newValue ->
       onInput(newValue)
     },
-    labelText = stringResource(R.string.claims_item_enter_model_name),
+    labelText = stringResource(Res.string.claims_item_enter_model_name),
     textFieldSize = TextFieldSize.Medium,
     modifier = modifier.focusRequester(focusRequester),
     keyboardOptions = KeyboardOptions(
@@ -394,7 +406,7 @@ private fun ItemProblems(
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     MultiSelectDialog(
-      title = stringResource(R.string.claims_item_screen_type_of_damage_button),
+      title = stringResource(Res.string.claims_item_screen_type_of_damage_button),
       options = uiState.availableItemProblems.map { itemProblem ->
         RadioOption(
           id = RadioOptionId(itemProblem.itemProblemId),
@@ -406,13 +418,13 @@ private fun ItemProblems(
         selectProblem(uiState.availableItemProblems.first { it.itemProblemId == id.id })
       },
       onDismissRequest = { showDialog = false },
-      buttonText = stringResource(R.string.general_save_button),
+      buttonText = stringResource(Res.string.general_save_button),
     )
   }
 
   HedvigBigCard(
     onClick = { showDialog = true },
-    labelText = stringResource(R.string.claims_item_screen_type_of_damage_button),
+    labelText = stringResource(Res.string.claims_item_screen_type_of_damage_button),
     inputText = when {
       uiState.selectedItemProblems.isEmpty() -> null
       else -> uiState.selectedItemProblems.joinToString(transform = ItemProblem::displayName)

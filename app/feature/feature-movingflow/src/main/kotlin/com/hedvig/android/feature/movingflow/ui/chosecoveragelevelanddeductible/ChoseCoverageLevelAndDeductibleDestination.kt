@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -91,8 +90,29 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DiscountCostBreakdown
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL
+import hedvig.resources.CHANGE_ADDRESS_TOTAL
+import hedvig.resources.GENERAL_CONFIRM
+import hedvig.resources.MOVING_FLOW_ADDON_REMOVE_OPTION
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.TIER_FLOW_COMPARE_BUTTON
+import hedvig.resources.TIER_FLOW_COVERAGE_LABEL
+import hedvig.resources.TIER_FLOW_DEDUCTIBLE_LABEL
+import hedvig.resources.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER
+import hedvig.resources.TIER_FLOW_PRICE_LABEL_CURRENCY
+import hedvig.resources.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY
+import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_SUBTITLE
+import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_TITLE
+import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
+import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
+import hedvig.resources.TIER_FLOW_SUBTITLE
+import hedvig.resources.TIER_FLOW_TITLE
+import hedvig.resources.general_back_button
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChoseCoverageLevelAndDeductibleDestination(
@@ -168,7 +188,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
           MissingOngoingMovingFlow -> {
             HedvigErrorSection(
               onButtonClick = popBackStack,
-              buttonText = stringResource(R.string.general_back_button),
+              buttonText = stringResource(Res.string.general_back_button),
             )
           }
 
@@ -197,8 +217,8 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 ) {
   Column(Modifier.padding(horizontal = 16.dp)) {
     FlowHeading(
-      stringResource(R.string.TIER_FLOW_TITLE),
-      stringResource(R.string.TIER_FLOW_SUBTITLE),
+      stringResource(Res.string.TIER_FLOW_TITLE),
+      stringResource(Res.string.TIER_FLOW_SUBTITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
@@ -216,7 +236,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
       Spacer(Modifier.height(8.dp))
       if (content.tiersInfo.coverageOptions.isNotEmpty()) {
         HedvigTextButton(
-          text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+          text = stringResource(Res.string.TIER_FLOW_COMPARE_BUTTON),
           modifier = Modifier.fillMaxWidth(),
           buttonSize = Large,
         ) {
@@ -225,7 +245,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
         Spacer(Modifier.height(4.dp))
       }
       HedvigButton(
-        text = stringResource(R.string.general_continue_button),
+        text = stringResource(Res.string.general_continue_button),
         onClick = dropUnlessResumed {
           onSubmit?.invoke()
         },
@@ -292,7 +312,7 @@ private fun CoverageCard(
             items = tiersInfo.coverageOptions.map { coverageInfo ->
               SimpleDropdownItem(coverageInfo.tierName)
             },
-            label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
+            label = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL),
           ),
           size = Small,
           hintText = tiersInfo.selectedCoverage.tierDisplayName,
@@ -313,7 +333,7 @@ private fun CoverageCard(
         for (relatedAddonQuote in relatedAddonQuotes) {
           val relatedAddonQuoteOptions = listOf(
             relatedAddonQuote.coverageDisplayName,
-            stringResource(R.string.MOVING_FLOW_ADDON_REMOVE_OPTION),
+            stringResource(Res.string.MOVING_FLOW_ADDON_REMOVE_OPTION),
           )
           val chosenItemIndex = when (relatedAddonQuote.isExcludedByUser) {
             false -> 0
@@ -367,11 +387,11 @@ private fun CoverageCard(
                 items = deductibleOptions.deductibleOptions.map { coverageInfo ->
                   SimpleDropdownItem(coverageInfo.deductible.amount.toString())
                 },
-                label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+                label = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_LABEL),
               ),
               size = Small,
               hintText = tiersInfo.selectedDeductible?.tierDisplayName
-                ?: stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
+                ?: stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER),
               chosenItemIndex = chosenDeductibleItemIndex,
               dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
             ) { onDismissRequest ->
@@ -391,7 +411,7 @@ private fun CoverageCard(
               text = deductibleOptions.deductibleOption.deductible.displayText,
               onValueChange = {},
               textFieldSize = TextFieldSize.Small,
-              labelText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+              labelText = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_LABEL),
               readOnly = true,
             )
           }
@@ -402,13 +422,13 @@ private fun CoverageCard(
       }
       HorizontalDivider()
       HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = { HedvigText(stringResource(R.string.CHANGE_ADDRESS_TOTAL)) },
+        startSlot = { HedvigText(stringResource(Res.string.CHANGE_ADDRESS_TOTAL)) },
         endSlot = {
           Row(horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End)) {
             if (grossPremium != null && grossPremium.amount != premium?.amount) {
               HedvigText(
                 text = stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   grossPremium,
                 ),
                 textAlign = TextAlign.End,
@@ -420,7 +440,7 @@ private fun CoverageCard(
             }
             HedvigText(
               text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 premium ?: tiersInfo.selectedCoverage.netPremiumWithAddons.toString(),
               ),
               textAlign = TextAlign.End,
@@ -445,8 +465,8 @@ private fun CoverageChoiceDialogContent(
 ) {
   var dialogLocalChosenItemIndex by remember { mutableStateOf(chosenItemIndex) }
   CommonChoiceDialogContent(
-    firstText = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
-    secondText = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
+    firstText = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+    secondText = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
     radioGroup = {
       RadioGroup(
         options = coverageOptions.map { coverageInfo ->
@@ -466,9 +486,9 @@ private fun CoverageChoiceDialogContent(
           HighlightLabel(
             labelText = stringResource(
               if (isPremiumPriceExact) {
-                R.string.TIER_FLOW_PRICE_LABEL_CURRENCY
+                Res.string.TIER_FLOW_PRICE_LABEL_CURRENCY
               } else {
-                R.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY
+                Res.string.TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY
               },
               coverageInfo.minimumPremiumForCoverage.toString(),
             ),
@@ -498,8 +518,8 @@ private fun DeductibleChoiceDialogContent(
 ) {
   var dialogLocalChosenItemIndex by remember { mutableStateOf(chosenItemIndex) }
   CommonChoiceDialogContent(
-    firstText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
-    secondText = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
+    firstText = stringResource(Res.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
+    secondText = stringResource(Res.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
     radioGroup = {
       RadioGroup(
         options = deductibleOptions.map { deductibleOption ->
@@ -523,7 +543,7 @@ private fun DeductibleChoiceDialogContent(
           val deductibleOption = deductibleOptions.first { it.id == id.id }
           HighlightLabel(
             labelText = stringResource(
-              R.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
+              Res.string.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL,
               deductibleOption.homeQuotePremium.toString(),
             ),
             size = HighLightSize.Small,
@@ -563,7 +583,7 @@ private fun CommonChoiceDialogContent(
     radioGroup()
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.GENERAL_CONFIRM),
+      text = stringResource(Res.string.GENERAL_CONFIRM),
       onClick = onConfirm,
       buttonSize = Large,
       enabled = selectedOptionIndex != null,
@@ -571,7 +591,7 @@ private fun CommonChoiceDialogContent(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       onClick = onDismissRequest,
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),

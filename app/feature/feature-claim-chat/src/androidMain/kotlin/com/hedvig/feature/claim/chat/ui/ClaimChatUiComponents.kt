@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,23 +69,34 @@ import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
+import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
+import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
+import hedvig.resources.EMBARK_SUBMIT_CLAIM
+import hedvig.resources.GENERAL_NO
+import hedvig.resources.GENERAL_REMOVE
+import hedvig.resources.GENERAL_YES
+import hedvig.resources.claims_skip_button
+import hedvig.resources.general_save_button
 import java.io.File
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
-//todo: if we want a a fullscreen free text overlay,
+// todo: if we want a a fullscreen free text overlay,
 // the claim chat screen should be wrapped in this:
-//@Composable
-//internal fun ClaimChatScreen(
+// @Composable
+// internal fun ClaimChatScreen(
 //  updateFreeText: (String?) -> Unit,
 //  onCloseFullScreenEditText: () -> Unit,
-//) {
+// ) {
 //  FreeTextOverlay(
 //    freeTextMaxLength = 2000,
 //    freeTextValue = if (uiState is AudioRecordingStepState.FreeTextDescription) uiState.freeText else null,
-//    freeTextHint = stringResource(R.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-//    freeTextTitle = stringResource(R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+//    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+//    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
 //    freeTextOnCancelClick = {
 //      onCloseFullScreenEditText()
 //    },
@@ -98,8 +108,7 @@ import kotlinx.datetime.LocalDate
 //    overlaidContent = {
 //      // all chat content
 //    })
-//}
-
+// }
 
 @Composable
 internal fun AudioRecorderBubble(
@@ -144,7 +153,6 @@ internal fun AudioRecorderBubble(
   )
 }
 
-
 @Composable
 internal fun AssistantMessageBubble(
   text: String,
@@ -178,7 +186,7 @@ internal fun AssistantMessageBubble(
         )
         Spacer(Modifier.width(8.dp))
         HedvigText(
-          "Hedvig AI Assistant", //todo
+          "Hedvig AI Assistant", // todo
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
@@ -222,16 +230,19 @@ internal fun YesNoBubble(
           horizontalArrangement = Arrangement.End,
         ) {
           HighlightLabel(
-            labelText = stringResource(R.string.GENERAL_YES),
+            labelText = stringResource(Res.string.GENERAL_YES),
             size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected == true) HighlightLabelDefaults.HighlightColor.Green(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            )
-            else HighlightLabelDefaults.HighlightColor.Grey(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            ),
+            color = if (answerSelected == true) {
+              HighlightLabelDefaults.HighlightColor.Green(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            } else {
+              HighlightLabelDefaults.HighlightColor.Grey(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            },
             modifier = Modifier.clickable(
-              enabled = canBeChanged, //todo
+              enabled = canBeChanged, // todo
               onClick = {
                 onSelect(true)
               },
@@ -239,16 +250,19 @@ internal fun YesNoBubble(
           )
           Spacer(Modifier.width(16.dp))
           HighlightLabel(
-            labelText = stringResource(R.string.GENERAL_NO),
+            labelText = stringResource(Res.string.GENERAL_NO),
             size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected != null && !answerSelected) HighlightLabelDefaults.HighlightColor.Green(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            )
-            else HighlightLabelDefaults.HighlightColor.Grey(
-              HighlightLabelDefaults.HighlightShade.MEDIUM,
-            ),
+            color = if (answerSelected != null && !answerSelected) {
+              HighlightLabelDefaults.HighlightColor.Green(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            } else {
+              HighlightLabelDefaults.HighlightColor.Grey(
+                HighlightLabelDefaults.HighlightShade.MEDIUM,
+              )
+            },
             modifier = Modifier.clickable(
-              enabled = canBeChanged, //todo
+              enabled = canBeChanged, // todo
               onClick = {
                 onSelect(false)
               },
@@ -330,7 +344,7 @@ internal fun MultiSelectBubbleWithDialog(
       selectedOptions = selectedOptionIds,
       onOptionSelected = onSelect,
       onDismissRequest = { showDialog = false },
-      buttonText = stringResource(R.string.general_save_button),
+      buttonText = stringResource(Res.string.general_save_button),
     )
   }
   StandardBubble(
@@ -347,7 +361,7 @@ internal fun MultiSelectBubbleWithDialog(
         labelText = questionLabel,
         inputText = when {
           selectedOptionIds.isEmpty() -> null
-          else -> options.filter {it.id in selectedOptionIds}
+          else -> options.filter { it.id in selectedOptionIds }
             .joinToString(transform = RadioOption::text)
         },
         modifier = modifier,
@@ -385,7 +399,7 @@ internal fun DateSelectBubble(
       DatePickerWithDialog(
         datePickerState,
         canInteract = canBeChanged,
-        startText = questionLabel ?: "", //todo
+        startText = questionLabel ?: "", // todo
       )
     },
   )
@@ -450,7 +464,7 @@ internal fun TextInputBubble(
                 ) {
                   Icon(
                     HedvigIcons.Close,
-                    stringResource(R.string.GENERAL_REMOVE),
+                    stringResource(Res.string.GENERAL_REMOVE),
                   )
                 }
               }
@@ -518,7 +532,7 @@ internal fun ChatClaimSummary(
         horizontalArrangement = Arrangement.Center,
       ) {
         HedvigButton(
-          text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
+          text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
           enabled = true,
           onClick = onSubmit,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
@@ -553,7 +567,7 @@ internal fun ChatClaimOutcome(
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
-          text = stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
+          text = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
         )
       }
     }
@@ -587,7 +601,7 @@ internal fun <T> StandardBubble(
             imageVector = HedvigIcons.HelipadFilled,
             tint = HedvigTheme.colorScheme.signalAmberElement,
             modifier = Modifier.align(Alignment.TopStart),
-            contentDescription = null, //todo
+            contentDescription = null, // todo
           )
         }
       }
@@ -599,14 +613,14 @@ internal fun <T> StandardBubble(
         ) {
           if (canSkip) {
             HedvigTextButton(
-              stringResource(R.string.claims_skip_button),
+              stringResource(Res.string.claims_skip_button),
               onClick = onSkip,
               buttonSize = ButtonDefaults.ButtonSize.Medium,
             )
           }
           Spacer(Modifier.width(16.dp))
           HedvigButton(
-            text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+            text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
             enabled = selectedAnswer != null,
             onClick = {
               if (selectedAnswer != null) onSubmit(selectedAnswer)
@@ -758,7 +772,7 @@ private fun PreviewClaimChatComponents() {
           onSkip = {},
           onSelect = {},
           onSubmit = {},
-          isPrefilled = false
+          isPrefilled = false,
         )
         Spacer(Modifier.height(16.dp))
         DateSelectBubble(

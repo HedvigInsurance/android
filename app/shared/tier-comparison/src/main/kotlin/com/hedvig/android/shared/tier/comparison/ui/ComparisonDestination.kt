@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.Placeholder
@@ -68,7 +67,12 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel.ComparisonItem.CoveredStatus.Checkmark
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonState.Success.CoverageLevel.ComparisonItem.CoveredStatus.Description
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_COVERED
+import hedvig.resources.TIER_COMPARISON_SUBTITLE
+import hedvig.resources.TIER_COMPARISON_TITLE
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ComparisonDestination(viewModel: ComparisonViewModel, navigateUp: () -> Unit) {
@@ -123,8 +127,8 @@ private fun ComparisonScreen(uiState: Success, navigateUp: () -> Unit) {
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-      stringResource(R.string.TIER_COMPARISON_TITLE),
-      stringResource(R.string.TIER_COMPARISON_SUBTITLE),
+      stringResource(Res.string.TIER_COMPARISON_TITLE),
+      stringResource(Res.string.TIER_COMPARISON_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
@@ -175,7 +179,7 @@ private fun CoverageLevelRow(
   Column {
     coverage.items.forEachIndexed { index, item ->
       val coveredDescription = when (item.coveredStatus) {
-        Checkmark -> stringResource(R.string.TALKBACK_COVERED)
+        Checkmark -> stringResource(Res.string.TALKBACK_COVERED)
         is Description -> item.coveredStatus.description
       }
       val itemDescription = "${item.title}, $coveredDescription"
@@ -264,7 +268,7 @@ private fun ComparisonRowBottomSheetContent(
     Spacer(Modifier.height(32.dp))
     HedvigButton(
       onClick = dismissSheet,
-      text = stringResource(R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       enabled = true,
       buttonStyle = Ghost,
       modifier = Modifier.fillMaxWidth(),

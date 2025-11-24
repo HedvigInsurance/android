@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -39,11 +38,22 @@ import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTime
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
+import hedvig.resources.claim_decision_not_compensated
+import hedvig.resources.claim_decision_not_covered
+import hedvig.resources.claim_decision_paid
+import hedvig.resources.claim_decision_unresponsive
+import hedvig.resources.claim_history_empty_state_body
+import hedvig.resources.claim_history_empty_state_title
+import hedvig.resources.claim_status_claim_details_submitted
+import hedvig.resources.claim_status_detail_closed
+import hedvig.resources.profile_claim_history_title
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ClaimHistoryDestination(
@@ -69,7 +79,7 @@ private fun ClaimHistoryScreen(
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.profile_claim_history_title),
+    topAppBarText = stringResource(Res.string.profile_claim_history_title),
     modifier = Modifier.fillMaxSize(),
   ) {
     when (uiState) {
@@ -90,8 +100,8 @@ private fun ClaimHistoryScreen(
       )
 
       ClaimHistoryUiState.NoHistory -> EmptyState(
-        text = stringResource(R.string.claim_history_empty_state_title),
-        description = stringResource(R.string.claim_history_empty_state_body),
+        text = stringResource(Res.string.claim_history_empty_state_title),
+        description = stringResource(Res.string.claim_history_empty_state_body),
         modifier = Modifier
           .weight(1f)
           .wrapContentHeight(Alignment.CenterVertically)
@@ -121,12 +131,12 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
     {
       Column {
         HedvigText(
-          text = claim.claimType ?: stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
+          text = claim.claimType ?: stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
           style = HedvigTheme.typography.bodySmall,
         )
         HedvigText(
           buildString {
-            append(stringResource(R.string.claim_status_claim_details_submitted))
+            append(stringResource(Res.string.claim_status_claim_details_submitted))
             append(" ")
             append(
               hedvigDateTimeFormatter.format(
@@ -142,15 +152,14 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
       Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
       ) {
-
         HighlightLabel(
           labelText = stringResource(
             when (claim.outcome) {
-              ClaimHistory.ClaimOutcome.PAID -> R.string.claim_decision_paid
-              ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> R.string.claim_decision_not_compensated
-              ClaimHistory.ClaimOutcome.NOT_COVERED -> R.string.claim_decision_not_covered
-              ClaimHistory.ClaimOutcome.UNRESPONSIVE -> R.string.claim_decision_unresponsive
-              else -> R.string.claim_status_detail_closed
+              ClaimHistory.ClaimOutcome.PAID -> Res.string.claim_decision_paid
+              ClaimHistory.ClaimOutcome.NOT_COMPENSATED -> Res.string.claim_decision_not_compensated
+              ClaimHistory.ClaimOutcome.NOT_COVERED -> Res.string.claim_decision_not_covered
+              ClaimHistory.ClaimOutcome.UNRESPONSIVE -> Res.string.claim_decision_unresponsive
+              else -> Res.string.claim_status_detail_closed
             },
           ),
           size = HighlightLabelDefaults.HighLightSize.Small,

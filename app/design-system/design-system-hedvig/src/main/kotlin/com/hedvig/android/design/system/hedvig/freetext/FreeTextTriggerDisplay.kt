@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,7 +51,9 @@ import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupp
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingStart
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingTop
 import com.hedvig.android.design.system.hedvig.value
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.A11Y_CHARACTER_LIMIT
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FreeTextDisplay(
@@ -125,7 +126,7 @@ fun FreeTextDisplay(
             }
             Spacer(Modifier.width(2.dp))
             val characterLimitDescription =
-              stringResource(R.string.A11Y_CHARACTER_LIMIT, textValue.length, maxLength)
+              stringResource(Res.string.A11Y_CHARACTER_LIMIT, textValue.length, maxLength)
             HedvigText(
               text = "${textValue.length}/$maxLength",
               style = FreeTextDisplayDefaults.countLabelStyle.value,

@@ -9,7 +9,6 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -20,7 +19,13 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_NOT_SUCCESSFUL_TITLE
+import hedvig.resources.general_done_button
+import hedvig.resources.general_error
+import hedvig.resources.open_chat
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationFailureDestination(
@@ -49,9 +54,9 @@ private fun TerminationFailureScreen(
 ) {
   TerminationInfoScreen(
     windowSizeClass = windowSizeClass,
-    title = stringResource(id = R.string.general_error),
-    headerText = stringResource(R.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
-    bodyText = errorMessage.message ?: stringResource(R.string.something_went_wrong),
+    title = stringResource(Res.string.general_error),
+    headerText = stringResource(Res.string.TERMINATION_NOT_SUCCESSFUL_TITLE),
+    bodyText = errorMessage.message ?: stringResource(Res.string.something_went_wrong),
     navigateUp = navigateUp,
   ) {
     Column(
@@ -60,13 +65,13 @@ private fun TerminationFailureScreen(
     ) {
       HedvigButton(
         modifier = Modifier.fillMaxSize(),
-        text = stringResource(id = R.string.open_chat),
+        text = stringResource(Res.string.open_chat),
         enabled = true,
         onClick = onNavigateToNewConversation,
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        text = stringResource(R.string.general_done_button),
+        text = stringResource(Res.string.general_done_button),
         modifier = Modifier.fillMaxSize(),
         buttonSize = Large,
         onClick = navigateBack,

@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -58,11 +57,22 @@ import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBott
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.FailureDownloadingHistory
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.Loading
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.SuccessDownloadingHistory
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
+import hedvig.resources.PROFILE_ROW_TRAVEL_CERTIFICATE
+import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
+import hedvig.resources.TOAST_READ_MORE
+import hedvig.resources.general_error
+import hedvig.resources.travel_certificate_active
+import hedvig.resources.travel_certificate_downloading_error
+import hedvig.resources.travel_certificate_empty_list_message
+import hedvig.resources.travel_certificate_expired
+import hedvig.resources.travel_certificate_get_travel_certificate_button
 import java.io.File
 import kotlin.String
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelCertificateHistoryDestination(
@@ -118,7 +128,7 @@ private fun TravelCertificateHistoryScreen(
       HedvigScaffold(
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
-        topAppBarText = stringResource(id = R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+        topAppBarText = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
         topAppBarActions = {
           IconButton(
             onClick = { explanationSheetState.show() },
@@ -126,7 +136,7 @@ private fun TravelCertificateHistoryScreen(
           ) {
             Icon(
               imageVector = HedvigIcons.InfoOutline,
-              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(24.dp),
             )
           }
@@ -191,7 +201,7 @@ private fun TravelCertificateSuccessScreen(
   HedvigScaffold(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
-    topAppBarText = stringResource(id = R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+    topAppBarText = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
     topAppBarActions = {
       IconButton(
         onClick = { onIconClick() },
@@ -199,7 +209,7 @@ private fun TravelCertificateSuccessScreen(
       ) {
         Icon(
           imageVector = HedvigIcons.InfoOutline,
-          contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+          contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
           modifier = Modifier.size(24.dp),
         )
       }
@@ -236,7 +246,7 @@ private fun TravelCertificateSuccessScreen(
         if (showGenerationButton) {
           Spacer(Modifier.height(8.dp))
           HedvigButton(
-            text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
+            text = stringResource(Res.string.travel_certificate_get_travel_certificate_button),
             onClick = dropUnlessResumed {
               if (hasChooseOption) onGoToChooseContract() else onStartGenerateTravelCertificateFlow()
             },
@@ -253,7 +263,7 @@ private fun TravelCertificateSuccessScreen(
         Modifier.fillMaxWidth(),
       ) {
         HedvigTooltip(
-          message = stringResource(R.string.TOAST_READ_MORE),
+          message = stringResource(Res.string.TOAST_READ_MORE),
           showTooltip = true,
           beakDirection = TopEnd,
           tooltipShown = {},
@@ -276,7 +286,7 @@ private fun TravelAddonBanner(
     modifier = modifier,
     title = travelAddonBannerInfo.title,
     description = travelAddonBannerInfo.description,
-    buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
     labels = travelAddonBannerInfo.labels,
     onButtonClick = {
       launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
@@ -292,7 +302,7 @@ private fun EmptyTravelCertificatesScreen(modifier: Modifier = Modifier) {
     verticalArrangement = Arrangement.Center,
   ) {
     EmptyState(
-      text = stringResource(R.string.travel_certificate_empty_list_message),
+      text = stringResource(Res.string.travel_certificate_empty_list_message),
       description = null,
       iconStyle = INFO,
     )
@@ -308,8 +318,8 @@ private fun TravelCertificatesList(
 ) {
   if (showErrorDialog) {
     ErrorDialog(
-      title = stringResource(id = R.string.general_error),
-      message = stringResource(id = R.string.travel_certificate_downloading_error),
+      title = stringResource(Res.string.general_error),
+      message = stringResource(Res.string.travel_certificate_downloading_error),
       onDismiss = {
         onDismissDownloadCertificateError()
       },
@@ -329,9 +339,9 @@ private fun TravelCertificatesList(
       val isExpired = certificate.isExpiredNow
       val color = if (isExpired) HedvigTheme.colorScheme.signalRedElement else Color.Unspecified
       val endText = if (isExpired) {
-        stringResource(id = R.string.travel_certificate_expired)
+        stringResource(Res.string.travel_certificate_expired)
       } else {
-        stringResource(id = R.string.travel_certificate_active)
+        stringResource(Res.string.travel_certificate_active)
       }
 
       HorizontalItemsWithMaximumSpaceTaken(

@@ -14,6 +14,11 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TOAST_PLAY_STORE_MISSING_ON_DEVICE
+import hedvig.resources.login_bottom_sheet_view_code
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
 
 internal class ExternalNavigatorImpl(
   private val activity: Activity,

@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -33,7 +32,10 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIM_TRIAGING_ABOUT_TITILE
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SelectContractDestination(
@@ -126,7 +128,7 @@ private fun SelectContractSuccessScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.CLAIM_TRIAGING_ABOUT_TITILE),
+      text = stringResource(Res.string.CLAIM_TRIAGING_ABOUT_TITILE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
@@ -146,7 +148,7 @@ private fun SelectContractSuccessScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = submitLocation,
       isLoading = uiState.isButtonLoading,
       enabled = uiState.canSubmit,

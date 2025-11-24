@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -20,7 +19,11 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_close_button
+import hedvig.resources.travel_certificate_info_subtitle
+import hedvig.resources.travel_certificate_info_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelCertificateInfoBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
@@ -33,18 +36,18 @@ internal fun TravelCertificateInfoBottomSheet(sheetState: HedvigBottomSheetState
 private fun TravelCertificateInfoBottomSheetContent(onDismiss: () -> Unit) {
   Column {
     HedvigText(
-      text = stringResource(R.string.travel_certificate_info_title),
+      text = stringResource(Res.string.travel_certificate_info_title),
       modifier = Modifier.fillMaxWidth().semantics { heading() },
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.travel_certificate_info_subtitle),
+      text = stringResource(Res.string.travel_certificate_info_subtitle),
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       onClick = onDismiss,
       modifier = Modifier.fillMaxWidth(),
     )

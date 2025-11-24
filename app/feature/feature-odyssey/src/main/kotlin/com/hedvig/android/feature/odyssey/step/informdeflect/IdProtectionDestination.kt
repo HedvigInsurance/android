@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,7 +47,12 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_LABEL
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_TITLE
+import hedvig.resources.open_chat
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectIdProtectionDestination(
@@ -161,19 +165,19 @@ private fun DeflectIdProtectionScreen(
       Column {
         Spacer(Modifier.height(16.dp))
         HedvigText(
-          text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
+          text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
           textAlign = TextAlign.Center,
           modifier = sideSpacingModifier.fillMaxWidth(),
         )
         HedvigText(
-          text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
+          text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
           textAlign = TextAlign.Center,
           color = HedvigTheme.colorScheme.textSecondary,
           modifier = sideSpacingModifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(24.dp))
         HedvigButton(
-          text = stringResource(R.string.open_chat),
+          text = stringResource(Res.string.open_chat),
           onClick = dropUnlessResumed { onNavigateToNewConversation() },
           buttonSize = Small,
           enabled = true,
@@ -238,7 +242,7 @@ private fun PartnerUrlButton(buttonText: String, url: String) {
 private fun PartnerPhoneNumberButton(phoneNumber: String, buttonStyle: ButtonDefaults.ButtonStyle) {
   val context = LocalContext.current
   HedvigButton(
-    text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL, phoneNumber),
+    text = stringResource(Res.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL, phoneNumber),
     enabled = true,
     buttonSize = Medium,
     buttonStyle = buttonStyle,

@@ -25,7 +25,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -68,7 +67,20 @@ import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetContentState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
-import hedvig.resources.R
+import hedvig.resources.COINSURED_WITHOUT_SSN_INFO
+import hedvig.resources.CONTRACT_ADD_COINSURED
+import hedvig.resources.CONTRACT_ADD_COINSURED_NO_SSN
+import hedvig.resources.CONTRACT_BIRTH_DATE
+import hedvig.resources.CONTRACT_FIRST_NAME
+import hedvig.resources.CONTRACT_LAST_NAME
+import hedvig.resources.CONTRACT_PERSONAL_IDENTITY
+import hedvig.resources.CONTRACT_SSN_FETCH_INFO
+import hedvig.resources.FULL_NAME_TEXT
+import hedvig.resources.GENERAL_ADD_NEW
+import hedvig.resources.Res
+import hedvig.resources.edit_coinsured_ssn_placeholder
+import hedvig.resources.general_cancel_button
+import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
@@ -76,6 +88,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddCoInsuredBottomSheetContent(
@@ -95,7 +108,7 @@ internal fun AddCoInsuredBottomSheetContent(
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
+      text = stringResource(Res.string.CONTRACT_ADD_COINSURED),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -139,16 +152,14 @@ internal fun AddCoInsuredBottomSheetContent(
         },
         modifier = Modifier.fillMaxWidth(),
         toggleStyle = ToggleStyle.Default(Small),
-        labelText = stringResource(id = R.string.CONTRACT_ADD_COINSURED_NO_SSN),
+        labelText = stringResource(Res.string.CONTRACT_ADD_COINSURED_NO_SSN),
         enabled = true,
       )
       AnimatedVisibility(bottomSheetState.showUnderAgedInfo) {
         Column {
           Spacer(Modifier.height(4.dp))
           HedvigNotificationCard(
-            message = stringResource(
-              id = R.string.COINSURED_WITHOUT_SSN_INFO,
-            ),
+            message = stringResource(Res.string.COINSURED_WITHOUT_SSN_INFO),
             priority = NotificationDefaults.NotificationPriority.Attention,
           )
         }
@@ -156,7 +167,7 @@ internal fun AddCoInsuredBottomSheetContent(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(id = bottomSheetState.getSaveLabel().stringRes()),
+      text = stringResource(bottomSheetState.getSaveLabel().stringRes()),
       enabled = bottomSheetState.canContinue(),
       onClick = onContinue,
       isLoading = bottomSheetState.isLoading,
@@ -165,7 +176,7 @@ internal fun AddCoInsuredBottomSheetContent(
     Spacer(Modifier.height(8.dp))
     HedvigButton(
       onClick = onDismiss,
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       enabled = true,
       buttonStyle = Ghost,
       modifier = Modifier.fillMaxWidth(),
@@ -204,7 +215,7 @@ internal fun SelectableCoInsuredList(
     )
   }
   HedvigTextButton(
-    text = stringResource(id = R.string.GENERAL_ADD_NEW),
+    text = stringResource(Res.string.GENERAL_ADD_NEW),
     onClick = { onAddNewCoInsured() },
     modifier = Modifier.fillMaxWidth(),
   )
@@ -219,12 +230,12 @@ private fun FetchFromSsnFields(
   onContinue: () -> Unit,
 ) {
   var ssnInput by remember { mutableStateOf(ssn ?: "") }
-  val mask = stringResource(id = R.string.edit_coinsured_ssn_placeholder)
+  val mask = stringResource(Res.string.edit_coinsured_ssn_placeholder)
   val maskColor = HedvigTheme.colorScheme.textSecondary
   Column {
     HedvigTextField(
       text = ssnInput,
-      labelText = stringResource(id = R.string.CONTRACT_PERSONAL_IDENTITY),
+      labelText = stringResource(Res.string.CONTRACT_PERSONAL_IDENTITY),
       onValueChange = { value ->
         if (value.length <= 12) {
           onSsnChanged(value)
@@ -233,7 +244,7 @@ private fun FetchFromSsnFields(
       },
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       errorState = if (errorMessage != null) {
-        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(stringResource(R.string.something_went_wrong))
+        HedvigTextFieldDefaults.ErrorState.Error.WithMessage(stringResource(Res.string.something_went_wrong))
       } else {
         HedvigTextFieldDefaults.ErrorState.NoError
       },
@@ -256,7 +267,7 @@ private fun FetchFromSsnFields(
       HedvigTextField(
         text = displayName,
         onValueChange = {},
-        labelText = stringResource(id = R.string.FULL_NAME_TEXT),
+        labelText = stringResource(Res.string.FULL_NAME_TEXT),
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         enabled = false,
         modifier = Modifier.fillMaxWidth(),
@@ -327,7 +338,7 @@ private fun ManualInputFields(
     Row {
       HedvigTextField(
         text = firstNameInput,
-        labelText = stringResource(id = R.string.CONTRACT_FIRST_NAME),
+        labelText = stringResource(Res.string.CONTRACT_FIRST_NAME),
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         onValueChange = {
           onFirstNameChanged(it)
@@ -345,7 +356,7 @@ private fun ManualInputFields(
       HedvigTextField(
         text = lastNameInput,
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        labelText = stringResource(id = R.string.CONTRACT_LAST_NAME),
+        labelText = stringResource(Res.string.CONTRACT_LAST_NAME),
         onValueChange = {
           onLastNameChanged(it)
           lastNameInput = it
@@ -367,7 +378,7 @@ private fun ManualInputFields(
       Column {
         Spacer(Modifier.height(4.dp))
         HedvigNotificationCard(
-          message = stringResource(R.string.something_went_wrong),
+          message = stringResource(Res.string.something_went_wrong),
           priority = NotificationDefaults.NotificationPriority.Attention,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -430,7 +441,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
       }
       if (birthDate != null) {
         HedvigText(
-          text = stringResource(id = R.string.CONTRACT_BIRTH_DATE),
+          text = stringResource(Res.string.CONTRACT_BIRTH_DATE),
           color = HedvigTheme.colorScheme.textSecondary,
           fontSize = HedvigTheme.typography.label.fontSize,
           modifier = Modifier.padding(
@@ -442,7 +453,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
         text = if (birthDate != null) {
           rememberHedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
         } else {
-          stringResource(id = R.string.CONTRACT_BIRTH_DATE)
+          stringResource(Res.string.CONTRACT_BIRTH_DATE)
         },
         color = if (birthDate != null) {
           Color.Unspecified
@@ -458,8 +469,8 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
 }
 
 private fun AddBottomSheetContentState.SaveButtonLabel.stringRes() = when (this) {
-  AddBottomSheetContentState.SaveButtonLabel.FETCH_INFO -> R.string.CONTRACT_SSN_FETCH_INFO
-  AddBottomSheetContentState.SaveButtonLabel.ADD -> R.string.CONTRACT_ADD_COINSURED
+  AddBottomSheetContentState.SaveButtonLabel.FETCH_INFO -> Res.string.CONTRACT_SSN_FETCH_INFO
+  AddBottomSheetContentState.SaveButtonLabel.ADD -> Res.string.CONTRACT_ADD_COINSURED
 }
 
 @Composable

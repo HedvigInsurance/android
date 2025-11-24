@@ -3,6 +3,9 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
+import hedvig.resources.PERMISSION_DIALOG_TITLE
+import hedvig.resources.profile_appSettingsSection_title
 
 /**
  * [permissionDescription] The text which will be used as the description of why we want this permission
@@ -24,7 +27,7 @@ import androidx.compose.ui.res.stringResource
  *  }
  *  if (showDialog) {
  *    PermissionDialog(
- *      permissionDescription = stringResource(R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
+ *      permissionDescription = stringResource(Res.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
  *      isPermanentlyDeclined = !shouldShowRequestPermissionRationale(Manifest.permission.FOO),
  *      onDismiss = { showDialog = false },
  *      okClick = permissionState::launchPermissionRequest,
@@ -48,10 +51,10 @@ fun PermissionDialog(
   modifier: Modifier = Modifier,
 ) {
   HedvigAlertDialog(
-    title = stringResource(hedvig.resources.R.string.PERMISSION_DIALOG_TITLE),
+    title = stringResource(hedvig.resources.Res.string.PERMISSION_DIALOG_TITLE),
     text = permissionDescription,
     confirmButtonLabel = if (isPermanentlyDeclined) {
-      stringResource(hedvig.resources.R.string.profile_appSettingsSection_title)
+      stringResource(hedvig.resources.Res.string.profile_appSettingsSection_title)
     } else {
       stringResource(android.R.string.ok)
     },

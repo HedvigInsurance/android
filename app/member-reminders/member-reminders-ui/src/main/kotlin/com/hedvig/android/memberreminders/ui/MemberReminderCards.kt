@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
@@ -32,9 +31,23 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
+import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
+import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
+import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
+import hedvig.resources.MISSING_CONTACT_INFO_CARD_BUTTON
+import hedvig.resources.MISSING_CONTACT_INFO_CARD_TEXT
+import hedvig.resources.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL
+import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
+import hedvig.resources.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW
+import hedvig.resources.PUSH_NOTIFICATIONS_ALERT_ACTION_OK
+import hedvig.resources.info_card_missing_payment_body
+import hedvig.resources.info_card_missing_payment_missing_payments_body
+import hedvig.resources.open_chat
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MemberReminderCardsWithoutNotification(
@@ -203,13 +216,13 @@ fun ReminderCardEnableNotifications(
   modifier: Modifier = Modifier,
 ) {
   HedvigNotificationCard(
-    message = stringResource(R.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
+    message = stringResource(Res.string.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL),
     modifier = modifier,
     priority = NotificationPriority.Info,
     style = InfoCardStyle.Buttons(
-      leftButtonText = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
+      leftButtonText = stringResource(Res.string.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW),
       onLeftButtonClick = snoozeNotificationPermissionReminder,
-      rightButtonText = stringResource(R.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
+      rightButtonText = stringResource(Res.string.PUSH_NOTIFICATIONS_ALERT_ACTION_OK),
       onRightButtonClick = requestNotificationPermission,
     ),
   )
@@ -218,11 +231,11 @@ fun ReminderCardEnableNotifications(
 @Composable
 fun ReminderCardUpdateContactInfo(navigateToContactInfo: () -> Unit, modifier: Modifier = Modifier) {
   HedvigNotificationCard(
-    message = stringResource(R.string.MISSING_CONTACT_INFO_CARD_TEXT),
+    message = stringResource(Res.string.MISSING_CONTACT_INFO_CARD_TEXT),
     modifier = modifier,
     priority = NotificationPriority.Info,
     style = InfoCardStyle.Button(
-      buttonText = stringResource(R.string.MISSING_CONTACT_INFO_CARD_BUTTON),
+      buttonText = stringResource(Res.string.MISSING_CONTACT_INFO_CARD_BUTTON),
       onButtonClick = navigateToContactInfo,
     ),
   )
@@ -231,11 +244,11 @@ fun ReminderCardUpdateContactInfo(navigateToContactInfo: () -> Unit, modifier: M
 @Composable
 private fun ReminderCardConnectPayment(navigateToConnectPayment: () -> Unit, modifier: Modifier = Modifier) {
   HedvigNotificationCard(
-    message = stringResource(R.string.info_card_missing_payment_body),
+    message = stringResource(Res.string.info_card_missing_payment_body),
     modifier = modifier,
     priority = NotificationPriority.Attention,
     style = InfoCardStyle.Button(
-      buttonText = stringResource(R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+      buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
       onButtonClick = navigateToConnectPayment,
     ),
   )
@@ -248,11 +261,11 @@ private fun ReminderCardMissingPayment(
   modifier: Modifier = Modifier,
 ) {
   HedvigNotificationCard(
-    message = stringResource(R.string.info_card_missing_payment_missing_payments_body, terminationDate),
+    message = stringResource(Res.string.info_card_missing_payment_missing_payments_body, terminationDate),
     modifier = modifier,
     priority = NotificationPriority.Attention,
     style = InfoCardStyle.Button(
-      buttonText = stringResource(R.string.open_chat),
+      buttonText = stringResource(Res.string.open_chat),
       onButtonClick = onNavigateToNewConversation,
     ),
   )
@@ -270,11 +283,11 @@ private fun ReminderCardUpcomingRenewals(
   val style = upcomingRenewal.draftCertificateUrl?.let {
     InfoCardStyle.Button(
       onButtonClick = { openUrl(it) },
-      buttonText = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+      buttonText = stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
     )
   } ?: InfoCardStyle.Default
   HedvigNotificationCard(
-    message = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
+    message = stringResource(Res.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
     modifier = modifier,
     priority = NotificationPriority.Info,
     style = style,
@@ -284,11 +297,11 @@ private fun ReminderCardUpcomingRenewals(
 @Composable
 private fun ReminderCoInsuredInfo(navigateToContractDetail: () -> Unit, modifier: Modifier = Modifier) {
   HedvigNotificationCard(
-    message = stringResource(R.string.CONTRACT_COINSURED_MISSING_INFO_TEXT),
+    message = stringResource(Res.string.CONTRACT_COINSURED_MISSING_INFO_TEXT),
     modifier = modifier,
     priority = NotificationPriority.Attention,
     style = InfoCardStyle.Button(
-      buttonText = stringResource(R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+      buttonText = stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
       onButtonClick = navigateToContractDetail,
     ),
   )

@@ -64,7 +64,6 @@ import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -161,7 +160,22 @@ import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.AUTOMATED_MESSAGE_INFO_CARD_BUTTON
+import hedvig.resources.CHAT_CONVERSATION_CLOSED_INFO
+import hedvig.resources.CHAT_DELIVERED_MESSAGE
+import hedvig.resources.CHAT_FAILED_TO_SEND
+import hedvig.resources.CHAT_FILE_DOWNLOAD
+import hedvig.resources.CHAT_SENDER_AUTOMATION
+import hedvig.resources.CHAT_SENDER_HEDVIG
+import hedvig.resources.CHAT_SENDER_MEMBER
+import hedvig.resources.TALKBACK_CHAT_FAILED_MEDIA
+import hedvig.resources.TALKBACK_CHAT_FAILED_PHOTO
+import hedvig.resources.TALKBACK_CHAT_FAILED_TEXT
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_FILE
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_GIF
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_TEXT
+import hedvig.resources.general_close_button
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
@@ -174,6 +188,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CbmChatLoadedScreen(
@@ -250,9 +265,9 @@ private fun ChatLoadedScreen(
         onNavigateToImageViewer = onNavigateToImageViewer,
         onRetrySendChatMessage = onRetrySendChatMessage,
         modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f)
-            .clearFocusOnTap(),
+          .fillMaxWidth()
+          .weight(1f)
+          .clearFocusOnTap(),
       )
       AnimatedVisibility(
         visible = WindowInsets.imeAnimationTarget.asPaddingValues().calculateBottomPadding() == 0.dp &&
@@ -272,40 +287,40 @@ private fun ChatLoadedScreen(
       ) {
         ChatBanner(
           text = when (uiState.bannerText) {
-            ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
+            ClosedConversation -> stringResource(Res.string.CHAT_CONVERSATION_CLOSED_INFO)
             is BannerText.Text -> uiState.bannerText.text
             null -> ""
           },
           possibleToClose = uiState.bannerText !is ClosedConversation,
           onCloseCLick = onCloseBannerClick,
           modifier = Modifier
-              .fillMaxWidth()
-              .windowInsetsPadding(WindowInsets.safeDrawing)
-              .drawWithContent {
-                  drawContent()
-                  drawLine(
-                      color = dividerColor,
-                      strokeWidth = dividerThickness.toPx(),
-                      start = Offset(0f, dividerThickness.toPx() / 2),
-                      end = Offset(size.width, dividerThickness.toPx() / 2),
-                  )
-              },
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .drawWithContent {
+              drawContent()
+              drawLine(
+                color = dividerColor,
+                strokeWidth = dividerThickness.toPx(),
+                start = Offset(0f, dividerThickness.toPx() / 2),
+                end = Offset(size.width, dividerThickness.toPx() / 2),
+              )
+            },
         )
       }
       Box(
         propagateMinConstraints = true,
         modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .drawWithContent {
-                drawContent()
-                drawLine(
-                    color = dividerColor,
-                    strokeWidth = dividerThickness.toPx(),
-                    start = Offset(0f, dividerThickness.toPx() / 2),
-                    end = Offset(size.width, dividerThickness.toPx() / 2),
-                )
-            },
+          .fillMaxWidth()
+          .windowInsetsPadding(WindowInsets.safeDrawing)
+          .drawWithContent {
+            drawContent()
+            drawLine(
+              color = dividerColor,
+              strokeWidth = dividerThickness.toPx(),
+              start = Offset(0f, dividerThickness.toPx() / 2),
+              end = Offset(size.width, dividerThickness.toPx() / 2),
+            )
+          },
       ) {
         chatInput()
       }
@@ -321,7 +336,6 @@ private fun ChatLoadedScreen(
     }
   }
 }
-
 
 @Composable
 private fun ScrollToBottomEffect(
@@ -453,9 +467,9 @@ private fun ChatLazyColumn(
           MessageBanner(
             banner,
             Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 8.dp),
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp)
+              .padding(bottom = 8.dp),
           )
         }
       }
@@ -479,16 +493,16 @@ private fun ChatLazyColumn(
         }
         ThreeDotsLoading(
           Modifier
-              .fillParentMaxWidth()
-              .wrapContentWidth()
-              .padding(24.dp)
-              .then(
-                  if (hideForFirstFrames) {
-                      Modifier.withoutPlacement()
-                  } else {
-                      Modifier
-                  },
-              ),
+            .fillParentMaxWidth()
+            .wrapContentWidth()
+            .padding(24.dp)
+            .then(
+              if (hideForFirstFrames) {
+                Modifier.withoutPlacement()
+              } else {
+                Modifier
+              },
+            ),
         )
       }
     }
@@ -528,11 +542,11 @@ private fun ChatBubble(
             HedvigText(
               text = "HHHHHHHHHH",
               modifier = Modifier
-                  .padding(horizontal = 16.dp, vertical = 12.dp)
-                  .withoutPlacement()
-                  .semantics {
-                      hideFromAccessibility()
-                  },
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .withoutPlacement()
+                .semantics {
+                  hideFromAccessibility()
+                },
             )
           }
         }
@@ -547,10 +561,10 @@ private fun ChatBubble(
               text = chatMessage.text,
               style = LocalTextStyle.current.copy(color = LocalContentColor.current),
               modifier = Modifier
-                  .padding(horizontal = 16.dp, vertical = 12.dp)
-                  .semantics {
-                      hideFromAccessibility()
-                  },
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .semantics {
+                  hideFromAccessibility()
+                },
             )
           }
         }
@@ -564,12 +578,12 @@ private fun ChatBubble(
                 cacheKey = chatMessage.id,
                 isFailedToBeSentMessage = false,
                 modifier = Modifier
-                    .clickable {
-                        onNavigateToImageViewer(chatMessage.url, chatMessage.id)
-                    }
-                    .semantics {
-                        hideFromAccessibility()
-                    },
+                  .clickable {
+                    onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                  }
+                  .semantics {
+                    hideFromAccessibility()
+                  },
               )
             }
 
@@ -607,17 +621,17 @@ private fun ChatBubble(
                 cacheKey = chatMessage.id,
                 isFailedToBeSentMessage = false,
                 modifier = Modifier
-                    .clickable {
-                        openUrl(chatMessage.url)
-                    }
-                    .semantics {
-                        hideFromAccessibility()
-                    },
+                  .clickable {
+                    openUrl(chatMessage.url)
+                  }
+                  .semantics {
+                    hideFromAccessibility()
+                  },
               )
             }
 
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -727,7 +741,7 @@ private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Mo
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
         onClick = { sheetState.dismiss() },
-        text = stringResource(R.string.general_close_button),
+        text = stringResource(Res.string.general_close_button),
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
@@ -759,7 +773,7 @@ private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Mo
     modifier = modifier,
     style = if (sheetInformation != null) {
       InfoCardStyle.Button(
-        stringResource(R.string.AUTOMATED_MESSAGE_INFO_CARD_BUTTON),
+        stringResource(Res.string.AUTOMATED_MESSAGE_INFO_CARD_BUTTON),
         { sheetState.show(sheetInformation) },
       )
     } else {
@@ -774,24 +788,24 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
     val context = LocalContext.current
     val sender = stringResource(
       when (it.sender) {
-        HEDVIG -> R.string.CHAT_SENDER_HEDVIG
-        AUTOMATION -> R.string.CHAT_SENDER_AUTOMATION
-        MEMBER -> R.string.CHAT_SENDER_MEMBER
+        HEDVIG -> Res.string.CHAT_SENDER_HEDVIG
+        AUTOMATION -> Res.string.CHAT_SENDER_AUTOMATION
+        MEMBER -> Res.string.CHAT_SENDER_MEMBER
       },
     )
     val time = formatInstantForTalkBack(context, it.sentAt)
     when (it) {
-      is ChatMessageFile -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
+      is ChatMessageFile -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
       // At [%s:formattedInstant], [%s:sender] sent a file with type: [%s:mimeType], double tap to open.
-      is ChatMessageGif -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_GIF, time, sender)
+      is ChatMessageGif -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_GIF, time, sender)
       // At [%s:formattedInstant], [%s:sender] sent a GIF picture.
-      is CbmChatMessage.ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
+      is CbmChatMessage.ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
       // "at $instant, $sender said: $it.text."
-      is FailedToBeSent.ChatMessageMedia -> stringResource(R.string.TALKBACK_CHAT_FAILED_MEDIA, time)
+      is FailedToBeSent.ChatMessageMedia -> stringResource(Res.string.TALKBACK_CHAT_FAILED_MEDIA, time)
       // "at $instant, you tried to send a media file, but it failed. Double tap to try sending again."
-      is FailedToBeSent.ChatMessagePhoto -> stringResource(R.string.TALKBACK_CHAT_FAILED_PHOTO, time)
+      is FailedToBeSent.ChatMessagePhoto -> stringResource(Res.string.TALKBACK_CHAT_FAILED_PHOTO, time)
       // "at $instant, you tried to send a photo, but it failed. Double tap to try sending again."
-      is FailedToBeSent.ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
+      is FailedToBeSent.ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
       // "at $instant, you tried to send a text message, but it failed. Double tap to try sending again. The message said: $it.text"
     }
   } ?: ""
@@ -823,24 +837,24 @@ private fun FailedToBeSentUri(
     isRetryable = true,
     isFailedToBeSentMessage = true,
     modifier = modifier
-        .clip(HedvigTheme.shapes.cornerLarge)
-        .clickable { onRetrySendChatMessage(messageId) }
-        .drawWithContent {
-            drawContent()
-            drawRect(color = Color.Black, alpha = 0.38f)
-            withTransform(
-                transformBlock = {
-                    translate(
-                        left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
-                        top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
-                    )
-                },
-            ) {
-                with(retryIconPainter) {
-                    draw(retryIconPainter.intrinsicSize)
-                }
-            }
-        },
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .clickable { onRetrySendChatMessage(messageId) }
+      .drawWithContent {
+        drawContent()
+        drawRect(color = Color.Black, alpha = 0.38f)
+        withTransform(
+          transformBlock = {
+            translate(
+              left = (size.width - retryIconPainter.intrinsicSize.width) / 2,
+              top = (size.height - retryIconPainter.intrinsicSize.height) / 2,
+            )
+          },
+        ) {
+          with(retryIconPainter) {
+            draw(retryIconPainter.intrinsicSize)
+          }
+        }
+      },
   )
 }
 
@@ -854,24 +868,24 @@ private fun AttachedFileMessage(
   val shape = HedvigTheme.shapes.cornerLarge
   Box(
     modifier
-        .drawWithCache {
-            val stroke = Stroke(1.dp.toPx())
-            val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
-            onDrawWithContent {
-                drawContent()
-                drawOutline(outline, borderColor, style = stroke)
-            }
+      .drawWithCache {
+        val stroke = Stroke(1.dp.toPx())
+        val outline = shape.createOutline(size.copy(size.width, size.height), layoutDirection, this)
+        onDrawWithContent {
+          drawContent()
+          drawOutline(outline, borderColor, style = stroke)
         }
-        .clip(HedvigTheme.shapes.cornerLarge)
-        .background(containerColor)
-        .clickable(onClick = onClick),
+      }
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .background(containerColor)
+      .clickable(onClick = onClick),
   ) {
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
       Icon(imageVector = HedvigIcons.MultipleDocuments, contentDescription = null, modifier = Modifier.size(24.dp))
-      HedvigText(text = stringResource(R.string.CHAT_FILE_DOWNLOAD))
+      HedvigText(text = stringResource(Res.string.CHAT_FILE_DOWNLOAD))
     }
   }
 }
@@ -901,9 +915,9 @@ private fun VideoMessage(
   Media(
     state = state,
     modifier = modifier
-        .height(height)
-        .clip(HedvigTheme.shapes.cornerLarge)
-        .background(Color.Black),
+      .height(height)
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .background(Color.Black),
     surfaceType = SurfaceType.TextureView,
     resizeMode = ResizeMode.Fit,
     keepContentOnPlayerReset = true,
@@ -922,8 +936,8 @@ private fun VideoMessage(
       onGoDefaultWidth = onGoDefaultWidth,
       showingFullWidth = showingFullWidth,
       modifier = Modifier
-          .fillMaxSize()
-          .clip(HedvigTheme.shapes.cornerLarge),
+        .fillMaxSize()
+        .clip(HedvigTheme.shapes.cornerLarge),
     )
   }
 }
@@ -1048,20 +1062,20 @@ private fun ChatAsyncImage(
       }
     },
     modifier = Modifier
-        .clip(HedvigTheme.shapes.cornerLarge)
-        .then(modifier)
-        .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
-        .then(
-            if (loadedImageIntrinsicSize.value == null) {
-                Modifier.hedvigPlaceholder(
-                    visible = true,
-                    shape = HedvigTheme.shapes.cornerLarge,
-                    highlight = PlaceholderHighlight.fade(),
-                )
-            } else {
-                Modifier
-            },
-        ),
+      .clip(HedvigTheme.shapes.cornerLarge)
+      .then(modifier)
+      .adjustSizeToImageRatio(getImageSize = { loadedImageIntrinsicSize.value })
+      .then(
+        if (loadedImageIntrinsicSize.value == null) {
+          Modifier.hedvigPlaceholder(
+            visible = true,
+            shape = HedvigTheme.shapes.cornerLarge,
+            highlight = PlaceholderHighlight.fade(),
+          )
+        } else {
+          Modifier
+        },
+      ),
   )
 }
 
@@ -1090,10 +1104,10 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
           contentDescription = null,
           tint = HedvigTheme.colorScheme.signalRedElement,
           modifier = Modifier
-              .size(16.dp)
-              .semantics {
-                  hideFromAccessibility()
-              },
+            .size(16.dp)
+            .semantics {
+              hideFromAccessibility()
+            },
         )
       }
     }
@@ -1101,8 +1115,8 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-          .align(chatMessage.messageHorizontalAlignment(chatItemIndex))
-          .padding(horizontal = 2.dp),
+        .align(chatMessage.messageHorizontalAlignment(chatItemIndex))
+        .padding(horizontal = 2.dp),
     ) {
       HedvigText(
         text = buildString {
@@ -1110,18 +1124,18 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
             append("HHHH.HH.HH")
           } else {
             if (failedToBeSent) {
-              append(stringResource(R.string.CHAT_FAILED_TO_SEND))
+              append(stringResource(Res.string.CHAT_FAILED_TO_SEND))
               append(" • ")
             }
             if (enableMessageSenderLabeling) {
               when (uiChatMessage.chatMessage.sender) {
                 AUTOMATION -> {
-                  append(stringResource(R.string.CHAT_SENDER_AUTOMATION))
+                  append(stringResource(Res.string.CHAT_SENDER_AUTOMATION))
                   append(" • ")
                 }
 
                 Sender.HEDVIG -> {
-                  append(stringResource(R.string.CHAT_SENDER_HEDVIG))
+                  append(stringResource(Res.string.CHAT_SENDER_HEDVIG))
                   append(" • ")
                 }
 
@@ -1131,28 +1145,28 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
             append(chatMessage.formattedDateTime(getLocale()))
             if (uiChatMessage.isLastDeliveredMessage) {
               append(" • ")
-              append(stringResource(R.string.CHAT_DELIVERED_MESSAGE))
+              append(stringResource(Res.string.CHAT_DELIVERED_MESSAGE))
             }
           }
         },
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier
-            .semantics {
-                hideFromAccessibility()
-            }
-            .weight(1f, false)
-            .then(
-                if (chatMessage == null) {
-                    Modifier.hedvigPlaceholder(
-                        visible = true,
-                        shape = HedvigTheme.shapes.cornerSmall,
-                        highlight = PlaceholderHighlight.shimmer(),
-                    )
-                } else {
-                    Modifier
-                },
-            ),
+          .semantics {
+            hideFromAccessibility()
+          }
+          .weight(1f, false)
+          .then(
+            if (chatMessage == null) {
+              Modifier.hedvigPlaceholder(
+                visible = true,
+                shape = HedvigTheme.shapes.cornerSmall,
+                highlight = PlaceholderHighlight.shimmer(),
+              )
+            } else {
+              Modifier
+            },
+          ),
       )
       if (uiChatMessage?.isLastDeliveredMessage == true) {
         Spacer(Modifier.width(4.dp))

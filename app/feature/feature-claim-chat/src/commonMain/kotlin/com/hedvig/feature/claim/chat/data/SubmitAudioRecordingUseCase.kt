@@ -18,18 +18,11 @@ internal class SubmitAudioRecordingUseCase(
   private val apolloClient: ApolloClient,
   private val uploadFileUseCase: UploadFileUseCase,
 ) {
-  suspend fun invoke(
-    stepId: StepId,
-    freeText: String,
-  ): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId, freeText: String): Either<ErrorMessage, ClaimIntent> {
     return either { invoke(stepId, null, freeText) }
   }
 
-  suspend fun invoke(
-    stepId: StepId,
-    commonFile: CommonFile,
-    uploadUrl: String,
-  ): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId, commonFile: CommonFile, uploadUrl: String): Either<ErrorMessage, ClaimIntent> {
     return either {
       val fileId = uploadFileUseCase.invoke(commonFile, uploadUrl).fileId
       logcat { "SubmitFileUploadUseCase uploaded file with Uri:${commonFile.fileName} got back fileId:$fileId" }
@@ -38,11 +31,7 @@ internal class SubmitAudioRecordingUseCase(
   }
 
   context(_: Raise<ErrorMessage>)
-  private suspend fun invoke(
-    stepId: StepId,
-    commonFileId: CommonFileId?,
-    freeText: String?,
-  ): ClaimIntent {
+  private suspend fun invoke(stepId: StepId, commonFileId: CommonFileId?, freeText: String?): ClaimIntent {
     return apolloClient
       .mutation(
         ClaimIntentSubmitAudioMutation(

@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -51,11 +50,21 @@ import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.Legac
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.NewConversation
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
 import com.hedvig.android.logger.logcat
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHAT_CONVERSATION_HISTORY_TITLE
+import hedvig.resources.CHAT_CONVERSATION_QUESTION_TITLE
+import hedvig.resources.CHAT_FAILED_TO_SEND
+import hedvig.resources.CHAT_FILE_SIZE_TOO_BIG_ERROR
+import hedvig.resources.CHAT_NEW_CONVERSATION_SUBTITLE
+import hedvig.resources.CHAT_NEW_CONVERSATION_TITLE
+import hedvig.resources.CHAT_TITLE
+import hedvig.resources.claim_status_detail_submitted
+import hedvig.resources.home_claim_card_pill_claim
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CbmChatDestination(
@@ -162,13 +171,13 @@ private fun ChatScreen(
               simpleVideoCache = simpleVideoCache,
               errorSnackbarState = if (uiState.showFileTooBigErrorToast) {
                 ErrorSnackbarState(
-                  messageText = stringResource(R.string.CHAT_FILE_SIZE_TOO_BIG_ERROR),
+                  messageText = stringResource(Res.string.CHAT_FILE_SIZE_TOO_BIG_ERROR),
                   error = true,
                   showedError = showedFileTooBigError,
                 )
               } else if (uiState.showFileFailedToBeSentToast) {
                 ErrorSnackbarState(
-                  messageText = stringResource(R.string.CHAT_FAILED_TO_SEND),
+                  messageText = stringResource(Res.string.CHAT_FAILED_TO_SEND),
                   error = true,
                   showedError = showedFileFailedToBeSentToast,
                 )
@@ -214,14 +223,14 @@ private fun ChatTopAppBar(
         is Loaded -> {
           when (val topAppBarText = uiState.topAppBarText) {
             Legacy -> HedvigText(
-              stringResource(R.string.CHAT_CONVERSATION_HISTORY_TITLE),
+              stringResource(Res.string.CHAT_CONVERSATION_HISTORY_TITLE),
               modifier = headingModifier,
             )
             NewConversation -> {
               Column(modifier = headingModifier) {
-                HedvigText(stringResource(R.string.CHAT_NEW_CONVERSATION_TITLE))
+                HedvigText(stringResource(Res.string.CHAT_NEW_CONVERSATION_TITLE))
                 HedvigText(
-                  stringResource(R.string.CHAT_NEW_CONVERSATION_SUBTITLE),
+                  stringResource(Res.string.CHAT_NEW_CONVERSATION_SUBTITLE),
                   color = HedvigTheme.colorScheme.textSecondary,
                 )
               }
@@ -229,7 +238,7 @@ private fun ChatTopAppBar(
 
             is ClaimConversation -> {
               Column(modifier = headingModifier) {
-                HedvigText(topAppBarText.claimType ?: stringResource(R.string.home_claim_card_pill_claim))
+                HedvigText(topAppBarText.claimType ?: stringResource(Res.string.home_claim_card_pill_claim))
                 val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
                 HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
               }
@@ -237,7 +246,7 @@ private fun ChatTopAppBar(
 
             is ServiceConversation -> {
               Column(modifier = headingModifier) {
-                HedvigText(stringResource(R.string.CHAT_CONVERSATION_QUESTION_TITLE))
+                HedvigText(stringResource(Res.string.CHAT_CONVERSATION_QUESTION_TITLE))
                 val subtitle = chatTopAppBarFormattedSubtitle(topAppBarText.createdAt)
                 HedvigText(subtitle, color = HedvigTheme.colorScheme.textSecondary)
               }
@@ -245,7 +254,7 @@ private fun ChatTopAppBar(
           }
         }
 
-        else -> HedvigText(stringResource(R.string.CHAT_TITLE), modifier = headingModifier)
+        else -> HedvigText(stringResource(Res.string.CHAT_TITLE), modifier = headingModifier)
       }
     }
   }
@@ -254,7 +263,7 @@ private fun ChatTopAppBar(
 @Composable
 private fun chatTopAppBarFormattedSubtitle(createdAt: Instant): String {
   val locale = getLocale()
-  val stringResource = stringResource(R.string.claim_status_detail_submitted)
+  val stringResource = stringResource(Res.string.claim_status_detail_submitted)
   return remember(locale, stringResource, createdAt) {
     val formattedDate = HedvigDateTimeFormatterDefaults
       .monthDateAndYear(locale)

@@ -11,13 +11,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import com.hedvig.android.composewebview.WebView
 import com.hedvig.android.composewebview.rememberWebViewState
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS
+import org.jetbrains.compose.resources.stringResource
 
 private const val licensesUrl = "file:///android_asset/open_source_licenses.html"
 
@@ -33,7 +34,7 @@ internal fun LicensesDestination(onBackPressed: () -> Unit) {
     Column {
       TopAppBarWithBack(
         onClick = onBackPressed,
-        title = stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS),
+        title = stringResource(Res.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS),
       )
       Column(
         Modifier

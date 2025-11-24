@@ -35,7 +35,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -64,7 +63,14 @@ import com.hedvig.android.design.system.hedvig.tokens.NavigationBarTokens
 import com.hedvig.android.design.system.hedvig.tokens.NavigationRailTokens
 import com.hedvig.android.design.system.hedvig.tokens.NavigationTokens
 import com.hedvig.android.navigation.core.TopLevelGraph
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TAB_HOME_TITLE
+import hedvig.resources.TAB_INSURANCES_TITLE
+import hedvig.resources.TAB_PAYMENTS_TITLE
+import hedvig.resources.TAB_PROFILE_TITLE
+import hedvig.resources.TAB_REFERRALS_TITLE
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NavigationBar(
@@ -288,13 +294,13 @@ private fun TopLevelGraph.unselectedIcon(): ImageVector {
   }
 }
 
-private fun TopLevelGraph.titleTextId(): Int {
+private fun TopLevelGraph.titleTextId(): StringResource {
   return when (this) {
-    TopLevelGraph.Home -> R.string.TAB_HOME_TITLE
-    TopLevelGraph.Insurances -> R.string.TAB_INSURANCES_TITLE
-    TopLevelGraph.Forever -> R.string.TAB_REFERRALS_TITLE
-    TopLevelGraph.Payments -> R.string.TAB_PAYMENTS_TITLE
-    TopLevelGraph.Profile -> R.string.TAB_PROFILE_TITLE
+    TopLevelGraph.Home -> Res.string.TAB_HOME_TITLE
+    TopLevelGraph.Insurances -> Res.string.TAB_INSURANCES_TITLE
+    TopLevelGraph.Forever -> Res.string.TAB_REFERRALS_TITLE
+    TopLevelGraph.Payments -> Res.string.TAB_PAYMENTS_TITLE
+    TopLevelGraph.Profile -> Res.string.TAB_PROFILE_TITLE
   }
 }
 

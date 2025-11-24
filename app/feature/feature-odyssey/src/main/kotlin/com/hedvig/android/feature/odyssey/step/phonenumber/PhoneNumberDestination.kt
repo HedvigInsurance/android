@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -34,7 +33,11 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.ERROR
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.LOADING
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_CONFIRM_NUMBER_TITLE
+import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
+import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PhoneNumberDestination(
@@ -84,7 +87,7 @@ private fun PhoneNumberScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.CLAIMS_CONFIRM_NUMBER_TITLE),
+      text = stringResource(Res.string.CLAIMS_CONFIRM_NUMBER_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
@@ -94,7 +97,7 @@ private fun PhoneNumberScreen(
       text = uiState.phoneNumber,
       onValueChange = updatePhoneNumber,
       textFieldSize = Medium,
-      labelText = stringResource(R.string.ODYSSEY_PHONE_NUMBER_LABEL),
+      labelText = stringResource(Res.string.ODYSSEY_PHONE_NUMBER_LABEL),
       enabled = uiState.status != LOADING,
       keyboardOptions = KeyboardOptions(
         autoCorrectEnabled = false,
@@ -108,7 +111,7 @@ private fun PhoneNumberScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
+      text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       onClick = submitPhoneNumber,
       isLoading = uiState.status == LOADING,
       enabled = uiState.canSubmit,

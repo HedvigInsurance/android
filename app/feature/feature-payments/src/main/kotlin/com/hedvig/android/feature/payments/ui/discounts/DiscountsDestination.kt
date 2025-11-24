@@ -23,8 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -56,7 +54,20 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.overview.data.ReferredByInfo
-import hedvig.resources.R
+import hedvig.resources.FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL
+import hedvig.resources.Res
+import hedvig.resources.FOREVER_REFERRAL_INVITED_YOU
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.PAYMENTS_DISCOUNTS_SECTION_TITLE
+import hedvig.resources.PAYMENTS_REFERRALS_INFO_DESCRIPTION
+import hedvig.resources.PAYMENTS_REFERRALS_INFO_TITLE
+import hedvig.resources.general_close_button
+import hedvig.resources.general_more_information_button
+import hedvig.resources.important_message_read_more
+import hedvig.resources.referrals_info_sheet_headline
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DiscountsDestination(
@@ -81,7 +92,7 @@ private fun DiscountsScreen(
   navigateToForever: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
+    topAppBarText = stringResource(Res.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
     navigateUp = navigateUp,
   ) {
     if (uiState.isLoadingPaymentOverView) {
@@ -90,7 +101,7 @@ private fun DiscountsScreen(
       HedvigErrorSection(
         modifier = Modifier.weight(1f),
         onButtonClick = retry,
-        buttonText = stringResource(R.string.GENERAL_RETRY),
+        buttonText = stringResource(Res.string.GENERAL_RETRY),
       )
     } else {
       Column(
@@ -109,10 +120,10 @@ private fun DiscountsScreen(
           Spacer(modifier = Modifier.height(16.dp))
           Spacer(Modifier.weight(1f))
           HedvigNotificationCard(
-            message = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
+            message = stringResource(Res.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
             priority = NotificationDefaults.NotificationPriority.Campaign,
             style = NotificationDefaults.InfoCardStyle.Button(
-              buttonText = stringResource(R.string.important_message_read_more),
+              buttonText = stringResource(Res.string.important_message_read_more),
               onButtonClick = navigateToForever,
             ),
           )
@@ -135,7 +146,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
       spaceBetween = 8.dp,
       startSlot = {
         HedvigText(
-          stringResource(R.string.PAYMENTS_REFERRALS_INFO_TITLE),
+          stringResource(Res.string.PAYMENTS_REFERRALS_INFO_TITLE),
           modifier = Modifier.wrapContentSize(Alignment.CenterStart),
         )
       },
@@ -143,7 +154,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
         Icon(
           imageVector = HedvigIcons.InfoFilled,
           tint = HedvigTheme.colorScheme.fillSecondary,
-          contentDescription = stringResource(R.string.general_more_information_button),
+          contentDescription = stringResource(Res.string.general_more_information_button),
           modifier = Modifier
             .wrapContentSize(Alignment.CenterEnd)
             .size(24.dp)
@@ -172,7 +183,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
             }
             HedvigText(
               stringResource(
-                R.string.FOREVER_REFERRAL_INVITED_YOU,
+                Res.string.FOREVER_REFERRAL_INVITED_YOU,
                 foreverInformation.referredBy.name,
               ),
               color = HedvigTheme.colorScheme.textSecondaryTranslucent,
@@ -187,7 +198,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
           ) {
             HedvigText(
               stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 "-${foreverInformation.referredBy.activeDiscount}",
               ),
               color = HedvigTheme.colorScheme.textSecondaryTranslucent,
@@ -215,7 +226,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
           }
           HedvigText(
             pluralStringResource(
-              R.plurals.FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL,
+              Res.plurals.FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL,
               foreverInformation.numberOfReferrals,
               foreverInformation.numberOfReferrals,
             ),
@@ -231,7 +242,7 @@ private fun ForeverSection(foreverInformation: ForeverInformation, modifier: Mod
         ) {
           HedvigText(
             stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               "-${foreverInformation.currentMonthlyDiscountFromReferrals}",
             ),
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
@@ -254,14 +265,14 @@ internal fun ForeverExplanationBottomSheet(foreverInfoBottomSheetState: HedvigBo
 @Suppress("UnusedReceiverParameter")
 @Composable
 private fun ColumnScope.ForeverExplanationBottomSheetContent(onDismiss: () -> Unit) {
-  HedvigText(text = stringResource(R.string.referrals_info_sheet_headline))
+  HedvigText(text = stringResource(Res.string.referrals_info_sheet_headline))
   HedvigText(
-    text = stringResource(R.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
+    text = stringResource(Res.string.PAYMENTS_REFERRALS_INFO_DESCRIPTION),
     color = HedvigTheme.colorScheme.textSecondary,
   )
   Spacer(Modifier.height(24.dp))
   HedvigTextButton(
-    text = stringResource(id = R.string.general_close_button),
+    text = stringResource(Res.string.general_close_button),
     enabled = true,
     modifier = Modifier.fillMaxWidth(),
     onClick = onDismiss,

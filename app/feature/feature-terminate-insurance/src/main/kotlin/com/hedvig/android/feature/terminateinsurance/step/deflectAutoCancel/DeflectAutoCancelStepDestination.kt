@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
@@ -17,7 +16,10 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.navigation.AutoCancelDeflectStepParameters
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.DASHBOARD_OPEN_CHAT
+import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectAutoCancelStepDestination(
@@ -68,7 +70,7 @@ private fun DeflectAutoCancelScreen(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      stringResource(id = R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+      stringResource(Res.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
       enabled = true,
       modifier = Modifier
         .fillMaxWidth()
@@ -77,7 +79,7 @@ private fun DeflectAutoCancelScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+      text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),

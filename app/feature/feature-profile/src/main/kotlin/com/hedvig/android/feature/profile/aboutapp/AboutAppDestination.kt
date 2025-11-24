@@ -20,7 +20,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,7 +38,21 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.withHedvigLink
-import hedvig.resources.R
+import hedvig.resources.HC_CHAT_BUTTON
+import hedvig.resources.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS
+import hedvig.resources.PROFILE_ABOUT_APP_MEMBER_ID
+import hedvig.resources.PROFILE_ABOUT_APP_TITLE
+import hedvig.resources.PROFILE_ABOUT_APP_VERSION
+import hedvig.resources.Res
+import hedvig.resources.app_info_submit_bug_button
+import hedvig.resources.app_info_submit_bug_continue
+import hedvig.resources.app_info_submit_bug_go_back
+import hedvig.resources.app_info_submit_bug_prefilled_letter_body
+import hedvig.resources.app_info_submit_bug_prefilled_letter_subject
+import hedvig.resources.app_info_submit_bug_warning_with_chat_link_1
+import hedvig.resources.app_info_submit_bug_warning_with_chat_link_2
+import hedvig.resources.app_info_submit_bug_warning_with_chat_link_3
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AboutAppDestination(
@@ -72,7 +85,7 @@ private fun AboutAppScreen(
   navigateToNewConversation: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(R.string.PROFILE_ABOUT_APP_TITLE),
+    topAppBarText = stringResource(Res.string.PROFILE_ABOUT_APP_TITLE),
     navigateUp = onBackPressed,
     modifier = Modifier.clearFocusOnTap(),
   ) {
@@ -80,8 +93,8 @@ private fun AboutAppScreen(
       AboutAppUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgressDebounced(
           Modifier
-            .weight(1f)
-            .wrapContentHeight(),
+              .weight(1f)
+              .wrapContentHeight(),
         )
       }
 
@@ -127,10 +140,10 @@ private fun ColumnScope.AboutAppContent(
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
+          .fillMaxWidth()
+          .padding(16.dp),
       startSlot = {
-        HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_MEMBER_ID))
+        HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_MEMBER_ID))
       },
       endSlot = {
         HedvigText(
@@ -143,10 +156,10 @@ private fun ColumnScope.AboutAppContent(
   }
   HorizontalItemsWithMaximumSpaceTaken(
     modifier = Modifier
-      .fillMaxWidth()
-      .padding(16.dp),
+        .fillMaxWidth()
+        .padding(16.dp),
     startSlot = {
-      HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_VERSION))
+      HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_VERSION))
     },
     endSlot = {
       HedvigText(
@@ -169,22 +182,22 @@ private fun ColumnScope.AboutAppContent(
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
-      .fillMaxWidth()
-      .clickable(onClick = showOpenSourceLicenses)
-      .padding(16.dp),
+        .fillMaxWidth()
+        .clickable(onClick = showOpenSourceLicenses)
+        .padding(16.dp),
   ) {
-    HedvigText(stringResource(R.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
+    HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
   }
   Spacer(Modifier.height(16.dp))
   Spacer(Modifier.weight(1f))
   HedvigButton(
-    text = stringResource(R.string.app_info_submit_bug_button),
+    text = stringResource(Res.string.app_info_submit_bug_button),
     enabled = true,
     buttonStyle = Secondary,
     onClick = { showSubmitBugWarning = true },
     modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(16.dp))
 }
@@ -198,9 +211,9 @@ private fun SubmitBugWarningDialog(
   onDismissRequest: () -> Unit,
 ) {
   val localContext = LocalContext.current
-  val letterSubject = stringResource(R.string.app_info_submit_bug_prefilled_letter_subject)
+  val letterSubject = stringResource(Res.string.app_info_submit_bug_prefilled_letter_subject)
   val letterBody = String.format(
-    stringResource(R.string.app_info_submit_bug_prefilled_letter_body),
+    stringResource(Res.string.app_info_submit_bug_prefilled_letter_body),
     memberId,
     deviceId,
     appVersionName,
@@ -208,16 +221,16 @@ private fun SubmitBugWarningDialog(
   )
   HedvigAlertDialog(
     title = buildAnnotatedString {
-      append(stringResource(R.string.app_info_submit_bug_warning_with_chat_link_1))
+      append(stringResource(Res.string.app_info_submit_bug_warning_with_chat_link_1))
       append(" ")
       withHedvigLink(
-        tag = stringResource(R.string.HC_CHAT_BUTTON),
+        tag = stringResource(Res.string.HC_CHAT_BUTTON),
         onClick = navigateToNewConversation,
       ) {
-        append(stringResource(R.string.app_info_submit_bug_warning_with_chat_link_2))
+        append(stringResource(Res.string.app_info_submit_bug_warning_with_chat_link_2))
       }
       append(" ")
-      append(stringResource(R.string.app_info_submit_bug_warning_with_chat_link_3))
+      append(stringResource(Res.string.app_info_submit_bug_warning_with_chat_link_3))
     },
     text = null,
     onDismissRequest = onDismissRequest,
@@ -229,8 +242,8 @@ private fun SubmitBugWarningDialog(
         letterBody,
       )
     },
-    confirmButtonLabel = stringResource(R.string.app_info_submit_bug_continue),
-    dismissButtonLabel = stringResource(R.string.app_info_submit_bug_go_back),
+    confirmButtonLabel = stringResource(Res.string.app_info_submit_bug_continue),
+    dismissButtonLabel = stringResource(Res.string.app_info_submit_bug_go_back),
   )
 }
 

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -32,7 +31,12 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
+import hedvig.resources.general_close_button
+import hedvig.resources.insurance_details_update_details_sheet_title
+import hedvig.resources.open_chat
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun UpcomingChangesBottomSheetContent(
@@ -53,7 +57,7 @@ internal fun UpcomingChangesBottomSheetContent(
       priceInfoBottomSheetState,
     )
     HedvigText(
-      text = stringResource(id = R.string.insurance_details_update_details_sheet_title),
+      text = stringResource(Res.string.insurance_details_update_details_sheet_title),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -78,14 +82,14 @@ internal fun UpcomingChangesBottomSheetContent(
       modifier = Modifier.fillMaxWidth(),
       style =
         Button(
-          stringResource(id = R.string.open_chat),
+          stringResource(Res.string.open_chat),
           onNavigateToNewConversation,
         ),
     )
     Spacer(modifier = Modifier.height(16.dp))
     if (certificateUrl != null) {
       HedvigButton(
-        text = stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+        text = stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
         enabled = true,
         onClick = { onOpenUrlClick(certificateUrl) },
         modifier = Modifier.fillMaxWidth(),
@@ -93,7 +97,7 @@ internal fun UpcomingChangesBottomSheetContent(
     }
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       buttonSize = Large,
       onClick = onDismiss,
       modifier = Modifier.fillMaxWidth(),

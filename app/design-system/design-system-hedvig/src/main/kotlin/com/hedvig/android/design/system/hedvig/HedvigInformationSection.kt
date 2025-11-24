@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.ALERT_OK
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HedvigInformationSection(
@@ -20,7 +21,7 @@ fun HedvigInformationSection(
   modifier: Modifier = Modifier,
   subTitle: String? = null,
   onButtonClick: (() -> Unit)? = null,
-  buttonText: String = stringResource(id = R.string.ALERT_OK),
+  buttonText: String = stringResource(Res.string.ALERT_OK),
   windowInsets: WindowInsets = WindowInsets.safeDrawing,
 ) {
   Column(

@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -30,8 +29,18 @@ import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CONTRACT_CHANGE_INFORMATION_TITLE
+import hedvig.resources.CONTRACT_EDIT_COINSURED
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
+import hedvig.resources.insurance_details_change_coverage
 import kotlin.collections.buildList
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditInsuranceBottomSheetContent(
@@ -50,8 +59,8 @@ internal fun EditInsuranceBottomSheetContent(
       add(
         RadioOption(
           RadioOptionId("0"),
-          stringResource(R.string.insurance_details_change_coverage),
-          stringResource(R.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
+          stringResource(Res.string.insurance_details_change_coverage),
+          stringResource(Res.string.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE),
         ),
       )
     }
@@ -59,8 +68,8 @@ internal fun EditInsuranceBottomSheetContent(
       add(
         RadioOption(
           RadioOptionId("1"),
-          stringResource(R.string.CONTRACT_EDIT_COINSURED),
-          stringResource(R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
+          stringResource(Res.string.CONTRACT_EDIT_COINSURED),
+          stringResource(Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
         ),
       )
     }
@@ -68,8 +77,8 @@ internal fun EditInsuranceBottomSheetContent(
       add(
         RadioOption(
           RadioOptionId("2"),
-          stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE),
-          stringResource(R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE),
+          stringResource(Res.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE),
+          stringResource(Res.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE),
         ),
       )
     }
@@ -78,7 +87,7 @@ internal fun EditInsuranceBottomSheetContent(
     modifier = modifier,
   ) {
     HedvigText(
-      text = stringResource(id = R.string.CONTRACT_CHANGE_INFORMATION_TITLE),
+      text = stringResource(Res.string.CONTRACT_CHANGE_INFORMATION_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -93,7 +102,7 @@ internal fun EditInsuranceBottomSheetContent(
     )
     Spacer(modifier = Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(id = R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       enabled = selectedItemId != null,
       onClick = dropUnlessResumed {
         when (selectedItemId) {
@@ -107,7 +116,7 @@ internal fun EditInsuranceBottomSheetContent(
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       buttonSize = Large,
       onClick = onDismiss,
       modifier = Modifier.fillMaxWidth(),

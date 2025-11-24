@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -49,7 +48,17 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.PHONE_NUMBER_ROW_TITLE
+import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
+import hedvig.resources.PROFILE_MY_INFO_REVIEW_INFO_CARD
+import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
+import hedvig.resources.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
+import hedvig.resources.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
+import hedvig.resources.general_save_button
+import hedvig.resources.something_went_wrong
+import hedvig.resources.travel_certificate_travel_certificate_ready
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ContactInfoDestination(viewModel: ContactInfoViewModel, navigateUp: () -> Unit) {
@@ -79,7 +88,7 @@ private fun ContactInfoScreen(
 ) {
   val focusManager = LocalFocusManager.current
   HedvigScaffold(
-    topAppBarText = stringResource(R.string.PROFILE_MY_INFO_ROW_TITLE),
+    topAppBarText = stringResource(Res.string.PROFILE_MY_INFO_ROW_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier
       .fillMaxSize()
@@ -125,7 +134,7 @@ private fun ColumnScope.SuccessState(
   Box(modifier = Modifier.requiredHeight(0.dp).wrapContentHeight(Alignment.Top, unbounded = true).zIndex(1f)) {
     HedvigSnackbar(
       snackbarText = when (uiState.errorSnackBarText) {
-        ErrorSnackBarText.General -> stringResource(R.string.something_went_wrong)
+        ErrorSnackBarText.General -> stringResource(Res.string.something_went_wrong)
         is ErrorSnackBarText.WithMessage -> uiState.errorSnackBarText.message
         null -> "Test message"
       },
@@ -135,7 +144,7 @@ private fun ColumnScope.SuccessState(
       modifier = Modifier.padding(16.dp),
     )
     HedvigSnackbar(
-      snackbarText = stringResource(R.string.travel_certificate_travel_certificate_ready), // todo - separate key
+      snackbarText = stringResource(Res.string.travel_certificate_travel_certificate_ready), // todo - separate key
       priority = NotificationPriority.Info,
       showSnackbar = uiState.showSuccessSnackBar,
       showedSnackbar = showedSnackBar,
@@ -145,7 +154,7 @@ private fun ColumnScope.SuccessState(
   Spacer(Modifier.weight(1f))
   Spacer(Modifier.height(16.dp))
   HedvigNotificationCard(
-    message = stringResource(R.string.PROFILE_MY_INFO_REVIEW_INFO_CARD),
+    message = stringResource(Res.string.PROFILE_MY_INFO_REVIEW_INFO_CARD),
     priority = NotificationDefaults.NotificationPriority.Info,
     modifier = Modifier.padding(horizontal = 16.dp),
   )
@@ -153,8 +162,8 @@ private fun ColumnScope.SuccessState(
   Column {
     ContactInfoTextField(
       textFieldState = uiState.emailState,
-      labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
-      errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL).takeIf {
+      labelText = stringResource(Res.string.PROFILE_MY_INFO_EMAIL_LABEL),
+      errorText = stringResource(Res.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL).takeIf {
         uiState.emailHasError
       },
       keyboardOptions = KeyboardOptions(
@@ -170,8 +179,8 @@ private fun ColumnScope.SuccessState(
     Spacer(Modifier.height(4.dp))
     ContactInfoTextField(
       textFieldState = uiState.phoneNumberState,
-      labelText = stringResource(R.string.PHONE_NUMBER_ROW_TITLE),
-      errorText = stringResource(R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
+      labelText = stringResource(Res.string.PHONE_NUMBER_ROW_TITLE),
+      errorText = stringResource(Res.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER).takeIf {
         uiState.phoneNumberHasError
       },
       keyboardOptions = KeyboardOptions(
@@ -184,7 +193,7 @@ private fun ColumnScope.SuccessState(
   }
   Spacer(Modifier.height(16.dp))
   HedvigButton(
-    text = stringResource(R.string.general_save_button),
+    text = stringResource(Res.string.general_save_button),
     enabled = uiState.canSubmit || uiState.submittingUpdatedInfo,
     onClick = {
       focusManager.clearFocus()

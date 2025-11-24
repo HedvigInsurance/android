@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,7 +32,33 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_TITLE
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_INFO_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL
+import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE
+import hedvig.resources.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL
+import hedvig.resources.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE
+import hedvig.resources.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EmergencyScreen(
@@ -45,7 +70,7 @@ fun EmergencyScreen(
   modifier: Modifier = Modifier,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE),
+    topAppBarText = stringResource(Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE),
     navigateUp = navigateUp,
     modifier = modifier,
   ) {
@@ -54,7 +79,7 @@ fun EmergencyScreen(
     ) {
       Spacer(Modifier.height(8.dp))
       HedvigNotificationCard(
-        message = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_INFO_LABEL),
+        message = stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_INFO_LABEL),
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
         style = NotificationDefaults.InfoCardStyle.Default,
         priority = NotificationDefaults.NotificationPriority.Attention,
@@ -82,14 +107,14 @@ fun EmergencyScreen(
             )
             Spacer(Modifier.height(24.dp))
             HedvigText(
-              text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_TITLE),
+              text = stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_TITLE),
               textAlign = TextAlign.Center,
               style = HedvigTheme.typography.bodySmall,
               modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(2.dp))
             HedvigText(
-              text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_LABEL),
+              text = stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_LABEL),
               textAlign = TextAlign.Center,
               color = HedvigTheme.colorScheme.textSecondary,
               style = HedvigTheme.typography.bodySmall.copy(
@@ -103,7 +128,7 @@ fun EmergencyScreen(
                 buttonSize = ButtonDefaults.ButtonSize.Medium,
                 enabled = true,
                 text = stringResource(
-                  R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL,
+                  Res.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL,
                   emergencyUrl,
                 ),
                 onClick = {
@@ -124,7 +149,7 @@ fun EmergencyScreen(
                 buttonStyle = style,
                 buttonSize = ButtonDefaults.ButtonSize.Medium,
                 text = stringResource(
-                  R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
+                  Res.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
                   emergencyNumber,
                 ),
                 enabled = true,
@@ -147,7 +172,7 @@ fun EmergencyScreen(
             }
             Spacer(Modifier.height(16.dp))
             HedvigText(
-              text = stringResource(R.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
+              text = stringResource(Res.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE),
               textAlign = TextAlign.Center,
               modifier = Modifier.fillMaxWidth(),
               color = HedvigTheme.colorScheme.textSecondary,
@@ -159,12 +184,12 @@ fun EmergencyScreen(
       }
       Spacer(Modifier.height(24.dp))
       HedvigText(
-        text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE),
+        text = stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE),
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       )
       Spacer(Modifier.height(8.dp))
       HedvigText(
-        text = stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL),
+        text = stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL),
         modifier = Modifier.padding(horizontal = 16.dp),
         style = HedvigTheme.typography.bodySmall,
         color = HedvigTheme.colorScheme.textSecondary,
@@ -181,22 +206,22 @@ fun EmergencyScreen(
 @Composable
 private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   val faqList = listOf(
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL),
-    stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE) to
-      stringResource(R.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL),
+    stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE) to
+      stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL),
   )
   Column(modifier) {
     AccordionList(mapToAccordionData(faqList))

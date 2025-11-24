@@ -32,13 +32,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -88,9 +88,24 @@ import com.hedvig.android.shared.foreverui.ui.data.ReferralState.ACTIVE
 import com.hedvig.android.shared.foreverui.ui.data.ReferredByInfo
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Loading
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Success
-import hedvig.resources.R
+import hedvig.resources.FOREVER_TAB_MONTHLY_DISCOUNT
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
+import hedvig.resources.REFERRALS_SHARE_SHEET_TITLE
+import hedvig.resources.REFERRAL_SMS_MESSAGE
+import hedvig.resources.Res
+import hedvig.resources.TAB_REFERRALS_TITLE
+import hedvig.resources.TALKBACK_YOUR_REFERRAL_DISCOUNT
+import hedvig.resources.referrals_change_change_code
+import hedvig.resources.referrals_change_code_changed
+import hedvig.resources.referrals_empty_body
+import hedvig.resources.referrals_empty_code_headline
+import hedvig.resources.referrals_empty_share_code_button
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ForeverDestination(
@@ -100,9 +115,8 @@ fun ForeverDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
-  LocalConfiguration.current
-  val resources = context.resources
-  val shareSheetTitle = stringResource(R.string.REFERRALS_SHARE_SHEET_TITLE)
+  val shareSheetTitle = stringResource(Res.string.REFERRALS_SHARE_SHEET_TITLE)
+  val coroutineScope = rememberCoroutineScope()
   ForeverScreen(
     uiState = uiState,
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
@@ -112,22 +126,25 @@ fun ForeverDestination(
       viewModel.emit(ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage)
     },
     onShareCodeClick = { code: String, incentive: UiMoney ->
-      context.showShareSheet(shareSheetTitle) { intent ->
-        intent.putExtra(
-          Intent.EXTRA_TEXT,
-          resources.getString(
-            R.string.REFERRAL_SMS_MESSAGE,
-            incentive.toString(),
-            buildString {
-              append(hedvigBuildConstants.urlBaseWeb)
-              append("/")
-              append(languageService.getLanguage().webPath())
-              append("/forever/")
-              append(Uri.encode(code))
-            },
-          ),
+      coroutineScope.launch {
+        val string = getString(
+          Res.string.REFERRAL_SMS_MESSAGE,
+          incentive.toString(),
+          buildString {
+            append(hedvigBuildConstants.urlBaseWeb)
+            append("/")
+            append(languageService.getLanguage().webPath())
+            append("/forever/")
+            append(Uri.encode(code))
+          },
         )
-        intent.type = "text/plain"
+        context.showShareSheet(shareSheetTitle) { intent ->
+          intent.putExtra(
+            Intent.EXTRA_TEXT,
+            string,
+          )
+          intent.type = "text/plain"
+        }
       }
     },
   )
@@ -206,7 +223,7 @@ internal fun LoadingForeverContent() {
         },
     ) {
       HedvigText(
-        text = stringResource(R.string.TAB_REFERRALS_TITLE),
+        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
         style = HedvigTheme.typography.headlineSmall,
       )
     }
@@ -284,7 +301,7 @@ internal fun ForeverContent(
       modifier = Modifier.align(Alignment.TopCenter),
     )
     HedvigSnackbar(
-      snackbarText = stringResource(R.string.referrals_change_code_changed),
+      snackbarText = stringResource(Res.string.referrals_change_code_changed),
       showSnackbar = uiState.showReferralCodeSuccessfullyChangedMessage,
       showedSnackbar = showedReferralCodeSuccessfulChangeMessage,
       priority = NotificationPriority.Info,
@@ -324,7 +341,7 @@ private fun ForeverScrollableContent(
         },
     ) {
       HedvigText(
-        text = stringResource(R.string.TAB_REFERRALS_TITLE),
+        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
         style = HedvigTheme.typography.headlineSmall,
       )
       if (uiState.foreverData?.incentive != null) {
@@ -334,7 +351,7 @@ private fun ForeverScrollableContent(
         ) {
           Icon(
             imageVector = HedvigIcons.InfoOutline,
-            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
             modifier = Modifier.size(24.dp),
           )
         }
@@ -342,7 +359,7 @@ private fun ForeverScrollableContent(
     }
     val discount = uiState.foreverData?.currentDiscount
     if (discount != null) {
-      val yourDiscountDescription = stringResource(R.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
+      val yourDiscountDescription = stringResource(Res.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
       val discountUiMoneyDescription = discount.getDescription()
       Spacer(Modifier.height(16.dp))
       HedvigText(
@@ -372,7 +389,7 @@ private fun ForeverScrollableContent(
     if (noReferrals && uiState.foreverData.incentive != null) {
       HedvigText(
         text = stringResource(
-          id = R.string.referrals_empty_body,
+          Res.string.referrals_empty_body,
           uiState.foreverData.incentive.toString(),
         ),
         style = HedvigTheme.typography.bodySmall.copy(
@@ -386,7 +403,7 @@ private fun ForeverScrollableContent(
       )
     } else {
       HedvigText(
-        text = stringResource(id = R.string.FOREVER_TAB_MONTHLY_DISCOUNT),
+        text = stringResource(Res.string.FOREVER_TAB_MONTHLY_DISCOUNT),
         textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()
@@ -396,7 +413,7 @@ private fun ForeverScrollableContent(
         ?: UiMoney(0.0, uiState.foreverData?.currentGrossCost?.currencyCode ?: SEK)
       val discountText =
         "-" + stringResource(
-          id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
           discountValue.toString(),
         )
       HedvigText(
@@ -417,7 +434,7 @@ private fun ForeverScrollableContent(
     if (uiState.foreverData?.incentive != null && uiState.foreverData.campaignCode != null) {
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(R.string.referrals_empty_share_code_button),
+        text = stringResource(Res.string.referrals_empty_share_code_button),
         enabled = true,
         onClick = {
           onShareCodeClick(
@@ -431,7 +448,7 @@ private fun ForeverScrollableContent(
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        text = stringResource(id = R.string.referrals_change_change_code),
+        text = stringResource(Res.string.referrals_change_change_code),
         onClick = { referralCodeBottomSheetState.show(uiState.foreverData.campaignCode) },
         buttonSize = Large,
         modifier = Modifier
@@ -471,7 +488,7 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
     ) {
       Column {
         HedvigText(
-          text = stringResource(id = R.string.referrals_empty_code_headline),
+          text = stringResource(Res.string.referrals_empty_code_headline),
           style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
         )
         HedvigText(

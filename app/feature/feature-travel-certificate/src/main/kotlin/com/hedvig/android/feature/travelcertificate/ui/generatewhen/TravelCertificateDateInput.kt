@@ -15,7 +15,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -41,9 +40,14 @@ import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
+import hedvig.resources.general_continue_button
+import hedvig.resources.travel_certificate_start_date_title
+import hedvig.resources.travel_certificate_when_is_your_trip
 import java.util.Locale
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelCertificateDateInputDestination(
@@ -116,7 +120,7 @@ private fun TravelCertificateDateInput(
       ) {
         Spacer(Modifier.height(8.dp))
         FlowHeading(
-          stringResource(R.string.travel_certificate_when_is_your_trip),
+          stringResource(Res.string.travel_certificate_when_is_your_trip),
           null,
           modifier = Modifier
             .fillMaxWidth()
@@ -137,11 +141,11 @@ private fun TravelCertificateDateInput(
             onEmailChanged(it)
           },
           modifier = Modifier.padding(horizontal = 16.dp),
-          errorText = uiState.errorMessageRes?.let { stringResource(id = it) },
+          errorText = uiState.errorMessageRes?.let { stringResource(it) },
         )
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          stringResource(id = R.string.general_continue_button),
+          stringResource(Res.string.general_continue_button),
           onClick = submitInput,
           enabled = true,
           modifier = Modifier
@@ -172,7 +176,7 @@ private fun EmailTextField(
       ErrorState.NoError
     },
     textFieldSize = Medium,
-    labelText = stringResource(R.string.PROFILE_MY_INFO_EMAIL_LABEL),
+    labelText = stringResource(Res.string.PROFILE_MY_INFO_EMAIL_LABEL),
     modifier = modifier.fillMaxWidth(),
   )
 }
@@ -201,7 +205,7 @@ private fun MovingDateButton(
       onValueChange = {},
       readOnly = true,
       enabled = true,
-      labelText = stringResource(R.string.travel_certificate_start_date_title),
+      labelText = stringResource(Res.string.travel_certificate_start_date_title),
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       trailingContent = {},
       modifier = Modifier.clickable(onClick = onClick),

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -29,7 +28,10 @@ import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.DiscountedContract
 import com.hedvig.android.feature.payments.data.DiscountsDetails
 import com.hedvig.android.feature.payments.discountsPreviewData
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.PAYMENTS_REFERRAL_DISCOUNT
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DiscountRows(
@@ -96,7 +98,7 @@ internal fun DiscountRow(
             horizontalAlignment = Alignment.Start,
           ) {
             val descriptionText = if (discount.isReferral) {
-              stringResource(R.string.PAYMENTS_REFERRAL_DISCOUNT)
+              stringResource(Res.string.PAYMENTS_REFERRAL_DISCOUNT)
             } else {
               discount.description
             }
@@ -123,7 +125,7 @@ internal fun DiscountRow(
             discount.amount?.let { discountAmount ->
               HedvigText(
                 text = stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   "$discountAmount",
                 ),
                 color = if (discountIsExpired) {

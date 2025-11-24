@@ -10,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -25,8 +24,13 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CERTIFICATES_DOWNLOAD
+import hedvig.resources.CERTIFICATES_EMAIL_SENT
+import hedvig.resources.INSURANCE_EVIDENCE_EMAIL_SENT_DESCRIPTION
+import hedvig.resources.general_close_button
 import java.io.File
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InsuranceEvidenceOverviewDestination(
@@ -87,14 +91,14 @@ internal fun InsuranceEvidenceOverview(
         Spacer(Modifier.height(16.dp))
         Spacer(Modifier.weight(1f))
         EmptyState(
-          text = stringResource(R.string.CERTIFICATES_EMAIL_SENT),
-          description = stringResource(R.string.INSURANCE_EVIDENCE_EMAIL_SENT_DESCRIPTION),
+          text = stringResource(Res.string.CERTIFICATES_EMAIL_SENT),
+          description = stringResource(Res.string.INSURANCE_EVIDENCE_EMAIL_SENT_DESCRIPTION),
           iconStyle = SUCCESS,
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          text = stringResource(R.string.CERTIFICATES_DOWNLOAD),
+          text = stringResource(Res.string.CERTIFICATES_DOWNLOAD),
           onClick = {
             if (uiState.insuranceEvidenceUri != null) {
               onShareInsuranceEvidence(uiState.insuranceEvidenceUri)
@@ -110,7 +114,7 @@ internal fun InsuranceEvidenceOverview(
         )
         Spacer(modifier = Modifier.height(8.dp))
         HedvigTextButton(
-          text = stringResource(id = R.string.general_close_button),
+          text = stringResource(Res.string.general_close_button),
           onClick = navigateUp,
           modifier = Modifier
             .fillMaxWidth()

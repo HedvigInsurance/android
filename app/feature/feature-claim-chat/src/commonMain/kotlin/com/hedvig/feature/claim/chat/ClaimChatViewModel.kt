@@ -50,13 +50,17 @@ internal sealed interface ClaimChatEvent {
   }
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
+
   data class Form(val id: StepId, val formInputs: Map<FieldId, List<String?>>) : ClaimChatEvent
+
   data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
   data object Initializing : ClaimChatUiState
+
   data object FailedToStart : ClaimChatUiState
+
   data class ClaimChat(
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
@@ -76,20 +80,20 @@ internal class ClaimChatViewModel(
   submitSelectUseCase: SubmitSelectUseCase,
   submitSummaryUseCase: SubmitSummaryUseCase,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
-  ClaimChatUiState.Initializing,
-  ClaimChatPresenter(
-    sourceMessageId,
-    developmentFlow,
-    startClaimIntentUseCase,
-    getClaimIntentUseCase,
-    submitTaskUseCase,
-    submitAudioRecordingUseCase,
-    submitFileUploadUseCase,
-    submitFormUseCase,
-    submitSelectUseCase,
-    submitSummaryUseCase,
-  ),
-)
+    ClaimChatUiState.Initializing,
+    ClaimChatPresenter(
+      sourceMessageId,
+      developmentFlow,
+      startClaimIntentUseCase,
+      getClaimIntentUseCase,
+      submitTaskUseCase,
+      submitAudioRecordingUseCase,
+      submitFileUploadUseCase,
+      submitFormUseCase,
+      submitSelectUseCase,
+      submitSummaryUseCase,
+    ),
+  )
 
 internal class ClaimChatPresenter(
   private val sourceMessageId: String?,
@@ -104,9 +108,7 @@ internal class ClaimChatPresenter(
   private val submitSummaryUseCase: SubmitSummaryUseCase,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
-  override fun MoleculePresenterScope<ClaimChatEvent>.present(
-    lastState: ClaimChatUiState,
-  ): ClaimChatUiState {
+  override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
     var initializing by remember { mutableStateOf(lastState !is ClaimChatUiState.ClaimChat) }
     var failedToStart by remember { mutableStateOf(lastState is ClaimChatUiState.FailedToStart) }
     val steps = remember {
@@ -134,7 +136,7 @@ internal class ClaimChatPresenter(
                 failedToStart = false
                 claimIntentId = claimIntent.id
                 steps.clear()
-                when(val next = claimIntent.next) {
+                when (val next = claimIntent.next) {
                   is ClaimIntent.Next.Outcome -> setOutcome(next.claimIntentOutcome)
                   is ClaimIntent.Next.Step -> steps.add(next.claimIntentStep)
                 }
@@ -300,8 +302,12 @@ private fun SubmitCompleteTaskEffect(
   }
 }
 
-private fun handleNext(steps: SnapshotStateList<ClaimIntentStep>, setOutcome: (outcome: ClaimIntentOutcome) -> Unit, next: ClaimIntent.Next) {
-  when(next) {
+private fun handleNext(
+  steps: SnapshotStateList<ClaimIntentStep>,
+  setOutcome: (outcome: ClaimIntentOutcome) -> Unit,
+  next: ClaimIntent.Next,
+) {
+  when (next) {
     is ClaimIntent.Next.Outcome -> {
       setOutcome(next.claimIntentOutcome)
     }
@@ -310,6 +316,7 @@ private fun handleNext(steps: SnapshotStateList<ClaimIntentStep>, setOutcome: (o
     }
   }
 }
+
 private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
   Snapshot.withMutableSnapshot {
     removeLastIf { it.stepContent is StepContent.Task }

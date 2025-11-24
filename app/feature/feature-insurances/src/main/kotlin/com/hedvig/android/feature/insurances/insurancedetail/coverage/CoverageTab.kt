@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +50,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.insurances.data.Addon
+import org.jetbrains.compose.resources.stringResource
+import hedvig.resources.general_close_button
 
 @Composable
 internal fun CoverageTab(
@@ -70,7 +71,7 @@ internal fun CoverageTab(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(hedvig.resources.R.string.general_close_button),
+      text = stringResource(hedvig.resources.Res.string.general_close_button),
       buttonSize = Large,
       onClick = { bottomSheetState.dismiss() },
       modifier = Modifier.fillMaxWidth(),

@@ -44,7 +44,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -70,12 +69,17 @@ import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDefaultToggleToke
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeDetailedToggleTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.ToggleIconSizeTokens
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_TURN_OFF
+import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_TURN_ON
+import hedvig.resources.TALKBACK_TURNED_OFF_STATE
+import hedvig.resources.TALKBACK_TURNED_ON_STATE
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun HedvigToggle(
@@ -117,8 +121,8 @@ fun HedvigToggle(
   }
 
   val coroutineScope = rememberCoroutineScope()
-  val turnedOnStateDescription = stringResource(R.string.TALKBACK_TURNED_ON_STATE)
-  val turnedOffStateDescription = stringResource(R.string.TALKBACK_TURNED_OFF_STATE)
+  val turnedOnStateDescription = stringResource(Res.string.TALKBACK_TURNED_ON_STATE)
+  val turnedOffStateDescription = stringResource(Res.string.TALKBACK_TURNED_OFF_STATE)
   Surface(
     onClick = {
       coroutineScope.launch {
@@ -128,8 +132,8 @@ fun HedvigToggle(
       }
     },
     onClickLabel = when (turnedOn) {
-      true -> stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_TURN_OFF)
-      false -> stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_TURN_ON)
+      true -> stringResource(Res.string.TALKBACK_DOUBLE_TAP_TO_TURN_OFF)
+      false -> stringResource(Res.string.TALKBACK_DOUBLE_TAP_TO_TURN_ON)
     },
     shape = toggleStyle.shape,
     color = containerColor,

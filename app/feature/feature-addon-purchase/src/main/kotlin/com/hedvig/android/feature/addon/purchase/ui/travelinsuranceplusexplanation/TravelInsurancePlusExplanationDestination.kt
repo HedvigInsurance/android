@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -22,7 +21,11 @@ import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION
+import hedvig.resources.ADDON_FLOW_TRAVEL_INFORMATION_TITLE
+import hedvig.resources.ADDON_LEARN_MORE_LABEL
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelInsurancePlusExplanationDestination(travelPerilData: List<TravelPerilData>, navigateUp: () -> Unit) {
@@ -45,13 +48,13 @@ internal fun TravelInsurancePlusExplanationDestination(travelPerilData: List<Tra
 private fun TravelInsurancePlusExplanationScreen(perilData: List<PerilData>, navigateUp: () -> Unit) {
   HedvigScaffold(navigateUp) {
     FlowHeading(
-      stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
-      stringResource(R.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
+      stringResource(Res.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
+      stringResource(Res.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
       Modifier.fillMaxWidth().padding(horizontal = 18.dp),
     )
     Spacer(Modifier.height(32.dp))
     HighlightLabel(
-      labelText = stringResource(R.string.ADDON_LEARN_MORE_LABEL),
+      labelText = stringResource(Res.string.ADDON_LEARN_MORE_LABEL),
       size = Medium,
       color = Blue(LIGHT),
       modifier = Modifier.padding(horizontal = 16.dp),

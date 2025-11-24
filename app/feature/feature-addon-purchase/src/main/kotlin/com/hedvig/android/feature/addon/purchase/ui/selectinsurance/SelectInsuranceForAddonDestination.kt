@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -34,7 +33,12 @@ import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
+import hedvig.resources.ADDON_FLOW_TITLE
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SelectInsuranceForAddonDestination(
@@ -114,7 +118,7 @@ private fun SelectInsuranceForAddonContentScreen(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )
@@ -122,8 +126,8 @@ private fun SelectInsuranceForAddonContentScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-      stringResource(R.string.ADDON_FLOW_TITLE),
-      stringResource(R.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
+      stringResource(Res.string.ADDON_FLOW_TITLE),
+      stringResource(Res.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -146,7 +150,7 @@ private fun SelectInsuranceForAddonContentScreen(
     )
     Spacer(Modifier.height(12.dp))
     HedvigButton(
-      stringResource(id = R.string.general_continue_button),
+      stringResource(Res.string.general_continue_button),
       enabled = uiState.currentlySelected != null,
       modifier = Modifier
         .fillMaxWidth()

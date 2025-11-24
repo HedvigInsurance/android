@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -20,8 +19,11 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextP
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
 import com.hedvig.android.design.system.internals.HedvigDatePicker
 import com.hedvig.android.design.system.internals.HedvigDatePickerColors
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_done_button
+import hedvig.resources.general_save_button
 import java.util.Locale
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun rememberHedvigDatePickerState(
@@ -83,7 +85,7 @@ fun HedvigDatePicker(
     ),
     confirmButton = {
       HedvigTextButton(
-        text = stringResource(R.string.general_done_button),
+        text = stringResource(Res.string.general_done_button),
         onClick = onConfirmRequest,
         buttonSize = Medium,
       )
@@ -120,7 +122,7 @@ fun HedvigDatePicker(
         ),
         confirmButton = {
           HedvigTextButton(
-            text = stringResource(R.string.general_save_button),
+            text = stringResource(Res.string.general_save_button),
             onClick = onConfirmRequest,
             buttonSize = Medium,
           )

@@ -24,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -46,7 +45,13 @@ import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.AudioPlayerState.Ready.ReadyState
 import com.hedvig.audio.player.data.ProgressPercentage
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.A11Y_PAUSE
+import hedvig.resources.A11Y_PLAY
+import hedvig.resources.claim_status_detail_info_error_body
+import hedvig.resources.claim_status_detail_info_error_button
+import hedvig.resources.claim_status_detail_info_error_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FakeWaveAudioPlayerCard(
@@ -110,16 +115,16 @@ private fun FakeWaveAudioPlayerContent(
         HedvigNotificationCard(
           content = {
             Column {
-              HedvigText(text = stringResource(R.string.claim_status_detail_info_error_title))
+              HedvigText(text = stringResource(Res.string.claim_status_detail_info_error_title))
               HedvigText(
-                text = stringResource(R.string.claim_status_detail_info_error_body),
+                text = stringResource(Res.string.claim_status_detail_info_error_body),
                 style = HedvigTheme.typography.finePrint,
               )
             }
           },
           priority = NotificationPriority.Attention,
           style = Button(
-            buttonText = stringResource(R.string.claim_status_detail_info_error_button),
+            buttonText = stringResource(Res.string.claim_status_detail_info_error_button),
             onButtonClick = retryLoadingAudio,
           ),
         )
@@ -193,9 +198,9 @@ private fun ActionOrLoadingIcon(
             },
             contentDescription = stringResource(
               when (audioPlayerState.readyState) {
-                AudioPlayerState.Ready.ReadyState.Playing -> R.string.A11Y_PAUSE
-                AudioPlayerState.Ready.ReadyState.Seeking -> R.string.A11Y_PAUSE
-                else -> R.string.A11Y_PLAY
+                AudioPlayerState.Ready.ReadyState.Playing -> Res.string.A11Y_PAUSE
+                AudioPlayerState.Ready.ReadyState.Seeking -> Res.string.A11Y_PAUSE
+                else -> Res.string.A11Y_PLAY
               },
             ),
             modifier = Modifier.size(24.dp),

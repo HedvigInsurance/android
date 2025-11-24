@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
@@ -20,7 +19,12 @@ import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE
+import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
+import hedvig.resources.general_cancel_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FileUploadDestination(
@@ -80,10 +84,10 @@ internal fun FileUploadDestination(
   var fileToRemoveId by remember { mutableStateOf<String?>(null) }
   if (fileToRemoveId != null) {
     HedvigAlertDialog(
-      title = stringResource(id = R.string.GENERAL_ARE_YOU_SURE),
-      text = stringResource(id = R.string.CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE),
-      confirmButtonLabel = stringResource(id = R.string.REMOVE_CONFIRMATION_BUTTON),
-      dismissButtonLabel = stringResource(id = R.string.general_cancel_button),
+      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(Res.string.CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE),
+      confirmButtonLabel = stringResource(Res.string.REMOVE_CONFIRMATION_BUTTON),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
       onDismissRequest = {
         fileToRemoveId = null
       },

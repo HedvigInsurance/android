@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
@@ -40,7 +39,9 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_REMOVE
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * [onInput] guarantees that it either returns a valid [Int], or null
@@ -83,7 +84,7 @@ internal fun MonetaryAmountInput(
               },
               Modifier.size(24.dp),
             ) {
-              Icon(HedvigIcons.Close, stringResource(R.string.GENERAL_REMOVE))
+              Icon(HedvigIcons.Close, stringResource(Res.string.GENERAL_REMOVE))
             }
           }
         }

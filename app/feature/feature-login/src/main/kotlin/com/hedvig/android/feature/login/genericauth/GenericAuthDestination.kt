@@ -5,11 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import org.jetbrains.compose.resources.stringResource
+import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
+import hedvig.resources.login_text_input_email_error_enter_email
+import hedvig.resources.login_text_input_email_error_not_valid
 
 @Composable
 internal fun GenericAuthDestination(
@@ -68,15 +71,15 @@ private fun errorMessage(error: GenericAuthViewState.TextFieldError): String {
     is GenericAuthViewState.TextFieldError.Other -> {
       when (error) {
         GenericAuthViewState.TextFieldError.Other.Empty -> {
-          stringResource(hedvig.resources.R.string.login_text_input_email_error_enter_email)
+          stringResource(hedvig.resources.Res.string.login_text_input_email_error_enter_email)
         }
 
         GenericAuthViewState.TextFieldError.Other.InvalidEmail -> {
-          stringResource(hedvig.resources.R.string.login_text_input_email_error_not_valid)
+          stringResource(hedvig.resources.Res.string.login_text_input_email_error_not_valid)
         }
 
         GenericAuthViewState.TextFieldError.Other.NetworkError -> {
-          stringResource(hedvig.resources.R.string.NETWORK_ERROR_ALERT_MESSAGE)
+          stringResource(hedvig.resources.Res.string.NETWORK_ERROR_ALERT_MESSAGE)
         }
       }
     }

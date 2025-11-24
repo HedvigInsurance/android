@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -26,7 +25,19 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.chat.DeleteAccountViewModel
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION
+import hedvig.resources.DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE
+import hedvig.resources.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
+import hedvig.resources.DELETE_ACCOUNT_PROCESSED_TITLE
+import hedvig.resources.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION
+import hedvig.resources.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE
+import hedvig.resources.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
+import hedvig.resources.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE
+import hedvig.resources.PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION
+import hedvig.resources.general_back_button
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeleteAccountDestination(
@@ -66,7 +77,7 @@ private fun DeleteAccountScreen(
         DeleteScreenContents(
           title = stringResource(uiState.titleStringRes()),
           description = stringResource(uiState.descriptionStringRes()),
-          buttonText = stringResource(R.string.general_back_button),
+          buttonText = stringResource(Res.string.general_back_button),
           onButtonClick = navigateBack,
           modifier = Modifier.weight(1f),
           isButtonRed = false,
@@ -78,9 +89,9 @@ private fun DeleteAccountScreen(
           HedvigErrorSection(onButtonClick = retryLoading, Modifier.weight(1f))
         } else {
           DeleteScreenContents(
-            title = stringResource(R.string.DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE),
-            description = stringResource(R.string.DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION),
-            buttonText = stringResource(R.string.PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION),
+            title = stringResource(Res.string.DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE),
+            description = stringResource(Res.string.DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION),
+            buttonText = stringResource(Res.string.PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION),
             onButtonClick = initiateAccountDeletion,
             modifier = Modifier.weight(1f),
             isButtonLoading = uiState.isPerformingDeletion,
@@ -143,26 +154,24 @@ private fun DeleteScreenContents(
   }
 }
 
-@StringRes
-private fun DeleteAccountUiState.CanNotDelete.titleStringRes(): Int {
+private fun DeleteAccountUiState.CanNotDelete.titleStringRes(): StringResource {
   return when (this) {
-    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> R.string.DELETE_ACCOUNT_PROCESSED_TITLE
-    DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE
-    DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE
+    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> Res.string.DELETE_ACCOUNT_PROCESSED_TITLE
+    DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> Res.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE
+    DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> Res.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE
   }
 }
 
-@StringRes
-private fun DeleteAccountUiState.CanNotDelete.descriptionStringRes(): Int {
+private fun DeleteAccountUiState.CanNotDelete.descriptionStringRes(): StringResource {
   return when (this) {
     DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion ->
-      R.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
+      Res.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
 
     DeleteAccountUiState.CanNotDelete.HasActiveInsurance ->
-      R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
+      Res.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
 
     DeleteAccountUiState.CanNotDelete.HasOngoingClaim ->
-      R.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION
+      Res.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION
   }
 }
 

@@ -25,7 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,6 +47,13 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
+import org.jetbrains.compose.resources.stringResource
+import hedvig.resources.login_navigation_bar_center_element_title
+import hedvig.resources.login_open_email_app_button
+import hedvig.resources.login_smedium_button_active_resend_code
+import hedvig.resources.login_snackbar_code_resent
+import hedvig.resources.login_subtitle_verification_code_email
+import hedvig.resources.login_title_check_your_email
 
 @Composable
 fun OtpInputDestination(
@@ -110,7 +116,7 @@ fun OtpInputScreen(
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
+    topAppBarText = stringResource(hedvig.resources.Res.string.login_navigation_bar_center_element_title),
     modifier = modifier.fillMaxSize(),
   ) {
     Box(
@@ -159,12 +165,12 @@ private fun OtpInputScreenContents(
   ) {
     Spacer(Modifier.height(60.dp))
     HedvigText(
-      text = stringResource(hedvig.resources.R.string.login_title_check_your_email),
+      text = stringResource(hedvig.resources.Res.string.login_title_check_your_email),
       style = HedvigTheme.typography.headlineMedium,
     )
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(hedvig.resources.R.string.login_subtitle_verification_code_email, credential),
+      text = stringResource(hedvig.resources.Res.string.login_subtitle_verification_code_email, credential),
       style = HedvigTheme.typography.bodySmall,
     )
     Spacer(Modifier.height(40.dp))
@@ -174,7 +180,7 @@ private fun OtpInputScreenContents(
     if (showResentMessageNotification) {
       Spacer(Modifier.height(16.dp))
       HedvigText(
-        text = stringResource(hedvig.resources.R.string.login_snackbar_code_resent),
+        text = stringResource(hedvig.resources.Res.string.login_snackbar_code_resent),
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth(),
       )
@@ -182,7 +188,7 @@ private fun OtpInputScreenContents(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(hedvig.resources.R.string.login_open_email_app_button),
+      text = stringResource(hedvig.resources.Res.string.login_open_email_app_button),
       onClick = onOpenEmailApp,
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
@@ -246,7 +252,7 @@ private fun ResendCodeItem(
     Spacer(modifier = Modifier.width(8.dp))
     HedvigText(
       modifier = Modifier.align(Alignment.CenterVertically),
-      text = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
+      text = stringResource(hedvig.resources.Res.string.login_smedium_button_active_resend_code),
       style = HedvigTheme.typography.bodySmall,
       textAlign = TextAlign.Center,
     )
@@ -277,7 +283,7 @@ private fun RotatingIcon(isLoading: Boolean) {
   Icon(
     imageVector = HedvigIcons.Reload,
     modifier = Modifier.graphicsLayer { rotationZ = angle.value },
-    contentDescription = stringResource(hedvig.resources.R.string.login_smedium_button_active_resend_code),
+    contentDescription = stringResource(hedvig.resources.Res.string.login_smedium_button_active_resend_code),
   )
 }
 

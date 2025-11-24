@@ -31,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -85,13 +84,27 @@ import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
+import hedvig.resources.PAYMENTS_DISCOUNTS_SECTION_TITLE
+import hedvig.resources.PAYMENTS_IN_PROGRESS
+import hedvig.resources.PAYMENTS_MISSED_PAYMENT
+import hedvig.resources.PAYMENTS_NO_PAYMENTS_IN_PROGRESS
+import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
+import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
+import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
+import hedvig.resources.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
+import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
+import hedvig.resources.TAB_PAYMENTS_TITLE
+import hedvig.resources.info_card_missing_payment_body
+import hedvig.resources.info_card_missing_payment_missing_payments_body
 import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PaymentsDestination(
@@ -157,7 +170,7 @@ private fun PaymentsScreen(
             },
         ) {
           HedvigText(
-            text = stringResource(R.string.TAB_PAYMENTS_TITLE),
+            text = stringResource(Res.string.TAB_PAYMENTS_TITLE),
             style = HedvigTheme.typography.headlineSmall,
           )
         }
@@ -219,7 +232,7 @@ private fun PaymentsContent(
     val upcomingPayment = (uiState as? Content)?.upcomingPayment
     if (upcomingPayment == NoUpcomingPayment) {
       HedvigInformationSection(
-        stringResource(R.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS),
+        stringResource(Res.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS),
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
@@ -262,7 +275,7 @@ private fun PaymentsContent(
         is ConnectedPaymentInfo.Connected -> {
           Spacer(Modifier.weight(1f))
           HedvigButton(
-            text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
+            text = stringResource(Res.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
             onClick = onChangeBankAccount,
             enabled = true,
             buttonStyle = Secondary,
@@ -280,7 +293,7 @@ private fun PaymentsContent(
 
         ConnectedPaymentInfo.Pending -> {
           HedvigNotificationCard(
-            message = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
+            message = stringResource(Res.string.MY_PAYMENT_UPDATING_MESSAGE),
             priority = Info,
             modifier = Modifier
               .padding(horizontal = 16.dp)
@@ -307,16 +320,16 @@ private fun CardNotConnectedWarningCard(
   val dueDateToConnect = connectedPaymentInfo?.dueDateToConnect
   val text = if (dueDateToConnect != null) {
     stringResource(
-      R.string.info_card_missing_payment_missing_payments_body,
+      Res.string.info_card_missing_payment_missing_payments_body,
       dateTimeFormatter.format(dueDateToConnect.toJavaLocalDate()),
     )
   } else {
-    stringResource(id = R.string.info_card_missing_payment_body)
+    stringResource(Res.string.info_card_missing_payment_body)
   }
   HedvigNotificationCard(
     message = text,
     style = Button(
-      buttonText = stringResource(id = R.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
+      buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE),
       onButtonClick = onChangeBankAccount,
     ),
     priority = NotificationPriority.Attention,
@@ -331,7 +344,7 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
       NoInfo -> {}
       InProgress -> {
         HedvigNotificationCard(
-          message = stringResource(id = R.string.PAYMENTS_IN_PROGRESS),
+          message = stringResource(Res.string.PAYMENTS_IN_PROGRESS),
           priority = Info,
         )
       }
@@ -341,7 +354,7 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
         HedvigNotificationCard(
           priority = NotificationPriority.Attention,
           message = stringResource(
-            R.string.PAYMENTS_MISSED_PAYMENT,
+            Res.string.PAYMENTS_MISSED_PAYMENT,
             monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate.toJavaLocalDate()),
             monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate.toJavaLocalDate()),
           ),
@@ -364,7 +377,7 @@ private fun PaymentsListItems(
     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
   Column {
     PaymentsListItem(
-      text = stringResource(R.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
+      text = stringResource(Res.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
       icon = {
         Icon(
           imageVector = HedvigIcons.Campaign,
@@ -381,7 +394,7 @@ private fun PaymentsListItems(
     )
     HorizontalDivider(modifier = listItemsSideSpacingModifier)
     PaymentsListItem(
-      text = stringResource(R.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL),
+      text = stringResource(Res.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL),
       icon = {
         Icon(
           imageVector = HedvigIcons.Clock,
@@ -438,7 +451,7 @@ private fun OngoingPaymentCards(
     for (ongoingCharge in ongoingCharges) {
       PaymentCard(
         onClick = { onCardClicked(ongoingCharge.id) },
-        title = stringResource(R.string.PAYMENTS_PROCESSING_PAYMENT),
+        title = stringResource(Res.string.PAYMENTS_PROCESSING_PAYMENT),
         endSlotText = ongoingCharge.netAmount.toString(),
         subtitle = rememberHedvigDateTimeFormatter().format(ongoingCharge.date.toJavaLocalDate()),
         showPlaceholder = false,
@@ -460,7 +473,7 @@ private fun PaymentAmountCard(
   }
   PaymentCard(
     onClick = onClick,
-    title = stringResource(R.string.PAYMENTS_UPCOMING_PAYMENT),
+    title = stringResource(Res.string.PAYMENTS_UPCOMING_PAYMENT),
     endSlotText = if (upcomingPayment != null) {
       upcomingPayment.netAmount.toString()
     } else {

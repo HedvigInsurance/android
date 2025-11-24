@@ -36,7 +36,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -62,7 +61,11 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextP
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens
 import com.hedvig.android.design.system.hedvig.value
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.A11Y_CHARACTER_LIMIT
+import hedvig.resources.general_close_button
+import hedvig.resources.general_save_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FreeTextOverlay(
@@ -219,7 +222,7 @@ private fun FreeTextOverlayContent(
           )
 
           val characterLimitDescription =
-            stringResource(R.string.A11Y_CHARACTER_LIMIT, textValue.text.length, textMaxLength)
+            stringResource(Res.string.A11Y_CHARACTER_LIMIT, textValue.text.length, textMaxLength)
           HedvigText(
             text = "${textValue.text.length}/$textMaxLength",
             style = FreeTextDefaults.countLabelStyle.value,
@@ -246,7 +249,7 @@ private fun FreeTextOverlayContent(
       ) {
         HedvigButton(
           enabled = true,
-          text = cancelButtonText ?: stringResource(id = R.string.general_close_button),
+          text = cancelButtonText ?: stringResource(Res.string.general_close_button),
           onClick = {
             focusManager.clearFocus()
             onCancelClick()
@@ -258,7 +261,7 @@ private fun FreeTextOverlayContent(
         Spacer(modifier = Modifier.width(8.dp))
         HedvigButton(
           enabled = true,
-          text = confirmButtonText ?: stringResource(id = R.string.general_save_button),
+          text = confirmButtonText ?: stringResource(Res.string.general_save_button),
           onClick = {
             focusManager.clearFocus()
             val valueToSave = textValue.text.ifEmpty { null }

@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
@@ -45,7 +44,11 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.defaultButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_NO
+import hedvig.resources.GENERAL_YES
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ErrorDialog(
@@ -53,7 +56,7 @@ fun ErrorDialog(
   message: String?,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
-  buttonText: String = stringResource(R.string.general_close_button),
+  buttonText: String = stringResource(Res.string.general_close_button),
   onButtonClick: (() -> Unit)? = null,
 ) {
   HedvigDialog(
@@ -81,8 +84,8 @@ fun HedvigAlertDialog(
   onConfirmClick: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
-  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
+  confirmButtonLabel: String = stringResource(Res.string.GENERAL_YES),
+  dismissButtonLabel: String = stringResource(Res.string.GENERAL_NO),
   buttonSize: DialogDefaults.ButtonSize = defaultButtonSize,
 ) {
   HedvigAlertDialog(
@@ -104,8 +107,8 @@ fun HedvigAlertDialog(
   onConfirmClick: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  confirmButtonLabel: String = stringResource(R.string.GENERAL_YES),
-  dismissButtonLabel: String = stringResource(R.string.GENERAL_NO),
+  confirmButtonLabel: String = stringResource(Res.string.GENERAL_YES),
+  dismissButtonLabel: String = stringResource(Res.string.GENERAL_NO),
   buttonSize: DialogDefaults.ButtonSize = defaultButtonSize,
 ) {
   HedvigDialog(
@@ -150,7 +153,7 @@ fun SingleSelectDialog(
 ) {
   CoreSelectDialog(
     onDismissRequest,
-    DialogStyle.TitlePlusButton(title, onDismissRequest, stringResource(R.string.general_close_button)),
+    DialogStyle.TitlePlusButton(title, onDismissRequest, stringResource(Res.string.general_close_button)),
   ) {
     RadioGroup(
       options = options,
@@ -177,7 +180,7 @@ fun MultiSelectDialog(
     style = DialogStyle.TitlePlusButton(
       title = title,
       onButtonClick = onDismissRequest,
-      buttonText = buttonText ?: stringResource(R.string.general_close_button),
+      buttonText = buttonText ?: stringResource(Res.string.general_close_button),
     ),
   ) {
     CheckboxGroup(

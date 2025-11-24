@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,8 +32,13 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.odyssey.ui.LocationWithDialog
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL
+import hedvig.resources.CLAIMS_LOCATON_OCCURANCE_TITLE
+import hedvig.resources.claims_item_screen_date_of_incident_button
+import hedvig.resources.general_continue_button
 import java.util.Locale
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DateOfOccurrencePlusLocationDestination(
@@ -83,7 +87,7 @@ private fun DateOfOccurrencePlusLocationScreen(
   ) { sideSpacingModifier ->
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.CLAIMS_LOCATON_OCCURANCE_TITLE),
+      text = stringResource(Res.string.CLAIMS_LOCATON_OCCURANCE_TITLE),
       style = HedvigTheme.typography.headlineMedium.copy(
         lineBreak = LineBreak.Heading,
       ),
@@ -96,13 +100,13 @@ private fun DateOfOccurrencePlusLocationScreen(
     DateOfIncident(uiState.datePickerUiState, !uiState.isLoading, sideSpacingModifier.fillMaxWidth())
     Spacer(Modifier.height(16.dp))
     HedvigNotificationCard(
-      message = stringResource(R.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
+      message = stringResource(Res.string.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL),
       priority = Info,
       modifier = sideSpacingModifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = submitDateOfOccurrenceAndLocation,
       isLoading = uiState.isLoading,
       enabled = uiState.canSubmit,
@@ -118,7 +122,7 @@ private fun DateOfIncident(uiState: DatePickerUiState, canInteract: Boolean, mod
   DatePickerWithDialog(
     uiState = uiState,
     canInteract = canInteract,
-    startText = stringResource(R.string.claims_item_screen_date_of_incident_button),
+    startText = stringResource(Res.string.claims_item_screen_date_of_incident_button),
     modifier = modifier,
   )
 }

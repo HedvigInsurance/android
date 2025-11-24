@@ -34,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -100,12 +99,38 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_YOUR_CLAIM
+import hedvig.resources.DASHBOARD_OPEN_CHAT
+import hedvig.resources.MY_DOCUMENTS_INSURANCE_TERMS
+import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
+import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import hedvig.resources.claim_outcome_unresponsive_support_text
+import hedvig.resources.claim_status_appeal_instruction_link_text
+import hedvig.resources.claim_status_being_handled_reopened_support_text
+import hedvig.resources.claim_status_being_handled_support_text
+import hedvig.resources.claim_status_claim_details_info_text
+import hedvig.resources.claim_status_claim_details_title
+import hedvig.resources.claim_status_detail_add_files
+import hedvig.resources.claim_status_detail_add_more_files
+import hedvig.resources.claim_status_detail_documents_title
+import hedvig.resources.claim_status_detail_message_view_body
+import hedvig.resources.claim_status_detail_uploaded_files_info_title
+import hedvig.resources.claim_status_not_compensated_support_text
+import hedvig.resources.claim_status_not_covered_support_text
+import hedvig.resources.claim_status_paid_support_text_short
+import hedvig.resources.claim_status_submitted_support_text
+import hedvig.resources.claim_status_uploaded_files_upload_text
+import hedvig.resources.general_close_button
+import hedvig.resources.general_error
+import hedvig.resources.something_went_wrong
+import hedvig.resources.travel_certificate_downloading_error
 import java.io.File
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ClaimDetailsDestination(
@@ -238,8 +263,8 @@ private fun ClaimDetailContentScreen(
 
   if (uiState.downloadError == true) {
     ErrorDialog(
-      title = stringResource(id = R.string.general_error),
-      message = stringResource(id = R.string.travel_certificate_downloading_error),
+      title = stringResource(Res.string.general_error),
+      message = stringResource(Res.string.travel_certificate_downloading_error),
       onDismiss = {
         onDismissDownloadError()
       },
@@ -276,7 +301,7 @@ private fun ClaimDetailContentScreen(
 @Composable
 private fun ClaimDetailTopAppBar(navigateUp: () -> Unit) {
   TopAppBar(
-    title = stringResource(R.string.CLAIMS_YOUR_CLAIM),
+    title = stringResource(Res.string.CLAIMS_YOUR_CLAIM),
     actionType = BACK,
     onActionClick = navigateUp,
   )
@@ -355,13 +380,13 @@ private fun NonDynamicGrid(
 internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
   HedvigBottomSheet(sheetState) { _ ->
     HedvigText(
-      text = stringResource(id = R.string.claim_status_claim_details_info_text),
+      text = stringResource(Res.string.claim_status_claim_details_info_text),
       modifier = Modifier
         .fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
-      text = stringResource(id = R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       buttonSize = Large,
       onClick = { sheetState.dismiss() },
       modifier = Modifier.fillMaxWidth(),
@@ -409,7 +434,7 @@ private fun BeforeGridContent(
                 .clickable(onClick = navigateToConversation),
               startSlot = {
                 HedvigText(
-                  text = stringResource(R.string.claim_status_detail_message_view_body),
+                  text = stringResource(Res.string.claim_status_detail_message_view_body),
                   style = HedvigTheme.typography.bodySmall,
                   modifier = Modifier.wrapContentSize(Alignment.CenterStart),
                 )
@@ -423,7 +448,7 @@ private fun BeforeGridContent(
                 ) {
                   Icon(
                     imageVector = HedvigIcons.Chat,
-                    contentDescription = stringResource(R.string.DASHBOARD_OPEN_CHAT),
+                    contentDescription = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
                     tint = HedvigTheme.colorScheme.signalGreyElement,
                     modifier = Modifier
                       .size(32.dp)
@@ -445,7 +470,7 @@ private fun BeforeGridContent(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         HedvigText(
-          stringResource(R.string.claim_status_claim_details_title),
+          stringResource(Res.string.claim_status_claim_details_title),
           Modifier.padding(horizontal = 2.dp),
         )
       }
@@ -460,7 +485,7 @@ private fun BeforeGridContent(
         ) {
           Icon(
             imageVector = HedvigIcons.InfoFilled,
-            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
             modifier = Modifier.size(24.dp),
           )
         }
@@ -478,7 +503,7 @@ private fun BeforeGridContent(
   )
   Spacer(Modifier.height(24.dp))
   HedvigText(
-    stringResource(R.string.claim_status_detail_uploaded_files_info_title),
+    stringResource(Res.string.claim_status_detail_uploaded_files_info_title),
     Modifier.padding(horizontal = 2.dp),
   )
   Spacer(Modifier.height(8.dp))
@@ -512,7 +537,7 @@ private fun AfterGridContent(
     if (uiState.isUploadingFilesEnabled) {
       Spacer(Modifier.height(24.dp))
       HedvigText(
-        text = stringResource(id = R.string.claim_status_uploaded_files_upload_text),
+        text = stringResource(Res.string.claim_status_uploaded_files_upload_text),
         textAlign = TextAlign.Center,
         modifier = Modifier
           .padding(horizontal = 2.dp)
@@ -520,9 +545,9 @@ private fun AfterGridContent(
       )
       Spacer(Modifier.height(16.dp))
       val text = if (uiState.files.isNotEmpty()) {
-        stringResource(id = R.string.claim_status_detail_add_more_files)
+        stringResource(Res.string.claim_status_detail_add_more_files)
       } else {
-        stringResource(id = R.string.claim_status_detail_add_files)
+        stringResource(Res.string.claim_status_detail_add_files)
       }
       Row(
         modifier = Modifier.fillMaxWidth(),
@@ -540,7 +565,7 @@ private fun AfterGridContent(
     }
     if (uiState.uploadError != null) {
       ErrorDialog(
-        title = stringResource(R.string.something_went_wrong),
+        title = stringResource(Res.string.something_went_wrong),
         message = uiState.uploadError,
         onDismiss = onDismissUploadError,
       )
@@ -548,7 +573,7 @@ private fun AfterGridContent(
     if (uiState.termsConditionsUrl != null || uiState.appealInstructionsUrl != null) {
       Spacer(Modifier.height(16.dp))
       HedvigText(
-        stringResource(R.string.claim_status_detail_documents_title),
+        stringResource(Res.string.claim_status_detail_documents_title),
         Modifier.padding(horizontal = 2.dp),
       )
       Spacer(Modifier.height(8.dp))
@@ -583,7 +608,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
         LayoutWithoutPlacement(
           sizeAdjustingContent = {
             DocumentCard(
-              title = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+              title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
             )
           },
         ) {
@@ -597,7 +622,7 @@ private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifie
         }
       } else {
         DocumentCard(
-          title = stringResource(id = R.string.MY_DOCUMENTS_INSURANCE_TERMS),
+          title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
         )
       }
     }
@@ -615,7 +640,7 @@ private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modif
         LayoutWithoutPlacement(
           sizeAdjustingContent = {
             DocumentCard(
-              title = stringResource(id = R.string.claim_status_appeal_instruction_link_text),
+              title = stringResource(Res.string.claim_status_appeal_instruction_link_text),
             )
           },
         ) {
@@ -629,7 +654,7 @@ private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modif
         }
       } else {
         DocumentCard(
-          title = stringResource(id = R.string.claim_status_appeal_instruction_link_text),
+          title = stringResource(Res.string.claim_status_appeal_instruction_link_text),
         )
       }
     }
@@ -659,7 +684,7 @@ private fun DocumentCard(title: String) {
         Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
           Icon(
             imageVector = HedvigIcons.ArrowNorthEast,
-            contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+            contentDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
             modifier = Modifier.size(16.dp),
           )
         }
@@ -674,29 +699,31 @@ private fun statusParagraphText(
   claimStatus: ClaimDetailUiState.Content.ClaimStatus,
   claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
 ): String = when (claimStatus) {
-  ClaimDetailUiState.Content.ClaimStatus.CREATED -> stringResource(R.string.claim_status_submitted_support_text)
-  ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS -> stringResource(R.string.claim_status_being_handled_support_text)
+  ClaimDetailUiState.Content.ClaimStatus.CREATED -> stringResource(Res.string.claim_status_submitted_support_text)
+  ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS -> stringResource(
+    Res.string.claim_status_being_handled_support_text,
+  )
   ClaimDetailUiState.Content.ClaimStatus.CLOSED -> when (claimOutcome) {
-    ClaimDetailUiState.Content.ClaimOutcome.PAID -> stringResource(R.string.claim_status_paid_support_text_short)
+    ClaimDetailUiState.Content.ClaimOutcome.PAID -> stringResource(Res.string.claim_status_paid_support_text_short)
     ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED -> {
-      stringResource(R.string.claim_status_not_compensated_support_text)
+      stringResource(Res.string.claim_status_not_compensated_support_text)
     }
 
     ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED -> {
-      stringResource(R.string.claim_status_not_covered_support_text)
+      stringResource(Res.string.claim_status_not_covered_support_text)
     }
 
     ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN -> ""
     ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE -> stringResource(
-      R.string.claim_outcome_unresponsive_support_text,
+      Res.string.claim_outcome_unresponsive_support_text,
     )
   }
 
   ClaimDetailUiState.Content.ClaimStatus.REOPENED -> {
-    stringResource(R.string.claim_status_being_handled_reopened_support_text)
+    stringResource(Res.string.claim_status_being_handled_reopened_support_text)
   }
 
-  ClaimDetailUiState.Content.ClaimStatus.UNKNOWN -> stringResource(R.string.claim_status_being_handled_support_text)
+  ClaimDetailUiState.Content.ClaimStatus.UNKNOWN -> stringResource(Res.string.claim_status_being_handled_support_text)
 }
 
 @Composable

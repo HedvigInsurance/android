@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -51,7 +50,9 @@ import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.icon.Play
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_REMOVE
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Makes a column with content above and below a dynamic lazy grid of files thumbnails. The column
@@ -269,7 +270,7 @@ fun File(
       ) {
         Icon(
           imageVector = HedvigIcons.Close,
-          contentDescription = stringResource(R.string.GENERAL_REMOVE),
+          contentDescription = stringResource(Res.string.GENERAL_REMOVE),
           modifier = Modifier.size(16.dp),
         )
       }

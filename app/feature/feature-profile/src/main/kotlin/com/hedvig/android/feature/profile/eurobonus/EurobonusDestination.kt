@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +35,14 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import org.jetbrains.compose.resources.stringResource
+import hedvig.resources.general_save_button
+import hedvig.resources.sas_integration_connect_your_eurobonus
+import hedvig.resources.sas_integration_info
+import hedvig.resources.sas_integration_number
+import hedvig.resources.sas_integration_number_placeholder
+import hedvig.resources.sas_integration_title
+import hedvig.resources.something_went_wrong
 
 @Composable
 internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () -> Unit) {
@@ -72,7 +79,7 @@ private fun EurobonusScreen(
       HedvigFullScreenCenterAlignedProgressDebounced()
     } else {
       HedvigScaffold(
-        topAppBarText = stringResource(hedvig.resources.R.string.sas_integration_title),
+        topAppBarText = stringResource(hedvig.resources.Res.string.sas_integration_title),
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
       ) {
@@ -82,7 +89,7 @@ private fun EurobonusScreen(
             .fillMaxWidth(),
         ) {
           HedvigText(
-            text = stringResource(hedvig.resources.R.string.sas_integration_connect_your_eurobonus),
+            text = stringResource(hedvig.resources.Res.string.sas_integration_connect_your_eurobonus),
             modifier = Modifier.padding(16.dp),
           )
         }
@@ -96,13 +103,13 @@ private fun EurobonusScreen(
         )
         Spacer(Modifier.height(16.dp))
         HedvigText(
-          text = stringResource(hedvig.resources.R.string.sas_integration_info),
+          text = stringResource(hedvig.resources.Res.string.sas_integration_info),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          text = stringResource(hedvig.resources.R.string.general_save_button),
+          text = stringResource(hedvig.resources.Res.string.general_save_button),
           enabled = uiState.canSubmit,
           onClick = { onSave() },
           buttonStyle = ButtonDefaults.ButtonStyle.Primary,
@@ -139,14 +146,14 @@ private fun EurobonusNumberField(
       },
       enabled = canEditText,
       labelText = buildString {
-        append(stringResource(hedvig.resources.R.string.sas_integration_title))
+        append(stringResource(hedvig.resources.Res.string.sas_integration_title))
         append(" ")
-        append(stringResource(hedvig.resources.R.string.sas_integration_number))
+        append(stringResource(hedvig.resources.Res.string.sas_integration_number))
       },
       errorState =
         if (hasError) {
           HedvigTextFieldDefaults.ErrorState.Error.WithMessage(
-            stringResource(hedvig.resources.R.string.something_went_wrong),
+            stringResource(hedvig.resources.Res.string.something_went_wrong),
           )
         } else {
           HedvigTextFieldDefaults.ErrorState.NoError
@@ -170,7 +177,7 @@ private fun EurobonusNumberField(
     )
     if (!hasError) {
       HedvigText(
-        stringResource(hedvig.resources.R.string.sas_integration_number_placeholder),
+        stringResource(hedvig.resources.Res.string.sas_integration_number_placeholder),
         color = HedvigTheme.colorScheme.textSecondary,
         style = HedvigTheme.typography.label,
         modifier = Modifier.padding(horizontal = 32.dp, vertical = 4.dp),

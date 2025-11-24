@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -59,9 +58,20 @@ import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetContentState
-import hedvig.resources.R
+import hedvig.resources.ADDON_FLOW_LEARN_MORE_BUTTON
+import hedvig.resources.COINSURED_EDIT_TITLE
+import hedvig.resources.CONTRACT_ADD_COINSURED
+import hedvig.resources.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.PRICE_NEW_PRICE
+import hedvig.resources.PRICE_PREVIOUS_PRICE
+import hedvig.resources.Res
+import hedvig.resources.SUMMARY_TOTAL_PRICE_SUBTITLE
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_error
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditCoInsuredAddOrRemoveDestination(
@@ -148,14 +158,14 @@ private fun EditCoInsuredScreen(
 ) {
   Column(Modifier.fillMaxSize()) {
     TopAppBarWithBack(
-      title = stringResource(id = R.string.COINSURED_EDIT_TITLE),
+      title = stringResource(Res.string.COINSURED_EDIT_TITLE),
       onClick = navigateUp,
     )
 
     when (uiState) {
       is EditCoInsuredState.Error -> {
         ErrorDialog(
-          title = stringResource(id = R.string.general_error),
+          title = stringResource(Res.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
           modifier = Modifier.fillMaxWidth(),
@@ -248,7 +258,7 @@ private fun EditCoInsuredScreen(
           Spacer(Modifier.height(8.dp))
           if (uiState.listState.noCoInsuredHaveMissingInfo()) {
             HedvigButton(
-              text = stringResource(id = R.string.CONTRACT_ADD_COINSURED),
+              text = stringResource(Res.string.CONTRACT_ADD_COINSURED),
               onClick = {
                 addHedvigBottomSheetState.show(uiState.addBottomSheetContentState)
                 onAddCoInsuredClicked()
@@ -267,7 +277,7 @@ private fun EditCoInsuredScreen(
               Spacer(Modifier.height(16.dp))
               PriceInfo(uiState.listState.priceInfo, costBreakdownBottomSheetState)
               HedvigButton(
-                text = stringResource(id = R.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
+                text = stringResource(Res.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
                 onClick = onCommitChanges,
                 enabled = true,
                 isLoading = uiState.listState.isCommittingUpdate,
@@ -280,7 +290,7 @@ private fun EditCoInsuredScreen(
             Spacer(Modifier.height(8.dp))
             HedvigTextButton(
               onClick = navigateUp,
-              text = stringResource(R.string.general_cancel_button),
+              text = stringResource(Res.string.general_cancel_button),
               modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
@@ -316,7 +326,7 @@ private fun PriceInfo(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          HedvigText(text = stringResource(id = R.string.PRICE_PREVIOUS_PRICE))
+          HedvigText(text = stringResource(Res.string.PRICE_PREVIOUS_PRICE))
         }
       },
       endSlot = {
@@ -325,7 +335,7 @@ private fun PriceInfo(
             modifier = Modifier
               .padding(vertical = 16.dp),
             text = stringResource(
-              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               priceInfo.currentCost.monthlyNet.toString(),
             ),
           )
@@ -339,7 +349,7 @@ private fun PriceInfo(
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          HedvigText(text = stringResource(id = R.string.PRICE_NEW_PRICE))
+          HedvigText(text = stringResource(Res.string.PRICE_NEW_PRICE))
           IconButton(
             onClick = {
               val priceInfoForBottomSheet = PriceInfoForBottomSheet(
@@ -352,7 +362,7 @@ private fun PriceInfo(
           ) {
             Icon(
               HedvigIcons.InfoFilled,
-              contentDescription = stringResource(R.string.ADDON_FLOW_LEARN_MORE_BUTTON),
+              contentDescription = stringResource(Res.string.ADDON_FLOW_LEARN_MORE_BUTTON),
               tint = HedvigTheme.colorScheme.fillSecondary,
             )
           }
@@ -364,13 +374,13 @@ private fun PriceInfo(
             modifier = Modifier
               .padding(top = 16.dp),
             text = stringResource(
-              id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               priceInfo.newCost.monthlyNet.toString(),
             ),
           )
           HedvigText(
             text = stringResource(
-              id = R.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
+              Res.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
               dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
             ),
             style = HedvigTheme.typography.label,

@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,8 +53,15 @@ import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.audio.player.data.PlayableAudioSource
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_COMPLEMENT__CLAIM
+import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.EMBARK_SUBMIT_CLAIM
+import hedvig.resources.claim_status_detail_uploaded_files_info_title
+import hedvig.resources.claims_summary_screen_title
+import hedvig.resources.moving_summary_scroll_Details
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ClaimSummaryDestination(
@@ -101,7 +107,7 @@ private fun ClaimSummaryScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    topAppBarText = stringResource(R.string.claims_summary_screen_title),
+    topAppBarText = stringResource(Res.string.claims_summary_screen_title),
     errorSnackbarState = ErrorSnackbarState(
       uiState.claimSummaryStatusUiState.hasError,
       showedError,
@@ -133,7 +139,7 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
   val resources = LocalContext.current.resources
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
-    HedvigText(stringResource(R.string.moving_summary_scroll_Details))
+    HedvigText(stringResource(Res.string.moving_summary_scroll_Details))
     Spacer(Modifier.height(8.dp))
     val detailPairs = uiState.claimSummaryInfoUiState.itemDetailPairs(resources, getLocale())
     CompositionLocalProvider(
@@ -162,13 +168,13 @@ private fun BeforeGridContent(uiState: ClaimSummaryUiState, modifier: Modifier =
         showCount = false,
         height = Height.Limited(80.dp),
         freeTextValue = uiState.claimSummaryInfoUiState.freeText,
-        freeTextPlaceholder = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+        freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
       )
       Spacer(Modifier.height(8.dp))
     }
     Spacer(Modifier.height(8.dp))
     if (uiState.claimSummaryInfoUiState.submittedContent != null || !uiState.claimSummaryInfoUiState.files.isEmpty()) {
-      HedvigText(stringResource(R.string.claim_status_detail_uploaded_files_info_title))
+      HedvigText(stringResource(Res.string.claim_status_detail_uploaded_files_info_title))
     }
     if (uiState.claimSummaryInfoUiState.submittedContent != null) {
       when (uiState.claimSummaryInfoUiState.submittedContent) {
@@ -195,13 +201,13 @@ private fun AfterGridContent(uiState: ClaimSummaryUiState, submitSummary: () -> 
   Column(modifier) {
     Spacer(Modifier.height(16.dp))
     HedvigNotificationCard(
-      message = stringResource(R.string.CLAIMS_COMPLEMENT__CLAIM),
+      message = stringResource(Res.string.CLAIMS_COMPLEMENT__CLAIM),
       priority = NotificationPriority.Info,
       modifier = Modifier.fillMaxSize(),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
+      text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
       onClick = submitSummary,
       isLoading = uiState.claimSummaryStatusUiState.isLoading,
       enabled = uiState.canSubmit,

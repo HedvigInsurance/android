@@ -10,7 +10,6 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
@@ -20,7 +19,9 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_done_button
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Skeleton for any kind of summary screen about success and failure
@@ -81,7 +82,7 @@ private fun PreviewTerminationInfoScreen() {
       ) {
         HedvigButton(
           modifier = Modifier.fillMaxWidth(),
-          text = stringResource(R.string.general_done_button),
+          text = stringResource(Res.string.general_done_button),
           enabled = true,
           onClick = { },
         )

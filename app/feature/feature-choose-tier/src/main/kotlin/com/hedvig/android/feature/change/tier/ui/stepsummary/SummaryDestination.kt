@@ -18,7 +18,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -73,9 +72,26 @@ import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import hedvig.resources.R
+import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
+import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.GENERAL_CONFIRM
+import hedvig.resources.GENERAL_NO
+import hedvig.resources.GENERAL_PROGRESS_WILL_BE_LOST_ALERT
+import hedvig.resources.GENERAL_YES
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
+import hedvig.resources.SUMMARY_TOTAL_PRICE_SUBTITLE
+import hedvig.resources.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS
+import hedvig.resources.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS
+import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE
+import hedvig.resources.TIER_FLOW_SUMMARY_CONFIRM_BUTTON
+import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChangeTierSummaryDestination(
@@ -159,7 +175,7 @@ private fun SummaryScreen(
 @Composable
 private fun MakingChangesScreen() {
   HedvigFullScreenCenterAlignedLinearProgress(
-    title = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE),
+    title = stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE),
   )
 }
 
@@ -180,28 +196,28 @@ private fun SummarySuccessScreen(
         },
       )
     },
-    topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
+    topAppBarText = stringResource(Res.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     if (showExitDialog) {
       HedvigDialog(
         onDismissRequest = { showExitDialog = false },
         style = Buttons(
           onDismissRequest = { showExitDialog = false },
-          dismissButtonText = stringResource(R.string.GENERAL_NO),
+          dismissButtonText = stringResource(Res.string.GENERAL_NO),
           onConfirmButtonClick = dropUnlessResumed {
             showExitDialog = false
             onExitTierFlow()
           },
-          confirmButtonText = stringResource(R.string.GENERAL_YES),
+          confirmButtonText = stringResource(Res.string.GENERAL_YES),
         ),
       ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
           HedvigText(
-            text = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+            text = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
             textAlign = TextAlign.Center,
           )
           HedvigText(
-            text = stringResource(R.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
+            text = stringResource(Res.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
             textAlign = TextAlign.Center,
             color = HedvigTheme.colorScheme.textSecondary,
           )
@@ -213,15 +229,15 @@ private fun SummarySuccessScreen(
     val dateFormatter = rememberHedvigDateTimeFormatter()
     if (showConfirmationDialog) {
       HedvigAlertDialog(
-        title = stringResource(R.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
+        title = stringResource(Res.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
         text = stringResource(
-          R.string.CONFIRM_CHANGES_SUBTITLE,
+          Res.string.CONFIRM_CHANGES_SUBTITLE,
           dateFormatter.format(uiState.activationDate.toJavaLocalDate()),
         ),
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
-        confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
-        dismissButtonLabel = stringResource(R.string.general_cancel_button),
+        confirmButtonLabel = stringResource(Res.string.GENERAL_CONFIRM),
+        dismissButtonLabel = stringResource(Res.string.general_cancel_button),
       )
     }
     SummaryCard(
@@ -240,7 +256,7 @@ private fun SummarySuccessScreen(
         modifier = Modifier.fillMaxWidth(),
         startSlot = {
           HedvigText(
-            stringResource(R.string.TIER_FLOW_TOTAL),
+            stringResource(Res.string.TIER_FLOW_TOTAL),
             style = HedvigTheme.typography.bodySmall,
           )
         },
@@ -248,15 +264,15 @@ private fun SummarySuccessScreen(
         endSlot = {
           Row(horizontalArrangement = Arrangement.End) {
             val grossPriceVoiceDescription = stringResource(
-              R.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
+              Res.string.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS,
               uiState.quote.newTotalCost.monthlyGross.getPerMonthDescription(),
             )
             val netPriceVoiceDescription =
-              stringResource(R.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS, uiState.totalNet.getPerMonthDescription())
+              stringResource(Res.string.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS, uiState.totalNet.getPerMonthDescription())
             if (uiState.quote.newTotalCost.monthlyGross != uiState.quote.newTotalCost.monthlyNet) {
               HedvigText(
                 text = stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   uiState.quote.newTotalCost.monthlyGross,
                 ),
                 textAlign = TextAlign.End,
@@ -272,7 +288,7 @@ private fun SummarySuccessScreen(
             }
             HedvigText(
               text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 uiState.totalNet,
               ),
               textAlign = TextAlign.End,
@@ -288,7 +304,7 @@ private fun SummarySuccessScreen(
         val dateTimeFormatter = rememberHedvigDateTimeFormatter()
         HedvigText(
           text = stringResource(
-            id = R.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
+            Res.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
             dateTimeFormatter.format(uiState.activationDate.toJavaLocalDate()),
           ),
           style = HedvigTheme.typography.label,
@@ -299,7 +315,7 @@ private fun SummarySuccessScreen(
       }
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(R.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
+        text = stringResource(Res.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
         modifier = Modifier.fillMaxWidth(),
         buttonStyle = Primary,
         buttonSize = Large,
@@ -314,7 +330,7 @@ private fun SummarySuccessScreen(
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        text = stringResource(R.string.general_cancel_button),
+        text = stringResource(Res.string.general_cancel_button),
         onClick = {
           showExitDialog = true
         },
@@ -329,7 +345,7 @@ private fun SummaryTopAppBar(onIconClick: () -> Unit) {
   IconButton(onIconClick) {
     Icon(
       HedvigIcons.Close,
-      stringResource(R.string.general_close_button),
+      stringResource(Res.string.general_close_button),
       Modifier.size(24.dp),
     )
   }

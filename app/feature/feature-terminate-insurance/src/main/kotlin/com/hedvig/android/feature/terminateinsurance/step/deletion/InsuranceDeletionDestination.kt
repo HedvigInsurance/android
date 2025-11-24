@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -19,7 +18,12 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardInsurance
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON
+import hedvig.resources.TERMINATION_FLOW_CONFIRM_INFORMATION
+import hedvig.resources.TERMINATION_FLOW_DELETION_INFO_CARD
+import hedvig.resources.TERMINATION_FLOW_TODAY
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InsuranceDeletionDestination(
@@ -35,7 +39,7 @@ internal fun InsuranceDeletionDestination(
   ) { title ->
     FlowHeading(
       title,
-      stringResource(id = R.string.TERMINATION_FLOW_CONFIRM_INFORMATION),
+      stringResource(Res.string.TERMINATION_FLOW_CONFIRM_INFORMATION),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -49,7 +53,7 @@ internal fun InsuranceDeletionDestination(
     )
     Spacer(modifier = Modifier.height(8.dp))
     TerminationInfoCardDate(
-      dateValue = stringResource(id = R.string.TERMINATION_FLOW_TODAY),
+      dateValue = stringResource(Res.string.TERMINATION_FLOW_TODAY),
       onClick = null,
       isLocked = true,
       modifier = Modifier
@@ -58,7 +62,7 @@ internal fun InsuranceDeletionDestination(
     )
     Spacer(modifier = Modifier.height(8.dp))
     HedvigNotificationCard(
-      message = stringResource(id = R.string.TERMINATION_FLOW_DELETION_INFO_CARD),
+      message = stringResource(Res.string.TERMINATION_FLOW_DELETION_INFO_CARD),
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
@@ -67,7 +71,7 @@ internal fun InsuranceDeletionDestination(
     Spacer(Modifier.height(16.dp))
 
     HedvigButton(
-      text = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
+      text = stringResource(Res.string.TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON),
       onClick = onContinue,
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       enabled = true,

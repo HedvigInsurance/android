@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MutablePermissionState
 import com.google.accompanist.permissions.PermissionLifecycleCheckerEffect
@@ -26,7 +25,9 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.hedvig.android.design.system.hedvig.PermissionDialog
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
+import org.jetbrains.compose.resources.stringResource
 
 interface NotificationPermissionState : PermissionState {
   val showDialog: Boolean
@@ -93,7 +94,7 @@ fun NotificationPermissionDialog(
 ) {
   if (notificationPermissionState.showDialog) {
     PermissionDialog(
-      permissionDescription = stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
+      permissionDescription = stringResource(Res.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY),
       isPermanentlyDeclined = !notificationPermissionState.status.shouldShowRationale,
       onDismiss = notificationPermissionState::dismissDialog,
       okClick = notificationPermissionState::launchPermissionRequest,

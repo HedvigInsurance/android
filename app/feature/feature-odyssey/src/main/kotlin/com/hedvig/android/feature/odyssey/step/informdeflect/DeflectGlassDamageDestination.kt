@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,7 +45,24 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_TITLE
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_WHAT_COST_LABEL
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_WORKSHOP_LABEL
+import hedvig.resources.SUBMIT_CLAIM_HOW_BOOK_TITLE
+import hedvig.resources.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_LABEL
+import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_TITLE
+import hedvig.resources.SUBMIT_CLAIM_PARTNER_TITLE
+import hedvig.resources.SUBMIT_CLAIM_WHAT_COST_TITLE
+import hedvig.resources.SUBMIT_CLAIM_WORKSHOP_TITLE
+import hedvig.resources.open_chat
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectGlassDamageDestination(
@@ -83,11 +99,11 @@ private fun DeflectGlassDamageScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_GLASS_DAMAGE_TITLE),
+    topAppBarText = stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_TITLE),
   ) {
     Spacer(Modifier.height(8.dp))
     HedvigNotificationCard(
-      message = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL),
+      message = stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL),
       priority = Info,
       modifier = Modifier
         .fillMaxWidth()
@@ -95,7 +111,7 @@ private fun DeflectGlassDamageScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_PARTNER_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_PARTNER_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -119,13 +135,13 @@ private fun DeflectGlassDamageScreen(
               PartnerImage(partner, imageLoader, Modifier.padding(16.dp))
               Spacer(Modifier.height(16.dp))
               HedvigText(
-                text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL),
+                text = stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
               )
               Spacer(Modifier.height(16.dp))
               HedvigButton(
-                text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
+                text = stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
                 buttonSize = ButtonDefaults.ButtonSize.Small,
                 enabled = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -150,12 +166,12 @@ private fun DeflectGlassDamageScreen(
     }
     Spacer(Modifier.height(24.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_HOW_IT_WORKS_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL),
+      text = stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL),
       modifier = Modifier.padding(horizontal = 16.dp),
       color = HedvigTheme.colorScheme.textSecondary,
     )
@@ -163,14 +179,14 @@ private fun DeflectGlassDamageScreen(
     QuestionsAndAnswers(Modifier.padding(horizontal = 16.dp))
     Spacer(Modifier.height(32.dp))
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_TITLE),
       textAlign = TextAlign.Center,
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .fillMaxWidth(),
     )
     HedvigText(
-      text = stringResource(R.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
+      text = stringResource(Res.string.SUBMIT_CLAIM_NEED_HELP_LABEL),
       textAlign = TextAlign.Center,
       color = HedvigTheme.colorScheme.textSecondary,
       modifier = Modifier
@@ -179,7 +195,7 @@ private fun DeflectGlassDamageScreen(
     )
     Spacer(Modifier.height(24.dp))
     HedvigButton(
-      text = stringResource(R.string.open_chat),
+      text = stringResource(Res.string.open_chat),
       onClick = dropUnlessResumed { onNavigateToNewConversation() },
       buttonSize = Small,
       enabled = true,
@@ -198,14 +214,14 @@ private fun QuestionsAndAnswers(modifier: Modifier = Modifier) {
   var expandedItem by rememberSaveable { mutableIntStateOf(-1) }
   val faqList = listOf(
     stringResource(
-      R.string.SUBMIT_CLAIM_WHAT_COST_TITLE,
-    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WHAT_COST_LABEL),
+      Res.string.SUBMIT_CLAIM_WHAT_COST_TITLE,
+    ) to stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_WHAT_COST_LABEL),
     stringResource(
-      R.string.SUBMIT_CLAIM_HOW_BOOK_TITLE,
-    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL),
+      Res.string.SUBMIT_CLAIM_HOW_BOOK_TITLE,
+    ) to stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL),
     stringResource(
-      R.string.SUBMIT_CLAIM_WORKSHOP_TITLE,
-    ) to stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_WORKSHOP_LABEL),
+      Res.string.SUBMIT_CLAIM_WORKSHOP_TITLE,
+    ) to stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_WORKSHOP_LABEL),
   )
   Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     faqList.forEachIndexed { index, faqItem ->

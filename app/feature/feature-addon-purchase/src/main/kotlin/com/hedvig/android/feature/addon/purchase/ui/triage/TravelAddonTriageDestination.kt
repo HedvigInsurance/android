@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,11 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Success
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.general_close_button
+import hedvig.resources.open_chat
+import org.jetbrains.compose.resources.stringResource
 
 @androidx.annotation.Keep
 @Composable
@@ -117,17 +120,17 @@ private fun FailureScreen(
             ),
         ) {
           Spacer(Modifier.weight(1f))
-          val buttonText = stringResource(R.string.open_chat)
+          val buttonText = stringResource(Res.string.open_chat)
 
           HedvigErrorSection(
             onButtonClick = onNavigateToNewConversation,
-            subTitle = stringResource(R.string.GENERAL_ERROR_BODY),
+            subTitle = stringResource(Res.string.GENERAL_ERROR_BODY),
             modifier = Modifier.fillMaxSize(),
             buttonText = buttonText,
           )
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
-            stringResource(R.string.general_close_button),
+            stringResource(Res.string.general_close_button),
             onClick = dropUnlessResumed { popBackStack() },
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),

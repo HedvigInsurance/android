@@ -17,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -27,7 +26,12 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.general_close_button
+import hedvig.resources.open_chat
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun UnknownErrorDestination(
@@ -54,11 +58,11 @@ private fun UnknownErrorScreen(onNavigateToNewConversation: () -> Unit, closeFai
     ) {
       Spacer(Modifier.height(16.dp))
       EmptyState(
-        text = stringResource(R.string.something_went_wrong),
-        description = stringResource(R.string.GENERAL_ERROR_BODY),
+        text = stringResource(Res.string.something_went_wrong),
+        description = stringResource(Res.string.GENERAL_ERROR_BODY),
         iconStyle = ERROR,
         buttonStyle = Button(
-          stringResource(R.string.open_chat),
+          stringResource(Res.string.open_chat),
           dropUnlessResumed { onNavigateToNewConversation() },
         ),
         modifier = Modifier
@@ -68,7 +72,7 @@ private fun UnknownErrorScreen(onNavigateToNewConversation: () -> Unit, closeFai
       )
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
-        stringResource(R.string.general_close_button),
+        stringResource(Res.string.general_close_button),
         onClick = closeFailureScreenDestination,
         enabled = true,
         modifier = Modifier

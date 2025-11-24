@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -31,6 +30,11 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import org.jetbrains.compose.resources.stringResource
+import hedvig.resources.login_continue_button
+import hedvig.resources.login_enter_your_email_address
+import hedvig.resources.login_navigation_bar_center_element_title
+import hedvig.resources.login_text_input_email_address
 
 @Composable
 fun EmailInputScreen(
@@ -48,7 +52,7 @@ fun EmailInputScreen(
   ) {
     TopAppBarWithBack(
       onClick = onUpClick,
-      title = stringResource(hedvig.resources.R.string.login_navigation_bar_center_element_title),
+      title = stringResource(hedvig.resources.Res.string.login_navigation_bar_center_element_title),
     )
     Column(
       modifier = Modifier
@@ -58,7 +62,7 @@ fun EmailInputScreen(
     ) {
       Spacer(Modifier.height(60.dp))
       HedvigText(
-        text = stringResource(hedvig.resources.R.string.login_enter_your_email_address),
+        text = stringResource(hedvig.resources.Res.string.login_enter_your_email_address),
         style = HedvigTheme.typography.headlineMedium,
       )
       Spacer(Modifier.height(40.dp))
@@ -66,7 +70,7 @@ fun EmailInputScreen(
       Spacer(Modifier.weight(1f))
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(hedvig.resources.R.string.login_continue_button),
+        text = stringResource(hedvig.resources.Res.string.login_continue_button),
         onClick = onSubmitEmail,
         enabled = true,
         modifier = Modifier.fillMaxWidth(),
@@ -88,7 +92,7 @@ private fun EmailTextField(
     text = emailInput,
     onValueChange = onInputChanged,
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
-    labelText = stringResource(hedvig.resources.R.string.login_text_input_email_address),
+    labelText = stringResource(hedvig.resources.Res.string.login_text_input_email_address),
     suffix = if (loading) {
       { HedvigCircularProgressIndicator(Modifier.size(24.dp)) }
     } else {

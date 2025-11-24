@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -25,9 +24,13 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import hedvig.resources.R
+import hedvig.resources.ADDON_FLOW_SUCCESS_SUBTITLE
+import hedvig.resources.ADDON_FLOW_SUCCESS_TITLE
+import hedvig.resources.Res
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: () -> Unit) {
@@ -50,9 +53,9 @@ internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: (
     Spacer(Modifier.weight(1f))
     EmptyState(
       modifier = Modifier.fillMaxWidth(),
-      text = stringResource(R.string.ADDON_FLOW_SUCCESS_TITLE),
+      text = stringResource(Res.string.ADDON_FLOW_SUCCESS_TITLE),
       description = stringResource(
-        R.string.ADDON_FLOW_SUCCESS_SUBTITLE,
+        Res.string.ADDON_FLOW_SUCCESS_SUBTITLE,
         formattedDate,
       ),
       iconStyle = SUCCESS,
@@ -60,7 +63,7 @@ internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: (
     )
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
-      stringResource(R.string.general_close_button),
+      stringResource(Res.string.general_close_button),
       onClick = dropUnlessResumed { popBackStack() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),

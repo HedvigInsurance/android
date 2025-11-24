@@ -47,7 +47,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
@@ -126,7 +125,18 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.TOAST_NEW_OFFER
+import hedvig.resources.home_tab_active_in_future_info
+import hedvig.resources.home_tab_claim_button_text
+import hedvig.resources.home_tab_get_help
+import hedvig.resources.home_tab_pending_switchable_welcome_title_without_name
+import hedvig.resources.home_tab_pending_unknown_title_without_name
+import hedvig.resources.home_tab_terminated_welcome_title_without_name
+import hedvig.resources.home_tab_welcome_title_without_name
+import hedvig.resources.important_message_hide
+import hedvig.resources.important_message_read_more
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -137,6 +147,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HomeDestination(
@@ -278,7 +289,7 @@ private fun HomeScreen(
             )
             ToolbarClaimChatIcon(
               onClick = navigateToClaimChatInDevMode,
-              isDev = true
+              isDev = true,
             )
           }
           val actionsList = buildList {
@@ -328,7 +339,7 @@ private fun HomeScreen(
         }
         if (shouldShowNewMessageTooltip) {
           HedvigTooltip(
-            message = stringResource(R.string.CHAT_NEW_MESSAGE),
+            message = stringResource(Res.string.CHAT_NEW_MESSAGE),
             showTooltip = shouldShowNewMessageTooltip,
             tooltipStyle = Inbox,
             beakDirection = TopEnd,
@@ -373,7 +384,7 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
     }
     if (shouldShowCrossSellsTooltip) {
       HedvigTooltip(
-        message = stringResource(R.string.TOAST_NEW_OFFER),
+        message = stringResource(Res.string.TOAST_NEW_OFFER),
         showTooltip = true,
         tooltipStyle = TooltipDefaults.TooltipStyle.Campaign(
           subMessage = null,
@@ -481,7 +492,7 @@ private fun HomeScreenSuccess(
           Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             if (uiState.homeText is HomeText.ActiveInFuture) {
               HedvigNotificationCard(
-                message = stringResource(R.string.home_tab_active_in_future_info, uiState.homeText.inception),
+                message = stringResource(Res.string.home_tab_active_in_future_info, uiState.homeText.inception),
                 priority = NotificationPriority.Info,
                 modifier = Modifier
                   .fillMaxWidth()
@@ -504,7 +515,7 @@ private fun HomeScreenSuccess(
         },
         startClaimButton = {
           HedvigButton(
-            text = stringResource(R.string.home_tab_claim_button_text),
+            text = stringResource(Res.string.home_tab_claim_button_text),
             onClick = onStartClaimClicked,
             enabled = true,
             modifier = Modifier
@@ -516,7 +527,7 @@ private fun HomeScreenSuccess(
         helpCenterButton = {
           if (uiState.isHelpCenterEnabled) {
             HedvigButton(
-              text = stringResource(R.string.home_tab_get_help),
+              text = stringResource(Res.string.home_tab_get_help),
               onClick = navigateToHelpCenter,
               buttonStyle = Secondary,
               enabled = true,
@@ -613,15 +624,15 @@ private fun VeryImportantMessageCard(
       withIcon = false,
       style = if (veryImportantMessage.linkInfo != null) {
         NotificationDefaults.InfoCardStyle.Buttons(
-          leftButtonText = stringResource(R.string.important_message_hide),
+          leftButtonText = stringResource(Res.string.important_message_hide),
           rightButtonText =
-            veryImportantMessage.linkInfo.buttonText ?: stringResource(R.string.important_message_read_more),
+            veryImportantMessage.linkInfo.buttonText ?: stringResource(Res.string.important_message_read_more),
           onLeftButtonClick = { hideImportantMessage(veryImportantMessage.id) },
           onRightButtonClick = { openUrl(veryImportantMessage.linkInfo.link) },
         )
       } else {
         NotificationDefaults.InfoCardStyle.Button(
-          buttonText = stringResource(R.string.important_message_hide),
+          buttonText = stringResource(Res.string.important_message_hide),
           onButtonClick = { hideImportantMessage(veryImportantMessage.id) },
         )
       },
@@ -643,11 +654,11 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
     )
   } else {
     val headlineText = when (homeText) {
-      is HomeText.Active -> stringResource(R.string.home_tab_welcome_title_without_name)
+      is HomeText.Active -> stringResource(Res.string.home_tab_welcome_title_without_name)
       is HomeText.ActiveInFuture -> error("Image shows here instead")
-      is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
-      is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
-      is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
+      is HomeText.Pending -> stringResource(Res.string.home_tab_pending_unknown_title_without_name)
+      is HomeText.Switching -> stringResource(Res.string.home_tab_pending_switchable_welcome_title_without_name)
+      is HomeText.Terminated -> stringResource(Res.string.home_tab_terminated_welcome_title_without_name)
     }
     HedvigText(
       text = headlineText,
@@ -799,7 +810,7 @@ private fun PreviewHomeScreen(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {}
+        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -830,7 +841,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {}
+        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -882,7 +893,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {}
+        navigateToClaimChatInDevMode = {},
       )
     }
   }

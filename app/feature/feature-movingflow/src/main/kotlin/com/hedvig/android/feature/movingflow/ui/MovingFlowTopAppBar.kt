@@ -9,7 +9,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -27,7 +26,13 @@ import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.GENERAL_NO
+import hedvig.resources.GENERAL_PROGRESS_WILL_BE_LOST_ALERT
+import hedvig.resources.GENERAL_YES
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun MovingFlowTopAppBar(
@@ -61,21 +66,21 @@ private fun MovingFlowTopAppBar(
       onDismissRequest = { setShowExitDialog(false) },
       style = Buttons(
         onDismissRequest = { setShowExitDialog(false) },
-        dismissButtonText = stringResource(R.string.GENERAL_NO),
+        dismissButtonText = stringResource(Res.string.GENERAL_NO),
         onConfirmButtonClick = {
           setShowExitDialog(false)
           exitFlow()
         },
-        confirmButtonText = stringResource(R.string.GENERAL_YES),
+        confirmButtonText = stringResource(Res.string.GENERAL_YES),
       ),
     ) {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
         HedvigText(
-          text = stringResource(R.string.GENERAL_ARE_YOU_SURE),
+          text = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
           textAlign = TextAlign.Center,
         )
         HedvigText(
-          text = stringResource(R.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
+          text = stringResource(Res.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
           textAlign = TextAlign.Center,
           color = HedvigTheme.colorScheme.textSecondary,
         )
@@ -99,7 +104,7 @@ private fun MovingFlowTopAppBar(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )

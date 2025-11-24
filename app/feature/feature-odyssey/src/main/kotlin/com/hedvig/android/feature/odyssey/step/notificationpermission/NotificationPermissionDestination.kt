@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,13 @@ import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
+import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA
+import hedvig.resources.CLAIMS_NOTIFICATIONS_ACTIVATED
+import hedvig.resources.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun NotificationPermissionDestination(
@@ -72,12 +77,12 @@ private fun NotificationPermissionScreen(
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     Spacer(Modifier.height(16.dp))
     FlowHeading(
-      stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+      stringResource(Res.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
       stringResource(
         if (notificationPermissionState.status.isGranted) {
-          R.string.CLAIMS_NOTIFICATIONS_ACTIVATED
+          Res.string.CLAIMS_NOTIFICATIONS_ACTIVATED
         } else {
-          R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
+          Res.string.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
         },
       ),
       sideSpacingModifier.fillMaxWidth(),
@@ -86,12 +91,12 @@ private fun NotificationPermissionScreen(
     Spacer(Modifier.weight(1f))
     val bottomButton: Pair<String, () -> Unit> = when (notificationPermissionState.status) {
       is Granted -> {
-        stringResource(R.string.general_continue_button) to onNotificationPermissionDecided
+        stringResource(Res.string.general_continue_button) to onNotificationPermissionDecided
       }
 
       is Denied -> {
         Pair(
-          stringResource(R.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
+          stringResource(Res.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
           notificationPermissionState::launchPermissionRequest,
         )
       }
@@ -106,7 +111,7 @@ private fun NotificationPermissionScreen(
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
         onClick = onNotificationPermissionDecided,
-        text = stringResource(R.string.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
+        text = stringResource(Res.string.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS),
         modifier = sideSpacingModifier.fillMaxWidth(),
       )
     }

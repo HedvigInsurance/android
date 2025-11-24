@@ -21,7 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -62,9 +61,20 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuran
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.R
+import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.Res
+import hedvig.resources.TERMINATE_CONTRACT_TERMINATING_PROGRESS
+import hedvig.resources.TERMINATION_ADDON_COVERAGE_TITLE
+import hedvig.resources.TERMINATION_BUTTON
+import hedvig.resources.TERMINATION_FLOW_CONFIRMATION
+import hedvig.resources.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION
+import hedvig.resources.TERMINATION_FLOW_CONFIRM_BUTTON
+import hedvig.resources.TERMINATION_FLOW_SUMMARY_SUBTITLE
+import hedvig.resources.TERMINATION_KEEP_INSURANCE_BUTTON
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationConfirmationDestination(
@@ -99,7 +109,7 @@ private fun TerminationConfirmationScreen(
   val isSubmittingTerminationOrNavigatingForward = uiState.isSubmittingContractTermination || uiState.nextStep != null
   if (isSubmittingTerminationOrNavigatingForward) {
     HedvigFullScreenCenterAlignedLinearProgress(
-      title = stringResource(id = R.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
+      title = stringResource(Res.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
     )
   } else {
     AreYouSureScreen(
@@ -135,7 +145,7 @@ private fun AreYouSureScreen(
   ) { title ->
     FlowHeading(
       title,
-      stringResource(id = R.string.TERMINATION_FLOW_SUMMARY_SUBTITLE),
+      stringResource(Res.string.TERMINATION_FLOW_SUMMARY_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f).heightIn(min = 8.dp))
@@ -158,7 +168,7 @@ private fun AreYouSureScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.TERMINATION_BUTTON),
+      text = stringResource(Res.string.TERMINATION_BUTTON),
       enabled = true,
       onClick = { areYouSureSheetState.show() },
       modifier = Modifier
@@ -167,7 +177,7 @@ private fun AreYouSureScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.TERMINATION_KEEP_INSURANCE_BUTTON),
+      text = stringResource(Res.string.TERMINATION_KEEP_INSURANCE_BUTTON),
       buttonSize = Large,
       onClick = closeTerminationFlow,
       modifier = Modifier
@@ -207,14 +217,14 @@ private fun AreYouSureSheetContent(
   Column(modifier) {
     EmptyState(
       iconStyle = ERROR,
-      text = stringResource(id = R.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
       description = when (type) {
         TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion ->
-          stringResource(id = R.string.TERMINATION_FLOW_CONFIRMATION)
+          stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION)
 
         is Termination ->
           stringResource(
-            id = R.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
+            Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
             dateTimeFormatter.format(type.terminationDate.toJavaLocalDate()),
           )
       },
@@ -222,14 +232,14 @@ private fun AreYouSureSheetContent(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.TERMINATION_FLOW_CONFIRM_BUTTON),
+      text = stringResource(Res.string.TERMINATION_FLOW_CONFIRM_BUTTON),
       onClick = confirmCancellation,
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(8.dp))
     HedvigButton(
-      text = stringResource(R.string.general_close_button),
+      text = stringResource(Res.string.general_close_button),
       onClick = dismissSheet,
       enabled = true,
       buttonStyle = Ghost,
@@ -264,7 +274,7 @@ private fun InsuranceInfoCard(
         Spacer(Modifier.height(16.dp))
         HorizontalDivider()
         Spacer(Modifier.height(16.dp))
-        HedvigText(stringResource(R.string.TERMINATION_ADDON_COVERAGE_TITLE))
+        HedvigText(stringResource(Res.string.TERMINATION_ADDON_COVERAGE_TITLE))
         ProvideTextStyle(LocalTextStyle.current.copy(color = HedvigTheme.colorScheme.textSecondary)) {
           for (extraCoverageItem in extraCoverageItems) {
             HorizontalItemsWithMaximumSpaceTaken(

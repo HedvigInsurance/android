@@ -14,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -56,9 +55,22 @@ import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.ADDON_FLOW_CONFIRMATION_BUTTON
+import hedvig.resources.ADDON_FLOW_CONFIRMATION_DESCRIPTION
+import hedvig.resources.ADDON_FLOW_CONFIRMATION_TITLE
+import hedvig.resources.ADDON_FLOW_PRICE_LABEL
+import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
+import hedvig.resources.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON
+import hedvig.resources.ADDON_FLOW_SUMMARY_INFO_TEXT
+import hedvig.resources.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddonSummaryDestination(
@@ -123,7 +135,7 @@ private fun AddonSummaryScreen(
 private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
   HedvigScaffold(
     navigateUp,
-    topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
+    topAppBarText = stringResource(Res.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     val locale = getLocale()
     val formattedDate = remember(uiState.activationDate, locale) {
@@ -134,14 +146,14 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
       HedvigAlertDialog(
-        title = stringResource(R.string.ADDON_FLOW_CONFIRMATION_TITLE),
+        title = stringResource(Res.string.ADDON_FLOW_CONFIRMATION_TITLE),
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
         buttonSize = DialogDefaults.ButtonSize.BIG,
-        confirmButtonLabel = stringResource(R.string.ADDON_FLOW_CONFIRMATION_BUTTON),
-        dismissButtonLabel = stringResource(R.string.general_close_button),
+        confirmButtonLabel = stringResource(Res.string.ADDON_FLOW_CONFIRMATION_BUTTON),
+        dismissButtonLabel = stringResource(Res.string.general_close_button),
         text = stringResource(
-          R.string.ADDON_FLOW_CONFIRMATION_DESCRIPTION,
+          Res.string.ADDON_FLOW_CONFIRMATION_DESCRIPTION,
           formattedDate,
         ),
       )
@@ -159,7 +171,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         .padding(horizontal = 16.dp),
     ) {
       HedvigNotificationCard(
-        message = stringResource(R.string.ADDON_FLOW_SUMMARY_INFO_TEXT),
+        message = stringResource(Res.string.ADDON_FLOW_SUMMARY_INFO_TEXT),
         priority = NotificationDefaults.NotificationPriority.Info,
       )
       Spacer(Modifier.height(24.dp))
@@ -167,7 +179,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         modifier = Modifier.semantics(true) {},
         startSlot = {
           HedvigText(
-            stringResource(R.string.TIER_FLOW_TOTAL),
+            stringResource(Res.string.TIER_FLOW_TOTAL),
             style = HedvigTheme.typography.bodySmall,
           )
         },
@@ -176,13 +188,13 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
           val text = if (uiState.totalPriceChange.amount > 0) {
             // with +
             stringResource(
-              R.string.ADDON_FLOW_PRICE_LABEL,
+              Res.string.ADDON_FLOW_PRICE_LABEL,
               uiState.totalPriceChange,
             )
           } else {
             // without + (supposedly with minus)
             stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
               uiState.totalPriceChange,
             )
           }
@@ -202,7 +214,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         horizontalArrangement = Arrangement.End,
       ) {
         HedvigText(
-          text = stringResource(R.string.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE),
+          text = stringResource(Res.string.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE),
           textAlign = TextAlign.End,
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
@@ -210,7 +222,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       }
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(R.string.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON),
+        text = stringResource(Res.string.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON),
         modifier = Modifier.fillMaxWidth(),
         buttonStyle = Primary,
         buttonSize = Large,
@@ -241,11 +253,11 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   val costBreakdown: List<CostBreakdownEntry> =
     if (uiState.currentTravelAddon != null) {
       val currentAddonDisplayItemValue = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
         uiState.currentTravelAddon.netPremium,
       )
       val newAddonDisplayValueNet = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
         uiState.quote.itemCost.monthlyNet,
       )
       buildList {
@@ -266,7 +278,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       }
     } else {
       val newAddonDisplayValueGross = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
         uiState.quote.itemCost.monthlyGross,
       )
       buildList {
@@ -290,7 +302,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     }
   QuoteCard(
     subtitle = stringResource(
-      R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
+      Res.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
       formattedDate,
     ),
     premium = premium,
@@ -335,7 +347,7 @@ private fun AddonCostBreakdownComposable(
           {
             HedvigText(
               text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 currentTravelAddon.netPremium,
               ),
               textAlign = TextAlign.End,
@@ -351,7 +363,7 @@ private fun AddonCostBreakdownComposable(
           {
             HedvigText(
               text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 quote.itemCost.monthlyNet,
               ),
               textAlign = TextAlign.End,
@@ -365,7 +377,7 @@ private fun AddonCostBreakdownComposable(
           {
             HedvigText(
               text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 quote.itemCost.monthlyGross,
               ),
               textAlign = TextAlign.End,

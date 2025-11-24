@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -30,10 +29,20 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.GENERAL_CONTACT_US_TITLE
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.MOVING_FLOW_BODY
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import hedvig.resources.insurance_details_change_address_button
+import hedvig.resources.open_chat
+import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CreateMutation
 import octopus.feature.movingflow.fragment.MoveIntentFragment
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SelectContractDestination(
@@ -80,20 +89,20 @@ private fun SelectContractScreen(
       ) {
         HedvigErrorSection(
           buttonText = when (uiState) {
-            is SelectContractState.Error.UserPresentable -> stringResource(R.string.open_chat)
-            else -> stringResource(R.string.GENERAL_RETRY)
+            is SelectContractState.Error.UserPresentable -> stringResource(Res.string.open_chat)
+            else -> stringResource(Res.string.GENERAL_RETRY)
           },
           onButtonClick = when (uiState) {
             is SelectContractState.Error.UserPresentable -> goToChat
             else -> reload
           },
           title = when (uiState) {
-            is SelectContractState.Error.UserPresentable -> stringResource(R.string.GENERAL_CONTACT_US_TITLE)
-            else -> stringResource(R.string.something_went_wrong)
+            is SelectContractState.Error.UserPresentable -> stringResource(Res.string.GENERAL_CONTACT_US_TITLE)
+            else -> stringResource(Res.string.something_went_wrong)
           },
           subTitle = when (uiState) {
             is SelectContractState.Error.UserPresentable -> uiState.message
-            else -> stringResource(R.string.GENERAL_ERROR_BODY)
+            else -> stringResource(Res.string.GENERAL_ERROR_BODY)
           },
           modifier = Modifier
             .fillMaxWidth()
@@ -117,7 +126,7 @@ private fun SelectContractScreen(
             content = {
               Icon(
                 imageVector = HedvigIcons.Close,
-                contentDescription = stringResource(R.string.general_close_button),
+                contentDescription = stringResource(Res.string.general_close_button),
               )
             },
           )
@@ -125,8 +134,8 @@ private fun SelectContractScreen(
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         FlowHeading(
-          title = stringResource(id = R.string.insurance_details_change_address_button),
-          stringResource(id = R.string.MOVING_FLOW_BODY),
+          title = stringResource(Res.string.insurance_details_change_address_button),
+          stringResource(Res.string.MOVING_FLOW_BODY),
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -151,7 +160,7 @@ private fun SelectContractScreen(
         )
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          stringResource(id = R.string.general_continue_button),
+          stringResource(Res.string.general_continue_button),
           enabled = uiState.selectedAddress != null,
           modifier = Modifier
             .fillMaxWidth()

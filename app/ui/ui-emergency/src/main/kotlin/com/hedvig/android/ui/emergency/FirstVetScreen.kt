@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -32,8 +31,12 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_TITLE
+import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON
+import hedvig.resources.general_close_button
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FirstVetScreen(
@@ -44,7 +47,7 @@ fun FirstVetScreen(
 ) {
   val context = LocalContext.current
   HedvigScaffold(
-    topAppBarText = stringResource(id = R.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
+    topAppBarText = stringResource(Res.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
     navigateUp = navigateUp,
   ) {
     Column(
@@ -92,7 +95,7 @@ fun FirstVetScreen(
                 buttonStyle = ButtonDefaults.ButtonStyle.SecondaryAlt,
                 enabled = true,
                 text = section.buttonTitle
-                  ?: stringResource(R.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
+                  ?: stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
                 onClick = {
                   val url = section.url ?: "https://firstvet-se.go.link/kHxkt"
                   context.startActivity(
@@ -108,7 +111,7 @@ fun FirstVetScreen(
       Spacer(modifier = Modifier.weight(1f))
       Spacer(modifier = Modifier.height(16.dp))
       HedvigTextButton(
-        text = stringResource(R.string.general_close_button),
+        text = stringResource(Res.string.general_close_button),
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
         buttonSize = Large,
         onClick = navigateBack,
