@@ -55,6 +55,7 @@ kotlin {
       implementation(projects.audioPlayerData)
       implementation(projects.audioPlayerUi)
       implementation(projects.composePhotoCaptureState)
+      implementation(projects.coreUiData)
     }
   }
 }

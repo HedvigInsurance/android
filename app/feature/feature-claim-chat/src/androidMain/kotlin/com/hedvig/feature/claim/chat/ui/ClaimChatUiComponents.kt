@@ -10,11 +10,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -40,12 +44,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
+import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -79,6 +87,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
@@ -378,7 +388,13 @@ internal fun UploadFilesBubble(
   canBeChanged: Boolean,
   onSkip: () -> Unit,
   addLocalFile: (uri: Uri) -> Unit,
-  onSubmit: () -> Unit,
+  onRemoveFile: (fileId: String) -> Unit,
+  onSubmitFiles: () -> Unit,
+  appPackageId: String,
+  localFiles: List<UiFile>,
+  uploadedFiles: List<UiFile>,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -399,6 +415,7 @@ internal fun UploadFilesBubble(
       addLocalFile(resultingUri)
     }
   }
+
   FilePickerBottomSheet(
     sheetState = fileTypeSelectBottomSheetState,
     onPickPhoto = {
@@ -414,27 +431,82 @@ internal fun UploadFilesBubble(
       fileTypeSelectBottomSheetState.dismiss()
     },
   )
+  UploadFilesBubbleContent(
+    onUploadButtonClick = {
+      fileTypeSelectBottomSheetState.show()
+    },
+    isCurrentStep =isCurrentStep,
+    canSkip = canSkip,
+    canBeChanged = canBeChanged,
+    onSkip = onSkip,
+    onRemoveFile = onRemoveFile,
+    onSubmitFiles = onSubmitFiles,
+    localFiles = localFiles,
+    uploadedFiles = uploadedFiles,
+    imageLoader = imageLoader,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    modifier = modifier,
+  )
+}
 
+@Composable
+private fun UploadFilesBubbleContent(
+  isCurrentStep: Boolean,
+  canSkip: Boolean,
+  canBeChanged: Boolean,
+  onSkip: () -> Unit,
+  onRemoveFile: (fileId: String) -> Unit,
+  onSubmitFiles: () -> Unit,
+  onUploadButtonClick: () -> Unit,
+  localFiles: List<UiFile>,
+  uploadedFiles: List<UiFile>,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   StandardBubble(
     isPrefilledByAI = false,
     isCurrentStep = isCurrentStep,
     canSkip = canSkip,
-    onSubmit = onSubmit,
+    onSubmit = {
+      onSubmitFiles()
+    },
     modifier = modifier,
-    selectedAnswer = TODO(),
+    selectedAnswer = Unit,
     onSkip = onSkip,
     content = {
-      HedvigButton(
-        text = stringResource(R.string.file_upload_upload_files),
-        onClick = submitFiles,
-        enabled = isCurrentStep || canBeChanged,
-      )
+      Column(
+        horizontalAlignment = Alignment.End
+      ) {
+        DynamicFilesGridBetweenOtherThings(
+          files = (uploadedFiles + localFiles),
+          imageLoader = imageLoader,
+          onRemoveFile = onRemoveFile,
+          onClickFile = null,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          belowGridContent = {
+            Row(
+              Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.End
+            ) {
+              HedvigButton(
+              text = stringResource(R.string.file_upload_upload_files),
+              onClick = onUploadButtonClick,
+              enabled = isCurrentStep || canBeChanged,
+                buttonSize = ButtonDefaults.ButtonSize.Medium
+            )
+            }
+          },
+          contentPadding = WindowInsets.safeDrawing
+            .only(WindowInsetsSides.Bottom).asPaddingValues() + PaddingValues(16.dp),
+        )
+      }
     },
   )
 }
 
 @Composable
-fun FilePickerBottomSheet(
+private fun FilePickerBottomSheet(
   sheetState: HedvigBottomSheetState<Unit>,
   onPickPhoto: () -> Unit,
   onPickFile: () -> Unit,
@@ -465,21 +537,36 @@ private fun FilePickerBottomSheetContent(
     Column(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-      ClickableOption(
-        text = stringResource(R.string.file_upload_photo_library),
-        icon = HedvigIcons.Image,
+      HedvigButton(
         onClick = onPickPhoto,
-      )
-      ClickableOption(
-        text = stringResource(R.string.file_upload_take_photo),
-        icon = HedvigIcons.Camera,
+        true,
+      ) {
+        Row {
+          Icon(HedvigIcons.Image, null)
+          Spacer(Modifier.height(8.dp))
+          HedvigText(stringResource(R.string.file_upload_photo_library))
+        }
+      }
+      HedvigButton(
         onClick = onTakePhoto,
-      )
-      ClickableOption(
-        text = stringResource(R.string.file_upload_choose_files),
-        icon = HedvigIcons.Document,
+        true,
+      ) {
+        Row {
+          Icon(HedvigIcons.Camera, null)
+          Spacer(Modifier.height(8.dp))
+          HedvigText(stringResource(R.string.file_upload_take_photo))
+        }
+      }
+      HedvigButton(
         onClick = onPickFile,
-      )
+        true,
+      ) {
+        Row {
+          Icon(HedvigIcons.Document, null)
+          Spacer(Modifier.height(8.dp))
+          HedvigText(stringResource(R.string.file_upload_choose_files))
+        }
+      }
     }
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -939,7 +1026,9 @@ private fun PreviewClaimChatComponents() {
 @Composable
 private fun PreviewSummary() {
   HedvigTheme {
-    Surface {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -958,6 +1047,44 @@ private fun PreviewSummary() {
           "All done! Here is your submitted claim.",
           onNavigateToClaim = {},
           claimId = "",
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewUploadFilesBubbleContent() {
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        UploadFilesBubbleContent(
+          modifier = Modifier.height(250.dp),
+          isCurrentStep = true,
+          canSkip = true,
+          canBeChanged = true,
+          onSkip = {},
+          onRemoveFile = {},
+          onSubmitFiles = {},
+          localFiles = listOf(
+            UiFile(
+              name = "file",
+              localPath = "path",
+              mimeType = "image/jpg",
+              url = null,
+              id = "1",
+            )
+          ),
+          uploadedFiles = emptyList(),
+          imageLoader = rememberPreviewImageLoader(),
+          onNavigateToImageViewer = { _, _ -> },
+          onUploadButtonClick = {},
         )
       }
     }
