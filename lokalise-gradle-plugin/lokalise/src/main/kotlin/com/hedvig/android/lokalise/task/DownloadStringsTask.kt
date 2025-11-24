@@ -201,15 +201,22 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   /**
-   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
-   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
+   * Replace all `.` from string keys with `_`. They get translated to `_` anyway in order to be able to access them
+   * from Kotlin code so this has no change on the call sites.
+   * Keeping the `.` also breaks the code generation for CMP resources, this fixes it.
    */
   private fun String.removeDotsFromStringIds(): String {
-    return replace(
-      oldValue = """.""", // todo only remove dots from ids and not from the real translations
-      newValue = """_""",
-    )
-      .replace("""1_0""", """1.0""")
+    return this.replace(
+      Regex(
+        """
+        name="([^"]*)"
+        """.trimIndent(),
+      ),
+    ) { matchResult ->
+      val nameValue = matchResult.groupValues[1]
+      val nameWithoutDots = nameValue.replace(".", "_")
+      """name="$nameWithoutDots""""
+    }
   }
 
   private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {
