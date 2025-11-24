@@ -9,19 +9,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.navigation.AutoDecommissionDeflectStepParameters
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class DeflectAutoDecommissionStepViewModel(
+  deflectParameters: AutoDecommissionDeflectStepParameters,
   terminateInsuranceRepository: TerminateInsuranceRepository,
 ) : MoleculeViewModel<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState>(
-    initialState = DeflectAutoDecommissionUiState.Success(),
-    presenter = DeflectAutoDecomStepPresenter(terminateInsuranceRepository),
+    initialState = DeflectAutoDecommissionUiState.Success(
+      title = deflectParameters.title,
+      message = deflectParameters.message,
+      info = deflectParameters.info,
+      explanations = deflectParameters.explanations
+    ),
+    presenter = DeflectAutoDecomStepPresenter(terminateInsuranceRepository, deflectParameters),
   )
 
 private class DeflectAutoDecomStepPresenter(
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
+  private val deflectParameters: AutoDecommissionDeflectStepParameters,
 ) : MoleculePresenter<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState> {
   @Composable
   override fun MoleculePresenterScope<DeflectAutoDecommissionEvent>.present(
@@ -58,6 +66,10 @@ private class DeflectAutoDecomStepPresenter(
             DeflectAutoDecommissionUiState.Success(
               buttonLoading = true,
               nextStep = result,
+              title = deflectParameters.title,
+              message = deflectParameters.message,
+              info = deflectParameters.info,
+              explanations = deflectParameters.explanations,
             )
           },
         )
@@ -71,6 +83,10 @@ internal sealed interface DeflectAutoDecommissionUiState {
   data object Loading : DeflectAutoDecommissionUiState
 
   data class Success(
+    val title: String,
+    val message: String,
+    val info: String?,
+    val explanations: List<Pair<String?, String>>,
     val buttonLoading: Boolean = false,
     val nextStep: TerminateInsuranceStep? = null,
   ) : DeflectAutoDecommissionUiState

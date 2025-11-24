@@ -75,6 +75,7 @@ private fun DeflectAutoDecomStepScreen(
 
     DeflectAutoDecommissionUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
     is DeflectAutoDecommissionUiState.Success -> DeflectAutoDecomStepSuccessScreen(
+      uiState,
       isNextStepLoading = uiState.buttonLoading,
       navigateUp = navigateUp,
       closeTerminationFlow = closeTerminationFlow,
@@ -85,6 +86,7 @@ private fun DeflectAutoDecomStepScreen(
 
 @Composable
 private fun DeflectAutoDecomStepSuccessScreen(
+  uiState: DeflectAutoDecommissionUiState.Success,
   isNextStepLoading: Boolean,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
@@ -95,45 +97,42 @@ private fun DeflectAutoDecomStepSuccessScreen(
     closeTerminationFlow = closeTerminationFlow,
   ) { _ ->
     FlowHeading(
-      title = stringResource(id = R.string.TERMINATION_FLOW_AUTO_DECOM_TITLE),
+      title = uiState.title,
       description = null,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
 
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      stringResource(R.string.TERMINATION_FLOW_AUTO_DECOM_INFO),
+      uiState.message,
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
-    HedvigText(
-      stringResource(R.string.TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    HedvigText(
-      stringResource(R.string.TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO),
-      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(16.dp))
-    HedvigText(
-      stringResource(R.string.TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    HedvigText(
-      stringResource(R.string.TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO),
-      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
+    uiState.explanations.forEach {
+      val title = it.first
+      if (title != null) {
+        HedvigText(
+          title,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      HedvigText(
+        it.second,
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
     Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-    HedvigNotificationCard(
-      message = stringResource(R.string.TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION),
-      priority = NotificationDefaults.NotificationPriority.Info,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(16.dp))
+    if (uiState.info !=null) {
+      HedvigNotificationCard(
+        message = uiState.info,
+        priority = NotificationDefaults.NotificationPriority.Info,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
     HedvigButton(
       stringResource(id = R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
       enabled = !isNextStepLoading,
@@ -179,8 +178,24 @@ private fun PreviewChooseInsuranceToTerminateScreen(
 private class DeflectAutoDecomUiStateProvider :
   CollectionPreviewParameterProvider<DeflectAutoDecommissionUiState>(
     listOf(
-      DeflectAutoDecommissionUiState.Success(),
-      DeflectAutoDecommissionUiState.Success(buttonLoading = true),
+      DeflectAutoDecommissionUiState.Success(
+        title = "Title",
+        message = "Message",
+        info = "Info",
+        explanations = listOf(
+          "Title 1" to "Text 1",
+          "Title 2" to "Text 2"
+        )
+      ),
+      DeflectAutoDecommissionUiState.Success(
+        title = "Title",
+        message = "Message",
+        info = "Info",
+        explanations = listOf(
+          "Title 1" to "Text 1",
+          "Title 2" to "Text 2"
+        ),
+        buttonLoading = true),
       DeflectAutoDecommissionUiState.Loading,
       DeflectAutoDecommissionUiState.Failure,
     ),
