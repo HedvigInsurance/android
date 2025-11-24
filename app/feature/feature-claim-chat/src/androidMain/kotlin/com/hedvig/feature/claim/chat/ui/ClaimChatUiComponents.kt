@@ -60,6 +60,8 @@ import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.AccordionData
+import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
@@ -88,6 +90,7 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
@@ -109,6 +112,7 @@ import hedvig.resources.R
 import java.io.File
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
 //todo: if we want a a fullscreen free text overlay,
 // the claim chat screen should be wrapped in this:
@@ -445,7 +449,7 @@ internal fun UploadFilesBubble(
     onUploadButtonClick = {
       fileTypeSelectBottomSheetState.show()
     },
-    isCurrentStep =isCurrentStep,
+    isCurrentStep = isCurrentStep,
     canSkip = canSkip,
     canBeChanged = canBeChanged,
     onSkip = onSkip,
@@ -485,14 +489,15 @@ private fun UploadFilesBubbleContent(
     selectedAnswer = if ((localFiles + uploadedFiles).isNotEmpty()) Unit else null,
     onSkip = onSkip,
     content = {
-      Column{
+      Column {
         val allFiles = localFiles + uploadedFiles
         if (allFiles.isNotEmpty()) {
-          LazyRow(Modifier
-            .height(120.dp),
+          LazyRow(
+            Modifier
+              .height(120.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 8.dp)
-            ) {
+            contentPadding = PaddingValues(top = 8.dp),
+          ) {
             items(
               items = allFiles,
               key = { it.id },
@@ -512,13 +517,13 @@ private fun UploadFilesBubbleContent(
         }
         Row(
           Modifier.fillMaxWidth().padding(16.dp),
-          horizontalArrangement = Arrangement.End
+          horizontalArrangement = Arrangement.End,
         ) {
           HedvigButton(
             text = stringResource(R.string.file_upload_upload_files),
             onClick = onUploadButtonClick,
             enabled = isCurrentStep || canBeChanged,
-            buttonSize = ButtonDefaults.ButtonSize.Medium
+            buttonSize = ButtonDefaults.ButtonSize.Medium,
           )
         }
       }
@@ -596,19 +601,70 @@ private fun FilePickerBottomSheetContent(
 
 @Composable
 internal fun DeflectBubble(
-  isCurrentStep: Boolean,
-  canSkip: Boolean,
-  canBeChanged: Boolean,
-  onSkip: () -> Unit,
-  onSubmit: (String) -> Unit,
+  title: String,
+  description: String,
+  faq: List<Pair<String, String>>,
+  openUrl: (String) -> Unit,
+  partners: List<DeflectPartner>,
   modifier: Modifier = Modifier,
 ) {
-  HedvigCard(
-    Modifier.padding(start = 8.dp, top = 8.dp),
-  ) {
 
-  }
+    Column(
+      modifier = modifier.padding(16.dp),
+      horizontalAlignment = Alignment.End,
+    ) {
+      FlowHeading(title, description)
+      partners.forEach { partner ->
+          Spacer(Modifier.height(16.dp))
+          HedvigCard(
+            Modifier.fillMaxWidth()
+          ) {
+            Column(Modifier.padding(16.dp),
+              horizontalAlignment = Alignment.CenterHorizontally) {
+              if (partner.title!=null) {
+                HedvigText(partner.title)
+              }
+              if (partner.description!=null) {
+                HedvigText(partner.description)
+              }
+              if (partner.url != null && partner.buttonTitle != null) {
+                Spacer(Modifier.height(8.dp))
+              HedvigButton(
+                buttonSize = ButtonDefaults.ButtonSize.Medium,
+                enabled = true,
+                text =
+                  partner.buttonTitle,
+                onClick = {
+                  openUrl(partner.url)
+                },
+              )
+            }
+          }
+        }
+      }
+      if (faq.isNotEmpty()) {
+        Spacer(Modifier.height(16.dp))
+        AccordionList(
+          faq.map { faqItem ->
+            AccordionData(title = faqItem.first, description = faqItem.second)
+          },
+        )
+      }
+    }
 }
+
+
+@Serializable
+data class DeflectPartner(
+  val id: String,
+  val title: String?,
+  val description: String?,
+  val imageUrl: String,
+  val phoneNumber: String?,
+  val url: String?,
+  val buttonTitle: String?,
+  val info: String?,
+)
 
 @Composable
 internal fun DateSelectBubble(
@@ -1085,7 +1141,7 @@ private fun PreviewUploadFilesBubbleContent(
     ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         UploadFilesBubbleContent(
           modifier = Modifier.height(400.dp),
@@ -1102,12 +1158,59 @@ private fun PreviewUploadFilesBubbleContent(
               mimeType = "image/jpg",
               url = null,
               id = "1",
-            )
+            ),
           ) else emptyList(),
           uploadedFiles = emptyList(),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
           onUploadButtonClick = {},
+        )
+      }
+    }
+  }
+}
+
+
+@HedvigPreview
+@Composable
+private fun PreviewDeflect(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasFaq: Boolean,
+) {
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        DeflectBubble(
+          title = "Deflect title",
+          description = "Loooooooooooooooooooooong deflect description",
+          faq = listOf("Question" to "Answer"),
+          openUrl = {},
+          partners = listOf(
+            DeflectPartner(
+              id = "partner1",
+              title = "partner1",
+              description = "description",
+              imageUrl = "",
+              phoneNumber = "",
+              url = "",
+              buttonTitle = "Contact Partner 1",
+              info = "Available 24/7 for emergency assistance",
+            ),
+            DeflectPartner(
+              id = "partner2",
+              imageUrl = "",
+              phoneNumber = null,
+              url = "",
+              buttonTitle = "Visit Website",
+              info = "Online support and resources",
+              title = "partner2",
+              description = "description",
+            ),
+          ),
         )
       }
     }
