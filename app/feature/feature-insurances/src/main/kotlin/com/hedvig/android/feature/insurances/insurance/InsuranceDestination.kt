@@ -233,7 +233,29 @@ private fun InsuranceScreenContent(
             onInsuranceCardClick = onInsuranceCardClick,
             contracts = uiState.contracts + uiState.pendingContracts,
           )
+          if (uiState.crossSells.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            CrossSellsSection(
+              title = stringResource(R.string.INSURANCE_OFFERS_SUBHEADING),
+              crossSells = uiState.crossSells,
+              onCrossSellClick = onCrossSellClick,
+              modifier = Modifier.padding(horizontal = 16.dp),
+              onSheetDismissed = {},
+              imageLoader = imageLoader,
+              hasCrossSellDiscounts = uiState.hasCrossSellDiscounts,
+            )
+          }
           if (uiState.travelAddonBannerInfo != null) {
+            Spacer(Modifier.height(24.dp))
+            Row(
+              modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .semantics { heading() },
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              HedvigText(text = stringResource(R.string.INSURANCE_ADDONS_SUBHEADING))
+            }
             TravelAddonBanner(
               travelAddonBannerInfo = uiState.travelAddonBannerInfo,
               launchAddonPurchaseFlow = {
@@ -250,16 +272,6 @@ private fun InsuranceScreenContent(
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           }
-        }
-        if (uiState.crossSells.isNotEmpty()) {
-          CrossSellsSection(
-            crossSells = uiState.crossSells,
-            onCrossSellClick = onCrossSellClick,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            onSheetDismissed = {},
-            imageLoader = imageLoader,
-            hasCrossSellDiscounts = uiState.hasCrossSellDiscounts
-          )
         }
         if (quantityOfCancelledInsurances > 0) {
           TerminatedContractsButton(
@@ -352,7 +364,7 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
   Column(modifier) {
     HedvigNotificationCard(
       message = stringResource(R.string.insurances_tab_moving_flow_info_title),
-      priority = NotificationPriority.Info,
+      priority = NotificationPriority.Campaign,
       style = InfoCardStyle.Button(
         stringResource(R.string.insurances_tab_moving_flow_info_button_title),
         dropUnlessResumed { onNavigateToMovingFlow() },
@@ -405,9 +417,14 @@ private fun PreviewInsuranceScreen(
           hasError = false,
           isLoading = false,
           isRetrying = false,
-          travelAddonBannerInfo = null,
+          travelAddonBannerInfo = TravelAddonBannerInfo(
+            "Title",
+            "description",
+            eligibleInsurancesIds = nonEmptyListOf(""),
+            labels = listOf("Great"),
+          ),
           pendingContracts = listOf(previewPendingContract),
-          hasCrossSellDiscounts = true
+          hasCrossSellDiscounts = true,
         ),
         {},
         {},
@@ -416,7 +433,6 @@ private fun PreviewInsuranceScreen(
         {},
         rememberPreviewImageLoader(),
         {},
-
       )
     }
   }
@@ -459,7 +475,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
-      hasCrossSellDiscounts = true
+      hasCrossSellDiscounts = true,
     ),
     InsuranceUiState(
       contracts = listOf(),

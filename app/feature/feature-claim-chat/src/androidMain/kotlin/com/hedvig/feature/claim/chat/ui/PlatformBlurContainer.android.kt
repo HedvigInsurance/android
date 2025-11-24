@@ -54,7 +54,7 @@ internal actual fun BlurredGradientBackground(modifier: Modifier, radius: Int) {
     Box(modifier = modifier.fillMaxSize()) {
       // 2. The Blur and Canvas Layer (Combined for Skia/Android)
       Canvas(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
       ) {
         val canvasWidth = size.width
         val canvasHeight = size.height

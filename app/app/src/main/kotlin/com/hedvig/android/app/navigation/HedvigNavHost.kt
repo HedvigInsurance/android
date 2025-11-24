@@ -193,14 +193,20 @@ internal fun HedvigNavHost(
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
       },
       navigateToClaimChat = {
-        hedvigAppState.navController.navigate(ClaimChatDestination(
-          messageId = null, isDevelopmentFlow = false
-        ))
+        hedvigAppState.navController.navigate(
+          ClaimChatDestination(
+            messageId = null,
+            isDevelopmentFlow = false,
+          ),
+        )
       },
       navigateToClaimChatInDevMode = {
-        hedvigAppState.navController.navigate(ClaimChatDestination(
-          messageId = null, isDevelopmentFlow = true
-        ))
+        hedvigAppState.navController.navigate(
+          ClaimChatDestination(
+            messageId = null,
+            isDevelopmentFlow = true,
+          ),
+        )
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,

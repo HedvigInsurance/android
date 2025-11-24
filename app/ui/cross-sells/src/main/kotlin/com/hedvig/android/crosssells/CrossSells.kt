@@ -140,7 +140,7 @@ fun CrossSellFloatingBottomSheet(
         otherCrossSells = crossSellSheetData.otherCrossSells,
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
-        imageLoader,
+        imageLoader = imageLoader,
       )
     },
   )
@@ -461,10 +461,11 @@ fun CrossSellsSection(
   modifier: Modifier = Modifier,
   withSubHeader: Boolean = true,
   hasCrossSellDiscounts: Boolean = false,
+  title: String? = null,
 ) {
   Column(modifier) {
     if (withSubHeader) {
-      CrossSellsSubHeaderWithDivider(hasCrossSellDiscounts)
+      CrossSellsSubHeaderWithDivider(hasCrossSellDiscounts, title)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
       if (hasCrossSellDiscounts) {
@@ -477,6 +478,7 @@ fun CrossSellsSection(
           imageLoader = imageLoader,
           crossSellImageAsset = crossSell.pillowImage,
           onSheetDismissed = onSheetDismissed,
+          buttonText = crossSell.buttonText,
         )
       } else {
         CrossSellItem(
@@ -512,12 +514,10 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
 }
 
 @Composable
-private fun CrossSellsSubHeaderWithDivider(
-  hasCrossSellDiscounts: Boolean,
-) {
+private fun CrossSellsSubHeaderWithDivider(hasCrossSellDiscounts: Boolean, title: String? = null) {
   Column {
     NotificationSubheading(
-      text = stringResource(R.string.insurance_tab_cross_sells_title),
+      text = title ?: stringResource(R.string.insurance_tab_cross_sells_title),
       modifier = Modifier.semantics { heading() },
     )
     if (hasCrossSellDiscounts) {
@@ -572,7 +572,7 @@ fun AnimatedCrossSellsIconWithText(modifier: Modifier = Modifier) {
           ),
         ) {
           HedvigText(
-            text = stringResource(R.string.INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE), //todo
+            text = stringResource(R.string.INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE), // todo
             color = HedvigTheme.colorScheme.signalGreenText,
             style = HedvigTheme.typography.label,
             modifier = Modifier.padding(top = 8.dp, end = 14.dp, bottom = 8.dp),
@@ -691,6 +691,7 @@ private fun CrossSellItemWithDiscounts(
   crossSellTitle: String,
   crossSellSubtitle: String,
   storeUrl: String,
+  buttonText: String?,
   crossSellImageAsset: ImageAsset?,
   onCrossSellClick: (String) -> Unit,
   isLoading: Boolean,
@@ -729,8 +730,6 @@ private fun CrossSellItemWithDiscounts(
     ) {
       HedvigText(
         text = crossSellTitle,
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.hedvigPlaceholder(
           visible = isLoading,
           highlight = PlaceholderHighlight.shimmer(),
@@ -740,6 +739,8 @@ private fun CrossSellItemWithDiscounts(
       Spacer(Modifier.height(4.dp))
       HedvigText(
         text = crossSellSubtitle,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier.hedvigPlaceholder(
           visible = isLoading,
           shape = HedvigTheme.shapes.cornerSmall,
@@ -749,7 +750,7 @@ private fun CrossSellItemWithDiscounts(
     }
     Spacer(Modifier.width(16.dp))
     HedvigButton(
-      text = stringResource(R.string.cross_sell_get_price),
+      text = buttonText ?: stringResource(R.string.cross_sell_get_price),
       onClick = {
         onCrossSellClick(storeUrl)
         onSheetDismissed()
@@ -944,6 +945,7 @@ private fun PreviewCrossSellsSectionWithDiscounts() {
             "50% off your first year",
             "storeUrl",
             ImageAsset("", "", ""),
+            buttonText = "Save 50%",
           )
         },
         {},

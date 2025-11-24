@@ -116,16 +116,16 @@ internal fun AudioRecorder(
 
     is AudioRecordingStepState.AudioRecording.PrerecordedWithAudioContent ->
       PrerecordedPlayback(
-      uiState = uiState,
-      submitAudioUrl = {
-        submitAudioUrl(uiState.audioContent.audioUrl)
-      },
-      redo = redo,
-      isCurrentStep = isCurrentStep,
-      modifier = modifier,
-      canSkip = canSkip,
-      onSkip = onSkip
-    )
+        uiState = uiState,
+        submitAudioUrl = {
+          submitAudioUrl(uiState.audioContent.audioUrl)
+        },
+        redo = redo,
+        isCurrentStep = isCurrentStep,
+        modifier = modifier,
+        canSkip = canSkip,
+        onSkip = onSkip,
+      )
 
     else -> {
       val isRecording = uiState is AudioRecordingStepState.AudioRecording.Recording
@@ -255,7 +255,12 @@ internal fun AudioRecorder(
 }
 
 @Composable
-private fun Playback(uiState: AudioRecordingStepState.AudioRecording.Playback, submit: () -> Unit, redo: () -> Unit, modifier: Modifier = Modifier) {
+private fun Playback(
+  uiState: AudioRecordingStepState.AudioRecording.Playback,
+  submit: () -> Unit,
+  redo: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier.fillMaxWidth(),
@@ -316,7 +321,7 @@ private fun PrerecordedPlayback(
         Column {
           Spacer(Modifier.height(16.dp))
           Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
           ) {
             if (canSkip) {
               HedvigTextButton(
@@ -419,7 +424,6 @@ private class KeepScreenOnState(private val view: View) {
   }
 }
 
-
 @HedvigPreview
 @Composable
 private fun PreviewRecordingAmplitudeIndicator() {
@@ -440,7 +444,6 @@ private fun PreviewRecordingAmplitudeIndicator() {
   }
 }
 
-
 @HedvigPreview
 @Composable
 private fun PreviewNotRecording() {
@@ -458,7 +461,7 @@ private fun PreviewNotRecording() {
         onLaunchFreeText = {},
         isCurrentStep = true,
         onSkip = {},
-        canSkip = true
+        canSkip = true,
       )
     }
   }
@@ -470,8 +473,11 @@ private fun PreviewRecording() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AudioRecorder(
-        uiState = AudioRecordingStepState.AudioRecording.Recording(listOf(70),
-          Clock.System.now().minus(1019.seconds), ""),
+        uiState = AudioRecordingStepState.AudioRecording.Recording(
+          listOf(70),
+          Clock.System.now().minus(1019.seconds),
+          "",
+        ),
         startRecording = { },
         clock = Clock.System,
         stopRecording = { },
@@ -482,12 +488,11 @@ private fun PreviewRecording() {
         redo = { },
         isCurrentStep = true,
         onSkip = {},
-        canSkip = true
+        canSkip = true,
       )
     }
   }
 }
-
 
 @HedvigPreview
 @Composable
@@ -495,10 +500,12 @@ private fun PreviewPrerecordedPlayback() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       PrerecordedPlayback(
-        uiState = AudioRecordingStepState.AudioRecording.PrerecordedWithAudioContent(AudioContent(
-          AudioUrl(""),
-          AudioUrl(""),
-        )),
+        uiState = AudioRecordingStepState.AudioRecording.PrerecordedWithAudioContent(
+          AudioContent(
+            AudioUrl(""),
+            AudioUrl(""),
+          ),
+        ),
         redo = {},
         submitAudioUrl = {},
         modifier = Modifier,

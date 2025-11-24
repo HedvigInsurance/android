@@ -5,7 +5,7 @@ import kotlinx.io.Source
 
 internal class JvmFile(
   override val fileName: String,
-  override val description: String
+  override val description: String,
 ) : CommonFile {
   override fun source(): Source {
     TODO("Not yet implemented")
@@ -16,7 +16,7 @@ internal class JvmFile(
   }
 }
 
-internal class JvmFileService: FileService {
+internal class JvmFileService : FileService {
   override fun convertToCommonFile(uri: Uri): CommonFile {
     return JvmFile("todo", "todo")
   }

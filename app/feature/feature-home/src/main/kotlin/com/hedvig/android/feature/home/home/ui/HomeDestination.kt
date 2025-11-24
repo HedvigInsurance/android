@@ -278,7 +278,7 @@ private fun HomeScreen(
             )
             ToolbarClaimChatIcon(
               onClick = navigateToClaimChatInDevMode,
-              isDev = true
+              isDev = true,
             )
           }
           val actionsList = buildList {
@@ -799,7 +799,7 @@ private fun PreviewHomeScreen(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {}
+        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -830,7 +830,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {}
+        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -882,7 +882,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToContactInfo = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
-        navigateToClaimChatInDevMode = {}
+        navigateToClaimChatInDevMode = {},
       )
     }
   }

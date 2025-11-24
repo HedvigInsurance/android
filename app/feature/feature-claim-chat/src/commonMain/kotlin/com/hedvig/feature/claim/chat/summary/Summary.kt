@@ -21,7 +21,8 @@ import com.hedvig.feature.claim.chat.data.StepContent
 internal fun Summary(
 //  summary: ConversationItem.Summary,
   onSubmit: () -> Unit,
-  modifier: Modifier = Modifier) {
+  modifier: Modifier = Modifier,
+) {
   Column(
     modifier = modifier.fillMaxSize(),
     horizontalAlignment = Alignment.CenterHorizontally,

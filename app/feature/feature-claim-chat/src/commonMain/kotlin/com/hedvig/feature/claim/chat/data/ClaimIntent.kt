@@ -10,12 +10,12 @@ internal data class ClaimIntent(
   val id: ClaimIntentId,
   val next: Next,
 ) {
-
   sealed interface Next {
     val step: Step?
       get() = this as? Step
 
     data class Step(val claimIntentStep: ClaimIntentStep) : Next
+
     data class Outcome(val claimIntentOutcome: ClaimIntentOutcome) : Next
   }
 }
@@ -94,7 +94,6 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
   ) : StepContent {
-
     data class Field(
       val id: FieldId,
       val isRequired: Boolean,
@@ -128,7 +127,9 @@ internal sealed interface StepContent {
     override val isRegrettable: Boolean = false
 
     data class Item(val title: String, val value: String)
+
     data class AudioRecording(val url: String)
+
     data class FileUpload(val url: String, val contentType: String, val fileName: String)
   }
 
