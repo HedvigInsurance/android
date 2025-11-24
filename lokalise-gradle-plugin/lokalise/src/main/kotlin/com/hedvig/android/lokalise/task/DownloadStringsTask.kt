@@ -72,7 +72,10 @@ abstract class DownloadStringsTask @Inject constructor(
     logger.debug("{} zip file path:{}", tag, tempFileForZipFile.absolutePath)
     dirRes.fillContentsByCopyingFromZipFile(tempFileForZipFile)
     logger.debug("{} dirRes:{}", tag, dirRes.asFileTree.map { it.absolutePath })
-    dirRes.fixPercentageSigns()
+    dirRes.editTranslations {
+      fixPercentageSigns()
+        .removeDotsFromStringIds()
+    }
     tempFileForZipFile.delete()
   }
 
@@ -168,11 +171,9 @@ abstract class DownloadStringsTask @Inject constructor(
     return this.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
   }
 
-  /**
-   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
-   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
-   */
-  private fun ConfigurableFileCollection.fixPercentageSigns() {
+  private fun ConfigurableFileCollection.editTranslations(
+    block: String.() -> String,
+  ) {
     val allTranslationXmlFilePaths: List<okio.Path> = asFileTree
       .map { it.path.toPath() }
       .filter { it.name == """strings.xml""" }
@@ -181,15 +182,34 @@ abstract class DownloadStringsTask @Inject constructor(
     val fileSystem = FileSystem.SYSTEM
     for (currentLanguageTranslationXmlFilePath in allTranslationXmlFilePaths) {
       val content = fileSystem.read(currentLanguageTranslationXmlFilePath) { readUtf8() }
-      val updatedContent = content
-        .replace(
-          oldValue = """%%""",
-          newValue = """\u0025""",
-        )
+      val updatedContent = block(content)
       fileSystem.write(currentLanguageTranslationXmlFilePath) {
         writeUtf8(updatedContent)
       }
     }
+  }
+
+  /**
+   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
+   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
+   */
+  private fun String.fixPercentageSigns(): String {
+    return replace(
+      oldValue = """%%""",
+      newValue = """\u0025""",
+    )
+  }
+
+  /**
+   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
+   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
+   */
+  private fun String.removeDotsFromStringIds(): String {
+    return replace(
+      oldValue = """.""", // todo only remove dots from ids and not from the real translations
+      newValue = """_""",
+    )
+      .replace("""1_0""", """1.0""")
   }
 
   private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {

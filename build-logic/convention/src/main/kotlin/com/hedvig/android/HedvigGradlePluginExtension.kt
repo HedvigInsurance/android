@@ -1,6 +1,7 @@
 package com.hedvig.android
 
 import androidx.room.gradle.RoomExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
@@ -9,7 +10,6 @@ import com.apollographql.apollo.gradle.api.Service
 import com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask
 import java.io.File
 import javax.inject.Inject
-import kotlin.takeIf
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -23,6 +23,7 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
 abstract class HedvigGradlePluginExtension @Inject constructor(
@@ -178,18 +179,14 @@ private abstract class ComposeHandler {
 //    project.extensions.configure<ComposeCompilerGradlePluginExtension> {
 //      configureComposeCompilerMetrics(project)
 //    }
+    project.configureIfPresent<LibraryExtension> {
+      configureComposeAndroidBuildFeature()
+    }
+    project.configureIfPresent<BaseAppModuleExtension> {
+      configureComposeAndroidBuildFeature()
+    }
     val isAndroidLibrary = project.extensions.findByType<LibraryExtension>() != null
-    if (isAndroidLibrary) {
-      project.extensions.configure<LibraryExtension> {
-        configureComposeAndroidBuildFeature()
-      }
-    }
     val isAndroidApp = project.extensions.findByType<BaseAppModuleExtension>() != null
-    if (isAndroidApp) {
-      project.extensions.configure<BaseAppModuleExtension> {
-        configureComposeAndroidBuildFeature()
-      }
-    }
     val isAndroidMultiplatformLibrary =
       project.extensions.findByType<KotlinMultiplatformAndroidComponentsExtension>() != null
     project.dependencies {
@@ -237,10 +234,20 @@ private abstract class ComposeHandler {
 
 private abstract class AndroidResHandler {
   fun configure(project: Project) {
-    project.extensions.configure<LibraryExtension> {
-      buildFeatures {
-        androidResources = true
-      }
+//    val isAndroidLibrary = project.extensions.findByType<LibraryExtension>() != null
+//    val isMultiplatformLibrary = project.extensions.findByType<KotlinMultiplatformAndroidLibraryExtension>() != null
+    project.configureIfPresent<LibraryExtension> {
+      androidResources.enable = true
+    }
+    project.configureIfPresent<KotlinMultiplatformAndroidLibraryExtension> {
+      @Suppress("UnstableApiUsage")
+      androidResources.enable = true
+    }
+    project.configureIfPresent<ResourcesExtension> {
+      // todo figure out why this isn't configured
+      generateResClass = ResourcesExtension.ResourceClassGeneration.Always
+      packageOfResClass = "hedvig.resources"
+      publicResClass = true
     }
   }
 }
@@ -264,5 +271,11 @@ private abstract class RoomHandler {
     project.extensions.configure<RoomExtension> {
       schemaDirectory(project.rootDir.resolveSchemaRelativeToRootDir().absolutePath)
     }
+  }
+}
+
+private inline fun <reified T : Any> Project.configureIfPresent(noinline configure: T.() -> Unit) {
+  if (project.extensions.findByType<T>() != null) {
+    project.extensions.configure<T>(configure)
   }
 }
