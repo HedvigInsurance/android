@@ -51,12 +51,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
@@ -424,7 +426,6 @@ internal fun UploadFilesBubble(
       addLocalFile(resultingUri)
     }
   }
-
   FilePickerBottomSheet(
     sheetState = fileTypeSelectBottomSheetState,
     onPickPhoto = {
@@ -1075,7 +1076,9 @@ private fun PreviewSummary() {
 
 @HedvigPreview
 @Composable
-private fun PreviewUploadFilesBubbleContent() {
+private fun PreviewUploadFilesBubbleContent(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasFiles: Boolean,
+) {
   HedvigTheme {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -1092,7 +1095,7 @@ private fun PreviewUploadFilesBubbleContent() {
           onSkip = {},
           onRemoveFile = {},
           onSubmitFiles = {},
-          localFiles = listOf(
+          localFiles = if (hasFiles) listOf(
             UiFile(
               name = "file",
               localPath = "path",
@@ -1100,7 +1103,7 @@ private fun PreviewUploadFilesBubbleContent() {
               url = null,
               id = "1",
             )
-          ),
+          ) else emptyList(),
           uploadedFiles = emptyList(),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
