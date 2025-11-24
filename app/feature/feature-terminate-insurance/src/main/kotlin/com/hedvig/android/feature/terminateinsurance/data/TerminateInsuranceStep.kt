@@ -1,8 +1,9 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
 import com.hedvig.android.feature.terminateinsurance.navigation.AutoCancelDeflectStepParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.AutoDecommissionDeflectStepParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoCancel
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoDecom
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoDecommission
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.InsuranceDeletion
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationDate
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationFailure
@@ -61,7 +62,12 @@ internal sealed interface TerminateInsuranceStep {
     val extraMessage: String?,
   ) : TerminateInsuranceStep
 
-  data object DeflectAutoDecommissionStep : TerminateInsuranceStep
+  data class DeflectAutoDecommissionStep(
+    val title: String,
+    val message: String,
+    val info: String?,
+    val explanations: List<Pair<String?, String>>,
+  ) : TerminateInsuranceStep
 }
 
 internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
@@ -90,7 +96,14 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
     }
 
     is TerminationFlowStepFragment.FlowTerminationCarAutoDecomStepCurrentStep -> {
-      TerminateInsuranceStep.DeflectAutoDecommissionStep
+      TerminateInsuranceStep.DeflectAutoDecommissionStep(
+        title = title,
+        message = message,
+        explanations = explanations.map {
+          it.title to it.text
+        },
+        info = info
+      )
     }
 
     is TerminationFlowStepFragment.FlowTerminationCarDeflectAutoCancelStepCurrentStep -> {
@@ -271,8 +284,14 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       ),
     )
 
-    is TerminateInsuranceStep.DeflectAutoDecommissionStep -> DeflectAutoDecom(
+    is TerminateInsuranceStep.DeflectAutoDecommissionStep -> DeflectAutoDecommission(
       commonParams = commonParams,
+      deflectParameters = AutoDecommissionDeflectStepParameters(
+        title = title,
+        message = message,
+        info = info,
+        explanations = explanations
+      )
     )
   }
 }
