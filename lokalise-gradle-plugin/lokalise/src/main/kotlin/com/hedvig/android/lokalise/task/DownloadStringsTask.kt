@@ -207,6 +207,10 @@ abstract class DownloadStringsTask @Inject constructor(
    */
   private fun String.removeDotsFromStringIds(): String {
     return this.replace(
+      // Regex("""name="([^"]*)")""" - Matches the pattern name="..." where:
+      //    - name=" - literal text
+      //    - ([^"]*) - captures any characters that are not quotes (this is group 1)
+      //    - " - closing quote
       Regex(
         """
         name="([^"]*)"
