@@ -25,9 +25,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -54,6 +59,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
+import com.hedvig.android.design.system.hedvig.File
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -472,34 +478,47 @@ private fun UploadFilesBubbleContent(
       onSubmitFiles()
     },
     modifier = modifier,
-    selectedAnswer = Unit,
+    selectedAnswer = if ((localFiles + uploadedFiles).isNotEmpty()) Unit else null,
     onSkip = onSkip,
     content = {
-      Column(
-        horizontalAlignment = Alignment.End
-      ) {
-        DynamicFilesGridBetweenOtherThings(
-          files = (uploadedFiles + localFiles),
-          imageLoader = imageLoader,
-          onRemoveFile = onRemoveFile,
-          onClickFile = null,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          belowGridContent = {
-            Row(
-              Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.End
-            ) {
-              HedvigButton(
-              text = stringResource(R.string.file_upload_upload_files),
-              onClick = onUploadButtonClick,
-              enabled = isCurrentStep || canBeChanged,
-                buttonSize = ButtonDefaults.ButtonSize.Medium
-            )
+      Column{
+        val allFiles = localFiles + uploadedFiles
+        if (allFiles.isNotEmpty()) {
+          LazyVerticalGrid(
+            columns = GridCells.Adaptive(109.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(top = 8.dp),
+            modifier = Modifier.height(120.dp),
+          ) {
+            items(
+              items = allFiles,
+              key = { it.id },
+            ) { uiFile ->
+              File(
+                id = uiFile.id,
+                name = uiFile.name,
+                path = uiFile.localPath ?: uiFile.url,
+                mimeType = uiFile.mimeType,
+                imageLoader = imageLoader,
+                onRemoveFile = onRemoveFile,
+                onClickFile = null,
+                onNavigateToImageViewer = onNavigateToImageViewer,
+              )
             }
-          },
-          contentPadding = WindowInsets.safeDrawing
-            .only(WindowInsetsSides.Bottom).asPaddingValues() + PaddingValues(16.dp),
-        )
+          }
+        }
+        Row(
+          Modifier.fillMaxWidth().padding(16.dp),
+          horizontalArrangement = Arrangement.End
+        ) {
+          HedvigButton(
+            text = stringResource(R.string.file_upload_upload_files),
+            onClick = onUploadButtonClick,
+            enabled = isCurrentStep || canBeChanged,
+            buttonSize = ButtonDefaults.ButtonSize.Medium
+          )
+        }
       }
     },
   )
@@ -1062,10 +1081,10 @@ private fun PreviewUploadFilesBubbleContent() {
     ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.padding(horizontal = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp)
       ) {
         UploadFilesBubbleContent(
-          modifier = Modifier.height(250.dp),
+          modifier = Modifier.height(400.dp),
           isCurrentStep = true,
           canSkip = true,
           canBeChanged = true,
