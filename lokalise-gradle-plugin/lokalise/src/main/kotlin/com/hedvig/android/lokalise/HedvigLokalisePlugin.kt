@@ -40,7 +40,7 @@ class HedvigLokalisePlugin : Plugin<Project> {
         task.lokaliseProjectId.set(extension.lokaliseProjectId)
         task.lokaliseToken.set(extension.lokaliseToken)
         task.downloadConfig.set(extension.downloadConfig)
-        task.outputDirectory.from(extension.outputDirectory)
+        task.outputDirectory.from(extension.outputDirectories)
       }
     }
   }

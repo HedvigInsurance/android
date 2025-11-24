@@ -221,9 +221,11 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   private fun ConfigurableFileCollection.fillContentsByCopyingFromZipFile(zipFile: File) {
-    fileSystemOperations.copy {
-      it.from(archiveOperations.zipTree(zipFile))
-      it.into(this.asPath)
+    files.forEach { file ->
+      fileSystemOperations.copy {
+        it.from(archiveOperations.zipTree(zipFile))
+        it.into(file.path)
+      }
     }
   }
 }

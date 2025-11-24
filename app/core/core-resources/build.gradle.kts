@@ -24,7 +24,10 @@ lokalise {
     lokaliseProperties.load(FileInputStream(lokalisePropertiesFile))
     lokaliseProjectId.set(lokaliseProperties.getProperty("id"))
     lokaliseToken.set(lokaliseProperties.getProperty("token"))
-    outputDirectory.set(file("src/commonMain/composeResources"))
+    outputDirectories.setFrom(
+      file("src/androidMain/res"),
+      file("src/commonMain/composeResources"),
+    )
   }
 }
 
