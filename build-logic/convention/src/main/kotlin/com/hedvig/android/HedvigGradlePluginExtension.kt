@@ -23,6 +23,7 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.newInstance
 import org.gradle.kotlin.dsl.the
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 
@@ -234,8 +235,6 @@ private abstract class ComposeHandler {
 
 private abstract class AndroidResHandler {
   fun configure(project: Project) {
-//    val isAndroidLibrary = project.extensions.findByType<LibraryExtension>() != null
-//    val isMultiplatformLibrary = project.extensions.findByType<KotlinMultiplatformAndroidLibraryExtension>() != null
     project.configureIfPresent<LibraryExtension> {
       androidResources.enable = true
     }
@@ -243,11 +242,12 @@ private abstract class AndroidResHandler {
       @Suppress("UnstableApiUsage")
       androidResources.enable = true
     }
-    project.configureIfPresent<ResourcesExtension> {
-      // todo figure out why this isn't configured
-      generateResClass = ResourcesExtension.ResourceClassGeneration.Always
-      packageOfResClass = "hedvig.resources"
-      publicResClass = true
+    project.configureIfPresent<ComposeExtension> {
+      extensions.configure<ResourcesExtension> {
+        generateResClass = ResourcesExtension.ResourceClassGeneration.Always
+        packageOfResClass = "hedvig.resources"
+        publicResClass = true
+      }
     }
   }
 }

@@ -50,10 +50,3 @@ kotlin {
     }
   }
 }
-
-compose.resources {
-  // todo move inside gradle plugin
-  generateResClass = ResourcesExtension.ResourceClassGeneration.Always
-  packageOfResClass = "hedvig.resources"
-  publicResClass = true
-}
