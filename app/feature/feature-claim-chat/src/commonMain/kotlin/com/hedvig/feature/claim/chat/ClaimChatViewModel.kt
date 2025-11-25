@@ -320,6 +320,6 @@ private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: Cla
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
   val last = lastOrNull() ?: return
   if (predicate(last)) {
-    removeLast()
+    removeAt(this.lastIndex)
   }
 }
