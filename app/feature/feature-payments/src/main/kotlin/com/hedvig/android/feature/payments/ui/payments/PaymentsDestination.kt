@@ -99,6 +99,7 @@ internal fun PaymentsDestination(
   onPaymentClicked: (id: String?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPaymentDetailsClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -109,6 +110,7 @@ internal fun PaymentsDestination(
     onDiscountClicked = onDiscountClicked,
     onPaymentHistoryClicked = onPaymentHistoryClicked,
     onRetry = { viewModel.emit(Retry) },
+    onPaymentDetailsClicked = onPaymentDetailsClicked
   )
 }
 
@@ -119,6 +121,7 @@ private fun PaymentsScreen(
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPaymentDetailsClicked: () -> Unit,
   onRetry: () -> Unit,
 ) {
   val density = LocalDensity.current
@@ -177,6 +180,7 @@ private fun PaymentsScreen(
               onChangeBankAccount = onChangeBankAccount,
               onDiscountClicked = onDiscountClicked,
               onPaymentHistoryClicked = onPaymentHistoryClicked,
+              onPaymentDetailsClicked = onPaymentDetailsClicked
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -200,6 +204,7 @@ private fun PaymentsContent(
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPaymentDetailsClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -256,28 +261,13 @@ private fun PaymentsContent(
       )
     }
 
-    PaymentsListItems(uiState, onDiscountClicked, onPaymentHistoryClicked)
+    PaymentsListItems(uiState,
+      onDiscountClicked = onDiscountClicked,
+      onPaymentHistoryClicked = onPaymentHistoryClicked,
+      onPaymentDetailsClicked = onPaymentDetailsClicked
+    )
     if (uiState is Content) {
-      when (val connectedPaymentInfo = uiState.connectedPaymentInfo) {
-        is ConnectedPaymentInfo.Connected -> {
-          Spacer(Modifier.weight(1f))
-          HedvigButton(
-            text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-            onClick = onChangeBankAccount,
-            enabled = true,
-            buttonStyle = Secondary,
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth()
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-              .hedvigPlaceholder(
-                uiState.isRetrying,
-                shape = HedvigTheme.shapes.cornerSmall,
-                highlight = PlaceholderHighlight.shimmer(),
-              ),
-          )
-        }
-
+      when (uiState.connectedPaymentInfo) {
         ConnectedPaymentInfo.Pending -> {
           HedvigNotificationCard(
             message = stringResource(R.string.MY_PAYMENT_UPDATING_MESSAGE),
@@ -290,8 +280,8 @@ private fun PaymentsContent(
 
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
-        -> {
-        }
+        is ConnectedPaymentInfo.Connected
+        -> {}
       }
     }
   }
@@ -358,6 +348,7 @@ private fun PaymentsListItems(
   uiState: PaymentsUiState,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPaymentDetailsClicked: () -> Unit,
 ) {
   val listItemsSideSpacingModifier = Modifier
     .padding(horizontal = 16.dp)
@@ -399,7 +390,7 @@ private fun PaymentsListItems(
       if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Connected) {
         HorizontalDivider(listItemsSideSpacingModifier)
         PaymentsListItem(
-          text = uiState.connectedPaymentInfo.displayName,
+          text = stringResource(R.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
           icon = {
             Icon(
               imageVector = HedvigIcons.Card,
@@ -407,21 +398,11 @@ private fun PaymentsListItems(
               modifier = Modifier.size(24.dp),
             )
           },
-          endSlot = {
-            HedvigText(
-              text = uiState.connectedPaymentInfo.maskedAccountNumber,
-              color = HedvigTheme.colorScheme.textSecondary,
-              textAlign = TextAlign.End,
-            )
-          },
-          modifier = listItemsSideSpacingModifier
+          modifier = Modifier
+            .clickable(onClick = onPaymentDetailsClicked)
+            .then(listItemsSideSpacingModifier)
             .padding(vertical = 16.dp)
-            .fillMaxWidth()
-            .hedvigPlaceholder(
-              uiState.isRetrying,
-              shape = HedvigTheme.shapes.cornerSmall,
-              highlight = PlaceholderHighlight.shimmer(),
-            ),
+            .fillMaxWidth(),
         )
       }
     }
@@ -583,6 +564,7 @@ private fun PreviewPaymentScreen(
         {},
         {},
         {},
+        {}
       )
     }
   }
