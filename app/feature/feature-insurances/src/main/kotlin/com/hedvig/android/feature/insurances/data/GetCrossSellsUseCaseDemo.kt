@@ -40,9 +40,8 @@ internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
             "",
             ImageAsset("", "", ""),
           ),
-        )
+        ),
       )
-
     }
   }
 }

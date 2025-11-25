@@ -41,5 +41,5 @@ internal class GetCrossSellsUseCaseImpl(
 
 data class CrossSellResult(
   val hasDiscounts: Boolean,
-  val crossSells: List<CrossSell>
+  val crossSells: List<CrossSell>,
 )

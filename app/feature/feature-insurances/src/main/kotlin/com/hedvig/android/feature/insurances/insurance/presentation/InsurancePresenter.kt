@@ -125,7 +125,7 @@ internal class InsurancePresenter(
       isLoading = isLoading,
       isRetrying = isRetrying,
       travelAddonBannerInfo = insuranceData.travelAddonBannerInfo,
-      hasCrossSellDiscounts = insuranceData.hasDiscounts
+      hasCrossSellDiscounts = insuranceData.hasDiscounts,
     )
   }
 }
@@ -157,7 +157,7 @@ private fun loadInsuranceData(
           !it.isTerminated && it.upcomingInsuranceAgreement == null && it.supportsAddressChange
         },
         travelAddonBannerInfo = travelAddonBannerInfo,
-        hasDiscounts = crossSellResult.hasDiscounts
+        hasDiscounts = crossSellResult.hasDiscounts,
       )
     }.onLeft {
       logcat(LogPriority.INFO, it.throwable) {
@@ -174,7 +174,7 @@ private data class InsuranceData(
   val quantityOfCancelledInsurances: Int,
   val isEligibleToPerformMovingFlow: Boolean,
   val travelAddonBannerInfo: TravelAddonBannerInfo?,
-  val hasDiscounts: Boolean
+  val hasDiscounts: Boolean,
 ) {
   companion object {
     fun fromUiState(uiState: InsuranceUiState): InsuranceData {
@@ -185,7 +185,7 @@ private data class InsuranceData(
         isEligibleToPerformMovingFlow = uiState.shouldSuggestMovingFlow,
         travelAddonBannerInfo = uiState.travelAddonBannerInfo,
         pendingContracts = uiState.pendingContracts,
-        hasDiscounts = uiState.hasCrossSellDiscounts
+        hasDiscounts = uiState.hasCrossSellDiscounts,
       )
     }
 
@@ -196,7 +196,7 @@ private data class InsuranceData(
       quantityOfCancelledInsurances = 0,
       isEligibleToPerformMovingFlow = false,
       travelAddonBannerInfo = null,
-      hasDiscounts = false
+      hasDiscounts = false,
     )
   }
 }
