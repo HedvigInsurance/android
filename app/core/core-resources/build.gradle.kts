@@ -31,6 +31,7 @@ lokalise {
   }
 }
 
+// https://issuetracker.google.com/issues/463591200
 //android {
 //  namespace = "hedvig.resources"
 //
