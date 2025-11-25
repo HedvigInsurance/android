@@ -46,6 +46,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       api(libs.jetbrains.components.resources)
+      implementation(libs.jetbrains.compose.runtime)
     }
   }
 }
