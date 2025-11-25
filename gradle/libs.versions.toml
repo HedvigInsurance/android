@@ -51,8 +51,9 @@ androidx-ui-alpha = "1.8.3"
 androidxGraphicsShapes = "1.0.1"
 jetbrains-animation = "1.10.0-beta02"
 jetbrains-compose = "1.10.0-beta02"
-jetbrains-material3 = "1.10.0-alpha05"
 jetbrains-lifecycle = "2.9.6"
+jetbrains-material3 = "1.10.0-alpha05"
+jetbrains-navigation = "2.9.1"
 arrow = "2.2.0"
 assertK = "0.28.1"
 atomicfu = "0.29.0"
@@ -181,6 +182,7 @@ jetbrains-compose-ui-graphics = { module = "org.jetbrains.compose.ui:ui-graphics
 jetbrains-compose-ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jetbrains-compose" }
 jetbrains-compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrains-compose" }
 jetbrains-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }
+jetbrains-navigation-common = { module = "org.jetbrains.androidx.navigation:navigation-common", version.ref = "jetbrains-navigation" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koinBom" }
