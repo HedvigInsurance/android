@@ -1,36 +1,106 @@
 package com.hedvig.feature.claim.chat.data
 
-data class ClaimIntent(
-  val id: String,
-  val step: ClaimIntentStep,
-)
+import kotlin.jvm.JvmInline
+import kotlin.time.Instant
 
-data class ClaimIntentStep(
-  val id: String,
+@JvmInline
+value class ClaimIntentId(val value: String)
+
+internal data class ClaimIntent(
+  val id: ClaimIntentId,
+  val next: Next,
+) {
+
+  sealed interface Next {
+    val step: Step?
+      get() = this as? Step
+
+    data class Step(val claimIntentStep: ClaimIntentStep) : Next
+    data class Outcome(val claimIntentOutcome: ClaimIntentOutcome) : Next
+  }
+}
+
+@JvmInline
+value class StepId(val value: String)
+
+internal data class ClaimIntentStep(
+  val id: StepId,
   val text: String,
   val stepContent: StepContent,
 )
 
-sealed interface StepContent {
+internal sealed interface ClaimIntentOutcome {
+  data class Deflect(
+    val title: String?,
+    val infoText: String?,
+    val warningText: String?,
+    val partners: List<Partner>,
+    val partnersInfo: InfoBlock?,
+    val content: InfoBlock,
+    val faq: List<InfoBlock>,
+  ) : ClaimIntentOutcome {
+    data class Partner(
+      val id: String,
+      val imageUrl: String?,
+      val phoneNumber: String?,
+      val title: String?,
+      val description: String?,
+      val info: String?,
+      val url: String?,
+      val urlButtonTitle: String?,
+    )
+
+    data class InfoBlock(
+      val title: String,
+      val description: String,
+    )
+  }
+
+  data class Claim(val claimId: String, val claimSubmissionDate: Instant) : ClaimIntentOutcome
+
+  data object Unknown : ClaimIntentOutcome
+}
+
+@JvmInline
+value class FieldId(val value: String)
+
+internal sealed interface StepContent {
+  val isSkippable: Boolean
+  val isRegrettable: Boolean
+
   data class AudioRecording(
     val hint: String?,
     val uploadUri: String,
+    override val isSkippable: Boolean,
+    override val isRegrettable: Boolean,
+  ) : StepContent
+
+  data class FileUpload(
+    val uploadUri: String,
+    override val isSkippable: Boolean,
+    override val isRegrettable: Boolean,
   ) : StepContent
 
   data class Task(
-    val description: String,
+    val descriptions: List<String>,
     val isCompleted: Boolean,
-  ) : StepContent
+  ) : StepContent {
+    override val isSkippable: Boolean = false
+    override val isRegrettable: Boolean = false
+  }
 
   data class Form(
     val fields: List<Field>,
+    override val isSkippable: Boolean,
+    override val isRegrettable: Boolean,
   ) : StepContent {
+
     data class Field(
-      val id: String,
+      val id: FieldId,
       val isRequired: Boolean,
       val suffix: String?,
       val title: String,
-      val defaultValue: String?,
+      val defaultValues: List<String>,
       val maxValue: String?,
       val minValue: String?,
       val type: String?,
@@ -38,15 +108,32 @@ sealed interface StepContent {
     )
   }
 
-  data class Summary(
-    val items: List<Item>,
+  data class ContentSelect(
+    val options: List<Option>,
+    override val isSkippable: Boolean,
+    override val isRegrettable: Boolean,
   ) : StepContent {
-    data class Item(val title: String, val value: String)
+    data class Option(
+      val id: String,
+      val title: String,
+    )
   }
 
-  data class Outcome(
-    val claimId: String,
-  ) : StepContent
+  data class Summary(
+    val items: List<Item>,
+    val audioRecordings: List<AudioRecording>,
+    val fileUploads: List<FileUpload>,
+  ) : StepContent {
+    override val isSkippable: Boolean = false
+    override val isRegrettable: Boolean = false
 
-  object Unknown : StepContent
+    data class Item(val title: String, val value: String)
+    data class AudioRecording(val url: String)
+    data class FileUpload(val url: String, val contentType: String, val fileName: String)
+  }
+
+  object Unknown : StepContent {
+    override val isSkippable: Boolean = false
+    override val isRegrettable: Boolean = false
+  }
 }

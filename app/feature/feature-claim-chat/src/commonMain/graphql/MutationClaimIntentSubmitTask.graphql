@@ -1,10 +1,5 @@
 mutation ClaimIntentSubmitTask($stepId: ID!) {
   claimIntentSubmitTask(input: {stepId: $stepId}) {
-    userError {
-      message
-    }
-    intent {
-      ...ClaimIntentFragment
-    }
+    ...ClaimIntentMutationOutputFragment
   }
 }

@@ -322,6 +322,10 @@ type CartItem {
   """
   notifications: [CarItemNotification!]!
 }
+enum CarTrialProduct {
+  HEDVIG_60_DAYS
+  HEDVIG_14_DAYS
+}
 """
 Returns changed price for an addon.
 """
@@ -547,6 +551,7 @@ type ChatMessageFile implements ChatMessage {
   sentAt: Instant!
   signedUrl: Url!
   mimeType: String!
+  fileName: String
   disclaimer: ChatMessageDisclaimer
 }
 type ChatMessageMutationOutput {
@@ -646,16 +651,60 @@ Root type expressing the entire flow for members trying to report a new claim.
 """
 type ClaimIntent {
   id: ID!
-  currentStep: ClaimIntentStep!
+  currentStep: ClaimIntentStep
   sourceMessages: [ClaimIntentSourceMessage!]
+  """
+  The outcome of the intent.
+  Once this value is returned, the intent is effectively over, and no steps
+  can be produced or interacted with.
+  """
+  outcome: ClaimIntentOutcome
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
-  values: [ClaimIntentStepContentFormFieldValue!]
+  """
+  For most field types, send a single value here.
+  If `ClaimIntentStepContentFormField.isRequired == false`, this can be left empty for "no value".
+  """
+  values: [ClaimIntentStepContentFormFieldValue!]!
 }
 type ClaimIntentMutationOutput {
   intent: ClaimIntent
   userError: UserError
+}
+union ClaimIntentOutcome = ClaimIntentOutcomeClaim|ClaimIntentOutcomeDeflection
+type ClaimIntentOutcomeClaim {
+  """
+  The created claim ID.
+  """
+  claimId: ID!
+  """
+  The entire claim model. Note that this is slower to fetch than simply the `claimId`.
+  """
+  claim: Claim!
+}
+type ClaimIntentOutcomeDeflection {
+  title: String
+  infoText: String
+  warningText: String
+  partners: [ClaimIntentOutcomeDeflectionPartner!]!
+  partnersInfo: ClaimIntentOutcomeDeflectionInfoBlock
+  content: ClaimIntentOutcomeDeflectionInfoBlock!
+  faq: [ClaimIntentOutcomeDeflectionInfoBlock!]!
+}
+type ClaimIntentOutcomeDeflectionInfoBlock {
+  title: String!
+  description: String!
+}
+type ClaimIntentOutcomeDeflectionPartner {
+  id: ID!
+  imageUrl: Url
+  phoneNumber: String
+  title: String
+  description: String
+  info: String
+  url: Url
+  urlButtonTitle: String
 }
 type ClaimIntentSourceMessage {
   id: ID!
@@ -682,7 +731,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -747,9 +796,9 @@ type ClaimIntentStepContentFormField {
   """
   options: [ClaimIntentStepContentFormFieldOption!]
   """
-  If present - the pre-defined value of this field.
+  If there are default values, they will show up in this array. Empty means no default value.
   """
-  defaultValue: ClaimIntentStepContentFormFieldValue
+  defaultValues: [ClaimIntentStepContentFormFieldValue!]!
   """
   If present - the minimal value this field can hold.
   """
@@ -768,6 +817,7 @@ enum ClaimIntentStepContentFormFieldType {
   DATE
   NUMBER
   SINGLE_SELECT
+  MULTI_SELECT
   BINARY
 }
 """
@@ -775,13 +825,6 @@ A scalar representing client-server agreed upon submittable form values.
 This typically will be backed by a String - but other formats could appear.
 """
 scalar ClaimIntentStepContentFormFieldValue
-"""
-A step that shows the outcome of a claim intent.
-This is a terminal step - there is no way to submit it.
-"""
-type ClaimIntentStepContentOutcome {
-  claimId: ID!
-}
 """
 A select step is one that contains a choice to select one of several alternatives.
 It can be seen as a special-case form with nicer rendering.
@@ -1262,6 +1305,10 @@ input EventInput {
   """
   data: JSON!
 }
+type ExplanationItem {
+  title: String
+  text: String!
+}
 type ExternalInsuranceCancellation {
   """
   Determines if and how we can help the user with cancellation.
@@ -1694,9 +1741,20 @@ interface FlowStep {
 input FlowTerminationCarAutoDecomInput {
   proceedToCancel: Boolean!
 }
+"""
+ Deflect step informing about car insurance automatically switching to decommission tier
+(if decommissioned) or regular tier (if the car is set active again). Member can continue termination from this step.
+"""
 type FlowTerminationCarAutoDecomStep implements FlowStep {
   id: ID!
+  title: String!
+  message: String!
+  explanations: [ExplanationItem!]!
+  info: String
 }
+"""
+ Deflect step informing about car auto-cancellation. End of termination flow. 
+"""
 type FlowTerminationCarDeflectAutoCancelStep implements FlowStep {
   id: ID!
   title: String!
@@ -3242,10 +3300,6 @@ type Product {
   """
   multiple: Boolean
   """
-  Bundle discount information for this product
-  """
-  bundleDiscount: ProductOfferBundleDiscountInfo! @deprecated(reason: "Use ProductOffer.bundleDiscount instead")
-  """
   A list of the external insurers valid for this specific product.
   """
   externalInsurers: [ExternalInsurer!]!
@@ -4074,6 +4128,7 @@ type TrialExtension {
   id: UUID!
   priceIntent: PriceIntent!
   trialContract: TrialContract!
+  product: CarTrialProduct!
   shopSession: ShopSession!
 }
 """

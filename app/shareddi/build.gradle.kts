@@ -1,5 +1,6 @@
 plugins {
   id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
@@ -10,6 +11,8 @@ kotlin {
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
       implementation(libs.koin.core)
+      implementation(libs.ktor.client.auth)
+      implementation(projects.authCoreApi)
       implementation(projects.coreBuildConstants)
       implementation(projects.featureClaimChat)
     }

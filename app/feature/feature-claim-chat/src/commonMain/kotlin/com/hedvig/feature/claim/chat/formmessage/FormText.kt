@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun FormText(
+internal fun FormText(
   value: String?,
   id: String,
   title: String?,

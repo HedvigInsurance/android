@@ -26,16 +26,19 @@ kotlin {
       implementation(compose.ui)
       implementation(libs.androidx.lifecycle.compose)
       implementation(libs.apollo.api)
-      implementation(libs.apollo.runtime)
       implementation(libs.apollo.normalizedCache)
+      implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
       implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)
-      implementation(libs.ktor.client.core)
+      implementation(libs.kotlinx.serialization.json)
       implementation(libs.ktor.client.contentNegotiation)
+      implementation(libs.ktor.client.core)
       implementation(libs.ktor.client.logging)
+      implementation(libs.uri.kmp)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
+      implementation(projects.moleculePublic)
     }
     androidMain.dependencies {
       implementation(libs.bundles.kmpPreviewBugWorkaround)
@@ -43,6 +46,14 @@ kotlin {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.designSystemHedvig)
+      implementation(projects.composeUi)
+      implementation(projects.coreResources)
+      implementation(libs.androidx.compose.uiToolingPreview)
+      implementation(projects.coreCommonPublic)
+      implementation(libs.androidx.graphicsShapes)
+      implementation(libs.accompanist.permissions)
+      implementation(projects.audioPlayerData)
+      implementation(projects.audioPlayerUi)
     }
   }
 }

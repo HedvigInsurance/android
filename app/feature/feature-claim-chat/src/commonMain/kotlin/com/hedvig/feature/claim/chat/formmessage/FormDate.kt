@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun FormDate(
+internal fun FormDate(
   value: String?,
   id: String,
   title: String?,

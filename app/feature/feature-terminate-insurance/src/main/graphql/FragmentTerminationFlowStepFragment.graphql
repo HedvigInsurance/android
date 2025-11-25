@@ -94,6 +94,13 @@ fragment FlowTerminationSuccessStepFragment on FlowTerminationSuccessStep {
 
 fragment FlowTerminationAutoDecomStepFragment on FlowTerminationCarAutoDecomStep {
   id
+  title
+  message
+  explanations {
+    title
+    text
+  }
+  info
 }
 
 fragment FlowTerminationCarDeflectAutoCancelStepFragment on FlowTerminationCarDeflectAutoCancelStep {
