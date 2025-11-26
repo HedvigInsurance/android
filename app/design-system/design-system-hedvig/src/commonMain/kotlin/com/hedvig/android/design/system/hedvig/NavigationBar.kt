@@ -1,9 +1,9 @@
 package com.hedvig.android.design.system.hedvig
 
-import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material.ripple
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -306,8 +306,6 @@ private fun TopLevelGraph.titleTextId(): StringResource {
 
 @PreviewFontScale
 @Preview(name = "200%", fontScale = 2f, locale = "sv")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 private fun PreviewNavigationBar(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) selected: Boolean,
@@ -325,8 +323,6 @@ private fun PreviewNavigationBar(
 
 @PreviewFontScale
 @Preview(name = "200%", fontScale = 2f, locale = "sv")
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
 private fun PreviewNavigationRail(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) selected: Boolean,

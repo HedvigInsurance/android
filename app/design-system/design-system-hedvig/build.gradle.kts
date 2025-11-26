@@ -1,5 +1,6 @@
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
@@ -7,30 +8,41 @@ hedvig {
   compose()
 }
 
-dependencies {
-  api(libs.androidx.compose.foundation)
-  api(libs.coil.coil)
-  api(libs.compose.richtext)
-  api(libs.compose.richtextCommonmark)
-  api(projects.designSystemApi)
-  api(projects.placeholder)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      api(libs.coil.coil)
+      api(libs.coil.compose)
+      api(projects.designSystemApi)
+      api(projects.placeholder)
 
-  implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.compose.materialRipple)
-  implementation(libs.androidx.compose.uiGraphics)
-  implementation(libs.androidx.graphicsShapes)
-  implementation(libs.androidx.other.core)
-  implementation(libs.coil.compose)
-  implementation(libs.modal.sheet)
-  implementation(projects.composeUi)
-  implementation(projects.coreResources)
-  implementation(projects.coreUiData)
-  implementation(projects.designSystemInternals)
-  implementation(projects.navigationCore)
-  implementation(libs.media3.exoplayer)
-  implementation(libs.media3.exoplayer.dash)
-  implementation(libs.media3.ui)
-  implementation(libs.kotlinx.datetime)
+      implementation(libs.jetbrains.compose.foundation)
+      implementation(libs.jetbrains.compose.foundation.layout)
+      implementation(libs.jetbrains.compose.material.ripple)
+      implementation(libs.jetbrains.compose.material3)
+      implementation(libs.jetbrains.compose.material3.windowSizeClass)
+      implementation(libs.jetbrains.compose.runtime)
+      implementation(libs.jetbrains.compose.ui)
+      implementation(libs.jetbrains.compose.ui.backhandler)
+      implementation(libs.jetbrains.compose.ui.graphics)
+      implementation(libs.jetbrains.compose.ui.tooling.preview)
+      implementation(libs.jetbrains.navigationevent.compose)
+      implementation(libs.androidx.graphicsShapes)
+      implementation(libs.modal.sheet)
+      implementation(projects.composeUi)
+      implementation(projects.coreResources)
+      implementation(projects.coreUiData)
+      implementation(projects.designSystemInternals)
+      implementation(projects.navigationCore)
+      implementation(libs.kotlinx.datetime)
+    }
+    androidMain.dependencies {
+      implementation(libs.androidx.other.core)
+      implementation(libs.compose.richtext)
+      implementation(libs.compose.richtextCommonmark)
+      implementation(libs.media3.exoplayer)
+      implementation(libs.media3.exoplayer.dash)
+      implementation(libs.media3.ui)
+    }
+  }
 }

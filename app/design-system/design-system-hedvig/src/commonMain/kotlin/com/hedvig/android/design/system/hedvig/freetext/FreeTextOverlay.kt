@@ -1,6 +1,5 @@
 package com.hedvig.android.design.system.hedvig.freetext
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
@@ -43,6 +42,9 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationEventHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -167,7 +169,8 @@ private fun FreeTextOverlayContent(
   LaunchedEffect(Unit) {
     focusRequester.requestFocus()
   }
-  BackHandler(true) {
+
+  NavigationEventHandler(rememberNavigationEventState(NavigationEventInfo.None), isBackEnabled = true) {
     focusManager.clearFocus()
     onCancelClick()
   }

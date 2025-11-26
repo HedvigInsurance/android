@@ -21,10 +21,10 @@ import androidx.core.graphics.transform
 
 @Suppress("unused")
 @Stable
-fun Brush.Companion.angledSweepGradient(
+actual fun Brush.Companion.angledSweepGradient(
   vararg colorStops: Pair<Float, Color>,
-  center: Offset = Offset.Unspecified,
-  startAngle: Float = 0f,
+  center: Offset,
+  startAngle: Float,
 ): Brush = AngledSweepGradient(
   colors = List(colorStops.size) { i -> colorStops[i].second },
   stops = List(colorStops.size) { i -> colorStops[i].first },
@@ -33,10 +33,10 @@ fun Brush.Companion.angledSweepGradient(
 )
 
 @Stable
-fun Brush.Companion.angledSweepGradient(
+actual fun Brush.Companion.angledSweepGradient(
   colors: List<Color>,
-  center: Offset = Offset.Unspecified,
-  startAngle: Float = 0f,
+  center: Offset,
+  startAngle: Float,
 ): Brush = AngledSweepGradient(
   colors = colors,
   stops = null,
