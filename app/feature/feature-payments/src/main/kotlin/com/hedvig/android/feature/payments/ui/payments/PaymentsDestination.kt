@@ -108,7 +108,7 @@ internal fun PaymentsDestination(
     onDiscountClicked = onDiscountClicked,
     onPaymentHistoryClicked = onPaymentHistoryClicked,
     onRetry = { viewModel.emit(Retry) },
-    onPaymentDetailsClicked = onMemberPaymentDetailsClicked
+    onPaymentDetailsClicked = onMemberPaymentDetailsClicked,
   )
 }
 
@@ -178,7 +178,7 @@ private fun PaymentsScreen(
               onChangeBankAccount = onChangeBankAccount,
               onDiscountClicked = onDiscountClicked,
               onPaymentHistoryClicked = onPaymentHistoryClicked,
-              onPaymentDetailsClicked = onPaymentDetailsClicked
+              onPaymentDetailsClicked = onPaymentDetailsClicked,
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -259,10 +259,11 @@ private fun PaymentsContent(
       )
     }
 
-    PaymentsListItems(uiState,
+    PaymentsListItems(
+      uiState,
       onDiscountClicked = onDiscountClicked,
       onPaymentHistoryClicked = onPaymentHistoryClicked,
-      onPaymentDetailsClicked = onPaymentDetailsClicked
+      onPaymentDetailsClicked = onPaymentDetailsClicked,
     )
     if (uiState is Content) {
       when (uiState.connectedPaymentInfo) {
@@ -278,7 +279,7 @@ private fun PaymentsContent(
 
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
-        is ConnectedPaymentInfo.Connected
+        is ConnectedPaymentInfo.Connected,
         -> {}
       }
     }
@@ -562,7 +563,7 @@ private fun PreviewPaymentScreen(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }

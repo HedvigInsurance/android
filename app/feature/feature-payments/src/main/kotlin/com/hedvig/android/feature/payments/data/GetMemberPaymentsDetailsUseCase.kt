@@ -31,7 +31,7 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
         }
         .bind()
       val chargeMethod = result.currentMember.paymentInformation.chargeMethod
-      if (chargeMethod==null){
+      if (chargeMethod == null) {
         logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase chargeMethod is null" }
         raise(ErrorMessage())
       }
@@ -46,7 +46,6 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
       }
     }
   }
-
 }
 
 data class MemberPaymentsDetails(

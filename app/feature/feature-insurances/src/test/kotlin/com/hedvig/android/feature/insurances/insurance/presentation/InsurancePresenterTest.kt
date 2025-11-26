@@ -226,14 +226,15 @@ internal class InsurancePresenterTest {
   private val validCrossSells: CrossSellResult = CrossSellResult(
     false,
     listOf(
-    CrossSell(
-      id = "crossSellId",
-      title = "crossSellTitle",
-      subtitle = "crossSellDescription",
-      storeUrl = "",
-      pillowImage = ImageAsset("", "", ""),
+      CrossSell(
+        id = "crossSellId",
+        title = "crossSellTitle",
+        subtitle = "crossSellDescription",
+        storeUrl = "",
+        pillowImage = ImageAsset("", "", ""),
+      ),
     ),
-  ))
+  )
 
   @Test
   fun `on launch loading state is true, followed by the loaded state`() = runTest {

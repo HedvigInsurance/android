@@ -52,8 +52,9 @@ internal class GetChargeDetailsUseCaseImpl(
         val paymentInformation = currentMember.paymentInformation
         when (paymentInformation.status) {
           MemberPaymentConnectionStatus.ACTIVE -> {
-            if (paymentInformation.chargeMethod?.displayName != null
-              && paymentInformation.chargeMethod.descriptor != null) {
+            if (paymentInformation.chargeMethod?.displayName != null &&
+              paymentInformation.chargeMethod.descriptor != null
+            ) {
               PaymentsInfo.Active(
                 displayName = paymentInformation.chargeMethod.displayName,
                 displayValue = paymentInformation.chargeMethod.descriptor,
@@ -61,7 +62,6 @@ internal class GetChargeDetailsUseCaseImpl(
             } else {
               logcat(LogPriority.ERROR) { "Payment connection is active but displayName or descriptor is null" }
               PaymentsInfo.NoPresentableInfo
-
             }
           }
 

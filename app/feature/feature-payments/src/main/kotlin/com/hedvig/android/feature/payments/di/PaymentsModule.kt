@@ -90,8 +90,7 @@ val paymentsModule = module {
   }
 
   viewModel<MemberPaymentDetailsViewModel> {
-    MemberPaymentDetailsViewModel(
-      getMemberPaymentsDetailsUseCase = get<GetMemberPaymentsDetailsUseCase>())
+    MemberPaymentDetailsViewModel(getMemberPaymentsDetailsUseCase = get<GetMemberPaymentsDetailsUseCase>())
   }
   single<GetMemberPaymentsDetailsUseCase> {
     GetMemberPaymentsDetailsUseCaseImpl(

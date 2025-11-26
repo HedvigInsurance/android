@@ -612,51 +612,51 @@ internal fun DeflectBubble(
   partners: List<DeflectPartner>,
   modifier: Modifier = Modifier,
 ) {
-
-    Column(
-      modifier = modifier.padding(16.dp),
-      horizontalAlignment = Alignment.End,
-    ) {
-      FlowHeading(title, description)
-      partners.forEach { partner ->
-          Spacer(Modifier.height(16.dp))
-          HedvigCard(
-            Modifier.fillMaxWidth()
-          ) {
-            Column(Modifier.padding(16.dp),
-              horizontalAlignment = Alignment.CenterHorizontally) {
-              if (partner.title!=null) {
-                HedvigText(partner.title)
-              }
-              if (partner.description!=null) {
-                HedvigText(partner.description)
-              }
-              if (partner.url != null && partner.buttonTitle != null) {
-                Spacer(Modifier.height(8.dp))
-              HedvigButton(
-                buttonSize = ButtonDefaults.ButtonSize.Medium,
-                enabled = true,
-                text =
-                  partner.buttonTitle,
-                onClick = {
-                  openUrl(partner.url)
-                },
-              )
-            }
+  Column(
+    modifier = modifier.padding(16.dp),
+    horizontalAlignment = Alignment.End,
+  ) {
+    FlowHeading(title, description)
+    partners.forEach { partner ->
+      Spacer(Modifier.height(16.dp))
+      HedvigCard(
+        Modifier.fillMaxWidth(),
+      ) {
+        Column(
+          Modifier.padding(16.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          if (partner.title != null) {
+            HedvigText(partner.title)
+          }
+          if (partner.description != null) {
+            HedvigText(partner.description)
+          }
+          if (partner.url != null && partner.buttonTitle != null) {
+            Spacer(Modifier.height(8.dp))
+            HedvigButton(
+              buttonSize = ButtonDefaults.ButtonSize.Medium,
+              enabled = true,
+              text =
+                partner.buttonTitle,
+              onClick = {
+                openUrl(partner.url)
+              },
+            )
           }
         }
       }
-      if (faq.isNotEmpty()) {
-        Spacer(Modifier.height(16.dp))
-        AccordionList(
-          faq.map { faqItem ->
-            AccordionData(title = faqItem.first, description = faqItem.second)
-          },
-        )
-      }
     }
+    if (faq.isNotEmpty()) {
+      Spacer(Modifier.height(16.dp))
+      AccordionList(
+        faq.map { faqItem ->
+          AccordionData(title = faqItem.first, description = faqItem.second)
+        },
+      )
+    }
+  }
 }
-
 
 @Serializable
 data class DeflectPartner(
@@ -1155,15 +1155,19 @@ private fun PreviewUploadFilesBubbleContent(
           onSkip = {},
           onRemoveFile = {},
           onSubmitFiles = {},
-          localFiles = if (hasFiles) listOf(
-            UiFile(
-              name = "file",
-              localPath = "path",
-              mimeType = "image/jpg",
-              url = null,
-              id = "1",
-            ),
-          ) else emptyList(),
+          localFiles = if (hasFiles) {
+            listOf(
+              UiFile(
+                name = "file",
+                localPath = "path",
+                mimeType = "image/jpg",
+                url = null,
+                id = "1",
+              ),
+            )
+          } else {
+            emptyList()
+          },
           uploadedFiles = emptyList(),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
@@ -1173,7 +1177,6 @@ private fun PreviewUploadFilesBubbleContent(
     }
   }
 }
-
 
 @HedvigPreview
 @Composable

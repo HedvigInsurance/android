@@ -9,6 +9,7 @@ import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
@@ -57,7 +58,7 @@ fun NavGraphBuilder.paymentsGraph(
           with(navigator) {
             backStackEntry.navigate(PaymentsDestinations.MemberPaymentDetails)
           }
-        }
+        },
       )
     }
 
@@ -112,6 +113,11 @@ fun NavGraphBuilder.paymentsGraph(
 
     navdestination<PaymentsDestinations.MemberPaymentDetails> { backStackEntry ->
       val viewModel: MemberPaymentDetailsViewModel = koinViewModel()
+      MemberPaymentDetailsDestination(
+        viewModel,
+        onChangeBankAccount = navigateToConnectPayment,
+        navigateUp = navigator::navigateUp,
+      )
     }
   }
 }

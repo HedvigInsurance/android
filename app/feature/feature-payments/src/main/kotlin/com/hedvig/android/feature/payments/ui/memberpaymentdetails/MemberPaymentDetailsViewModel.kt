@@ -16,11 +16,11 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class MemberPaymentDetailsViewModel(
   getMemberPaymentsDetailsUseCase: GetMemberPaymentsDetailsUseCase,
 ) : MoleculeViewModel<MemberPaymentDetailsEvent, MemberPaymentDetailsUiState>(
-  initialState = MemberPaymentDetailsUiState.Loading,
-  presenter = MemberPaymentDetailsPresenter(
-    getMemberPaymentsDetailsUseCase,
-  ),
-)
+    initialState = MemberPaymentDetailsUiState.Loading,
+    presenter = MemberPaymentDetailsPresenter(
+      getMemberPaymentsDetailsUseCase,
+    ),
+  )
 
 private class MemberPaymentDetailsPresenter(
   private val getMemberPaymentsDetailsUseCase: GetMemberPaymentsDetailsUseCase,
@@ -66,6 +66,6 @@ internal sealed interface MemberPaymentDetailsUiState {
 }
 
 internal sealed interface MemberPaymentDetailsEvent {
-  data object Retry: MemberPaymentDetailsEvent
-  //todo
+  data object Retry : MemberPaymentDetailsEvent
+  // todo
 }

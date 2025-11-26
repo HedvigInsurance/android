@@ -53,16 +53,16 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentInformation = result.currentMember.paymentInformation
         when (paymentInformation.status) {
           MemberPaymentConnectionStatus.ACTIVE -> {
-            if (paymentInformation.chargeMethod?.displayName != null
-              && paymentInformation.chargeMethod.descriptor != null) {
+            if (paymentInformation.chargeMethod?.displayName != null &&
+              paymentInformation.chargeMethod.descriptor != null
+            ) {
               PaymentConnection.Active(
                 displayName = paymentInformation.chargeMethod.displayName,
                 displayValue = paymentInformation.chargeMethod.descriptor,
               )
             } else {
-              logcat(LogPriority.ERROR) { "Payment connection is active but displayName or descriptor is null"}
+              logcat(LogPriority.ERROR) { "Payment connection is active but displayName or descriptor is null" }
               PaymentConnection.Unknown
-              
             }
           }
 
