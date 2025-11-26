@@ -227,7 +227,7 @@ private fun InsuranceScreenContent(
           Modifier.padding(horizontal = 16.dp),
         )
       } else {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column {
           ContractsSection(
             imageLoader = imageLoader,
             onInsuranceCardClick = onInsuranceCardClick,
@@ -256,6 +256,7 @@ private fun InsuranceScreenContent(
             ) {
               HedvigText(text = stringResource(R.string.INSURANCE_ADDONS_SUBHEADING))
             }
+            Spacer(Modifier.height(16.dp))
             TravelAddonBanner(
               travelAddonBannerInfo = uiState.travelAddonBannerInfo,
               launchAddonPurchaseFlow = {
@@ -267,6 +268,7 @@ private fun InsuranceScreenContent(
             )
           }
           if (uiState.shouldSuggestMovingFlow) {
+            Spacer(Modifier.height(8.dp))
             MovingFlowSuggestionSection(
               onNavigateToMovingFlow = onNavigateToMovingFlow,
               modifier = Modifier.padding(horizontal = 16.dp),
