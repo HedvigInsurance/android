@@ -8,11 +8,9 @@ import org.koin.compose.viewmodel.koinViewModel
 import platform.UIKit.UIViewController
 
 @Suppress("unused", "FunctionName") // Used from iOS
-fun ClaimChatViewController(
-  isDevelopmentFlow: Boolean,
-  messageId: String?
-): UIViewController = ComposeUIViewController {
-  Box(Modifier.fillMaxSize()) {
-    ClaimChatDestination(isDevelopmentFlow, messageId)
+fun ClaimChatViewController(isDevelopmentFlow: Boolean, messageId: String?): UIViewController =
+  ComposeUIViewController {
+    Box(Modifier.fillMaxSize()) {
+      ClaimChatDestination(isDevelopmentFlow, messageId)
+    }
   }
-}

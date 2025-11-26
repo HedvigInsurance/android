@@ -105,7 +105,6 @@ class DatePickerUiState(
   }
 }
 
-
 @HedvigPreview
 @Composable
 private fun PreviewDatePickerWithDialog(

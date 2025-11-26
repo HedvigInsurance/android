@@ -5,6 +5,8 @@ import kotlinx.io.Source
 internal interface CommonFile {
   val fileName: String
   val description: String
+
   fun source(): Source
+
   fun readBytes(): ByteArray
 }

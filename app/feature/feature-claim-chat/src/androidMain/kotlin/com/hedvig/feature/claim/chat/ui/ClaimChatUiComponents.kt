@@ -75,13 +75,13 @@ import java.io.File
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 
-//todo: if we want a a fullscreen free text overlay,
+// todo: if we want a a fullscreen free text overlay,
 // the claim chat screen should be wrapped in this:
-//@Composable
-//internal fun ClaimChatScreen(
+// @Composable
+// internal fun ClaimChatScreen(
 //  updateFreeText: (String?) -> Unit,
 //  onCloseFullScreenEditText: () -> Unit,
-//) {
+// ) {
 //  FreeTextOverlay(
 //    freeTextMaxLength = 2000,
 //    freeTextValue = if (uiState is AudioRecordingStepState.FreeTextDescription) uiState.freeText else null,
@@ -98,8 +98,7 @@ import kotlinx.datetime.LocalDate
 //    overlaidContent = {
 //      // all chat content
 //    })
-//}
-
+// }
 
 @Composable
 internal fun AudioRecorderBubble(
@@ -144,7 +143,6 @@ internal fun AudioRecorderBubble(
   )
 }
 
-
 @Composable
 internal fun AssistantMessageBubble(
   text: String,
@@ -178,7 +176,7 @@ internal fun AssistantMessageBubble(
         )
         Spacer(Modifier.width(8.dp))
         HedvigText(
-          "Hedvig AI Assistant", //todo
+          "Hedvig AI Assistant", // todo
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
@@ -224,14 +222,17 @@ internal fun YesNoBubble(
           HighlightLabel(
             labelText = stringResource(R.string.GENERAL_YES),
             size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected == true) HighlightLabelDefaults.HighlightColor.Green(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            )
-            else HighlightLabelDefaults.HighlightColor.Grey(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            ),
+            color = if (answerSelected == true) {
+              HighlightLabelDefaults.HighlightColor.Green(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            } else {
+              HighlightLabelDefaults.HighlightColor.Grey(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            },
             modifier = Modifier.clickable(
-              enabled = canBeChanged, //todo
+              enabled = canBeChanged, // todo
               onClick = {
                 onSelect(true)
               },
@@ -241,14 +242,17 @@ internal fun YesNoBubble(
           HighlightLabel(
             labelText = stringResource(R.string.GENERAL_NO),
             size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected != null && !answerSelected) HighlightLabelDefaults.HighlightColor.Green(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            )
-            else HighlightLabelDefaults.HighlightColor.Grey(
-              HighlightLabelDefaults.HighlightShade.MEDIUM,
-            ),
+            color = if (answerSelected != null && !answerSelected) {
+              HighlightLabelDefaults.HighlightColor.Green(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            } else {
+              HighlightLabelDefaults.HighlightColor.Grey(
+                HighlightLabelDefaults.HighlightShade.MEDIUM,
+              )
+            },
             modifier = Modifier.clickable(
-              enabled = canBeChanged, //todo
+              enabled = canBeChanged, // todo
               onClick = {
                 onSelect(false)
               },
@@ -347,7 +351,7 @@ internal fun MultiSelectBubbleWithDialog(
         labelText = questionLabel,
         inputText = when {
           selectedOptionIds.isEmpty() -> null
-          else -> options.filter {it.id in selectedOptionIds}
+          else -> options.filter { it.id in selectedOptionIds }
             .joinToString(transform = RadioOption::text)
         },
         modifier = modifier,
@@ -385,7 +389,7 @@ internal fun DateSelectBubble(
       DatePickerWithDialog(
         datePickerState,
         canInteract = canBeChanged,
-        startText = questionLabel ?: "", //todo
+        startText = questionLabel ?: "", // todo
       )
     },
   )
@@ -587,7 +591,7 @@ internal fun <T> StandardBubble(
             imageVector = HedvigIcons.HelipadFilled,
             tint = HedvigTheme.colorScheme.signalAmberElement,
             modifier = Modifier.align(Alignment.TopStart),
-            contentDescription = null, //todo
+            contentDescription = null, // todo
           )
         }
       }
@@ -758,7 +762,7 @@ private fun PreviewClaimChatComponents() {
           onSkip = {},
           onSelect = {},
           onSubmit = {},
-          isPrefilled = false
+          isPrefilled = false,
         )
         Spacer(Modifier.height(16.dp))
         DateSelectBubble(

@@ -227,13 +227,36 @@ private fun InsuranceScreenContent(
           Modifier.padding(horizontal = 16.dp),
         )
       } else {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column {
           ContractsSection(
             imageLoader = imageLoader,
             onInsuranceCardClick = onInsuranceCardClick,
             contracts = uiState.contracts + uiState.pendingContracts,
           )
+          if (uiState.crossSells.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            CrossSellsSection(
+              title = stringResource(R.string.INSURANCE_OFFERS_SUBHEADING),
+              crossSells = uiState.crossSells,
+              onCrossSellClick = onCrossSellClick,
+              modifier = Modifier.padding(horizontal = 16.dp),
+              onSheetDismissed = {},
+              imageLoader = imageLoader,
+              hasCrossSellDiscounts = uiState.hasCrossSellDiscounts,
+            )
+          }
           if (uiState.travelAddonBannerInfo != null) {
+            Spacer(Modifier.height(24.dp))
+            Row(
+              modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .semantics { heading() },
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              HedvigText(text = stringResource(R.string.INSURANCE_ADDONS_SUBHEADING))
+            }
+            Spacer(Modifier.height(16.dp))
             TravelAddonBanner(
               travelAddonBannerInfo = uiState.travelAddonBannerInfo,
               launchAddonPurchaseFlow = {
@@ -245,20 +268,12 @@ private fun InsuranceScreenContent(
             )
           }
           if (uiState.shouldSuggestMovingFlow) {
+            Spacer(Modifier.height(8.dp))
             MovingFlowSuggestionSection(
               onNavigateToMovingFlow = onNavigateToMovingFlow,
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           }
-        }
-        if (uiState.crossSells.isNotEmpty()) {
-          CrossSellsSection(
-            crossSells = uiState.crossSells,
-            onCrossSellClick = onCrossSellClick,
-            modifier = Modifier.padding(horizontal = 16.dp),
-            onSheetDismissed = {},
-            imageLoader = imageLoader,
-          )
         }
         if (quantityOfCancelledInsurances > 0) {
           TerminatedContractsButton(
@@ -404,8 +419,14 @@ private fun PreviewInsuranceScreen(
           hasError = false,
           isLoading = false,
           isRetrying = false,
-          travelAddonBannerInfo = null,
+          travelAddonBannerInfo = TravelAddonBannerInfo(
+            "Title",
+            "description",
+            eligibleInsurancesIds = nonEmptyListOf(""),
+            labels = listOf("Great"),
+          ),
           pendingContracts = listOf(previewPendingContract),
+          hasCrossSellDiscounts = true,
         ),
         {},
         {},
@@ -456,6 +477,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       shouldSuggestMovingFlow = true,
       travelAddonBannerInfo = null,
       pendingContracts = listOf(previewPendingContract),
+      hasCrossSellDiscounts = true,
     ),
     InsuranceUiState(
       contracts = listOf(),

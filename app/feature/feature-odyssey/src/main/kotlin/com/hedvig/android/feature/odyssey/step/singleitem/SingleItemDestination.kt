@@ -39,6 +39,8 @@ import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemModel.New
 import com.hedvig.android.data.claimflow.ItemProblem
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -60,8 +62,6 @@ import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.BothDialogAndC
 import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustCustomModel
 import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustModelDialog
 import com.hedvig.android.feature.odyssey.step.summary.displayName
-import com.hedvig.android.design.system.hedvig.DatePickerUiState
-import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import hedvig.resources.R
