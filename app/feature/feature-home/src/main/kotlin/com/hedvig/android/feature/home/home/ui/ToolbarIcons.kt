@@ -83,11 +83,8 @@ fun ToolbarCrossSellsIcon(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ToolbarClaimChatIcon(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  isDev: Boolean = false) {
-  Box{
+fun ToolbarClaimChatIcon(onClick: () -> Unit, modifier: Modifier = Modifier, isDev: Boolean = false) {
+  Box {
     Icon(
       imageVector = HedvigIcons.ColoredChat,
       contentDescription = stringResource(R.string.home_tab_claim_button_text),
@@ -102,10 +99,10 @@ fun ToolbarClaimChatIcon(
       HedvigText(
         "dev",
         style = HedvigTheme.typography.label,
-        modifier = Modifier.align(Alignment.Center))
+        modifier = Modifier.align(Alignment.Center),
+      )
     }
   }
-
 }
 
 @HedvigPreview

@@ -9,8 +9,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ClaimChatDestination(
   val isDevelopmentFlow: Boolean,
-  val messageId: String?
-): Destination
+  val messageId: String?,
+) : Destination
 
 fun NavGraphBuilder.claimChatGraph() {
   navdestination<ClaimChatDestination> {

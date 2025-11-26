@@ -394,12 +394,14 @@
   <string name="HONESTY_PLEDGE_TITLE">Innan vi börjar</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
+  <string name="INSURANCE_ADDONS_SUBHEADING">Tillägg</string>
   <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Giltighetsintyg</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">Giltighetsintyget är nu skickat till din e-post.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer - till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_TITLE">Vad är ett giltighetsintyg?</string>
+  <string name="INSURANCE_OFFERS_SUBHEADING">Erbjudanden</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>

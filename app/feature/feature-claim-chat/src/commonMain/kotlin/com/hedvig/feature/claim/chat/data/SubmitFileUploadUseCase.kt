@@ -26,11 +26,7 @@ internal class SubmitFileUploadUseCase(
   private val uploadFileUseCase: UploadFileUseCase,
   private val fileService: FileService,
 ) {
-  suspend fun invoke(
-    stepId: StepId,
-    fileUri: Uri,
-    uploadUrl: String,
-  ): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId, fileUri: Uri, uploadUrl: String): Either<ErrorMessage, ClaimIntent> {
     return either {
       val commonFile = fileService.convertToCommonFile(fileUri)
       val fileId = uploadFileUseCase.invoke(commonFile, uploadUrl).fileId
@@ -40,16 +36,13 @@ internal class SubmitFileUploadUseCase(
   }
 
   context(_: Raise<ErrorMessage>)
-  private suspend fun invoke(
-    stepId: StepId,
-    commonFileId: CommonFileId?,
-  ): ClaimIntent {
+  private suspend fun invoke(stepId: StepId, commonFileId: CommonFileId?): ClaimIntent {
     return apolloClient
       .mutation(
         ClaimIntentSubmitFileUploadMutation(
           ClaimIntentSubmitFileUploadInput(
             stepId = stepId.value,
-            fileIds = listOfNotNull(commonFileId?.value)
+            fileIds = listOfNotNull(commonFileId?.value),
           ),
         ),
       )

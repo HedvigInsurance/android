@@ -394,12 +394,14 @@
   <string name="HONESTY_PLEDGE_TITLE">Before we start</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Discounts available</string>
   <string name="INSURANCES_NO_ACTIVE">You don\'t have any active insurances</string>
+  <string name="INSURANCE_ADDONS_SUBHEADING">Addons</string>
   <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">To return to your previous coverage, register your car as active again with Transportstyrelsen.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Any damage that occurs during a 30-day period after the moving out date is eligible for claims.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Certificate of validity</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">The certificate has been sent to your email.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details, for example which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_TITLE">What is a certificate of validity?</string>
+  <string name="INSURANCE_OFFERS_SUBHEADING">Offers</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>

@@ -45,7 +45,6 @@ internal sealed interface AudioRecordingStepState {
   ) : AudioRecordingStepState
 
   sealed interface AudioRecording : AudioRecordingStepState {
-
     data object NotRecording : AudioRecording
 
     data class Recording(
@@ -58,8 +57,7 @@ internal sealed interface AudioRecordingStepState {
       val audioContent: AudioContent,
       val isLoading: Boolean = false,
       val hasError: Boolean = false,
-
-      ) : AudioRecording
+    ) : AudioRecording
 
     data class Playback(
       val filePath: String,
@@ -98,7 +96,6 @@ internal fun AudioRecordingStep(
   isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
-
   AnimatedContent(
     uiState,
     contentKey = { s ->
@@ -146,7 +143,6 @@ internal fun AudioRecordingStep(
     }
   }
 }
-
 
 @Composable
 private fun FreeTextInputSection(
@@ -196,8 +192,6 @@ private fun FreeTextInputSection(
           buttonSize = ButtonDefaults.ButtonSize.Medium,
           text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
         )
-
-
       }
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(

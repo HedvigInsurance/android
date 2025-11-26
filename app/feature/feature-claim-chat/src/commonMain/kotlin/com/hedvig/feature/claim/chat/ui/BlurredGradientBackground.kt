@@ -4,7 +4,4 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal expect fun BlurredGradientBackground(
-  modifier: Modifier = Modifier,
-  radius: Int = 100,
-)
+internal expect fun BlurredGradientBackground(modifier: Modifier = Modifier, radius: Int = 100)

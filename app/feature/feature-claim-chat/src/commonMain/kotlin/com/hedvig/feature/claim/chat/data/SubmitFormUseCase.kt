@@ -13,9 +13,7 @@ import octopus.type.ClaimIntentSubmitFormInput
 internal class SubmitFormUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(
-    formData: FormSubmissionData,
-  ): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(formData: FormSubmissionData): Either<ErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(

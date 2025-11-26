@@ -1,5 +1,10 @@
 package com.hedvig.android.crosssells
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +24,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +52,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.ImageLoader
@@ -69,6 +85,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.R
+import kotlinx.coroutines.delay
 
 data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,
@@ -123,7 +140,7 @@ fun CrossSellFloatingBottomSheet(
         otherCrossSells = crossSellSheetData.otherCrossSells,
         onCrossSellClick = onCrossSellClick,
         dismissSheet = { state.dismiss() },
-        imageLoader,
+        imageLoader = imageLoader,
       )
     },
   )
@@ -443,13 +460,34 @@ fun CrossSellsSection(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   withSubHeader: Boolean = true,
+  hasCrossSellDiscounts: Boolean = false,
+  title: String? = null,
 ) {
   Column(modifier) {
     if (withSubHeader) {
-      CrossSellsSubHeaderWithDivider()
+      CrossSellsSubHeaderWithDivider(title)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
-      CrossSellItem(crossSell, onCrossSellClick, onSheetDismissed = onSheetDismissed, imageLoader = imageLoader)
+      if (hasCrossSellDiscounts) {
+        CrossSellItemWithDiscounts(
+          crossSellTitle = crossSell.title,
+          crossSellSubtitle = crossSell.subtitle,
+          storeUrl = crossSell.storeUrl,
+          onCrossSellClick = onCrossSellClick,
+          isLoading = false,
+          imageLoader = imageLoader,
+          crossSellImageAsset = crossSell.pillowImage,
+          onSheetDismissed = onSheetDismissed,
+          buttonText = crossSell.buttonText,
+        )
+      } else {
+        CrossSellItem(
+          crossSell,
+          onCrossSellClick,
+          onSheetDismissed = onSheetDismissed,
+          imageLoader = imageLoader,
+        )
+      }
       if (index != crossSells.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
@@ -476,10 +514,10 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
 }
 
 @Composable
-private fun CrossSellsSubHeaderWithDivider() {
+private fun CrossSellsSubHeaderWithDivider(title: String? = null) {
   Column {
     NotificationSubheading(
-      text = stringResource(R.string.insurance_tab_cross_sells_title),
+      text = title ?: stringResource(R.string.insurance_tab_cross_sells_title),
       modifier = Modifier.semantics { heading() },
     )
     Spacer(Modifier.height(16.dp))
@@ -579,6 +617,88 @@ private fun CrossSellItem(
       onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
       buttonSize = ButtonDefaults.ButtonSize.Medium,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      modifier = Modifier.hedvigPlaceholder(
+        visible = isLoading,
+        shape = HedvigTheme.shapes.cornerSmall,
+        highlight = PlaceholderHighlight.shimmer(),
+      ),
+      enabled = !isLoading,
+    )
+  }
+}
+
+@Composable
+private fun CrossSellItemWithDiscounts(
+  crossSellTitle: String,
+  crossSellSubtitle: String,
+  storeUrl: String,
+  buttonText: String?,
+  crossSellImageAsset: ImageAsset?,
+  onCrossSellClick: (String) -> Unit,
+  isLoading: Boolean,
+  imageLoader: ImageLoader,
+  onSheetDismissed: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val description = "$crossSellTitle $crossSellSubtitle"
+  Row(
+    modifier = modifier
+      .heightIn(64.dp)
+      .semantics(true) {
+        contentDescription = description
+      },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    AsyncImage(
+      model = crossSellImageAsset?.src,
+      contentDescription = crossSellImageAsset?.description ?: EmptyContentDescription,
+      placeholder = crossSellPainterFallback(),
+      error = crossSellPainterFallback(),
+      fallback = crossSellPainterFallback(),
+      imageLoader = imageLoader,
+      contentScale = ContentScale.Crop,
+      modifier = Modifier
+        .size(48.dp),
+    )
+    Spacer(Modifier.width(16.dp))
+    Column(
+      modifier = Modifier
+        .weight(1f)
+        .semantics {
+          hideFromAccessibility()
+        },
+      verticalArrangement = Arrangement.Center,
+    ) {
+      HedvigText(
+        text = crossSellTitle,
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          highlight = PlaceholderHighlight.shimmer(),
+          shape = HedvigTheme.shapes.cornerXSmall,
+        ),
+      )
+      Spacer(Modifier.height(4.dp))
+      HedvigText(
+        text = crossSellSubtitle,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.hedvigPlaceholder(
+          visible = isLoading,
+          shape = HedvigTheme.shapes.cornerSmall,
+          highlight = PlaceholderHighlight.shimmer(),
+        ),
+      )
+    }
+    Spacer(Modifier.width(16.dp))
+    HedvigButton(
+      text = buttonText ?: stringResource(R.string.cross_sell_get_price),
+      onClick = {
+        onCrossSellClick(storeUrl)
+        onSheetDismissed()
+      },
+      onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+      buttonSize = ButtonDefaults.ButtonSize.Medium,
+      buttonStyle = ButtonDefaults.ButtonStyle.PrimaryAlt,
       modifier = Modifier.hedvigPlaceholder(
         visible = isLoading,
         shape = HedvigTheme.shapes.cornerSmall,
@@ -747,6 +867,32 @@ private fun PreviewCrossSellsSection() {
         {},
         {},
         rememberPreviewImageLoader(),
+        hasCrossSellDiscounts = false,
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewCrossSellsSectionWithDiscounts() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      CrossSellsSection(
+        List(2) {
+          CrossSell(
+            "id",
+            "Accident Insurance",
+            "50% off your first year",
+            "storeUrl",
+            ImageAsset("", "", ""),
+            buttonText = "Save 50%",
+          )
+        },
+        {},
+        {},
+        rememberPreviewImageLoader(),
+        hasCrossSellDiscounts = true,
       )
     }
   }
