@@ -7,40 +7,49 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.feature.payments.data.GetMemberPaymentsDetailsUseCase
+import com.hedvig.android.feature.payments.data.MemberPaymentsDetails
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class MemberPaymentDetailsViewModel(
-  // Add your dependencies here
+  getMemberPaymentsDetailsUseCase: GetMemberPaymentsDetailsUseCase,
 ) : MoleculeViewModel<MemberPaymentDetailsEvent, MemberPaymentDetailsUiState>(
-    initialState = MemberPaymentDetailsUiState.Loading,
-    presenter = MemberPaymentDetailsPresenter(
-      // Pass dependencies here
-    ),
-  )
+  initialState = MemberPaymentDetailsUiState.Loading,
+  presenter = MemberPaymentDetailsPresenter(
+    getMemberPaymentsDetailsUseCase,
+  ),
+)
 
 private class MemberPaymentDetailsPresenter(
-  // Add your dependencies here
+  private val getMemberPaymentsDetailsUseCase: GetMemberPaymentsDetailsUseCase,
 ) : MoleculePresenter<MemberPaymentDetailsEvent, MemberPaymentDetailsUiState> {
   @Composable
   override fun MoleculePresenterScope<MemberPaymentDetailsEvent>.present(
     lastState: MemberPaymentDetailsUiState,
   ): MemberPaymentDetailsUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
-    var screenState by remember {
+    var currentState by remember {
       mutableStateOf(lastState)
     }
 
     CollectEvents {
-      // TODO: Implement event handling
+      // TODO
     }
 
     LaunchedEffect(dataLoadIteration) {
-      screenState = MemberPaymentDetailsUiState.Loading
-      // TODO: Implement data loading logic
+      currentState = MemberPaymentDetailsUiState.Loading
+      getMemberPaymentsDetailsUseCase.invoke().fold(
+        ifLeft = {
+          currentState = MemberPaymentDetailsUiState.Failure
+        },
+        ifRight = {
+          currentState = MemberPaymentDetailsUiState.Success(it)
+        },
+      )
     }
-    return screenState
+    return currentState
   }
 }
 
@@ -50,10 +59,10 @@ internal sealed interface MemberPaymentDetailsUiState {
   data object Failure : MemberPaymentDetailsUiState
 
   data class Success(
-    // Add your data properties here
+    val paymentDetails: MemberPaymentsDetails,
   ) : MemberPaymentDetailsUiState
 }
 
 internal sealed interface MemberPaymentDetailsEvent {
-  // Add your events here
+  //todo
 }

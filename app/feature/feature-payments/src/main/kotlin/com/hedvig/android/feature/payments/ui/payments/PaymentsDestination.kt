@@ -43,8 +43,6 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigInformationSection
@@ -99,7 +97,7 @@ internal fun PaymentsDestination(
   onPaymentClicked: (id: String?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
-  onPaymentDetailsClicked: () -> Unit,
+  onMemberPaymentDetailsClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -110,7 +108,7 @@ internal fun PaymentsDestination(
     onDiscountClicked = onDiscountClicked,
     onPaymentHistoryClicked = onPaymentHistoryClicked,
     onRetry = { viewModel.emit(Retry) },
-    onPaymentDetailsClicked = onPaymentDetailsClicked
+    onPaymentDetailsClicked = onMemberPaymentDetailsClicked
   )
 }
 
