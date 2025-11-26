@@ -38,7 +38,7 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
       with(chargeMethod) {
         MemberPaymentsDetails(
           chargingDayInTheMonth = chargingDayInTheMonth,
-          description = descriptor,
+          descriptor = descriptor,
           displayName = displayName,
           mandate = mandate,
           paymentMethod = paymentMethod,
@@ -51,7 +51,7 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
 
 data class MemberPaymentsDetails(
   val chargingDayInTheMonth: Int?,
-  val description: String?,
+  val descriptor: String?,
   val displayName: String?,
   val mandate: String?,
   val paymentMethod: String,

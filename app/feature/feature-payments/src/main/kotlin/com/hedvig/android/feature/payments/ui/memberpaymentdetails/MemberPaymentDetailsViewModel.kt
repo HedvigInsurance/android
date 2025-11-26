@@ -35,7 +35,9 @@ private class MemberPaymentDetailsPresenter(
     }
 
     CollectEvents {
-      // TODO
+      when (it) {
+        MemberPaymentDetailsEvent.Retry -> TODO()
+      }
     }
 
     LaunchedEffect(dataLoadIteration) {
@@ -64,5 +66,6 @@ internal sealed interface MemberPaymentDetailsUiState {
 }
 
 internal sealed interface MemberPaymentDetailsEvent {
+  data object Retry: MemberPaymentDetailsEvent
   //todo
 }
