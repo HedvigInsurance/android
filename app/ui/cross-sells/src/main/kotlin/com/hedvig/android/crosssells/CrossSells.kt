@@ -465,7 +465,7 @@ fun CrossSellsSection(
 ) {
   Column(modifier) {
     if (withSubHeader) {
-      CrossSellsSubHeaderWithDivider(hasCrossSellDiscounts, title)
+      CrossSellsSubHeaderWithDivider(title)
     }
     for ((index, crossSell) in crossSells.withIndex()) {
       if (hasCrossSellDiscounts) {
@@ -498,7 +498,7 @@ fun CrossSellsSection(
 @Composable
 fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modifier) {
   Column(modifier) {
-    CrossSellsSubHeaderWithDivider(false)
+    CrossSellsSubHeaderWithDivider()
     CrossSellItem(
       crossSellTitle = "HHHH",
       crossSellSubtitle = "HHHHHHHH\nHHHHHHHHHHH",
@@ -514,72 +514,13 @@ fun CrossSellItemPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
 }
 
 @Composable
-private fun CrossSellsSubHeaderWithDivider(hasCrossSellDiscounts: Boolean, title: String? = null) {
+private fun CrossSellsSubHeaderWithDivider(title: String? = null) {
   Column {
     NotificationSubheading(
       text = title ?: stringResource(R.string.insurance_tab_cross_sells_title),
       modifier = Modifier.semantics { heading() },
     )
-    if (hasCrossSellDiscounts) {
-      Spacer(Modifier.height(6.dp))
-      AnimatedCrossSellsIconWithText()
-    }
     Spacer(Modifier.height(16.dp))
-  }
-}
-
-@Composable
-fun AnimatedCrossSellsIconWithText(modifier: Modifier = Modifier) {
-  val isRotated by produceState(false) { value = true }
-  val showText by produceState(false) {
-    delay(1_000L)
-    value = true
-  }
-  val fullRotation by animateFloatAsState(
-    targetValue = if (isRotated) 360f else 0f,
-    animationSpec = tween(1500, 50),
-  )
-  Surface(
-    shape = HedvigTheme.shapes.cornerXXLarge,
-    color = HedvigTheme.colorScheme.signalGreenFill,
-    modifier = modifier,
-  ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Icon(
-        imageVector = HedvigIcons.Campaign,
-        tint = HedvigTheme.colorScheme.signalGreenElement,
-        contentDescription = stringResource(R.string.insurance_tab_cross_sells_title),
-        modifier = Modifier
-          .padding(horizontal = 8.dp, vertical = 8.dp)
-          .size(22.dp)
-          .clip(CircleShape)
-          .graphicsLayer {
-            rotationZ = fullRotation
-          },
-      )
-      AnimatedVisibility(
-        visible = showText,
-        enter = expandHorizontally(
-          expandFrom = Alignment.Start,
-        ) + fadeIn(),
-      ) {
-        CompositionLocalProvider(
-          LocalDensity provides Density(
-            density = LocalDensity.current.density,
-            fontScale = 1f,
-          ),
-        ) {
-          HedvigText(
-            text = stringResource(R.string.INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE), // todo
-            color = HedvigTheme.colorScheme.signalGreenText,
-            style = HedvigTheme.typography.label,
-            modifier = Modifier.padding(top = 8.dp, end = 14.dp, bottom = 8.dp),
-          )
-        }
-      }
-    }
   }
 }
 
