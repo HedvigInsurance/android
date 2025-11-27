@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
+import com.hedvig.android.design.system.hedvig.api.CommonLocale
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.SignStyle
@@ -180,7 +181,7 @@ private val yearMonthDateAndTime: DateTimeFormatterBuilder = DateTimeFormatterBu
 
 @Composable
 @ReadOnlyComposable
-fun getLocale(): Locale {
+actual fun getLocale(): CommonLocale {
   val configuration = LocalConfiguration.current
   return ConfigurationCompat.getLocales(configuration).get(0) ?: LocaleListCompat.getAdjustedDefault()[0]!!
 }
