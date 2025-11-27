@@ -260,7 +260,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     ) {
       val viewModel: DeflectAutoDecommissionStepViewModel = koinViewModel {
         parametersOf(
-          deflectParameters
+          deflectParameters,
         )
       }
       DeflectAutoDecomStepDestination(

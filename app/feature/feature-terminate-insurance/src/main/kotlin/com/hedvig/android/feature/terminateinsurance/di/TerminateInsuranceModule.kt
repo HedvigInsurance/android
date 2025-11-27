@@ -65,7 +65,7 @@ val terminateInsuranceModule = module {
     val deflectParams = params.get<AutoDecommissionDeflectStepParameters>()
     DeflectAutoDecommissionStepViewModel(
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
-      deflectParameters = deflectParams
+      deflectParameters = deflectParams,
     )
   }
 

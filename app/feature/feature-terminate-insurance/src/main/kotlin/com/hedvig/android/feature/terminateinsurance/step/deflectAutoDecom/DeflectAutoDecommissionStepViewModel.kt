@@ -22,7 +22,7 @@ internal class DeflectAutoDecommissionStepViewModel(
       title = deflectParameters.title,
       message = deflectParameters.message,
       info = deflectParameters.info,
-      explanations = deflectParameters.explanations
+      explanations = deflectParameters.explanations,
     ),
     presenter = DeflectAutoDecomStepPresenter(terminateInsuranceRepository, deflectParameters),
   )

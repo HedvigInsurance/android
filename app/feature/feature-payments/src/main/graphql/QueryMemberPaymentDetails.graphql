@@ -1,0 +1,14 @@
+query MemberPaymentDetails {
+  currentMember {
+    paymentInformation {
+      status
+      chargeMethod {
+        displayName
+        descriptor
+        chargingDayInTheMonth
+        mandate
+        paymentMethod
+      }
+    }
+  }
+}

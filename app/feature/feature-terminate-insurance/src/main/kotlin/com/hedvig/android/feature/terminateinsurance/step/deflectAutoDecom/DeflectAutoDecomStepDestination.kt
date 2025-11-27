@@ -125,7 +125,7 @@ private fun DeflectAutoDecomStepSuccessScreen(
       Spacer(Modifier.height(16.dp))
     }
     Spacer(Modifier.weight(1f))
-    if (uiState.info !=null) {
+    if (uiState.info != null) {
       HedvigNotificationCard(
         message = uiState.info,
         priority = NotificationDefaults.NotificationPriority.Info,
@@ -184,8 +184,8 @@ private class DeflectAutoDecomUiStateProvider :
         info = "Info",
         explanations = listOf(
           "Title 1" to "Text 1",
-          "Title 2" to "Text 2"
-        )
+          "Title 2" to "Text 2",
+        ),
       ),
       DeflectAutoDecommissionUiState.Success(
         title = "Title",
@@ -193,9 +193,10 @@ private class DeflectAutoDecomUiStateProvider :
         info = "Info",
         explanations = listOf(
           "Title 1" to "Text 1",
-          "Title 2" to "Text 2"
+          "Title 2" to "Text 2",
         ),
-        buttonLoading = true),
+        buttonLoading = true,
+      ),
       DeflectAutoDecommissionUiState.Loading,
       DeflectAutoDecommissionUiState.Failure,
     ),

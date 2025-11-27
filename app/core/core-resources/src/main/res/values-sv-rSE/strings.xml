@@ -477,9 +477,11 @@
   <string name="PAYMENTS_AUTOGIRO_LABEL">Autogiro</string>
   <string name="PAYMENTS_BANK_LABEL">Bank</string>
   <string name="PAYMENTS_DISCOUNTS_SECTION_TITLE">Rabatter</string>
+  <string name="PAYMENTS_DUE_DESCRIPTION">%1$s varje månad</string>
   <string name="PAYMENTS_EXPIRED_DATE">Utgått %1$s</string>
   <string name="PAYMENTS_HISTORY_INFO">Skicka ett meddelande till oss här i appen om du behöver mer info om betalningar äldre än 12 månader.</string>
   <string name="PAYMENTS_IN_PROGRESS">Betalningen behandlas. Notera att det kan ta 1 till 3 bankdagar innan beloppet dras från ditt konto</string>
+  <string name="PAYMENTS_MANDATE">Autogiromandat</string>
   <string name="PAYMENTS_MISSED_PAYMENT">Din betalning för perioden %1$s – %2$s gick inte igenom. Beloppet har lagts till i denna betalning.</string>
   <string name="PAYMENTS_NO_HISTORY_DATA">Du har ingen betalningshistorik</string>
   <string name="PAYMENTS_NO_PAYMENTS_IN_PROGRESS">Du har inga pågående betalningar</string>
@@ -487,6 +489,7 @@
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Vår månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_TITLE">Betalningsinformation</string>
   <string name="PAYMENTS_PAYMENT_DUE">Förfallodag</string>
+  <string name="PAYMENTS_PAYMENT_DUE_INFO">Om du uppdaterar ditt bankkonto nära den %1$s kan det ta några extra dagar innan pengarna dras.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Betalningshistorik</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Betalningssätt</string>

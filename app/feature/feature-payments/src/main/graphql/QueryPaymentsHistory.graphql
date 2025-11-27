@@ -14,9 +14,12 @@ query PaymentHistoryWithDetails {
     }
     paymentInformation {
       status
-      connection {
+      chargeMethod {
         displayName
         descriptor
+        chargingDayInTheMonth
+        mandate
+        paymentMethod
       }
     }
   }
