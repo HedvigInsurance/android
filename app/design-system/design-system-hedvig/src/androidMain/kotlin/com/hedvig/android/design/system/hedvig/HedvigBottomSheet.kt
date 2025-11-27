@@ -39,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
 import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import com.hedvig.android.design.system.internals.BottomSheet
 import com.hedvig.android.design.system.internals.rememberInternalHedvigBottomSheetState
-import eu.wewox.modalsheet.ExperimentalSheetApi
 import hedvig.resources.Res
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.PRICE_DETAILS_TITLE
@@ -163,7 +162,6 @@ data class PriceInfoForBottomSheet(
   val totalNet: UiMoney,
 )
 
-@OptIn(ExperimentalSheetApi::class)
 @Composable
 fun <T> HedvigBottomSheet(
   hedvigBottomSheetState: HedvigBottomSheetState<T>,
@@ -202,7 +200,6 @@ fun <T> rememberHedvigBottomSheetState(): HedvigBottomSheetState<T> {
   return rememberInternalHedvigBottomSheetState()
 }
 
-@OptIn(ExperimentalSheetApi::class)
 @Composable
 private fun <T> InternalHedvigBottomSheet(
   onDismissRequest: () -> Unit,
