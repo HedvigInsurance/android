@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.media3.datasource.cache.SimpleCache
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants

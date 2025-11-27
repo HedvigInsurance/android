@@ -9,7 +9,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants

@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode

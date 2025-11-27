@@ -2,7 +2,7 @@ package com.hedvig.android.feature.insurances.navigation
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.InsuranceDestination

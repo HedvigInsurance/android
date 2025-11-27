@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.ui.dropUnlessResumed

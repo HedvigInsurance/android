@@ -13,6 +13,7 @@ kotlin {
     commonMain.dependencies {
       api(libs.coil.coil)
       api(libs.coil.compose)
+      api(libs.coil.network.ktor)
       api(projects.designSystemApi)
       api(projects.placeholder)
 
@@ -28,7 +29,6 @@ kotlin {
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.androidx.graphicsShapes)
-      implementation(libs.modal.sheet)
       implementation(projects.composeUi)
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
@@ -43,6 +43,7 @@ kotlin {
       implementation(libs.media3.exoplayer)
       implementation(libs.media3.exoplayer.dash)
       implementation(libs.media3.ui)
+      implementation(libs.modal.sheet)
     }
   }
 }

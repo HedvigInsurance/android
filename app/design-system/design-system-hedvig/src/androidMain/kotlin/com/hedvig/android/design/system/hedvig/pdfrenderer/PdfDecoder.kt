@@ -4,12 +4,13 @@ import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
 import androidx.core.graphics.drawable.toDrawable
-import coil.ImageLoader
-import coil.decode.DecodeResult
-import coil.decode.Decoder
-import coil.decode.ImageSource
-import coil.fetch.SourceResult
-import coil.request.Options
+import coil3.ImageLoader
+import coil3.asImage
+import coil3.decode.DecodeResult
+import coil3.decode.Decoder
+import coil3.decode.ImageSource
+import coil3.fetch.SourceFetchResult
+import coil3.request.Options
 
 class PdfDecoder(
   private val source: ImageSource,
@@ -35,18 +36,18 @@ class PdfDecoder(
     pdfRenderer.close()
 
     return DecodeResult(
-      drawable = bitmap.toDrawable(context.resources),
+      image = bitmap.toDrawable(context.resources).asImage(),
       isSampled = false,
     )
   }
 
   class Factory : Decoder.Factory {
-    override fun create(result: SourceResult, options: Options, imageLoader: ImageLoader): Decoder? {
+    override fun create(result: SourceFetchResult, options: Options, imageLoader: ImageLoader): Decoder? {
       if (!isApplicable(result)) return null
       return PdfDecoder(result.source, options)
     }
 
-    private fun isApplicable(result: SourceResult): Boolean = result.mimeType == MIME_TYPE_PDF
+    private fun isApplicable(result: SourceFetchResult): Boolean = result.mimeType == MIME_TYPE_PDF
   }
 
   companion object {

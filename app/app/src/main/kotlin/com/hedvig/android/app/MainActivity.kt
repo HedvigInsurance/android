@@ -25,7 +25,7 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl

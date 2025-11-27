@@ -13,7 +13,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings

@@ -12,7 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog

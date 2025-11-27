@@ -87,11 +87,11 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.request.ImageRequest
-import coil.request.NullRequestDataException
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ErrorSnackbar
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState

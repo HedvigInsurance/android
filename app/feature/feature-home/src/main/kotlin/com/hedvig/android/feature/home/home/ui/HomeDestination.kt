@@ -60,7 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus

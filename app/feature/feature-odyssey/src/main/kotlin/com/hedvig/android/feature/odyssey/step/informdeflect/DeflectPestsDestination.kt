@@ -15,7 +15,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.DeflectPartner
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium

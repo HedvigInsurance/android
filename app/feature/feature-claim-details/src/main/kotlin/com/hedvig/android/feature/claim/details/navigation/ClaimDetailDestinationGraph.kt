@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination

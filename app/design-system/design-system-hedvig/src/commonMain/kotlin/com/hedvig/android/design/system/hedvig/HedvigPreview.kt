@@ -3,15 +3,14 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
-import coil.ComponentRegistry
-import coil.ImageLoader
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
-import coil.request.DefaultRequestOptions
-import coil.request.Disposable
-import coil.request.ErrorResult
-import coil.request.ImageRequest
-import coil.request.ImageResult
+import coil3.ComponentRegistry
+import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
+import coil3.request.Disposable
+import coil3.request.ErrorResult
+import coil3.request.ImageRequest
+import coil3.request.ImageResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
@@ -86,7 +85,7 @@ annotation class HedvigShortMultiScreenPreview
  */
 class PreviewImageLoader : ImageLoader {
   override val components: ComponentRegistry = ComponentRegistry()
-  override val defaults: DefaultRequestOptions = DefaultRequestOptions()
+  override val defaults: ImageRequest.Defaults = ImageRequest.Defaults.DEFAULT
   override val diskCache: DiskCache? = null
   override val memoryCache: MemoryCache? = null
 

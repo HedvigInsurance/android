@@ -22,7 +22,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus

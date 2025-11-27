@@ -37,8 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import coil.ImageLoader
-import coil.compose.AsyncImage
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase

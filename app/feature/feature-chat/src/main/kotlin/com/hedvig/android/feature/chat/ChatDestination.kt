@@ -27,7 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.SimpleCache
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection

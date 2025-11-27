@@ -38,7 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
