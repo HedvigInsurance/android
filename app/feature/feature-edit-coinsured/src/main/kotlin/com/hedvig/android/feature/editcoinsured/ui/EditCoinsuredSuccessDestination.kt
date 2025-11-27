@@ -17,8 +17,8 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.hedvigDateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
@@ -40,7 +40,7 @@ internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () ->
         text = stringResource(Res.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
         description = stringResource(
           Res.string.CONTRACT_ADD_COINSURED_UPDATED_LABEL,
-          date?.toJavaLocalDate()?.format(hedvigDateTimeFormatter(getLocale())) ?: "-",
+          date?.toJavaLocalDate()?.format(HedvigDateTimeFormatterDefaults.dateMonthAndYear(getLocale())) ?: "-",
         ),
         iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SUCCESS,
         modifier = Modifier.align(Alignment.Center),
