@@ -11,6 +11,7 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
+import androidx.core.graphics.createBitmap
 
 class PdfDecoder(
   private val source: ImageSource,
@@ -26,11 +27,7 @@ class PdfDecoder(
     )
     val page = pdfRenderer.openPage(0)
 
-    val bitmap = Bitmap.createBitmap(
-      page.width * 2,
-      page.height * 2,
-      Bitmap.Config.ARGB_8888,
-    )
+    val bitmap = createBitmap(page.width * 2, page.height * 2)
     page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
     page.close()
     pdfRenderer.close()

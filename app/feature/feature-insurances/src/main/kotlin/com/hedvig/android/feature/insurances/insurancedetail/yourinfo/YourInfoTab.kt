@@ -400,7 +400,7 @@ internal fun CoInsuredSection(
           horizontalArrangement = Arrangement.End,
           modifier = Modifier.padding(vertical = 4.dp),
         ) {
-          val text = if (coInsuredList.size == 0) {
+          val text = if (coInsuredList.isEmpty()) {
             stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
           } else {
             stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
