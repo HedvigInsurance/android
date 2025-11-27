@@ -24,7 +24,7 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
   override suspend fun invoke(): Either<ErrorMessage, MemberPaymentsDetails> {
     return either {
       val result = apolloClient.query(MemberPaymentDetailsQuery())
-        .fetchPolicy(FetchPolicy.NetworkFirst)
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute(::ErrorMessage)
         .onLeft {
           logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase returned error: $it" }
