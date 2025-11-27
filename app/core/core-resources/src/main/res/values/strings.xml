@@ -394,12 +394,14 @@
   <string name="HONESTY_PLEDGE_TITLE">Before we start</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Discounts available</string>
   <string name="INSURANCES_NO_ACTIVE">You don\'t have any active insurances</string>
+  <string name="INSURANCE_ADDONS_SUBHEADING">Addons</string>
   <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">To return to your previous coverage, register your car as active again with Transportstyrelsen.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Any damage that occurs during a 30-day period after the moving out date is eligible for claims.</string>
   <string name="INSURANCE_EVIDENCE.DOCUMENT_TITLE">Certificate of validity</string>
   <string name="INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION">The certificate has been sent to your email.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION">A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details, for example which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.</string>
   <string name="INSURANCE_EVIDENCE.READ_MORE_TITLE">What is a certificate of validity?</string>
+  <string name="INSURANCE_OFFERS_SUBHEADING">Offers</string>
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
@@ -475,9 +477,11 @@
   <string name="PAYMENTS_AUTOGIRO_LABEL">Direct debit</string>
   <string name="PAYMENTS_BANK_LABEL">Bank</string>
   <string name="PAYMENTS_DISCOUNTS_SECTION_TITLE">Discounts</string>
+  <string name="PAYMENTS_DUE_DESCRIPTION">%1$s each month</string>
   <string name="PAYMENTS_EXPIRED_DATE">Expired %1$s</string>
   <string name="PAYMENTS_HISTORY_INFO">For information about payments older than 12 months, please send us a message here in the app.</string>
   <string name="PAYMENTS_IN_PROGRESS">The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account</string>
+  <string name="PAYMENTS_MANDATE">Mandate</string>
   <string name="PAYMENTS_MISSED_PAYMENT">Your payment for the period %1$s – %2$s didn\'t process as expected. The amount has been added to this payment.</string>
   <string name="PAYMENTS_NO_HISTORY_DATA">There is no record of your payment history</string>
   <string name="PAYMENTS_NO_PAYMENTS_IN_PROGRESS">You have no payments in progress</string>
@@ -485,6 +489,7 @@
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION">Our monthly payment is processed using digital direct debit (Autogiro) through our payment partner Trustly. Your price is based on several factors, including aspects related to you, your belongings, your lifestyle, and where you live.</string>
   <string name="PAYMENTS_PAYMENT_DETAILS_INFO_TITLE">Payment details</string>
   <string name="PAYMENTS_PAYMENT_DUE">Payment due</string>
+  <string name="PAYMENTS_PAYMENT_DUE_INFO">If you update your bank account close to the %1$s, the withdrawal might take a few extra days.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Payment history</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Payment method</string>

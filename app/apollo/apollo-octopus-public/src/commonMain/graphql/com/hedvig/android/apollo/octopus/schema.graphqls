@@ -832,6 +832,7 @@ Submitted using `Mutation.claimIntentSubmitSelect`.
 """
 type ClaimIntentStepContentSelect {
   options: [ClaimIntentStepContentSelectOption!]!
+  defaultSelectedId: ID
   isSkippable: Boolean!
   isRegrettable: Boolean!
 }
@@ -1155,6 +1156,7 @@ type CrossSell {
   id: ID!
   title: String!
   description: String!
+  buttonTitle: String!
   """
   Product page URL for completing the purchase
   """
@@ -1209,6 +1211,7 @@ type CrossSellV2 {
   Other available cross-sells (behavior varies by userFlow)
   """
   otherCrossSells: [CrossSell!]!
+  discountAvailable: Boolean!
 }
 enum CurrencyCode {
   """
@@ -2179,7 +2182,7 @@ type MemberCharge {
 type MemberChargeBreakdownItem {
   gross: Money!
   net: Money!
-  discounts: [MemberChargeBreakdownItemDiscount!]
+  discounts: [MemberChargeBreakdownItemDiscount!] @deprecated(reason: "Added to the insurance price breakdown")
   displayTitle: String!
   displaySubtitle: String
   periods: [MemberChargeBreakdownItemPeriod!]!
@@ -2290,6 +2293,28 @@ type MemberMutationOutput {
   member: Member
   userError: UserError
 }
+type MemberPaymentChargeMethodInfo {
+  """
+  An abstract display name of the connection - usually like the name of the bank you are connected to.
+  """
+  displayName: String
+  """
+  A more specific description of your actual connection, such as a bank account reference.
+  """
+  descriptor: String
+  """
+  A payment method used eg AutoGiro
+  """
+  paymentMethod: String!
+  """
+  A payment mandate eg Hedvig Försäkring AB, Trustly
+  """
+  mandate: String
+  """
+  A date of the month when the charge will happen
+  """
+  chargingDayInTheMonth: Int
+}
 type MemberPaymentConnection {
   """
   An abstract display name of the connection - usually like the name of the bank you are connected to.
@@ -2322,7 +2347,11 @@ type MemberPaymentInformation {
   """
   A payment connection if registered.
   """
-  connection: MemberPaymentConnection
+  connection: MemberPaymentConnection @deprecated(reason: "Use chargeMethod instead. It provides additional charge metadata including mandate provider, payment method label, and charge schedule.")
+  """
+  A payment connection info
+  """
+  chargeMethod: MemberPaymentChargeMethodInfo
 }
 type MemberReferral {
   """

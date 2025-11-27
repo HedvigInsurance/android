@@ -12,10 +12,7 @@ import octopus.ClaimIntentStartMutation
 internal class StartClaimIntentUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(
-    sourceMessageId: String?,
-    developmentFlow: Boolean,
-  ): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(sourceMessageId: String?, developmentFlow: Boolean): Either<ErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(

@@ -16,9 +16,12 @@ query UpcomingPayment {
     }
     paymentInformation {
       status
-      connection {
+      chargeMethod {
         displayName
         descriptor
+        chargingDayInTheMonth
+        mandate
+        paymentMethod
       }
     }
   }

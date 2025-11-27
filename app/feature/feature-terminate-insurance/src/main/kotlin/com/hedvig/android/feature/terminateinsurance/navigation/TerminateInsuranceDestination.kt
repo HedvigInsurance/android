@@ -140,13 +140,12 @@ internal sealed interface TerminateInsuranceDestination {
   @Serializable
   data class DeflectAutoDecommission(
     val commonParams: TerminationGraphParameters,
-    val deflectParameters: AutoDecommissionDeflectStepParameters
-
+    val deflectParameters: AutoDecommissionDeflectStepParameters,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<TerminationGraphParameters>(),
-        typeOf<AutoDecommissionDeflectStepParameters>()
+        typeOf<AutoDecommissionDeflectStepParameters>(),
       )
     }
   }
@@ -186,5 +185,5 @@ internal data class AutoDecommissionDeflectStepParameters(
   val title: String,
   val message: String,
   val info: String?,
-  val explanations: List<Pair<String?, String>>
+  val explanations: List<Pair<String?, String>>,
 )

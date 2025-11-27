@@ -5,7 +5,7 @@ import kotlinx.io.Source
 
 internal class NativeFile(
   override val fileName: String,
-  override val description: String
+  override val description: String,
 ) : CommonFile {
   override fun source(): Source {
     TODO("Not yet implemented")

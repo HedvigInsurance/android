@@ -142,7 +142,6 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
       Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
       ) {
-
         HighlightLabel(
           labelText = stringResource(
             when (claim.outcome) {

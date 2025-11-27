@@ -24,10 +24,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 internal class UploadFileUseCase(private val client: HttpClient) {
   context(_: Raise<ErrorMessage>)
-  suspend fun invoke(
-    commonFile: CommonFile,
-    uploadUrl: String,
-  ): FileUploadResponse {
+  suspend fun invoke(commonFile: CommonFile, uploadUrl: String): FileUploadResponse {
     // todo URL for prod/staging
     val response = client.post("https://gateway.test.hedvig.com$uploadUrl") {
       setBody(

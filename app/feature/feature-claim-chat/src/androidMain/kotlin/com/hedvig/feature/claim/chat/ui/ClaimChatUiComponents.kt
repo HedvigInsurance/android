@@ -1,22 +1,41 @@
 package com.hedvig.feature.claim.chat.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -32,13 +51,24 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
+import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.AccordionData
+import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
+import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
+import com.hedvig.android.design.system.hedvig.File
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -60,11 +90,19 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
+import com.hedvig.android.design.system.hedvig.icon.Image
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
@@ -74,14 +112,15 @@ import hedvig.resources.R
 import java.io.File
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.Serializable
 
-//todo: if we want a a fullscreen free text overlay,
+// todo: if we want a a fullscreen free text overlay,
 // the claim chat screen should be wrapped in this:
-//@Composable
-//internal fun ClaimChatScreen(
+// @Composable
+// internal fun ClaimChatScreen(
 //  updateFreeText: (String?) -> Unit,
 //  onCloseFullScreenEditText: () -> Unit,
-//) {
+// ) {
 //  FreeTextOverlay(
 //    freeTextMaxLength = 2000,
 //    freeTextValue = if (uiState is AudioRecordingStepState.FreeTextDescription) uiState.freeText else null,
@@ -98,8 +137,7 @@ import kotlinx.datetime.LocalDate
 //    overlaidContent = {
 //      // all chat content
 //    })
-//}
-
+// }
 
 @Composable
 internal fun AudioRecorderBubble(
@@ -144,7 +182,6 @@ internal fun AudioRecorderBubble(
   )
 }
 
-
 @Composable
 internal fun AssistantMessageBubble(
   text: String,
@@ -178,7 +215,7 @@ internal fun AssistantMessageBubble(
         )
         Spacer(Modifier.width(8.dp))
         HedvigText(
-          "Hedvig AI Assistant", //todo
+          "Hedvig AI Assistant", // todo
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
@@ -224,14 +261,17 @@ internal fun YesNoBubble(
           HighlightLabel(
             labelText = stringResource(R.string.GENERAL_YES),
             size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected == true) HighlightLabelDefaults.HighlightColor.Green(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            )
-            else HighlightLabelDefaults.HighlightColor.Grey(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            ),
+            color = if (answerSelected == true) {
+              HighlightLabelDefaults.HighlightColor.Green(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            } else {
+              HighlightLabelDefaults.HighlightColor.Grey(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            },
             modifier = Modifier.clickable(
-              enabled = canBeChanged, //todo
+              enabled = canBeChanged, // todo
               onClick = {
                 onSelect(true)
               },
@@ -241,14 +281,17 @@ internal fun YesNoBubble(
           HighlightLabel(
             labelText = stringResource(R.string.GENERAL_NO),
             size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected != null && !answerSelected) HighlightLabelDefaults.HighlightColor.Green(
-              HighlightLabelDefaults.HighlightShade.LIGHT,
-            )
-            else HighlightLabelDefaults.HighlightColor.Grey(
-              HighlightLabelDefaults.HighlightShade.MEDIUM,
-            ),
+            color = if (answerSelected != null && !answerSelected) {
+              HighlightLabelDefaults.HighlightColor.Green(
+                HighlightLabelDefaults.HighlightShade.LIGHT,
+              )
+            } else {
+              HighlightLabelDefaults.HighlightColor.Grey(
+                HighlightLabelDefaults.HighlightShade.MEDIUM,
+              )
+            },
             modifier = Modifier.clickable(
-              enabled = canBeChanged, //todo
+              enabled = canBeChanged, // todo
               onClick = {
                 onSelect(false)
               },
@@ -347,7 +390,7 @@ internal fun MultiSelectBubbleWithDialog(
         labelText = questionLabel,
         inputText = when {
           selectedOptionIds.isEmpty() -> null
-          else -> options.filter {it.id in selectedOptionIds}
+          else -> options.filter { it.id in selectedOptionIds }
             .joinToString(transform = RadioOption::text)
         },
         modifier = modifier,
@@ -356,6 +399,276 @@ internal fun MultiSelectBubbleWithDialog(
     },
   )
 }
+
+@Composable
+internal fun UploadFilesBubble(
+  isCurrentStep: Boolean,
+  canSkip: Boolean,
+  canBeChanged: Boolean,
+  onSkip: () -> Unit,
+  addLocalFile: (uri: Uri) -> Unit,
+  onRemoveFile: (fileId: String) -> Unit,
+  onSubmitFiles: () -> Unit,
+  appPackageId: String,
+  localFiles: List<UiFile>,
+  uploadedFiles: List<UiFile>,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
+    addLocalFile(uri)
+  }
+  val photoPicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.PickMultipleVisualMedia(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
+      addLocalFile(resultingUri)
+    }
+  }
+  val filePicker = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.GetMultipleContents(),
+  ) { resultingUriList: List<Uri> ->
+    for (resultingUri in resultingUriList) {
+      addLocalFile(resultingUri)
+    }
+  }
+  FilePickerBottomSheet(
+    sheetState = fileTypeSelectBottomSheetState,
+    onPickPhoto = {
+      photoPicker.launch(PickVisualMediaRequest())
+      fileTypeSelectBottomSheetState.dismiss()
+    },
+    onPickFile = {
+      filePicker.launch("*/*")
+      fileTypeSelectBottomSheetState.dismiss()
+    },
+    onTakePhoto = {
+      photoCaptureState.launchTakePhotoRequest()
+      fileTypeSelectBottomSheetState.dismiss()
+    },
+  )
+  UploadFilesBubbleContent(
+    onUploadButtonClick = {
+      fileTypeSelectBottomSheetState.show()
+    },
+    isCurrentStep = isCurrentStep,
+    canSkip = canSkip,
+    canBeChanged = canBeChanged,
+    onSkip = onSkip,
+    onRemoveFile = onRemoveFile,
+    onSubmitFiles = onSubmitFiles,
+    localFiles = localFiles,
+    uploadedFiles = uploadedFiles,
+    imageLoader = imageLoader,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun UploadFilesBubbleContent(
+  isCurrentStep: Boolean,
+  canSkip: Boolean,
+  canBeChanged: Boolean,
+  onSkip: () -> Unit,
+  onRemoveFile: (fileId: String) -> Unit,
+  onSubmitFiles: () -> Unit,
+  onUploadButtonClick: () -> Unit,
+  localFiles: List<UiFile>,
+  uploadedFiles: List<UiFile>,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  StandardBubble(
+    isPrefilledByAI = false,
+    isCurrentStep = isCurrentStep,
+    canSkip = canSkip,
+    onSubmit = {
+      onSubmitFiles()
+    },
+    modifier = modifier,
+    selectedAnswer = if ((localFiles + uploadedFiles).isNotEmpty()) Unit else null,
+    onSkip = onSkip,
+    content = {
+      Column {
+        val allFiles = localFiles + uploadedFiles
+        if (allFiles.isNotEmpty()) {
+          LazyRow(
+            Modifier
+              .height(120.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(top = 8.dp),
+          ) {
+            items(
+              items = allFiles,
+              key = { it.id },
+            ) { uiFile ->
+              File(
+                id = uiFile.id,
+                name = uiFile.name,
+                path = uiFile.localPath ?: uiFile.url,
+                mimeType = uiFile.mimeType,
+                imageLoader = imageLoader,
+                onRemoveFile = onRemoveFile,
+                onClickFile = null,
+                onNavigateToImageViewer = onNavigateToImageViewer,
+              )
+            }
+          }
+        }
+        Row(
+          Modifier.fillMaxWidth().padding(16.dp),
+          horizontalArrangement = Arrangement.End,
+        ) {
+          HedvigButton(
+            text = stringResource(R.string.file_upload_upload_files),
+            onClick = onUploadButtonClick,
+            enabled = isCurrentStep || canBeChanged,
+            buttonSize = ButtonDefaults.ButtonSize.Medium,
+          )
+        }
+      }
+    },
+  )
+}
+
+@Composable
+private fun FilePickerBottomSheet(
+  sheetState: HedvigBottomSheetState<Unit>,
+  onPickPhoto: () -> Unit,
+  onPickFile: () -> Unit,
+  onTakePhoto: () -> Unit,
+) {
+  HedvigBottomSheet(
+    sheetState,
+    content = {
+      FilePickerBottomSheetContent(
+        onPickPhoto = onPickPhoto,
+        onTakePhoto = onTakePhoto,
+        onPickFile = onPickFile,
+      )
+    },
+  )
+}
+
+@Composable
+private fun FilePickerBottomSheetContent(
+  onPickPhoto: () -> Unit,
+  onTakePhoto: () -> Unit,
+  onPickFile: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier,
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      HedvigButton(
+        onClick = onPickPhoto,
+        true,
+      ) {
+        Row {
+          Icon(HedvigIcons.Image, null)
+          Spacer(Modifier.height(8.dp))
+          HedvigText(stringResource(R.string.file_upload_photo_library))
+        }
+      }
+      HedvigButton(
+        onClick = onTakePhoto,
+        true,
+      ) {
+        Row {
+          Icon(HedvigIcons.Camera, null)
+          Spacer(Modifier.height(8.dp))
+          HedvigText(stringResource(R.string.file_upload_take_photo))
+        }
+      }
+      HedvigButton(
+        onClick = onPickFile,
+        true,
+      ) {
+        Row {
+          Icon(HedvigIcons.Document, null)
+          Spacer(Modifier.height(8.dp))
+          HedvigText(stringResource(R.string.file_upload_choose_files))
+        }
+      }
+    }
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
+internal fun DeflectBubble(
+  title: String,
+  description: String,
+  faq: List<Pair<String, String>>,
+  openUrl: (String) -> Unit,
+  partners: List<DeflectPartner>,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier.padding(16.dp),
+    horizontalAlignment = Alignment.End,
+  ) {
+    FlowHeading(title, description)
+    partners.forEach { partner ->
+      Spacer(Modifier.height(16.dp))
+      HedvigCard(
+        Modifier.fillMaxWidth(),
+      ) {
+        Column(
+          Modifier.padding(16.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          if (partner.title != null) {
+            HedvigText(partner.title)
+          }
+          if (partner.description != null) {
+            HedvigText(partner.description)
+          }
+          if (partner.url != null && partner.buttonTitle != null) {
+            Spacer(Modifier.height(8.dp))
+            HedvigButton(
+              buttonSize = ButtonDefaults.ButtonSize.Medium,
+              enabled = true,
+              text =
+                partner.buttonTitle,
+              onClick = {
+                openUrl(partner.url)
+              },
+            )
+          }
+        }
+      }
+    }
+    if (faq.isNotEmpty()) {
+      Spacer(Modifier.height(16.dp))
+      AccordionList(
+        faq.map { faqItem ->
+          AccordionData(title = faqItem.first, description = faqItem.second)
+        },
+      )
+    }
+  }
+}
+
+@Serializable
+data class DeflectPartner(
+  val id: String,
+  val title: String?,
+  val description: String?,
+  val imageUrl: String,
+  val phoneNumber: String?,
+  val url: String?,
+  val buttonTitle: String?,
+  val info: String?,
+)
 
 @Composable
 internal fun DateSelectBubble(
@@ -385,7 +698,7 @@ internal fun DateSelectBubble(
       DatePickerWithDialog(
         datePickerState,
         canInteract = canBeChanged,
-        startText = questionLabel ?: "", //todo
+        startText = questionLabel ?: "", // todo
       )
     },
   )
@@ -587,7 +900,7 @@ internal fun <T> StandardBubble(
             imageVector = HedvigIcons.HelipadFilled,
             tint = HedvigTheme.colorScheme.signalAmberElement,
             modifier = Modifier.align(Alignment.TopStart),
-            contentDescription = null, //todo
+            contentDescription = null, // todo
           )
         }
       }
@@ -758,7 +1071,7 @@ private fun PreviewClaimChatComponents() {
           onSkip = {},
           onSelect = {},
           onSubmit = {},
-          isPrefilled = false
+          isPrefilled = false,
         )
         Spacer(Modifier.height(16.dp))
         DateSelectBubble(
@@ -794,7 +1107,9 @@ private fun PreviewClaimChatComponents() {
 @Composable
 private fun PreviewSummary() {
   HedvigTheme {
-    Surface {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
       Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -813,6 +1128,96 @@ private fun PreviewSummary() {
           "All done! Here is your submitted claim.",
           onNavigateToClaim = {},
           claimId = "",
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewUploadFilesBubbleContent(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasFiles: Boolean,
+) {
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        UploadFilesBubbleContent(
+          modifier = Modifier.height(400.dp),
+          isCurrentStep = true,
+          canSkip = true,
+          canBeChanged = true,
+          onSkip = {},
+          onRemoveFile = {},
+          onSubmitFiles = {},
+          localFiles = if (hasFiles) {
+            listOf(
+              UiFile(
+                name = "file",
+                localPath = "path",
+                mimeType = "image/jpg",
+                url = null,
+                id = "1",
+              ),
+            )
+          } else {
+            emptyList()
+          },
+          uploadedFiles = emptyList(),
+          imageLoader = rememberPreviewImageLoader(),
+          onNavigateToImageViewer = { _, _ -> },
+          onUploadButtonClick = {},
+        )
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewDeflect(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) hasFaq: Boolean,
+) {
+  HedvigTheme {
+    Surface(
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
+      ) {
+        DeflectBubble(
+          title = "Deflect title",
+          description = "Loooooooooooooooooooooong deflect description",
+          faq = listOf("Question" to "Answer"),
+          openUrl = {},
+          partners = listOf(
+            DeflectPartner(
+              id = "partner1",
+              title = "partner1",
+              description = "description",
+              imageUrl = "",
+              phoneNumber = "",
+              url = "",
+              buttonTitle = "Contact Partner 1",
+              info = "Available 24/7 for emergency assistance",
+            ),
+            DeflectPartner(
+              id = "partner2",
+              imageUrl = "",
+              phoneNumber = null,
+              url = "",
+              buttonTitle = "Visit Website",
+              info = "Online support and resources",
+              title = "partner2",
+              description = "description",
+            ),
+          ),
         )
       }
     }

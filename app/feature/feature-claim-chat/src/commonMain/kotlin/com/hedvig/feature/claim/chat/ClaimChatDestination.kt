@@ -25,10 +25,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ClaimChatDestination(
-  developmentFlow: Boolean = true,
-  messageId: String? = null,
-) {
+fun ClaimChatDestination(developmentFlow: Boolean = true, messageId: String? = null) {
   val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
     parametersOf(messageId, developmentFlow)
   }
@@ -80,7 +77,7 @@ slightly on the last step. As I tried to catch my balance, the phone slipped out
 The phone still works perfectly, it turns on, and the internal components are functional. However, the screen is cracked
 quite badly, mainly across the top and down one side. The damage is significant and requires repair.
 I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish Crowns (SEK).
-              """.trimIndent(),
+                  """.trimIndent(),
                 ),
               )
             },
