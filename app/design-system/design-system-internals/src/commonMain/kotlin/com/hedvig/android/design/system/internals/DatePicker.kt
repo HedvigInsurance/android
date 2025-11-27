@@ -18,11 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.hedvig.android.design.system.hedvig.api.CommonLocale
 import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
-import java.util.Locale
 import kotlinx.coroutines.flow.drop
+
+internal expect fun CommonLocale.toCalendarLocale(): CalendarLocale
 
 @Composable
 fun rememberHedvigDatePickerState(
@@ -43,7 +45,7 @@ fun rememberHedvigDatePickerState(
 }
 
 fun HedvigDatePickerState(
-  locale: Locale,
+  locale: CommonLocale,
   initialSelectedDateMillis: Long?,
   initialDisplayedMonthMillis: Long?,
   yearRange: IntRange,
@@ -51,7 +53,7 @@ fun HedvigDatePickerState(
   selectableDates: HedvigSelectableDates,
 ): HedvigDatePickerState {
   val materialState = DatePickerState(
-    locale = locale,
+    locale = locale.toCalendarLocale(),
     initialSelectedDateMillis = initialSelectedDateMillis,
     initialDisplayedMonthMillis = initialDisplayedMonthMillis,
     yearRange = yearRange,

@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.api.CommonLocale
 import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerDefaults
 import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
@@ -22,7 +23,6 @@ import com.hedvig.android.design.system.internals.HedvigDatePickerColors
 import hedvig.resources.Res
 import hedvig.resources.general_done_button
 import hedvig.resources.general_save_button
-import java.util.Locale
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -43,7 +43,7 @@ fun rememberHedvigDatePickerState(
 }
 
 fun HedvigDatePickerState(
-  locale: Locale,
+  locale: CommonLocale,
   initialSelectedDateMillis: Long?,
   initialDisplayedMonthMillis: Long?,
   yearRange: IntRange = HedvigDatePickerDefaults.YearRange,
@@ -66,7 +66,7 @@ data class HedvigDatePickerImmutableState(
   val yearRange: IntRange,
   val minDateInMillis: Long,
   val maxDateInMillis: Long,
-  val locale: Locale,
+  val locale: CommonLocale,
 )
 
 @Composable
