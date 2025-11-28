@@ -1054,8 +1054,8 @@ private fun ChatAsyncImage(
         AsyncImagePainter.State.Empty -> state
         is AsyncImagePainter.State.Success -> {
           loadedImageIntrinsicSize.value = IntSize(
-            state.result.drawable.intrinsicWidth,
-            state.result.drawable.intrinsicHeight,
+            state.result.image.width,
+            state.result.image.height,
           )
           state
         }
