@@ -20,7 +20,7 @@ jobs:
     name: Build and release new umbrella version
     runs-on: macos-15-xlarge
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Setup CI
         uses: ./.github/actions/common-setup
         with:
@@ -99,7 +99,7 @@ jobs:
         env:
           VERSION_CODE: ${{ env.VERSION_CODE }}
       - name: Checkout umbrella repo under the path_umbrella path
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: path_umbrella
           repository: hedviginsurance/umbrella
