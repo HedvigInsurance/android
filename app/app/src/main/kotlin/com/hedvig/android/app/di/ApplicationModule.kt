@@ -42,6 +42,7 @@ import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -105,6 +106,7 @@ import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.feature.claim.chat.di.claimChatModule
+import io.ktor.client.HttpClient
 import java.io.File
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
@@ -112,6 +114,11 @@ import org.koin.dsl.module
 import timber.log.Timber
 
 private val networkModule = module {
+  single<HttpClient>(baseHttpClientQualifier) {
+    // todo add common headers and logging. Do not add authentication which should only be added to specific versions
+    //  of the http client
+    HttpClient()
+  }
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient
@@ -351,8 +358,7 @@ private val coilModule = module {
     val applicationContext = get<Context>().applicationContext
     ImageLoader.Builder(get<Context>())
       .components {
-        //.okHttpClient(get<OkHttpClient.Builder>().build())
-        add(KtorNetworkFetcherFactory()) // todo finish coil migration
+        add(KtorNetworkFetcherFactory(get<HttpClient>()))
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
           add(AnimatedImageDecoder.Factory())

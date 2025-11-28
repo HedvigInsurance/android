@@ -14,6 +14,7 @@ kotlin {
       implementation(libs.ktor.client.auth)
       implementation(projects.authCoreApi)
       implementation(projects.coreBuildConstants)
+      implementation(projects.coreCommonPublic)
       implementation(projects.featureClaimChat)
     }
   }
