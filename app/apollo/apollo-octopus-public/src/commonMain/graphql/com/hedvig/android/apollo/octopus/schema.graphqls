@@ -1312,6 +1312,21 @@ type ExplanationItem {
   title: String
   text: String!
 }
+"""
+Single discount line that represents a distinct discount source affecting the item.
+Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be
+returned as ExtendedItemDiscount
+"""
+type ExtendedItemDiscount {
+  """
+   General discount information 
+  """
+  itemDiscount: ItemDiscount!
+  """
+   Whether discount is on a pending state or not 
+  """
+  isPending: Boolean!
+}
 type ExternalInsuranceCancellation {
   """
   Determines if and how we can help the user with cancellation.
@@ -3457,7 +3472,8 @@ type ProductOfferCost {
   """
   Collection of discounts that affect an item. Referral bonuses apply to member as a whole so it will not be listed here
   """
-  discounts: [ItemDiscount!]!
+  discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
+  discountsV2: [ExtendedItemDiscount!]!
 }
 type ProductOfferDeductible {
   displayName: String!
