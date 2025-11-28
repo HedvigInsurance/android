@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
-import org.koin.compose.viewmodel.koinViewModel
 import platform.UIKit.UIViewController
 
 @Suppress("unused", "FunctionName") // Used from iOS

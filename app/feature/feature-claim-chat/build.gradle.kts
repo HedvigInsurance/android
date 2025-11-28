@@ -56,6 +56,7 @@ kotlin {
       implementation(projects.audioPlayerUi)
       implementation(projects.composePhotoCaptureState)
       implementation(projects.coreUiData)
+      implementation(projects.uiClaimFlow)
     }
   }
 }

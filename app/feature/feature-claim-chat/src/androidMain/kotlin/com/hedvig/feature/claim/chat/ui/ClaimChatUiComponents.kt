@@ -5,12 +5,16 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +42,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,7 +54,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.selectableGroup
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -103,14 +112,19 @@ import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
+import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
 import hedvig.resources.R
 import java.io.File
+import kotlin.random.Random
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -138,6 +152,50 @@ import kotlinx.serialization.Serializable
 //      // all chat content
 //    })
 // }
+
+@Composable
+internal fun ContentSelectChips(
+  options: List<StepContent.ContentSelect.Option>,
+  selectedOption: StepContent.ContentSelect.Option?,
+  onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
+  modifier: Modifier = Modifier
+) {
+  FlowRow(
+    modifier = modifier.semantics {
+      selectableGroup()
+    },
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    for (item in options) {
+      key(item) {
+        val isPreview = LocalInspectionMode.current
+        val showChipAnimatable = remember {
+          Animatable(if (isPreview) 1.0f else 0.0f)
+        }
+        LaunchedEffect(Unit) {
+          delay(Random.nextDouble(0.3, 0.6).seconds)
+          showChipAnimatable.animateTo(
+            1.0f,
+            animationSpec = spring(
+              dampingRatio = Spring.DampingRatioLowBouncy,
+              stiffness = Spring.StiffnessLow,
+            ),
+          )
+        }
+        HedvigChip(
+          item = item,
+          showChipAnimatable = showChipAnimatable,
+          itemDisplayName = {
+            item.title
+          },
+          isSelected = item == selectedOption,
+          onItemClick = onOptionClick,
+        )
+      }
+    }
+  }
+}
 
 @Composable
 internal fun AudioRecorderBubble(

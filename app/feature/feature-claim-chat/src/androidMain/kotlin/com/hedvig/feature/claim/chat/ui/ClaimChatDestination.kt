@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,8 +19,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.feature.claim.chat.ClaimChatEvent
+import com.hedvig.feature.claim.chat.ClaimChatUiState
+import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
+import com.hedvig.feature.claim.chat.ui.ContentSelectChips
 import com.hedvig.feature.claim.chat.ui.rememberFilePicker
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -84,12 +89,15 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
           )
         }
 
-        is StepContent.ContentSelect -> BasicText(
-          "ContentSelect",
-          Modifier.clickable {
-            onEvent(ClaimChatEvent.Select(item.id, item.stepContent.options.firstNotNullOf { it.id }))
-          },
-        )
+        is StepContent.ContentSelect ->
+          ContentSelectChips(
+            modifier = Modifier. padding(16.dp), //todo
+            options = item.stepContent.options,
+            selectedOption = null, //todo
+            onOptionClick = {
+              onEvent(ClaimChatEvent.Select(item.id, item.stepContent.options.firstNotNullOf { it.id }))
+            },
+          )
 
         is StepContent.FileUpload -> {
           val filePicker = rememberFilePicker { uri ->
