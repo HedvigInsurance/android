@@ -34,7 +34,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -140,7 +140,7 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
             append(" ")
             append(
               hedvigDateTimeFormatter.format(
-                claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toJavaLocalDateTime(),
+                claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()),
               ),
             )
           },

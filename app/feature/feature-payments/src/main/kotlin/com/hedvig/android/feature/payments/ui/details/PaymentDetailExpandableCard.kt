@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.DateFormatter
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -45,9 +46,9 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.chargeBreakdownPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
@@ -64,7 +65,6 @@ import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE
 import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND
 import hedvig.resources.TALKBACK_EXPANDABLE_STATE_COLLAPSED
 import hedvig.resources.TALKBACK_EXPANDABLE_STATE_EXPANDED
-import java.time.format.DateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
@@ -284,7 +284,7 @@ internal fun PaymentDetailExpandableCard(
 @Composable
 private fun PeriodItem(
   period: MemberCharge.ChargeBreakdown.Period,
-  dateTimeFormatter: DateTimeFormatter,
+  dateTimeFormatter: DateFormatter,
   modifier: Modifier,
 ) {
   Column(
@@ -343,12 +343,8 @@ private fun PeriodItem(
   }
 }
 
-private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: DateTimeFormatter): String {
-  return "${
-    dateTimeFormatter.format(
-      fromDate.toJavaLocalDate(),
-    )
-  } - ${dateTimeFormatter.format(toDate.toJavaLocalDate())}"
+private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: DateFormatter): String {
+  return "${dateTimeFormatter.format(fromDate)} - ${dateTimeFormatter.format(toDate)}"
 }
 
 @Composable

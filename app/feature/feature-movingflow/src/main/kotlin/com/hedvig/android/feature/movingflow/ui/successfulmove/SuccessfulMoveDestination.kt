@@ -22,7 +22,7 @@ import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import hedvig.resources.Res
@@ -30,14 +30,13 @@ import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_TITLE
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SuccessfulMoveDestination(moveDate: LocalDate, navigateUp: () -> Unit, popBackStack: () -> Unit) {
   val locale = getLocale()
   val formattedDate = remember(moveDate, locale) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(moveDate.toJavaLocalDate())
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(moveDate)
   }
 
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {

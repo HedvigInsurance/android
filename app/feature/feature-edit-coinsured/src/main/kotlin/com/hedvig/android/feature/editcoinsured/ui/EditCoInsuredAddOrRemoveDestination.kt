@@ -47,7 +47,7 @@ import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
@@ -381,7 +381,7 @@ private fun PriceInfo(
           HedvigText(
             text = stringResource(
               Res.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
-              dateTimeFormatter.format(priceInfo.validFrom.toJavaLocalDate()),
+              dateTimeFormatter.format(priceInfo.validFrom),
             ),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondary,

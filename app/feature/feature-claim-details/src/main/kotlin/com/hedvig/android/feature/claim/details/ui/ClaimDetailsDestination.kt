@@ -82,7 +82,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -748,8 +748,8 @@ private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modif
             val formatter = rememberHedvigDateTimeFormatter()
             HedvigText(
               text = when (val item = displayItem.value) {
-                is Date -> formatter.format(item.date.toJavaLocalDate())
-                is DateTime -> formatter.format(item.localDateTime.toJavaLocalDateTime())
+                is Date -> formatter.format(item.date)
+                is DateTime -> formatter.format(item.localDateTime)
                 is Text -> item.text
               },
               textAlign = TextAlign.End,

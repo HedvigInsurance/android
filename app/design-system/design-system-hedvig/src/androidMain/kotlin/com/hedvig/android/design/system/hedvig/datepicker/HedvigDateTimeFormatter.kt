@@ -4,16 +4,10 @@ import android.content.Context
 import android.text.format.DateUtils
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
 import com.hedvig.android.design.system.hedvig.api.CommonLocale
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.SignStyle
-import java.time.temporal.ChronoField
-import java.util.Locale
 import kotlin.time.Instant
 
 fun formatInstantForTalkBack(context: Context, instant: Instant): String {
@@ -23,145 +17,6 @@ fun formatInstantForTalkBack(context: Context, instant: Instant): String {
     timeInMillis,
     DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_SHOW_YEAR,
   )
-}
-
-@Composable
-fun rememberHedvigDateTimeFormatter(): DateTimeFormatter {
-  val locale = getLocale()
-  return remember(locale) { HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale) }
-}
-
-@Suppress("unused")
-@Composable
-fun rememberHedvigMonthDateTimeFormatter(): DateTimeFormatter {
-  val locale = getLocale()
-  return remember(locale) { HedvigDateTimeFormatterDefaults.dateAndMonth(locale) }
-}
-
-@Suppress("unused")
-@Composable
-fun rememberHedvigBirthDateDateTimeFormatter(): DateTimeFormatter {
-  val locale = getLocale()
-  return remember(locale) { HedvigDateTimeFormatterDefaults.yearMonthDayCombined(locale) }
-}
-
-object HedvigDateTimeFormatterDefaults {
-  /**
-   * Example output: "2021.07.01"
-   */
-  fun isoLocalDateWithDots(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
-      .appendLiteral('.')
-      .appendValue(ChronoField.MONTH_OF_YEAR, 2)
-      .appendLiteral('.')
-      .appendValue(ChronoField.DAY_OF_MONTH, 2)
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "12:34"
-   */
-  fun timeOnly(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendValue(ChronoField.HOUR_OF_DAY, 2)
-      .appendLiteral(':')
-      .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "Fri 12:34"
-   */
-  fun dayOfTheWeekAndTime(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendPattern("EEE")
-      .appendLiteral(' ')
-      .appendValue(ChronoField.HOUR_OF_DAY, 2)
-      .appendLiteral(':')
-      .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "Nov 11 9:04"
-   */
-  fun monthDateAndTime(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendPattern("MMM")
-      .appendLiteral(' ')
-      .appendValue(ChronoField.DAY_OF_MONTH, 2)
-      .appendLiteral(' ')
-      .appendValue(ChronoField.HOUR_OF_DAY, 2)
-      .appendLiteral(':')
-      .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "11 Nov 2024"
-   */
-  fun dateMonthAndYear(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendValue(ChronoField.DAY_OF_MONTH, 2)
-      .appendLiteral(' ')
-      .appendPattern("MMM")
-      .appendLiteral(' ')
-      .appendValue(ChronoField.YEAR, 4)
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "Nov 11 2024"
-   */
-  fun monthDateAndYear(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendPattern("MMM")
-      .appendLiteral(' ')
-      .appendValue(ChronoField.DAY_OF_MONTH, 2)
-      .appendLiteral(' ')
-      .appendValue(ChronoField.YEAR, 4)
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "2022 Nov 11 9:04"
-   */
-  fun yearMonthDateAndTime(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendPattern("yyyy")
-      .appendLiteral(' ')
-      .appendPattern("MMM")
-      .appendLiteral(' ')
-      .appendValue(ChronoField.DAY_OF_MONTH, 2)
-      .appendLiteral(' ')
-      .appendValue(ChronoField.HOUR_OF_DAY, 2)
-      .appendLiteral(':')
-      .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "16 Jan"
-   */
-  fun dateAndMonth(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendValue(ChronoField.DAY_OF_MONTH)
-      .appendLiteral(' ')
-      .appendPattern("MMM")
-      .toFormatter(locale)
-  }
-
-  /**
-   * Example output: "910113"
-   */
-  fun yearMonthDayCombined(locale: Locale): DateTimeFormatter {
-    return DateTimeFormatterBuilder()
-      .appendValue(ChronoField.YEAR, 2)
-      .appendValue(ChronoField.MONTH_OF_YEAR, 2)
-      .appendValue(ChronoField.DAY_OF_MONTH, 2)
-      .toFormatter(locale)
-  }
 }
 
 @Composable

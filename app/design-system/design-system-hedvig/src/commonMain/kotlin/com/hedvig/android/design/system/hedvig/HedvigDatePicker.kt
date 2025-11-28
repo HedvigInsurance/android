@@ -11,20 +11,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
+import com.hedvig.android.design.system.hedvig.api.CommonLocale
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
+import com.hedvig.android.design.system.hedvig.api.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_NOT_SURE
-import java.util.Locale
+import hedvig.resources.Res
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
@@ -61,11 +60,9 @@ fun DatePickerWithDialog(
     if (selectedDateMillis == null) {
       null
     } else {
-      Instant.fromEpochMilliseconds(selectedDateMillis)
-        .toLocalDateTime(TimeZone.UTC)
-        .date
-        .toJavaLocalDate()
-        .format(hedvigDateTimeFormatter)
+      hedvigDateTimeFormatter.format(
+        Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
+      )
     }
   }
   HedvigBigCard(
@@ -79,7 +76,7 @@ fun DatePickerWithDialog(
 
 @Stable
 class DatePickerUiState(
-  locale: Locale,
+  locale: CommonLocale,
   initiallySelectedDate: LocalDate?,
   minDate: LocalDate = LocalDate(1900, 1, 1),
   maxDate: LocalDate = LocalDate(2100, 1, 1),
@@ -115,7 +112,7 @@ private fun PreviewDatePickerWithDialog(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DatePickerWithDialog(
         uiState = DatePickerUiState(
-          locale = Locale.ENGLISH,
+          locale = previewCommonLocale,
           initiallySelectedDate = if (hasSelectedDate) LocalDate(2100, 1, 1) else null,
         ),
         canInteract = true,

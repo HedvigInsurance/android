@@ -38,7 +38,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
@@ -62,7 +62,6 @@ import hedvig.resources.claim_status_detail_submitted
 import hedvig.resources.home_claim_card_pill_claim
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
@@ -270,7 +269,7 @@ private fun chatTopAppBarFormattedSubtitle(createdAt: Instant): String {
       .format(
         createdAt.toLocalDateTime(
           TimeZone.currentSystemDefault(),
-        ).toJavaLocalDateTime(),
+        ),
       )
     "$stringResource $formattedDate"
   }

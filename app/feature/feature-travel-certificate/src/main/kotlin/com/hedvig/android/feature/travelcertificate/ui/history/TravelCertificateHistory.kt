@@ -46,7 +46,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
@@ -348,7 +348,7 @@ private fun TravelCertificatesList(
         spaceBetween = 8.dp,
         startSlot = {
           HedvigText(
-            text = dateTimeFormatter.format(certificate.startDate.toJavaLocalDate()),
+            text = dateTimeFormatter.format(certificate.startDate),
             color = color,
           )
         },

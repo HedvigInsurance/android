@@ -45,7 +45,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
@@ -131,7 +131,7 @@ private fun MemberChargeDetailsScreen(
           }
 
           else -> {
-            dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate())
+            dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate)
           }
         },
         navigateUp = navigateUp,
@@ -244,7 +244,7 @@ private fun MemberChargeDetailsScreen(
                   Res.string.PAYMENTS_PAYMENT_FAILED,
                   nextOrFutureCharge
                     ?.let {
-                      dateTimeFormatter.format(it.dueDate.toJavaLocalDate())
+                      dateTimeFormatter.format(it.dueDate)
                     } ?: "-",
                 ),
                 priority = NotificationDefaults.NotificationPriority.Error,
@@ -312,7 +312,7 @@ private fun MemberChargeDetailsScreen(
             },
             endSlot = {
               HedvigText(
-                text = dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate.toJavaLocalDate()),
+                text = dateTimeFormatter.format(uiState.paymentDetails.memberCharge.dueDate),
                 textAlign = TextAlign.End,
                 modifier = Modifier.fillMaxWidth(),
                 color = HedvigTheme.colorScheme.textSecondary,

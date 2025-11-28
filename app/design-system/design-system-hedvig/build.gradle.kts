@@ -1,3 +1,7 @@
+import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
+
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
@@ -10,6 +14,15 @@ hedvig {
 
 kotlin {
   sourceSets {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+      common {
+        group("jvmAndAndroid") {
+          withAndroidLibraryTarget()
+          withJvm()
+        }
+      }
+    }
     commonMain.dependencies {
       api(libs.coil.coil)
       api(libs.coil.compose)

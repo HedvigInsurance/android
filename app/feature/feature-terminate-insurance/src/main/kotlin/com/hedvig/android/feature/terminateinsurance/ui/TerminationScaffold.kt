@@ -28,7 +28,7 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
@@ -153,7 +153,7 @@ private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<String>) {
 @Composable
 private fun terminationDateText(terminationDate: LocalDate): String {
   val formatter = rememberHedvigDateTimeFormatter()
-  val formattedDate = formatter.format(terminationDate.toJavaLocalDate())
+  val formattedDate = formatter.format(terminationDate)
   return stringResource(Res.string.CONTRACT_STATUS_TO_BE_TERMINATED, formattedDate)
 }
 

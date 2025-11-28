@@ -50,14 +50,14 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
+import com.hedvig.android.design.system.hedvig.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
@@ -85,8 +85,6 @@ import hedvig.resources.insurances_tab_your_insurance_will_be_updated
 import hedvig.resources.insurances_tab_your_insurance_will_be_updated_with_info
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toJavaLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -169,7 +167,7 @@ internal fun YourInfoTab(
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
           Res.string.insurances_tab_your_insurance_will_be_updated_with_info,
-          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
+          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom),
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems,
         upcomingPriceInfo = upcomingPriceInfoForBottomSheet,
@@ -213,7 +211,7 @@ internal fun YourInfoTab(
           modifier = Modifier.padding(horizontal = 16.dp),
           message = stringResource(
             Res.string.insurances_tab_your_insurance_will_be_updated,
-            dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
+            dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom),
           ),
           priority = Info,
           style = if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
@@ -308,8 +306,8 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
             val formatter = rememberHedvigDateTimeFormatter()
             HedvigText(
               text = when (val item = displayItem.value) {
-                is Date -> formatter.format(item.date.toJavaLocalDate())
-                is DateTime -> formatter.format(item.localDateTime.toJavaLocalDateTime())
+                is Date -> formatter.format(item.date)
+                is DateTime -> formatter.format(item.localDateTime)
                 is Text -> item.text
               },
               color = HedvigTheme.colorScheme.textSecondary,
@@ -474,7 +472,7 @@ internal fun CoInsuredSection(
                 HighlightLabel(
                   labelText = stringResource(
                     Res.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
-                    dateTimeFormatter.format(coInsured.activatesOn.toJavaLocalDate()),
+                    dateTimeFormatter.format(coInsured.activatesOn),
                   ),
                   size = Small,
                   color = Amber(MEDIUM),
@@ -485,7 +483,7 @@ internal fun CoInsuredSection(
                 HighlightLabel(
                   labelText = stringResource(
                     Res.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
-                    dateTimeFormatter.format(coInsured.terminatesOn.toJavaLocalDate()),
+                    dateTimeFormatter.format(coInsured.terminatesOn),
                   ),
                   size = Small,
                   color = Red(LIGHT),

@@ -27,7 +27,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import hedvig.resources.Res
 import hedvig.resources.TERMINATE_CONTRACT_TERMINATION_COMPLETE
 import hedvig.resources.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE
@@ -66,7 +66,7 @@ internal fun TerminationSuccessDestination(terminationDate: LocalDate?, onDone: 
         description = terminationDate?.let {
           stringResource(
             Res.string.TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE,
-            rememberHedvigDateTimeFormatter().format(terminationDate.toJavaLocalDate()),
+            rememberHedvigDateTimeFormatter().format(terminationDate),
           )
         } ?: stringResource(Res.string.TERMINATE_CONTRACT_TERMINATION_COMPLETE),
         iconStyle = SUCCESS,

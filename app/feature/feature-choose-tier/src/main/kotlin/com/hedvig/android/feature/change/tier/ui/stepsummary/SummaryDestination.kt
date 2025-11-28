@@ -60,7 +60,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
@@ -232,7 +232,7 @@ private fun SummarySuccessScreen(
         title = stringResource(Res.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
         text = stringResource(
           Res.string.CONFIRM_CHANGES_SUBTITLE,
-          dateFormatter.format(uiState.activationDate.toJavaLocalDate()),
+          dateFormatter.format(uiState.activationDate),
         ),
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
@@ -305,7 +305,7 @@ private fun SummarySuccessScreen(
         HedvigText(
           text = stringResource(
             Res.string.SUMMARY_TOTAL_PRICE_SUBTITLE,
-            dateTimeFormatter.format(uiState.activationDate.toJavaLocalDate()),
+            dateTimeFormatter.format(uiState.activationDate),
           ),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,

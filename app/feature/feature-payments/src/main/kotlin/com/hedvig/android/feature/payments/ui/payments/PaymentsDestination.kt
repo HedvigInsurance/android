@@ -58,8 +58,8 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
@@ -321,7 +321,7 @@ private fun CardNotConnectedWarningCard(
   val text = if (dueDateToConnect != null) {
     stringResource(
       Res.string.info_card_missing_payment_missing_payments_body,
-      dateTimeFormatter.format(dueDateToConnect.toJavaLocalDate()),
+      dateTimeFormatter.format(dueDateToConnect),
     )
   } else {
     stringResource(Res.string.info_card_missing_payment_body)
@@ -355,8 +355,8 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
           priority = NotificationPriority.Attention,
           message = stringResource(
             Res.string.PAYMENTS_MISSED_PAYMENT,
-            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate.toJavaLocalDate()),
-            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate.toJavaLocalDate()),
+            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
+            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
           ),
         )
       }
@@ -453,7 +453,7 @@ private fun OngoingPaymentCards(
         onClick = { onCardClicked(ongoingCharge.id) },
         title = stringResource(Res.string.PAYMENTS_PROCESSING_PAYMENT),
         endSlotText = ongoingCharge.netAmount.toString(),
-        subtitle = rememberHedvigDateTimeFormatter().format(ongoingCharge.date.toJavaLocalDate()),
+        subtitle = rememberHedvigDateTimeFormatter().format(ongoingCharge.date),
         showPlaceholder = false,
       )
     }
@@ -480,7 +480,7 @@ private fun PaymentAmountCard(
       "100 kr >>"
     },
     subtitle = if (upcomingPayment != null) {
-      rememberHedvigDateTimeFormatter().format(upcomingPayment.dueDate.toJavaLocalDate())
+      rememberHedvigDateTimeFormatter().format(upcomingPayment.dueDate)
     } else {
       "22 Jul 2024"
     },

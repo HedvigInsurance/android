@@ -22,14 +22,13 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import hedvig.resources.ADDON_FLOW_SUCCESS_SUBTITLE
 import hedvig.resources.ADDON_FLOW_SUCCESS_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -37,7 +36,7 @@ internal fun SubmitAddonSuccessScreen(activationDate: LocalDate, popBackStack: (
   val locale = getLocale()
   val formattedDate = remember(activationDate, locale) {
     HedvigDateTimeFormatterDefaults
-      .dateMonthAndYear(locale).format(activationDate.toJavaLocalDate())
+      .dateMonthAndYear(locale).format(activationDate)
   }
   Column(
     modifier = Modifier

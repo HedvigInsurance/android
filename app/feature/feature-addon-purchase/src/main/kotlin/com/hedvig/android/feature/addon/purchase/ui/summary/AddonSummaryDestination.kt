@@ -44,7 +44,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
@@ -69,7 +69,6 @@ import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -141,7 +140,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
     val formattedDate = remember(uiState.activationDate, locale) {
       HedvigDateTimeFormatterDefaults.dateMonthAndYear(
         locale,
-      ).format(uiState.activationDate.toJavaLocalDate())
+      ).format(uiState.activationDate)
     }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
@@ -242,7 +241,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   val formattedDate = remember(uiState.activationDate, locale) {
     HedvigDateTimeFormatterDefaults.dateMonthAndYear(
       locale,
-    ).format(uiState.activationDate.toJavaLocalDate())
+    ).format(uiState.activationDate)
   }
   val premium: UiMoney = uiState.quote.itemCost.monthlyNet
   val previousPremium: UiMoney? = if (uiState.currentTravelAddon != null) {

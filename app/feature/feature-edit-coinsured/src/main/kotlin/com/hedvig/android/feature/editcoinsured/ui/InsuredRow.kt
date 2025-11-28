@@ -26,7 +26,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
@@ -84,7 +84,7 @@ internal fun InsuredRow(
             HighlightLabel(
               labelText = stringResource(
                 Res.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
-                dateTimeFormatter.format(activatesOn.toJavaLocalDate()),
+                dateTimeFormatter.format(activatesOn),
               ),
               size = Small,
               color = Amber(MEDIUM),
@@ -95,7 +95,7 @@ internal fun InsuredRow(
             HighlightLabel(
               labelText = stringResource(
                 Res.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
-                dateTimeFormatter.format(terminatesOn.toJavaLocalDate()),
+                dateTimeFormatter.format(terminatesOn),
               ),
               size = Small,
               color = Red(LIGHT),

@@ -71,7 +71,7 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -104,7 +104,6 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -340,7 +339,7 @@ private fun SummaryScreen(
 private fun formatStartDate(startDate: LocalDate): String {
   val locale = getLocale()
   return remember(startDate) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate.toJavaLocalDate())
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate)
   }
 }
 

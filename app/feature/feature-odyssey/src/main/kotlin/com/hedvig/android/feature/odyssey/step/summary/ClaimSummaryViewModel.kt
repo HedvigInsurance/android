@@ -16,7 +16,7 @@ import com.hedvig.android.data.claimflow.ItemModel.New
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import hedvig.resources.R
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 
@@ -165,7 +164,7 @@ internal data class ClaimSummaryInfoUiState(
 
       // Skadedatum
       val incidentDateText = if (dateOfIncident != null) {
-        dateOfIncident.toJavaLocalDate().format(HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale))
+        HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(dateOfIncident)
       } else {
         null
       }
@@ -195,7 +194,7 @@ internal data class ClaimSummaryInfoUiState(
       }
       // Inköpsdatum
       val purchaseDateText = if (dateOfPurchase != null) {
-        dateOfPurchase.toJavaLocalDate().format(HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale))
+        HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(dateOfPurchase)
       } else {
         null
       }

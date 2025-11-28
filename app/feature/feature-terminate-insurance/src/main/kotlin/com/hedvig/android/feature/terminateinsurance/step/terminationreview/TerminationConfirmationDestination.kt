@@ -49,7 +49,7 @@ import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
@@ -225,7 +225,7 @@ private fun AreYouSureSheetContent(
         is Termination ->
           stringResource(
             Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
-            dateTimeFormatter.format(type.terminationDate.toJavaLocalDate()),
+            dateTimeFormatter.format(type.terminationDate),
           )
       },
       modifier = Modifier.fillMaxWidth(),

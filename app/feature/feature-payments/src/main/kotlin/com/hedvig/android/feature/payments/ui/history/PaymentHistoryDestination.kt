@@ -32,7 +32,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.feature.payments.data.MemberCharge
 import hedvig.resources.Res
@@ -143,7 +143,7 @@ private fun PaymentHistorySuccessScreen(
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
                 HedvigText(
-                  text = dateTimeFormatter.format(charge.dueDate.toJavaLocalDate()),
+                  text = dateTimeFormatter.format(charge.dueDate),
                   color = charge.color(),
                   modifier = Modifier.padding(start = 2.dp),
                 )

@@ -61,8 +61,8 @@ import com.hedvig.android.design.system.hedvig.ToggleDefaults.ToggleStyle
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetContentState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -86,7 +86,6 @@ import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
@@ -111,8 +110,8 @@ internal fun AddCoInsuredBottomSheetContent(
       text = stringResource(Res.string.CONTRACT_ADD_COINSURED),
       textAlign = TextAlign.Center,
       modifier = Modifier
-        .fillMaxWidth()
-        .semantics { heading() },
+          .fillMaxWidth()
+          .semantics { heading() },
     )
     Spacer(Modifier.height(24.dp))
     if (bottomSheetState.canPickExistingCoInsured() && bottomSheetState.selectableCoInsured != null) {
@@ -349,8 +348,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-          .weight(1f)
-          .defaultMinSize(minHeight = 64.dp),
+            .weight(1f)
+            .defaultMinSize(minHeight = 64.dp),
       )
       Spacer(Modifier.width(4.dp))
       HedvigTextField(
@@ -366,8 +365,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-          .weight(1f)
-          .defaultMinSize(minHeight = 64.dp),
+            .weight(1f)
+            .defaultMinSize(minHeight = 64.dp),
       )
     }
     AnimatedVisibility(
@@ -451,7 +450,7 @@ internal fun DatePickerWithDialog(birthDate: LocalDate?, onSave: (LocalDate) -> 
       }
       HedvigText(
         text = if (birthDate != null) {
-          rememberHedvigDateTimeFormatter.format(birthDate.toJavaLocalDate())
+          rememberHedvigDateTimeFormatter.format(birthDate)
         } else {
           stringResource(Res.string.CONTRACT_BIRTH_DATE)
         },

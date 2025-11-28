@@ -19,7 +19,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.ui.claimstatus.internal.ClaimPillsRow
 import com.hedvig.android.ui.claimstatus.internal.ClaimProgressRow
@@ -36,7 +36,6 @@ import hedvig.resources.claim_status_claim_details_button
 import hedvig.resources.claim_status_detail_submitted
 import kotlin.time.Instant
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
@@ -103,7 +102,7 @@ fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, modifier: Modifier =
         .format(
           uiState.submittedDate.toLocalDateTime(
             TimeZone.currentSystemDefault(),
-          ).toJavaLocalDateTime(),
+          ),
         )
       "${stringResource(Res.string.claim_status_detail_submitted)} $formattedDate"
     }
