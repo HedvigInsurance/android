@@ -1,5 +1,6 @@
 plugins {
   id("hedvig.android.library")
+  alias(libs.plugins.paparazzi)
   id("hedvig.gradle.plugin")
 }
 
@@ -10,7 +11,15 @@ hedvig {
 }
 
 android {
+  androidResources.enable = true
+
   testOptions.unitTests.isReturnDefaultValues = true
+
+  testOptions {
+    unitTests {
+      isIncludeAndroidResources = true
+    }
+  }
 }
 
 dependencies {
