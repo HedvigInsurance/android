@@ -126,7 +126,7 @@ internal class ClaimChatPresenter(
     if (initializing) {
       LaunchedEffect(Unit) {
         startClaimIntentUseCase
-          .invoke(sourceMessageId, developmentFlow)
+          .invoke(developmentFlow)
           .fold(
             ifLeft = { failedToStart = true },
             ifRight = { claimIntent ->

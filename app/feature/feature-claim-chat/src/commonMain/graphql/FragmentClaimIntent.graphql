@@ -11,10 +11,6 @@ fragment ClaimIntentFragment on ClaimIntent {
     ...ClaimIntentOutcomeClaimFragment
     ...ClaimIntentOutcomeDeflectionFragment
   }
-  sourceMessages {
-    id
-    text
-  }
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
