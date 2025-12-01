@@ -17,6 +17,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialEmailUseCase
 import com.hedvig.android.molecule.test.test
+import hedvig.resources.Res
+import hedvig.resources.something_went_wrong
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -206,7 +208,7 @@ internal class InsuranceEvidenceEmailInputPresenterTest {
     presenter.test(
       InsuranceEvidenceEmailInputState.Success(
         email = "",
-        generatingErrorMessage = 123,
+        generatingErrorMessage = Res.string.something_went_wrong,
       ),
     ) {
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
@@ -241,7 +243,7 @@ internal class InsuranceEvidenceEmailInputPresenterTest {
     presenter.test(
       InsuranceEvidenceEmailInputState.Success(
         email = "invalid-email",
-        emailValidationErrorMessage = 123,
+        emailValidationErrorMessage = Res.string.something_went_wrong,
       ),
     ) {
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceEmailInputState.Success::class)
