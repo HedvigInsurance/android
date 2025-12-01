@@ -124,7 +124,7 @@ private fun RoundedPolygon.Companion.squircle(
         CornerRounding(cornerRadius, smoothing),
       )
     },
-  ).toPath()
+  ).toPath(startAngle = 0)
 }
 
 enum class FigmaShapeDirection {
