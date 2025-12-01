@@ -18,9 +18,8 @@ import org.koin.dsl.module
 
 val claimChatModule = module {
   includes(claimChatPlatformModule)
-  viewModel<ClaimChatViewModel> { (sourceMessageId: String?, developmentFlow: Boolean) ->
+  viewModel<ClaimChatViewModel> { (developmentFlow: Boolean) ->
     ClaimChatViewModel(
-      sourceMessageId,
       developmentFlow,
       get(),
       get(),

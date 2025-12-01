@@ -1,7 +1,9 @@
 package com.hedvig.feature.claim.chat.data
 
+import androidx.compose.runtime.Immutable
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
+import kotlinx.serialization.Serializable
 
 @JvmInline
 value class ClaimIntentId(val value: String)
@@ -73,6 +75,7 @@ internal sealed interface StepContent {
     val uploadUri: String,
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
+    val recordingState: AudioRecordingStepState
   ) : StepContent
 
   data class FileUpload(
@@ -139,3 +142,59 @@ internal sealed interface StepContent {
     override val isRegrettable: Boolean = false
   }
 }
+
+internal sealed interface AudioRecordingStepState {
+  data class FreeTextDescription(
+    val freeText: String?,
+    val showOverlay: Boolean,
+    val errorType: FreeTextErrorType?,
+    val hasError: Boolean = false,
+  ) : AudioRecordingStepState
+
+  sealed interface AudioRecording : AudioRecordingStepState {
+    data object NotRecording : AudioRecording
+
+    data class Recording(
+      val amplitudes: List<Int>,
+      val startedAt: Instant,
+      val filePath: String,
+    ) : AudioRecording
+
+    data class PrerecordedWithAudioContent(
+      val audioContent: AudioContent,
+      val isLoading: Boolean = false,
+      val hasError: Boolean = false,
+    ) : AudioRecording
+
+    data class Playback(
+      val filePath: String,
+      val isPlaying: Boolean,
+      val isPrepared: Boolean,
+      val amplitudes: List<Int>,
+      val isLoading: Boolean,
+      val hasError: Boolean,
+      val canSubmit: Boolean,
+    ) : AudioRecording
+  }
+}
+
+internal sealed interface FreeTextErrorType {
+  data class TooShort(val minLength: Int) : FreeTextErrorType
+}
+
+@Serializable
+@JvmInline
+internal value class AudioUrl(val value: String)
+
+@Immutable
+@Serializable
+internal data class AudioContent(
+  /**
+   * The url to be used to play back the audio file
+   */
+  val signedUrl: AudioUrl,
+  /**
+   * The url that the backend expects when trying to go to the next step of the flow
+   */
+  val audioUrl: AudioUrl,
+)

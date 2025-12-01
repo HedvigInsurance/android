@@ -76,6 +76,9 @@ import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.ProgressPercentage
 import com.hedvig.audio.player.data.SignedAudioUrl
+import com.hedvig.feature.claim.chat.data.AudioContent
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.data.AudioUrl
 import hedvig.resources.R
 import java.io.File
 import java.text.DecimalFormat

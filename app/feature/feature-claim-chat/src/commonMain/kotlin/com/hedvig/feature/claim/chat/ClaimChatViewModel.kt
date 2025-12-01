@@ -54,6 +54,12 @@ internal sealed interface ClaimChatEvent {
   data class Form(val id: StepId, val formInputs: Map<FieldId, List<String?>>) : ClaimChatEvent
 
   data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
+
+  data class UpdateFreeText(val text: String?): ClaimChatEvent
+
+  data object OpenFreeTextOverlay: ClaimChatEvent
+
+  data object CloseFreeChatOverlay: ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -65,12 +71,13 @@ internal sealed interface ClaimChatUiState {
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
     val currentStep: ClaimIntentStep?,
+    val showFreeTextOverlay: Boolean,
+    val freeText: String?,
     val outcome: ClaimIntentOutcome?,
   ) : ClaimChatUiState
 }
 
 internal class ClaimChatViewModel(
-  sourceMessageId: String?,
   developmentFlow: Boolean,
   startClaimIntentUseCase: StartClaimIntentUseCase,
   getClaimIntentUseCase: GetClaimIntentUseCase,
@@ -83,7 +90,6 @@ internal class ClaimChatViewModel(
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
     ClaimChatPresenter(
-      sourceMessageId,
       developmentFlow,
       startClaimIntentUseCase,
       getClaimIntentUseCase,
@@ -97,7 +103,6 @@ internal class ClaimChatViewModel(
   )
 
 internal class ClaimChatPresenter(
-  private val sourceMessageId: String?,
   private val developmentFlow: Boolean,
   private val startClaimIntentUseCase: StartClaimIntentUseCase,
   private val getClaimIntentUseCase: GetClaimIntentUseCase,
@@ -123,6 +128,8 @@ internal class ClaimChatPresenter(
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }
+    var showFreeTextOverlay by remember { mutableStateOf(false) }
+    var freeText by remember { mutableStateOf<String?>(null) }
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
 
     if (initializing) {
@@ -241,6 +248,12 @@ internal class ClaimChatPresenter(
               )
           }
         }
+
+        ClaimChatEvent.CloseFreeChatOverlay -> showFreeTextOverlay = false
+        ClaimChatEvent.OpenFreeTextOverlay -> showFreeTextOverlay = true
+        is ClaimChatEvent.UpdateFreeText -> {
+          freeText = event.text
+        }
       }
     }
 
@@ -251,7 +264,9 @@ internal class ClaimChatPresenter(
         claimIntentId = claimIntentId!!,
         steps = steps,
         currentStep = currentStep,
-        outcome = outcome
+        outcome = outcome,
+        showFreeTextOverlay = showFreeTextOverlay,
+        freeText = freeText
       )
       else -> error("")
     }

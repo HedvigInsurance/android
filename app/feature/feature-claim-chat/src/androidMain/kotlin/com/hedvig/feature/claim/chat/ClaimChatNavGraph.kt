@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.com.hedvig.feature.claim.chat
+package com.hedvig.feature.claim.chat
 
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.navigation.common.Destination
@@ -12,8 +12,13 @@ data class ClaimChatDestination(
   val messageId: String?,
 ) : Destination
 
-fun NavGraphBuilder.claimChatGraph() {
+fun NavGraphBuilder.claimChatGraph(
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+) {
   navdestination<ClaimChatDestination> {
-    ClaimChatDestination(developmentFlow = isDevelopmentFlow, messageId = messageId)
+    ClaimChatDestination(
+      developmentFlow = isDevelopmentFlow,
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale
+    )
   }
 }

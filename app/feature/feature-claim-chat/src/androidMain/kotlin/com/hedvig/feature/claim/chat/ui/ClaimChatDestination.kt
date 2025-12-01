@@ -1,19 +1,18 @@
 package com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -33,57 +32,102 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
+import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
 import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
 import com.hedvig.feature.claim.chat.ui.ContentSelectChips
 import com.hedvig.feature.claim.chat.ui.rememberFilePicker
-import kotlin.random.Random
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
-import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import hedvig.resources.R
+import java.io.File
+import kotlin.time.Clock
 
 @Composable
-fun ClaimChatDestination(developmentFlow: Boolean = true, messageId: String? = null) {
+fun ClaimChatDestination(
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  developmentFlow: Boolean) {
   val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
-    parametersOf(messageId, developmentFlow)
+    parametersOf(developmentFlow)
   }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     BlurredGradientBackground(radius = 100)
-    ClaimChatScreen(claimChatViewModel)
+    ClaimChatScreenContent(claimChatViewModel,
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale)
   }
 }
 
 @Composable
-internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
+internal fun ClaimChatScreenContent(
+  claimChatViewModel: ClaimChatViewModel,
+  shouldShowRequestPermissionRationale: (String) -> Boolean
+) {
   val uiState = claimChatViewModel.uiState.collectAsState().value
 
   Box(Modifier.fillMaxSize(), Alignment.Center) {
     when (uiState) {
       ClaimChatUiState.FailedToStart -> BasicText("FailedToStart") //todo
-      ClaimChatUiState.Initializing -> BasicText("Initializing") //todo
-      is ClaimChatUiState.ClaimChat -> ClaimChatScreen(uiState, claimChatViewModel::emit)
+      ClaimChatUiState.Initializing ->  HedvigFullScreenCenterAlignedProgress()
+      is ClaimChatUiState.ClaimChat -> ClaimChatScreen(
+        uiState = uiState,
+        onEvent = claimChatViewModel::emit,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+      )
     }
   }
 }
 
 @Composable
-private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (ClaimChatEvent) -> Unit) {
+private fun ClaimChatScreen(
+  uiState: ClaimChatUiState.ClaimChat,
+  onEvent: (ClaimChatEvent) -> Unit,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+) {
+  FreeTextOverlay(
+    freeTextMaxLength = 3000,
+    freeTextValue = uiState.freeText,
+    freeTextHint = stringResource(R.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER), //todo
+    freeTextTitle = stringResource(R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER), //todo
+    freeTextOnCancelClick = {
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+    },
+    freeTextOnSaveClick = { feedback ->
+      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+    },
+    shouldShowOverlay = uiState.showFreeTextOverlay,
+    overlaidContent = {
+      ClaimChatScreenContent(
+        uiState,
+        onEvent,
+        shouldShowRequestPermissionRationale)
+    },
+  )
+}
+
+@Composable
+private fun ClaimChatScreenContent(
+  uiState: ClaimChatUiState.ClaimChat,
+  onEvent: (ClaimChatEvent) -> Unit,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  modifier: Modifier = Modifier) {
   val lazyListState = rememberLazyListState()
   LazyColumn(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     state = lazyListState,
-    contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
-    // + PaddingValues(bottom = 16.dp)
+    contentPadding = WindowInsets.safeDrawing.asPaddingValues().plus(PaddingValues(bottom = 16.dp)),
     verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
   ) {
     items(
@@ -93,23 +137,29 @@ private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (Claim
     ) { item ->
       when (item.stepContent) {
         is StepContent.AudioRecording -> {
-          BasicText(
-            "AudioRecording",
-            Modifier.clickable {
-              onEvent(
-                ClaimChatEvent.AudioRecording.TextInput(
-                  item.id,
-                  """
-Earlier this afternoon, I was walking up the steps outside my office building. I had my phone in my hand when I tripped
-slightly on the last step. As I tried to catch my balance, the phone slipped out of my grip and fell onto the concrete.
-The phone still works perfectly, it turns on, and the internal components are functional. However, the screen is cracked
-quite badly, mainly across the top and down one side. The damage is significant and requires repair.
-I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish Crowns (SEK).
-                  """.trimIndent(),
-                ),
-              )
-            },
-          )
+//          AudioRecordingStep(
+//            item = item,
+//            stepContent = item.stepContent,
+//            onShowFreeText = {
+//              //todo
+//            },
+//            onShowAudioRecording = TODO(),
+//            onLaunchFullScreenEditText = {
+//              onEvent(ClaimChatEvent.OpenFreeTextOverlay)
+//            },
+//            submitFreeText = TODO(),
+//            submitAudioFile = TODO(),
+//            submitAudioUrl = TODO(),
+//            stopRecording = TODO(),
+//            redoRecording = TODO(),
+//            onSkip = TODO(),
+//            isCurrentStep = item == uiState.currentStep,
+//            clock = TODO(),
+//            onShouldShowRequestPermissionRationale = TODO(),
+//            openAppSettings = TODO(),
+//            startRecording = TODO(),
+//            modifier = Modifier.padding(horizontal = 16.dp),
+//          )
         }
 
         is StepContent.ContentSelect -> ContentSelectStep(
@@ -186,13 +236,55 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
 }
 
 @Composable
+private fun AudioRecordingStep(
+  item: ClaimIntentStep,
+  stepContent: StepContent.AudioRecording,
+  onShowFreeText: () -> Unit,
+  onShowAudioRecording: () -> Unit,
+  onLaunchFullScreenEditText: () -> Unit,
+  submitFreeText: () -> Unit,
+  submitAudioFile: (File) -> Unit,
+  submitAudioUrl: (AudioUrl) -> Unit,
+  stopRecording: () -> Unit,
+  redoRecording: () -> Unit,
+  onSkip: () -> Unit,
+  isCurrentStep: Boolean,
+  clock: Clock,
+  onShouldShowRequestPermissionRationale: (String) -> Boolean,
+  openAppSettings: () -> Unit,
+  startRecording: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  AudioRecorderBubble(
+    recordingState = stepContent.recordingState,
+    clock = clock,
+    onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+    startRecording = startRecording,
+    stopRecording = stopRecording,
+    submitAudioFile = submitAudioFile,
+    submitAudioUrl = submitAudioUrl,
+    redoRecording = redoRecording,
+    openAppSettings = openAppSettings,
+    freeTextAvailable = true,
+    submitFreeText = submitFreeText,
+    onShowFreeText = onShowFreeText,
+    onShowAudioRecording = onShowAudioRecording,
+    onLaunchFullScreenEditText = onLaunchFullScreenEditText,
+    canSkip = stepContent.isSkippable,
+    onSkip = onSkip,
+    isCurrentStep = isCurrentStep,
+    modifier = modifier
+  )
+}
+
+@Composable
 private fun ContentSelectStep(
   item: ClaimIntentStep,
   currentStep: ClaimIntentStep?,
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
   onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     AnimatedContent(

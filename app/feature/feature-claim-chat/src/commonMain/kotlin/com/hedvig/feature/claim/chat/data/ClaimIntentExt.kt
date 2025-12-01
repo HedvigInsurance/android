@@ -69,7 +69,8 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
       hint = hint,
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
+      isRegrettable = isRegrettable,
+      recordingState =  AudioRecordingStepState.AudioRecording.NotRecording
     )
     is FileUploadFragment -> StepContent.FileUpload(
       uploadUri = uploadUri,

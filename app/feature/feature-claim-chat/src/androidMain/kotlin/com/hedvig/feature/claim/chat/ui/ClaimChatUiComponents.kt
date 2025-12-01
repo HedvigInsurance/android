@@ -10,7 +10,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +18,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -31,15 +27,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -66,7 +57,6 @@ import coil.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
-import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.AccordionData
@@ -74,7 +64,6 @@ import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
-import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.design.system.hedvig.File
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -115,10 +104,10 @@ import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
-import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
 import hedvig.resources.R
 import java.io.File
 import kotlin.random.Random
@@ -128,37 +117,12 @@ import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
-// todo: if we want a a fullscreen free text overlay,
-// the claim chat screen should be wrapped in this:
-// @Composable
-// internal fun ClaimChatScreen(
-//  updateFreeText: (String?) -> Unit,
-//  onCloseFullScreenEditText: () -> Unit,
-// ) {
-//  FreeTextOverlay(
-//    freeTextMaxLength = 2000,
-//    freeTextValue = if (uiState is AudioRecordingStepState.FreeTextDescription) uiState.freeText else null,
-//    freeTextHint = stringResource(R.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-//    freeTextTitle = stringResource(R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-//    freeTextOnCancelClick = {
-//      onCloseFullScreenEditText()
-//    },
-//    freeTextOnSaveClick = { feedback ->
-//      updateFreeText(feedback)
-//      onCloseFullScreenEditText()
-//    },
-//    shouldShowOverlay = if (uiState is AudioRecordingStepState.FreeTextDescription) uiState.showOverlay else false,
-//    overlaidContent = {
-//      // all chat content
-//    })
-// }
-
 @Composable
 internal fun ContentSelectChips(
   options: List<StepContent.ContentSelect.Option>,
   selectedOption: StepContent.ContentSelect.Option?,
   onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   FlowRow(
     modifier = modifier.semantics {
@@ -199,19 +163,19 @@ internal fun ContentSelectChips(
 
 @Composable
 internal fun AudioRecorderBubble(
-  uiState: AudioRecordingStepState,
+  recordingState: AudioRecordingStepState,
   clock: Clock,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  onShouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
   submitAudioUrl: (AudioUrl) -> Unit,
-  redo: () -> Unit,
+  redoRecording: () -> Unit,
   openAppSettings: () -> Unit,
   freeTextAvailable: Boolean,
   submitFreeText: () -> Unit,
-  showFreeText: () -> Unit,
-  showAudioRecording: () -> Unit,
+  onShowFreeText: () -> Unit,
+  onShowAudioRecording: () -> Unit,
   onLaunchFullScreenEditText: () -> Unit,
   canSkip: Boolean,
   onSkip: () -> Unit,
@@ -219,19 +183,19 @@ internal fun AudioRecorderBubble(
   modifier: Modifier = Modifier,
 ) {
   AudioRecordingStep(
-    uiState = uiState,
+    uiState = recordingState,
     clock = clock,
-    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
     startRecording = startRecording,
     stopRecording = stopRecording,
     submitAudioFile = submitAudioFile,
     submitAudioUrl = submitAudioUrl,
-    redo = redo,
+    redo = redoRecording,
     openAppSettings = openAppSettings,
     freeTextAvailable = freeTextAvailable,
     submitFreeText = submitFreeText,
-    showFreeText = showFreeText,
-    showAudioRecording = showAudioRecording,
+    showFreeText = onShowFreeText,
+    showAudioRecording = onShowAudioRecording,
     onLaunchFullScreenEditText = onLaunchFullScreenEditText,
     canSkip = canSkip,
     onSkip = onSkip,
@@ -1064,25 +1028,25 @@ private fun PreviewClaimChatComponents() {
       ) {
         AudioRecorderBubble(
           isCurrentStep = true,
-          uiState = AudioRecordingStepState.FreeTextDescription(
+          recordingState = AudioRecordingStepState.FreeTextDescription(
             "some not really long free text",
             showOverlay = false,
             errorType = null,
           ),
           clock = Clock.System,
-          shouldShowRequestPermissionRationale = {
+          onShouldShowRequestPermissionRationale = {
             false
           },
           startRecording = {},
           stopRecording = {},
           submitAudioFile = {},
           submitAudioUrl = {},
-          redo = {},
+          redoRecording = {},
           openAppSettings = {},
           freeTextAvailable = true,
           submitFreeText = {},
-          showFreeText = {},
-          showAudioRecording = {},
+          onShowFreeText = {},
+          onShowAudioRecording = {},
           onLaunchFullScreenEditText = {},
           canSkip = true,
           onSkip = {},
