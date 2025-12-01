@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,11 +14,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -27,15 +23,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -52,11 +43,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
-import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.AccordionData
@@ -64,7 +54,6 @@ import com.hedvig.android.design.system.hedvig.AccordionList
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
-import com.hedvig.android.design.system.hedvig.DynamicFilesGridBetweenOtherThings
 import com.hedvig.android.design.system.hedvig.File
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -92,7 +81,6 @@ import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.Document
@@ -100,6 +88,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.audio.player.data.PlayableAudioSource
@@ -107,22 +96,24 @@ import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
-import hedvig.resources.Res
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
-import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
-import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.GENERAL_YES
+import hedvig.resources.Res
 import hedvig.resources.claims_skip_button
+import hedvig.resources.file_upload_choose_files
+import hedvig.resources.file_upload_photo_library
+import hedvig.resources.file_upload_take_photo
+import hedvig.resources.file_upload_upload_files
 import hedvig.resources.general_save_button
 import java.io.File
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
-import org.jetbrains.compose.resources.stringResource
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 
 // todo: if we want a a fullscreen free text overlay,
 // the claim chat screen should be wrapped in this:
@@ -534,7 +525,7 @@ private fun UploadFilesBubbleContent(
           horizontalArrangement = Arrangement.End,
         ) {
           HedvigButton(
-            text = stringResource(R.string.file_upload_upload_files),
+            text = stringResource(Res.string.file_upload_upload_files),
             onClick = onUploadButtonClick,
             enabled = isCurrentStep || canBeChanged,
             buttonSize = ButtonDefaults.ButtonSize.Medium,
@@ -584,7 +575,7 @@ private fun FilePickerBottomSheetContent(
         Row {
           Icon(HedvigIcons.Image, null)
           Spacer(Modifier.height(8.dp))
-          HedvigText(stringResource(R.string.file_upload_photo_library))
+          HedvigText(stringResource(Res.string.file_upload_photo_library))
         }
       }
       HedvigButton(
@@ -594,7 +585,7 @@ private fun FilePickerBottomSheetContent(
         Row {
           Icon(HedvigIcons.Camera, null)
           Spacer(Modifier.height(8.dp))
-          HedvigText(stringResource(R.string.file_upload_take_photo))
+          HedvigText(stringResource(Res.string.file_upload_take_photo))
         }
       }
       HedvigButton(
@@ -604,7 +595,7 @@ private fun FilePickerBottomSheetContent(
         Row {
           Icon(HedvigIcons.Document, null)
           Spacer(Modifier.height(8.dp))
-          HedvigText(stringResource(R.string.file_upload_choose_files))
+          HedvigText(stringResource(Res.string.file_upload_choose_files))
         }
       }
     }

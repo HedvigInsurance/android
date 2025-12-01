@@ -86,6 +86,8 @@ import hedvig.resources.A11Y_VIEW_DETAILS
 import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.DASHBOARD_SCREEN_TITLE
 import hedvig.resources.INSURANCES_NO_ACTIVE
+import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
+import hedvig.resources.INSURANCE_OFFERS_SUBHEADING
 import hedvig.resources.insurances_tab_moving_flow_info_button_title
 import hedvig.resources.insurances_tab_moving_flow_info_title
 import hedvig.resources.insurances_tab_terminated_insurance_subtitile
@@ -242,7 +244,7 @@ private fun InsuranceScreenContent(
           if (uiState.crossSells.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             CrossSellsSection(
-              title = stringResource(R.string.INSURANCE_OFFERS_SUBHEADING),
+              title = stringResource(Res.string.INSURANCE_OFFERS_SUBHEADING),
               crossSells = uiState.crossSells,
               onCrossSellClick = onCrossSellClick,
               modifier = Modifier.padding(horizontal = 16.dp),
@@ -260,7 +262,7 @@ private fun InsuranceScreenContent(
                 .semantics { heading() },
               verticalAlignment = Alignment.CenterVertically,
             ) {
-              HedvigText(text = stringResource(R.string.INSURANCE_ADDONS_SUBHEADING))
+              HedvigText(text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING))
             }
             Spacer(Modifier.height(16.dp))
             TravelAddonBanner(
