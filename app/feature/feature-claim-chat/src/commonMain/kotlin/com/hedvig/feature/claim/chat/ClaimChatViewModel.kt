@@ -15,6 +15,8 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.feature.claim.chat.data.AudioRecordingManager
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
@@ -40,13 +42,21 @@ internal sealed interface ClaimChatEvent {
   sealed interface AudioRecording : ClaimChatEvent {
     val id: StepId
 
-    data class AudioInput(
-      override val id: StepId,
-      val commonFile: CommonFile,
-      val uploadUri: String,
-    ) : AudioRecording
+    data class SubmitAudioFile(override val id: StepId) : AudioRecording
 
     data class TextInput(override val id: StepId, val text: String) : AudioRecording
+
+    data class StartRecording(override val id: StepId) : AudioRecording
+
+    data class StopRecording(override val id: StepId) : AudioRecording
+
+    data class RedoRecording(override val id: StepId) : AudioRecording
+
+    data class ShowFreeText(override val id: StepId) : AudioRecording
+
+    data class ShowAudioRecording(override val id: StepId) : AudioRecording
+
+    data class Skip(override val id: StepId) : AudioRecording
   }
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
@@ -55,11 +65,11 @@ internal sealed interface ClaimChatEvent {
 
   data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
 
-  data class UpdateFreeText(val text: String?): ClaimChatEvent
+  data class UpdateFreeText(val text: String?) : ClaimChatEvent
 
-  data object OpenFreeTextOverlay: ClaimChatEvent
+  data object OpenFreeTextOverlay : ClaimChatEvent
 
-  data object CloseFreeChatOverlay: ClaimChatEvent
+  data object CloseFreeChatOverlay : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -87,6 +97,7 @@ internal class ClaimChatViewModel(
   submitFormUseCase: SubmitFormUseCase,
   submitSelectUseCase: SubmitSelectUseCase,
   submitSummaryUseCase: SubmitSummaryUseCase,
+  audioRecordingManager: AudioRecordingManager,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
     ClaimChatPresenter(
@@ -99,6 +110,7 @@ internal class ClaimChatViewModel(
       submitFormUseCase,
       submitSelectUseCase,
       submitSummaryUseCase,
+      audioRecordingManager,
     ),
   )
 
@@ -112,6 +124,7 @@ internal class ClaimChatPresenter(
   private val submitFormUseCase: SubmitFormUseCase,
   private val submitSelectUseCase: SubmitSelectUseCase,
   private val submitSummaryUseCase: SubmitSummaryUseCase,
+  private val audioRecordingManager: AudioRecordingManager,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -183,13 +196,24 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.AudioRecording -> {
           when (event) {
-            is ClaimChatEvent.AudioRecording.AudioInput -> {
+            is ClaimChatEvent.AudioRecording.SubmitAudioFile -> {
+              val recordedFile = audioRecordingManager.getRecordedFile()
+              if (recordedFile == null) {
+                logcat { "No recorded file available" }
+                return@CollectEvents
+              }
+              val stepContent = steps.find { it.id == event.id }?.stepContent as? StepContent.AudioRecording
+              if (stepContent == null) {
+                logcat { "Step content not found or not AudioRecording" }
+                return@CollectEvents
+              }
               launch {
                 submitAudioRecordingUseCase
-                  .invoke(event.id, event.commonFile, event.uploadUri)
+                  .invoke(event.id, recordedFile, stepContent.uploadUri)
                   .fold(
                     ifLeft = { error("todo left submitAudioRecordingUseCase audio") },
                     ifRight = { claimIntent ->
+                      audioRecordingManager.cleanup()
                       handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
@@ -207,6 +231,90 @@ internal class ClaimChatPresenter(
                     },
                   )
               }
+            }
+
+            is ClaimChatEvent.AudioRecording.StartRecording -> {
+              audioRecordingManager.startRecording { recordingState ->
+                Snapshot.withMutableSnapshot {
+                  val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
+                  val stepContent = stepToUpdate.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
+                  val index = steps.indexOf(stepToUpdate)
+                  if (index >= 0) {
+                    steps[index] = stepToUpdate.copy(
+                      stepContent = stepContent.copy(recordingState = recordingState),
+                    )
+                  }
+                }
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.StopRecording -> {
+              audioRecordingManager.stopRecording { playbackState ->
+                Snapshot.withMutableSnapshot {
+                  val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
+                  val stepContent = stepToUpdate.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
+                  val index = steps.indexOf(stepToUpdate)
+                  if (index >= 0) {
+                    steps[index] = stepToUpdate.copy(
+                      stepContent = stepContent.copy(recordingState = playbackState),
+                    )
+                  }
+                }
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.RedoRecording -> {
+              audioRecordingManager.reset()
+              Snapshot.withMutableSnapshot {
+                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
+                val currentStepContent = currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
+                val index = steps.indexOf(currentStepState)
+                if (index >= 0) {
+                  steps[index] = currentStepState.copy(
+                    stepContent = currentStepContent.copy(
+                      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+                    ),
+                  )
+                }
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.ShowFreeText -> {
+              Snapshot.withMutableSnapshot {
+                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
+                val currentStepContent = currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
+                val index = steps.indexOf(currentStepState)
+                if (index >= 0) {
+                  steps[index] = currentStepState.copy(
+                    stepContent = currentStepContent.copy(
+                      recordingState = AudioRecordingStepState.FreeTextDescription(
+                        freeText = freeText,
+                        showOverlay = showFreeTextOverlay,
+                        errorType = null,
+                      ),
+                    ),
+                  )
+                }
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.ShowAudioRecording -> {
+              Snapshot.withMutableSnapshot {
+                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
+                val currentStepContent = currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
+                val index = steps.indexOf(currentStepState)
+                if (index >= 0) {
+                  steps[index] = currentStepState.copy(
+                    stepContent = currentStepContent.copy(
+                      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+                    ),
+                  )
+                }
+              }
+            }
+
+            is ClaimChatEvent.AudioRecording.Skip -> {
+              // TODO: Implement skip logic if backend supports it
             }
           }
         }

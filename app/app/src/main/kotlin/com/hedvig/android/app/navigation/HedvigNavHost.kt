@@ -443,7 +443,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigateToConversation: (NavBackStackEntry, String) -> Unit,
 ) {
   claimChatGraph(
-    shouldShowRequestPermissionRationale
+    shouldShowRequestPermissionRationale,
+    externalNavigator::openAppSettings,
   )
   claimDetailsGraph(
     navigator = navigator,

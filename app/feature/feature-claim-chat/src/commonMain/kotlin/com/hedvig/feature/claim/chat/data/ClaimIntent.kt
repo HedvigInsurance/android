@@ -143,7 +143,7 @@ internal sealed interface StepContent {
   }
 }
 
-internal sealed interface AudioRecordingStepState {
+sealed interface AudioRecordingStepState {
   data class FreeTextDescription(
     val freeText: String?,
     val showOverlay: Boolean,
@@ -178,17 +178,17 @@ internal sealed interface AudioRecordingStepState {
   }
 }
 
-internal sealed interface FreeTextErrorType {
+sealed interface FreeTextErrorType {
   data class TooShort(val minLength: Int) : FreeTextErrorType
 }
 
 @Serializable
 @JvmInline
-internal value class AudioUrl(val value: String)
+value class AudioUrl(val value: String)
 
 @Immutable
 @Serializable
-internal data class AudioContent(
+data class AudioContent(
   /**
    * The url to be used to play back the audio file
    */

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,10 +35,6 @@ import com.hedvig.feature.claim.chat.data.FreeTextErrorType
 import hedvig.resources.R
 import java.io.File
 import kotlin.time.Clock
-import kotlin.time.Instant
-import kotlinx.serialization.Serializable
-
-
 
 @Composable
 internal fun AudioRecordingStep(

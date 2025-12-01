@@ -29,6 +29,7 @@ val claimChatModule = module {
       get(),
       get(),
       get(),
+      get(),
     )
   }
 

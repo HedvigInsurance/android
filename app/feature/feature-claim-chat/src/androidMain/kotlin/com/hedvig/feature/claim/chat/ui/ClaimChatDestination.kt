@@ -42,9 +42,11 @@ import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.data.file.AndroidFile
 import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
 import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
 import com.hedvig.feature.claim.chat.ui.ContentSelectChips
@@ -54,25 +56,30 @@ import org.koin.core.parameter.parametersOf
 import hedvig.resources.R
 import java.io.File
 import kotlin.time.Clock
+import kotlinx.io.asSource
+import kotlinx.io.buffered
 
 @Composable
 fun ClaimChatDestination(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
-  developmentFlow: Boolean) {
+  openAppSettings: () -> Unit,
+  isDevelopmentFlow: Boolean) {
   val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
-    parametersOf(developmentFlow)
+    parametersOf(isDevelopmentFlow)
   }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     BlurredGradientBackground(radius = 100)
     ClaimChatScreenContent(claimChatViewModel,
-      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale)
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+      openAppSettings = openAppSettings)
   }
 }
 
 @Composable
 internal fun ClaimChatScreenContent(
   claimChatViewModel: ClaimChatViewModel,
-  shouldShowRequestPermissionRationale: (String) -> Boolean
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  openAppSettings: () -> Unit,
 ) {
   val uiState = claimChatViewModel.uiState.collectAsState().value
 
@@ -84,6 +91,7 @@ internal fun ClaimChatScreenContent(
         uiState = uiState,
         onEvent = claimChatViewModel::emit,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openAppSettings = openAppSettings
       )
     }
   }
@@ -94,6 +102,7 @@ private fun ClaimChatScreen(
   uiState: ClaimChatUiState.ClaimChat,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
+  openAppSettings: () -> Unit,
 ) {
   FreeTextOverlay(
     freeTextMaxLength = 3000,
@@ -110,9 +119,11 @@ private fun ClaimChatScreen(
     shouldShowOverlay = uiState.showFreeTextOverlay,
     overlaidContent = {
       ClaimChatScreenContent(
-        uiState,
-        onEvent,
-        shouldShowRequestPermissionRationale)
+        uiState = uiState,
+        onEvent = onEvent,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openAppSettings = openAppSettings
+      )
     },
   )
 }
@@ -122,6 +133,7 @@ private fun ClaimChatScreenContent(
   uiState: ClaimChatUiState.ClaimChat,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
+  openAppSettings: () -> Unit,
   modifier: Modifier = Modifier) {
   val lazyListState = rememberLazyListState()
   LazyColumn(
@@ -137,29 +149,44 @@ private fun ClaimChatScreenContent(
     ) { item ->
       when (item.stepContent) {
         is StepContent.AudioRecording -> {
-//          AudioRecordingStep(
-//            item = item,
-//            stepContent = item.stepContent,
-//            onShowFreeText = {
-//              //todo
-//            },
-//            onShowAudioRecording = TODO(),
-//            onLaunchFullScreenEditText = {
-//              onEvent(ClaimChatEvent.OpenFreeTextOverlay)
-//            },
-//            submitFreeText = TODO(),
-//            submitAudioFile = TODO(),
-//            submitAudioUrl = TODO(),
-//            stopRecording = TODO(),
-//            redoRecording = TODO(),
-//            onSkip = TODO(),
-//            isCurrentStep = item == uiState.currentStep,
-//            clock = TODO(),
-//            onShouldShowRequestPermissionRationale = TODO(),
-//            openAppSettings = TODO(),
-//            startRecording = TODO(),
-//            modifier = Modifier.padding(horizontal = 16.dp),
-//          )
+          AudioRecordingStep(
+            stepContent = item.stepContent,
+            onShowFreeText = {
+              onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(item.id))
+            },
+            onShowAudioRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
+            },
+            onLaunchFullScreenEditText = {
+              onEvent(ClaimChatEvent.OpenFreeTextOverlay)
+            },
+            startRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.StartRecording(item.id))
+            },
+            stopRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.StopRecording(item.id))
+            },
+            redoRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.RedoRecording(item.id))
+            },
+            submitFreeText = { text ->
+              onEvent(ClaimChatEvent.AudioRecording.TextInput(item.id, text))
+            },
+            submitAudioFile = {
+              onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(item.id))
+            },
+            submitAudioUrl = { audioUrl ->
+              // TODO: Handle audio URL submission
+            },
+            onSkip = {
+              onEvent(ClaimChatEvent.AudioRecording.Skip(item.id))
+            },
+            isCurrentStep = item == uiState.currentStep,
+            clock = kotlin.time.Clock.System,
+            onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            openAppSettings = openAppSettings,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
         }
 
         is StepContent.ContentSelect -> ContentSelectStep(
@@ -237,13 +264,12 @@ private fun ClaimChatScreenContent(
 
 @Composable
 private fun AudioRecordingStep(
-  item: ClaimIntentStep,
   stepContent: StepContent.AudioRecording,
   onShowFreeText: () -> Unit,
   onShowAudioRecording: () -> Unit,
   onLaunchFullScreenEditText: () -> Unit,
-  submitFreeText: () -> Unit,
-  submitAudioFile: (File) -> Unit,
+  submitFreeText: (String) -> Unit,
+  submitAudioFile: () -> Unit,
   submitAudioUrl: (AudioUrl) -> Unit,
   stopRecording: () -> Unit,
   redoRecording: () -> Unit,
@@ -261,12 +287,19 @@ private fun AudioRecordingStep(
     onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
     startRecording = startRecording,
     stopRecording = stopRecording,
-    submitAudioFile = submitAudioFile,
+    submitAudioFile = { _ ->
+      submitAudioFile()
+    },
     submitAudioUrl = submitAudioUrl,
     redoRecording = redoRecording,
     openAppSettings = openAppSettings,
     freeTextAvailable = true,
-    submitFreeText = submitFreeText,
+    submitFreeText = {
+      val text = (stepContent.recordingState as? AudioRecordingStepState.FreeTextDescription)?.freeText
+      if (text != null) {
+        submitFreeText(text)
+      }
+    },
     onShowFreeText = onShowFreeText,
     onShowAudioRecording = onShowAudioRecording,
     onLaunchFullScreenEditText = onLaunchFullScreenEditText,

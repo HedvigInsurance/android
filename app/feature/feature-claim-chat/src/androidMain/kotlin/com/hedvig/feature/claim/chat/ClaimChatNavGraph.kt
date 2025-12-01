@@ -14,11 +14,13 @@ data class ClaimChatDestination(
 
 fun NavGraphBuilder.claimChatGraph(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
+  openAppSettings: () -> Unit,
 ) {
   navdestination<ClaimChatDestination> {
     ClaimChatDestination(
-      developmentFlow = isDevelopmentFlow,
-      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale
+      isDevelopmentFlow = isDevelopmentFlow,
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+      openAppSettings = openAppSettings
     )
   }
 }
