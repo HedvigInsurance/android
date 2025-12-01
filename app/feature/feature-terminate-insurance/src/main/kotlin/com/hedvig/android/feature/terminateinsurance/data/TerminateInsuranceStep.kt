@@ -102,7 +102,7 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
         explanations = explanations.map {
           it.title to it.text
         },
-        info = info
+        info = info,
       )
     }
 
@@ -290,8 +290,8 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
         title = title,
         message = message,
         info = info,
-        explanations = explanations
-      )
+        explanations = explanations,
+      ),
     )
   }
 }

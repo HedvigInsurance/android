@@ -6,6 +6,7 @@ data class CrossSell(
   val subtitle: String,
   val storeUrl: String,
   val pillowImage: ImageAsset,
+  val buttonText: String? = null, // todo!!
 )
 
 data class ImageAsset(
