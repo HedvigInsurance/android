@@ -50,11 +50,32 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep
 
 private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
   return when (this) {
-    is FormFragment -> StepContent.Form(this.fields.toFields(), isSkippable, isRegrettable)
-    is ContentSelectFragment -> StepContent.ContentSelect(options.toOptions(), isSkippable, isRegrettable)
-    is TaskFragment -> StepContent.Task(listOf(description), isCompleted)
-    is AudioRecordingFragment -> StepContent.AudioRecording(hint, uploadUri, isSkippable, isRegrettable)
-    is FileUploadFragment -> StepContent.FileUpload(uploadUri, isSkippable, isRegrettable)
+    is FormFragment -> StepContent.Form(
+      fields = this.fields.toFields(),
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable
+    )
+    is ContentSelectFragment -> StepContent.ContentSelect(
+      options = options.toOptions(),
+      selectedOption = null, //todo
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable
+    )
+    is TaskFragment -> StepContent.Task(
+      descriptions = listOf(element = description),
+      isCompleted = isCompleted,
+    )
+    is AudioRecordingFragment -> StepContent.AudioRecording(
+      hint = hint,
+      uploadUri = uploadUri,
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable
+    )
+    is FileUploadFragment -> StepContent.FileUpload(
+      uploadUri = uploadUri,
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable
+    )
     is SummaryFragment -> StepContent.Summary(
       items = items.map { StepContent.Summary.Item(it.title, it.value) },
       audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },

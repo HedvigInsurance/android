@@ -46,8 +46,8 @@ internal fun ClaimChatScreen(claimChatViewModel: ClaimChatViewModel) {
 
   Box(Modifier.fillMaxSize(), Alignment.Center) {
     when (uiState) {
-      ClaimChatUiState.FailedToStart -> BasicText("FailedToStart")
-      ClaimChatUiState.Initializing -> BasicText("Initializing")
+      ClaimChatUiState.FailedToStart -> BasicText("FailedToStart") //todo
+      ClaimChatUiState.Initializing -> BasicText("Initializing") //todo
       is ClaimChatUiState.ClaimChat -> ClaimChatScreen(uiState, claimChatViewModel::emit)
     }
   }
@@ -61,7 +61,7 @@ private fun ClaimChatScreen(uiState: ClaimChatUiState.ClaimChat, onEvent: (Claim
     state = lazyListState,
     contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
     // + PaddingValues(bottom = 16.dp)
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
   ) {
     items(
       items = uiState.steps,
@@ -93,7 +93,7 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
           ContentSelectChips(
             modifier = Modifier. padding(16.dp), //todo
             options = item.stepContent.options,
-            selectedOption = null, //todo
+            selectedOption = item.stepContent.options.firstOrNull { it.id == item.stepContent.selectedOptionId },
             onOptionClick = {
               onEvent(ClaimChatEvent.Select(item.id, item.stepContent.options.firstNotNullOf { it.id }))
             },

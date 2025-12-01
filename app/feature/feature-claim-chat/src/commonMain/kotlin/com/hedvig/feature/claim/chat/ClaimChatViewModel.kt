@@ -155,6 +155,12 @@ internal class ClaimChatPresenter(
       logcat { "ClaimChatPresenter received event: $event" }
       when (event) {
         is ClaimChatEvent.Select -> {
+          val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect ?: return@CollectEvents
+          val currentStepState = currentStep ?: return@CollectEvents
+          steps.remove(currentStepState)
+          steps.add(currentStepState.copy(stepContent = currentStepContent.copy(
+            selectedOptionId = event.selectedId
+          ))) //todo: check
           launch {
             submitSelectUseCase
               .invoke(event.id, event.selectedId)

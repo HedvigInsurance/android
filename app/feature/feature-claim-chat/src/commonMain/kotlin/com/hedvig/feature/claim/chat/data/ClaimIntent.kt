@@ -109,6 +109,7 @@ internal sealed interface StepContent {
 
   data class ContentSelect(
     val options: List<Option>,
+    val selectedOptionId: String?, //todo: check
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
   ) : StepContent {
