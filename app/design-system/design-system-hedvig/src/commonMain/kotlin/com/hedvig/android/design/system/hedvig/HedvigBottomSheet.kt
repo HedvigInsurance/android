@@ -39,9 +39,9 @@ import com.hedvig.android.design.system.hedvig.tokens.BottomSheetTokens
 import com.hedvig.android.design.system.hedvig.tokens.ScrimTokens
 import com.hedvig.android.design.system.internals.BottomSheet
 import com.hedvig.android.design.system.internals.rememberInternalHedvigBottomSheetState
-import hedvig.resources.Res
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.PRICE_DETAILS_TITLE
+import hedvig.resources.Res
 import hedvig.resources.TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS
 import hedvig.resources.TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS
 import hedvig.resources.TIER_FLOW_TOTAL

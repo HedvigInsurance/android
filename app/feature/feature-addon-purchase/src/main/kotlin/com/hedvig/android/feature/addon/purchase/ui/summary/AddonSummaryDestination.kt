@@ -32,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primar
 import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -44,7 +45,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
@@ -55,7 +55,6 @@ import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import hedvig.resources.Res
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_BUTTON
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_DESCRIPTION
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_TITLE
@@ -65,6 +64,7 @@ import hedvig.resources.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.ADDON_FLOW_SUMMARY_INFO_TEXT
 import hedvig.resources.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_close_button

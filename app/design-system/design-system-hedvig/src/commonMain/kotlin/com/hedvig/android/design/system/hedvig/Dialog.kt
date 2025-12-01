@@ -44,9 +44,9 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults.defaultButtonSize
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.tokens.DialogTokens
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_YES
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 

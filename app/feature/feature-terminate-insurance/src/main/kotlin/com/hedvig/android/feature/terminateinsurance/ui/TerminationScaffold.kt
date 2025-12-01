@@ -28,13 +28,13 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import hedvig.resources.Res
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import hedvig.resources.CONTRACT_STATUS_TO_BE_TERMINATED
+import hedvig.resources.Res
 import hedvig.resources.TERMINATION_A_01
 import hedvig.resources.TERMINATION_A_02
 import hedvig.resources.TERMINATION_A_03

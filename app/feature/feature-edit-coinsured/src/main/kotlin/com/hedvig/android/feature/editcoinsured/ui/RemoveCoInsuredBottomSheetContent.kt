@@ -25,9 +25,9 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
-import hedvig.resources.Res
 import hedvig.resources.CONTRACT_REMOVE_COINSURED_CONFIRMATION
 import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
+import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate

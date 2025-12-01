@@ -30,6 +30,7 @@ import androidx.media3.datasource.cache.SimpleCache
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -38,7 +39,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
-import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.rememberPreviewSimpleCache
@@ -50,7 +50,6 @@ import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.Legac
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.NewConversation
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.TopAppBarText.ServiceConversation
 import com.hedvig.android.logger.logcat
-import hedvig.resources.Res
 import hedvig.resources.CHAT_CONVERSATION_HISTORY_TITLE
 import hedvig.resources.CHAT_CONVERSATION_QUESTION_TITLE
 import hedvig.resources.CHAT_FAILED_TO_SEND
@@ -58,6 +57,7 @@ import hedvig.resources.CHAT_FILE_SIZE_TOO_BIG_ERROR
 import hedvig.resources.CHAT_NEW_CONVERSATION_SUBTITLE
 import hedvig.resources.CHAT_NEW_CONVERSATION_TITLE
 import hedvig.resources.CHAT_TITLE
+import hedvig.resources.Res
 import hedvig.resources.claim_status_detail_submitted
 import hedvig.resources.home_claim_card_pill_claim
 import kotlin.time.Instant

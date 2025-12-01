@@ -16,8 +16,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.navigation.AutoCancelDeflectStepParameters
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.Res
 import hedvig.resources.DASHBOARD_OPEN_CHAT
+import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
 import org.jetbrains.compose.resources.stringResource
 

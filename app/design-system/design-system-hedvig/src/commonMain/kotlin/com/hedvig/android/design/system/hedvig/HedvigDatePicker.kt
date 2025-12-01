@@ -61,7 +61,7 @@ fun DatePickerWithDialog(
       null
     } else {
       hedvigDateTimeFormatter.format(
-        Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
+        Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date,
       )
     }
   }

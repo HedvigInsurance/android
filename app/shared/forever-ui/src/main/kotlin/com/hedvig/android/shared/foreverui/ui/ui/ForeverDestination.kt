@@ -163,7 +163,7 @@ private fun ForeverScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = (uiState as? ForeverUiState.Success)?.reloading == true,
+    refreshing = (uiState as? Success)?.reloading == true,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
@@ -259,7 +259,7 @@ internal fun LoadingForeverContent() {
 
 @Composable
 internal fun ForeverContent(
-  uiState: ForeverUiState.Success,
+  uiState: Success,
   pullRefreshState: PullRefreshState,
   onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
   onSubmitCode: (String) -> Unit,
@@ -315,7 +315,7 @@ internal fun ForeverContent(
 
 @Composable
 private fun ForeverScrollableContent(
-  uiState: ForeverUiState.Success,
+  uiState: Success,
   pullRefreshState: PullRefreshState,
   referralExplanationBottomSheetState: HedvigBottomSheetState<UiMoney>,
   referralCodeBottomSheetState: HedvigBottomSheetState<String>,
@@ -530,7 +530,7 @@ private fun PreviewForeverContent(
 private class ForeverUiStateProvider : CollectionPreviewParameterProvider<ForeverUiState>(
   listOf(
     ForeverUiState.Error,
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referredBy = ReferredByInfo(
           name = "Sladan",
@@ -538,7 +538,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
           activeDiscount = UiMoney(10.0, SEK),
         ),
         referrals = listOf(
-          Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
+          Referral("Name#1", ACTIVE, UiMoney(10.0, SEK)),
           Referral("Name#2", ReferralState.IN_PROGRESS, null),
           Referral("Name#3", ReferralState.TERMINATED, null),
           Referral("Name#4", ReferralState.TERMINATED, null),
@@ -557,7 +557,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referredBy = ReferredByInfo(
           name = "Sladan",
@@ -576,11 +576,11 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referredBy = null,
         referrals = listOf(
-          Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
+          Referral("Name#1", ACTIVE, UiMoney(10.0, SEK)),
           Referral("Name#2", ReferralState.IN_PROGRESS, null),
           Referral("Name#3", ReferralState.TERMINATED, null),
           Referral("Name#4", ReferralState.TERMINATED, null),
@@ -599,21 +599,21 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referrals = emptyList(),
         referredBy = null,
         campaignCode = "HEDV1G",
-        incentive = UiMoney(10.0, UiCurrencyCode.SEK),
-        currentNetCost = UiMoney(80.0, UiCurrencyCode.SEK),
-        currentDiscount = UiMoney(20.0, UiCurrencyCode.SEK),
-        currentGrossCost = UiMoney(100.0, UiCurrencyCode.SEK),
+        incentive = UiMoney(10.0, SEK),
+        currentNetCost = UiMoney(80.0, SEK),
+        currentDiscount = UiMoney(20.0, SEK),
+        currentGrossCost = UiMoney(100.0, SEK),
       ),
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Loading,
+    Loading,
   ),
 )

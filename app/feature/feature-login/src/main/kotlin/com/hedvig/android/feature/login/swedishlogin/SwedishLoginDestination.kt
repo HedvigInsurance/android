@@ -55,11 +55,11 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.Res
 import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_LABEL
 import hedvig.resources.AUTHENTICATION_BANKID_LOGIN_TITLE
 import hedvig.resources.AUTHENTICATION_BANKID_OPEN_BUTTON
 import hedvig.resources.DEMO_MODE_START
+import hedvig.resources.Res
 import hedvig.resources.SETTINGS_LOGIN_ROW
 import hedvig.resources.TALKBACK_QR_CODE_DESCRIPTION
 import hedvig.resources.bankid_missing_login_email_button

@@ -5,5 +5,6 @@ import kotlinx.datetime.LocalDateTime
 
 interface DateFormatter {
   fun format(date: LocalDate): String
+
   fun format(date: LocalDateTime): String
 }

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.MultipleDocuments: ImageVector
+val HedvigIcons.MultipleDocuments: ImageVector
   get() {
     if (_multipleDocuments != null) {
       return _multipleDocuments!!

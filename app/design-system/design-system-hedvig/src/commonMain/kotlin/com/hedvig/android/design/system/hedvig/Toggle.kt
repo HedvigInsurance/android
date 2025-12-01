@@ -400,14 +400,14 @@ object ToggleDefaults {
 private val ToggleDefaults.ToggleDefaultStyleSize.size: ToggleDefaultStyleSize
   get() = when (this) {
     ToggleDefaults.ToggleDefaultStyleSize.Large -> ToggleDefaultStyleSize.Large
-    ToggleDefaults.ToggleDefaultStyleSize.Medium -> ToggleDefaultStyleSize.Medium
+    Medium -> ToggleDefaultStyleSize.Medium
     ToggleDefaults.ToggleDefaultStyleSize.Small -> ToggleDefaultStyleSize.Small
   }
 
 private val ToggleDefaults.ToggleDetailedStyleSize.size: ToggleDetailedStyleSize
   get() = when (this) {
-    ToggleDefaults.ToggleDetailedStyleSize.Large -> ToggleDetailedStyleSize.Large
-    ToggleDefaults.ToggleDetailedStyleSize.Small -> ToggleDetailedStyleSize.Small
+    Large -> ToggleDetailedStyleSize.Large
+    Small -> ToggleDetailedStyleSize.Small
   }
 
 @Immutable

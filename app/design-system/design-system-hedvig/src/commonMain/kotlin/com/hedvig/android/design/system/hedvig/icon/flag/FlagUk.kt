@@ -23,7 +23,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.FlagUk: ImageVector
+val HedvigIcons.FlagUk: ImageVector
   get() {
     if (_flagUk != null) {
       return _flagUk!!

@@ -40,8 +40,8 @@ import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
-import hedvig.resources.Res
 import hedvig.resources.DASHBOARD_OPEN_CHAT
+import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
 import hedvig.resources.TIER_FLOW_PROCESSING

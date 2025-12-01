@@ -38,12 +38,12 @@ import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.Content
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError.GenericError
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeUiState.HousingTypeError.UserPresentable
-import hedvig.resources.Res
 import hedvig.resources.CHANGE_ADDRESS_APARTMENT_OWN_LABEL
 import hedvig.resources.CHANGE_ADDRESS_APARTMENT_RENT_LABEL
 import hedvig.resources.CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE
 import hedvig.resources.CHANGE_ADDRESS_VILLA_LABEL
 import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_change_address_button
 import hedvig.resources.something_went_wrong

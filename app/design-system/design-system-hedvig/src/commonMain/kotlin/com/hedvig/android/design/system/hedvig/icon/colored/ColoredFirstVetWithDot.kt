@@ -18,7 +18,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.ColoredFirstVetWithDot: ImageVector
+val HedvigIcons.ColoredFirstVetWithDot: ImageVector
   get() {
     val current = _firstVet
     if (current != null) return current

@@ -32,8 +32,8 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Failure
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputUiState.Success
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_SUBMIT
+import hedvig.resources.Res
 import hedvig.resources.travel_certificate_missing_coinsured_button
 import hedvig.resources.travel_certificate_missing_coinsured_info
 import hedvig.resources.travel_certificate_who_is_traveling
@@ -74,7 +74,7 @@ private fun TravelCertificateTravellersInput(
     when (uiState) {
       TravelCertificateTravellersInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
 
-      TravelCertificateTravellersInputUiState.Failure -> {
+      Failure -> {
         HedvigScaffold(
           navigateUp = navigateUp,
         ) {
@@ -88,7 +88,7 @@ private fun TravelCertificateTravellersInput(
         }
       }
 
-      is TravelCertificateTravellersInputUiState.Success -> {
+      is Success -> {
         HedvigScaffold(
           navigateUp = navigateUp,
         ) {

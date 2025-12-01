@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
@@ -62,7 +63,6 @@ import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.AddBottomSheetContentState
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -110,8 +110,8 @@ internal fun AddCoInsuredBottomSheetContent(
       text = stringResource(Res.string.CONTRACT_ADD_COINSURED),
       textAlign = TextAlign.Center,
       modifier = Modifier
-          .fillMaxWidth()
-          .semantics { heading() },
+        .fillMaxWidth()
+        .semantics { heading() },
     )
     Spacer(Modifier.height(24.dp))
     if (bottomSheetState.canPickExistingCoInsured() && bottomSheetState.selectableCoInsured != null) {
@@ -348,8 +348,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-            .weight(1f)
-            .defaultMinSize(minHeight = 64.dp),
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
       Spacer(Modifier.width(4.dp))
       HedvigTextField(
@@ -365,8 +365,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-            .weight(1f)
-            .defaultMinSize(minHeight = 64.dp),
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
     }
     AnimatedVisibility(

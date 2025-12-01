@@ -60,9 +60,9 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.ContractData
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
@@ -466,12 +466,12 @@ private class SummaryUiStateProvider :
             )
           },
           currentTotalCost = TotalCost(
-            monthlyGross = UiMoney(175.0, UiCurrencyCode.SEK),
-            monthlyNet = UiMoney(150.0, UiCurrencyCode.SEK),
+            monthlyGross = UiMoney(175.0, SEK),
+            monthlyNet = UiMoney(150.0, SEK),
           ),
           newTotalCost = TotalCost(
-            monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-            monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+            monthlyGross = UiMoney(380.0, SEK),
+            monthlyNet = UiMoney(304.0, SEK),
           ),
           costBreakdown = listOf(
             "Home Insurance Max" to "300 kr/mo",

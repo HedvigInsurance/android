@@ -97,7 +97,7 @@ private fun RoundedPolygon.Companion.squircle(
   figmaShapeDirection: FigmaShapeDirection,
 ): Path {
   if (width == 0f || height == 0f) {
-    return androidx.compose.ui.graphics.Path()
+    return Path()
   }
   @Suppress("ktlint:standard:argument-list-wrapping")
   return RoundedPolygon(
@@ -206,7 +206,7 @@ private fun pathFromCubics(
         atan2(
           y = cubics[0].anchor0Y - rotationPivotY,
           x = cubics[0].anchor0X - rotationPivotX,
-        )
+        ),
       )
     // Rotate the Path to to start from the given angle.
     path.transform(Matrix().apply { rotateZ(-angleToFirstCubic + startAngle) })

@@ -31,8 +31,8 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
-import hedvig.resources.Res
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_TITLE
+import hedvig.resources.Res
 import hedvig.resources.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON
 import hedvig.resources.general_close_button
 import kotlinx.serialization.Serializable

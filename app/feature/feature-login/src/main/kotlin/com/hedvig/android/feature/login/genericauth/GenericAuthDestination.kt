@@ -9,10 +9,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
 import hedvig.resources.login_text_input_email_error_enter_email
 import hedvig.resources.login_text_input_email_error_not_valid
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun GenericAuthDestination(

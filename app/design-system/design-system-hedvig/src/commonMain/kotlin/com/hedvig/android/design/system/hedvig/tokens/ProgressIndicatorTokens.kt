@@ -9,7 +9,7 @@ internal object CircularProgressIndicatorTokens {
   val ActiveIndicatorColor = ColorSchemeKeyTokens.FillPrimary
   val ActiveIndicatorWidth = 4.0.dp
   val TrackColor = ColorSchemeKeyTokens.SurfaceSecondaryTransparent
-  val StrokeCap: StrokeCap = androidx.compose.ui.graphics.StrokeCap.Square
+  val StrokeCap: StrokeCap = StrokeCap.Square
   val Size = 48.0.dp
   val IndicatorDiameter = Size - ActiveIndicatorWidth * 2
   const val RotationDuration = 1332
@@ -27,7 +27,7 @@ internal object CircularProgressIndicatorTokens {
 internal object LinearProgressIndicatorTokens {
   val ActiveIndicatorColor = ColorSchemeKeyTokens.FillPrimary
   val TrackColor = ColorSchemeKeyTokens.SurfaceSecondary
-  val StrokeCap: StrokeCap = androidx.compose.ui.graphics.StrokeCap.Butt
+  val StrokeCap: StrokeCap = StrokeCap.Butt
   val IndicatorWidth = 240.dp
   val IndicatorHeight = 4.0.dp
   const val AnimationDuration = 1800

@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.HedvigLogotype: ImageVector
+val HedvigIcons.HedvigLogotype: ImageVector
   get() {
     if (_hedvigLogotype != null) {
       return _hedvigLogotype!!

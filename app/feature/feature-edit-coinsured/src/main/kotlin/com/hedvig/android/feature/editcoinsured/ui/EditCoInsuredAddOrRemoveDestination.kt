@@ -47,11 +47,11 @@ import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
@@ -491,7 +491,7 @@ private fun EditCoInsuredScreenEditablePreview() {
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
           ),
-          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
+          removeBottomSheetContentState = RemoveBottomSheetContentState(),
         ),
         onSave = {},
         onSsnChanged = {},
@@ -555,7 +555,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
             manualInfo = ManualInfo(),
             infoFromSsn = InfoFromSsn(),
           ),
-          removeBottomSheetContentState = EditCoInsuredState.Loaded.RemoveBottomSheetContentState(),
+          removeBottomSheetContentState = RemoveBottomSheetContentState(),
         ),
         onSave = {},
         onSsnChanged = {},

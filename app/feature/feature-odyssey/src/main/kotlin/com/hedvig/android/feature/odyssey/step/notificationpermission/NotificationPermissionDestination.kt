@@ -31,11 +31,11 @@ import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.notification.permission.rememberPreviewNotificationPermissionState
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
 import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA
 import hedvig.resources.CLAIMS_NOTIFICATIONS_ACTIVATED
 import hedvig.resources.ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS
+import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -152,9 +152,9 @@ private data class PreviewPermissionState(
 private class PermissionStatusCollectionPreviewParameterProvider :
   CollectionPreviewParameterProvider<PreviewPermissionState>(
     listOf(
-      PreviewPermissionState(PermissionStatus.Granted, false),
-      PreviewPermissionState(PermissionStatus.Denied(false), false),
-      PreviewPermissionState(PermissionStatus.Denied(true), true),
-      PreviewPermissionState(PermissionStatus.Denied(false), true),
+      PreviewPermissionState(Granted, false),
+      PreviewPermissionState(Denied(false), false),
+      PreviewPermissionState(Denied(true), true),
+      PreviewPermissionState(Denied(false), true),
     ),
   )

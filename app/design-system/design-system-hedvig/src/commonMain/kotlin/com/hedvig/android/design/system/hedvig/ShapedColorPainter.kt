@@ -20,8 +20,7 @@ class ShapedColorPainter(
   private var colorFilter: ColorFilter? = null
 
   override fun DrawScope.onDraw() {
-    val outline = shape.createOutline(size, layoutDirection, this)
-    when (outline) {
+    when (val outline = shape.createOutline(size, layoutDirection, this)) {
       is Outline.Generic -> {
         drawPath(
           outline.path,

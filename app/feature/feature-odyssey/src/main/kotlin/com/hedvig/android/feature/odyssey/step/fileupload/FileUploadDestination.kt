@@ -19,10 +19,10 @@ import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
+import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import org.jetbrains.compose.resources.stringResource
 

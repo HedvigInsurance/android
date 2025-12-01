@@ -43,17 +43,17 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Reload
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.isActive
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.login_navigation_bar_center_element_title
 import hedvig.resources.login_open_email_app_button
 import hedvig.resources.login_smedium_button_active_resend_code
 import hedvig.resources.login_snackbar_code_resent
 import hedvig.resources.login_subtitle_verification_code_email
 import hedvig.resources.login_title_check_your_email
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.isActive
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun OtpInputDestination(

@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.first
  * This function will suspend and wait forever until the first time we should open the app review dialog.
  */
 interface WaitUntilAppReviewDialogShouldBeOpenedUseCase {
-  suspend fun invoke(): Unit
+  suspend fun invoke()
 }
 
 internal class WaitUntilAppReviewDialogShouldBeOpenedUseCaseImpl(

@@ -31,8 +31,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageState.Success
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.open_chat
 import org.jetbrains.compose.resources.stringResource
@@ -163,7 +163,7 @@ private fun StartTierFlowScreenPreview(
 internal class TravelAddonTriageStateProvider :
   CollectionPreviewParameterProvider<TravelAddonTriageState>(
     listOf(
-      TravelAddonTriageState.Loading,
+      Loading,
       Success(
         listOf("id", "id2"),
       ),

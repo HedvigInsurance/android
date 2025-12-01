@@ -55,8 +55,8 @@ import com.hedvig.android.design.system.hedvig.tokens.MediumSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
-import hedvig.resources.Res
 import hedvig.resources.A11Y_CLEAR_FIELD
+import hedvig.resources.Res
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
@@ -72,7 +72,7 @@ fun HedvigTextField(
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
   trailingContent: @Composable (() -> Unit)? = null,
-  errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
+  errorState: ErrorState = ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -92,7 +92,7 @@ fun HedvigTextField(
   val trailingIconColor by colors.trailingContentColor(
     readOnly = readOnly,
     enabled = enabled,
-    isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
+    isError = errorState is ErrorState.Error,
   )
   val isFocused by interactionSource.collectIsFocusedAsState()
   HedvigTextField(
@@ -124,7 +124,7 @@ fun HedvigTextField(
       enabled = enabled,
       clearText = { onValueChange("") },
     ),
-    supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
+    supportingText = if (errorState is ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
       null
@@ -192,7 +192,7 @@ fun HedvigTextField(
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
   trailingContent: @Composable (() -> Unit)? = null,
-  errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
+  errorState: ErrorState = ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -212,7 +212,7 @@ fun HedvigTextField(
   val trailingIconColor by colors.trailingContentColor(
     readOnly = readOnly,
     enabled = enabled,
-    isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
+    isError = errorState is ErrorState.Error,
   )
   val isFocused by interactionSource.collectIsFocusedAsState()
   HedvigTextField(
@@ -237,7 +237,7 @@ fun HedvigTextField(
       enabled = enabled,
       clearText = { onValueChange(TextFieldValue("")) },
     ),
-    supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
+    supportingText = if (errorState is ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
       null
@@ -312,7 +312,7 @@ fun HedvigTextField(
   suffix: @Composable (() -> Unit)? = null,
   leadingContent: @Composable (() -> Unit)? = null,
   trailingContent: @Composable (() -> Unit)? = null,
-  errorState: HedvigTextFieldDefaults.ErrorState = HedvigTextFieldDefaults.ErrorState.NoError,
+  errorState: ErrorState = ErrorState.NoError,
   enabled: Boolean = true,
   readOnly: Boolean = false,
   inputTransformation: InputTransformation? = null,
@@ -328,7 +328,7 @@ fun HedvigTextField(
   val trailingIconColor by colors.trailingContentColor(
     readOnly = readOnly,
     enabled = enabled,
-    isError = errorState is HedvigTextFieldDefaults.ErrorState.Error,
+    isError = errorState is ErrorState.Error,
   )
   val isFocused by interactionSource.collectIsFocusedAsState()
   HedvigTextField(
@@ -352,7 +352,7 @@ fun HedvigTextField(
       enabled = enabled,
       clearText = { state.clearText() },
     ),
-    supportingText = if (errorState is HedvigTextFieldDefaults.ErrorState.Error.WithMessage) {
+    supportingText = if (errorState is ErrorState.Error.WithMessage) {
       { HedvigText(text = errorState.message) }
     } else {
       null

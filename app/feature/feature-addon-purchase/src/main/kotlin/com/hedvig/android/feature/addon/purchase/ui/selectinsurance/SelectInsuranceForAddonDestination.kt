@@ -33,9 +33,9 @@ import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Success
-import hedvig.resources.Res
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
 import hedvig.resources.ADDON_FLOW_TITLE
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
@@ -76,7 +76,7 @@ private fun SelectInsuranceForAddonScreen(
   navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   when (uiState) {
-    SelectInsuranceForAddonState.Failure -> {
+    Failure -> {
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
@@ -84,8 +84,8 @@ private fun SelectInsuranceForAddonScreen(
       }
     }
 
-    SelectInsuranceForAddonState.Loading -> HedvigFullScreenCenterAlignedProgress()
-    is SelectInsuranceForAddonState.Success -> {
+    Loading -> HedvigFullScreenCenterAlignedProgress()
+    is Success -> {
       LaunchedEffect(uiState.insuranceIdToContinue) {
         if (uiState.insuranceIdToContinue != null) {
           navigateToCustomizeAddon(uiState.insuranceIdToContinue)
@@ -103,7 +103,7 @@ private fun SelectInsuranceForAddonScreen(
 
 @Composable
 private fun SelectInsuranceForAddonContentScreen(
-  uiState: SelectInsuranceForAddonState.Success,
+  uiState: Success,
   navigateUp: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,

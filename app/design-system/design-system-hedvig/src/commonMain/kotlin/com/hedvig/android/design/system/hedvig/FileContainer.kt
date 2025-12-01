@@ -18,8 +18,8 @@ import coil3.request.ImageRequest
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.Res
 import hedvig.resources.FILE_UPLOAD_IMAGE
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

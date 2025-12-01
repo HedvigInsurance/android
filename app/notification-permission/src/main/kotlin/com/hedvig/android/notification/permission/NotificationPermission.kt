@@ -25,8 +25,8 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.hedvig.android.design.system.hedvig.PermissionDialog
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_ACTIVATE_NOTIFICATIONS_BODY
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 interface NotificationPermissionState : PermissionState {

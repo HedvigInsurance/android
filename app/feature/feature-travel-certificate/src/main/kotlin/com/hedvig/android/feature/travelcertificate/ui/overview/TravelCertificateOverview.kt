@@ -28,10 +28,10 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewUiState.Success
-import hedvig.resources.Res
 import hedvig.resources.CERTIFICATES_EMAIL_SENT
 import hedvig.resources.GENERAL_DOWNLOAD
 import hedvig.resources.GENERAL_SHOW
+import hedvig.resources.Res
 import hedvig.resources.general_done_button
 import hedvig.resources.travel_certificate_download_recommendation
 import hedvig.resources.travel_certificate_download_travel_certificate
@@ -86,7 +86,7 @@ internal fun TravelCertificateOverview(
       HedvigFullScreenCenterAlignedProgress(modifier = Modifier.fillMaxSize())
     }
 
-    is TravelCertificateOverviewUiState.Success -> {
+    is Success -> {
       LaunchedEffect(uiState.travelCertificateUri) {
         uiState.travelCertificateUri?.let {
           onShareTravelCertificate(it)

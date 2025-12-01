@@ -55,13 +55,13 @@ import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payments.overview.data.ForeverInformation
 import com.hedvig.android.feature.payments.overview.data.ReferredByInfo
 import hedvig.resources.FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL
-import hedvig.resources.Res
 import hedvig.resources.FOREVER_REFERRAL_INVITED_YOU
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.PAYMENTS_DISCOUNTS_SECTION_TITLE
 import hedvig.resources.PAYMENTS_REFERRALS_INFO_DESCRIPTION
 import hedvig.resources.PAYMENTS_REFERRALS_INFO_TITLE
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_more_information_button
 import hedvig.resources.important_message_read_more

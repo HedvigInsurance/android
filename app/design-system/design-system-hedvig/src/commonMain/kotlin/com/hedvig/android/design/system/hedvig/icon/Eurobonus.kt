@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Eurobonus: ImageVector
+val HedvigIcons.Eurobonus: ImageVector
   get() {
     if (_eurobonus != null) {
       return _eurobonus!!

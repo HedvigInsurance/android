@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Logout: ImageVector
+val HedvigIcons.Logout: ImageVector
   get() {
     if (_logout != null) {
       return _logout!!

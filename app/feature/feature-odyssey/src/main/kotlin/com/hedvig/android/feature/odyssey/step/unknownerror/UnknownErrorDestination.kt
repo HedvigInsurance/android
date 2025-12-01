@@ -26,8 +26,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.open_chat
 import hedvig.resources.something_went_wrong

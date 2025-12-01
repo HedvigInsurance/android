@@ -17,6 +17,8 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import hedvig.resources.claim_status_detail_closed
+import hedvig.resources.claim_status_detail_submitted
 import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.Clock.System
@@ -27,8 +29,6 @@ import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.stringResource
-import hedvig.resources.claim_status_detail_closed
-import hedvig.resources.claim_status_detail_submitted
 
 @Composable
 internal fun SubmittedAndClosedColumns(submittedAt: Instant, closedAt: Instant?, locale: Locale) {
@@ -77,7 +77,7 @@ private fun SubmittedAndClosedColumn(topText: String, bottomText: String, modifi
 }
 
 @Composable
-private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = Clock.System): State<Instant> {
+private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = System): State<Instant> {
   return produceState(initialValue = clock.now()) {
     while (isActive) {
       delay(updateInterval)

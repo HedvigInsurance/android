@@ -35,7 +35,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.general_save_button
 import hedvig.resources.sas_integration_connect_your_eurobonus
 import hedvig.resources.sas_integration_info
@@ -43,6 +42,7 @@ import hedvig.resources.sas_integration_number
 import hedvig.resources.sas_integration_number_placeholder
 import hedvig.resources.sas_integration_title
 import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EurobonusDestination(viewModel: EurobonusViewModel, navigateUp: () -> Unit) {

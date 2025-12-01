@@ -27,12 +27,20 @@ fun rememberHedvigBirthDateDateTimeFormatter(): DateFormatter {
 
 expect object HedvigDateTimeFormatterDefaults {
   fun isoLocalDateWithDots(locale: CommonLocale): DateFormatter
+
   fun timeOnly(locale: CommonLocale): DateFormatter
+
   fun dayOfTheWeekAndTime(locale: CommonLocale): DateFormatter
+
   fun monthDateAndTime(locale: CommonLocale): DateFormatter
+
   fun dateMonthAndYear(locale: CommonLocale): DateFormatter
+
   fun monthDateAndYear(locale: CommonLocale): DateFormatter
+
   fun yearMonthDateAndTime(locale: CommonLocale): DateFormatter
+
   fun dateAndMonth(locale: CommonLocale): DateFormatter
+
   fun yearMonthDayCombined(locale: CommonLocale): DateFormatter
 }

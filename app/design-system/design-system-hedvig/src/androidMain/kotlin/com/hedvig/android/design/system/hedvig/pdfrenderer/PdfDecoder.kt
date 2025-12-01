@@ -3,6 +3,7 @@ package com.hedvig.android.design.system.hedvig.pdfrenderer
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil3.ImageLoader
 import coil3.asImage
@@ -11,7 +12,6 @@ import coil3.decode.Decoder
 import coil3.decode.ImageSource
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
-import androidx.core.graphics.createBitmap
 
 class PdfDecoder(
   private val source: ImageSource,

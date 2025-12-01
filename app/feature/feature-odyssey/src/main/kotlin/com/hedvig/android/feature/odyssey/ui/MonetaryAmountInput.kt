@@ -39,8 +39,8 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_REMOVE
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 /**

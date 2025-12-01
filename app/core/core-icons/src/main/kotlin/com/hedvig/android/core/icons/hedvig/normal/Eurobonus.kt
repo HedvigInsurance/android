@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Eurobonus: ImageVector
+val HedvigIcons.Eurobonus: ImageVector
   get() {
     if (_eurobonus != null) {
       return _eurobonus!!

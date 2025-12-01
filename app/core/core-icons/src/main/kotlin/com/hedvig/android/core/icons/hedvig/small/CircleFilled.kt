@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.CircleFilled: ImageVector
+val HedvigIcons.CircleFilled: ImageVector
   get() {
     if (_circleFilled != null) {
       return _circleFilled!!

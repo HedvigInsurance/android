@@ -28,8 +28,8 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_DATE_NOT_SURE_NOTICE_LABEL
+import hedvig.resources.Res
 import hedvig.resources.claims_incident_screen_date_of_incident
 import hedvig.resources.claims_item_screen_date_of_incident_button
 import hedvig.resources.general_continue_button

@@ -1,12 +1,12 @@
 package com.hedvig.android.data.productvariant.android
 
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import hedvig.resources.Res
 import hedvig.resources.MY_DOCUMENTS_GENERAL_TERMS
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_CERTIFICATE
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_TERMS
 import hedvig.resources.MY_DOCUMENTS_PRIVACY_POLICY
 import hedvig.resources.MY_DOUMENTS_INSURANCE_PREPURCHASE
+import hedvig.resources.Res
 
 fun InsuranceVariantDocument.InsuranceDocumentType.getStringRes() = when (this) {
   InsuranceVariantDocument.InsuranceDocumentType.TERMS_AND_CONDITIONS -> Res.string.MY_DOCUMENTS_INSURANCE_TERMS

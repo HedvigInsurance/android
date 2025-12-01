@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.BankId: ImageVector
+val HedvigIcons.BankId: ImageVector
   get() {
     if (_bankId != null) {
       return _bankId!!

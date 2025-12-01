@@ -61,7 +61,7 @@ internal class ClaimSummaryViewModel(
         val availableItemBrands = summary.availableItemBrands ?: return@run null
         val selectedItemBrand = summary.selectedItemBrand ?: return@run null
         val selectedItemType = availableItemBrands
-          .filterIsInstance<ItemBrand.Known>()
+          .filterIsInstance<Known>()
           .firstOrNull { itemBrand ->
             itemBrand.asKnown()?.itemBrandId == selectedItemBrand
           } ?: return@run null
@@ -242,9 +242,9 @@ internal data class ClaimSummaryInfoUiState(
           it.asKnown()?.itemBrandId == summary.selectedItemBrand
         }
         if (customName != null && selectedBrand != null) {
-          return CustomModelWithBrand(selectedBrand, ItemModel.New(customName))
+          return CustomModelWithBrand(selectedBrand, New(customName))
         } else if (customName != null) {
-          return Model(ItemModel.New(customName))
+          return Model(New(customName))
         } else if (selectedBrand != null) {
           return Brand(selectedBrand)
         }

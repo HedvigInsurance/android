@@ -52,7 +52,7 @@ internal class GenerateInsuranceEvidenceUseCaseTest {
 
     apolloClient.enqueueTestResponse(
       InsuranceEvidenceCreateMutation(input = InsuranceEvidenceInput("test@email.com")),
-      InsuranceEvidenceCreateMutation.Companion.Data(OctopusFakeResolver) {
+      InsuranceEvidenceCreateMutation.Data(OctopusFakeResolver) {
         insuranceEvidenceCreate = buildInsuranceEvidenceOutput {
           userError = buildUserError {
             message = errorMessage
@@ -72,7 +72,7 @@ internal class GenerateInsuranceEvidenceUseCaseTest {
 
     apolloClient.enqueueTestResponse(
       InsuranceEvidenceCreateMutation(input = InsuranceEvidenceInput("test@email.com")),
-      InsuranceEvidenceCreateMutation.Companion.Data(OctopusFakeResolver) {
+      InsuranceEvidenceCreateMutation.Data(OctopusFakeResolver) {
         insuranceEvidenceCreate = buildInsuranceEvidenceOutput {
           insuranceEvidenceInformation = null
         }
@@ -91,7 +91,7 @@ internal class GenerateInsuranceEvidenceUseCaseTest {
 
     apolloClient.enqueueTestResponse(
       InsuranceEvidenceCreateMutation(input = InsuranceEvidenceInput("test@email.com")),
-      InsuranceEvidenceCreateMutation.Companion.Data(OctopusFakeResolver) {
+      InsuranceEvidenceCreateMutation.Data(OctopusFakeResolver) {
         insuranceEvidenceCreate = buildInsuranceEvidenceOutput {
           insuranceEvidenceInformation = buildInsuranceEvidenceInformation {
             this.signedUrl = signedUrl

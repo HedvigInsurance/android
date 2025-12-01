@@ -142,7 +142,7 @@ private fun DeflectGlassDamageScreen(
               Spacer(Modifier.height(16.dp))
               HedvigButton(
                 text = stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
-                buttonSize = ButtonDefaults.ButtonSize.Small,
+                buttonSize = Small,
                 enabled = true,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {

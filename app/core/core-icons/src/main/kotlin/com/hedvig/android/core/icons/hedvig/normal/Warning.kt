@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Warning: ImageVector
+val HedvigIcons.Warning: ImageVector
   get() {
     if (_warning != null) {
       return _warning!!

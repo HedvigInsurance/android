@@ -52,7 +52,6 @@ import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import hedvig.resources.Res
 import hedvig.resources.CERTIFICATES_CREATE_CERTIFICATE
 import hedvig.resources.CERTIFICATES_VERIFY_EMAIL
 import hedvig.resources.INSURANCE_EVIDENCE_DOCUMENT_TITLE
@@ -60,6 +59,7 @@ import hedvig.resources.INSURANCE_EVIDENCE_READ_MORE_DESCRIPTION
 import hedvig.resources.INSURANCE_EVIDENCE_READ_MORE_TITLE
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
 import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
+import hedvig.resources.Res
 import hedvig.resources.TOAST_READ_MORE
 import hedvig.resources.general_close_button
 import hedvig.resources.travel_certificate_email_empty_error

@@ -25,7 +25,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.chat.DeleteAccountViewModel
-import hedvig.resources.Res
 import hedvig.resources.DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION
 import hedvig.resources.DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE
 import hedvig.resources.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
@@ -35,6 +34,7 @@ import hedvig.resources.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE
 import hedvig.resources.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
 import hedvig.resources.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_TITLE
 import hedvig.resources.PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION
+import hedvig.resources.Res
 import hedvig.resources.general_back_button
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource

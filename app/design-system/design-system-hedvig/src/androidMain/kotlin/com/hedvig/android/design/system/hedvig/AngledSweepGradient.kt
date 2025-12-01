@@ -33,16 +33,13 @@ actual fun Brush.Companion.angledSweepGradient(
 )
 
 @Stable
-actual fun Brush.Companion.angledSweepGradient(
-  colors: List<Color>,
-  center: Offset,
-  startAngle: Float,
-): Brush = AngledSweepGradient(
-  colors = colors,
-  stops = null,
-  center = center,
-  startAngle = startAngle,
-)
+actual fun Brush.Companion.angledSweepGradient(colors: List<Color>, center: Offset, startAngle: Float): Brush =
+  AngledSweepGradient(
+    colors = colors,
+    stops = null,
+    center = center,
+    startAngle = startAngle,
+  )
 
 @Immutable
 class AngledSweepGradient internal constructor(

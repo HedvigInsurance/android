@@ -40,10 +40,10 @@ import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.claimtriaging.OptionChipsFlowRow
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.ui.claimflow.WarningTextWithIcon
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_SELECT_CATEGORY
 import hedvig.resources.CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE
 import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_SELECT_CATEGORY_ERROR_DESCRIPTION
 import hedvig.resources.claims_continue_button
 import hedvig.resources.something_went_wrong

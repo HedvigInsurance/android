@@ -93,8 +93,8 @@ private fun AboutAppScreen(
       AboutAppUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgressDebounced(
           Modifier
-              .weight(1f)
-              .wrapContentHeight(),
+            .weight(1f)
+            .wrapContentHeight(),
         )
       }
 
@@ -140,8 +140,8 @@ private fun ColumnScope.AboutAppContent(
     HorizontalItemsWithMaximumSpaceTaken(
       spaceBetween = 8.dp,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
+        .fillMaxWidth()
+        .padding(16.dp),
       startSlot = {
         HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_MEMBER_ID))
       },
@@ -156,8 +156,8 @@ private fun ColumnScope.AboutAppContent(
   }
   HorizontalItemsWithMaximumSpaceTaken(
     modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
+      .fillMaxWidth()
+      .padding(16.dp),
     startSlot = {
       HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_VERSION))
     },
@@ -182,9 +182,9 @@ private fun ColumnScope.AboutAppContent(
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
     modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = showOpenSourceLicenses)
-        .padding(16.dp),
+      .fillMaxWidth()
+      .clickable(onClick = showOpenSourceLicenses)
+      .padding(16.dp),
   ) {
     HedvigText(stringResource(Res.string.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS))
   }
@@ -196,8 +196,8 @@ private fun ColumnScope.AboutAppContent(
     buttonStyle = Secondary,
     onClick = { showSubmitBugWarning = true },
     modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(16.dp))
 }

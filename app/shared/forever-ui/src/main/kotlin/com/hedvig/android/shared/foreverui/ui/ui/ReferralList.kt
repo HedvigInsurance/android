@@ -34,11 +34,11 @@ import com.hedvig.android.shared.foreverui.ui.data.ReferralState.IN_PROGRESS
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.TERMINATED
 import com.hedvig.android.shared.foreverui.ui.data.ReferralState.UNKNOWN
 import com.hedvig.android.shared.foreverui.ui.data.ReferredByInfo
-import hedvig.resources.Res
 import hedvig.resources.FOREVER_REFERRAL_LIST_LABEL
 import hedvig.resources.FOREVER_TAB_TOTAL_DISCOUNT_LABEL
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.REFERRAL_TERMINATED_STATUS_LABEL
+import hedvig.resources.Res
 import hedvig.resources.referalls_invitee_states_invited_you
 import org.jetbrains.compose.resources.stringResource
 
@@ -170,7 +170,7 @@ private fun ReferralState.toColor(): Color = when (this) {
   ACTIVE -> HedvigTheme.colorScheme.signalGreenElement
   IN_PROGRESS -> HedvigTheme.colorScheme.signalAmberElement
   TERMINATED -> HedvigTheme.colorScheme.signalRedElement
-  ReferralState.UNKNOWN -> HedvigTheme.colorScheme.signalRedElement
+  UNKNOWN -> HedvigTheme.colorScheme.signalRedElement
 }
 
 @Composable

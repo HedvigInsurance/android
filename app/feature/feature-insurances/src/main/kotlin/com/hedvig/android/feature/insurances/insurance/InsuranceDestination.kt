@@ -81,13 +81,13 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
-import hedvig.resources.Res
 import hedvig.resources.A11Y_VIEW_DETAILS
 import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
 import hedvig.resources.DASHBOARD_SCREEN_TITLE
 import hedvig.resources.INSURANCES_NO_ACTIVE
 import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
 import hedvig.resources.INSURANCE_OFFERS_SUBHEADING
+import hedvig.resources.Res
 import hedvig.resources.insurances_tab_moving_flow_info_button_title
 import hedvig.resources.insurances_tab_moving_flow_info_title
 import hedvig.resources.insurances_tab_terminated_insurance_subtitile

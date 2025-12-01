@@ -21,8 +21,8 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.core.common.android.validation.validateEmail
-import hedvig.resources.Res
 import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
+import hedvig.resources.Res
 import hedvig.resources.travel_certificate_email_empty_error
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds

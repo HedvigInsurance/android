@@ -45,13 +45,13 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionUiState
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionUiState.Success
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.HC_ANSWER_TITLE
 import hedvig.resources.HC_QUESTION_NOT_FOUND
 import hedvig.resources.HC_QUESTION_TITLE
 import hedvig.resources.HC_TITLE
+import hedvig.resources.Res
 import hedvig.resources.general_back_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -225,10 +225,10 @@ private fun PreviewHelpCenterQuestionScreen(
 
 private class HelpCenterQuestionUiStateProvider : CollectionPreviewParameterProvider<HelpCenterQuestionUiState>(
   listOf(
-    HelpCenterQuestionUiState.Loading,
-    HelpCenterQuestionUiState.Failure,
-    HelpCenterQuestionUiState.NoQuestionFound,
-    HelpCenterQuestionUiState.Success(
+    Loading,
+    Failure,
+    NoQuestionFound,
+    Success(
       FAQItem("id", "title", "answerrrrrrrr"),
     ),
   ),

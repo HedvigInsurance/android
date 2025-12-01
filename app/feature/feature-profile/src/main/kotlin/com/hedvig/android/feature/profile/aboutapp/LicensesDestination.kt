@@ -16,8 +16,8 @@ import com.hedvig.android.composewebview.rememberWebViewState
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
-import hedvig.resources.Res
 import hedvig.resources.PROFILE_ABOUT_APP_LICENSE_ATTRIBUTIONS
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 private const val licensesUrl = "file:///android_asset/open_source_licenses.html"

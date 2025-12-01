@@ -24,10 +24,10 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewState.Success
-import hedvig.resources.Res
 import hedvig.resources.CERTIFICATES_DOWNLOAD
 import hedvig.resources.CERTIFICATES_EMAIL_SENT
 import hedvig.resources.INSURANCE_EVIDENCE_EMAIL_SENT_DESCRIPTION
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import java.io.File
 import org.jetbrains.compose.resources.stringResource
@@ -78,7 +78,7 @@ internal fun InsuranceEvidenceOverview(
       HedvigFullScreenCenterAlignedProgress(modifier = Modifier.fillMaxSize())
     }
 
-    is InsuranceEvidenceOverviewState.Success -> {
+    is Success -> {
       LaunchedEffect(uiState.insuranceEvidenceUri) {
         uiState.insuranceEvidenceUri?.let {
           onShareInsuranceEvidence(it)

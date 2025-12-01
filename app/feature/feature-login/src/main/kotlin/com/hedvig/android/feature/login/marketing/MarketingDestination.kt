@@ -53,9 +53,9 @@ import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundVideo
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
-import hedvig.resources.Res
 import hedvig.resources.MARKETING_GET_HEDVIG
 import hedvig.resources.PROFILE_ABOUT_APP_VERSION
+import hedvig.resources.Res
 import hedvig.resources.SETTINGS_LANGUAGE_TITLE
 import hedvig.resources.SETTINGS_LOGIN_ROW
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK

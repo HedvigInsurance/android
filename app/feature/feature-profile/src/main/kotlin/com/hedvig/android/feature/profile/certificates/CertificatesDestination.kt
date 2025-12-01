@@ -18,9 +18,9 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.MultipleDocuments
 import com.hedvig.android.feature.profile.tab.ProfileRow
-import hedvig.resources.Res
 import hedvig.resources.INSURANCE_EVIDENCE_DOCUMENT_TITLE
 import hedvig.resources.PROFILE_ROW_TRAVEL_CERTIFICATE
+import hedvig.resources.Res
 import hedvig.resources.profile_certificates_title
 import org.jetbrains.compose.resources.stringResource
 

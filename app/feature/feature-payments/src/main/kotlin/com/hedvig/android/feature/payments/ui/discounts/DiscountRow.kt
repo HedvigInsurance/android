@@ -28,9 +28,9 @@ import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.DiscountedContract
 import com.hedvig.android.feature.payments.data.DiscountsDetails
 import com.hedvig.android.feature.payments.discountsPreviewData
-import hedvig.resources.Res
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.PAYMENTS_REFERRAL_DISCOUNT
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

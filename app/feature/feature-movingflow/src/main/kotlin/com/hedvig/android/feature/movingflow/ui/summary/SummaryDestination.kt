@@ -60,6 +60,7 @@ import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -71,7 +72,6 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -89,7 +89,6 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.S
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import hedvig.resources.Res
 import hedvig.resources.CHANGE_ADDRESS_ACCEPT_OFFER
 import hedvig.resources.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT
 import hedvig.resources.CHANGE_ADDRESS_SUMMARY_TITLE
@@ -97,6 +96,7 @@ import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
 import hedvig.resources.SUMMARY_TOTAL_PRICE_SUBTITLE
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_back_button

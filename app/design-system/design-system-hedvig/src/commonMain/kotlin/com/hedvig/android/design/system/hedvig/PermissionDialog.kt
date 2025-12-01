@@ -3,9 +3,9 @@ package com.hedvig.android.design.system.hedvig
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.PERMISSION_DIALOG_TITLE
 import hedvig.resources.profile_appSettingsSection_title
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * [permissionDescription] The text which will be used as the description of why we want this permission
