@@ -50,6 +50,7 @@ kotlin {
       implementation(projects.coreResources)
       implementation(libs.androidx.compose.uiToolingPreview)
       implementation(projects.coreCommonPublic)
+      implementation(projects.coreFileUpload)
       implementation(libs.androidx.graphicsShapes)
       implementation(libs.accompanist.permissions)
       implementation(projects.audioPlayerData)

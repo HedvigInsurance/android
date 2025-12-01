@@ -9,8 +9,6 @@ import java.util.Timer
 import java.util.TimerTask
 import java.util.UUID
 import kotlin.time.Clock
-import kotlinx.io.asSource
-import kotlinx.io.buffered
 
 internal class AndroidAudioRecordingManager(
   private val clock: Clock,
@@ -103,11 +101,7 @@ internal class AndroidAudioRecordingManager(
     val file = File(filePath)
     if (!file.exists()) return null
 
-    return AndroidFile(
-      fileName = file.name,
-      description = "Audio recording",
-      getSource = { file.inputStream().asSource().buffered() },
-    )
+    return AndroidFile.fromFile(file, description = "Audio recording")
   }
 
   override fun cleanup() {
@@ -142,7 +136,3 @@ internal class AndroidAudioRecordingManager(
     }
   }
 }
-
-//actual fun createAudioRecordingManager(clock: Clock): AudioRecordingManager {
-//  AndroidAudioRecordingManager(Clock.System)
-//}

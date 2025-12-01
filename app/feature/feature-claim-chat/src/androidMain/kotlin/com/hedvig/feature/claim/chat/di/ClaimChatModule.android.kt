@@ -11,8 +11,10 @@ import org.koin.dsl.module
 
 actual val claimChatPlatformModule: Module = module {
   single<FileService> {
-    AndroidFileService(get<Context>().contentResolver)
+    AndroidFileService(
+      coreFileService = get<com.hedvig.android.core.fileupload.FileService>(),
+      contentResolver = get<Context>().contentResolver,
+    )
   }
   single<AudioRecordingManager> { AndroidAudioRecordingManager(Clock.System) }
-
 }
