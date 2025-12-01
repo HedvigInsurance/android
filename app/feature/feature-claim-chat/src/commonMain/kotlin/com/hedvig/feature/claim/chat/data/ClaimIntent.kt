@@ -105,9 +105,18 @@ internal sealed interface StepContent {
       val defaultValues: List<String>,
       val maxValue: String?,
       val minValue: String?,
-      val type: String?,
+      val type: FieldType?,
       val options: List<Pair<String, String>>,
     )
+
+    enum class FieldType {
+      TEXT,
+      DATE,
+      NUMBER,
+      SINGLE_SELECT,
+      MULTI_SELECT,
+      BINARY,
+    }
   }
 
   data class ContentSelect(

@@ -14,6 +14,7 @@ import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
+import octopus.type.ClaimIntentStepContentFormFieldType
 
 context(raise: Raise<ErrorMessage>)
 internal fun ClaimIntentMutationOutputFragment.toClaimIntent(): ClaimIntent {
@@ -106,7 +107,15 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       defaultValues = field.defaultValues,
       maxValue = field.maxValue,
       minValue = field.minValue,
-      type = field.type.toString(), // todo
+      type = when (field.type) {
+        ClaimIntentStepContentFormFieldType.TEXT -> StepContent.Form.FieldType.TEXT
+        ClaimIntentStepContentFormFieldType.DATE -> StepContent.Form.FieldType.DATE
+        ClaimIntentStepContentFormFieldType.NUMBER -> StepContent.Form.FieldType.NUMBER
+          ClaimIntentStepContentFormFieldType.SINGLE_SELECT -> StepContent.Form.FieldType.SINGLE_SELECT
+        ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
+        ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
+        ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
+      },
       options = field.options?.map { it.title to it.value } ?: emptyList(),
     )
   }

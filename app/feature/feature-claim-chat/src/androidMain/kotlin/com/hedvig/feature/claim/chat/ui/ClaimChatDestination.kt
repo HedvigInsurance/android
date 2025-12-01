@@ -42,14 +42,17 @@ import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
-import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
 import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
 import com.hedvig.feature.claim.chat.ui.ContentSelectChips
-import com.hedvig.feature.claim.chat.ui.rememberFilePicker
+import com.hedvig.feature.claim.chat.ui.DateSelectBubble
+import com.hedvig.feature.claim.chat.ui.MultiSelectBubbleWithDialog
+import com.hedvig.feature.claim.chat.ui.SingleSelectBubbleWithDialog
+import com.hedvig.feature.claim.chat.ui.TextInputBubble
+import com.hedvig.feature.claim.chat.ui.UploadFilesBubble
+import com.hedvig.feature.claim.chat.ui.YesNoBubble
 import hedvig.resources.R
 import kotlin.time.Clock
 import org.koin.compose.viewmodel.koinViewModel
@@ -139,8 +142,8 @@ private fun ClaimChatScreenContent(
   LazyColumn(
     modifier = modifier.fillMaxSize(),
     state = lazyListState,
-    contentPadding = WindowInsets.safeDrawing.asPaddingValues().plus(PaddingValues(bottom = 16.dp)),
-    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
+    contentPadding = WindowInsets.safeDrawing.asPaddingValues().plus(PaddingValues(vertical = 16.dp)),
+    verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
   ) {
     items(
       items = uiState.steps,
@@ -180,11 +183,11 @@ private fun ClaimChatScreenContent(
               onEvent(ClaimChatEvent.Skip(item.id))
             },
             isCurrentStep = item == uiState.currentStep,
-            clock = kotlin.time.Clock.System,
+            clock = Clock.System,
             onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             openAppSettings = openAppSettings,
             modifier = Modifier.padding(horizontal = 16.dp),
-            freeText = uiState.freeText
+            freeText = uiState.freeText,
           )
         }
 
@@ -206,37 +209,51 @@ private fun ClaimChatScreenContent(
 
 
         is StepContent.FileUpload -> {
-          val filePicker = rememberFilePicker { uri ->
-            onEvent(
-              ClaimChatEvent.FileUpload(
-                id = item.id,
-                fileUri = uri,
-                uploadUri = item.stepContent.uploadUri,
-              ),
+          Column(Modifier.padding(horizontal = 16.dp)) {
+            HedvigText(
+              item.text,
             )
+            Spacer(Modifier.height(8.dp))
+//            UploadFilesBubble(
+//              isCurrentStep = TODO(),
+//              canSkip = item.stepContent.isSkippable,
+//              canBeChanged = item.stepContent.isRegrettable, //todo
+//              onSkip = {
+//                onEvent(ClaimChatEvent.Skip(item.id))
+//              },
+//              addLocalFile = TODO(),
+//              onRemoveFile = TODO(),
+//              onSubmitFiles = {
+//                onEvent(ClaimChatEvent.FileUpload())
+//              },
+//              appPackageId = appPackageId,
+//              localFiles = TODO(),
+//              uploadedFiles = TODO(),
+//              imageLoader = TODO(),
+//              onNavigateToImageViewer = TODO(),
+//              modifier = TODO(),
+//            )
           }
-          BasicText(
-            "FileUpload",
-            Modifier.clickable {
-              filePicker.launch()
-            },
-          )
         }
 
         is StepContent.Form -> {
-          BasicText(
+          HedvigText(
             item.text,
-            Modifier.clickable {
-              onEvent(
-                ClaimChatEvent.Form(
-                  item.id,
-                  item.stepContent.fields.associate {
-                    it.id to it.defaultValues
-                  },
-                ),
-              )
-            },
+            Modifier
+              .padding(horizontal = 16.dp)
+//              .clickable {
+//                onEvent(
+//                  ClaimChatEvent.Form(
+//                    item.id,
+//                    item.stepContent.fields.associate {
+//                      it.id to it.defaultValues
+//                    },
+//                  ),
+//                )
+//              },
           )
+          Spacer(Modifier.height(8.dp))
+          FormContent(item, item.stepContent)
         }
 
         is StepContent.Summary -> BasicText("Summary")
@@ -257,6 +274,33 @@ private fun ClaimChatScreenContent(
   LaunchedEffect(uiState.steps.size) {
     if (uiState.steps.isNotEmpty()) {
       lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+    }
+  }
+}
+
+@Composable
+private fun FormContent(
+  item:  ClaimIntentStep,
+  content: StepContent.Form,
+  onSkip: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  Column(
+    modifier,
+    verticalArrangement = Arrangement.spacedBy(8.dp)
+  ) {
+    content.fields.forEach { field ->
+      when (field.type) {
+        StepContent.Form.FieldType.TEXT -> TextInputBubble()
+        StepContent.Form.FieldType.DATE -> DateSelectBubble()
+        StepContent.Form.FieldType.NUMBER -> TextInputBubble() //add: keyboard choice
+        StepContent.Form.FieldType.SINGLE_SELECT -> SingleSelectBubbleWithDialog()
+        StepContent.Form.FieldType.MULTI_SELECT -> MultiSelectBubbleWithDialog()
+        StepContent.Form.FieldType.BINARY -> YesNoBubble()
+        null -> {
+          onSkip() //todo: check
+        }
+      }
     }
   }
 }
@@ -303,7 +347,7 @@ private fun AudioRecordingStep(
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
       isCurrentStep = isCurrentStep,
-      freeText = freeText
+      freeText = freeText,
     )
   }
 }
