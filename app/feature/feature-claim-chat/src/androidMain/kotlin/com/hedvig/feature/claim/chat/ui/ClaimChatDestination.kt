@@ -1,12 +1,26 @@
 package com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,16 +30,25 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
+import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
 import com.hedvig.feature.claim.chat.ui.ContentSelectChips
 import com.hedvig.feature.claim.chat.ui.rememberFilePicker
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -89,15 +112,22 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
           )
         }
 
-        is StepContent.ContentSelect ->
-          ContentSelectChips(
-            modifier = Modifier. padding(16.dp), //todo
-            options = item.stepContent.options,
-            selectedOption = item.stepContent.options.firstOrNull { it.id == item.stepContent.selectedOptionId },
-            onOptionClick = {
-              onEvent(ClaimChatEvent.Select(item.id, item.stepContent.options.firstNotNullOf { it.id }))
-            },
-          )
+        is StepContent.ContentSelect -> ContentSelectStep(
+          item = item,
+          currentStep = uiState.currentStep,
+          options = item.stepContent.options,
+          selectedOptionId = item.stepContent.selectedOptionId,
+          onOptionClick = { option ->
+            onEvent(
+              ClaimChatEvent.Select(
+                item.id,
+                option.id,
+              ),
+            )
+          },
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+
 
         is StepContent.FileUpload -> {
           val filePicker = rememberFilePicker { uri ->
@@ -153,4 +183,78 @@ I purchased the phone on June 1st, 2025, and the original cost was 8999 Swedish 
       lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
     }
   }
+}
+
+@Composable
+private fun ContentSelectStep(
+  item: ClaimIntentStep,
+  currentStep: ClaimIntentStep?,
+  options: List<StepContent.ContentSelect.Option>,
+  selectedOptionId: String?,
+  onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
+  modifier: Modifier,
+) {
+  Column(modifier) {
+    AnimatedContent(
+      item == currentStep,
+      transitionSpec = {
+        (fadeIn(animationSpec = tween(220, delayMillis = 90))
+          .togetherWith(fadeOut(animationSpec = tween(90))))
+      },
+    ) { targetState ->
+      Column {
+        HedvigText(
+          item.text,
+        )
+        if (targetState) {
+          Spacer(Modifier.height(8.dp))
+          ContentSelectChips(
+            options = options,
+            selectedOption = null,
+            onOptionClick = onOptionClick,
+          )
+        }
+
+      }
+
+    }
+    val selected = options.firstOrNull { it.id == selectedOptionId }
+    if (
+      selected != null
+    ) {
+      Column {
+        Spacer(Modifier.height(8.dp))
+        Row(
+          horizontalArrangement = Arrangement.End,
+          modifier = Modifier
+            .fillMaxWidth(),
+        ) {
+          val showChipAnimatable = remember {
+            Animatable(0.0f)
+          }
+          LaunchedEffect(Unit) {
+            showChipAnimatable.animateTo(
+              1.0f,
+              animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessLow,
+              ),
+            )
+          }
+          HedvigChip(
+            item = item,
+            showChipAnimatable = showChipAnimatable,
+            itemDisplayName = {
+              selected.title
+            },
+            isSelected = false, //should be grey according to figma
+            onItemClick = {},
+          )
+        }
+      }
+
+    }
+  }
+
+
 }

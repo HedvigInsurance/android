@@ -57,7 +57,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
     )
     is ContentSelectFragment -> StepContent.ContentSelect(
       options = options.toOptions(),
-      selectedOption = null, //todo
+      selectedOptionId = null, //todo
       isSkippable = isSkippable,
       isRegrettable = isRegrettable
     )

@@ -64,6 +64,7 @@ internal sealed interface ClaimChatUiState {
   data class ClaimChat(
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
+    val currentStep: ClaimIntentStep?,
     val outcome: ClaimIntentOutcome?,
   ) : ClaimChatUiState
 }
@@ -127,7 +128,7 @@ internal class ClaimChatPresenter(
     if (initializing) {
       LaunchedEffect(Unit) {
         startClaimIntentUseCase
-          .invoke(sourceMessageId, developmentFlow)
+          .invoke(developmentFlow)
           .fold(
             ifLeft = { failedToStart = true },
             ifRight = { claimIntent ->
@@ -157,11 +158,11 @@ internal class ClaimChatPresenter(
         is ClaimChatEvent.Select -> {
           val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect ?: return@CollectEvents
           val currentStepState = currentStep ?: return@CollectEvents
-          steps.remove(currentStepState)
-          steps.add(currentStepState.copy(stepContent = currentStepContent.copy(
-            selectedOptionId = event.selectedId
-          ))) //todo: check
           launch {
+            steps.remove(currentStepState)
+            steps.add(currentStepState.copy(stepContent = currentStepContent.copy(
+              selectedOptionId = event.selectedId
+            ))) //todo: check
             submitSelectUseCase
               .invoke(event.id, event.selectedId)
               .fold(
@@ -246,7 +247,12 @@ internal class ClaimChatPresenter(
     return when {
       initializing -> ClaimChatUiState.Initializing
       failedToStart -> ClaimChatUiState.FailedToStart
-      claimIntentId != null -> ClaimChatUiState.ClaimChat(claimIntentId!!, steps, outcome)
+      claimIntentId != null -> ClaimChatUiState.ClaimChat(
+        claimIntentId = claimIntentId!!,
+        steps = steps,
+        currentStep = currentStep,
+        outcome = outcome
+      )
       else -> error("")
     }
   }
