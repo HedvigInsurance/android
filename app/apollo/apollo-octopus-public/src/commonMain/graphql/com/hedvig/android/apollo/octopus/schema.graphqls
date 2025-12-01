@@ -652,7 +652,6 @@ Root type expressing the entire flow for members trying to report a new claim.
 type ClaimIntent {
   id: ID!
   currentStep: ClaimIntentStep
-  sourceMessages: [ClaimIntentSourceMessage!]
   """
   The outcome of the intent.
   Once this value is returned, the intent is effectively over, and no steps
@@ -711,11 +710,6 @@ type ClaimIntentSourceMessage {
   text: String!
 }
 input ClaimIntentStartInput {
-  """
-  Optionally inject a chat message ID to start the claim intent from. This will replace the audio recording
-  as the first step, using the chat history as the implicit first step.
-  """
-  sourceMessageId: ID
   developmentFlow: Boolean
 }
 """
