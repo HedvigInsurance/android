@@ -1,6 +1,5 @@
 package com.hedvig.android.compose.ui
 
-import android.text.Layout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
