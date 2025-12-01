@@ -96,7 +96,6 @@ internal fun AudioRecorder(
   clock: Clock,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
-  submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
   allowFreeText: Boolean,
   onLaunchFreeText: () -> Unit,
@@ -115,20 +114,8 @@ internal fun AudioRecorder(
       },
       redo = redo,
       modifier = modifier,
+      isCurrentStep = isCurrentStep
     )
-
-    is AudioRecordingStepState.AudioRecording.PrerecordedWithAudioContent ->
-      PrerecordedPlayback(
-        uiState = uiState,
-        submitAudioUrl = {
-          submitAudioUrl(uiState.audioContent.audioUrl)
-        },
-        redo = redo,
-        isCurrentStep = isCurrentStep,
-        modifier = modifier,
-        canSkip = canSkip,
-        onSkip = onSkip,
-      )
 
     else -> {
       val isRecording = uiState is AudioRecordingStepState.AudioRecording.Recording
@@ -262,6 +249,7 @@ private fun Playback(
   uiState: AudioRecordingStepState.AudioRecording.Playback,
   submit: () -> Unit,
   redo: () -> Unit,
+  isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -274,92 +262,25 @@ private fun Playback(
       val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
       HedvigAudioPlayer(audioPlayer = audioPlayer)
     }
-
-    HedvigButton(
-      onClick = submit,
-      text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
-      isLoading = uiState.isLoading,
-      enabled = uiState.canSubmit,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 16.dp),
-    )
-
-    HedvigTextButton(
-      text = stringResource(R.string.EMBARK_RECORD_AGAIN),
-      onClick = redo,
-      enabled = uiState.canSubmit,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 8.dp),
-    )
-  }
-}
-
-@Composable
-private fun PrerecordedPlayback(
-  uiState: AudioRecordingStepState.AudioRecording.PrerecordedWithAudioContent,
-  redo: () -> Unit,
-  submitAudioUrl: () -> Unit,
-  isCurrentStep: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
-  modifier: Modifier = Modifier,
-  audioPlayer: AudioPlayer = rememberAudioPlayer(
-    PlayableAudioSource.RemoteUrl(SignedAudioUrl.fromSignedAudioUrlString(uiState.audioContent.signedUrl.value)),
-  ),
-) {
-  Column(
-    horizontalAlignment = Alignment.End,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    val audioPlayerState = audioPlayer.audioPlayerState.collectAsStateWithLifecycle().value
-    HedvigAudioPlayer(audioPlayer = audioPlayer)
     if (isCurrentStep) {
-      AnimatedVisibility(
-        visible = audioPlayerState is AudioPlayerState.Ready,
-        enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
-        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
-      ) {
-        Column {
-          Spacer(Modifier.height(16.dp))
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            if (canSkip) {
-              HedvigTextButton(
-                stringResource(R.string.claims_skip_button),
-                onClick = onSkip,
-                buttonSize = ButtonDefaults.ButtonSize.Medium,
-              )
-              Spacer(Modifier.width(16.dp))
-            }
-            HedvigButton(
-              onClick = submitAudioUrl,
-              text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
-              isLoading = uiState.isLoading,
-              buttonSize = ButtonDefaults.ButtonSize.Medium,
-              enabled = true,
-            )
-          }
-        }
-      }
+      HedvigButton(
+        onClick = submit,
+        text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
+        isLoading = uiState.isLoading,
+        enabled = uiState.canSubmit,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 16.dp),
+      )
 
-      AnimatedVisibility(
-        visible = audioPlayerState is AudioPlayerState.Failed || audioPlayerState is AudioPlayerState.Ready,
-        enter = fadeIn() + expandVertically(expandFrom = Alignment.CenterVertically, clip = false),
-        exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.CenterVertically, clip = false),
-      ) {
-        Column {
-          Spacer(Modifier.height(8.dp))
-          HedvigTextButton(
-            text = stringResource(R.string.EMBARK_RECORD_AGAIN),
-            onClick = redo,
-            enabled = true,
-            buttonSize = ButtonDefaults.ButtonSize.Medium,
-          )
-        }
-      }
+      HedvigTextButton(
+        text = stringResource(R.string.EMBARK_RECORD_AGAIN),
+        onClick = redo,
+        enabled = uiState.canSubmit,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(top = 8.dp),
+      )
     }
   }
 }
@@ -458,7 +379,6 @@ private fun PreviewNotRecording() {
         clock = Clock.System,
         stopRecording = {},
         submitAudioFile = {},
-        submitAudioUrl = {},
         redo = {},
         allowFreeText = true,
         onLaunchFreeText = {},
@@ -485,53 +405,12 @@ private fun PreviewRecording() {
         clock = Clock.System,
         stopRecording = { },
         submitAudioFile = {},
-        submitAudioUrl = {},
         allowFreeText = false,
         onLaunchFreeText = {},
         redo = { },
         isCurrentStep = true,
         onSkip = {},
         canSkip = true,
-      )
-    }
-  }
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewPrerecordedPlayback() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      PrerecordedPlayback(
-        uiState = AudioRecordingStepState.AudioRecording.PrerecordedWithAudioContent(
-          AudioContent(
-            AudioUrl(""),
-            AudioUrl(""),
-          ),
-        ),
-        redo = {},
-        submitAudioUrl = {},
-        modifier = Modifier,
-        isCurrentStep = true,
-        onSkip = {},
-        canSkip = true,
-        audioPlayer = object : AudioPlayer {
-          override val audioPlayerState: StateFlow<AudioPlayerState> = MutableStateFlow(
-            AudioPlayerState.Ready.done(),
-          )
-
-          override fun initialize() = error("Not implemented")
-
-          override fun startPlayer() = error("Not implemented")
-
-          override fun pausePlayer() = error("Not implemented")
-
-          override fun retryLoadingAudio() = error("Not implemented")
-
-          override fun seekTo(progressPercentage: ProgressPercentage) = error("Not implemented")
-
-          override fun close() = error("Not implemented")
-        },
       )
     }
   }

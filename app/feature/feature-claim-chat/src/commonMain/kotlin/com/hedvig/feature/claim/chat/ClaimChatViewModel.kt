@@ -17,6 +17,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.*
 import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
@@ -34,7 +35,6 @@ import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
-import com.hedvig.feature.claim.chat.data.file.CommonFile
 import kotlin.String
 import kotlinx.coroutines.launch
 
@@ -44,7 +44,7 @@ internal sealed interface ClaimChatEvent {
 
     data class SubmitAudioFile(override val id: StepId) : AudioRecording
 
-    data class TextInput(override val id: StepId, val text: String) : AudioRecording
+    data class SubmitTextInput(override val id: StepId) : AudioRecording
 
     data class StartRecording(override val id: StepId) : AudioRecording
 
@@ -55,17 +55,15 @@ internal sealed interface ClaimChatEvent {
     data class ShowFreeText(override val id: StepId) : AudioRecording
 
     data class ShowAudioRecording(override val id: StepId) : AudioRecording
-
-    data class Skip(override val id: StepId) : AudioRecording
   }
 
-  data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
+  data class UpdateFreeText(val text: String?) : ClaimChatEvent
 
+  data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
+  data class Skip(val id: StepId) : ClaimChatEvent
   data class Form(val id: StepId, val formInputs: Map<FieldId, List<String?>>) : ClaimChatEvent
 
   data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
-
-  data class UpdateFreeText(val text: String?) : ClaimChatEvent
 
   data object OpenFreeTextOverlay : ClaimChatEvent
 
@@ -220,12 +218,13 @@ internal class ClaimChatPresenter(
               }
             }
 
-            is ClaimChatEvent.AudioRecording.TextInput -> {
+            is ClaimChatEvent.AudioRecording.SubmitTextInput -> {
+              val freeTextInput = freeText ?: return@CollectEvents
               launch {
                 submitAudioRecordingUseCase
-                  .invoke(event.id, event.text)
+                  .invoke(event.id, freeTextInput)
                   .fold(
-                    ifLeft = { error("todo left submitAudioRecordingUseCase text") },
+                    ifLeft = { error("todo left submitAudioRecordingUseCase text: $it") },
                     ifRight = { claimIntent ->
                       handleNext(steps, setOutcome, claimIntent.next)
                     },
@@ -267,12 +266,13 @@ internal class ClaimChatPresenter(
               audioRecordingManager.reset()
               Snapshot.withMutableSnapshot {
                 val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                val currentStepContent = currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
+                val currentStepContent = currentStepState.stepContent as? StepContent.AudioRecording
+                  ?: return@withMutableSnapshot
                 val index = steps.indexOf(currentStepState)
                 if (index >= 0) {
                   steps[index] = currentStepState.copy(
                     stepContent = currentStepContent.copy(
-                      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+                      recordingState = AudioRecording.NotRecording,
                     ),
                   )
                 }
@@ -287,8 +287,7 @@ internal class ClaimChatPresenter(
                 if (index >= 0) {
                   steps[index] = currentStepState.copy(
                     stepContent = currentStepContent.copy(
-                      recordingState = AudioRecordingStepState.FreeTextDescription(
-                        freeText = freeText,
+                      recordingState = FreeTextDescription(
                         showOverlay = showFreeTextOverlay,
                         errorType = null,
                       ),
@@ -306,15 +305,11 @@ internal class ClaimChatPresenter(
                 if (index >= 0) {
                   steps[index] = currentStepState.copy(
                     stepContent = currentStepContent.copy(
-                      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+                      recordingState = AudioRecording.NotRecording,
                     ),
                   )
                 }
               }
-            }
-
-            is ClaimChatEvent.AudioRecording.Skip -> {
-              // TODO: Implement skip logic if backend supports it
             }
           }
         }
@@ -331,7 +326,7 @@ internal class ClaimChatPresenter(
                 ),
               )
               .fold(
-                ifLeft = { error("todo left submitAudioRecordingUseCase") },
+                ifLeft = { error("submitFormUseCase error: $it") },
                 ifRight = { claimIntent ->
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -359,6 +354,10 @@ internal class ClaimChatPresenter(
 
         ClaimChatEvent.CloseFreeChatOverlay -> showFreeTextOverlay = false
         ClaimChatEvent.OpenFreeTextOverlay -> showFreeTextOverlay = true
+        is ClaimChatEvent.Skip -> {
+          // TODO: Implement skip logic
+        }
+
         is ClaimChatEvent.UpdateFreeText -> {
           freeText = event.text
         }

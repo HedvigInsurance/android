@@ -30,7 +30,6 @@ import com.hedvig.android.design.system.hedvig.PermissionDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
 import hedvig.resources.R
 import java.io.File
@@ -39,12 +38,12 @@ import kotlin.time.Clock
 @Composable
 internal fun AudioRecordingStep(
   uiState: AudioRecordingStepState,
+  freeText: String?,
   clock: Clock,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
-  submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
   openAppSettings: () -> Unit,
   freeTextAvailable: Boolean,
@@ -76,7 +75,6 @@ internal fun AudioRecordingStep(
             startRecording = startRecording,
             stopRecording = stopRecording,
             submitAudioFile = submitAudioFile,
-            submitAudioUrl = submitAudioUrl,
             redo = redo,
             openAppSettings = openAppSettings,
             allowFreeText = freeTextAvailable,
@@ -92,7 +90,7 @@ internal fun AudioRecordingStep(
             submitFreeText = submitFreeText,
             showAudioRecording = showAudioRecording,
             onLaunchFullScreenEditText = onLaunchFullScreenEditText,
-            freeText = uiStateAnimated.freeText,
+            freeText = freeText,
             hasError = uiStateAnimated.hasError,
             errorType = uiStateAnimated.errorType,
             canSkip = canSkip,
@@ -174,7 +172,6 @@ private fun AudioRecordingSection(
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
-  submitAudioUrl: (AudioUrl) -> Unit,
   redo: () -> Unit,
   openAppSettings: () -> Unit,
   launchFreeText: () -> Unit,
@@ -216,7 +213,6 @@ private fun AudioRecordingSection(
     clock = clock,
     stopRecording = stopRecording,
     submitAudioFile = submitAudioFile,
-    submitAudioUrl = submitAudioUrl,
     redo = redo,
     modifier = modifier,
     allowFreeText = allowFreeText,

@@ -164,12 +164,12 @@ internal fun ContentSelectChips(
 @Composable
 internal fun AudioRecorderBubble(
   recordingState: AudioRecordingStepState,
+  freeText: String?,
   clock: Clock,
   onShouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
   submitAudioFile: (File) -> Unit,
-  submitAudioUrl: (AudioUrl) -> Unit,
   redoRecording: () -> Unit,
   openAppSettings: () -> Unit,
   freeTextAvailable: Boolean,
@@ -184,12 +184,12 @@ internal fun AudioRecorderBubble(
 ) {
   AudioRecordingStep(
     uiState = recordingState,
+    freeText = freeText,
     clock = clock,
     shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
     startRecording = startRecording,
     stopRecording = stopRecording,
     submitAudioFile = submitAudioFile,
-    submitAudioUrl = submitAudioUrl,
     redo = redoRecording,
     openAppSettings = openAppSettings,
     freeTextAvailable = freeTextAvailable,
@@ -1029,7 +1029,6 @@ private fun PreviewClaimChatComponents() {
         AudioRecorderBubble(
           isCurrentStep = true,
           recordingState = AudioRecordingStepState.FreeTextDescription(
-            "some not really long free text",
             showOverlay = false,
             errorType = null,
           ),
@@ -1040,7 +1039,6 @@ private fun PreviewClaimChatComponents() {
           startRecording = {},
           stopRecording = {},
           submitAudioFile = {},
-          submitAudioUrl = {},
           redoRecording = {},
           openAppSettings = {},
           freeTextAvailable = true,
@@ -1050,6 +1048,7 @@ private fun PreviewClaimChatComponents() {
           onLaunchFullScreenEditText = {},
           canSkip = true,
           onSkip = {},
+          freeText = "some not really long free text"
         )
         Spacer(Modifier.height(16.dp))
         YesNoBubble(

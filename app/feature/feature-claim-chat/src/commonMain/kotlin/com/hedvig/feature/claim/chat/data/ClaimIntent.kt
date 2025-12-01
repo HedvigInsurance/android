@@ -145,7 +145,6 @@ internal sealed interface StepContent {
 
 sealed interface AudioRecordingStepState {
   data class FreeTextDescription(
-    val freeText: String?,
     val showOverlay: Boolean,
     val errorType: FreeTextErrorType?,
     val hasError: Boolean = false,
@@ -158,12 +157,6 @@ sealed interface AudioRecordingStepState {
       val amplitudes: List<Int>,
       val startedAt: Instant,
       val filePath: String,
-    ) : AudioRecording
-
-    data class PrerecordedWithAudioContent(
-      val audioContent: AudioContent,
-      val isLoading: Boolean = false,
-      val hasError: Boolean = false,
     ) : AudioRecording
 
     data class Playback(
