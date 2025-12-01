@@ -253,7 +253,14 @@ private fun ClaimChatScreenContent(
 //              },
           )
           Spacer(Modifier.height(8.dp))
-          FormContent(item, item.stepContent)
+          FormContent(
+            item, item.stepContent,
+            onSkip = {
+              onEvent(ClaimChatEvent.Skip(item.id))
+            },
+            modifier =  Modifier
+              .padding(horizontal = 16.dp)
+          )
         }
 
         is StepContent.Summary -> BasicText("Summary")
@@ -290,17 +297,29 @@ private fun FormContent(
     verticalArrangement = Arrangement.spacedBy(8.dp)
   ) {
     content.fields.forEach { field ->
-      when (field.type) {
-        StepContent.Form.FieldType.TEXT -> TextInputBubble()
-        StepContent.Form.FieldType.DATE -> DateSelectBubble()
-        StepContent.Form.FieldType.NUMBER -> TextInputBubble() //add: keyboard choice
-        StepContent.Form.FieldType.SINGLE_SELECT -> SingleSelectBubbleWithDialog()
-        StepContent.Form.FieldType.MULTI_SELECT -> MultiSelectBubbleWithDialog()
-        StepContent.Form.FieldType.BINARY -> YesNoBubble()
-        null -> {
-          onSkip() //todo: check
-        }
-      }
+//      when (field.type) {
+//        StepContent.Form.FieldType.TEXT -> TextInputBubble(
+//          //todo
+//        )
+//        StepContent.Form.FieldType.DATE -> DateSelectBubble(
+//          //todo
+//        )
+//        StepContent.Form.FieldType.NUMBER -> TextInputBubble(
+//          //todo
+//        ) //add: keyboard choice
+//        StepContent.Form.FieldType.SINGLE_SELECT -> SingleSelectBubbleWithDialog(
+//          //todo
+//        )
+//        StepContent.Form.FieldType.MULTI_SELECT -> MultiSelectBubbleWithDialog(
+//          //todo
+//        )
+//        StepContent.Form.FieldType.BINARY -> YesNoBubble(
+//          //todo
+//        )
+//        null -> {
+//          onSkip() //todo: check
+//        }
+//      }
     }
   }
 }
