@@ -108,8 +108,6 @@ import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
-import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
