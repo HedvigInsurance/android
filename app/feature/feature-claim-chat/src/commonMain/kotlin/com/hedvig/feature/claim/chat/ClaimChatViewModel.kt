@@ -17,7 +17,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.*
 import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
@@ -271,7 +270,7 @@ internal class ClaimChatPresenter(
                 if (index >= 0) {
                   steps[index] = currentStepState.copy(
                     stepContent = currentStepContent.copy(
-                      recordingState = AudioRecording.NotRecording,
+                      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
                     ),
                   )
                 }
@@ -286,7 +285,7 @@ internal class ClaimChatPresenter(
                 if (index >= 0) {
                   steps[index] = currentStepState.copy(
                     stepContent = currentStepContent.copy(
-                      recordingState = FreeTextDescription(
+                      recordingState = AudioRecordingStepState.FreeTextDescription(
                         showOverlay = showFreeTextOverlay,
                         errorType = null,
                       ),
@@ -304,7 +303,7 @@ internal class ClaimChatPresenter(
                 if (index >= 0) {
                   steps[index] = currentStepState.copy(
                     stepContent = currentStepContent.copy(
-                      recordingState = AudioRecording.NotRecording,
+                      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
                     ),
                   )
                 }

@@ -31,6 +31,7 @@ kotlin {
       implementation(libs.uri.kmp)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
+      implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
     }
     androidMain.dependencies {

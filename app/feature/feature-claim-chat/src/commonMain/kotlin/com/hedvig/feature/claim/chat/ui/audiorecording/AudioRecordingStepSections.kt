@@ -1,6 +1,5 @@
 package com.hedvig.feature.claim.chat.ui.audiorecording
 
-import android.Manifest
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,10 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -169,7 +164,6 @@ private fun FreeTextInputSection(
   }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 private fun AudioRecordingSection(
   uiState: AudioRecordingStepState.AudioRecording,
@@ -196,7 +190,7 @@ private fun AudioRecordingSection(
       override fun launchPermissionRequest() {}
     }
   } else {
-    rememberPermissionState(Manifest.permission.RECORD_AUDIO) { isGranted ->
+    rememberPermissionState(RECORD_AUDIO_PERMISSION) { isGranted ->
       if (isGranted) {
         startRecording()
       } else {
@@ -207,7 +201,7 @@ private fun AudioRecordingSection(
   if (showPermissionDialog) {
     PermissionDialog(
       permissionDescription = stringResource(Res.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
-      isPermanentlyDeclined = !shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO),
+      isPermanentlyDeclined = !shouldShowRequestPermissionRationale(RECORD_AUDIO_PERMISSION),
       onDismiss = { showPermissionDialog = false },
       okClick = recordAudioPermissionState::launchPermissionRequest,
       openAppSettings = openAppSettings,
@@ -248,3 +242,6 @@ private fun PreviewFreeTextInput() {
     }
   }
 }
+
+// Platform-specific permission constant
+internal expect val RECORD_AUDIO_PERMISSION: String

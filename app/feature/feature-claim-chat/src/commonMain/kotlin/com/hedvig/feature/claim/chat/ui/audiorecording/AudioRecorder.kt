@@ -1,8 +1,8 @@
 package com.hedvig.feature.claim.chat.ui.audiorecording
 
-import android.view.View
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
@@ -35,7 +35,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -70,7 +70,6 @@ import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.EMBARK_RECORD_AGAIN
 import hedvig.resources.EMBARK_START_RECORDING
 import hedvig.resources.EMBARK_STOP_RECORDING
-import hedvig.resources.R
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import hedvig.resources.TALKBACK_RECORDING_DURATION
@@ -300,45 +299,6 @@ fun RecordingAmplitudeIndicator(amplitude: Int, modifier: Modifier = Modifier) {
       color = color,
       radius = animated.toFloat(),
     )
-  }
-}
-
-/**
- * While this composable is in composition the phone screen stays awake. This is automatically cleared when the
- * composable leaves the composition.
- * Keeps an internal ref count scoped to the current [View] to make sure that multiple calls to this composable don't
- * negate other callers.
- */
-@Composable
-internal fun ScreenOnFlag() {
-  val view = LocalView.current
-  DisposableEffect(view) {
-    val keepScreenOnState = view.keepScreenOnState
-    keepScreenOnState.request()
-    onDispose {
-      keepScreenOnState.release()
-    }
-  }
-}
-
-private val View.keepScreenOnState: KeepScreenOnState
-  get() = getTag(R.id.keep_screen_on_state) as? KeepScreenOnState
-    ?: KeepScreenOnState(this).also { setTag(R.id.keep_screen_on_state, it) }
-
-private class KeepScreenOnState(private val view: View) {
-  private var refCount = 0
-    set(value) {
-      val newValue = value.coerceAtLeast(0)
-      field = newValue
-      view.keepScreenOn = newValue > 0
-    }
-
-  fun request() {
-    refCount++
-  }
-
-  fun release() {
-    refCount--
   }
 }
 

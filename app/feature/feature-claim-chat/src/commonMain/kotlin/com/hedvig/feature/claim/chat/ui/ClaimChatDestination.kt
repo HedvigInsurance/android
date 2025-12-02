@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ui
+package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
@@ -32,7 +32,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -44,17 +43,11 @@ import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
-import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
-import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
-import com.hedvig.feature.claim.chat.ui.ContentSelectChips
-import com.hedvig.feature.claim.chat.ui.DateSelectBubble
-import com.hedvig.feature.claim.chat.ui.MultiSelectBubbleWithDialog
-import com.hedvig.feature.claim.chat.ui.SingleSelectBubbleWithDialog
-import com.hedvig.feature.claim.chat.ui.TextInputBubble
-import com.hedvig.feature.claim.chat.ui.UploadFilesBubble
-import com.hedvig.feature.claim.chat.ui.YesNoBubble
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import kotlin.time.Clock
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -109,8 +102,8 @@ private fun ClaimChatScreen(
   FreeTextOverlay(
     freeTextMaxLength = 3000,
     freeTextValue = uiState.freeText,
-    freeTextHint = stringResource(R.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER), //todo
-    freeTextTitle = stringResource(R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER), //todo
+    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
     freeTextOnCancelClick = {
       onEvent(ClaimChatEvent.CloseFreeChatOverlay)
     },
