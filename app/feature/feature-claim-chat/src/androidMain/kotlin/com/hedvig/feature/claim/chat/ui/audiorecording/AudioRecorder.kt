@@ -49,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -79,7 +78,18 @@ import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.data.AudioContent
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.AudioUrl
+import hedvig.resources.A11Y_AUDIO_RECORDING
+import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
+import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
+import hedvig.resources.EMBARK_RECORD_AGAIN
+import hedvig.resources.EMBARK_START_RECORDING
+import hedvig.resources.EMBARK_STOP_RECORDING
 import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
+import hedvig.resources.TALKBACK_RECORDING_DURATION
+import hedvig.resources.TALKBACK_RECORDING_NOW
+import hedvig.resources.claims_skip_button
 import java.io.File
 import java.text.DecimalFormat
 import kotlin.math.sqrt
@@ -88,6 +98,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AudioRecorder(
@@ -124,10 +135,10 @@ internal fun AudioRecorder(
         ScreenOnFlag()
       }
 
-      val startRecordingText = stringResource(R.string.EMBARK_START_RECORDING)
-      val stopRecordingText = stringResource(R.string.EMBARK_STOP_RECORDING)
-      val audioRecordingText = stringResource(R.string.A11Y_AUDIO_RECORDING)
-      val recordingState = stringResource(R.string.TALKBACK_RECORDING_NOW)
+      val startRecordingText = stringResource(Res.string.EMBARK_START_RECORDING)
+      val stopRecordingText = stringResource(Res.string.EMBARK_STOP_RECORDING)
+      val audioRecordingText = stringResource(Res.string.A11Y_AUDIO_RECORDING)
+      val recordingState = stringResource(Res.string.TALKBACK_RECORDING_NOW)
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
@@ -213,7 +224,7 @@ internal fun AudioRecorder(
             val diff = clock.now() - (startedRecordingAt ?: clock.now())
             val label =
               "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
-            val durationDescription = stringResource(R.string.TALKBACK_RECORDING_DURATION, label)
+            val durationDescription = stringResource(Res.string.TALKBACK_RECORDING_DURATION, label)
             HedvigText(
               text = label,
               style = HedvigTheme.typography.bodySmall,
@@ -227,7 +238,7 @@ internal fun AudioRecorder(
           } else {
             if (allowFreeText) {
               HedvigTextButton(
-                text = stringResource(R.string.CLAIMS_USE_TEXT_INSTEAD),
+                text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
                 onClick = onLaunchFreeText,
               )
             } else {
@@ -265,7 +276,7 @@ private fun Playback(
     if (isCurrentStep) {
       HedvigButton(
         onClick = submit,
-        text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
+        text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         isLoading = uiState.isLoading,
         enabled = uiState.canSubmit,
         modifier = Modifier
@@ -274,7 +285,7 @@ private fun Playback(
       )
 
       HedvigTextButton(
-        text = stringResource(R.string.EMBARK_RECORD_AGAIN),
+        text = stringResource(Res.string.EMBARK_RECORD_AGAIN),
         onClick = redo,
         enabled = uiState.canSubmit,
         modifier = Modifier

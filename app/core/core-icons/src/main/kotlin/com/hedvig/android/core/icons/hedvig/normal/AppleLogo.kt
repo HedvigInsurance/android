@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.AppleLogo: ImageVector
+val HedvigIcons.AppleLogo: ImageVector
   get() {
     if (_appleLogo != null) {
       return _appleLogo!!

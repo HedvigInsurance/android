@@ -3,8 +3,8 @@ package com.hedvig.android.feature.chat.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import java.time.temporal.TemporalAdjusters
@@ -59,7 +59,7 @@ internal fun CbmChatMessage.formattedDateTime(locale: Locale): String {
 
     else -> HedvigDateTimeFormatterDefaults.yearMonthDateAndTime(locale)
   }
-  return formatter.format(sentAt.toLocalDateTime(timeZone).toJavaLocalDateTime())
+  return formatter.format(sentAt.toLocalDateTime(timeZone))
 }
 
 private fun getStartOfThisYear(nowLocalDateTime: LocalDateTime, timeZone: TimeZone): Instant {
@@ -83,5 +83,5 @@ internal fun Instant.formattedChatDateTime(locale: Locale): String {
     sentAt > getStartOfThisYear(nowLocalDateTime, timeZone) -> HedvigDateTimeFormatterDefaults.monthDateAndTime(locale)
     else -> HedvigDateTimeFormatterDefaults.yearMonthDateAndTime(locale)
   }
-  return formatter.format(sentAt.toLocalDateTime(timeZone).toJavaLocalDateTime())
+  return formatter.format(sentAt.toLocalDateTime(timeZone))
 }

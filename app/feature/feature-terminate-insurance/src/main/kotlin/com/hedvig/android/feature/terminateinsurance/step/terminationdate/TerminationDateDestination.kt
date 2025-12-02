@@ -13,7 +13,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.Checkbox
@@ -35,12 +34,18 @@ import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmuta
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardDate
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoCardInsurance
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_DATE_TEXT
+import hedvig.resources.TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT
+import hedvig.resources.TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE
+import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
+import hedvig.resources.general_continue_button
 import java.util.Locale
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationDateDestination(
@@ -84,7 +89,7 @@ private fun TerminationDateScreen(
   ) { title ->
     FlowHeading(
       title,
-      stringResource(id = R.string.TERMINATION_DATE_TEXT),
+      stringResource(Res.string.TERMINATION_DATE_TEXT),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -115,7 +120,7 @@ private fun TerminationDateScreen(
     Spacer(Modifier.height(16.dp))
 
     HedvigButton(
-      text = stringResource(id = R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = submit,
       enabled = uiState.canSubmit,
       modifier = Modifier
@@ -141,11 +146,11 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
     ) {
       Column(modifier = Modifier.weight(1f)) {
         HedvigText(
-          text = stringResource(id = R.string.TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE),
+          text = stringResource(Res.string.TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE),
           style = HedvigTheme.typography.headlineSmall,
         )
         HedvigText(
-          text = stringResource(id = R.string.TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT),
+          text = stringResource(Res.string.TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
@@ -153,7 +158,7 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
         HedvigTheme(darkTheme = false) {
           Checkbox(
             option = CheckboxOption(
-              text = stringResource(R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+              text = stringResource(Res.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
             ),
             selected = isChecked,
             onCheckboxSelected = onCheckedChange,

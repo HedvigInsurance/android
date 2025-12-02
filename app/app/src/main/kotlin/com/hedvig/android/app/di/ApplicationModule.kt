@@ -10,12 +10,14 @@ import android.os.Build
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
-import coil.ImageLoader
-import coil.decode.GifDecoder
-import coil.decode.ImageDecoderDecoder
-import coil.decode.SvgDecoder
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
+import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.disk.directory
+import coil3.gif.AnimatedImageDecoder
+import coil3.gif.GifDecoder
+import coil3.memory.MemoryCache
+import coil3.network.ktor3.KtorNetworkFetcherFactory
+import coil3.svg.SvgDecoder
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
@@ -40,6 +42,7 @@ import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
@@ -103,6 +106,7 @@ import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.feature.claim.chat.di.claimChatModule
+import io.ktor.client.HttpClient
 import java.io.File
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
@@ -110,6 +114,11 @@ import org.koin.dsl.module
 import timber.log.Timber
 
 private val networkModule = module {
+  single<HttpClient>(baseHttpClientQualifier) {
+    // todo add common headers and logging. Do not add authentication which should only be added to specific versions
+    //  of the http client
+    HttpClient()
+  }
   factory<OkHttpClient.Builder> {
     val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient
@@ -223,6 +232,8 @@ private val buildConstantsModule = module {
       override val appPackageId: String = BuildConfig.APPLICATION_ID
 
       override val isDebug: Boolean = BuildConfig.DEBUG
+
+      @Suppress("SimplifyBooleanWithConstants")
       override val isProduction: Boolean =
         BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
       override val buildApiVersion: Int = Build.VERSION.SDK_INT
@@ -346,19 +357,18 @@ private val databaseChatAndroidModule = module {
 private val coilModule = module {
   single<ImageLoader> {
     val applicationContext = get<Context>().applicationContext
-    ImageLoader
-      .Builder(get())
-      .okHttpClient(get<OkHttpClient.Builder>().build())
+    ImageLoader.Builder(get<Context>())
       .components {
+        add(KtorNetworkFetcherFactory(get<HttpClient>()))
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-          add(ImageDecoderDecoder.Factory())
+          add(AnimatedImageDecoder.Factory())
         } else {
           add(GifDecoder.Factory())
         }
         add(PdfDecoder.Factory())
       }.memoryCache {
-        MemoryCache.Builder(applicationContext).build()
+        MemoryCache.Builder().maxSizePercent(applicationContext).build()
       }.diskCache {
         DiskCache
           .Builder()

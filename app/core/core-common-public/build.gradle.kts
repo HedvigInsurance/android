@@ -1,3 +1,6 @@
+import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
@@ -6,22 +9,28 @@ plugins {
 
 kotlin {
   sourceSets {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+      common {
+        group("jvmAndAndroid") {
+          withAndroidLibraryTarget()
+          withJvm()
+        }
+      }
+    }
     commonMain.dependencies {
       implementation(libs.coroutines.core)
       implementation(libs.koin.core)
       implementation(libs.kotlinx.datetime)
     }
 
-    val jvmAndAndroidMain by creating {
-      dependsOn(commonMain.get())
+    val jvmAndAndroidMain by getting {
       dependencies {
         api(libs.okhttp.core)
       }
     }
 
-    jvmMain.get().dependsOn(jvmAndAndroidMain)
     androidMain.apply {
-      get().dependsOn(jvmAndAndroidMain)
       dependencies {
         implementation(libs.androidx.other.core)
         implementation(projects.apolloOctopusPublic)

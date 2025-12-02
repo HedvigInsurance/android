@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Pause: ImageVector
+val HedvigIcons.Pause: ImageVector
   get() {
     if (_pause != null) {
       return _pause!!

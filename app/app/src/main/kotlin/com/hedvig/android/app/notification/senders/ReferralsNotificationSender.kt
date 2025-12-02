@@ -1,7 +1,6 @@
 package com.hedvig.android.app.notification.senders
 
 import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_DEFAULT
@@ -14,9 +13,7 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import hedvig.resources.R.drawable.ic_hedvig_h
-import hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT
-import hedvig.resources.R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE
+import hedvig.resources.R
 
 class ReferralsNotificationSender(
   private val context: Context,
@@ -36,12 +33,12 @@ class ReferralsNotificationSender(
       false,
     )
     val title = remoteMessage.titleFromCustomerIoData()
-      ?: context.resources.getString(NOTIFICATION_REFERRAL_COMPLETED_TITLE)
+      ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE)
     val body = remoteMessage.bodyFromCustomerIoData()
-      ?: context.resources.getString(NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
+      ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
     val notificationBuilder = NotificationCompat
       .Builder(context, notificationChannel.channelId)
-      .setSmallIcon(ic_hedvig_h)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
       .setContentTitle(title)
       .setContentText(body)
       .setPriority(PRIORITY_DEFAULT)

@@ -72,7 +72,10 @@ abstract class DownloadStringsTask @Inject constructor(
     logger.debug("{} zip file path:{}", tag, tempFileForZipFile.absolutePath)
     dirRes.fillContentsByCopyingFromZipFile(tempFileForZipFile)
     logger.debug("{} dirRes:{}", tag, dirRes.asFileTree.map { it.absolutePath })
-    dirRes.fixPercentageSigns()
+    dirRes.editTranslations {
+      fixPercentageSigns()
+        .removeDotsFromStringIds()
+    }
     tempFileForZipFile.delete()
   }
 
@@ -168,11 +171,9 @@ abstract class DownloadStringsTask @Inject constructor(
     return this.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
   }
 
-  /**
-   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
-   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
-   */
-  private fun ConfigurableFileCollection.fixPercentageSigns() {
+  private fun ConfigurableFileCollection.editTranslations(
+    block: String.() -> String,
+  ) {
     val allTranslationXmlFilePaths: List<okio.Path> = asFileTree
       .map { it.path.toPath() }
       .filter { it.name == """strings.xml""" }
@@ -181,14 +182,44 @@ abstract class DownloadStringsTask @Inject constructor(
     val fileSystem = FileSystem.SYSTEM
     for (currentLanguageTranslationXmlFilePath in allTranslationXmlFilePaths) {
       val content = fileSystem.read(currentLanguageTranslationXmlFilePath) { readUtf8() }
-      val updatedContent = content
-        .replace(
-          oldValue = """%%""",
-          newValue = """\u0025""",
-        )
+      val updatedContent = block(content)
       fileSystem.write(currentLanguageTranslationXmlFilePath) {
         writeUtf8(updatedContent)
       }
+    }
+  }
+
+  /**
+   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
+   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
+   */
+  private fun String.fixPercentageSigns(): String {
+    return replace(
+      oldValue = """%%""",
+      newValue = """\u0025""",
+    )
+  }
+
+  /**
+   * Replace all `.` from string keys with `_`. They get translated to `_` anyway in order to be able to access them
+   * from Kotlin code so this has no change on the call sites.
+   * Keeping the `.` also breaks the code generation for CMP resources, this fixes it.
+   */
+  private fun String.removeDotsFromStringIds(): String {
+    return this.replace(
+      // Regex("""name="([^"]*)")""" - Matches the pattern name="..." where:
+      //    - name=" - literal text
+      //    - ([^"]*) - captures any characters that are not quotes (this is group 1)
+      //    - " - closing quote
+      Regex(
+        """
+        name="([^"]*)"
+        """.trimIndent(),
+      ),
+    ) { matchResult ->
+      val nameValue = matchResult.groupValues[1]
+      val nameWithoutDots = nameValue.replace(".", "_")
+      """name="$nameWithoutDots""""
     }
   }
 
@@ -201,9 +232,11 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   private fun ConfigurableFileCollection.fillContentsByCopyingFromZipFile(zipFile: File) {
-    fileSystemOperations.copy {
-      it.from(archiveOperations.zipTree(zipFile))
-      it.into(this.asPath)
+    files.forEach { file ->
+      fileSystemOperations.copy {
+        it.from(archiveOperations.zipTree(zipFile))
+        it.into(file.path)
+      }
     }
   }
 }

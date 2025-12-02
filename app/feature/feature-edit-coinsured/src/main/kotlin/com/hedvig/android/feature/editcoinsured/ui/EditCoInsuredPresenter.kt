@@ -226,8 +226,7 @@ internal class EditCoInsuredPresenter(
       val ssn = addBottomSheetContentState.infoFromSsn.ssn
       if (ssn != null && !addBottomSheetContentState.showManualInput) {
         either {
-          val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssn).bind()
-          when (result) {
+          when (val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssn).bind()) {
             is CoInsuredPersonalInformation.FullInfo -> {
               addBottomSheetContentState = addBottomSheetContentState.copy(
                 infoFromSsn = InfoFromSsn(
@@ -400,7 +399,7 @@ internal class EditCoInsuredPresenter(
     originalIds: List<String>,
     activationDate: LocalDate,
   ): List<CoInsured> {
-    return coInsured.map { it ->
+    return coInsured.map {
       if (originalIds.contains(it.id)) {
         it
       } else {

@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
 internal class LoggingInterceptor : ApolloInterceptor {
-  override fun <D : Operation.Data> intercept(
+  override fun <D : Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
@@ -44,7 +44,7 @@ internal class LoggingInterceptor : ApolloInterceptor {
     }
   }
 
-  private fun <D : Operation.Data> logError(
+  private fun <D : Data> logError(
     data: D?,
     errors: List<LoggableGraphqlError>,
     request: ApolloRequest<D>,

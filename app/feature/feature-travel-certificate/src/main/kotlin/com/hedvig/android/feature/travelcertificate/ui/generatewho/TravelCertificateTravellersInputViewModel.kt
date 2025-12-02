@@ -88,7 +88,7 @@ internal class TravelCertificateTravellersInputPresenter(
               it.hasMissingInfo
             }.map { coInsuredData ->
               CoInsured(
-                id = CoInsured.CoInsuredId(coInsuredData),
+                id = CoInsuredId(coInsuredData),
                 name = "${coInsuredData.firstName} ${coInsuredData.lastName}",
                 ssn = coInsuredData.ssn,
                 dateOfBirth = coInsuredData.dateOfBirth,

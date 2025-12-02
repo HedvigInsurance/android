@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -69,7 +68,23 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.CLAIMS_CHECKOUT_COUNT_TITLE
+import hedvig.resources.CLAIMS_CHECKOUT_NOTICE
+import hedvig.resources.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT
+import hedvig.resources.CLAIMS_CHECKOUT_PAYOUT_TEXT
+import hedvig.resources.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT
+import hedvig.resources.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT
+import hedvig.resources.CLAIMS_CHECKOUT_REPAIR_TITLE
+import hedvig.resources.CLAIMS_PAYOUT_HEDVIG_LABEL
+import hedvig.resources.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE
+import hedvig.resources.PAYMENTS_SUBTITLE_PAYMENT_METHOD
+import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
+import hedvig.resources.Res
+import hedvig.resources.claims_payout_age_deductable
+import hedvig.resources.claims_payout_age_deduction
+import hedvig.resources.claims_payout_button_label
+import hedvig.resources.claims_payout_payout_label
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SingleItemCheckoutDestination(
@@ -115,7 +130,7 @@ private fun SingleItemCheckoutScreen(
   SingleItemCheckoutInfoBottomSheet(hedvigBottomSheetState)
 
   ClaimFlowScaffold(
-    topAppBarText = stringResource(R.string.claims_payout_payout_label),
+    topAppBarText = stringResource(Res.string.claims_payout_payout_label),
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
@@ -142,7 +157,7 @@ private fun SingleItemCheckoutScreen(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
-            text = stringResource(R.string.CLAIMS_CHECKOUT_COUNT_TITLE),
+            text = stringResource(Res.string.CLAIMS_CHECKOUT_COUNT_TITLE),
             modifier = sideSpacingModifier,
           )
         }
@@ -155,15 +170,11 @@ private fun SingleItemCheckoutScreen(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           val explanationText = when (uiState.compensation) {
-            is RepairCompensation -> stringResource(
-              id = R.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT,
-            )
+            is RepairCompensation -> stringResource(Res.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT)
 
-            is ValueCompensation -> stringResource(
-              id = R.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT,
-            )
+            is ValueCompensation -> stringResource(Res.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT)
           }
-          val title = stringResource(R.string.CLAIMS_CHECKOUT_COUNT_TITLE)
+          val title = stringResource(Res.string.CLAIMS_CHECKOUT_COUNT_TITLE)
           IconButton(
             onClick = {
               hedvigBottomSheetState.show(Pair(title, explanationText))
@@ -174,7 +185,7 @@ private fun SingleItemCheckoutScreen(
           ) {
             Icon(
               imageVector = HedvigIcons.InfoFilled,
-              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(16.dp),
             )
           }
@@ -187,14 +198,14 @@ private fun SingleItemCheckoutScreen(
           is RepairCompensation -> listOf(
             RepairPair(
               stringResource(
-                R.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
+                Res.string.CLAIMS_CHECKOUT_REPAIR_TITLE,
                 uiState.modelDisplayName,
               ),
               uiState.compensation.repairCost.toString(),
               uiState.compensation.repairCost,
             ),
             RepairPair(
-              stringResource(R.string.claims_payout_age_deductable),
+              stringResource(Res.string.claims_payout_age_deductable),
               "-" + uiState.compensation.deductible.toString(),
               uiState.compensation.deductible,
             ),
@@ -202,17 +213,17 @@ private fun SingleItemCheckoutScreen(
 
           is ValueCompensation -> listOf(
             RepairPair(
-              stringResource(R.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE),
+              stringResource(Res.string.KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE),
               uiState.compensation.price.toString(),
               uiState.compensation.price,
             ),
             RepairPair(
-              stringResource(R.string.claims_payout_age_deduction),
+              stringResource(Res.string.claims_payout_age_deduction),
               "-" + uiState.compensation.depreciation.toString(),
               uiState.compensation.depreciation,
             ),
             RepairPair(
-              stringResource(R.string.claims_payout_age_deductable),
+              stringResource(Res.string.claims_payout_age_deductable),
               "-" + uiState.compensation.deductible.toString(),
               uiState.compensation.deductible,
             ),
@@ -241,7 +252,7 @@ private fun SingleItemCheckoutScreen(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
-            text = stringResource(R.string.CLAIMS_PAYOUT_HEDVIG_LABEL),
+            text = stringResource(Res.string.CLAIMS_PAYOUT_HEDVIG_LABEL),
             modifier = sideSpacingModifier,
           )
         }
@@ -269,7 +280,7 @@ private fun SingleItemCheckoutScreen(
     when (uiState.compensation) {
       is RepairCompensation -> {
         HedvigNotificationCard(
-          stringResource(R.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT),
+          stringResource(Res.string.CLAIMS_CHECKOUT_REPAIR_INFO_TEXT),
           NotificationPriority.Info,
           sideSpacingModifier,
         )
@@ -285,7 +296,7 @@ private fun SingleItemCheckoutScreen(
       startSlot = {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
-            text = stringResource(R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),
+            text = stringResource(Res.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD),
             modifier = sideSpacingModifier,
           )
         }
@@ -296,8 +307,8 @@ private fun SingleItemCheckoutScreen(
             Arrangement.End,
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          val explanationText = stringResource(id = R.string.CLAIMS_CHECKOUT_PAYOUT_TEXT)
-          val explanationTitle = stringResource(id = R.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD)
+          val explanationText = stringResource(Res.string.CLAIMS_CHECKOUT_PAYOUT_TEXT)
+          val explanationTitle = stringResource(Res.string.PAYMENTS_SUBTITLE_PAYMENT_METHOD)
           IconButton(
             onClick = {
               hedvigBottomSheetState.show(Pair(explanationTitle, explanationText))
@@ -308,7 +319,7 @@ private fun SingleItemCheckoutScreen(
           ) {
             Icon(
               imageVector = HedvigIcons.InfoFilled,
-              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(16.dp),
             )
           }
@@ -326,16 +337,16 @@ private fun SingleItemCheckoutScreen(
     Spacer(Modifier.weight(1f))
     if (uiState.compensation is ValueCompensation) {
       HedvigNotificationCard(
-        stringResource(R.string.CLAIMS_CHECKOUT_NOTICE),
+        stringResource(Res.string.CLAIMS_CHECKOUT_NOTICE),
         NotificationPriority.Info,
         sideSpacingModifier,
       )
       Spacer(Modifier.height(16.dp))
     }
     val payoutDescription =
-      stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.getDescription())
+      stringResource(Res.string.claims_payout_button_label, uiState.compensation.payoutAmount.getDescription())
     HedvigButton(
-      text = stringResource(R.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()),
+      text = stringResource(Res.string.claims_payout_button_label, uiState.compensation.payoutAmount.toString()),
       onClick = { submitSelectedCheckoutMethod(uiState.selectedCheckoutMethod) },
       enabled = true,
       modifier = sideSpacingModifier

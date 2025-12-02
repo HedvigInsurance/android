@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -61,6 +60,7 @@ import com.hedvig.android.data.productvariant.ProductVariantPeril
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -72,7 +72,6 @@ import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
@@ -90,9 +89,22 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.S
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.tiersandaddons.QuoteCard
 import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import hedvig.resources.R
+import hedvig.resources.CHANGE_ADDRESS_ACCEPT_OFFER
+import hedvig.resources.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT
+import hedvig.resources.CHANGE_ADDRESS_SUMMARY_TITLE
+import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
+import hedvig.resources.GENERAL_CONFIRM
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
+import hedvig.resources.SUMMARY_TOTAL_PRICE_SUBTITLE
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_back_button
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
+import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SummaryDestination(
@@ -135,7 +147,7 @@ private fun SummaryScreen(
       MovingFlowTopAppBar(
         navigateUp = navigateUp,
         exitFlow = exitFlow,
-        topAppBarText = stringResource(R.string.CHANGE_ADDRESS_SUMMARY_TITLE),
+        topAppBarText = stringResource(Res.string.CHANGE_ADDRESS_SUMMARY_TITLE),
       )
       Box(
         modifier = Modifier
@@ -149,7 +161,7 @@ private fun SummaryScreen(
           SummaryUiState.Error -> HedvigErrorSection(
             onButtonClick = navigateBack,
             subTitle = null,
-            buttonText = stringResource(R.string.general_back_button),
+            buttonText = stringResource(Res.string.general_back_button),
           )
 
           is SummaryUiState.Content -> {
@@ -175,22 +187,22 @@ private fun SummaryScreen(
   var showConfirmChangesDialog by rememberSaveable { mutableStateOf(false) }
   if (showConfirmChangesDialog) {
     HedvigAlertDialog(
-      title = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
+      title = stringResource(Res.string.CHANGE_ADDRESS_ACCEPT_OFFER),
       onDismissRequest = { showConfirmChangesDialog = false },
       onConfirmClick = onConfirmChanges,
-      confirmButtonLabel = stringResource(R.string.GENERAL_CONFIRM),
-      dismissButtonLabel = stringResource(R.string.general_cancel_button),
-      text = stringResource(R.string.CONFIRM_CHANGES_SUBTITLE, startDateFormatted),
+      confirmButtonLabel = stringResource(Res.string.GENERAL_CONFIRM),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
+      text = stringResource(Res.string.CONFIRM_CHANGES_SUBTITLE, startDateFormatted),
     )
   }
   if (content.submitError != null) {
     ErrorDialog(
-      title = stringResource(R.string.something_went_wrong),
+      title = stringResource(Res.string.something_went_wrong),
       message = when (content.submitError) {
-        Generic -> stringResource(R.string.GENERAL_ERROR_BODY)
+        Generic -> stringResource(Res.string.GENERAL_ERROR_BODY)
         is WithMessage -> content.submitError.message
       },
-      buttonText = stringResource(R.string.general_close_button),
+      buttonText = stringResource(Res.string.general_close_button),
       onButtonClick = onDismissSubmissionError,
       onDismiss = onDismissSubmissionError,
     )
@@ -225,7 +237,7 @@ private fun SummaryScreen(
       }
       if (content.hasMtaQuotes) {
         Spacer(Modifier.height(16.dp))
-        HedvigNotificationCard(stringResource(R.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
+        HedvigNotificationCard(stringResource(Res.string.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT), Info)
       }
       Spacer(Modifier.height(16.dp))
       with(LocalDensity.current) {
@@ -249,7 +261,7 @@ private fun SummaryScreen(
         Spacer(Modifier.height(16.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
-            HedvigText(stringResource(R.string.TIER_FLOW_TOTAL))
+            HedvigText(stringResource(Res.string.TIER_FLOW_TOTAL))
           },
           endSlot = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.End)) {
@@ -259,7 +271,7 @@ private fun SummaryScreen(
               ) {
                 HedvigText(
                   text = stringResource(
-                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                     content.grossPremium,
                   ),
                   textAlign = TextAlign.End,
@@ -285,7 +297,7 @@ private fun SummaryScreen(
                 val voiceoverDescription = premium.getPerMonthDescription()
                 HedvigText(
                   text = stringResource(
-                    R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                    Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                     premium?.toString() ?: "00 kr",
                   ),
                   textAlign = TextAlign.End,
@@ -303,14 +315,14 @@ private fun SummaryScreen(
         )
         Spacer(Modifier.height(2.dp))
         HedvigText(
-          text = stringResource(R.string.SUMMARY_TOTAL_PRICE_SUBTITLE, startDateFormatted),
+          text = stringResource(Res.string.SUMMARY_TOTAL_PRICE_SUBTITLE, startDateFormatted),
           style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
           textAlign = TextAlign.End,
           modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          text = stringResource(R.string.CHANGE_ADDRESS_ACCEPT_OFFER),
+          text = stringResource(Res.string.CHANGE_ADDRESS_ACCEPT_OFFER),
           enabled = !content.shouldDisableInput,
           onClick = { showConfirmChangesDialog = true },
           isLoading = content.isSubmitting,
@@ -327,7 +339,7 @@ private fun SummaryScreen(
 private fun formatStartDate(startDate: LocalDate): String {
   val locale = getLocale()
   return remember(startDate) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate.toJavaLocalDate())
+    HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(startDate)
   }
 }
 

@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.FlagDenmark: ImageVector
+val HedvigIcons.FlagDenmark: ImageVector
   get() {
     if (_flagDenmark != null) {
       return _flagDenmark!!

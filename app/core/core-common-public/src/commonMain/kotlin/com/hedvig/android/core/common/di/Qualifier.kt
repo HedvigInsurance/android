@@ -19,3 +19,9 @@ val databaseFileQualifier = qualifier("databaseFileQualifier")
  * [kotlinx.coroutines.Dispatchers.IO] for production code
  */
 val ioDispatcherQualifier = qualifier("ioDispatcher")
+
+/**
+ * Qualifier for the base ktor HttpClient which does not have authentication configured but does have the common
+ * headers and logging which all http clients should have
+ */
+val baseHttpClientQualifier = qualifier("baseHttpClientQualifier")

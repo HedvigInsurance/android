@@ -53,7 +53,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
@@ -91,7 +91,6 @@ import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.Document
@@ -99,6 +98,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.ui.claimflow.HedvigChip
@@ -108,7 +108,21 @@ import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
-import hedvig.resources.R
+import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.ui.audiorecording.AudioUrl
+import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
+import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
+import hedvig.resources.EMBARK_SUBMIT_CLAIM
+import hedvig.resources.GENERAL_NO
+import hedvig.resources.GENERAL_REMOVE
+import hedvig.resources.GENERAL_YES
+import hedvig.resources.Res
+import hedvig.resources.claims_skip_button
+import hedvig.resources.file_upload_choose_files
+import hedvig.resources.file_upload_photo_library
+import hedvig.resources.file_upload_take_photo
+import hedvig.resources.file_upload_upload_files
+import hedvig.resources.general_save_button
 import java.io.File
 import kotlin.random.Random
 import kotlin.time.Clock
@@ -116,6 +130,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ContentSelectChips(
@@ -281,7 +296,7 @@ internal fun YesNoBubble(
           horizontalArrangement = Arrangement.End,
         ) {
           HighlightLabel(
-            labelText = stringResource(R.string.GENERAL_YES),
+            labelText = stringResource(Res.string.GENERAL_YES),
             size = HighlightLabelDefaults.HighLightSize.Medium,
             color = if (answerSelected == true) {
               HighlightLabelDefaults.HighlightColor.Green(
@@ -301,7 +316,7 @@ internal fun YesNoBubble(
           )
           Spacer(Modifier.width(16.dp))
           HighlightLabel(
-            labelText = stringResource(R.string.GENERAL_NO),
+            labelText = stringResource(Res.string.GENERAL_NO),
             size = HighlightLabelDefaults.HighLightSize.Medium,
             color = if (answerSelected != null && !answerSelected) {
               HighlightLabelDefaults.HighlightColor.Green(
@@ -395,7 +410,7 @@ internal fun MultiSelectBubbleWithDialog(
       selectedOptions = selectedOptionIds,
       onOptionSelected = onSelect,
       onDismissRequest = { showDialog = false },
-      buttonText = stringResource(R.string.general_save_button),
+      buttonText = stringResource(Res.string.general_save_button),
     )
   }
   StandardBubble(
@@ -546,7 +561,7 @@ private fun UploadFilesBubbleContent(
           horizontalArrangement = Arrangement.End,
         ) {
           HedvigButton(
-            text = stringResource(R.string.file_upload_upload_files),
+            text = stringResource(Res.string.file_upload_upload_files),
             onClick = onUploadButtonClick,
             enabled = isCurrentStep || canBeChanged,
             buttonSize = ButtonDefaults.ButtonSize.Medium,
@@ -596,7 +611,7 @@ private fun FilePickerBottomSheetContent(
         Row {
           Icon(HedvigIcons.Image, null)
           Spacer(Modifier.height(8.dp))
-          HedvigText(stringResource(R.string.file_upload_photo_library))
+          HedvigText(stringResource(Res.string.file_upload_photo_library))
         }
       }
       HedvigButton(
@@ -606,7 +621,7 @@ private fun FilePickerBottomSheetContent(
         Row {
           Icon(HedvigIcons.Camera, null)
           Spacer(Modifier.height(8.dp))
-          HedvigText(stringResource(R.string.file_upload_take_photo))
+          HedvigText(stringResource(Res.string.file_upload_take_photo))
         }
       }
       HedvigButton(
@@ -616,7 +631,7 @@ private fun FilePickerBottomSheetContent(
         Row {
           Icon(HedvigIcons.Document, null)
           Spacer(Modifier.height(8.dp))
-          HedvigText(stringResource(R.string.file_upload_choose_files))
+          HedvigText(stringResource(Res.string.file_upload_choose_files))
         }
       }
     }
@@ -785,7 +800,7 @@ internal fun TextInputBubble(
                 ) {
                   Icon(
                     HedvigIcons.Close,
-                    stringResource(R.string.GENERAL_REMOVE),
+                    stringResource(Res.string.GENERAL_REMOVE),
                   )
                 }
               }
@@ -836,7 +851,6 @@ internal fun ChatClaimSummary(
               HedvigText(text = displayItem.first)
             },
             endSlot = {
-              val formatter = rememberHedvigDateTimeFormatter()
               HedvigText(
                 text = displayItem.second,
                 textAlign = TextAlign.End,
@@ -853,7 +867,7 @@ internal fun ChatClaimSummary(
         horizontalArrangement = Arrangement.Center,
       ) {
         HedvigButton(
-          text = stringResource(R.string.EMBARK_SUBMIT_CLAIM),
+          text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
           enabled = true,
           onClick = onSubmit,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
@@ -888,7 +902,7 @@ internal fun ChatClaimOutcome(
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
-          text = stringResource(R.string.CHAT_CONVERSATION_CLAIM_TITLE),
+          text = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
         )
       }
     }
@@ -934,14 +948,14 @@ internal fun <T> StandardBubble(
         ) {
           if (canSkip) {
             HedvigTextButton(
-              stringResource(R.string.claims_skip_button),
+              stringResource(Res.string.claims_skip_button),
               onClick = onSkip,
               buttonSize = ButtonDefaults.ButtonSize.Medium,
             )
           }
           Spacer(Modifier.width(16.dp))
           HedvigButton(
-            text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+            text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
             enabled = selectedAnswer != null,
             onClick = {
               if (selectedAnswer != null) onSubmit(selectedAnswer)

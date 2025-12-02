@@ -9,7 +9,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -187,7 +187,7 @@ internal fun HedvigNavHost(
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
-        with(navigator) { backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId)) }
+        with(navigator) { backStackEntry.navigate(CoInsuredAddInfo(contractId)) }
       },
       navigateToHelpCenter = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(HelpCenterDestination) }
@@ -287,7 +287,7 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
       startEditCoInsured = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contractId))
+          backStackEntry.navigate(CoInsuredAddOrRemove(contractId))
         }
       },
       onNavigateToStartChangeTier = { backStackEntry: NavBackStackEntry, contractId: String ->
@@ -302,7 +302,7 @@ internal fun HedvigNavHost(
       },
       startEditCoInsuredAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
+          backStackEntry.navigate(CoInsuredAddInfo(contractId))
         }
       },
       onNavigateToAddonPurchaseFlow = { ids ->
@@ -339,7 +339,7 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToAddMissingInfo = { backStackEntry: NavBackStackEntry, contractId: String ->
         with(navigator) {
-          backStackEntry.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
+          backStackEntry.navigate(CoInsuredAddInfo(contractId))
         }
       },
       navigateToDeleteAccountFeature = { backStackEntry: NavBackStackEntry ->
@@ -464,7 +464,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     onNavigateToCoInsuredAddInfo = { contractId ->
-      navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId))
+      navigator.navigateUnsafe(CoInsuredAddInfo(contractId))
     },
     onNavigateToAddonPurchaseFlow = { ids ->
       navigator.navigateUnsafe(

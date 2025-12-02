@@ -11,13 +11,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import hedvig.resources.claim_status_detail_closed
+import hedvig.resources.claim_status_detail_submitted
 import java.util.Locale
 import kotlin.time.Clock
 import kotlin.time.Clock.System
@@ -27,6 +28,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SubmittedAndClosedColumns(submittedAt: Instant, closedAt: Instant?, locale: Locale) {
@@ -45,12 +47,12 @@ internal fun SubmittedAndClosedColumns(submittedAt: Instant, closedAt: Instant?,
   }
   Row {
     SubmittedAndClosedColumn(
-      topText = stringResource(hedvig.resources.R.string.claim_status_detail_submitted).uppercase(locale),
+      topText = stringResource(hedvig.resources.Res.string.claim_status_detail_submitted).uppercase(locale),
       bottomText = submittedText,
       modifier = Modifier.weight(0.5f),
     )
     SubmittedAndClosedColumn(
-      topText = stringResource(hedvig.resources.R.string.claim_status_detail_closed).uppercase(locale),
+      topText = stringResource(hedvig.resources.Res.string.claim_status_detail_closed).uppercase(locale),
       bottomText = closedText,
       modifier = Modifier.weight(0.5f),
     )
@@ -75,7 +77,7 @@ private fun SubmittedAndClosedColumn(topText: String, bottomText: String, modifi
 }
 
 @Composable
-private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = Clock.System): State<Instant> {
+private fun currentTimeAsState(updateInterval: Duration = 1.seconds, clock: Clock = System): State<Instant> {
   return produceState(initialValue = clock.now()) {
     while (isActive) {
       delay(updateInterval)

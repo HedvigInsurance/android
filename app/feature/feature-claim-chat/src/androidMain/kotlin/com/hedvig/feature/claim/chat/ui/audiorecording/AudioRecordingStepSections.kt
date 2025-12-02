@@ -15,7 +15,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -31,9 +30,16 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
-import hedvig.resources.R
+import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
+import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
+import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
+import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
+import hedvig.resources.Res
+import hedvig.resources.claims_skip_button
 import java.io.File
 import kotlin.time.Clock
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AudioRecordingStep(
@@ -123,9 +129,9 @@ private fun FreeTextInputSection(
     FreeTextDisplay(
       onClick = { onLaunchFullScreenEditText() },
       freeTextValue = freeText,
-      freeTextPlaceholder = stringResource(id = R.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+      freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
       supportingText = if (errorType is FreeTextErrorType.TooShort) {
-        stringResource(R.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength)
+        stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength)
       } else {
         null
       },
@@ -138,7 +144,7 @@ private fun FreeTextInputSection(
       ) {
         if (canSkip) {
           HedvigTextButton(
-            stringResource(R.string.claims_skip_button),
+            stringResource(Res.string.claims_skip_button),
             onClick = onSkip,
             buttonSize = ButtonDefaults.ButtonSize.Medium,
           )
@@ -149,12 +155,12 @@ private fun FreeTextInputSection(
           onClick = submitFreeText,
           enabled = true,
           buttonSize = ButtonDefaults.ButtonSize.Medium,
-          text = stringResource(R.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+          text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
         )
       }
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        text = stringResource(R.string.CLAIMS_USE_AUDIO_RECORDING),
+        text = stringResource(Res.string.CLAIMS_USE_AUDIO_RECORDING),
         onClick = showAudioRecording,
         buttonSize = ButtonDefaults.ButtonSize.Medium,
         enabled = true,
@@ -200,7 +206,7 @@ private fun AudioRecordingSection(
   }
   if (showPermissionDialog) {
     PermissionDialog(
-      permissionDescription = stringResource(R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
+      permissionDescription = stringResource(Res.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
       isPermanentlyDeclined = !shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO),
       onDismiss = { showPermissionDialog = false },
       okClick = recordAudioPermissionState::launchPermissionRequest,

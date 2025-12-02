@@ -11,7 +11,7 @@ class FakeLanguageService(
     error("Not implemented")
   }
 
-  override fun getSelectedLanguage(): Language? {
+  override fun getSelectedLanguage(): Language {
     error("Not implemented")
   }
 

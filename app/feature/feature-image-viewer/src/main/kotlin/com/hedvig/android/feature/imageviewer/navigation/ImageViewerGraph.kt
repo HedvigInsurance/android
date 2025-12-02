@@ -3,7 +3,7 @@ package com.hedvig.android.feature.imageviewer.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.feature.imageviewer.ImageViewerDestination
 import com.hedvig.android.navigation.compose.navdestination
 
