@@ -46,7 +46,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -98,14 +97,12 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadFilled
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.data.AudioUrl
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
