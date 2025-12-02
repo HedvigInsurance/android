@@ -193,6 +193,7 @@ jetbrains-compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", versi
 jetbrains-graphics-shapes = { module = "org.jetbrains.androidx.graphics:graphics-shapes", version.ref = "jetbrains-graphics" }
 jetbrains-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }
 jetbrains-navigation-common = { module = "org.jetbrains.androidx.navigation:navigation-common", version.ref = "jetbrains-navigation" }
+jetbrains-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "jetbrains-navigation" }
 jetbrains-navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version.ref = "jetbrains-navigationevent" }
 junit = { module = "junit:junit", version.ref = "junit" }
 koin-android = { module = "io.insert-koin:koin-android" }

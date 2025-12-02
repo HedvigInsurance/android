@@ -16,6 +16,7 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import kotlin.jvm.JvmSuppressWildcards
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
