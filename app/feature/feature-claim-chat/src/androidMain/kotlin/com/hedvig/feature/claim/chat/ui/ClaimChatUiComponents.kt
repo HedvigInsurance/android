@@ -819,7 +819,7 @@ internal fun TextInputBubble(
 @Composable
 internal fun ChatClaimSummary(
   text: String,
-  recordingUrl: String?,
+  recordingUrls: List<String>,
   displayItems: List<Pair<String, String>>,
   onSubmit: () -> Unit,
   isCurrentStep: Boolean,
@@ -828,14 +828,15 @@ internal fun ChatClaimSummary(
   Column(modifier) {
     HedvigText(text)
     HorizontalDivider()
-    if (recordingUrl != null) {
+    recordingUrls.forEach {
       val audioPlayer = rememberAudioPlayer(
         PlayableAudioSource.RemoteUrl(
           SignedAudioUrl
-            .fromSignedAudioUrlString(recordingUrl),
+            .fromSignedAudioUrlString(it),
         ),
       )
       HedvigAudioPlayer(audioPlayer = audioPlayer)
+      Spacer(Modifier.height(8.dp))
     }
     CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
       Column(modifier) {
@@ -1145,7 +1146,7 @@ private fun PreviewSummary() {
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
         ChatClaimSummary(
-          recordingUrl = "",
+          recordingUrls = listOf("", ""),
           displayItems = listOf(
             "Locked" to "Yes",
             "Electric bike" to "Yes",

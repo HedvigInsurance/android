@@ -61,6 +61,8 @@ internal sealed interface ClaimChatEvent {
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
   data class Skip(val id: StepId) : ClaimChatEvent
+
+  data class Regret(val id: StepId) : ClaimChatEvent
   data class Form(val id: StepId, val formInputs: Map<FieldId, List<String?>>) : ClaimChatEvent
 
   data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
@@ -68,6 +70,8 @@ internal sealed interface ClaimChatEvent {
   data object OpenFreeTextOverlay : ClaimChatEvent
 
   data object CloseFreeChatOverlay : ClaimChatEvent
+
+  data object SubmitClaim: ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -359,6 +363,14 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.UpdateFreeText -> {
           freeText = event.text
+        }
+
+        ClaimChatEvent.SubmitClaim -> {
+          // TODO: Implement submit claim logic
+        }
+
+        is ClaimChatEvent.Regret -> {
+          // TODO: Implement regret logic
         }
       }
     }

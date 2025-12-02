@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,14 +18,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
@@ -46,6 +55,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
 import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
+import com.hedvig.feature.claim.chat.ui.ChatClaimSummary
 import com.hedvig.feature.claim.chat.ui.ContentSelectChips
 import com.hedvig.feature.claim.chat.ui.DateSelectBubble
 import com.hedvig.feature.claim.chat.ui.MultiSelectBubbleWithDialog
@@ -140,7 +150,7 @@ private fun ClaimChatScreenContent(
 ) {
   val lazyListState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
     state = lazyListState,
     contentPadding = WindowInsets.safeDrawing.asPaddingValues().plus(PaddingValues(vertical = 16.dp)),
     verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
@@ -186,7 +196,6 @@ private fun ClaimChatScreenContent(
             clock = Clock.System,
             onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             openAppSettings = openAppSettings,
-            modifier = Modifier.padding(horizontal = 16.dp),
             freeText = uiState.freeText,
           )
         }
@@ -203,8 +212,7 @@ private fun ClaimChatScreenContent(
                 option.id,
               ),
             )
-          },
-          modifier = Modifier.padding(horizontal = 16.dp),
+          }
         )
 
 
@@ -237,41 +245,23 @@ private fun ClaimChatScreenContent(
         }
 
         is StepContent.Form -> {
-          HedvigText(
-            item.text,
-            Modifier
-              .padding(horizontal = 16.dp)
-//              .clickable {
-//                onEvent(
-//                  ClaimChatEvent.Form(
-//                    item.id,
-//                    item.stepContent.fields.associate {
-//                      it.id to it.defaultValues
-//                    },
-//                  ),
-//                )
-//              },
-          )
-          Spacer(Modifier.height(8.dp))
-          FormContent(
-            item, item.stepContent,
-            onSkip = {
-              onEvent(ClaimChatEvent.Skip(item.id))
-            },
-            modifier =  Modifier
-              .padding(horizontal = 16.dp)
-          )
+          //FormStep()
         }
 
-        is StepContent.Summary -> BasicText("Summary")
-        is StepContent.Task -> {
-          Column {
-            BasicText("Task")
-            for (description in item.stepContent.descriptions) {
-              BasicText(description)
-            }
-          }
-        }
+        is StepContent.Summary -> ChatClaimSummary(
+          text = item.text,
+          recordingUrls = item.stepContent.audioRecordings.map { it.url },
+          displayItems = item.stepContent.items.map { (title, value) -> title to value },
+          onSubmit = {
+            onEvent(ClaimChatEvent.SubmitClaim)
+          },
+          isCurrentStep = item == uiState.currentStep,
+        )
+        is StepContent.Task -> TaskStep(
+          itemText = item.text,
+          taskContent = item.stepContent
+        )
+
 
         StepContent.Unknown -> BasicText("Unknown")
       }
@@ -283,6 +273,66 @@ private fun ClaimChatScreenContent(
       lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
     }
   }
+}
+
+@Composable
+private fun TaskStep(
+  itemText: String,
+  taskContent: StepContent.Task,
+  modifier: Modifier = Modifier
+) {
+  Column(modifier) {
+    HedvigText(itemText)
+    if (taskContent.descriptions.isNotEmpty()) {
+      Spacer(Modifier.height(16.dp))
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        val color = HedvigTheme.colorScheme.signalGreenElement
+        Spacer(
+          Modifier
+            .wrapContentSize(Alignment.Center)
+            .size(20.dp)
+            .padding(1.dp)
+            .background(color, CircleShape),
+        )
+        Spacer(Modifier.width(8.dp))
+        HedvigChip(
+          item = taskContent.descriptions.last(),
+          showChipAnimatable = remember { Animatable(1f) },
+          itemDisplayName = {
+            taskContent.descriptions.last()
+          },
+          isSelected = false, //should be grey according to figma
+          onItemClick = {},
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun FormStep(
+  item:  ClaimIntentStep,
+  content: StepContent.Form,
+  onEvent: (ClaimChatEvent) -> Unit,
+  onSkip: () -> Unit,
+  modifier: Modifier = Modifier) {
+  HedvigText(
+    item.text,
+    Modifier
+      .padding(horizontal = 16.dp)
+  )
+  Spacer(Modifier.height(8.dp))
+  FormContent(
+    item = item,
+    content = content,
+    onSkip = {
+      onEvent(ClaimChatEvent.Skip(item.id))
+    },
+    modifier = Modifier
+      .padding(horizontal = 16.dp)
+  )
 }
 
 @Composable
@@ -346,7 +396,7 @@ private fun AudioRecordingStep(
 ) {
   Column(modifier) {
     HedvigText(item.text)
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(32.dp))
     AudioRecorderBubble(
       recordingState = stepContent.recordingState,
       clock = clock,
@@ -393,16 +443,14 @@ private fun ContentSelectStep(
           item.text,
         )
         if (targetState) {
-          Spacer(Modifier.height(8.dp))
+          Spacer(Modifier.height(32.dp))
           ContentSelectChips(
             options = options,
             selectedOption = null,
             onOptionClick = onOptionClick,
           )
         }
-
       }
-
     }
     val selected = options.firstOrNull { it.id == selectedOptionId }
     if (
@@ -438,9 +486,6 @@ private fun ContentSelectStep(
           )
         }
       }
-
     }
   }
-
-
 }
