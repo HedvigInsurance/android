@@ -3,7 +3,7 @@ package com.hedvig.audio.player.data
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
-import org.junit.Test
+import kotlin.test.Test
 
 class SignedAudioUrlTest {
   @Suppress("ktlint:standard:max-line-length")

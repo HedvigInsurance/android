@@ -1,6 +1,7 @@
 package com.hedvig.audio.player.data
 
 import androidx.annotation.FloatRange
+import kotlin.jvm.JvmInline
 
 @JvmInline
 value class ProgressPercentage(

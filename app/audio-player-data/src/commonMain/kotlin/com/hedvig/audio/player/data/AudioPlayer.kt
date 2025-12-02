@@ -1,9 +1,8 @@
 package com.hedvig.audio.player.data
 
-import java.io.Closeable
 import kotlinx.coroutines.flow.StateFlow
 
-interface AudioPlayer : Closeable {
+interface AudioPlayer : AutoCloseable {
   val audioPlayerState: StateFlow<AudioPlayerState>
 
   fun initialize()
