@@ -1,7 +1,5 @@
 package com.hedvig.android.audio.player.audioplayer
 
-import android.media.AudioAttributes
-import android.media.MediaPlayer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -9,9 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.hedvig.android.audio.player.internal.getProgressPercentage
-import com.hedvig.android.audio.player.internal.hasReachedTheEnd
-import com.hedvig.android.audio.player.internal.seekToPercent
+import com.hedvig.android.audio.player.CommonMediaPlayer
 import com.hedvig.android.logger.logcat
 import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
@@ -54,7 +50,7 @@ private class AudioPlayerImpl(
   override val audioPlayerState: StateFlow<AudioPlayerState> = _audioPlayerState.asStateFlow()
 
   private val mediaPlayerMutex = Mutex()
-  private var mediaPlayer: MediaPlayer? = null
+  private var mediaPlayer: CommonMediaPlayer? = null
 
   override fun initialize() {
     initializeMediaPlayer()
@@ -123,15 +119,8 @@ private class AudioPlayerImpl(
 
   private fun initializeMediaPlayer() {
     _audioPlayerState.update { AudioPlayerState.Preparing }
-    mediaPlayer = MediaPlayer().apply {
-      setAudioAttributes(
-        AudioAttributes.Builder()
-          .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-          .setUsage(AudioAttributes.USAGE_MEDIA)
-          .build(),
-      )
-      setDataSource(dataSourceUrl)
-      setOnErrorListener { _, what, extra ->
+    mediaPlayer = CommonMediaPlayer(dataSourceUrl).apply {
+      setOnErrorListener { what, extra ->
         logcat { "AudioPlayer failed with code: $what and extras code: $extra" }
         _audioPlayerState.update { AudioPlayerState.Failed }
         true
