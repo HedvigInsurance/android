@@ -219,7 +219,8 @@ private fun ClaimChatScreenContent(
         )
 
         is StepContent.Form -> FormStep(
-          item = item,
+          itemId = item.id,
+          itemText = item.text,
           content = item.stepContent,
           onEvent = onEvent,
           isCurrentStep = isCurrentStep,
@@ -330,7 +331,8 @@ private fun TaskStep(
 
 @Composable
 private fun FormStep(
-  item: ClaimIntentStep,
+  itemId: StepId,
+  itemText: String,
   content: StepContent.Form,
   onEvent: (ClaimChatEvent) -> Unit,
   isCurrentStep: Boolean,
@@ -340,26 +342,25 @@ private fun FormStep(
 ) {
   Column(modifier) {
     HedvigText(
-      item.text,
+      itemText,
     )
     Spacer(Modifier.height(32.dp))
     FormContent(
-      item = item,
       content = content,
       onSkip = {
-        onEvent(ClaimChatEvent.Skip(item.id))
+        onEvent(ClaimChatEvent.Skip(itemId))
       },
       isCurrentStep = isCurrentStep,
       canSkip = canSkip,
       canBeChanged = canBeChanged,
       onRegret = {
-        onEvent(ClaimChatEvent.Regret(item.id))
+        onEvent(ClaimChatEvent.Regret(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
-        onEvent(ClaimChatEvent.SelectFieldAnswer(item.id, fieldId, answer))
+        onEvent(ClaimChatEvent.SelectFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
-        onEvent(ClaimChatEvent.FormSubmit(item.id))
+        onEvent(ClaimChatEvent.FormSubmit(itemId))
       },
     )
   }
@@ -367,7 +368,6 @@ private fun FormStep(
 
 @Composable
 private fun FormContent(
-  item: ClaimIntentStep,
   content: StepContent.Form,
   isCurrentStep: Boolean,
   canSkip: Boolean,
