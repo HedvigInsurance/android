@@ -159,7 +159,7 @@ internal fun AudioRecorderBubble(
   onShouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
-  submitAudioFile: (java.io.File) -> Unit,
+  submitAudioFile: () -> Unit,
   redoRecording: () -> Unit,
   openAppSettings: () -> Unit,
   freeTextAvailable: Boolean,
@@ -219,11 +219,7 @@ internal fun AssistantMessageBubble(
       ) {
         val color = HedvigTheme.colorScheme.signalGreenElement
         Spacer(
-          Modifier
-            .wrapContentSize(Alignment.Center)
-            .size(20.dp)
-            .padding(1.dp)
-            .background(color, CircleShape),
+          Modifier.wrapContentSize(Alignment.Center).size(20.dp).padding(1.dp).background(color, CircleShape),
         )
         Spacer(Modifier.width(8.dp))
         HedvigText(
@@ -402,8 +398,7 @@ internal fun MultiSelectBubbleWithDialog(
         labelText = questionLabel,
         inputText = when {
           selectedOptionIds.isEmpty() -> null
-          else -> options.filter { it.id in selectedOptionIds }
-            .joinToString(transform = RadioOption::text)
+          else -> options.filter { it.id in selectedOptionIds }.joinToString(transform = RadioOption::text)
         },
         modifier = modifier,
         enabled = isCurrentStep || canBeChanged,
@@ -442,8 +437,7 @@ private fun UploadFilesBubbleContent(
         val allFiles = localFiles + uploadedFiles
         if (allFiles.isNotEmpty()) {
           LazyRow(
-            Modifier
-              .height(120.dp),
+            Modifier.height(120.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(top = 8.dp),
           ) {
@@ -526,8 +520,7 @@ internal fun DeflectBubble(
             HedvigButton(
               buttonSize = ButtonDefaults.ButtonSize.Medium,
               enabled = true,
-              text =
-                partner.buttonTitle,
+              text = partner.buttonTitle,
               onClick = {
                 openUrl(partner.url)
               },
@@ -607,8 +600,7 @@ internal fun TextInputBubble(
       val focusRequester = remember { FocusRequester() }
       var textValue by rememberSaveable {
         mutableStateOf(
-          text
-            ?: "",
+          text ?: "",
         )
       }
       val focusManager = LocalFocusManager.current
@@ -676,8 +668,7 @@ internal fun ChatClaimSummary(
     if (recordingUrl != null) {
       val audioPlayer = rememberAudioPlayer(
         PlayableAudioSource.RemoteUrl(
-          SignedAudioUrl
-            .fromSignedAudioUrlString(recordingUrl),
+          SignedAudioUrl.fromSignedAudioUrlString(recordingUrl),
         ),
       )
       HedvigAudioPlayer(audioPlayer = audioPlayer)

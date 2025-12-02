@@ -8,7 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -232,8 +231,7 @@ private fun ClaimChatScreenContent(
         is StepContent.Form -> {
           HedvigText(
             item.text,
-            Modifier
-              .padding(horizontal = 16.dp)
+            Modifier.padding(horizontal = 16.dp),
 //              .clickable {
 //                onEvent(
 //                  ClaimChatEvent.Form(
@@ -251,8 +249,7 @@ private fun ClaimChatScreenContent(
             onSkip = {
               onEvent(ClaimChatEvent.Skip(item.id))
             },
-            modifier =  Modifier
-              .padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
 
@@ -280,14 +277,14 @@ private fun ClaimChatScreenContent(
 
 @Composable
 private fun FormContent(
-  item:  ClaimIntentStep,
+  item: ClaimIntentStep,
   content: StepContent.Form,
   onSkip: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(
     modifier,
-    verticalArrangement = Arrangement.spacedBy(8.dp)
+    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     content.fields.forEach { field ->
 //      when (field.type) {
@@ -346,7 +343,7 @@ private fun AudioRecordingStep(
       onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
       startRecording = startRecording,
       stopRecording = stopRecording,
-      submitAudioFile = { _ ->
+      submitAudioFile = {
         submitAudioFile()
       },
       redoRecording = redoRecording,
@@ -377,8 +374,7 @@ private fun ContentSelectStep(
     AnimatedContent(
       item == currentStep,
       transitionSpec = {
-        (fadeIn(animationSpec = tween(220, delayMillis = 90))
-          .togetherWith(fadeOut(animationSpec = tween(90))))
+        (fadeIn(animationSpec = tween(220, delayMillis = 90)).togetherWith(fadeOut(animationSpec = tween(90))))
       },
     ) { targetState ->
       Column {
@@ -398,15 +394,12 @@ private fun ContentSelectStep(
 
     }
     val selected = options.firstOrNull { it.id == selectedOptionId }
-    if (
-      selected != null
-    ) {
+    if (selected != null) {
       Column {
         Spacer(Modifier.height(8.dp))
         Row(
           horizontalArrangement = Arrangement.End,
-          modifier = Modifier
-            .fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth(),
         ) {
           val showChipAnimatable = remember {
             Animatable(0.0f)

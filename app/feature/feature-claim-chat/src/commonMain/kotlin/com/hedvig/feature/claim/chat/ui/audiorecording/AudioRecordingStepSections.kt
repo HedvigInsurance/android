@@ -32,7 +32,6 @@ import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.claims_skip_button
-import java.io.File
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
 
@@ -44,7 +43,7 @@ internal fun AudioRecordingStep(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
-  submitAudioFile: (File) -> Unit,
+  submitAudioFile: () -> Unit,
   redo: () -> Unit,
   openAppSettings: () -> Unit,
   freeTextAvailable: Boolean,
@@ -171,7 +170,7 @@ private fun AudioRecordingSection(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   startRecording: () -> Unit,
   stopRecording: () -> Unit,
-  submitAudioFile: (File) -> Unit,
+  submitAudioFile: () -> Unit,
   redo: () -> Unit,
   openAppSettings: () -> Unit,
   launchFreeText: () -> Unit,

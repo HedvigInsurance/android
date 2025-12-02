@@ -2,7 +2,6 @@ package com.hedvig.feature.claim.chat.ui.audiorecording
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
@@ -35,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -74,7 +71,6 @@ import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
-import java.io.File
 import java.text.DecimalFormat
 import kotlin.math.sqrt
 import kotlin.time.Clock
@@ -88,7 +84,7 @@ internal fun AudioRecorder(
   startRecording: () -> Unit,
   clock: Clock,
   stopRecording: () -> Unit,
-  submitAudioFile: (File) -> Unit,
+  submitAudioFile: () -> Unit,
   redo: () -> Unit,
   allowFreeText: Boolean,
   onLaunchFreeText: () -> Unit,
@@ -100,14 +96,10 @@ internal fun AudioRecorder(
   when (uiState) {
     is AudioRecordingStepState.AudioRecording.Playback -> Playback(
       uiState = uiState,
-      submit = {
-        val filePath = uiState.filePath
-        val audioFile = File(filePath)
-        submitAudioFile(audioFile)
-      },
+      submit = submitAudioFile,
       redo = redo,
       modifier = modifier,
-      isCurrentStep = isCurrentStep
+      isCurrentStep = isCurrentStep,
     )
 
     else -> {
@@ -168,9 +160,7 @@ internal fun AudioRecorder(
               if (isRecording) 2.dp else 16.dp
             }
             Box(
-              Modifier
-                .size(size)
-                .background(color, RoundedCornerShape(cornerRadius)),
+              Modifier.size(size).background(color, RoundedCornerShape(cornerRadius)),
             )
           }
         }
@@ -189,14 +179,14 @@ internal fun AudioRecorder(
             val animationSpecFade = tween<Float>(MotionTokens.DurationMedium1.toInt())
             val animationSpecFloat = tween<Float>(MotionTokens.DurationLong1.toInt())
             val scale = 0.6f
-            val enterTransition =
-              slideInVertically(animationSpec) +
-                fadeIn(animationSpecFade) +
-                scaleIn(animationSpecFloat, initialScale = scale)
-            val exitTransition =
-              slideOutVertically(animationSpec) +
-                fadeOut(animationSpecFade) +
-                scaleOut(animationSpecFloat, targetScale = scale)
+            val enterTransition = slideInVertically(animationSpec) + fadeIn(animationSpecFade) + scaleIn(
+              animationSpecFloat,
+              initialScale = scale,
+            )
+            val exitTransition = slideOutVertically(animationSpec) + fadeOut(animationSpecFade) + scaleOut(
+              animationSpecFloat,
+              targetScale = scale,
+            )
             enterTransition togetherWith exitTransition
           },
           contentAlignment = Alignment.Center,
@@ -211,11 +201,9 @@ internal fun AudioRecorder(
               text = label,
               style = HedvigTheme.typography.bodySmall,
               textAlign = TextAlign.Center,
-              modifier = Modifier
-                .padding(bottom = 16.dp)
-                .clearAndSetSemantics {
-                  contentDescription = durationDescription
-                },
+              modifier = Modifier.padding(bottom = 16.dp).clearAndSetSemantics {
+                contentDescription = durationDescription
+              },
             )
           } else {
             if (allowFreeText) {
@@ -261,18 +249,14 @@ private fun Playback(
         text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         isLoading = uiState.isLoading,
         enabled = uiState.canSubmit,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
       )
 
       HedvigTextButton(
         text = stringResource(Res.string.EMBARK_RECORD_AGAIN),
         onClick = redo,
         enabled = uiState.canSubmit,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
       )
     }
   }
@@ -286,8 +270,7 @@ private fun Playback(
 fun RecordingAmplitudeIndicator(amplitude: Int, modifier: Modifier = Modifier) {
   val color = LocalContentColor.current.copy(alpha = 0.12f)
   val animated by animateIntAsState(
-    targetValue = (sqrt(amplitude.toDouble()).toInt() * 10)
-      .coerceAtMost(300),
+    targetValue = (sqrt(amplitude.toDouble()).toInt() * 10).coerceAtMost(300),
     animationSpec = spring(
       stiffness = Spring.StiffnessLow,
     ),
