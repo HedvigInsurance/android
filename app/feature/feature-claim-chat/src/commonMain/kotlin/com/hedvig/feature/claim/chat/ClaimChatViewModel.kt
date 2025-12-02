@@ -59,7 +59,7 @@ internal sealed interface ClaimChatEvent {
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
 
-  data class SelectFieldAnswer(val stepId: StepId, val fieldId: FieldId, val answer: String) : ClaimChatEvent
+  data class SelectFieldAnswer(val stepId: StepId, val fieldId: FieldId, val answer: String?) : ClaimChatEvent
   data class Skip(val id: StepId) : ClaimChatEvent
 
   data class Regret(val id: StepId) : ClaimChatEvent
@@ -396,15 +396,17 @@ internal class ClaimChatPresenter(
             val newFields = stepContent.fields.map { field ->
               if (field.id == event.fieldId) {
                 when (field.type) {
-                  StepContent.Form.FieldType.TEXT -> field.copy(selectedOptions = listOf(event.answer))
-                  StepContent.Form.FieldType.DATE -> field.copy(selectedOptions = listOf(event.answer))
-                  StepContent.Form.FieldType.NUMBER -> field.copy(selectedOptions = listOf(event.answer))
-                  StepContent.Form.FieldType.SINGLE_SELECT -> field.copy(selectedOptions = listOf(event.answer))
+                  StepContent.Form.FieldType.TEXT,
+                  StepContent.Form.FieldType.DATE,
+                  StepContent.Form.FieldType.NUMBER,
+                  StepContent.Form.FieldType.SINGLE_SELECT,
+                  StepContent.Form.FieldType.BINARY,
+                           null -> field.copy(selectedOptions = event.answer?.let{
+                    listOf(it)
+                  } ?: emptyList())
                   StepContent.Form.FieldType.MULTI_SELECT ->
-                    field.copy(selectedOptions = field.selectedOptions + event.answer)
-
-                  StepContent.Form.FieldType.BINARY -> field.copy(selectedOptions = listOf(event.answer))
-                  null -> field.copy(selectedOptions = listOf(event.answer))
+                    field.copy(selectedOptions = event.answer?.let{field.selectedOptions + event.answer}
+                      ?:field.selectedOptions)
                 }
               } else {
                 field

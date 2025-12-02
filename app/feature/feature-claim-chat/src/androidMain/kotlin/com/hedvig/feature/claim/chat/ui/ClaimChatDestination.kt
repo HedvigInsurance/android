@@ -64,6 +64,8 @@ import com.hedvig.feature.claim.chat.ui.TextInputBubble
 import com.hedvig.feature.claim.chat.ui.YesNoBubble
 import hedvig.resources.R
 import kotlin.time.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toLocalDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -370,7 +372,7 @@ private fun FormContent(
   canBeChanged: Boolean,
   onRegret: () -> Unit,
   onSubmit: () -> Unit,
-  onSelectFieldAnswer: (fieldId: FieldId, answer: String) -> Unit,
+  onSelectFieldAnswer: (fieldId: FieldId, answer: String?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -381,15 +383,24 @@ private fun FormContent(
       content.fields.forEach { field ->
         when (field.type) {
           StepContent.Form.FieldType.TEXT -> {
-//          TextInputBubble(
-//            //todo
-//          )
+          TextInputBubble(
+            questionLabel = field.title,
+            text = field.selectedOptions.getOrNull(0),
+            suffix = field.suffix,
+            onInput = { answer ->
+              onSelectFieldAnswer(field.id, answer)
+            },
+          )
           }
 
           StepContent.Form.FieldType.DATE -> {
-//          DateSelectBubble(
-//            //todo
-//          )
+          DateSelectBubble(
+            questionLabel = field.title,
+            date = field.selectedOptions.getOrNull(0) ?.let{
+              LocalDate.parse(it)
+            } ,
+            modifier = Modifier.fillMaxWidth()
+          )
           }
 
           StepContent.Form.FieldType.NUMBER -> {

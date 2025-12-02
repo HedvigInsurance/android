@@ -6,10 +6,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,7 +30,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -74,8 +70,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HighlightLabel
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
@@ -119,10 +113,7 @@ import hedvig.resources.file_upload_take_photo
 import hedvig.resources.file_upload_upload_files
 import hedvig.resources.general_save_button
 import java.io.File
-import kotlin.random.Random
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
@@ -255,26 +246,26 @@ internal fun YesNoBubble(
 ) {
   val options = listOf(
     StepContent.ContentSelect.Option(
-      "true", stringResource(Res.string.GENERAL_YES)
+      "true", stringResource(Res.string.GENERAL_YES),
     ),
     StepContent.ContentSelect.Option(
-      "false", stringResource(Res.string.GENERAL_NO)
-    )
+      "false", stringResource(Res.string.GENERAL_NO),
+    ),
   )
   Row(
-    modifier= modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically
+    modifier = modifier.fillMaxWidth(),
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     HedvigText(
       style = HedvigTheme.typography.label,
-      text = questionText
+      text = questionText,
     )
     Spacer(Modifier.width(16.dp))
     ContentSelectChips(
       options = options,
-      selectedOption = answerSelected?.let{
+      selectedOption = answerSelected?.let {
         if (it == options[0].title) options[0] else options[1]
-      } ,
+      },
       onOptionClick = { option ->
         onSelect(option.title)
       },
@@ -654,33 +645,17 @@ data class DeflectPartner(
 internal fun DateSelectBubble(
   questionLabel: String?,
   date: LocalDate?,
-  isPrefilled: Boolean,
-  isCurrentStep: Boolean,
-  canSkip: Boolean,
-  canBeChanged: Boolean,
-  onSkip: () -> Unit,
-  onSubmit: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  StandardBubble(
-    isPrefilledByAI = isPrefilled,
-    isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    onSubmit = onSubmit,
+  val datePickerState = DatePickerUiState(
+    locale = getLocale(),
+    initiallySelectedDate = date,
+  )
+  DatePickerWithDialog(
+    datePickerState,
+    canInteract = true,
+    startText = questionLabel ?: "", // todo
     modifier = modifier,
-    selectedAnswer = date,
-    onSkip = onSkip,
-    content = {
-      val datePickerState = DatePickerUiState(
-        locale = getLocale(),
-        initiallySelectedDate = date,
-      )
-      DatePickerWithDialog(
-        datePickerState,
-        canInteract = canBeChanged,
-        startText = questionLabel ?: "", // todo
-      )
-    },
   )
 }
 
@@ -689,78 +664,61 @@ internal fun TextInputBubble(
   questionLabel: String,
   text: String?,
   suffix: String?,
-  isPrefilled: Boolean,
-  isCurrentStep: Boolean,
-  canBeChanged: Boolean,
-  canSkip: Boolean,
   onInput: (String?) -> Unit,
-  onSubmit: (String) -> Unit,
-  onSkip: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  StandardBubble(
-    isPrefilledByAI = isPrefilled,
-    isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    onSubmit = onSubmit,
-    modifier = modifier,
-    selectedAnswer = text,
-    onSkip = onSkip,
-    content = {
-      val focusRequester = remember { FocusRequester() }
-      var textValue by rememberSaveable {
-        mutableStateOf(
-          text
-            ?: "",
-        )
-      }
-      val focusManager = LocalFocusManager.current
-      HedvigTextField(
-        text = textValue,
-        trailingContent = {},
-        onValueChange = onValueChange@{ newValue ->
-          textValue = newValue
-          onInput(newValue.ifBlank { null })
-        },
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        labelText = questionLabel,
-        modifier = Modifier.focusRequester(focusRequester),
-        enabled = canBeChanged,
-        suffix = {
+  val focusRequester = remember { FocusRequester() }
+  var textValue by rememberSaveable {
+    mutableStateOf(
+      text
+        ?: "",
+    )
+  }
+  val focusManager = LocalFocusManager.current
+  HedvigTextField(
+    text = textValue,
+    trailingContent = {},
+    onValueChange = onValueChange@{ newValue ->
+      textValue = newValue
+      onInput(newValue.ifBlank { null })
+    },
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    labelText = questionLabel,
+    modifier = modifier.focusRequester(focusRequester),
+    enabled = true,
+    suffix = {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        if (suffix != null) {
+          HedvigText(suffix)
+        }
+        AnimatedVisibility(textValue.isNotEmpty()) {
           Row(verticalAlignment = Alignment.CenterVertically) {
-            if (suffix != null) {
-              HedvigText(suffix)
-            }
-            AnimatedVisibility(textValue.isNotEmpty()) {
-              Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.width(16.dp))
-                IconButton(
-                  onClick = {
-                    onInput("")
-                    textValue = ""
-                  },
-                  Modifier.size(24.dp),
-                ) {
-                  Icon(
-                    HedvigIcons.Close,
-                    stringResource(Res.string.GENERAL_REMOVE),
-                  )
-                }
-              }
+            Spacer(Modifier.width(16.dp))
+            IconButton(
+              onClick = {
+                onInput("")
+                textValue = ""
+              },
+              Modifier.size(24.dp),
+            ) {
+              Icon(
+                HedvigIcons.Close,
+                stringResource(Res.string.GENERAL_REMOVE),
+              )
             }
           }
-        },
-        keyboardOptions = KeyboardOptions(
-          autoCorrectEnabled = false,
-          imeAction = ImeAction.Done,
-        ),
-        keyboardActions = KeyboardActions(
-          onDone = {
-            focusManager.clearFocus()
-          },
-        ),
-      )
+        }
+      }
     },
+    keyboardOptions = KeyboardOptions(
+      autoCorrectEnabled = false,
+      imeAction = ImeAction.Done,
+    ),
+    keyboardActions = KeyboardActions(
+      onDone = {
+        focusManager.clearFocus()
+      },
+    ),
   )
 }
 
@@ -956,12 +914,6 @@ private fun PreviewWithAssistantBubble() {
         DateSelectBubble(
           questionLabel = "Date of occurence",
           date = LocalDate(2025, 11, 10),
-          isPrefilled = true,
-          isCurrentStep = false,
-          canSkip = false,
-          canBeChanged = true,
-          onSubmit = {},
-          onSkip = {},
         )
         AssistantMessageBubble(
           text = "Processing information",
@@ -1012,7 +964,7 @@ private fun PreviewClaimChatComponents() {
         YesNoBubble(
           answerSelected = "No",
           onSelect = {},
-          questionText = "Was it electric?"
+          questionText = "Was it electric?",
         )
         Spacer(Modifier.height(16.dp))
         SingleSelectBubbleWithDialog(
@@ -1050,24 +1002,12 @@ private fun PreviewClaimChatComponents() {
         DateSelectBubble(
           questionLabel = "Date of occurence",
           date = LocalDate(2025, 11, 10),
-          isPrefilled = true,
-          isCurrentStep = false,
-          canSkip = false,
-          canBeChanged = true,
-          onSubmit = {},
-          onSkip = {},
         )
         Spacer(Modifier.height(16.dp))
         TextInputBubble(
           questionLabel = "Re-purchase price",
           text = "15000",
           suffix = "SEK",
-          isPrefilled = true,
-          isCurrentStep = true,
-          canBeChanged = true,
-          canSkip = true,
-          onSubmit = {},
-          onSkip = {},
           onInput = {},
         )
         Spacer(Modifier.height(16.dp))
