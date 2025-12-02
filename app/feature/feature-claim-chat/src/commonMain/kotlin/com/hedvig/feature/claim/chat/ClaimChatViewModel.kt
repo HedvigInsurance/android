@@ -25,6 +25,7 @@ import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.*
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
+import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
@@ -103,6 +104,7 @@ internal class ClaimChatViewModel(
   submitSelectUseCase: SubmitSelectUseCase,
   submitSummaryUseCase: SubmitSummaryUseCase,
   audioRecordingManager: AudioRecordingManager,
+  skipStepUseCase: SkipStepUseCase,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
   ClaimChatUiState.Initializing,
   ClaimChatPresenter(
@@ -115,7 +117,8 @@ internal class ClaimChatViewModel(
     submitFormUseCase,
     submitSelectUseCase,
     submitSummaryUseCase,
-    audioRecordingManager,
+    skipStepUseCase,
+    audioRecordingManager
   ),
 )
 
@@ -129,6 +132,7 @@ internal class ClaimChatPresenter(
   private val submitFormUseCase: SubmitFormUseCase,
   private val submitSelectUseCase: SubmitSelectUseCase,
   private val submitSummaryUseCase: SubmitSummaryUseCase,
+  private val skipStepUseCase: SkipStepUseCase,
   private val audioRecordingManager: AudioRecordingManager,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
@@ -373,7 +377,18 @@ internal class ClaimChatPresenter(
         ClaimChatEvent.CloseFreeChatOverlay -> showFreeTextOverlay = false
         ClaimChatEvent.OpenFreeTextOverlay -> showFreeTextOverlay = true
         is ClaimChatEvent.Skip -> {
-          // TODO: Implement skip logic
+          launch {
+            skipStepUseCase.invoke(event.id)
+              .fold(
+                ifLeft = { error("todo left skipStepUseCase $it") },
+                ifRight = { claimIntent ->
+//                  val newFields = stepContent.fields.map { field ->
+//                          field.copy(selectedOptions = emptyList())
+//                  } //todo: remove selected options on all skipped steps!
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
+          }
         }
 
         is ClaimChatEvent.UpdateFreeText -> {

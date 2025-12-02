@@ -243,7 +243,7 @@ private fun ClaimChatScreenContent(
           taskContent = item.stepContent,
         )
 
-        StepContent.Unknown -> BasicText("Unknown") //todo
+        StepContent.Unknown -> HedvigText("Unknown") //todo
       }
     }
   }
@@ -319,7 +319,7 @@ private fun TaskStep(
               itemDisplayName = {
                 target
               },
-              isSelected = false, //should be grey according to figma
+              isSelected = false,
               onItemClick = {},
             )
           }
