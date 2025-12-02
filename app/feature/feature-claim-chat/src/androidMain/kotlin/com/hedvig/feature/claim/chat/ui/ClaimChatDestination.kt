@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -404,10 +405,16 @@ private fun FormContent(
           }
 
           StepContent.Form.FieldType.NUMBER -> {
-//          TextInputBubble(
-//            //todo
-//          )
-          } //add: keyboard choice
+            TextInputBubble(
+              questionLabel = field.title,
+              text = field.selectedOptions.getOrNull(0),
+              suffix = field.suffix,
+              onInput = { answer ->
+                onSelectFieldAnswer(field.id, answer)
+              },
+              keyboardType = KeyboardType.Number
+            )
+          }
           StepContent.Form.FieldType.SINGLE_SELECT -> {
 //          SingleSelectBubbleWithDialog(
 //            //todo

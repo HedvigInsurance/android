@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -255,6 +256,7 @@ internal fun YesNoBubble(
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.End
   ) {
     HedvigText(
       style = HedvigTheme.typography.label,
@@ -666,6 +668,7 @@ internal fun TextInputBubble(
   suffix: String?,
   onInput: (String?) -> Unit,
   modifier: Modifier = Modifier,
+  keyboardType: KeyboardType = KeyboardType.Unspecified,
 ) {
   val focusRequester = remember { FocusRequester() }
   var textValue by rememberSaveable {
@@ -713,6 +716,7 @@ internal fun TextInputBubble(
     keyboardOptions = KeyboardOptions(
       autoCorrectEnabled = false,
       imeAction = ImeAction.Done,
+      keyboardType = keyboardType
     ),
     keyboardActions = KeyboardActions(
       onDone = {
