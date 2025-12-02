@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.compose.ui.LocalNavAnimatedVisibilityScope
 import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.compose.ui.globalSharedElement
 import com.hedvig.android.compose.ui.rememberGlobalSharedContentState
