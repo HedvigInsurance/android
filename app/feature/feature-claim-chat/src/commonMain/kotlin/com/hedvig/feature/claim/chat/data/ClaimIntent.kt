@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat.data
 
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
@@ -99,7 +100,11 @@ internal sealed interface StepContent {
   ) : StepContent {
 
     fun canContinue(): Boolean {
-      return fields.filter { it.isRequired }.all { it.selectedOptions.isNotEmpty() }
+      return fields.filter { it.isRequired }.all {
+        logcat { "Mariia: field ${it.title} selectedOptions: ${it.selectedOptions}" }
+        it.selectedOptions.isNotEmpty()
+
+      }
     }
 
     data class Field(
