@@ -17,8 +17,7 @@ class SignedAudioUrl private constructor(
     if (this === other) return true
     if (javaClass != other?.javaClass) return false
     other as SignedAudioUrl
-    if (urlWithoutQueryString != other.urlWithoutQueryString) return false
-    return true
+    return urlWithoutQueryString == other.urlWithoutQueryString
   }
 
   override fun hashCode(): Int {

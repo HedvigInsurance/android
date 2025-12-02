@@ -220,7 +220,7 @@ internal class AudioRecordingViewModel(
 
   fun stopRecording() {
     val currentState = uiState.value
-    if (currentState !is WhatHappenedUiState.AudioRecording.Recording) {
+    if (currentState !is Recording) {
       throw IllegalStateException("Must be in Recording-state to stop recording")
     }
     cleanup()

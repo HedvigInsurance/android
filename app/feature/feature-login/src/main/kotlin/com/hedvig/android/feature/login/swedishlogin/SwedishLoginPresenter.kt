@@ -112,8 +112,7 @@ internal class SwedishLoginPresenter(
       if (bankIdProperties != null) {
         return@LaunchedEffect
       }
-      val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
-      when (result) {
+      when (val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)) {
         is AuthAttemptResult.BankIdProperties -> bankIdProperties = result
         is AuthAttemptResult.Error -> {
           logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
@@ -159,8 +158,7 @@ internal class SwedishLoginPresenter(
         navigateToLoginScreen,
       )
     }
-    val loginStatusResultValue = loginStatusResult
-    val bankIdUiState: BankIdUiState = when (loginStatusResultValue) {
+    val bankIdUiState: BankIdUiState = when (val loginStatusResultValue = loginStatusResult) {
       null -> BankIdUiState.Loading
       is LoginStatusResult.Failed -> BankIdUiState.BankIdError(loginStatusResultValue.localisedMessage)
       is LoginStatusResult.Exception -> BankIdUiState.BankIdError(loginStatusResultValue.message)

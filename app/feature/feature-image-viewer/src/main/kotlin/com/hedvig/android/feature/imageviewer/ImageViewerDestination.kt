@@ -21,15 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
@@ -42,7 +41,11 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.mxalbert.zoomable.OverZoomConfig
 import com.mxalbert.zoomable.Zoomable
 import com.mxalbert.zoomable.rememberZoomableState
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import hedvig.resources.TALKBACK_PINCH_TO_ZOOM
+import hedvig.resources.general_back_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ImageViewerDestination(
@@ -68,7 +71,7 @@ internal fun ImageViewerDestination(
           .diskCacheKey(cacheKey)
           .memoryCacheKey(cacheKey)
           .build(),
-        contentDescription = stringResource(R.string.TALKBACK_PINCH_TO_ZOOM),
+        contentDescription = stringResource(Res.string.TALKBACK_PINCH_TO_ZOOM),
         modifier = Modifier.fillMaxSize()
           .semantics {
             role = Role.Image
@@ -88,7 +91,7 @@ internal fun ImageViewerDestination(
               .fillMaxWidth()
               .height(64.dp),
           ) {
-            val description = stringResource(R.string.general_back_button)
+            val description = stringResource(Res.string.general_back_button)
             IconButton(
               onClick = navigateUp,
             ) {
@@ -105,7 +108,7 @@ internal fun ImageViewerDestination(
               ) {
                 Icon(
                   imageVector = HedvigIcons.ArrowNorthEast,
-                  contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+                  contentDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
                   modifier = Modifier.size(24.dp),
                 )
               }

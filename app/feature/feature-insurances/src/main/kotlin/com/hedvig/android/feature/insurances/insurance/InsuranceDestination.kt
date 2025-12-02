@@ -31,8 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -41,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -83,8 +81,19 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
-import hedvig.resources.R
+import hedvig.resources.A11Y_VIEW_DETAILS
+import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
+import hedvig.resources.DASHBOARD_SCREEN_TITLE
+import hedvig.resources.INSURANCES_NO_ACTIVE
+import hedvig.resources.INSURANCE_ADDONS_SUBHEADING
+import hedvig.resources.INSURANCE_OFFERS_SUBHEADING
+import hedvig.resources.Res
+import hedvig.resources.insurances_tab_moving_flow_info_button_title
+import hedvig.resources.insurances_tab_moving_flow_info_title
+import hedvig.resources.insurances_tab_terminated_insurance_subtitile
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.pluralStringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InsuranceDestination(
@@ -178,7 +187,6 @@ private fun InsuranceScreen(
   }
 }
 
-@Suppress("UnusedReceiverParameter")
 @Composable
 private fun InsuranceScreenContent(
   uiState: InsuranceUiState,
@@ -211,7 +219,7 @@ private fun InsuranceScreenContent(
         },
     ) {
       HedvigText(
-        text = stringResource(id = R.string.DASHBOARD_SCREEN_TITLE),
+        text = stringResource(Res.string.DASHBOARD_SCREEN_TITLE),
         style = HedvigTheme.typography.headlineSmall,
       )
     }
@@ -236,7 +244,7 @@ private fun InsuranceScreenContent(
           if (uiState.crossSells.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             CrossSellsSection(
-              title = stringResource(R.string.INSURANCE_OFFERS_SUBHEADING),
+              title = stringResource(Res.string.INSURANCE_OFFERS_SUBHEADING),
               crossSells = uiState.crossSells,
               onCrossSellClick = onCrossSellClick,
               modifier = Modifier.padding(horizontal = 16.dp),
@@ -254,7 +262,7 @@ private fun InsuranceScreenContent(
                 .semantics { heading() },
               verticalAlignment = Alignment.CenterVertically,
             ) {
-              HedvigText(text = stringResource(R.string.INSURANCE_ADDONS_SUBHEADING))
+              HedvigText(text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING))
             }
             Spacer(Modifier.height(16.dp))
             TravelAddonBanner(
@@ -278,7 +286,7 @@ private fun InsuranceScreenContent(
         if (quantityOfCancelledInsurances > 0) {
           TerminatedContractsButton(
             text = pluralStringResource(
-              R.plurals.insurances_tab_terminated_insurance_subtitile,
+              Res.plurals.insurances_tab_terminated_insurance_subtitile,
               quantityOfCancelledInsurances,
               quantityOfCancelledInsurances,
             ),
@@ -303,7 +311,7 @@ private fun ContractsSection(
   Box(modifier) {
     if (contracts.isEmpty()) {
       EmptyState(
-        text = stringResource(id = R.string.INSURANCES_NO_ACTIVE),
+        text = stringResource(Res.string.INSURANCES_NO_ACTIVE),
         description = null,
       )
     } else {
@@ -343,7 +351,7 @@ private fun InsuranceCard(
     modifier = modifier
       .padding(horizontal = 16.dp)
       .clip(HedvigTheme.shapes.cornerXLarge)
-      .clickable(onClickLabel = stringResource(R.string.A11Y_VIEW_DETAILS)) {
+      .clickable(onClickLabel = stringResource(Res.string.A11Y_VIEW_DETAILS)) {
         onInsuranceCardClick(contract.id)
       },
     fallbackPainter = contract.createPainter(),
@@ -365,10 +373,10 @@ private fun TerminatedContractsButton(text: String, onClick: () -> Unit, modifie
 private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modifier: Modifier = Modifier) {
   Column(modifier) {
     HedvigNotificationCard(
-      message = stringResource(R.string.insurances_tab_moving_flow_info_title),
+      message = stringResource(Res.string.insurances_tab_moving_flow_info_title),
       priority = NotificationPriority.Campaign,
       style = InfoCardStyle.Button(
-        stringResource(R.string.insurances_tab_moving_flow_info_button_title),
+        stringResource(Res.string.insurances_tab_moving_flow_info_button_title),
         dropUnlessResumed { onNavigateToMovingFlow() },
       ),
     )
@@ -385,7 +393,7 @@ private fun TravelAddonBanner(
     modifier = modifier,
     title = travelAddonBannerInfo.title,
     description = travelAddonBannerInfo.description,
-    buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
     labels = travelAddonBannerInfo.labels,
     onButtonClick = dropUnlessResumed { launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds) },
   )

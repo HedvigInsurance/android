@@ -108,7 +108,7 @@ private fun BottomSheetWithList(sheetState: HedvigBottomSheetState<Unit>) {
       Spacer(Modifier.height(8.dp))
       HedvigButton(
         onClick = sheetState::dismiss,
-        text = stringResource(id = R.string.general_close_button),
+        text = stringResource(R.string.general_close_button),
         enabled = true,
         buttonStyle = Ghost,
         modifier = Modifier.fillMaxWidth(),
@@ -147,7 +147,7 @@ private fun BottomSheetWithLongList(sheetState: HedvigBottomSheetState<Unit>) {
       ) { HedvigText("Save") }
       HedvigButton(
         onClick = sheetState::dismiss,
-        text = stringResource(id = R.string.general_close_button),
+        text = stringResource(R.string.general_close_button),
         enabled = true,
         buttonStyle = Ghost,
         modifier = Modifier.fillMaxWidth(),
@@ -184,7 +184,7 @@ private fun BottomSheetWithEditText(sheetState: HedvigBottomSheetState<Unit>) {
       Spacer(Modifier.height(8.dp))
       HedvigButton(
         onClick = sheetState::dismiss,
-        text = stringResource(id = R.string.general_close_button),
+        text = stringResource(R.string.general_close_button),
         enabled = true,
         buttonStyle = Ghost,
         modifier = Modifier.fillMaxWidth(),

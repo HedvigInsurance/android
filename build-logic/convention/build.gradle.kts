@@ -14,6 +14,7 @@ java {
 kotlin {
   compilerOptions {
     jvmTarget.set(JvmTarget.JVM_21)
+    compilerOptions.freeCompilerArgs.add("-Xcontext-parameters")
   }
 }
 
@@ -22,6 +23,7 @@ dependencies {
   compileOnly(libs.androidMultiplatform.gradlePlugin)
   compileOnly(libs.apollo.gradlePlugin)
   compileOnly(libs.compose.compilerGradlePlugin)
+  compileOnly(libs.compose.gradlePlugin)
   compileOnly(libs.kotlin.gradlePlugin)
   compileOnly(libs.kotlinter.gradlePlugin)
   compileOnly(libs.room.gradlePlugin)

@@ -1,12 +1,7 @@
-@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
-
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
-  alias(libs.plugins.composeJetbrainsCompilerGradlePlugin)
 }
 
 hedvig {
@@ -17,13 +12,11 @@ hedvig {
 
 kotlin {
   sourceSets {
-    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
     commonMain.dependencies {
-      implementation(compose.animation)
-      implementation(compose.foundation)
-      implementation(compose.material3)
-      implementation(compose.material)
-      implementation(compose.ui)
+      implementation(libs.jetbrains.compose.animation)
+      implementation(libs.jetbrains.compose.foundation)
+      implementation(libs.jetbrains.compose.material3)
+      implementation(libs.jetbrains.compose.ui)
       implementation(libs.androidx.lifecycle.compose)
       implementation(libs.apollo.api)
       implementation(libs.apollo.normalizedCache)

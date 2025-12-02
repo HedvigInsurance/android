@@ -16,7 +16,7 @@ import com.hedvig.android.data.claimflow.ItemModel.New
 import com.hedvig.android.data.claimflow.ItemProblem
 import com.hedvig.android.data.claimflow.LocationOption
 import com.hedvig.android.data.claimflow.SubmittedContent
-import com.hedvig.android.design.system.hedvig.datepicker.hedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import hedvig.resources.R
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import octopus.type.FlowClaimItemBrandInput
 import octopus.type.FlowClaimItemModelInput
 
@@ -62,7 +61,7 @@ internal class ClaimSummaryViewModel(
         val availableItemBrands = summary.availableItemBrands ?: return@run null
         val selectedItemBrand = summary.selectedItemBrand ?: return@run null
         val selectedItemType = availableItemBrands
-          .filterIsInstance<ItemBrand.Known>()
+          .filterIsInstance<Known>()
           .firstOrNull { itemBrand ->
             itemBrand.asKnown()?.itemBrandId == selectedItemBrand
           } ?: return@run null
@@ -165,7 +164,7 @@ internal data class ClaimSummaryInfoUiState(
 
       // Skadedatum
       val incidentDateText = if (dateOfIncident != null) {
-        dateOfIncident.toJavaLocalDate().format(hedvigDateTimeFormatter(locale))
+        HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(dateOfIncident)
       } else {
         null
       }
@@ -195,7 +194,7 @@ internal data class ClaimSummaryInfoUiState(
       }
       // Inköpsdatum
       val purchaseDateText = if (dateOfPurchase != null) {
-        dateOfPurchase.toJavaLocalDate().format(hedvigDateTimeFormatter(locale))
+        HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(dateOfPurchase)
       } else {
         null
       }
@@ -243,9 +242,9 @@ internal data class ClaimSummaryInfoUiState(
           it.asKnown()?.itemBrandId == summary.selectedItemBrand
         }
         if (customName != null && selectedBrand != null) {
-          return CustomModelWithBrand(selectedBrand, ItemModel.New(customName))
+          return CustomModelWithBrand(selectedBrand, New(customName))
         } else if (customName != null) {
-          return Model(ItemModel.New(customName))
+          return Model(New(customName))
         } else if (selectedBrand != null) {
           return Brand(selectedBrand)
         }

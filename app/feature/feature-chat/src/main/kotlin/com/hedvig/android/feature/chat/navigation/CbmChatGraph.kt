@@ -2,7 +2,7 @@ package com.hedvig.android.feature.chat.navigation
 
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavGraphBuilder
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.CbmChatDestination
 import com.hedvig.android.feature.chat.CbmChatViewModel

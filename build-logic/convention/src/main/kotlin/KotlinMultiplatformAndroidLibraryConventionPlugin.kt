@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
 import com.android.build.api.dsl.androidLibrary
 import com.hedvig.android.configureAutomaticNamespace
 import com.hedvig.android.configureKotlinCompilerOptions
@@ -7,10 +8,12 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 
 class KotlinMultiplatformAndroidLibraryConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
@@ -22,6 +25,17 @@ class KotlinMultiplatformAndroidLibraryConventionPlugin : Plugin<Project> {
 
       configureKotlinAndroidMultiplatform()
     }
+  }
+}
+
+/**
+ * Replacement of [KotlinHierarchyBuilder.withAndroidTarget] while using `androidLibrary {}` instead of `androidTarget`
+ * as one of the KMP targets.
+ */
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
+fun KotlinHierarchyBuilder.withAndroidLibraryTarget() {
+  withCompilations {
+    it is KotlinMultiplatformAndroidCompilation
   }
 }
 

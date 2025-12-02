@@ -55,7 +55,7 @@ internal class AddHouseInformationViewModel(
   apolloClient: ApolloClient,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<AddHouseInformationEvent, AddHouseInformationUiState>(
-    AddHouseInformationUiState.Loading,
+    Loading,
     AddHouseInformationPresenter(
       savedStateHandle.toRoute<MovingFlowDestinations.AddHouseInformation>().moveIntentId,
       movingFlowRepository,
@@ -144,12 +144,12 @@ internal class AddHouseInformationPresenter(
           .map { it.moveIntentRequest }
           .fold(
             ifLeft = {
-              submittingInfoFailure = SubmittingInfoFailure.NetworkFailure
+              submittingInfoFailure = NetworkFailure
             },
             ifRight = { request ->
               when (val moveIntentQuotesFragment = request.moveIntent) {
                 null -> submittingInfoFailure = when (val errorMessage = request.userError?.message) {
-                  null -> SubmittingInfoFailure.NetworkFailure
+                  null -> NetworkFailure
                   else -> SubmittingInfoFailure.UserError(errorMessage)
                 }
 
@@ -165,10 +165,10 @@ internal class AddHouseInformationPresenter(
     }
 
     return when (val addressInputValue = addressInput) {
-      None -> AddHouseInformationUiState.Loading
+      None -> Loading
       is Some -> {
         when (val value = addressInputValue.value) {
-          null -> AddHouseInformationUiState.MissingOngoingMovingFlow
+          null -> MissingOngoingMovingFlow
           else -> Content(
             moveFromAddressId = moveIntentId,
             addressInput = value,

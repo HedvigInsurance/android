@@ -130,7 +130,7 @@ fun NavGraphBuilder.helpCenterGraph(
         navigateBack = navigator::popBackStack,
       )
     }
-    navdestination<HelpCenterDestinations.Emergency> {
+    navdestination<Emergency> {
       EmergencyDestination(
         emergencyNumber = emergencyNumber,
         emergencyUrl = emergencyUrl,

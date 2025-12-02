@@ -2,7 +2,6 @@ package com.hedvig.feature.claim.chat.ui.audiorecording
 
 import android.view.View
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -15,12 +14,10 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -29,14 +26,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -49,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -58,10 +52,8 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -71,23 +63,25 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
-import com.hedvig.audio.player.data.AudioPlayer
-import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
-import com.hedvig.audio.player.data.ProgressPercentage
-import com.hedvig.audio.player.data.SignedAudioUrl
-import com.hedvig.feature.claim.chat.data.AudioContent
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.data.AudioUrl
+import hedvig.resources.A11Y_AUDIO_RECORDING
+import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
+import hedvig.resources.EMBARK_RECORD_AGAIN
+import hedvig.resources.EMBARK_START_RECORDING
+import hedvig.resources.EMBARK_STOP_RECORDING
 import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
+import hedvig.resources.TALKBACK_RECORDING_DURATION
+import hedvig.resources.TALKBACK_RECORDING_NOW
 import java.io.File
 import java.text.DecimalFormat
 import kotlin.math.sqrt
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AudioRecorder(
@@ -124,10 +118,10 @@ internal fun AudioRecorder(
         ScreenOnFlag()
       }
 
-      val startRecordingText = stringResource(R.string.EMBARK_START_RECORDING)
-      val stopRecordingText = stringResource(R.string.EMBARK_STOP_RECORDING)
-      val audioRecordingText = stringResource(R.string.A11Y_AUDIO_RECORDING)
-      val recordingState = stringResource(R.string.TALKBACK_RECORDING_NOW)
+      val startRecordingText = stringResource(Res.string.EMBARK_START_RECORDING)
+      val stopRecordingText = stringResource(Res.string.EMBARK_STOP_RECORDING)
+      val audioRecordingText = stringResource(Res.string.A11Y_AUDIO_RECORDING)
+      val recordingState = stringResource(Res.string.TALKBACK_RECORDING_NOW)
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
@@ -213,7 +207,7 @@ internal fun AudioRecorder(
             val diff = clock.now() - (startedRecordingAt ?: clock.now())
             val label =
               "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
-            val durationDescription = stringResource(R.string.TALKBACK_RECORDING_DURATION, label)
+            val durationDescription = stringResource(Res.string.TALKBACK_RECORDING_DURATION, label)
             HedvigText(
               text = label,
               style = HedvigTheme.typography.bodySmall,
@@ -227,7 +221,7 @@ internal fun AudioRecorder(
           } else {
             if (allowFreeText) {
               HedvigTextButton(
-                text = stringResource(R.string.CLAIMS_USE_TEXT_INSTEAD),
+                text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
                 onClick = onLaunchFreeText,
               )
             } else {
@@ -265,7 +259,7 @@ private fun Playback(
     if (isCurrentStep) {
       HedvigButton(
         onClick = submit,
-        text = stringResource(R.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
+        text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
         isLoading = uiState.isLoading,
         enabled = uiState.canSubmit,
         modifier = Modifier
@@ -274,7 +268,7 @@ private fun Playback(
       )
 
       HedvigTextButton(
-        text = stringResource(R.string.EMBARK_RECORD_AGAIN),
+        text = stringResource(Res.string.EMBARK_RECORD_AGAIN),
         onClick = redo,
         enabled = uiState.canSubmit,
         modifier = Modifier

@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -31,13 +30,19 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.ACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.UNKNOWN
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CLAIM_STATUS
+import hedvig.resources.TALKBACK_UNKNOWN
+import hedvig.resources.claim_status_bar_being_handled
+import hedvig.resources.claim_status_detail_closed
+import hedvig.resources.claim_status_detail_submitted
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ClaimProgressRow(claimProgressItemsUiState: List<ClaimProgressSegment>, modifier: Modifier = Modifier) {
   val currentStatus =
-    claimProgressItemsUiState.lastOrNull { it.type == ACTIVE }?.text ?: stringResource(R.string.TALKBACK_UNKNOWN)
-  val description = stringResource(R.string.TALKBACK_CLAIM_STATUS, currentStatus)
+    claimProgressItemsUiState.lastOrNull { it.type == ACTIVE }?.text ?: stringResource(Res.string.TALKBACK_UNKNOWN)
+  val description = stringResource(Res.string.TALKBACK_CLAIM_STATUS, currentStatus)
   Row(
     modifier = modifier.semantics {
       contentDescription = description
@@ -59,13 +64,13 @@ internal fun ClaimProgressRow(claimProgressItemsUiState: List<ClaimProgressSegme
 @Composable
 private fun ClaimProgress(
   segmentText: ClaimProgressSegment.SegmentText,
-  type: ClaimProgressSegment.SegmentType,
+  type: SegmentType,
   modifier: Modifier = Modifier,
 ) {
   val color = when (type) {
-    ClaimProgressSegment.SegmentType.ACTIVE -> HedvigTheme.colorScheme.signalGreenElement
-    ClaimProgressSegment.SegmentType.INACTIVE -> HedvigTheme.colorScheme.fillDisabled
-    ClaimProgressSegment.SegmentType.UNKNOWN -> HedvigTheme.colorScheme.signalGreenElement
+    ACTIVE -> HedvigTheme.colorScheme.signalGreenElement
+    INACTIVE -> HedvigTheme.colorScheme.fillDisabled
+    UNKNOWN -> HedvigTheme.colorScheme.signalGreenElement
   }
   val textColor = when (type) {
     ACTIVE -> HedvigTheme.colorScheme.textPrimary
@@ -73,9 +78,9 @@ private fun ClaimProgress(
     UNKNOWN -> HedvigTheme.colorScheme.textTertiary
   }
   val text = when (segmentText) {
-    ClaimProgressSegment.SegmentText.Submitted -> stringResource(R.string.claim_status_detail_submitted)
-    ClaimProgressSegment.SegmentText.BeingHandled -> stringResource(R.string.claim_status_bar_being_handled)
-    ClaimProgressSegment.SegmentText.Closed -> stringResource(R.string.claim_status_detail_closed)
+    Submitted -> stringResource(Res.string.claim_status_detail_submitted)
+    BeingHandled -> stringResource(Res.string.claim_status_bar_being_handled)
+    Closed -> stringResource(Res.string.claim_status_detail_closed)
   }
   ClaimProgress(
     text = text,

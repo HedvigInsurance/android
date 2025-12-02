@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -83,7 +82,27 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import hedvig.resources.R
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_COMPARE_BUTTON
+import hedvig.resources.TIER_FLOW_COVERAGE_LABEL
+import hedvig.resources.TIER_FLOW_COVERAGE_PLACEHOLDER
+import hedvig.resources.TIER_FLOW_DEDUCTIBLE_LABEL
+import hedvig.resources.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER
+import hedvig.resources.TIER_FLOW_LOCKED_INFO_DESCRIPTION
+import hedvig.resources.TIER_FLOW_PREVIOUS_PRICE
+import hedvig.resources.TIER_FLOW_PRICE_LABEL
+import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_SUBTITLE
+import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_TITLE
+import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
+import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
+import hedvig.resources.TIER_FLOW_SUBTITLE
+import hedvig.resources.TIER_FLOW_TITLE
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SelectTierDestination(
@@ -178,7 +197,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
       )
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
-        stringResource(R.string.general_close_button),
+        stringResource(Res.string.general_close_button),
         onClick = popBackStack,
         buttonSize = Large,
         modifier = Modifier.fillMaxWidth(),
@@ -211,7 +230,7 @@ private fun SelectTierScreen(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )
@@ -219,7 +238,7 @@ private fun SelectTierScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.TIER_FLOW_TITLE),
+      text = stringResource(Res.string.TIER_FLOW_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -229,7 +248,7 @@ private fun SelectTierScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(R.string.TIER_FLOW_SUBTITLE),
+      text = stringResource(Res.string.TIER_FLOW_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -257,7 +276,7 @@ private fun SelectTierScreen(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       enabled = (uiState.chosenQuote != null && !uiState.isCurrentChosen),
       onClick = {
         onContinueClick()
@@ -273,7 +292,7 @@ private fun SelectTierScreen(
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+        text = stringResource(Res.string.TIER_FLOW_COMPARE_BUTTON),
         onClick = {
           onCompareClick()
         },
@@ -327,7 +346,7 @@ private fun CustomizationCard(
           add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
         }
       }
-      val hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
+      val hintText = stringResource(Res.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
       val chosenTierVoiceDescription = if (chosenTierIndex ==
         null
       ) {
@@ -339,7 +358,7 @@ private fun CustomizationCard(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         isEnabled = isTierChoiceEnabled,
         style = Label(
-          label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
+          label = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL),
           items = tierSimpleItems,
         ),
         size = Small,
@@ -348,14 +367,14 @@ private fun CustomizationCard(
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
         containerColor = HedvigTheme.colorScheme.surfacePrimary,
         modifier = Modifier.accessibilityForDropdown(
-          labelText = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
+          labelText = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL),
           selectedValue = chosenTierVoiceDescription,
           isEnabled = isTierChoiceEnabled,
         ),
       ) { onDismissRequest ->
         DropdownContent(
-          title = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
-          subTitle = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
+          title = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+          subTitle = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
           radioGroup = {
             TierCoverageRadioGroup(tiers, chosenTierInDialog, onChooseTierInDialogClick)
           },
@@ -370,7 +389,7 @@ private fun CustomizationCard(
       }
       if (!isTierChoiceEnabled) {
         HedvigText(
-          stringResource(R.string.TIER_FLOW_LOCKED_INFO_DESCRIPTION),
+          stringResource(Res.string.TIER_FLOW_LOCKED_INFO_DESCRIPTION),
           color = HedvigTheme.colorScheme.textSecondary,
           style = HedvigTheme.typography.label,
           modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 4.dp),
@@ -386,7 +405,7 @@ private fun CustomizationCard(
             }
           }
         }
-        val hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER)
+        val hintText = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER)
         val chosenDeductibleVoiceDescription = if (chosenQuoteIndex ==
           null
         ) {
@@ -397,7 +416,7 @@ private fun CustomizationCard(
         DropdownWithDialog(
           dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
           style = Label(
-            label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+            label = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             items = deductibleSimpleItems,
           ),
           isEnabled = quotesForChosenTier.size > 1,
@@ -407,7 +426,7 @@ private fun CustomizationCard(
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
           containerColor = HedvigTheme.colorScheme.surfacePrimary,
           modifier = Modifier.accessibilityForDropdown(
-            labelText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+            labelText = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             selectedValue = chosenDeductibleVoiceDescription,
             isEnabled = quotesForChosenTier.size > 1,
           ),
@@ -423,8 +442,8 @@ private fun CustomizationCard(
             onCancelButtonClick = {
               onDismissRequest()
             },
-            title = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
-            subTitle = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
+            title = stringResource(Res.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
+            subTitle = stringResource(Res.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
           )
         }
       }
@@ -432,7 +451,7 @@ private fun CustomizationCard(
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           HedvigText(
-            stringResource(R.string.TIER_FLOW_TOTAL),
+            stringResource(Res.string.TIER_FLOW_TOTAL),
             style = HedvigTheme.typography.bodySmall,
           )
         },
@@ -443,7 +462,7 @@ private fun CustomizationCard(
             text =
               newDisplayPremium?.let {
                 stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                   it,
                 )
               }
@@ -459,11 +478,11 @@ private fun CustomizationCard(
       if (!isCurrentChosen && data.activeDisplayPremium != null) {
         val voicePerMonth = data.activeDisplayPremium.getPerMonthDescription()
         val voiceDescription = stringResource(
-          R.string.TIER_FLOW_PREVIOUS_PRICE,
+          Res.string.TIER_FLOW_PREVIOUS_PRICE,
           voicePerMonth,
         )
         val perMonth = stringResource(
-          R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
           data.activeDisplayPremium,
         )
         HedvigText(
@@ -473,7 +492,7 @@ private fun CustomizationCard(
               contentDescription = voiceDescription
             },
           textAlign = Companion.End,
-          text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, perMonth),
+          text = stringResource(Res.string.TIER_FLOW_PREVIOUS_PRICE, perMonth),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
@@ -505,7 +524,7 @@ private fun QuoteDeductibleRadioGroup(
     textEndContent = { id ->
       val quote = quotesForChosenTier.first { it.id == id.id }
       HighlightLabel(
-        labelText = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
+        labelText = stringResource(Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
         size = HighLightSize.Small,
         color = HighlightColor.Grey(MEDIUM),
         modifier = Modifier.wrapContentSize(Alignment.TopEnd),
@@ -536,7 +555,7 @@ private fun TierCoverageRadioGroup(
     textEndContent = { id ->
       val pair = tiers.first { it.first.tierName == id.id }
       HighlightLabel(
-        labelText = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
+        labelText = stringResource(Res.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
         size = HighLightSize.Small,
         color = HighlightColor.Grey(MEDIUM),
         modifier = Modifier.wrapContentSize(Alignment.TopEnd),
@@ -589,14 +608,14 @@ private fun DropdownContent(
     radioGroup()
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = onContinueButtonClick,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       modifier = Modifier.fillMaxWidth(),
       buttonSize = Large,
       onClick = onCancelButtonClick,
@@ -608,7 +627,7 @@ private fun DropdownContent(
 internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
-      painter = painterResource(id = contractGroup.toPillow()),
+      painter = painterResource(contractGroup.toPillow()),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )

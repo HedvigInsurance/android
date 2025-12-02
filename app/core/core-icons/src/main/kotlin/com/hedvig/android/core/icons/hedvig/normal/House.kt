@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.House: ImageVector
+val HedvigIcons.House: ImageVector
   get() {
     if (_house != null) {
       return _house!!

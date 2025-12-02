@@ -74,11 +74,11 @@ internal data class MemberCharge(
     ) {
       val description: Description? = when {
         fromDate.dayOfMonth == 1 && toDate.isLastDayOfMonth() -> {
-          MemberCharge.ChargeBreakdown.Period.Description.FullPeriod
+          Description.FullPeriod
         }
 
         else -> {
-          MemberCharge.ChargeBreakdown.Period.Description.BetweenDays(fromDate.daysUntil(toDate))
+          Description.BetweenDays(fromDate.daysUntil(toDate))
         }
       }
 
@@ -104,11 +104,11 @@ internal fun ShortPaymentHistoryQuery.Data.CurrentMember.PastCharge.toPaymentHis
     id = id ?: "",
     netAmount = UiMoney.fromMoneyFragment(net),
     status = when (status) {
-      octopus.type.MemberChargeStatus.UPCOMING -> MemberCharge.MemberChargeStatus.UPCOMING
-      octopus.type.MemberChargeStatus.SUCCESS -> MemberCharge.MemberChargeStatus.SUCCESS
-      octopus.type.MemberChargeStatus.PENDING -> MemberCharge.MemberChargeStatus.PENDING
-      octopus.type.MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
-      octopus.type.MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
+      MemberChargeStatus.UPCOMING -> MemberCharge.MemberChargeStatus.UPCOMING
+      MemberChargeStatus.SUCCESS -> MemberCharge.MemberChargeStatus.SUCCESS
+      MemberChargeStatus.PENDING -> MemberCharge.MemberChargeStatus.PENDING
+      MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
+      MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
     },
     dueDate = date,
   )
