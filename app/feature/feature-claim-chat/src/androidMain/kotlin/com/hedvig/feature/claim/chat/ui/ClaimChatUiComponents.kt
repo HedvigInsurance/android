@@ -256,7 +256,7 @@ internal fun YesNoBubble(
   Row(
     modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.End
+    horizontalArrangement = Arrangement.End,
   ) {
     HedvigText(
       style = HedvigTheme.typography.label,
@@ -281,13 +281,7 @@ internal fun SingleSelectBubbleWithDialog(
   questionLabel: String,
   options: List<RadioOption>,
   selectedOptionId: RadioOptionId?,
-  isPrefilled: Boolean,
-  isCurrentStep: Boolean,
-  canBeChanged: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
   onSelect: (RadioOptionId) -> Unit,
-  onSubmit: (RadioOptionId) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showDialog by rememberSaveable { mutableStateOf(false) }
@@ -302,25 +296,14 @@ internal fun SingleSelectBubbleWithDialog(
       },
     )
   }
-  StandardBubble(
-    isPrefilledByAI = isPrefilled,
-    isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    onSubmit = onSubmit,
+  HedvigBigCard(
+    onClick = { showDialog = true },
+    labelText = questionLabel,
+    inputText = options.firstOrNull {
+      it.id == selectedOptionId
+    }?.text,
     modifier = modifier,
-    onSkip = onSkip,
-    selectedAnswer = selectedOptionId,
-    content = {
-      HedvigBigCard(
-        onClick = { showDialog = true },
-        labelText = questionLabel,
-        inputText = options.firstOrNull {
-          it.id == selectedOptionId
-        }?.text,
-        modifier = modifier,
-        enabled = canBeChanged,
-      )
-    },
+    enabled = true,
   )
 }
 
@@ -716,7 +699,7 @@ internal fun TextInputBubble(
     keyboardOptions = KeyboardOptions(
       autoCorrectEnabled = false,
       imeAction = ImeAction.Done,
-      keyboardType = keyboardType
+      keyboardType = keyboardType,
     ),
     keyboardActions = KeyboardActions(
       onDone = {
@@ -897,12 +880,6 @@ private fun PreviewWithAssistantBubble() {
             RadioOption(RadioOptionId("02"), "Outside home"),
           ),
           selectedOptionId = RadioOptionId("01"),
-          isPrefilled = true,
-          isCurrentStep = false,
-          canBeChanged = true,
-          canSkip = false,
-          onSubmit = {},
-          onSkip = {},
           onSelect = {},
         )
         AssistantMessageBubble(
@@ -978,12 +955,6 @@ private fun PreviewClaimChatComponents() {
             RadioOption(RadioOptionId("02"), "Outside home"),
           ),
           selectedOptionId = RadioOptionId("01"),
-          isPrefilled = true,
-          isCurrentStep = false,
-          canBeChanged = true,
-          canSkip = false,
-          onSubmit = {},
-          onSkip = {},
           onSelect = {},
         )
         Spacer(Modifier.height(16.dp))

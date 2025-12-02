@@ -333,7 +333,7 @@ internal class ClaimChatPresenter(
           val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
             ?: return@CollectEvents
           val fieldsToSubmit = currentContent.fields.map {
-            Field(it.id, it.selectedOptions)
+            Field(it.id, it.selectedOptions.ifEmpty { listOf(null) })
           }
           launch {
             submitFormUseCase

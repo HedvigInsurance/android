@@ -45,6 +45,8 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
@@ -384,24 +386,24 @@ private fun FormContent(
       content.fields.forEach { field ->
         when (field.type) {
           StepContent.Form.FieldType.TEXT -> {
-          TextInputBubble(
-            questionLabel = field.title,
-            text = field.selectedOptions.getOrNull(0),
-            suffix = field.suffix,
-            onInput = { answer ->
-              onSelectFieldAnswer(field.id, answer)
-            },
-          )
+            TextInputBubble(
+              questionLabel = field.title,
+              text = field.selectedOptions.getOrNull(0),
+              suffix = field.suffix,
+              onInput = { answer ->
+                onSelectFieldAnswer(field.id, answer)
+              },
+            )
           }
 
           StepContent.Form.FieldType.DATE -> {
-          DateSelectBubble(
-            questionLabel = field.title,
-            date = field.selectedOptions.getOrNull(0) ?.let{
-              LocalDate.parse(it)
-            } ,
-            modifier = Modifier.fillMaxWidth()
-          )
+            DateSelectBubble(
+              questionLabel = field.title,
+              date = field.selectedOptions.getOrNull(0)?.let {
+                LocalDate.parse(it)
+              },
+              modifier = Modifier.fillMaxWidth(),
+            )
           }
 
           StepContent.Form.FieldType.NUMBER -> {
@@ -412,13 +414,32 @@ private fun FormContent(
               onInput = { answer ->
                 onSelectFieldAnswer(field.id, answer)
               },
-              keyboardType = KeyboardType.Number
+              keyboardType = KeyboardType.Number,
             )
           }
+
           StepContent.Form.FieldType.SINGLE_SELECT -> {
-//          SingleSelectBubbleWithDialog(
-//            //todo
-//          )
+            SingleSelectBubbleWithDialog(
+              questionLabel = field.title,
+              options = field.options.map {
+                RadioOption(
+                  id = RadioOptionId(it.second),
+                  text = it.second,
+                  label = it.first,
+                  iconResource = null
+                )
+              },
+              selectedOptionId = field.selectedOptions.getOrNull(0)?.let {
+                RadioOptionId(it)
+              },
+              onSelect = { option ->
+                onSelectFieldAnswer(
+                  field.id,
+                  field.options.firstOrNull { it.second == option.id }?.second,
+                )
+              },
+              modifier = Modifier.fillMaxWidth()
+            )
           }
 
           StepContent.Form.FieldType.MULTI_SELECT -> {
@@ -448,7 +469,7 @@ private fun FormContent(
       Spacer(Modifier.height(8.dp))
       HedvigButton(
         text = stringResource(R.string.general_continue_button),
-        enabled = true,
+        enabled = content.canContinue(),
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth(),
       )
@@ -465,10 +486,14 @@ private fun FormContent(
       content.fields.forEach { field ->
         val textValue = field.selectedOptions.joinToString()
         if (textValue.isNotEmpty()) {
-          Column(Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End) {
-            HedvigText(field.title, style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textAccordion)
+          Column(
+            Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.End,
+          ) {
+            HedvigText(
+              field.title, style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textAccordion,
+            )
             Spacer(Modifier.height(4.dp))
             HedvigChip(
               item = textValue,
@@ -491,18 +516,19 @@ private fun FormContent(
 private fun EditButton(
   canBeChanged: Boolean,
   onRegret: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   if (canBeChanged) {
     Row(
       modifier = modifier.fillMaxWidth().padding(top = 8.dp),
-      horizontalArrangement = Arrangement.End) {
+      horizontalArrangement = Arrangement.End,
+    ) {
       HedvigButton(
         text = stringResource(R.string.claims_edit_button),
         enabled = true,
         onClick = onRegret,
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        buttonSize = ButtonDefaults.ButtonSize.Small
+        buttonSize = ButtonDefaults.ButtonSize.Small,
       )
     }
   }
@@ -626,10 +652,12 @@ private fun ContentSelectStep(
             onItemClick = {},
           )
         }
-        EditButton(item.stepContent.isRegrettable,
+        EditButton(
+          item.stepContent.isRegrettable,
           onRegret = {
             onEvent(ClaimChatEvent.Regret(item.id))
-          })
+          },
+        )
       }
     }
   }

@@ -42,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupSizeTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupStyleTokens
+import kotlin.jvm.JvmInline
 
 @Composable
 fun RadioGroup(

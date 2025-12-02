@@ -97,6 +97,11 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
   ) : StepContent {
+
+    fun canContinue(): Boolean {
+      return fields.filter { it.isRequired }.all { it.selectedOptions.isNotEmpty() }
+    }
+
     data class Field(
       val id: FieldId,
       val isRequired: Boolean,
