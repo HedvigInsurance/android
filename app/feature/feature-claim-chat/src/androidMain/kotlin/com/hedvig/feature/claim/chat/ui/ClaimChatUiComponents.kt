@@ -145,17 +145,7 @@ internal fun ContentSelectChips(
       key(item) {
         val isPreview = LocalInspectionMode.current
         val showChipAnimatable = remember {
-          Animatable(if (isPreview) 1.0f else 0.0f)
-        }
-        LaunchedEffect(Unit) {
-          delay(Random.nextDouble(0.3, 0.6).seconds)
-          showChipAnimatable.animateTo(
-            1.0f,
-            animationSpec = spring(
-              dampingRatio = Spring.DampingRatioLowBouncy,
-              stiffness = Spring.StiffnessLow,
-            ),
-          )
+          Animatable(1.0f)
         }
         HedvigChip(
           item = item,
@@ -258,82 +248,40 @@ internal fun AssistantMessageBubble(
 
 @Composable
 internal fun YesNoBubble(
-  questionLabel: String,
-  answerSelected: Boolean?,
-  isPrefilled: Boolean,
-  isCurrentStep: Boolean,
-  canBeChanged: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
-  onSelect: (Boolean) -> Unit,
-  onSubmit: (Boolean) -> Unit,
+  questionText: String,
+  answerSelected: String?,
+  onSelect: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  StandardBubble(
-    isPrefilledByAI = isPrefilled,
-    isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    onSubmit = onSubmit,
-    modifier = modifier,
-    onSkip = onSkip,
-    selectedAnswer = answerSelected,
-    content = {
-      Column(
-        Modifier.padding(16.dp),
-        horizontalAlignment = Alignment.End,
-      ) {
-        HedvigText(
-          questionLabel,
-          style = HedvigTheme.typography.label,
-        )
-        Spacer(Modifier.height(16.dp))
-        Row(
-          horizontalArrangement = Arrangement.End,
-        ) {
-          HighlightLabel(
-            labelText = stringResource(Res.string.GENERAL_YES),
-            size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected == true) {
-              HighlightLabelDefaults.HighlightColor.Green(
-                HighlightLabelDefaults.HighlightShade.LIGHT,
-              )
-            } else {
-              HighlightLabelDefaults.HighlightColor.Grey(
-                HighlightLabelDefaults.HighlightShade.LIGHT,
-              )
-            },
-            modifier = Modifier.clickable(
-              enabled = canBeChanged, // todo
-              onClick = {
-                onSelect(true)
-              },
-            ),
-          )
-          Spacer(Modifier.width(16.dp))
-          HighlightLabel(
-            labelText = stringResource(Res.string.GENERAL_NO),
-            size = HighlightLabelDefaults.HighLightSize.Medium,
-            color = if (answerSelected != null && !answerSelected) {
-              HighlightLabelDefaults.HighlightColor.Green(
-                HighlightLabelDefaults.HighlightShade.LIGHT,
-              )
-            } else {
-              HighlightLabelDefaults.HighlightColor.Grey(
-                HighlightLabelDefaults.HighlightShade.MEDIUM,
-              )
-            },
-            modifier = Modifier.clickable(
-              enabled = canBeChanged, // todo
-              onClick = {
-                onSelect(false)
-              },
-            ),
-          )
-        }
-      }
-    },
+  val options = listOf(
+    StepContent.ContentSelect.Option(
+      "true", stringResource(Res.string.GENERAL_YES)
+    ),
+    StepContent.ContentSelect.Option(
+      "false", stringResource(Res.string.GENERAL_NO)
+    )
   )
+  Row(
+    modifier= modifier.fillMaxWidth(),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    HedvigText(
+      style = HedvigTheme.typography.label,
+      text = questionText
+    )
+    Spacer(Modifier.width(16.dp))
+    ContentSelectChips(
+      options = options,
+      selectedOption = answerSelected?.let{
+        if (it == options[0].title) options[0] else options[1]
+      } ,
+      onOptionClick = { option ->
+        onSelect(option.title)
+      },
+    )
+  }
 }
+
 
 @Composable
 internal fun SingleSelectBubbleWithDialog(
@@ -1058,19 +1006,13 @@ private fun PreviewClaimChatComponents() {
           onLaunchFullScreenEditText = {},
           canSkip = true,
           onSkip = {},
-          freeText = "some not really long free text"
+          freeText = "some not really long free text",
         )
         Spacer(Modifier.height(16.dp))
         YesNoBubble(
-          questionLabel = "Was the bike electric?",
-          answerSelected = true,
-          isPrefilled = false,
-          isCurrentStep = false,
-          canBeChanged = true,
-          canSkip = true,
-          onSubmit = {},
-          onSkip = {},
+          answerSelected = "No",
           onSelect = {},
+          questionText = "Was it electric?"
         )
         Spacer(Modifier.height(16.dp))
         SingleSelectBubbleWithDialog(

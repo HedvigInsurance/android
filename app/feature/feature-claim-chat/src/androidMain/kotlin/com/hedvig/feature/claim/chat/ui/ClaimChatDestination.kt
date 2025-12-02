@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,18 +39,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HighlightLabel
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
+import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
 import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
 import com.hedvig.feature.claim.chat.ui.ChatClaimSummary
@@ -61,7 +61,6 @@ import com.hedvig.feature.claim.chat.ui.DateSelectBubble
 import com.hedvig.feature.claim.chat.ui.MultiSelectBubbleWithDialog
 import com.hedvig.feature.claim.chat.ui.SingleSelectBubbleWithDialog
 import com.hedvig.feature.claim.chat.ui.TextInputBubble
-import com.hedvig.feature.claim.chat.ui.UploadFilesBubble
 import com.hedvig.feature.claim.chat.ui.YesNoBubble
 import hedvig.resources.R
 import kotlin.time.Clock
@@ -161,71 +160,108 @@ private fun ClaimChatScreenContent(
       contentType = { it.stepContent::class },
     ) { item ->
       when (item.stepContent) {
-        is StepContent.AudioRecording -> {
-          AudioRecordingStep(
-            item = item,
-            stepContent = item.stepContent,
-            onShowFreeText = {
-              onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(item.id))
-            },
-            onShowAudioRecording = {
-              onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
-            },
-            onLaunchFullScreenEditText = {
-              onEvent(ClaimChatEvent.OpenFreeTextOverlay)
-            },
-            startRecording = {
-              onEvent(ClaimChatEvent.AudioRecording.StartRecording(item.id))
-            },
-            stopRecording = {
-              onEvent(ClaimChatEvent.AudioRecording.StopRecording(item.id))
-            },
-            redoRecording = {
-              onEvent(ClaimChatEvent.AudioRecording.RedoRecording(item.id))
-            },
-            submitFreeText = {
-              onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(item.id))
-            },
-            submitAudioFile = {
-              onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(item.id))
-            },
-            onSkip = {
-              onEvent(ClaimChatEvent.Skip(item.id))
-            },
-            isCurrentStep = item == uiState.currentStep,
-            clock = Clock.System,
-            onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            openAppSettings = openAppSettings,
-            freeText = uiState.freeText,
-          )
-        }
+        is StepContent.AudioRecording -> AudioRecordingStep(
+          item = item,
+          stepContent = item.stepContent,
+          onShowFreeText = {
+            onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(item.id))
+          },
+          onShowAudioRecording = {
+            onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
+          },
+          onLaunchFullScreenEditText = {
+            onEvent(ClaimChatEvent.OpenFreeTextOverlay)
+          },
+          startRecording = {
+            onEvent(ClaimChatEvent.AudioRecording.StartRecording(item.id))
+          },
+          stopRecording = {
+            onEvent(ClaimChatEvent.AudioRecording.StopRecording(item.id))
+          },
+          redoRecording = {
+            onEvent(ClaimChatEvent.AudioRecording.RedoRecording(item.id))
+          },
+          submitFreeText = {
+            onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(item.id))
+          },
+          submitAudioFile = {
+            onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(item.id))
+          },
+          onSkip = {
+            onEvent(ClaimChatEvent.Skip(item.id))
+          },
+          isCurrentStep = item == uiState.currentStep,
+          clock = Clock.System,
+          onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          openAppSettings = openAppSettings,
+          freeText = uiState.freeText,
+        )
 
         is StepContent.ContentSelect -> ContentSelectStep(
           item = item,
           currentStep = uiState.currentStep,
           options = item.stepContent.options,
           selectedOptionId = item.stepContent.selectedOptionId,
-          onOptionClick = { option ->
-            onEvent(
-              ClaimChatEvent.Select(
-                item.id,
-                option.id,
-              ),
-            )
-          }
+          onEvent = onEvent,
         )
 
 
-        is StepContent.FileUpload -> {
-          Column(Modifier.padding(horizontal = 16.dp)) {
-            HedvigText(
-              item.text,
-            )
-            Spacer(Modifier.height(8.dp))
+        is StepContent.FileUpload -> UploadFilesStep(
+          itemText = item.text,
+          stepContent = item.stepContent,
+        )
+
+        is StepContent.Form -> FormStep(
+          item = item,
+          content = item.stepContent,
+          onEvent = onEvent,
+          isCurrentStep = item == uiState.currentStep,
+          canSkip = item.stepContent.isSkippable,
+          canBeChanged = item.stepContent.isRegrettable,
+        )
+
+        is StepContent.Summary -> ChatClaimSummary(
+          text = item.text,
+          recordingUrls = item.stepContent.audioRecordings.map { it.url },
+          displayItems = item.stepContent.items.map { (title, value) -> title to value },
+          onSubmit = {
+            onEvent(ClaimChatEvent.SubmitClaim)
+          },
+          isCurrentStep = item == uiState.currentStep,
+        )
+
+        is StepContent.Task -> TaskStep(
+          itemText = item.text,
+          taskContent = item.stepContent,
+        )
+
+        StepContent.Unknown -> BasicText("Unknown")
+      }
+    }
+  }
+
+  LaunchedEffect(uiState.steps.size) {
+    if (uiState.steps.isNotEmpty()) {
+      lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+    }
+  }
+}
+
+@Composable
+private fun UploadFilesStep(
+  itemText: String,
+  stepContent: StepContent.FileUpload,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    HedvigText(
+      itemText,
+    )
+    Spacer(Modifier.height(8.dp))
 //            UploadFilesBubble(
 //              isCurrentStep = TODO(),
-//              canSkip = item.stepContent.isSkippable,
-//              canBeChanged = item.stepContent.isRegrettable, //todo
+//              canSkip = stepContent.isSkippable,
+//              canBeChanged = stepContent.isRegrettable, //todo
 //              onSkip = {
 //                onEvent(ClaimChatEvent.Skip(item.id))
 //              },
@@ -241,37 +277,6 @@ private fun ClaimChatScreenContent(
 //              onNavigateToImageViewer = TODO(),
 //              modifier = TODO(),
 //            )
-          }
-        }
-
-        is StepContent.Form -> {
-          //FormStep()
-        }
-
-        is StepContent.Summary -> ChatClaimSummary(
-          text = item.text,
-          recordingUrls = item.stepContent.audioRecordings.map { it.url },
-          displayItems = item.stepContent.items.map { (title, value) -> title to value },
-          onSubmit = {
-            onEvent(ClaimChatEvent.SubmitClaim)
-          },
-          isCurrentStep = item == uiState.currentStep,
-        )
-        is StepContent.Task -> TaskStep(
-          itemText = item.text,
-          taskContent = item.stepContent
-        )
-
-
-        StepContent.Unknown -> BasicText("Unknown")
-      }
-    }
-  }
-
-  LaunchedEffect(uiState.steps.size) {
-    if (uiState.steps.isNotEmpty()) {
-      lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
-    }
   }
 }
 
@@ -279,33 +284,37 @@ private fun ClaimChatScreenContent(
 private fun TaskStep(
   itemText: String,
   taskContent: StepContent.Task,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     HedvigText(itemText)
     if (taskContent.descriptions.isNotEmpty()) {
-      Spacer(Modifier.height(16.dp))
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        val color = HedvigTheme.colorScheme.signalGreenElement
-        Spacer(
-          Modifier
-            .wrapContentSize(Alignment.Center)
-            .size(20.dp)
-            .padding(1.dp)
-            .background(color, CircleShape),
-        )
-        Spacer(Modifier.width(8.dp))
-        HedvigChip(
-          item = taskContent.descriptions.last(),
-          showChipAnimatable = remember { Animatable(1f) },
-          itemDisplayName = {
-            taskContent.descriptions.last()
-          },
-          isSelected = false, //should be grey according to figma
-          onItemClick = {},
-        )
+      Column {
+        Spacer(Modifier.height(8.dp))
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          val color = HedvigTheme.colorScheme.signalGreenElement
+          Spacer(
+            Modifier
+              .wrapContentSize(Alignment.Center)
+              .size(20.dp)
+              .padding(1.dp)
+              .background(color, CircleShape),
+          )
+          Spacer(Modifier.width(8.dp))
+          AnimatedContent(taskContent.descriptions.last()) { target ->
+            HedvigChip(
+              item = target,
+              showChipAnimatable = remember { Animatable(1f) },
+              itemDisplayName = {
+                target
+              },
+              isSelected = false, //should be grey according to figma
+              onItemClick = {},
+            )
+          }
+        }
       }
     }
   }
@@ -313,63 +322,167 @@ private fun TaskStep(
 
 @Composable
 private fun FormStep(
-  item:  ClaimIntentStep,
+  item: ClaimIntentStep,
   content: StepContent.Form,
   onEvent: (ClaimChatEvent) -> Unit,
-  onSkip: () -> Unit,
-  modifier: Modifier = Modifier) {
-  HedvigText(
-    item.text,
-    Modifier
-      .padding(horizontal = 16.dp)
-  )
-  Spacer(Modifier.height(8.dp))
-  FormContent(
-    item = item,
-    content = content,
-    onSkip = {
-      onEvent(ClaimChatEvent.Skip(item.id))
-    },
-    modifier = Modifier
-      .padding(horizontal = 16.dp)
-  )
+  isCurrentStep: Boolean,
+  canSkip: Boolean,
+  canBeChanged: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    HedvigText(
+      item.text,
+    )
+    Spacer(Modifier.height(32.dp))
+    FormContent(
+      item = item,
+      content = content,
+      onSkip = {
+        onEvent(ClaimChatEvent.Skip(item.id))
+      },
+      isCurrentStep = isCurrentStep,
+      canSkip = canSkip,
+      canBeChanged = canBeChanged,
+      onRegret = {
+        onEvent(ClaimChatEvent.Regret(item.id))
+      },
+      onSelectFieldAnswer = { fieldId, answer ->
+        onEvent(ClaimChatEvent.SelectFieldAnswer(item.id, fieldId, answer))
+      },
+      onSubmit = {
+        onEvent(ClaimChatEvent.FormSubmit(item.id))
+      },
+    )
+  }
 }
 
 @Composable
 private fun FormContent(
-  item:  ClaimIntentStep,
+  item: ClaimIntentStep,
   content: StepContent.Form,
+  isCurrentStep: Boolean,
+  canSkip: Boolean,
   onSkip: () -> Unit,
-  modifier: Modifier = Modifier
+  canBeChanged: Boolean,
+  onRegret: () -> Unit,
+  onSubmit: () -> Unit,
+  onSelectFieldAnswer: (fieldId: FieldId, answer: String) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   Column(
     modifier,
-    verticalArrangement = Arrangement.spacedBy(8.dp)
+    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    content.fields.forEach { field ->
-//      when (field.type) {
-//        StepContent.Form.FieldType.TEXT -> TextInputBubble(
-//          //todo
-//        )
-//        StepContent.Form.FieldType.DATE -> DateSelectBubble(
-//          //todo
-//        )
-//        StepContent.Form.FieldType.NUMBER -> TextInputBubble(
-//          //todo
-//        ) //add: keyboard choice
-//        StepContent.Form.FieldType.SINGLE_SELECT -> SingleSelectBubbleWithDialog(
-//          //todo
-//        )
-//        StepContent.Form.FieldType.MULTI_SELECT -> MultiSelectBubbleWithDialog(
-//          //todo
-//        )
-//        StepContent.Form.FieldType.BINARY -> YesNoBubble(
-//          //todo
-//        )
-//        null -> {
-//          onSkip() //todo: check
-//        }
-//      }
+    if (isCurrentStep) {
+      content.fields.forEach { field ->
+        when (field.type) {
+          StepContent.Form.FieldType.TEXT -> {
+//          TextInputBubble(
+//            //todo
+//          )
+          }
+
+          StepContent.Form.FieldType.DATE -> {
+//          DateSelectBubble(
+//            //todo
+//          )
+          }
+
+          StepContent.Form.FieldType.NUMBER -> {
+//          TextInputBubble(
+//            //todo
+//          )
+          } //add: keyboard choice
+          StepContent.Form.FieldType.SINGLE_SELECT -> {
+//          SingleSelectBubbleWithDialog(
+//            //todo
+//          )
+          }
+
+          StepContent.Form.FieldType.MULTI_SELECT -> {
+//          MultiSelectBubbleWithDialog(
+//            //todo
+//          )
+          }
+
+          StepContent.Form.FieldType.BINARY -> YesNoBubble(
+            answerSelected = field.selectedOptions.firstOrNull(),
+            onSelect = {
+              onSelectFieldAnswer(
+                field.id,
+                it,
+              )
+            },
+            questionText = field.title,
+          )
+
+          null -> {
+            if (canSkip) {
+              onSkip()      //todo: check
+            }
+          }
+        }
+      }
+      Spacer(Modifier.height(8.dp))
+      HedvigButton(
+        text = stringResource(R.string.general_continue_button),
+        enabled = true,
+        onClick = onSubmit,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      if (canSkip) {
+        HedvigButton(
+          text = stringResource(R.string.claims_skip_button),
+          enabled = true,
+          onClick = onSkip,
+          modifier = Modifier.fillMaxWidth(),
+          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+        )
+      }
+    } else {
+      content.fields.forEach { field ->
+        val textValue = field.selectedOptions.joinToString()
+        if (textValue.isNotEmpty()) {
+          Column(Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.End) {
+            HedvigText(field.title, style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textAccordion)
+            Spacer(Modifier.height(4.dp))
+            HedvigChip(
+              item = textValue,
+              showChipAnimatable = remember { Animatable(1f) },
+              itemDisplayName = {
+                textValue
+              },
+              isSelected = false,
+              onItemClick = {},
+            )
+          }
+        }
+      }
+      EditButton(canBeChanged, onRegret)
+    }
+  }
+}
+
+@Composable
+private fun EditButton(
+  canBeChanged: Boolean,
+  onRegret: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  if (canBeChanged) {
+    Row(
+      modifier = modifier.fillMaxWidth().padding(top = 8.dp),
+      horizontalArrangement = Arrangement.End) {
+      HedvigButton(
+        text = stringResource(R.string.claims_edit_button),
+        enabled = true,
+        onClick = onRegret,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        buttonSize = ButtonDefaults.ButtonSize.Small
+      )
     }
   }
 }
@@ -427,7 +540,7 @@ private fun ContentSelectStep(
   currentStep: ClaimIntentStep?,
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
-  onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
+  onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -447,7 +560,14 @@ private fun ContentSelectStep(
           ContentSelectChips(
             options = options,
             selectedOption = null,
-            onOptionClick = onOptionClick,
+            onOptionClick = { option ->
+              onEvent(
+                ClaimChatEvent.Select(
+                  item.id,
+                  option.id,
+                ),
+              )
+            },
           )
         }
       }
@@ -485,6 +605,10 @@ private fun ContentSelectStep(
             onItemClick = {},
           )
         }
+        EditButton(item.stepContent.isRegrettable,
+          onRegret = {
+            onEvent(ClaimChatEvent.Regret(item.id))
+          })
       }
     }
   }

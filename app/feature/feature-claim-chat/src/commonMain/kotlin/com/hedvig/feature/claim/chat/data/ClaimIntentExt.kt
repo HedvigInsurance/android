@@ -117,6 +117,7 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
         ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
       },
       options = field.options?.map { it.title to it.value } ?: emptyList(),
+      selectedOptions = emptyList()
     )
   }
 }

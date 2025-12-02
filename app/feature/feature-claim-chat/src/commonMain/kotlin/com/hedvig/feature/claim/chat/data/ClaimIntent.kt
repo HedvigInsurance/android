@@ -107,6 +107,7 @@ internal sealed interface StepContent {
       val minValue: String?,
       val type: FieldType?,
       val options: List<Pair<String, String>>,
+      val selectedOptions: List<String>,
     )
 
     enum class FieldType {
