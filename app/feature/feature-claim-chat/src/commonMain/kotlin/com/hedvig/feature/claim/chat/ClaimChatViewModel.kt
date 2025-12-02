@@ -391,36 +391,35 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.SelectFieldAnswer -> {
           Snapshot.withMutableSnapshot {
-            val currentStepContent = currentStep?.stepContent as? StepContent.Form ?: return@CollectEvents
-            val currentStepState = currentStep ?: return@CollectEvents
-            if (event.stepId != currentStepState.id) return@CollectEvents
-            val fieldId = event.fieldId
-            val selectedAnswer = event.answer
-            val oldFields = currentStepContent.fields
-            val newFields = oldFields.map { field ->
-              if (field.id == fieldId) {
+            val stepToUpdate = steps.find { it.id == event.stepId } ?: return@withMutableSnapshot
+            val stepContent = stepToUpdate.stepContent as? StepContent.Form ?: return@withMutableSnapshot
+
+            val newFields = stepContent.fields.map { field ->
+              if (field.id == event.fieldId) {
                 when (field.type) {
-                  StepContent.Form.FieldType.TEXT -> field.copy(selectedOptions = listOf(selectedAnswer))
-                  StepContent.Form.FieldType.DATE -> field.copy(selectedOptions = listOf(selectedAnswer))
-                  StepContent.Form.FieldType.NUMBER -> field.copy(selectedOptions = listOf(selectedAnswer))
-                  StepContent.Form.FieldType.SINGLE_SELECT -> field.copy(selectedOptions = listOf(selectedAnswer))
+                  StepContent.Form.FieldType.TEXT -> field.copy(selectedOptions = listOf(event.answer))
+                  StepContent.Form.FieldType.DATE -> field.copy(selectedOptions = listOf(event.answer))
+                  StepContent.Form.FieldType.NUMBER -> field.copy(selectedOptions = listOf(event.answer))
+                  StepContent.Form.FieldType.SINGLE_SELECT -> field.copy(selectedOptions = listOf(event.answer))
                   StepContent.Form.FieldType.MULTI_SELECT ->
-                    field.copy(selectedOptions = field.selectedOptions + selectedAnswer)
-                  StepContent.Form.FieldType.BINARY ->  field.copy(selectedOptions = listOf(selectedAnswer))
-                  null -> field.copy(selectedOptions = listOf(selectedAnswer))
+                    field.copy(selectedOptions = field.selectedOptions + event.answer)
+
+                  StepContent.Form.FieldType.BINARY -> field.copy(selectedOptions = listOf(event.answer))
+                  null -> field.copy(selectedOptions = listOf(event.answer))
                 }
               } else {
                 field
               }
             }
-            steps.remove(currentStepState)
-            steps.add(
-              currentStepState.copy(
-                stepContent = currentStepContent.copy(
+
+            val index = steps.indexOf(stepToUpdate)
+            if (index >= 0) {
+              steps[index] = stepToUpdate.copy(
+                stepContent = stepContent.copy(
                   fields = newFields,
                 ),
-              ),
-            ) //todo: check
+              )
+            }
           }
         }
       }
