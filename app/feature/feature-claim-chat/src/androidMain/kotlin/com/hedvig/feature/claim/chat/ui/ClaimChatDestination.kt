@@ -159,6 +159,7 @@ private fun ClaimChatScreenContent(
       key = { step -> step.id.value },
       contentType = { it.stepContent::class },
     ) { item ->
+      val isCurrentStep = item.id == uiState.currentStep?.id
       when (item.stepContent) {
         is StepContent.AudioRecording -> AudioRecordingStep(
           item = item,
@@ -190,7 +191,7 @@ private fun ClaimChatScreenContent(
           onSkip = {
             onEvent(ClaimChatEvent.Skip(item.id))
           },
-          isCurrentStep = item == uiState.currentStep,
+          isCurrentStep = isCurrentStep,
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openAppSettings = openAppSettings,
@@ -199,7 +200,7 @@ private fun ClaimChatScreenContent(
 
         is StepContent.ContentSelect -> ContentSelectStep(
           item = item,
-          currentStep = uiState.currentStep,
+          isCurrentStep = isCurrentStep,
           options = item.stepContent.options,
           selectedOptionId = item.stepContent.selectedOptionId,
           onEvent = onEvent,
@@ -208,6 +209,7 @@ private fun ClaimChatScreenContent(
 
         is StepContent.FileUpload -> UploadFilesStep(
           itemText = item.text,
+          isCurrentStep = isCurrentStep,
           stepContent = item.stepContent,
         )
 
@@ -215,7 +217,7 @@ private fun ClaimChatScreenContent(
           item = item,
           content = item.stepContent,
           onEvent = onEvent,
-          isCurrentStep = item == uiState.currentStep,
+          isCurrentStep = isCurrentStep,
           canSkip = item.stepContent.isSkippable,
           canBeChanged = item.stepContent.isRegrettable,
         )
@@ -227,7 +229,7 @@ private fun ClaimChatScreenContent(
           onSubmit = {
             onEvent(ClaimChatEvent.SubmitClaim)
           },
-          isCurrentStep = item == uiState.currentStep,
+          isCurrentStep = isCurrentStep,
         )
 
         is StepContent.Task -> TaskStep(
@@ -235,7 +237,7 @@ private fun ClaimChatScreenContent(
           taskContent = item.stepContent,
         )
 
-        StepContent.Unknown -> BasicText("Unknown")
+        StepContent.Unknown -> BasicText("Unknown") //todo
       }
     }
   }
@@ -251,6 +253,7 @@ private fun ClaimChatScreenContent(
 private fun UploadFilesStep(
   itemText: String,
   stepContent: StepContent.FileUpload,
+  isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -537,7 +540,7 @@ private fun AudioRecordingStep(
 @Composable
 private fun ContentSelectStep(
   item: ClaimIntentStep,
-  currentStep: ClaimIntentStep?,
+  isCurrentStep: Boolean,
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -545,7 +548,7 @@ private fun ContentSelectStep(
 ) {
   Column(modifier) {
     AnimatedContent(
-      item == currentStep,
+      isCurrentStep,
       transitionSpec = {
         (fadeIn(animationSpec = tween(220, delayMillis = 90))
           .togetherWith(fadeOut(animationSpec = tween(90))))

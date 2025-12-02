@@ -177,7 +177,6 @@ internal class ClaimChatPresenter(
     }
 
     CollectEvents { event ->
-      logcat { "ClaimChatPresenter received event: $event" }
       when (event) {
         is ClaimChatEvent.Select -> {
           Snapshot.withMutableSnapshot {
@@ -195,7 +194,7 @@ internal class ClaimChatPresenter(
               submitSelectUseCase
                 .invoke(event.id, event.selectedId)
                 .fold(
-                  ifLeft = { error("todo left submitSelectUseCase") },
+                  ifLeft = { error("todo left submitSelectUseCase: $it") },
                   ifRight = { claimIntent ->
                     handleNext(steps, setOutcome, claimIntent.next)
                   },
@@ -221,7 +220,7 @@ internal class ClaimChatPresenter(
                 submitAudioRecordingUseCase
                   .invoke(event.id, recordedFile, stepContent.uploadUri)
                   .fold(
-                    ifLeft = { error("todo left submitAudioRecordingUseCase audio") },
+                    ifLeft = { error("todo left submitAudioRecordingUseCase audio: $it") },
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
                       handleNext(steps, setOutcome, claimIntent.next)
