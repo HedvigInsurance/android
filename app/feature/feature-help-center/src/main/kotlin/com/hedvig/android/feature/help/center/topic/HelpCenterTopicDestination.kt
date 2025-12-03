@@ -41,7 +41,6 @@ import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.NoTop
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicUiState.Success
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.HC_ALL_QUESTION_TITLE
@@ -49,6 +48,7 @@ import hedvig.resources.HC_COMMON_QUESTIONS_TITLE
 import hedvig.resources.HC_TITLE
 import hedvig.resources.HC_TOPIC_NOT_FOUND
 import hedvig.resources.HC_TOPIC_NO_QUESTIONS
+import hedvig.resources.Res
 import hedvig.resources.general_back_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -249,13 +249,13 @@ private fun PreviewHelpCenterTopicScreen(
 
 private class HelpCenterTopicUiStateProvider : CollectionPreviewParameterProvider<HelpCenterTopicUiState>(
   listOf(
-    HelpCenterTopicUiState.Loading,
-    HelpCenterTopicUiState.Failure,
-    HelpCenterTopicUiState.NoTopicFound,
-    HelpCenterTopicUiState.Success(
+    Loading,
+    Failure,
+    NoTopicFound,
+    Success(
       FAQTopic("id", "title", emptyList(), emptyList()),
     ),
-    HelpCenterTopicUiState.Success(
+    Success(
       FAQTopic(
         "id",
         "title",

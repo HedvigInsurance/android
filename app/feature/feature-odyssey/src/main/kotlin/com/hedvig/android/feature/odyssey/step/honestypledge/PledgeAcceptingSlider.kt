@@ -99,7 +99,7 @@ private class PledgeAcceptingSliderStateImpl(
     safeSetXOffset(xOffset + delta)
   }
   override val isInAcceptedPosition: Boolean by derivedStateOf {
-    xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted)
+    xOffset >= anchors.positionOf(Accepted)
   }
 
   override fun updateAnchors(layoutSize: IntSize) {
@@ -153,12 +153,12 @@ private class PledgeAcceptingSliderStateImpl(
 
   private fun onDragStopped(velocity: Float) {
     if (isInAcceptedPosition) return
-    val sliderAlmostAtEnd = xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted) - circleDiameterPx
+    val sliderAlmostAtEnd = xOffset >= anchors.positionOf(Accepted) - circleDiameterPx
     val closestAnchor = anchors.positionOf(
       if (sliderAlmostAtEnd) {
-        PledgeAcceptingSliderPosition.Accepted
+        Accepted
       } else {
-        PledgeAcceptingSliderPosition.Resting
+        Resting
       },
     )
     cancelOnDragStoppedJob()

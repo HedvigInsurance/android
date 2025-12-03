@@ -50,12 +50,12 @@ import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiStat
 import com.hedvig.android.feature.odyssey.step.audiorecording.WhatHappenedUiState.ScreenMode
 import com.hedvig.android.feature.odyssey.step.audiorecording.ui.AudioRecorder
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
+import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import java.io.File
 import kotlin.time.Clock
@@ -379,7 +379,7 @@ private fun PreviewAudioRecordingScreen(
 
 private class AudioRecordingUiStateProvider : CollectionPreviewParameterProvider<WhatHappenedUiState>(
   listOf(
-    WhatHappenedUiState.AudioRecording.NotRecording,
+    NotRecording,
     WhatHappenedUiState.FreeTextDescription(
       freeText = "good long text",
       showOverlay = false,

@@ -26,11 +26,8 @@ actual fun Brush.Companion.angledSweepGradient(
  * This fallback implementation uses a standard sweep gradient without rotation.
  */
 @Stable
-actual fun Brush.Companion.angledSweepGradient(
-  colors: List<Color>,
-  center: Offset,
-  startAngle: Float,
-): Brush = Brush.sweepGradient(
-  colors = colors,
-  center = center,
-)
+actual fun Brush.Companion.angledSweepGradient(colors: List<Color>, center: Offset, startAngle: Float): Brush =
+  Brush.sweepGradient(
+    colors = colors,
+    center = center,
+  )

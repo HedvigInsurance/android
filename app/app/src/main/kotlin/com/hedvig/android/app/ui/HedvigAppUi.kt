@@ -47,8 +47,8 @@ import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import hedvig.resources.Res
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
+import hedvig.resources.Res
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 

@@ -34,12 +34,12 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.Res
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
+import hedvig.resources.Res
 import hedvig.resources.claim_decision_not_compensated
 import hedvig.resources.claim_decision_not_covered
 import hedvig.resources.claim_decision_paid

@@ -119,9 +119,9 @@ private fun <D : Operation.Data> IorRaise<Nel<ApolloOperationError>>.parseRespon
   }
   if (exception != null) {
     if (exception is CacheMissException) {
-      raise(ApolloOperationError.CacheMiss(exception))
+      raise(CacheMiss(exception))
     }
-    raise(ApolloOperationError.OperationException(exception))
+    raise(OperationException(exception))
   }
   return iorFromErrorsAndData(errors.mapToOperationErrors(), data).bind()
 }
@@ -130,9 +130,9 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
   if (this == null) return null
   return map { error ->
     if (error.extensionErrorType() == ExtensionErrorType.Unauthenticated) {
-      ApolloOperationError.OperationError.Unathenticated
+      OperationError.Unathenticated
     } else {
-      ApolloOperationError.OperationError.Other(
+      OperationError.Other(
         buildString {
           append(error.message)
           if (error.extensions != null) {
@@ -146,12 +146,12 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
 
 private fun <D : Operation.Data> IorNel<ApolloOperationError, D>.mergeApolloErrors(): Ior<ApolloOperationError, D> {
   return mapLeft { errors ->
-    if (errors.size == 1 && errors.head is ApolloOperationError.OperationError.Unathenticated) {
+    if (errors.size == 1 && errors.head is OperationError.Unathenticated) {
       errors.head
     } else {
-      ApolloOperationError.OperationError.Other(
+      OperationError.Other(
         message = errors.joinToString(prefix = " [", postfix = "]", separator = ", ") { it.toString() },
-        containsUnauthenticatedError = errors.any { it is ApolloOperationError.OperationError.Unathenticated },
+        containsUnauthenticatedError = errors.any { it is OperationError.Unathenticated },
       )
     }
   }

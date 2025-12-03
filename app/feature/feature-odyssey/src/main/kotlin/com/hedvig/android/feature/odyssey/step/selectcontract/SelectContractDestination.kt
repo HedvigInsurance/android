@@ -32,8 +32,8 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIM_TRIAGING_ABOUT_TITILE
+import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 

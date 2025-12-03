@@ -12,19 +12,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import kotlinx.datetime.LocalDate
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_LABEL
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_done_button
+import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () -> Unit, navigateBack: () -> Unit) {

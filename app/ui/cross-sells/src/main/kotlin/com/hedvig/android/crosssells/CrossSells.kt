@@ -84,22 +84,21 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.A11Y_NUMBER_OF_ELIGIBLE_INSURANCES
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT
-import hedvig.resources.Res
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE
 import hedvig.resources.BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES
 import hedvig.resources.CROSS_SELL_BANNER_TEXT
-import hedvig.resources.cross_sell_get_price
 import hedvig.resources.CROSS_SELL_SUBTITLE
 import hedvig.resources.CROSS_SELL_TITLE
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.cross_sell_get_price
 import hedvig.resources.general_close_button
 import hedvig.resources.insurance_tab_cross_sells_title
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
-import kotlinx.coroutines.delay
 
 data class CrossSellSheetData(
   val recommendedCrossSell: RecommendedCrossSell?,

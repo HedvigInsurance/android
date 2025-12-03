@@ -11,7 +11,6 @@ import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
 import com.hedvig.android.design.system.hedvig.ChipUiData
 import com.hedvig.android.feature.insurances.data.InsuranceContract
-import hedvig.resources.Res
 import hedvig.resources.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE
 import hedvig.resources.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW
 import hedvig.resources.CONTRACT_STATUS_ACTIVE_IN_FUTURE
@@ -21,6 +20,7 @@ import hedvig.resources.CONTRACT_STATUS_TERMINATED_TODAY
 import hedvig.resources.CONTRACT_STATUS_TO_BE_TERMINATED
 import hedvig.resources.DASHBOARD_INSURANCE_STATUS_ACTIVE
 import hedvig.resources.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE
+import hedvig.resources.Res
 import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn

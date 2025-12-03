@@ -15,11 +15,11 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.ui.claimstatus.internal.ClaimPillsRow
 import com.hedvig.android.ui.claimstatus.internal.ClaimProgressRow

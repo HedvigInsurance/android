@@ -66,7 +66,7 @@ private fun ChooseContractForCertificate(
       HedvigFullScreenCenterAlignedProgress()
     }
 
-    is ChooseContractUiState.Success -> {
+    is Success -> {
       HedvigScaffold(
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),

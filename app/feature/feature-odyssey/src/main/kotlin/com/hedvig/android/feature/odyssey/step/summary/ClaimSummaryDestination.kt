@@ -53,10 +53,10 @@ import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplayDefaults.
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.audio.player.data.PlayableAudioSource
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_COMPLEMENT__CLAIM
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
+import hedvig.resources.Res
 import hedvig.resources.claim_status_detail_uploaded_files_info_title
 import hedvig.resources.claims_summary_screen_title
 import hedvig.resources.moving_summary_scroll_Details

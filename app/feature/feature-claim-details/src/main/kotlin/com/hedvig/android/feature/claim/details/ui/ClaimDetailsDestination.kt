@@ -82,13 +82,13 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.logger.logcat
@@ -99,11 +99,11 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_YOUR_CLAIM
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_TERMS
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.claim_outcome_unresponsive_support_text
 import hedvig.resources.claim_status_appeal_instruction_link_text
@@ -864,8 +864,8 @@ private fun PreviewClaimDetailScreen(
           isUploadingFilesEnabled = false,
           infoText = "If you have more receipts related to this claim, you can upload more on this page.",
           displayItems = listOf(
-            DisplayItem("Type", DisplayItem.DisplayItemValue.Text("Respiratory disorder")),
-            DisplayItem("Submitted", DisplayItem.DisplayItemValue.Text("2025-02-03")),
+            DisplayItem("Type", Text("Respiratory disorder")),
+            DisplayItem("Submitted", Text("2025-02-03")),
           ),
         ),
         openUrl = {},

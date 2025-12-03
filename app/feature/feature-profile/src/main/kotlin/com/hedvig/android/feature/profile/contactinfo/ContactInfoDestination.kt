@@ -48,13 +48,13 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
-import hedvig.resources.Res
 import hedvig.resources.PHONE_NUMBER_ROW_TITLE
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
 import hedvig.resources.PROFILE_MY_INFO_REVIEW_INFO_CARD
 import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
 import hedvig.resources.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
 import hedvig.resources.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
+import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
 import hedvig.resources.travel_certificate_travel_certificate_ready
@@ -112,7 +112,7 @@ private fun ContactInfoScreen(
         )
       }
 
-      is ContactInfoUiState.Content -> {
+      is Content -> {
         SuccessState(
           uiState = uiState,
           updateEmailAndPhoneNumber = updateEmailAndPhoneNumber,
@@ -126,7 +126,7 @@ private fun ContactInfoScreen(
 
 @Composable
 private fun ColumnScope.SuccessState(
-  uiState: ContactInfoUiState.Content,
+  uiState: Content,
   updateEmailAndPhoneNumber: () -> Unit,
   showedSnackBar: () -> Unit,
   focusManager: FocusManager,
@@ -155,7 +155,7 @@ private fun ColumnScope.SuccessState(
   Spacer(Modifier.height(16.dp))
   HedvigNotificationCard(
     message = stringResource(Res.string.PROFILE_MY_INFO_REVIEW_INFO_CARD),
-    priority = NotificationDefaults.NotificationPriority.Info,
+    priority = NotificationPriority.Info,
     modifier = Modifier.padding(horizontal = 16.dp),
   )
   Spacer(Modifier.height(4.dp))

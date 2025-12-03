@@ -32,9 +32,9 @@ import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsu
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
-import hedvig.resources.Res
 import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_COINSURED
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource

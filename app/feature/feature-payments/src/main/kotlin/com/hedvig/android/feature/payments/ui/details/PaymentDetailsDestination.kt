@@ -45,11 +45,11 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge

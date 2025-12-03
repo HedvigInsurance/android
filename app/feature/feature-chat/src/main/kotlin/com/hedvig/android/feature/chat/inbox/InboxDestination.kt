@@ -55,7 +55,6 @@ import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Tex
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.Unknown
 import com.hedvig.android.feature.chat.model.Sender
 import com.hedvig.android.feature.chat.ui.formattedChatDateTime
-import hedvig.resources.Res
 import hedvig.resources.CHAT_CONVERSATION_HISTORY_TITLE
 import hedvig.resources.CHAT_CONVERSATION_INBOX
 import hedvig.resources.CHAT_CONVERSATION_QUESTION_TITLE
@@ -64,6 +63,7 @@ import hedvig.resources.CHAT_SENDER_MEMBER
 import hedvig.resources.CHAT_SENT_A_FILE
 import hedvig.resources.CHAT_SENT_A_MESSAGE
 import hedvig.resources.HEDVIG_NAME_TEXT
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_CONVERSATION_DESCRIPTION
 import hedvig.resources.claim_status_bar_closed
 import hedvig.resources.home_claim_card_pill_claim
@@ -319,7 +319,7 @@ private fun ConversationCardPreview(
 private val mockInboxConversation1 = InboxConversation(
   conversationId = "1",
   header = Header.ClaimConversation("claimType"),
-  latestMessage = InboxConversation.LatestMessage.Text(
+  latestMessage = Text(
     "Please tell us more about how the phone broke.",
     Sender.HEDVIG,
     Clock.System.now(),
@@ -332,7 +332,7 @@ private val mockInboxConversation1 = InboxConversation(
 private val mockInboxConversation2 = InboxConversation(
   conversationId = "2",
   header = Header.ClaimConversation("claimType"),
-  latestMessage = InboxConversation.LatestMessage.File(Sender.AUTOMATION, Clock.System.now()),
+  latestMessage = File(Sender.AUTOMATION, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
   isClosed = false,
@@ -341,7 +341,7 @@ private val mockInboxConversation2 = InboxConversation(
 private val mockInboxConversation3 = InboxConversation(
   conversationId = "3",
   header = Header.ServiceConversation,
-  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
+  latestMessage = File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = false,
   createdAt = Clock.System.now(),
   isClosed = true,
@@ -350,7 +350,7 @@ private val mockInboxConversation3 = InboxConversation(
 private val mockInboxConversationLegacy = InboxConversation(
   conversationId = "999",
   header = Header.Legacy,
-  latestMessage = InboxConversation.LatestMessage.File(Sender.MEMBER, Clock.System.now()),
+  latestMessage = File(Sender.MEMBER, Clock.System.now()),
   hasNewMessages = true,
   createdAt = Clock.System.now(),
   isClosed = false,

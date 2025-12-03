@@ -46,10 +46,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.CLAIMS_PAYOUT_SUCCESS_LABEL
 import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
 import hedvig.resources.NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION
@@ -57,6 +53,10 @@ import hedvig.resources.claims_payout_progress_title
 import hedvig.resources.general_close_button
 import hedvig.resources.open_chat
 import hedvig.resources.something_went_wrong
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SingleItemPayoutDestination(

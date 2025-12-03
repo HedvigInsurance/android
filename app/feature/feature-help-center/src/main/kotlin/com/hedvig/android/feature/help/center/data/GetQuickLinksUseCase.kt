@@ -14,7 +14,6 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.Res
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CHANGE_ADDRESS_SUBTITLE
@@ -34,6 +33,7 @@ import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
+import hedvig.resources.Res
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 

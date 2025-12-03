@@ -165,6 +165,6 @@ private fun ClearErrorOnNewInputEffect(
 }
 
 @Composable
-private fun ForeverRepository.ReferralError.toErrorMessage(): String {
+private fun ReferralError.toErrorMessage(): String {
   return message ?: stringResource(Res.string.referrals_change_code_sheet_general_error)
 }

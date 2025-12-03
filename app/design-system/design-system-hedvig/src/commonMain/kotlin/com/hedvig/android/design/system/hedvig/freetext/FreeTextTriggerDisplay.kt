@@ -53,8 +53,8 @@ import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupp
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingStart
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens.DisplaySupportingTextPaddingTop
 import com.hedvig.android.design.system.hedvig.value
-import hedvig.resources.Res
 import hedvig.resources.A11Y_CHARACTER_LIMIT
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

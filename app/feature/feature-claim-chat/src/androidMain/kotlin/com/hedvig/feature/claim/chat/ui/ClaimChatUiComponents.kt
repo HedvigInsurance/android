@@ -815,7 +815,7 @@ internal fun ChatClaimSummary(
               HedvigText(text = displayItem.first)
             },
             endSlot = {
-              val formatter = rememberHedvigDateTimeFormatter()
+              rememberHedvigDateTimeFormatter()
               HedvigText(
                 text = displayItem.second,
                 textAlign = TextAlign.End,

@@ -31,7 +31,7 @@ internal class InsuranceEvidenceOverviewPresenter(
     lastState: InsuranceEvidenceOverviewState,
   ): InsuranceEvidenceOverviewState {
     var currentState by remember {
-      mutableStateOf<InsuranceEvidenceOverviewState>(InsuranceEvidenceOverviewState.Loading)
+      mutableStateOf<InsuranceEvidenceOverviewState>(Loading)
     }
 
     var dataLoadIteration by remember { mutableIntStateOf(0) }
@@ -55,7 +55,7 @@ internal class InsuranceEvidenceOverviewPresenter(
       if (url != null) {
         val oldState = currentState
         currentState = when (oldState) {
-          InsuranceEvidenceOverviewState.Failure -> InsuranceEvidenceOverviewState.Loading
+          InsuranceEvidenceOverviewState.Failure -> Loading
           Loading -> return@LaunchedEffect
           is InsuranceEvidenceOverviewState.Success -> oldState.copy(isButtonLoading = true)
         }

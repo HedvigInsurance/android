@@ -31,9 +31,9 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredCampaign
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredChat
 import com.hedvig.android.design.system.hedvig.icon.colored.ColoredFirstVet
-import hedvig.resources.Res
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE
+import hedvig.resources.Res
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.insurance_tab_cross_sells_title
 import org.jetbrains.compose.resources.stringResource

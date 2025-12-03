@@ -34,6 +34,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -53,7 +54,6 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
-import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.NoopValidator
@@ -72,7 +72,6 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import hedvig.resources.Res
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE
 import hedvig.resources.CHANGE_ADDRESS_MOVING_DATE_ERROR
@@ -89,6 +88,7 @@ import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_INVALID_INPUT
 import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.Res
 import hedvig.resources.app_info_submit_bug_go_back
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_change_address_button
@@ -173,7 +173,7 @@ private fun EnterNewAddressScreen(
 
 @Composable
 private fun EnterNewAddressScreen(
-  uiState: EnterNewAddressUiState.Content,
+  uiState: Content,
   submitInput: () -> Unit,
   dismissSubmissionError: () -> Unit,
   modifier: Modifier = Modifier,
@@ -424,7 +424,7 @@ private fun EnterNewAddressValidationError.string(): String {
 @Composable
 fun PreviewEnterNewAddressScreen() {
   EnterNewAddressScreen(
-    uiState = EnterNewAddressUiState.Content(
+    uiState = Content(
       moveFromAddressId = "moveFromAddressId",
       movingDate = ValidatedInput(
         Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -450,7 +450,7 @@ fun PreviewEnterNewAddressScreen() {
 @Composable
 fun PreviewEnterNewAddressScreenFailure() {
   EnterNewAddressScreen(
-    uiState = EnterNewAddressUiState.MissingOngoingMovingFlow,
+    uiState = MissingOngoingMovingFlow,
     {},
     {},
     {},

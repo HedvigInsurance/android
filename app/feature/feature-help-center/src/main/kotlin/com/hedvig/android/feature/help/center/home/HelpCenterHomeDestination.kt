@@ -112,6 +112,8 @@ import hedvig.resources.HC_COMMON_QUESTIONS_TITLE
 import hedvig.resources.HC_COMMON_TOPICS_TITLE
 import hedvig.resources.HC_HOME_VIEW_ANSWER
 import hedvig.resources.HC_HOME_VIEW_QUESTION
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_TITLE
@@ -120,11 +122,9 @@ import hedvig.resources.SEARCH_NOTHING_FOUND
 import hedvig.resources.SEARCH_PLACEHOLDER
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
-import org.jetbrains.compose.resources.stringResource
-import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
-import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HelpCenterHomeDestination(
@@ -303,7 +303,7 @@ private fun HelpCenterHomeScreen(
                   quickLinksForSearch = (
                     quickLinksUiState as?
                       HelpCenterUiState.QuickLinkUiState.QuickLinks
-                    )?.quickLinks ?: listOf(),
+                  )?.quickLinks ?: listOf(),
                   questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
                 )
                 onUpdateSearchResults(it, results)

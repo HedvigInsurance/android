@@ -118,7 +118,6 @@ internal class ClaimChatPresenter(
       mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.outcome)
     }
     var claimIntentId by remember { mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.claimIntentId) }
-    var submittingStep by remember { mutableStateOf(false) }
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }

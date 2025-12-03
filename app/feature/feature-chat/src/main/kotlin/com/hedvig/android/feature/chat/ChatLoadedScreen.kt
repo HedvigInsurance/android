@@ -160,7 +160,6 @@ import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.Res
 import hedvig.resources.AUTOMATED_MESSAGE_INFO_CARD_BUTTON
 import hedvig.resources.CHAT_CONVERSATION_CLOSED_INFO
 import hedvig.resources.CHAT_DELIVERED_MESSAGE
@@ -169,6 +168,7 @@ import hedvig.resources.CHAT_FILE_DOWNLOAD
 import hedvig.resources.CHAT_SENDER_AUTOMATION
 import hedvig.resources.CHAT_SENDER_HEDVIG
 import hedvig.resources.CHAT_SENDER_MEMBER
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_CHAT_FAILED_MEDIA
 import hedvig.resources.TALKBACK_CHAT_FAILED_PHOTO
 import hedvig.resources.TALKBACK_CHAT_FAILED_TEXT
@@ -361,7 +361,7 @@ private fun ScrollToBottomEffect(
             .first { it == idToScrollTo.toString() }
         }
         ensureActive()
-        val senderIsMember = chatMessage.sender == Sender.MEMBER
+        val senderIsMember = chatMessage.sender == MEMBER
         val isAlreadyCloseToTheBottom = lazyListState.firstVisibleItemIndex <= 2
         if (senderIsMember || isAlreadyCloseToTheBottom) {
           lazyListState.scrollToItem(0)
@@ -414,7 +414,7 @@ private fun ChatLazyColumn(
         when (uiChatMessage.chatMessage) {
           is ChatMessageFile -> {
             when (uiChatMessage.chatMessage.mimeType) {
-              ChatMessageFile.MimeType.IMAGE -> "ChatMessage.ChatMessageFileImage"
+              IMAGE -> "ChatMessage.ChatMessageFileImage"
               ChatMessageFile.MimeType.MP4 -> "ChatMessage.ChatMessageFileMP4"
               ChatMessageFile.MimeType.PDF -> "ChatMessage.ChatMessageFilePDF"
               ChatMessageFile.MimeType.OTHER -> "ChatMessage.ChatMessageFileOther"
@@ -571,7 +571,7 @@ private fun ChatBubble(
 
         is ChatMessageFile -> {
           when (chatMessage.mimeType) {
-            CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
+            IMAGE -> {
               ChatAsyncImage(
                 model = chatMessage.url,
                 imageLoader = imageLoader,
@@ -642,7 +642,7 @@ private fun ChatBubble(
           }
         }
 
-        is CbmChatMessage.ChatMessageGif -> {
+        is ChatMessageGif -> {
           ChatAsyncImage(
             model = chatMessage.gifUrl,
             imageLoader = imageLoader,
@@ -654,7 +654,7 @@ private fun ChatBubble(
           )
         }
 
-        is CbmChatMessage.FailedToBeSent -> {
+        is FailedToBeSent -> {
           when (chatMessage) {
             is ChatMessageText -> {
               Surface(
@@ -801,11 +801,11 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
       // At [%s:formattedInstant], [%s:sender] sent a GIF picture.
       is CbmChatMessage.ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
       // "at $instant, $sender said: $it.text."
-      is FailedToBeSent.ChatMessageMedia -> stringResource(Res.string.TALKBACK_CHAT_FAILED_MEDIA, time)
+      is ChatMessageMedia -> stringResource(Res.string.TALKBACK_CHAT_FAILED_MEDIA, time)
       // "at $instant, you tried to send a media file, but it failed. Double tap to try sending again."
-      is FailedToBeSent.ChatMessagePhoto -> stringResource(Res.string.TALKBACK_CHAT_FAILED_PHOTO, time)
+      is ChatMessagePhoto -> stringResource(Res.string.TALKBACK_CHAT_FAILED_PHOTO, time)
       // "at $instant, you tried to send a photo, but it failed. Double tap to try sending again."
-      is FailedToBeSent.ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
+      is ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
       // "at $instant, you tried to send a text message, but it failed. Double tap to try sending again. The message said: $it.text"
     }
   } ?: ""
@@ -1092,7 +1092,7 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     horizontalAlignment = chatMessage.messageHorizontalAlignment(chatItemIndex),
     modifier = modifier,
   ) {
-    val failedToBeSent = chatMessage is CbmChatMessage.FailedToBeSent
+    val failedToBeSent = chatMessage is FailedToBeSent
     Row(
       verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -1134,12 +1134,12 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
                   append(" • ")
                 }
 
-                Sender.HEDVIG -> {
+                HEDVIG -> {
                   append(stringResource(Res.string.CHAT_SENDER_HEDVIG))
                   append(" • ")
                 }
 
-                Sender.MEMBER -> {}
+                MEMBER -> {}
               }
             }
             append(chatMessage.formattedDateTime(getLocale()))

@@ -41,8 +41,8 @@ import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.android.ui.claimflow.WarningTextWithIcon
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_SELECT_CATEGORY
+import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds

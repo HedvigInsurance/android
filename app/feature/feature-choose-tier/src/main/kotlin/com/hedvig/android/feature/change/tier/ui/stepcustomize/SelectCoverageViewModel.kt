@@ -171,8 +171,7 @@ internal class SelectCoveragePresenter(
       }
     }
 
-    val currentPartialStateValue = currentPartialState
-    return when (currentPartialStateValue) {
+    return when (val currentPartialStateValue = currentPartialState) {
       is PartialUiState.Failure -> Failure
       PartialUiState.Loading -> Loading
       is PartialUiState.Success -> {

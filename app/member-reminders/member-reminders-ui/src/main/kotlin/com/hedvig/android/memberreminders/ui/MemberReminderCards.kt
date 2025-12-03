@@ -31,7 +31,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
-import hedvig.resources.Res
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
@@ -42,6 +41,7 @@ import hedvig.resources.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW
 import hedvig.resources.PUSH_NOTIFICATIONS_ALERT_ACTION_OK
+import hedvig.resources.Res
 import hedvig.resources.info_card_missing_payment_body
 import hedvig.resources.info_card_missing_payment_missing_payments_body
 import hedvig.resources.open_chat
@@ -273,7 +273,7 @@ private fun ReminderCardMissingPayment(
 
 @Composable
 private fun ReminderCardUpcomingRenewals(
-  upcomingRenewal: MemberReminder.UpcomingRenewal,
+  upcomingRenewal: UpcomingRenewal,
   openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {

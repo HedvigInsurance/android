@@ -13,9 +13,9 @@ enum class UiCurrencyCode {
   companion object {
     fun fromCurrencyCode(currencyCode: CurrencyCode): UiCurrencyCode {
       return when (currencyCode) {
-        CurrencyCode.SEK -> UiCurrencyCode.SEK
-        CurrencyCode.DKK -> UiCurrencyCode.DKK
-        CurrencyCode.NOK -> UiCurrencyCode.NOK
+        CurrencyCode.SEK -> SEK
+        CurrencyCode.DKK -> DKK
+        CurrencyCode.NOK -> NOK
         CurrencyCode.UNKNOWN__ -> error("Unknown currency code")
       }
     }

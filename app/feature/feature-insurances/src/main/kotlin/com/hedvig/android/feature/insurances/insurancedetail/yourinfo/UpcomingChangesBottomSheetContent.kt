@@ -31,8 +31,8 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import hedvig.resources.Res
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.insurance_details_update_details_sheet_title
 import hedvig.resources.open_chat

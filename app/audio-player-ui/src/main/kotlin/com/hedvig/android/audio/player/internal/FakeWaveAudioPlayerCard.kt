@@ -45,9 +45,9 @@ import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.AudioPlayerState.Ready.ReadyState
 import com.hedvig.audio.player.data.ProgressPercentage
-import hedvig.resources.Res
 import hedvig.resources.A11Y_PAUSE
 import hedvig.resources.A11Y_PLAY
+import hedvig.resources.Res
 import hedvig.resources.claim_status_detail_info_error_body
 import hedvig.resources.claim_status_detail_info_error_button
 import hedvig.resources.claim_status_detail_info_error_title
@@ -186,20 +186,20 @@ private fun ActionOrLoadingIcon(
       is AudioPlayerState.Ready -> {
         IconButton(
           onClick = when (audioPlayerState.readyState) {
-            is AudioPlayerState.Ready.ReadyState.Playing -> pause
+            is ReadyState.Playing -> pause
             else -> startPlaying
           },
         ) {
           Icon(
             imageVector = when (audioPlayerState.readyState) {
-              AudioPlayerState.Ready.ReadyState.Playing -> HedvigIcons.Pause
-              AudioPlayerState.Ready.ReadyState.Seeking -> HedvigIcons.Pause
+              ReadyState.Playing -> HedvigIcons.Pause
+              ReadyState.Seeking -> HedvigIcons.Pause
               else -> HedvigIcons.Play
             },
             contentDescription = stringResource(
               when (audioPlayerState.readyState) {
-                AudioPlayerState.Ready.ReadyState.Playing -> Res.string.A11Y_PAUSE
-                AudioPlayerState.Ready.ReadyState.Seeking -> Res.string.A11Y_PAUSE
+                ReadyState.Playing -> Res.string.A11Y_PAUSE
+                ReadyState.Seeking -> Res.string.A11Y_PAUSE
                 else -> Res.string.A11Y_PLAY
               },
             ),

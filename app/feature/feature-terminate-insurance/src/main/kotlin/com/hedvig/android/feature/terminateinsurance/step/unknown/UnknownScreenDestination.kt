@@ -17,10 +17,10 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationInfoScreen
-import hedvig.resources.Res
 import hedvig.resources.EMBARK_UPDATE_APP_BODY
 import hedvig.resources.EMBARK_UPDATE_APP_BUTTON
 import hedvig.resources.EMBARK_UPDATE_APP_TITLE
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_error
 import org.jetbrains.compose.resources.stringResource

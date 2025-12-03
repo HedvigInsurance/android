@@ -32,8 +32,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import hedvig.resources.Res
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
+import hedvig.resources.Res
 import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL
 import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE
 import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL

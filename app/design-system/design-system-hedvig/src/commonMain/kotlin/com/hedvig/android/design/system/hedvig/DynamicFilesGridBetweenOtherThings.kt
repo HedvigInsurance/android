@@ -50,8 +50,8 @@ import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.icon.Play
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_REMOVE
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 /**

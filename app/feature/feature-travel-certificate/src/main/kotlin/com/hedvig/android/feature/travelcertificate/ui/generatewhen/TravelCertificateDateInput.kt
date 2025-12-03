@@ -40,8 +40,8 @@ import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState.Success
-import hedvig.resources.Res
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
+import hedvig.resources.Res
 import hedvig.resources.general_continue_button
 import hedvig.resources.travel_certificate_start_date_title
 import hedvig.resources.travel_certificate_when_is_your_trip
@@ -101,7 +101,7 @@ private fun TravelCertificateDateInput(
       }
     }
 
-    is TravelCertificateDateInputUiState.Success -> {
+    is Success -> {
       LaunchedEffect(uiState.primaryInput) {
         if (uiState.errorMessageRes == null) {
           if (uiState.primaryInput != null) {
@@ -206,7 +206,7 @@ private fun MovingDateButton(
       readOnly = true,
       enabled = true,
       labelText = stringResource(Res.string.travel_certificate_start_date_title),
-      textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+      textFieldSize = Medium,
       trailingContent = {},
       modifier = Modifier.clickable(onClick = onClick),
     )

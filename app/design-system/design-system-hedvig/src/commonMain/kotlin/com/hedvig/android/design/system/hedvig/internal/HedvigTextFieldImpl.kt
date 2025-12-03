@@ -517,8 +517,8 @@ private enum class PreviewTextFieldInputState {
   ;
 
   val isFocused: Boolean
-    get() = this == PreviewTextFieldInputState.Focused || this == PreviewTextFieldInputState.FocusedEmpty
+    get() = this == Focused || this == FocusedEmpty
 
   val isEmpty: Boolean
-    get() = this == PreviewTextFieldInputState.FocusedEmpty || this == PreviewTextFieldInputState.UnfocusedEmpty
+    get() = this == FocusedEmpty || this == UnfocusedEmpty
 }

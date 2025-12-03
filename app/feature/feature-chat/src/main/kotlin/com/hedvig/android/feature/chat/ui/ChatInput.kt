@@ -64,9 +64,9 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.minimumInteractiveComponentSize
 import com.hedvig.android.logger.logcat
-import hedvig.resources.Res
 import hedvig.resources.CHAT_INPUT_PLACEHOLDER
 import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_ADD_DOCUMENTS
 import hedvig.resources.TALKBACK_ADD_IMAGES
 import hedvig.resources.TALKBACK_OPEN_SENDING_OPTIONS

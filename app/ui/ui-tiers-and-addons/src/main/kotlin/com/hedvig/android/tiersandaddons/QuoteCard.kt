@@ -74,8 +74,8 @@ import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
-import hedvig.resources.Res
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.TALKBACK_PREVIOUSLY
 import hedvig.resources.TIER_FLOW_PRICE_LABEL_CURRENCY

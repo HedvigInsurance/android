@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Search: ImageVector
+val HedvigIcons.Search: ImageVector
   get() {
     if (_search != null) {
       return _search!!

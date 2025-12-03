@@ -26,11 +26,11 @@ import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_PROGRESS_WILL_BE_LOST_ALERT
 import hedvig.resources.GENERAL_YES
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 

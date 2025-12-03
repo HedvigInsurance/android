@@ -56,8 +56,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
-import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
@@ -65,6 +63,8 @@ import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.ui.payments.PaymentsEvent.Retry
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content
@@ -82,7 +82,6 @@ import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
-import hedvig.resources.Res
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_DISCOUNTS_SECTION_TITLE
 import hedvig.resources.PAYMENTS_IN_PROGRESS
@@ -94,6 +93,7 @@ import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
 import hedvig.resources.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
+import hedvig.resources.Res
 import hedvig.resources.TAB_PAYMENTS_TITLE
 import hedvig.resources.info_card_missing_payment_body
 import hedvig.resources.info_card_missing_payment_missing_payments_body
@@ -592,7 +592,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         isRetrying = false,
         upcomingPayment = NoUpcomingPayment,
         upcomingPaymentInfo = NoInfo,
-        ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
+        ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, SEK))),
         connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",

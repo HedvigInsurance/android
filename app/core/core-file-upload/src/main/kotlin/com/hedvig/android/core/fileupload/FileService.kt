@@ -99,8 +99,8 @@ private fun getFileSize(contentResolver: ContentResolver, uri: Uri): Long {
   } ?: -1
 
   val sizeFromCursor =
-    contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { cursor ->
-      val sizeIndex = cursor.getColumnIndex(android.provider.OpenableColumns.SIZE)
+    contentResolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { cursor ->
+      val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
       if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else null
     } ?: -1
   logcat { "getFileSize for uri:$uri | statSize:$statSize | contentSize:$sizeFromCursor" }

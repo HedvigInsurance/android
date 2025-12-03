@@ -79,13 +79,13 @@ import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_YES
 import hedvig.resources.LOGOUT_BUTTON
 import hedvig.resources.PROFILE_ABOUT_ROW
 import hedvig.resources.PROFILE_LOGOUT_DIALOG_MESSAGE
 import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
 import hedvig.resources.PROFILE_TITLE
+import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.profile_appSettingsSection_row_headline
 import hedvig.resources.profile_certificates_title

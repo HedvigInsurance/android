@@ -63,8 +63,8 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextP
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextTertiary
 import com.hedvig.android.design.system.hedvig.tokens.FreeTextTokens
 import com.hedvig.android.design.system.hedvig.value
-import hedvig.resources.Res
 import hedvig.resources.A11Y_CHARACTER_LIMIT
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_save_button
 import org.jetbrains.compose.resources.stringResource

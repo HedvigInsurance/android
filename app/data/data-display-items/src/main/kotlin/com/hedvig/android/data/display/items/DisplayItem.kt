@@ -21,12 +21,12 @@ data class DisplayItem(
     fun fromStrings(title: String, value: String): DisplayItem {
       val displayItemValue: DisplayItemValue = run {
         try {
-          val localDate = kotlinx.datetime.LocalDate.parse(value)
+          val localDate = LocalDate.parse(value)
           return@run DisplayItemValue.Date(localDate)
         } catch (_: IllegalArgumentException) {
         }
         try {
-          val localDateTime = kotlinx.datetime.LocalDateTime.parse(value)
+          val localDateTime = LocalDateTime.parse(value)
           return@run DisplayItemValue.DateTime(localDateTime)
         } catch (_: IllegalArgumentException) {
         }

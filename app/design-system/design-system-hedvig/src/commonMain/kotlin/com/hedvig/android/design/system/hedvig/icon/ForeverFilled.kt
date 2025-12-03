@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.ForeverFilled: ImageVector
+val HedvigIcons.ForeverFilled: ImageVector
   get() {
     if (_foreverFilled != null) {
       return _foreverFilled!!

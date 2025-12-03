@@ -21,10 +21,10 @@ import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
-import hedvig.resources.Res
 import hedvig.resources.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION
 import hedvig.resources.ADDON_FLOW_TRAVEL_INFORMATION_TITLE
 import hedvig.resources.ADDON_LEARN_MORE_LABEL
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

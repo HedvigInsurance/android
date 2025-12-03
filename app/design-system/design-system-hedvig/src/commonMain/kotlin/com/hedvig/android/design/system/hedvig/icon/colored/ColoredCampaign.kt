@@ -22,7 +22,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.ColoredCampaign: ImageVector
+val HedvigIcons.ColoredCampaign: ImageVector
   get() {
     if (_campaign != null) {
       return _campaign!!

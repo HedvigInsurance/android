@@ -60,8 +60,8 @@ import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.Res
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_HINT
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT
@@ -524,7 +524,7 @@ private val previewReason3 = TerminationSurveyOption(
       listIndex = 1,
     ),
   ),
-  suggestion = SurveyOptionSuggestion.Known.Action.Redirect(
+  suggestion = Redirect(
     "http://www.google.com",
     "Do this action instead",
     "Click here to do it",

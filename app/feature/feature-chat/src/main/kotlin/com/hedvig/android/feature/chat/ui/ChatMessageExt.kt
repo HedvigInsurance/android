@@ -3,8 +3,8 @@ package com.hedvig.android.feature.chat.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.chat.model.CbmChatMessage
 import com.hedvig.android.feature.chat.model.Sender
 import java.time.temporal.TemporalAdjusters

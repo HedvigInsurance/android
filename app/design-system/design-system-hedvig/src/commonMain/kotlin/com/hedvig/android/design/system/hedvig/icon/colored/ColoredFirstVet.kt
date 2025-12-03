@@ -23,7 +23,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.ColoredFirstVet: ImageVector
+val HedvigIcons.ColoredFirstVet: ImageVector
   get() {
     if (_firstVet != null) {
       return _firstVet!!

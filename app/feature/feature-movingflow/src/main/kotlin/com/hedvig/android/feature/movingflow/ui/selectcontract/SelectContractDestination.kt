@@ -29,11 +29,11 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_CONTACT_US_TITLE
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.MOVING_FLOW_BODY
+import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_change_address_button

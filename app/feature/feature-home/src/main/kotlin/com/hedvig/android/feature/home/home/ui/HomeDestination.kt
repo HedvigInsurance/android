@@ -125,8 +125,8 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.Res
 import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.Res
 import hedvig.resources.TOAST_NEW_OFFER
 import hedvig.resources.home_tab_active_in_future_info
 import hedvig.resources.home_tab_claim_button_text
@@ -258,7 +258,7 @@ private fun HomeScreen(
           )
         }
 
-        is HomeUiState.Success -> {
+        is Success -> {
           HomeScreenSuccess(
             uiState = uiState,
             pullRefreshState = pullRefreshState,
@@ -281,7 +281,7 @@ private fun HomeScreen(
 
     Column {
       TopAppBarLayoutForActions {
-        val currentState = uiState as? HomeUiState.Success
+        val currentState = uiState as? Success
         if (currentState != null) {
           if (currentState.isExperimentalClaimChatEnabled) {
             ToolbarClaimChatIcon(
@@ -299,12 +299,12 @@ private fun HomeScreen(
           }
           actionsList.forEach { action ->
             when (action) {
-              HomeTopBarAction.ChatAction -> ToolbarChatIcon(
+              ChatAction -> ToolbarChatIcon(
                 onClick = onNavigateToInbox,
                 modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
               )
 
-              is HomeTopBarAction.CrossSellsAction -> {
+              is CrossSellsAction -> {
                 ToolbarCrossSellsIcon(
                   onClick = {
                     crossSellBottomSheetState.show(
@@ -318,7 +318,7 @@ private fun HomeScreen(
                 )
               }
 
-              is HomeTopBarAction.FirstVetAction -> {
+              is FirstVetAction -> {
                 val sections = action.sections
                 ToolbarFirstVetIcon(
                   onClick = { navigateToFirstVet(sections) },
@@ -328,7 +328,7 @@ private fun HomeScreen(
           }
         }
       }
-      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
+      if ((uiState as? Success)?.chatAction != null) {
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
         val shouldShowNewMessageTooltip by produceState(false) {
           snapshotFlow { updatedHasUnseenChatMessages }
@@ -416,7 +416,7 @@ private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HomeScreenSuccess(
-  uiState: HomeUiState.Success,
+  uiState: Success,
   pullRefreshState: PullRefreshState,
   toolbarHeight: Dp,
   notificationPermissionState: NotificationPermissionState,
@@ -559,7 +559,7 @@ private fun HomeScreenSuccess(
 
 @Composable
 private fun ImportantMessages(
-  list: List<HomeData.VeryImportantMessage>,
+  list: List<VeryImportantMessage>,
   openUrl: (String) -> Unit,
   hideImportantMessage: (id: String) -> Unit,
   contentPadding: PaddingValues,
@@ -613,7 +613,7 @@ private fun ImportantMessages(
 private fun VeryImportantMessageCard(
   openUrl: (String) -> Unit,
   hideImportantMessage: (id: String) -> Unit,
-  veryImportantMessage: HomeData.VeryImportantMessage,
+  veryImportantMessage: VeryImportantMessage,
   modifier: Modifier = Modifier,
 ) {
   key(veryImportantMessage.id) {
@@ -654,7 +654,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
     )
   } else {
     val headlineText = when (homeText) {
-      is HomeText.Active -> stringResource(Res.string.home_tab_welcome_title_without_name)
+      is Active -> stringResource(Res.string.home_tab_welcome_title_without_name)
       is HomeText.ActiveInFuture -> error("Image shows here instead")
       is HomeText.Pending -> stringResource(Res.string.home_tab_pending_unknown_title_without_name)
       is HomeText.Switching -> stringResource(Res.string.home_tab_pending_switchable_welcome_title_without_name)
@@ -855,7 +855,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HomeScreen(
-        uiState = HomeUiState.Success(
+        uiState = Success(
           homeText = homeText,
           isReloading = false,
           claimStatusCardsData = null,
@@ -901,7 +901,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
 
 private class HomeTextPreviewParameterProvider : CollectionPreviewParameterProvider<HomeText>(
   listOf(
-    HomeText.Active,
+    Active,
     HomeText.ActiveInFuture(LocalDate.parse("2025-01-01")),
     HomeText.Pending,
     HomeText.Switching,

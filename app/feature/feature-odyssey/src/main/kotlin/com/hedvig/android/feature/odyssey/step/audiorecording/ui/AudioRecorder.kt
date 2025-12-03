@@ -65,12 +65,12 @@ import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.ProgressPercentage
 import com.hedvig.audio.player.data.SignedAudioUrl
-import hedvig.resources.Res
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.EMBARK_RECORD_AGAIN
 import hedvig.resources.EMBARK_START_RECORDING
 import hedvig.resources.EMBARK_STOP_RECORDING
+import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW

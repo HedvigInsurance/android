@@ -77,10 +77,10 @@ import com.hedvig.android.feature.insurances.insurancedetail.documents.Documents
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
-import hedvig.resources.Res
 import hedvig.resources.CONTRACT_DETAILS_ERROR
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_CERTIFICATE
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
 import hedvig.resources.general_back_button
 import hedvig.resources.insurance_details_view_tab_1_title
 import hedvig.resources.insurance_details_view_tab_2_title
@@ -153,7 +153,7 @@ private fun ContractDetailScreen(
           ContractDetailsUiState.Error -> "Error"
           ContractDetailsUiState.NoContractFound -> "NoContractFound"
           ContractDetailsUiState.Loading -> "Loading"
-          is ContractDetailsUiState.Success -> "Success"
+          is Success -> "Success"
         }
       },
       label = "contract detail screen fade animated content",
@@ -204,7 +204,7 @@ private fun ContractDetailScreen(
           )
         }
 
-        is ContractDetailsUiState.Success -> {
+        is Success -> {
           val contract = state.insuranceContract
           val consumedWindowInsets = remember { MutableWindowInsets() }
           LazyColumn(

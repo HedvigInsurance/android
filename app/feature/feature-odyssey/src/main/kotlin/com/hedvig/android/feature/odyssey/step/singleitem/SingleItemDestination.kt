@@ -63,10 +63,10 @@ import com.hedvig.android.feature.odyssey.step.singleitem.ModelUi.JustModelDialo
 import com.hedvig.android.feature.odyssey.step.summary.displayName
 import com.hedvig.android.feature.odyssey.ui.MonetaryAmountInput
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_SINGLE_ITEM_DETAILS
 import hedvig.resources.CLAIMS_SINGLE_ITEM_NOTICE_LABEL
 import hedvig.resources.CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL
+import hedvig.resources.Res
 import hedvig.resources.SINGLE_ITEM_INFO_BRAND
 import hedvig.resources.claims_item_enter_model_name
 import hedvig.resources.claims_item_model_other
@@ -275,7 +275,7 @@ private fun Models(
   HedvigBigCard(
     onClick = { showDialog = true },
     labelText = stringResource(Res.string.claims_item_screen_model_button),
-    inputText = if (uiState.selectedItemModel is ItemModel.New) {
+    inputText = if (uiState.selectedItemModel is New) {
       stringResource(Res.string.claims_item_model_other)
     } else {
       uiState.selectedItemModel?.displayName(resources)
@@ -453,7 +453,7 @@ private fun PreviewSingleItemScreen(
           itemModelsUiState = ItemModelsUiState(
             nonEmptyListOf(ItemModel.Known("Item Model", "", "", "")),
             ItemModel.Known("Item Model #2", "", "", ""),
-            modelUi = ModelUi.BothDialogAndCustom,
+            modelUi = BothDialogAndCustom,
             initialCustomValue = "",
           ),
           itemProblemsUiState = ItemProblemsUiState.Content(

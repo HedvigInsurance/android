@@ -232,6 +232,7 @@ private val buildConstantsModule = module {
       override val appPackageId: String = BuildConfig.APPLICATION_ID
 
       override val isDebug: Boolean = BuildConfig.DEBUG
+
       @Suppress("SimplifyBooleanWithConstants")
       override val isProduction: Boolean =
         BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"

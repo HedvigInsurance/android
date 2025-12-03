@@ -53,11 +53,11 @@ import com.hedvig.android.notification.permission.NotificationPermissionDialog
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import com.hedvig.android.notification.permission.rememberNotificationPermissionState
 import com.hedvig.android.theme.Theme
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_SUBSCRIBED
 import hedvig.resources.GENERAL_UNSUBSCRIBED
 import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_OFF
 import hedvig.resources.PROFILE_NOTIFICATIONS_STATUS_ON
+import hedvig.resources.Res
 import hedvig.resources.SETTINGS_NOTIFICATIONS_TITLE
 import hedvig.resources.SETTINGS_SCREEN_CONFIRM_UNSUBSCRIBE
 import hedvig.resources.SETTINGS_SCREEN_DELETE_ACCOUNT_BUTTON

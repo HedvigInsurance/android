@@ -19,11 +19,11 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.Res
 import hedvig.resources.HC_CHAT_ANSWER
 import hedvig.resources.HC_CHAT_BUTTON
 import hedvig.resources.HC_CHAT_GO_TO_INBOX
 import hedvig.resources.HC_CHAT_QUESTION
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

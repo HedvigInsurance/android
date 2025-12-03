@@ -90,12 +90,12 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DiscountCostBreakdown
-import hedvig.resources.Res
 import hedvig.resources.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL
 import hedvig.resources.CHANGE_ADDRESS_TOTAL
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.MOVING_FLOW_ADDON_REMOVE_OPTION
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMPARE_BUTTON
 import hedvig.resources.TIER_FLOW_COVERAGE_LABEL
 import hedvig.resources.TIER_FLOW_DEDUCTIBLE_LABEL
@@ -700,8 +700,8 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
           UiMoney(it.toDouble(), SEK),
         )
       },
-      premium = UiMoney(100.0, UiCurrencyCode.SEK),
-      grossPremium = UiMoney(110.0, UiCurrencyCode.SEK),
+      premium = UiMoney(100.0, SEK),
+      grossPremium = UiMoney(110.0, SEK),
       navigateToSummaryScreenWithHomeQuoteId = null,
       isSubmitting = false,
       comparisonParameters = null,

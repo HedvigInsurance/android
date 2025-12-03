@@ -30,11 +30,11 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.login_continue_button
 import hedvig.resources.login_enter_your_email_address
 import hedvig.resources.login_navigation_bar_center_element_title
 import hedvig.resources.login_text_input_email_address
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EmailInputScreen(

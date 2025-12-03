@@ -54,13 +54,13 @@ import com.hedvig.android.feature.payments.chargeBreakdownPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberCharge.ChargeBreakdown.Period.Description.BetweenDays
 import com.hedvig.android.feature.payments.data.MemberCharge.ChargeBreakdown.Period.Description.FullPeriod
-import hedvig.resources.Res
 import hedvig.resources.PAYMENTS_AMOUNT_TO_PAY
 import hedvig.resources.PAYMENTS_OUTSTANDING_PAYMENT
 import hedvig.resources.PAYMENTS_PERIOD_DAYS
 import hedvig.resources.PAYMENTS_PERIOD_FULL
 import hedvig.resources.PAYMENTS_PERIOD_TITLE
 import hedvig.resources.PAYMENTS_SUBTOTAL
+import hedvig.resources.Res
 import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE
 import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND
 import hedvig.resources.TALKBACK_EXPANDABLE_STATE_COLLAPSED

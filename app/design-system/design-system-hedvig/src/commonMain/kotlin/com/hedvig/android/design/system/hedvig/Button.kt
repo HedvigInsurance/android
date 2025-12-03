@@ -57,7 +57,7 @@ fun HedvigButton(
   enabled: Boolean,
   modifier: Modifier = Modifier,
   buttonStyle: ButtonDefaults.ButtonStyle = ButtonDefaults.buttonStyle,
-  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.buttonSize,
+  buttonSize: ButtonSize = ButtonDefaults.buttonSize,
   interactionSource: MutableInteractionSource? = null,
   border: Color? = null,
   onClickLabel: String? = null,
@@ -108,7 +108,7 @@ fun HedvigButton(
   enabled: Boolean,
   modifier: Modifier = Modifier,
   buttonStyle: ButtonDefaults.ButtonStyle = ButtonDefaults.buttonStyle,
-  buttonSize: ButtonDefaults.ButtonSize = ButtonDefaults.buttonSize,
+  buttonSize: ButtonSize = ButtonDefaults.buttonSize,
   interactionSource: MutableInteractionSource? = null,
   border: Color? = null,
   onClickLabel: String? = null,
@@ -157,7 +157,7 @@ fun HedvigTextButton(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
-  buttonSize: ButtonSize = ButtonDefaults.ButtonSize.Large,
+  buttonSize: ButtonSize = ButtonSize.Large,
   isLoading: Boolean = false,
   onClickLabel: String? = null,
   onClick: () -> Unit,
@@ -188,7 +188,7 @@ fun HedvigRedTextButton(
     enabled = enabled,
     modifier = modifier,
     buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-    buttonSize = ButtonDefaults.ButtonSize.Large,
+    buttonSize = ButtonSize.Large,
     interactionSource = interactionSource,
   ) {
     HedvigText(text, color = ButtonDefaults.ButtonStyle.Ghost.style.buttonColors.redTextColor)
@@ -202,7 +202,7 @@ fun HedvigButtonGhostWithBorder(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   interactionSource: MutableInteractionSource? = null,
-  size: ButtonDefaults.ButtonSize = ButtonDefaults.ButtonSize.Medium,
+  size: ButtonSize = ButtonSize.Medium,
 ) {
   HedvigTextButton(
     text = text,
@@ -249,12 +249,12 @@ private val ButtonDefaults.ButtonStyle.style: Style
     ButtonDefaults.ButtonStyle.Red -> Style.Red
   }
 
-private val ButtonDefaults.ButtonSize.size: Size
+private val ButtonSize.size: Size
   get() = when (this) {
-    ButtonDefaults.ButtonSize.Large -> Size.Large
-    ButtonDefaults.ButtonSize.Medium -> Size.Medium
-    ButtonDefaults.ButtonSize.Small -> Size.Small
-    ButtonDefaults.ButtonSize.Mini -> Size.Mini
+    ButtonSize.Large -> Size.Large
+    ButtonSize.Medium -> Size.Medium
+    ButtonSize.Small -> Size.Small
+    ButtonSize.Mini -> Size.Mini
   }
 
 @Immutable
@@ -270,18 +270,18 @@ private data class ButtonColors(
   val redTextColor: Color,
 ) {
   @Stable
-  internal fun containerColor(enabled: Boolean): Color = when {
+  fun containerColor(enabled: Boolean): Color = when {
     !enabled -> disabledContainerColor
     else -> containerColor
   }
 
   @Stable
-  internal fun contentColor(enabled: Boolean): Color = when {
+  fun contentColor(enabled: Boolean): Color = when {
     !enabled -> disabledContentColor
     else -> contentColor
   }
 
-  internal fun hoverColor(isHovered: Boolean): Color = when {
+  fun hoverColor(isHovered: Boolean): Color = when {
     isHovered -> hoverContainerColor
     else -> Color.Unspecified
   }

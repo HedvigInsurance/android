@@ -24,9 +24,9 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_FILE_UPLOAD_INFO
 import hedvig.resources.CLAIMS_FILE_UPLOAD_TITLE
+import hedvig.resources.Res
 import hedvig.resources.claims_skip_button
 import hedvig.resources.file_upload_upload_files
 import org.jetbrains.compose.resources.stringResource

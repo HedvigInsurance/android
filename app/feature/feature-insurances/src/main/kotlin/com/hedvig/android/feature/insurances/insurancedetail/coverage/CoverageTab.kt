@@ -50,8 +50,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.insurances.data.Addon
-import org.jetbrains.compose.resources.stringResource
 import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CoverageTab(

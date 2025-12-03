@@ -479,7 +479,7 @@ private fun PreviewHedvigTabRow() {
       HedvigTabRow(
         tabTitles = List(5) { "Title#$it" },
         tabRowState = rememberHedvigTabRowState(4),
-        tabStyle = TabDefaults.TabStyle.Filled,
+        tabStyle = TabStyle.Filled,
       )
     }
   }
@@ -495,7 +495,7 @@ private fun PreviewHedvigTabRowWithVariousNumberOfItems(
       HedvigTabRow(
         tabTitles = List(numberOfItems) { "Title#$it" },
         tabRowState = rememberHedvigTabRowState(4),
-        tabStyle = TabDefaults.TabStyle.Filled,
+        tabStyle = TabStyle.Filled,
       )
     }
   }

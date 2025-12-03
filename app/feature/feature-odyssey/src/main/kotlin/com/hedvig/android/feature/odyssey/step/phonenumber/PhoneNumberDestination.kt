@@ -33,9 +33,9 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.ERROR
 import com.hedvig.android.feature.odyssey.step.phonenumber.PhoneNumberUiState.Status.LOADING
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_CONFIRM_NUMBER_TITLE
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
+import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import org.jetbrains.compose.resources.stringResource
 

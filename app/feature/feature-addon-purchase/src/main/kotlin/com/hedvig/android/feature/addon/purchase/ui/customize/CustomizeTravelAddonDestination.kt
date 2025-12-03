@@ -91,7 +91,6 @@ import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAdd
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Success
-import hedvig.resources.Res
 import hedvig.resources.ADDON_FLOW_COVER_BUTTON
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL
 import hedvig.resources.ADDON_FLOW_SELECT_BUTTON
@@ -102,6 +101,7 @@ import hedvig.resources.ADDON_FLOW_SUBTITLE
 import hedvig.resources.ADDON_FLOW_TITLE
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button

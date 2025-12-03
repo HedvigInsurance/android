@@ -49,8 +49,8 @@ import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
@@ -219,7 +219,7 @@ private fun AreYouSureSheetContent(
       iconStyle = ERROR,
       text = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
       description = when (type) {
-        TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion ->
+        TerminationType.Deletion ->
           stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION)
 
         is Termination ->
@@ -303,8 +303,8 @@ private fun PreviewTerminationConfirmationScreen(
   val terminationDate = LocalDate(2024, 8, 9)
   val isLoading = input.first
   val type = when (input.second) {
-    false -> TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion
-    true -> TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination(terminationDate)
+    false -> TerminationType.Deletion
+    true -> Termination(terminationDate)
   }
   val withExtraCoverage = input.third
   HedvigTheme {

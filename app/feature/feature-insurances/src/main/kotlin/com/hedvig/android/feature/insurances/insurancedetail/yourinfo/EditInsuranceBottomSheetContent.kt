@@ -29,13 +29,13 @@ import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.Res
 import hedvig.resources.CONTRACT_CHANGE_INFORMATION_TITLE
 import hedvig.resources.CONTRACT_EDIT_COINSURED
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_change_coverage

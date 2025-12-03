@@ -317,9 +317,9 @@ object StepperDefaults {
 
 private val StepperDefaults.StepperSize.size: StepperSize
   get() = when (this) {
-    StepperDefaults.StepperSize.Large -> StepperSize.Large
-    StepperDefaults.StepperSize.Medium -> StepperSize.Medium
-    StepperDefaults.StepperSize.Small -> StepperSize.Small
+    Large -> StepperSize.Large
+    Medium -> StepperSize.Medium
+    Small -> StepperSize.Small
   }
 
 private sealed class StepperSize {

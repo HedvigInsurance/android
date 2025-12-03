@@ -13,9 +13,9 @@ import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
-import hedvig.resources.Res
 import hedvig.resources.CONTRACT_COINSURED
 import hedvig.resources.CONTRACT_NO_INFORMATION
+import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 

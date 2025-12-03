@@ -24,10 +24,10 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.calculateForPreview
 import com.hedvig.android.notification.permission.rememberNotificationPermissionStatus
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_PLEDGE_SLIDE_LABEL
 import hedvig.resources.HONESTY_PLEDGE_DESCRIPTION
 import hedvig.resources.HONESTY_PLEDGE_TITLE
+import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import org.jetbrains.compose.resources.stringResource
 

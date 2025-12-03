@@ -14,9 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
-import hedvig.resources.Res
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.Res
 import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 

@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
-import hedvig.resources.Res
 import hedvig.resources.ALERT_OK
+import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

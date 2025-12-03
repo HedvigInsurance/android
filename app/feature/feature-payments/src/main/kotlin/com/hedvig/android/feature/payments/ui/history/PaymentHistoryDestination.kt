@@ -32,13 +32,13 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.feature.payments.data.MemberCharge
-import hedvig.resources.Res
 import hedvig.resources.PAYMENTS_HISTORY_INFO
 import hedvig.resources.PAYMENTS_NO_HISTORY_DATA
 import hedvig.resources.PAYMENT_HISTORY_TITLE
+import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource

@@ -18,7 +18,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.ColoredChatWithDot: ImageVector
+val HedvigIcons.ColoredChatWithDot: ImageVector
   get() {
     val current = _chat
     if (current != null) return current
