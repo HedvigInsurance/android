@@ -56,17 +56,6 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
-import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
-import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
-import com.hedvig.feature.claim.chat.ui.ChatClaimSummary
-import com.hedvig.feature.claim.chat.ui.ContentSelectChips
-import com.hedvig.feature.claim.chat.ui.DateSelectBubble
-import com.hedvig.feature.claim.chat.ui.MultiSelectBubbleWithDialog
-import com.hedvig.feature.claim.chat.ui.SingleSelectBubbleWithDialog
-import com.hedvig.feature.claim.chat.ui.TextInputBubble
-import com.hedvig.feature.claim.chat.ui.UploadFilesBubble
-import com.hedvig.feature.claim.chat.ui.YesNoBubble
-import hedvig.resources.R
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.Res
@@ -339,7 +328,7 @@ private fun UploadFilesStep(
       Spacer(Modifier.height(8.dp))
       if (stepContent.localFiles.isNotEmpty()) {
         HedvigButton(
-          text = stringResource(R.string.general_continue_button),
+          text = stringResource(Res.string.general_continue_button),
           enabled = true, //todo
           onClick = {
             onEvent(
@@ -353,7 +342,7 @@ private fun UploadFilesStep(
       }
       if (stepContent.isSkippable) {
         HedvigButton(
-          text = stringResource(R.string.claims_skip_button),
+          text = stringResource(Res.string.claims_skip_button),
           enabled = true,
           onClick = {
             onEvent(ClaimChatEvent.Skip(itemId))
