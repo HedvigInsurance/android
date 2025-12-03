@@ -443,9 +443,13 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigateToConversation: (NavBackStackEntry, String) -> Unit,
 ) {
   claimChatGraph(
-    shouldShowRequestPermissionRationale,
-    externalNavigator::openAppSettings,
+    navController = hedvigAppState.navController,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    openAppSettings = externalNavigator::openAppSettings,
     onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToClaimDetails = { claimId: String ->
+      hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+    },
     imageLoader = imageLoader,
     appPackageId = hedvigBuildConstants.appPackageId,
   )

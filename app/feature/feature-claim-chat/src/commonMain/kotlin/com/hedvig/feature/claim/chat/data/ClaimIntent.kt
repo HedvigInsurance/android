@@ -33,7 +33,9 @@ internal data class ClaimIntentStep(
   val stepContent: StepContent,
 )
 
+@Serializable
 internal sealed interface ClaimIntentOutcome {
+  @Serializable
   data class Deflect(
     val title: String?,
     val infoText: String?,
@@ -43,6 +45,7 @@ internal sealed interface ClaimIntentOutcome {
     val content: InfoBlock,
     val faq: List<InfoBlock>,
   ) : ClaimIntentOutcome {
+    @Serializable
     data class Partner(
       val id: String,
       val imageUrl: String?,
@@ -54,14 +57,17 @@ internal sealed interface ClaimIntentOutcome {
       val urlButtonTitle: String?,
     )
 
+    @Serializable
     data class InfoBlock(
       val title: String,
       val description: String,
     )
   }
 
+  @Serializable
   data class Claim(val claimId: String, val claimSubmissionDate: Instant) : ClaimIntentOutcome
 
+  @Serializable
   data object Unknown : ClaimIntentOutcome
 }
 
