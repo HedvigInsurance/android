@@ -64,7 +64,12 @@ internal sealed interface ClaimChatEvent {
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
 
-  data class UpdateFieldAnswer(val stepId: StepId, val fieldId: FieldId, val answer: String?) : ClaimChatEvent
+  data class UpdateFieldAnswer(
+    val stepId: StepId,
+    val fieldId: FieldId,
+    val answer: StepContent.Form.FieldOption?,
+  ) : ClaimChatEvent
+
   data class Skip(val id: StepId) : ClaimChatEvent
 
   data class Regret(val id: StepId) : ClaimChatEvent
@@ -369,7 +374,14 @@ internal class ClaimChatPresenter(
           val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
             ?: return@CollectEvents
           val fieldsToSubmit = currentContent.fields.map {
-            Field(it.id, it.selectedOptions.ifEmpty { listOf(null) })
+            Field(
+              it.id,
+              it.selectedOptions
+                //.ifEmpty { listOf(null) }
+                .map { selectedOption ->
+                  selectedOption.value
+                },
+            )
           }
           launch {
             submitFormUseCase
@@ -468,8 +480,8 @@ internal class ClaimChatPresenter(
                   StepContent.Form.FieldType.TEXT,
                   StepContent.Form.FieldType.DATE,
                   StepContent.Form.FieldType.NUMBER,
-                  StepContent.Form.FieldType.SINGLE_SELECT,
                   StepContent.Form.FieldType.BINARY,
+                  StepContent.Form.FieldType.SINGLE_SELECT,
                   null,
                     -> field.copy(
                     selectedOptions = event.answer?.let {

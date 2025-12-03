@@ -103,7 +103,7 @@ internal sealed interface StepContent {
 
     fun canContinue(): Boolean {
       return fields.filter { it.isRequired }.all {
-        logcat { "Mariia: field ${it.title} selectedOptions: ${it.selectedOptions}" }
+        logcat { "Mariia: required field ${it.title} selectedOptions: ${it.selectedOptions}" }
         it.selectedOptions.isNotEmpty()
 
       }
@@ -114,12 +114,17 @@ internal sealed interface StepContent {
       val isRequired: Boolean,
       val suffix: String?,
       val title: String,
-      val defaultValues: List<String>,
+      val defaultValues: List<FieldOption>,
       val maxValue: String?,
       val minValue: String?,
       val type: FieldType?,
-      val options: List<Pair<String, String>>,
-      val selectedOptions: List<String>,
+      val options: List<FieldOption>,
+      val selectedOptions: List<FieldOption>,
+    )
+
+    data class FieldOption(
+      val value: String,
+      val text: String
     )
 
     enum class FieldType {
