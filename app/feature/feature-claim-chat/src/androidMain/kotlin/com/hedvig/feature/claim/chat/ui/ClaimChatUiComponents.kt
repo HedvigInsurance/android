@@ -312,13 +312,7 @@ internal fun MultiSelectBubbleWithDialog(
   questionLabel: String,
   options: List<RadioOption>,
   selectedOptionIds: List<RadioOptionId>,
-  isPrefilled: Boolean,
-  isCurrentStep: Boolean,
-  canBeChanged: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
   onSelect: (RadioOptionId) -> Unit,
-  onSubmit: (List<RadioOptionId>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
@@ -332,27 +326,16 @@ internal fun MultiSelectBubbleWithDialog(
       buttonText = stringResource(Res.string.general_save_button),
     )
   }
-  StandardBubble(
-    isPrefilledByAI = isPrefilled,
-    isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    onSubmit = onSubmit,
-    modifier = modifier,
-    onSkip = onSkip,
-    selectedAnswer = selectedOptionIds,
-    content = {
-      HedvigBigCard(
-        onClick = { showDialog = true },
-        labelText = questionLabel,
-        inputText = when {
-          selectedOptionIds.isEmpty() -> null
-          else -> options.filter { it.id in selectedOptionIds }
-            .joinToString(transform = RadioOption::text)
-        },
-        modifier = modifier,
-        enabled = isCurrentStep || canBeChanged,
-      )
+  HedvigBigCard(
+    onClick = { showDialog = true },
+    labelText = questionLabel,
+    inputText = when {
+      selectedOptionIds.isEmpty() -> null
+      else -> options.filter { it.id in selectedOptionIds }
+        .joinToString(transform = RadioOption::text)
     },
+    modifier = modifier,
+    enabled = true,
   )
 }
 
@@ -965,13 +948,7 @@ private fun PreviewClaimChatComponents() {
             RadioOption(RadioOptionId("02"), "Seat"),
           ),
           selectedOptionIds = listOf(RadioOptionId("01"), RadioOptionId("02")),
-          isCurrentStep = false,
-          canBeChanged = true,
-          canSkip = true,
-          onSkip = {},
           onSelect = {},
-          onSubmit = {},
-          isPrefilled = false,
         )
         Spacer(Modifier.height(16.dp))
         DateSelectBubble(

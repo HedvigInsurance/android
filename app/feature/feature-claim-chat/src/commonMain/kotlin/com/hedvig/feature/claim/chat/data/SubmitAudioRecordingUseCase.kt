@@ -43,7 +43,10 @@ internal class SubmitAudioRecordingUseCase(
         ),
       )
       .safeExecute()
-      .mapLeft(::ErrorMessage)
+      .mapLeft{
+        logcat { "SubmitAudioRecordingUseCase error: $it" }
+        ErrorMessage()
+      }
       .bind()
       .claimIntentSubmitAudio
       .toClaimIntent()

@@ -7,6 +7,7 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentStartMutation
 
 internal class StartClaimIntentUseCase(
@@ -21,7 +22,10 @@ internal class StartClaimIntentUseCase(
           ),
         )
         .safeExecute()
-        .mapLeft(::ErrorMessage)
+        .mapLeft {
+          logcat { "StartClaimIntentUseCase error: $it" }
+          ErrorMessage()
+        }
         .bind()
         .claimIntentStart
         .toClaimIntent()

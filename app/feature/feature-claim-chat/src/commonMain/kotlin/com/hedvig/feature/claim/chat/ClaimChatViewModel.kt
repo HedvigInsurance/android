@@ -11,19 +11,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
-import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.*
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.AudioRecording
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.FreeTextDescription
 import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
-import com.hedvig.feature.claim.chat.data.FormSubmissionData.*
+import com.hedvig.feature.claim.chat.data.FormSubmissionData.Field
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
@@ -35,6 +37,7 @@ import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 internal sealed interface ClaimChatEvent {
@@ -60,13 +63,12 @@ internal sealed interface ClaimChatEvent {
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
 
-  data class SelectFieldAnswer(val stepId: StepId, val fieldId: FieldId, val answer: String?) : ClaimChatEvent
+  data class UpdateFieldAnswer(val stepId: StepId, val fieldId: FieldId, val answer: String?) : ClaimChatEvent
   data class Skip(val id: StepId) : ClaimChatEvent
 
   data class Regret(val id: StepId) : ClaimChatEvent
   data class FormSubmit(
     val stepId: StepId,
-    //val formInputs: Map<FieldId, List<String?>>
   ) : ClaimChatEvent
 
   data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
@@ -74,6 +76,8 @@ internal sealed interface ClaimChatEvent {
   data object OpenFreeTextOverlay : ClaimChatEvent
 
   data object CloseFreeChatOverlay : ClaimChatEvent
+
+  data object DismissErrorDialog : ClaimChatEvent
 
   data object SubmitClaim : ClaimChatEvent
 }
@@ -90,6 +94,7 @@ internal sealed interface ClaimChatUiState {
     val showFreeTextOverlay: Boolean,
     val freeText: String?,
     val outcome: ClaimIntentOutcome?,
+    val errorSubmittingStep: ErrorMessage?,
   ) : ClaimChatUiState
 }
 
@@ -118,7 +123,7 @@ internal class ClaimChatViewModel(
     submitSelectUseCase,
     submitSummaryUseCase,
     skipStepUseCase,
-    audioRecordingManager
+    audioRecordingManager,
   ),
 )
 
@@ -145,11 +150,16 @@ internal class ClaimChatPresenter(
     var outcome by remember {
       mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.outcome)
     }
-    var claimIntentId by remember { mutableStateOf((lastState as? ClaimChatUiState.ClaimChat)?.claimIntentId) }
+    var claimIntentId by remember {
+      mutableStateOf(
+        (lastState as? ClaimChatUiState.ClaimChat)?.claimIntentId,
+      )
+    }
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }
     var showFreeTextOverlay by remember { mutableStateOf(false) }
+    var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
 
@@ -184,22 +194,29 @@ internal class ClaimChatPresenter(
       when (event) {
         is ClaimChatEvent.Select -> {
           Snapshot.withMutableSnapshot {
-            val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect ?: return@CollectEvents
+            val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect
+              ?: return@CollectEvents
             val currentStepState = currentStep ?: return@CollectEvents
             launch {
-              steps.remove(currentStepState)
-              steps.add(
-                currentStepState.copy(
-                  stepContent = currentStepContent.copy(
-                    selectedOptionId = event.selectedId,
-                  ),
-                ),
-              ) //todo: check
               submitSelectUseCase
-                .invoke(event.id, event.selectedId)
+                .invoke(
+                  id = event.id,
+                  selectedId = event.selectedId,
+                )
                 .fold(
-                  ifLeft = { error("todo left submitSelectUseCase: $it") },
+                  ifLeft = {
+                    errorSubmittingStep = it
+                    logcat { "ClaimChatEvent.Select error: $it" }
+                  },
                   ifRight = { claimIntent ->
+                    steps.remove(currentStepState)
+                    steps.add(
+                      currentStepState.copy(
+                        stepContent = currentStepContent.copy(
+                          selectedOptionId = event.selectedId,
+                        ),
+                      ),
+                    )
                     handleNext(steps, setOutcome, claimIntent.next)
                   },
                 )
@@ -224,7 +241,10 @@ internal class ClaimChatPresenter(
                 submitAudioRecordingUseCase
                   .invoke(event.id, recordedFile, stepContent.uploadUri)
                   .fold(
-                    ifLeft = { error("todo left submitAudioRecordingUseCase audio: $it") },
+                    ifLeft = {
+                      errorSubmittingStep = it
+                      logcat { "ClaimChatEvent.AudioRecording.SubmitAudioFile error: $it" }
+                    },
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
                       handleNext(steps, setOutcome, claimIntent.next)
@@ -239,7 +259,10 @@ internal class ClaimChatPresenter(
                 submitAudioRecordingUseCase
                   .invoke(event.id, freeTextInput)
                   .fold(
-                    ifLeft = { error("todo left submitAudioRecordingUseCase text: $it") },
+                    ifLeft = {
+                      errorSubmittingStep = it
+                      logcat { "ClaimChatEvent.AudioRecording.SubmitTextInput error: $it" }
+                    },
                     ifRight = { claimIntent ->
                       handleNext(steps, setOutcome, claimIntent.next)
                     },
@@ -348,7 +371,10 @@ internal class ClaimChatPresenter(
                 ),
               )
               .fold(
-                ifLeft = { error("submitFormUseCase error: $it") },
+                ifLeft = {
+                  errorSubmittingStep = it
+                  logcat { "FormSubmit error: $it" }
+                },
                 ifRight = { claimIntent ->
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -366,7 +392,10 @@ internal class ClaimChatPresenter(
                 uploadUrl = event.uploadUri,
               )
               .fold(
-                ifLeft = { error("todo left submitFileUploadUseCase $it") },
+                ifLeft = {
+                  errorSubmittingStep = it
+                  logcat { "ClaimChatEvent.FileUpload $it" }
+                },
                 ifRight = { claimIntent ->
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -377,10 +406,15 @@ internal class ClaimChatPresenter(
         ClaimChatEvent.CloseFreeChatOverlay -> showFreeTextOverlay = false
         ClaimChatEvent.OpenFreeTextOverlay -> showFreeTextOverlay = true
         is ClaimChatEvent.Skip -> {
+          val claimChatState = claimIntentId != null
+          if (!claimChatState) return@CollectEvents
           launch {
             skipStepUseCase.invoke(event.id)
               .fold(
-                ifLeft = { error("todo left skipStepUseCase $it") },
+                ifLeft = {
+                  errorSubmittingStep = it
+                  logcat { "ClaimChatEvent.Skip $it" }
+                },
                 ifRight = { claimIntent ->
 //                  val newFields = stepContent.fields.map { field ->
 //                          field.copy(selectedOptions = emptyList())
@@ -403,7 +437,7 @@ internal class ClaimChatPresenter(
           // TODO: Implement regret logic
         }
 
-        is ClaimChatEvent.SelectFieldAnswer -> {
+        is ClaimChatEvent.UpdateFieldAnswer -> {
           Snapshot.withMutableSnapshot {
             val stepToUpdate = steps.find { it.id == event.stepId } ?: return@withMutableSnapshot
             val stepContent = stepToUpdate.stepContent as? StepContent.Form ?: return@withMutableSnapshot
@@ -416,12 +450,18 @@ internal class ClaimChatPresenter(
                   StepContent.Form.FieldType.NUMBER,
                   StepContent.Form.FieldType.SINGLE_SELECT,
                   StepContent.Form.FieldType.BINARY,
-                           null -> field.copy(selectedOptions = event.answer?.let{
-                    listOf(it)
-                  } ?: emptyList())
+                  null,
+                    -> field.copy(
+                    selectedOptions = event.answer?.let {
+                      listOf(it)
+                    } ?: emptyList(),
+                  )
+
                   StepContent.Form.FieldType.MULTI_SELECT ->
-                    field.copy(selectedOptions = event.answer?.let{field.selectedOptions + event.answer}
-                      ?:field.selectedOptions)
+                    field.copy(
+                      selectedOptions = event.answer?.let { field.selectedOptions + event.answer }
+                        ?: field.selectedOptions,
+                    )
                 }
               } else {
                 field
@@ -438,6 +478,8 @@ internal class ClaimChatPresenter(
             }
           }
         }
+
+        ClaimChatEvent.DismissErrorDialog -> errorSubmittingStep = null
       }
     }
 
@@ -451,6 +493,7 @@ internal class ClaimChatPresenter(
         outcome = outcome,
         showFreeTextOverlay = showFreeTextOverlay,
         freeText = freeText,
+        errorSubmittingStep = errorSubmittingStep,
       )
 
       else -> error("")
