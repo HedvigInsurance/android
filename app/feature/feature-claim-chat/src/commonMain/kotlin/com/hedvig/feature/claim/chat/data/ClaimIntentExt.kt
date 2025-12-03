@@ -119,7 +119,8 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
           text = it.title,
           value = it.value
         ) } ?: emptyList(),
-      selectedOptions = field.defaultValues.toFieldOptions(field.options)
+      selectedOptions = field.defaultValues.toFieldOptions(field.options),
+      datePickerUiState = null
     )
   }
 }

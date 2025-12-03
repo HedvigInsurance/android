@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat.data
 
 import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
@@ -116,6 +117,7 @@ internal sealed interface StepContent {
       val type: FieldType?,
       val options: List<FieldOption>,
       val selectedOptions: List<FieldOption>,
+      val datePickerUiState: DatePickerUiState?,
     )
 
     data class FieldOption(

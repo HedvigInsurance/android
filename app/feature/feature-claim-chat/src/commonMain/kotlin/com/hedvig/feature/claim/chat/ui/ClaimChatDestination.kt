@@ -48,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
@@ -429,6 +430,7 @@ private fun FormStep(
         onEvent(ClaimChatEvent.Regret(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
+        logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
         onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
