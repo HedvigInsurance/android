@@ -2,11 +2,9 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -61,6 +60,8 @@ import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_continue_button
+import hedvig.resources.general_error
+import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
@@ -147,6 +148,16 @@ private fun ClaimChatScreenContent(
   openAppSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  if (uiState.errorSubmittingStep != null) {
+    ErrorDialog(
+      title = org.jetbrains.compose.resources.stringResource(Res.string.general_error),
+      message = uiState.errorSubmittingStep.message
+        ?: org.jetbrains.compose.resources.stringResource(Res.string.something_went_wrong),
+      onDismiss = {
+        onEvent(ClaimChatEvent.DismissErrorDialog)
+      },
+    )
+  }
   val lazyListState = rememberLazyListState()
   LazyColumn(
     modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -352,7 +363,7 @@ private fun FormStep(
         onEvent(ClaimChatEvent.Regret(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
-        onEvent(ClaimChatEvent.SelectFieldAnswer(itemId, fieldId, answer))
+        onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
         onEvent(ClaimChatEvent.FormSubmit(itemId))
@@ -421,7 +432,7 @@ private fun FormContent(
                   id = RadioOptionId(it.second),
                   text = it.second,
                   label = it.first,
-                  iconResource = null
+                  iconResource = null,
                 )
               },
               selectedOptionId = field.selectedOptions.getOrNull(0)?.let {
@@ -433,14 +444,32 @@ private fun FormContent(
                   field.options.firstOrNull { it.second == option.id }?.second,
                 )
               },
-              modifier = Modifier.fillMaxWidth()
+              modifier = Modifier.fillMaxWidth(),
             )
           }
 
           StepContent.Form.FieldType.MULTI_SELECT -> {
-//          MultiSelectBubbleWithDialog(
-//            //todo
-//          )
+            MultiSelectBubbleWithDialog(
+              questionLabel = field.title,
+              options = field.options.map {
+              RadioOption(
+                id = RadioOptionId(it.second),
+                text = it.second,
+                label = it.first,
+                iconResource = null,
+              )
+            },
+              selectedOptionIds = field.selectedOptions.map {
+                RadioOptionId(it)
+              },
+              onSelect = { option ->
+                onSelectFieldAnswer(
+                  field.id,
+                  field.options.firstOrNull { it.second == option.id }?.second,
+                )
+              },
+              modifier = Modifier.fillMaxWidth()
+            )
           }
 
           StepContent.Form.FieldType.BINARY -> YesNoBubble(
@@ -586,16 +615,16 @@ private fun ContentSelectStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
+    HedvigText(
+      item.text,
+    )
     AnimatedContent(
       isCurrentStep,
       transitionSpec = {
-        (fadeIn(animationSpec = tween(220, delayMillis = 90)).togetherWith(fadeOut(animationSpec = tween(90))))
+        (fadeIn() + scaleIn()).togetherWith(fadeOut())
       },
     ) { targetState ->
       Column {
-        HedvigText(
-          item.text,
-        )
         if (targetState) {
           Spacer(Modifier.height(32.dp))
           ContentSelectChips(
@@ -613,42 +642,39 @@ private fun ContentSelectStep(
         }
       }
     }
-    val selected = options.firstOrNull { it.id == selectedOptionId }
-    if (selected != null) {
-      Column {
-        Spacer(Modifier.height(8.dp))
-        Row(
-          horizontalArrangement = Arrangement.End,
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          val showChipAnimatable = remember {
-            Animatable(0.0f)
-          }
-          LaunchedEffect(Unit) {
-            showChipAnimatable.animateTo(
-              1.0f,
-              animationSpec = spring(
-                dampingRatio = Spring.DampingRatioLowBouncy,
-                stiffness = Spring.StiffnessLow,
-              ),
+    AnimatedContent(
+      options.firstOrNull { it.id == selectedOptionId },
+      transitionSpec = {
+        (fadeIn() + scaleIn()).togetherWith(fadeOut())
+      },
+    ) { targetState ->
+      if (targetState != null) {
+        Column {
+          Spacer(Modifier.height(8.dp))
+          Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier
+              .fillMaxWidth(),
+          ) {
+            HedvigChip(
+              item = item,
+              showChipAnimatable = remember {
+                Animatable(1.0f)
+              },
+              itemDisplayName = {
+                targetState.title
+              },
+              isSelected = false,
+              onItemClick = {},
             )
           }
-          HedvigChip(
-            item = item,
-            showChipAnimatable = showChipAnimatable,
-            itemDisplayName = {
-              selected.title
+          EditButton(
+            item.stepContent.isRegrettable,
+            onRegret = {
+              onEvent(ClaimChatEvent.Regret(item.id))
             },
-            isSelected = false, //should be grey according to figma
-            onItemClick = {},
           )
         }
-        EditButton(
-          item.stepContent.isRegrettable,
-          onRegret = {
-            onEvent(ClaimChatEvent.Regret(item.id))
-          },
-        )
       }
     }
   }

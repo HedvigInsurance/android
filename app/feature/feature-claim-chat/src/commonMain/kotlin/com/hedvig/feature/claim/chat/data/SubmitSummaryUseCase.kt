@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSubmitSummaryMutation
 
 internal class SubmitSummaryUseCase(
@@ -16,7 +17,10 @@ internal class SubmitSummaryUseCase(
       apolloClient
         .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId))
         .safeExecute()
-        .mapLeft(::ErrorMessage)
+        .mapLeft{
+          logcat { "SubmitSummaryUseCase error: $it" }
+          ErrorMessage()
+        }
         .bind()
         .claimIntentSubmitSummary
         .toClaimIntent()

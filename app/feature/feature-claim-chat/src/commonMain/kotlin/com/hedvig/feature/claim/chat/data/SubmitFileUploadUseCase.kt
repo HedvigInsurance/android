@@ -47,7 +47,10 @@ internal class SubmitFileUploadUseCase(
         ),
       )
       .safeExecute()
-      .mapLeft(::ErrorMessage)
+      .mapLeft{
+        logcat { "SubmitFileUploadUseCase error: $it" }
+        ErrorMessage()
+      }
       .bind()
       .claimIntentSubmitFileUpload
       .toClaimIntent()
