@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat.data
 
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
@@ -97,6 +98,15 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
   ) : StepContent {
+
+    fun canContinue(): Boolean {
+      return fields.filter { it.isRequired }.all {
+        logcat { "Mariia: field ${it.title} selectedOptions: ${it.selectedOptions}" }
+        it.selectedOptions.isNotEmpty()
+
+      }
+    }
+
     data class Field(
       val id: FieldId,
       val isRequired: Boolean,
@@ -107,6 +117,7 @@ internal sealed interface StepContent {
       val minValue: String?,
       val type: FieldType?,
       val options: List<Pair<String, String>>,
+      val selectedOptions: List<String>,
     )
 
     enum class FieldType {

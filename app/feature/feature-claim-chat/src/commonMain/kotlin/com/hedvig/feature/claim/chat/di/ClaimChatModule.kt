@@ -3,6 +3,8 @@ package com.hedvig.feature.claim.chat.di
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
+import com.hedvig.feature.claim.chat.data.SkipStepUseCase
+import com.hedvig.feature.claim.chat.data.SkipStepUseCaseImpl
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
@@ -30,8 +32,13 @@ val claimChatModule = module {
       get(),
       get(),
       get(),
+      get<SkipStepUseCase>(),
     )
   }
+
+single<SkipStepUseCase> {
+  SkipStepUseCaseImpl(get<ApolloClient>())
+}
 
   single<StartClaimIntentUseCase> {
     StartClaimIntentUseCase(get<ApolloClient>())

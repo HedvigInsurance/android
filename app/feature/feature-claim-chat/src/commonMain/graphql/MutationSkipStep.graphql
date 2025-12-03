@@ -1,0 +1,5 @@
+mutation ClaimIntentSkipStep($stepId: ID!) {
+  claimIntentSkipStep(stepId:  $stepId) {
+    ...ClaimIntentMutationOutputFragment
+  }
+}
