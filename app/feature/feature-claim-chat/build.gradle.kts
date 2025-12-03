@@ -20,7 +20,6 @@ kotlin {
       implementation(libs.arrow.core)
       implementation(libs.jetbrains.compose.animation)
       implementation(libs.jetbrains.compose.foundation)
-      implementation(libs.jetbrains.compose.material3)
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)
