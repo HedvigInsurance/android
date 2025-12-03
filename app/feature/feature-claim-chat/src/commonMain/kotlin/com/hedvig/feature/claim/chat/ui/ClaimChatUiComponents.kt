@@ -340,18 +340,15 @@ internal fun MultiSelectBubbleWithDialog(
 
 @Composable
 internal fun UploadFilesBubble(
-  isCurrentStep: Boolean,
-  canSkip: Boolean,
-  canBeChanged: Boolean,
-  onSkip: () -> Unit,
   addLocalFile: (uri: Uri) -> Unit,
   onRemoveFile: (fileId: String) -> Unit,
-  onSubmitFiles: () -> Unit,
   appPackageId: String,
   localFiles: List<UiFile>,
-  uploadedFiles: List<UiFile>,
   imageLoader: ImageLoader,
-  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onNavigateToImageViewer: (
+    imageUrl: String,
+    cacheKey: String,
+  ) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -387,14 +384,8 @@ internal fun UploadFilesBubble(
     onUploadButtonClick = {
       fileTypeSelectBottomSheetState.show()
     },
-    isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    canBeChanged = canBeChanged,
-    onSkip = onSkip,
     onRemoveFile = onRemoveFile,
-    onSubmitFiles = onSubmitFiles,
     localFiles = localFiles,
-    uploadedFiles = uploadedFiles,
     imageLoader = imageLoader,
     onNavigateToImageViewer = onNavigateToImageViewer,
     modifier = modifier,
@@ -403,69 +394,45 @@ internal fun UploadFilesBubble(
 
 @Composable
 private fun UploadFilesBubbleContent(
-  isCurrentStep: Boolean,
-  canSkip: Boolean,
-  canBeChanged: Boolean,
-  onSkip: () -> Unit,
   onRemoveFile: (fileId: String) -> Unit,
-  onSubmitFiles: () -> Unit,
   onUploadButtonClick: () -> Unit,
   localFiles: List<UiFile>,
-  uploadedFiles: List<UiFile>,
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  StandardBubble(
-    isPrefilledByAI = false,
-    isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    onSubmit = {
-      onSubmitFiles()
-    },
-    modifier = modifier,
-    selectedAnswer = if ((localFiles + uploadedFiles).isNotEmpty()) Unit else null,
-    onSkip = onSkip,
-    content = {
-      Column {
-        val allFiles = localFiles + uploadedFiles
-        if (allFiles.isNotEmpty()) {
-          LazyRow(
-            Modifier.height(120.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 8.dp),
-          ) {
-            items(
-              items = allFiles,
-              key = { it.id },
-            ) { uiFile ->
-              File(
-                id = uiFile.id,
-                name = uiFile.name,
-                path = uiFile.localPath ?: uiFile.url,
-                mimeType = uiFile.mimeType,
-                imageLoader = imageLoader,
-                onRemoveFile = onRemoveFile,
-                onClickFile = null,
-                onNavigateToImageViewer = onNavigateToImageViewer,
-              )
-            }
-          }
-        }
-        Row(
-          Modifier.fillMaxWidth().padding(16.dp),
-          horizontalArrangement = Arrangement.End,
-        ) {
-          HedvigButton(
-            text = stringResource(Res.string.file_upload_upload_files),
-            onClick = onUploadButtonClick,
-            enabled = isCurrentStep || canBeChanged,
-            buttonSize = ButtonDefaults.ButtonSize.Medium,
+  Column(modifier) {
+    if (localFiles.isNotEmpty()) {
+      LazyRow(
+        Modifier
+          .height(120.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(top = 8.dp),
+      ) {
+        items(
+          items = localFiles,
+          key = { it.id },
+        ) { uiFile ->
+          File(
+            id = uiFile.id,
+            name = uiFile.name,
+            path = uiFile.localPath ?: uiFile.url,
+            mimeType = uiFile.mimeType,
+            imageLoader = imageLoader,
+            onRemoveFile = onRemoveFile,
+            onClickFile = null,
+            onNavigateToImageViewer = onNavigateToImageViewer,
           )
         }
       }
-    },
-  )
+    }
+    HedvigButton(
+      text = stringResource(Res.string.file_upload_upload_files),
+      onClick = onUploadButtonClick,
+      enabled = true,
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
 }
 
 @Composable
@@ -772,65 +739,6 @@ internal fun ChatClaimOutcome(
   }
 }
 
-@Composable
-internal fun <T> StandardBubble(
-  isPrefilledByAI: Boolean,
-  isCurrentStep: Boolean,
-  canSkip: Boolean,
-  selectedAnswer: T?,
-  onSkip: () -> Unit,
-  onSubmit: (T) -> Unit,
-  modifier: Modifier = Modifier,
-  content: @Composable () -> Unit,
-) {
-  Row(
-    modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.End,
-  ) {
-    Column {
-      Box {
-        HedvigCard(
-          Modifier.padding(start = 8.dp, top = 8.dp),
-        ) {
-          content()
-        }
-        if (isPrefilledByAI) {
-          Icon(
-            imageVector = HedvigIcons.HelipadFilled,
-            tint = HedvigTheme.colorScheme.signalAmberElement,
-            modifier = Modifier.align(Alignment.TopStart),
-            contentDescription = null, // todo
-          )
-        }
-      }
-      if (isCurrentStep) {
-        Spacer(Modifier.height(16.dp))
-        Row(
-          Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.End,
-        ) {
-          if (canSkip) {
-            HedvigTextButton(
-              stringResource(Res.string.claims_skip_button),
-              onClick = onSkip,
-              buttonSize = ButtonDefaults.ButtonSize.Medium,
-            )
-          }
-          Spacer(Modifier.width(16.dp))
-          HedvigButton(
-            text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
-            enabled = selectedAnswer != null,
-            onClick = {
-              if (selectedAnswer != null) onSubmit(selectedAnswer)
-            },
-            buttonSize = ButtonDefaults.ButtonSize.Medium,
-          )
-        }
-      }
-    }
-  }
-}
-
 @HedvigPreview
 @Composable
 private fun PreviewWithAssistantBubble() {
@@ -1005,12 +913,7 @@ private fun PreviewUploadFilesBubbleContent(
       ) {
         UploadFilesBubbleContent(
           modifier = Modifier.height(400.dp),
-          isCurrentStep = true,
-          canSkip = true,
-          canBeChanged = true,
-          onSkip = {},
           onRemoveFile = {},
-          onSubmitFiles = {},
           localFiles = if (hasFiles) {
             listOf(
               UiFile(
@@ -1024,7 +927,6 @@ private fun PreviewUploadFilesBubbleContent(
           } else {
             emptyList()
           },
-          uploadedFiles = emptyList(),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
           onUploadButtonClick = {},

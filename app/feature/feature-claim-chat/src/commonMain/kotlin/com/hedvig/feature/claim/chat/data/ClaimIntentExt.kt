@@ -76,7 +76,8 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
     is FileUploadFragment -> StepContent.FileUpload(
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
+      isRegrettable = isRegrettable,
+      localFiles = emptyList()
     )
     is SummaryFragment -> StepContent.Summary(
       items = items.map { StepContent.Summary.Item(it.title, it.value) },

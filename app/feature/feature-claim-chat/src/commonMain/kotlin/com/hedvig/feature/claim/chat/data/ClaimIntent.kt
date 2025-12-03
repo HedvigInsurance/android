@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat.data
 
 import androidx.compose.runtime.Immutable
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
@@ -83,6 +84,7 @@ internal sealed interface StepContent {
     val uploadUri: String,
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
+    val localFiles: List<UiFile>
   ) : StepContent
 
   data class Task(

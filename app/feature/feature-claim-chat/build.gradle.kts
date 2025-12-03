@@ -38,6 +38,7 @@ kotlin {
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
       implementation(projects.uiClaimFlow)
+      implementation(projects.coreUiData)
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)

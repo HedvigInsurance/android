@@ -12,6 +12,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -37,7 +38,7 @@ import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
-import kotlinx.coroutines.delay
+import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlinx.coroutines.launch
 
 internal sealed interface ClaimChatEvent {
@@ -71,7 +72,11 @@ internal sealed interface ClaimChatEvent {
     val stepId: StepId,
   ) : ClaimChatEvent
 
-  data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
+  data class AddFile(val id: StepId, val uri: String) : ClaimChatEvent
+
+  data class RemoveFile(val id: StepId, val fileId: String) : ClaimChatEvent
+
+  data class FileSubmit(val id: StepId) : ClaimChatEvent
 
   data object OpenFreeTextOverlay : ClaimChatEvent
 
@@ -110,6 +115,7 @@ internal class ClaimChatViewModel(
   submitSummaryUseCase: SubmitSummaryUseCase,
   audioRecordingManager: AudioRecordingManager,
   skipStepUseCase: SkipStepUseCase,
+  fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
   ClaimChatUiState.Initializing,
   ClaimChatPresenter(
@@ -124,6 +130,7 @@ internal class ClaimChatViewModel(
     submitSummaryUseCase,
     skipStepUseCase,
     audioRecordingManager,
+    fileService,
   ),
 )
 
@@ -139,6 +146,7 @@ internal class ClaimChatPresenter(
   private val submitSummaryUseCase: SubmitSummaryUseCase,
   private val skipStepUseCase: SkipStepUseCase,
   private val audioRecordingManager: AudioRecordingManager,
+  private val fileService: FileService,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -383,24 +391,35 @@ internal class ClaimChatPresenter(
           }
         }
 
-        is ClaimChatEvent.FileUpload -> {
-          val fileUri = event.fileUri ?: return@CollectEvents
-          launch {
-            submitFileUploadUseCase
-              .invoke(
-                stepId = event.id,
-                fileUri = fileUri,
-                uploadUrl = event.uploadUri,
+        is ClaimChatEvent.AddFile -> {
+          Snapshot.withMutableSnapshot {
+            val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
+            val stepContent = stepToUpdate.stepContent as? StepContent.FileUpload ?: return@withMutableSnapshot
+            if (event.uri in stepContent.localFiles.map { it.id }) {
+              return@CollectEvents
+            }
+            try {
+              val mimeType = fileService.getMimeType(event.uri)
+              val name = fileService.getFileName(event.uri) ?: event.uri
+              val localFile = UiFile(
+                name = name,
+                localPath = event.uri,
+                mimeType = mimeType,
+                id = event.uri,
+                url = null,
               )
-              .fold(
-                ifLeft = {
-                  errorSubmittingStep = it
-                  logcat { "ClaimChatEvent.FileUpload $it" }
-                },
-                ifRight = { claimIntent ->
-                  handleNext(steps, setOutcome, claimIntent.next)
-                },
-              )
+              val index = steps.indexOf(stepToUpdate)
+              if (index >= 0) {
+                steps[index] = stepToUpdate.copy(
+                  stepContent = stepContent.copy(
+                    localFiles = stepContent.localFiles + localFile,
+                  ),
+                )
+              }
+            } catch (e: Exception) {
+              logcat { "ClaimChatEvent.AddFile error: $e" }
+              errorSubmittingStep = ErrorMessage()
+            }
           }
         }
 
@@ -481,6 +500,48 @@ internal class ClaimChatPresenter(
         }
 
         ClaimChatEvent.DismissErrorDialog -> errorSubmittingStep = null
+        is ClaimChatEvent.FileSubmit -> {
+          val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
+          val fileUris = stepContent.localFiles
+            .filter {
+              it.localPath != null
+            }
+            .map {
+              Uri.parse(it.localPath!!)
+            }
+          launch {
+            submitFileUploadUseCase
+              .invoke(
+                stepId = event.id,
+                fileUris = fileUris,
+                uploadUrl = stepContent.uploadUri,
+              )
+              .fold(
+                ifLeft = {
+                  errorSubmittingStep = it
+                  logcat { "ClaimChatEvent.FileUpload $it" }
+                },
+                ifRight = { claimIntent ->
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
+          }
+        }
+
+        is ClaimChatEvent.RemoveFile -> {
+          Snapshot.withMutableSnapshot {
+            val stepState = currentStep ?: return@CollectEvents
+            val stepContent = stepState.stepContent as? StepContent.FileUpload ?: return@CollectEvents
+            val index = steps.indexOf(currentStep)
+            if (index >= 0) {
+              steps[index] = stepState.copy(
+                stepContent = stepContent.copy(
+                  localFiles = stepContent.localFiles.filterNot { it.id == event.fileId },
+                ),
+              )
+            }
+          }
+        }
       }
     }
 

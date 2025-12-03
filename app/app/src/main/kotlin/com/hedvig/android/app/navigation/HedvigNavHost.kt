@@ -445,6 +445,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   claimChatGraph(
     shouldShowRequestPermissionRationale,
     externalNavigator::openAppSettings,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    imageLoader = imageLoader,
+    appPackageId = hedvigBuildConstants.appPackageId,
   )
   claimDetailsGraph(
     navigator = navigator,
