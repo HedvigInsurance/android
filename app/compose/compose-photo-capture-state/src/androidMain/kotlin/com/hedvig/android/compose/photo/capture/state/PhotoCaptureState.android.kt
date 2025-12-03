@@ -19,29 +19,40 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import com.eygraber.uri.toKmpUri
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.io.File
 
+fun PhotoCaptureState.Companion.Saver(
+  context: Context,
+  externalPhotosDirectory: File?,
+  authority: String,
+): Saver<PhotoCaptureStateImpl, *> = Saver(
+  save = { it.currentPhotoPath },
+  restore = { PhotoCaptureStateImpl(it, context, externalPhotosDirectory, authority) },
+)
+
 @Stable
-class PhotoCaptureState internal constructor(
+class PhotoCaptureStateImpl internal constructor(
   initialPhotoPath: String?,
   private val context: Context,
   private val externalPhotosDirectory: File?,
   private val authority: String,
-) {
+): PhotoCaptureState {
+  @Suppress("RemoveExplicitTypeArguments")
   internal var currentPhotoPath by mutableStateOf<String?>(initialPhotoPath)
     private set
 
   internal var launcher: ActivityResultLauncher<Uri>? = null
 
-  fun launchTakePhotoRequest() {
+  override fun launchTakePhotoRequest() {
     val newPhotoFile: File = createFileInExternalPhotosDirectory(
       "JPEG_${System.currentTimeMillis()}.jpg",
     ).apply {
       currentPhotoPath = absolutePath
     }
-    val newPhotoUri: Uri = FileProvider.getUriForFile(context, authority, newPhotoFile)
+    val newPhotoUri = FileProvider.getUriForFile(context, authority, newPhotoFile)
     launcher?.launch(newPhotoUri) ?: throw IllegalStateException("ActivityResultLauncher cannot be null")
   }
 
@@ -55,26 +66,19 @@ class PhotoCaptureState internal constructor(
       fileName,
     )
   }
-
-  companion object {
-    @Suppress("ktlint:standard:function-naming")
-    fun Saver(context: Context, externalPhotosDirectory: File?, authority: String): Saver<PhotoCaptureState, *> = Saver(
-      save = { it.currentPhotoPath },
-      restore = { PhotoCaptureState(it, context, externalPhotosDirectory, authority) },
-    )
-  }
 }
 
+
 @Composable
-fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (uri: Uri) -> Unit): PhotoCaptureState {
+actual fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (uri: com.eygraber.uri.Uri) -> Unit): PhotoCaptureState {
   val context = LocalContext.current
   val activity = context.findActivity()
   val externalPhotosDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
   val authority = "$appPackageId.provider"
-  val photoCaptureState = rememberSaveable(
+  val photoCaptureState: PhotoCaptureStateImpl = rememberSaveable(
     saver = PhotoCaptureState.Saver(context, externalPhotosDirectory, authority),
   ) {
-    PhotoCaptureState(null, context, externalPhotosDirectory, authority)
+    PhotoCaptureStateImpl(null, context, externalPhotosDirectory, authority)
   }
 
   val takePictureLauncher: ActivityResultLauncher<Uri> = rememberLauncherForActivityResult(
@@ -91,7 +95,7 @@ fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (uri: Uri) 
     } else if (didSucceed) {
       val fileUri = Uri.fromFile(File(tempFilePath))
       logcat { "Captured picture with fileUri:$fileUri" }
-      onPhotoCaptured(fileUri)
+      onPhotoCaptured(fileUri.toKmpUri())
       photoCaptureState.clearCurrentPhotoPath()
     } else {
       logcat(LogPriority.INFO) { "Did not finish taking a picture, cancelled request normally" }
