@@ -513,6 +513,9 @@ interface ChatMessage {
   """
   disclaimer: ChatMessageDisclaimer
 }
+"""
+@deprecated Use ChatMessageText with actions field instead
+"""
 type ChatMessageAction implements ChatMessage {
   id: ID!
   sender: ChatMessageSender!
@@ -574,6 +577,11 @@ type ChatMessageText implements ChatMessage {
   sentAt: Instant!
   text: String!
   disclaimer: ChatMessageDisclaimer
+  actions: ChatMessageTextAction
+}
+type ChatMessageTextAction {
+  url: Url!
+  title: String!
 }
 scalar CheckoutPaymentsAction
 type Claim {
@@ -721,6 +729,7 @@ type ClaimIntentStep {
   id: ID!
   text: String!
   content: ClaimIntentStepContent!
+  isRegrettable: Boolean!
 }
 """
 A union of all the different kinds of "step content".
@@ -737,7 +746,6 @@ type ClaimIntentStepContentAudioRecording {
   """
   uploadUri: String!
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A file upload can be used to prompt the user to upload several files.
@@ -749,7 +757,6 @@ type ClaimIntentStepContentFileUpload {
   """
   uploadUri: String!
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A form step is one that contains a form in the shape of a list of "fields".
@@ -758,7 +765,6 @@ Submitted using `Mutation.claimIntentSubmitForm`.
 type ClaimIntentStepContentForm {
   fields: [ClaimIntentStepContentFormField!]!
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A single field to render in the form.
@@ -828,7 +834,6 @@ type ClaimIntentStepContentSelect {
   options: [ClaimIntentStepContentSelectOption!]!
   defaultSelectedId: ID
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A single choice in a "select" step.

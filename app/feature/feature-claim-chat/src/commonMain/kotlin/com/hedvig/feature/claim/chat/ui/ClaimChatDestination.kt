@@ -260,7 +260,7 @@ private fun ClaimChatScreenContent(
           onEvent = onEvent,
           isCurrentStep = isCurrentStep,
           canSkip = item.stepContent.isSkippable,
-          canBeChanged = item.stepContent.isRegrettable,
+          canBeChanged = item.isRegrettable,
         )
 
         is StepContent.Summary -> ChatClaimSummary(
@@ -739,7 +739,7 @@ private fun ContentSelectStep(
             )
           }
           EditButton(
-            item.stepContent.isRegrettable,
+            item.isRegrettable,
             onRegret = {
               onEvent(ClaimChatEvent.Regret(item.id))
             },

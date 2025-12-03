@@ -46,6 +46,7 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep
     id = StepId(id),
     text = text,
     stepContent = this.content.toStepContent(),
+    isRegrettable = this.isRegrettable
   )
 }
 
@@ -54,13 +55,11 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
     is FormFragment -> StepContent.Form(
       fields = this.fields.toFields(),
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
     )
     is ContentSelectFragment -> StepContent.ContentSelect(
       options = options.toOptions(),
       selectedOptionId = null, //todo
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
     )
     is TaskFragment -> StepContent.Task(
       descriptions = listOf(element = description),
@@ -70,13 +69,11 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
       hint = hint,
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable,
       recordingState =  AudioRecordingStepState.AudioRecording.NotRecording
     )
     is FileUploadFragment -> StepContent.FileUpload(
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable,
       localFiles = emptyList()
     )
     is SummaryFragment -> StepContent.Summary(
