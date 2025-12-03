@@ -578,7 +578,7 @@ private fun FormContent(
       }
     } else {
       content.fields.forEach { field ->
-        val textValue = field.selectedOptions.joinToString()
+        val textValue = field.selectedOptions.joinToString { it.text }
         if (textValue.isNotEmpty()) {
           Column(
             Modifier.fillMaxWidth(),
