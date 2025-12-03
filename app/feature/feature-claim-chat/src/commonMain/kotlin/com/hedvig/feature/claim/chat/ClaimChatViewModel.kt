@@ -489,11 +489,20 @@ internal class ClaimChatPresenter(
                     } ?: emptyList(),
                   )
 
-                  StepContent.Form.FieldType.MULTI_SELECT ->
+                  StepContent.Form.FieldType.MULTI_SELECT -> {
                     field.copy(
-                      selectedOptions = event.answer?.let { field.selectedOptions + event.answer }
+                      selectedOptions = event.answer?.let {
+                        val oldSelected = field.selectedOptions
+                        val newSelected = if (event.answer in oldSelected) {
+                          oldSelected.minus(event.answer)
+                        } else {
+                          oldSelected.plus(event.answer)
+                        }
+                        newSelected
+                      }
                         ?: field.selectedOptions,
                     )
+                  }
                 }
               } else {
                 field
