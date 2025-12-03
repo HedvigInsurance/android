@@ -36,7 +36,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.plus
@@ -56,21 +55,14 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
-import com.hedvig.feature.claim.chat.ui.AudioRecorderBubble
-import com.hedvig.feature.claim.chat.ui.BlurredGradientBackground
-import com.hedvig.feature.claim.chat.ui.ChatClaimSummary
-import com.hedvig.feature.claim.chat.ui.ContentSelectChips
-import com.hedvig.feature.claim.chat.ui.DateSelectBubble
-import com.hedvig.feature.claim.chat.ui.MultiSelectBubbleWithDialog
-import com.hedvig.feature.claim.chat.ui.SingleSelectBubbleWithDialog
-import com.hedvig.feature.claim.chat.ui.TextInputBubble
-import com.hedvig.feature.claim.chat.ui.YesNoBubble
-import hedvig.resources.Res
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
+import hedvig.resources.Res
+import hedvig.resources.claims_edit_button
+import hedvig.resources.claims_skip_button
+import hedvig.resources.general_continue_button
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toLocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -471,14 +463,14 @@ private fun FormContent(
       }
       Spacer(Modifier.height(8.dp))
       HedvigButton(
-        text = stringResource(R.string.general_continue_button),
+        text = stringResource(Res.string.general_continue_button),
         enabled = content.canContinue(),
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth(),
       )
       if (canSkip) {
         HedvigButton(
-          text = stringResource(R.string.claims_skip_button),
+          text = stringResource(Res.string.claims_skip_button),
           enabled = true,
           onClick = onSkip,
           modifier = Modifier.fillMaxWidth(),
@@ -527,7 +519,7 @@ private fun EditButton(
       horizontalArrangement = Arrangement.End,
     ) {
       HedvigButton(
-        text = stringResource(R.string.claims_edit_button),
+        text = stringResource(Res.string.claims_edit_button),
         enabled = true,
         onClick = onRegret,
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
