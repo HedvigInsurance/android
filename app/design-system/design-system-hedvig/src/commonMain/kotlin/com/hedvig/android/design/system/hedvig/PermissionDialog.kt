@@ -2,8 +2,10 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import hedvig.resources.ALERT_OK
 import hedvig.resources.PERMISSION_DIALOG_TITLE
+import hedvig.resources.Res
+import hedvig.resources.general_cancel_button
 import hedvig.resources.profile_appSettingsSection_title
 import org.jetbrains.compose.resources.stringResource
 
@@ -51,12 +53,12 @@ fun PermissionDialog(
   modifier: Modifier = Modifier,
 ) {
   HedvigAlertDialog(
-    title = stringResource(hedvig.resources.Res.string.PERMISSION_DIALOG_TITLE),
+    title = stringResource(Res.string.PERMISSION_DIALOG_TITLE),
     text = permissionDescription,
     confirmButtonLabel = if (isPermanentlyDeclined) {
-      stringResource(hedvig.resources.Res.string.profile_appSettingsSection_title)
+      stringResource(Res.string.profile_appSettingsSection_title)
     } else {
-      stringResource(android.R.string.ok)
+      stringResource(Res.string.ALERT_OK)
     },
     onConfirmClick = {
       onDismiss()
@@ -66,7 +68,7 @@ fun PermissionDialog(
         okClick()
       }
     },
-    dismissButtonLabel = stringResource(android.R.string.cancel),
+    dismissButtonLabel = stringResource(Res.string.general_cancel_button),
     onDismissRequest = onDismiss,
     modifier = modifier,
   )

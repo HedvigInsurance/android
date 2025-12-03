@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSubmitFormMutation
 import octopus.type.ClaimIntentFormSubmitInputField
 import octopus.type.ClaimIntentSubmitFormInput
@@ -30,7 +31,10 @@ internal class SubmitFormUseCase(
           ),
         )
         .safeExecute()
-        .mapLeft(::ErrorMessage)
+        .mapLeft{
+          logcat { "SubmitFormUseCase error: $it" }
+          ErrorMessage()
+        }
         .bind()
         .claimIntentSubmitForm
         .toClaimIntent()

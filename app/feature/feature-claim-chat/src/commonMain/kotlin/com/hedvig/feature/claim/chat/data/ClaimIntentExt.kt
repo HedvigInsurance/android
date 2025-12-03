@@ -14,6 +14,7 @@ import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
+import octopus.type.ClaimIntentStepContentFormFieldType
 
 context(raise: Raise<ErrorMessage>)
 internal fun ClaimIntentMutationOutputFragment.toClaimIntent(): ClaimIntent {
@@ -50,11 +51,34 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep
 
 private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
   return when (this) {
-    is FormFragment -> StepContent.Form(this.fields.toFields(), isSkippable, isRegrettable)
-    is ContentSelectFragment -> StepContent.ContentSelect(options.toOptions(), isSkippable, isRegrettable)
-    is TaskFragment -> StepContent.Task(listOf(description), isCompleted)
-    is AudioRecordingFragment -> StepContent.AudioRecording(hint, uploadUri, isSkippable, isRegrettable)
-    is FileUploadFragment -> StepContent.FileUpload(uploadUri, isSkippable, isRegrettable)
+    is FormFragment -> StepContent.Form(
+      fields = this.fields.toFields(),
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable
+    )
+    is ContentSelectFragment -> StepContent.ContentSelect(
+      options = options.toOptions(),
+      selectedOptionId = null, //todo
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable
+    )
+    is TaskFragment -> StepContent.Task(
+      descriptions = listOf(element = description),
+      isCompleted = isCompleted,
+    )
+    is AudioRecordingFragment -> StepContent.AudioRecording(
+      hint = hint,
+      uploadUri = uploadUri,
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable,
+      recordingState =  AudioRecordingStepState.AudioRecording.NotRecording
+    )
+    is FileUploadFragment -> StepContent.FileUpload(
+      uploadUri = uploadUri,
+      isSkippable = isSkippable,
+      isRegrettable = isRegrettable,
+      localFiles = emptyList()
+    )
     is SummaryFragment -> StepContent.Summary(
       items = items.map { StepContent.Summary.Item(it.title, it.value) },
       audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
@@ -84,8 +108,17 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       defaultValues = field.defaultValues,
       maxValue = field.maxValue,
       minValue = field.minValue,
-      type = field.type.toString(), // todo
+      type = when (field.type) {
+        ClaimIntentStepContentFormFieldType.TEXT -> StepContent.Form.FieldType.TEXT
+        ClaimIntentStepContentFormFieldType.DATE -> StepContent.Form.FieldType.DATE
+        ClaimIntentStepContentFormFieldType.NUMBER -> StepContent.Form.FieldType.NUMBER
+          ClaimIntentStepContentFormFieldType.SINGLE_SELECT -> StepContent.Form.FieldType.SINGLE_SELECT
+        ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
+        ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
+        ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
+      },
       options = field.options?.map { it.title to it.value } ?: emptyList(),
+      selectedOptions = emptyList()
     )
   }
 }

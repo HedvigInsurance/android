@@ -31,7 +31,10 @@ internal class GetClaimIntentUseCase(
             .query(ClaimIntentQuery(claimIntentId.value))
             .fetchPolicy(FetchPolicy.NetworkOnly)
             .safeExecute()
-            .mapLeft(::ErrorMessage)
+            .mapLeft {
+              logcat { "GetClaimIntentUseCase error: $it" }
+              ErrorMessage()
+            }
             .bind()
             .claimIntent
             .toClaimIntent()

@@ -1,7 +1,9 @@
 package com.hedvig.android.core.uidata
 
-internal fun interface DecimalFormatter {
-  fun format(number: Double): String
+fun interface DecimalFormatter {
+  fun format(number: Number): String
 }
 
 internal expect val decimalFormatter: DecimalFormatter
+
+expect fun DecimalFormatter(pattern: String) : DecimalFormatter

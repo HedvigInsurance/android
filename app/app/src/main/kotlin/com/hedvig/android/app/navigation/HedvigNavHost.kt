@@ -84,8 +84,8 @@ import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
-import com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ClaimChatDestination
-import com.hedvig.feature.claim.com.hedvig.feature.claim.chat.claimChatGraph
+import com.hedvig.feature.claim.chat.ClaimChatDestination
+import com.hedvig.feature.claim.chat.claimChatGraph
 
 @Composable
 internal fun HedvigNavHost(
@@ -442,7 +442,13 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   navigateToNewConversation: (NavBackStackEntry, (NavOptionsBuilder.() -> Unit)?) -> Unit,
   navigateToConversation: (NavBackStackEntry, String) -> Unit,
 ) {
-  claimChatGraph()
+  claimChatGraph(
+    shouldShowRequestPermissionRationale,
+    externalNavigator::openAppSettings,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    imageLoader = imageLoader,
+    appPackageId = hedvigBuildConstants.appPackageId,
+  )
   claimDetailsGraph(
     navigator = navigator,
     imageLoader = imageLoader,

@@ -1,7 +1,11 @@
 package com.hedvig.feature.claim.chat.data
 
+import androidx.compose.runtime.Immutable
+import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
+import kotlinx.serialization.Serializable
 
 @JvmInline
 value class ClaimIntentId(val value: String)
@@ -73,12 +77,14 @@ internal sealed interface StepContent {
     val uploadUri: String,
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
+    val recordingState: AudioRecordingStepState
   ) : StepContent
 
   data class FileUpload(
     val uploadUri: String,
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
+    val localFiles: List<UiFile>
   ) : StepContent
 
   data class Task(
@@ -94,6 +100,15 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
   ) : StepContent {
+
+    fun canContinue(): Boolean {
+      return fields.filter { it.isRequired }.all {
+        logcat { "Mariia: field ${it.title} selectedOptions: ${it.selectedOptions}" }
+        it.selectedOptions.isNotEmpty()
+
+      }
+    }
+
     data class Field(
       val id: FieldId,
       val isRequired: Boolean,
@@ -102,13 +117,24 @@ internal sealed interface StepContent {
       val defaultValues: List<String>,
       val maxValue: String?,
       val minValue: String?,
-      val type: String?,
+      val type: FieldType?,
       val options: List<Pair<String, String>>,
+      val selectedOptions: List<String>,
     )
+
+    enum class FieldType {
+      TEXT,
+      DATE,
+      NUMBER,
+      SINGLE_SELECT,
+      MULTI_SELECT,
+      BINARY,
+    }
   }
 
   data class ContentSelect(
     val options: List<Option>,
+    val selectedOptionId: String?, //todo: check
     override val isSkippable: Boolean,
     override val isRegrettable: Boolean,
   ) : StepContent {
@@ -138,3 +164,52 @@ internal sealed interface StepContent {
     override val isRegrettable: Boolean = false
   }
 }
+
+sealed interface AudioRecordingStepState {
+  data class FreeTextDescription(
+    val showOverlay: Boolean,
+    val errorType: FreeTextErrorType?,
+    val hasError: Boolean = false,
+  ) : AudioRecordingStepState
+
+  sealed interface AudioRecording : AudioRecordingStepState {
+    data object NotRecording : AudioRecording
+
+    data class Recording(
+      val amplitudes: List<Int>,
+      val startedAt: Instant,
+      val filePath: String,
+    ) : AudioRecording
+
+    data class Playback(
+      val filePath: String,
+      val isPlaying: Boolean,
+      val isPrepared: Boolean,
+      val amplitudes: List<Int>,
+      val isLoading: Boolean,
+      val hasError: Boolean,
+      val canSubmit: Boolean,
+    ) : AudioRecording
+  }
+}
+
+sealed interface FreeTextErrorType {
+  data class TooShort(val minLength: Int) : FreeTextErrorType
+}
+
+@Serializable
+@JvmInline
+value class AudioUrl(val value: String)
+
+@Immutable
+@Serializable
+data class AudioContent(
+  /**
+   * The url to be used to play back the audio file
+   */
+  val signedUrl: AudioUrl,
+  /**
+   * The url that the backend expects when trying to go to the next step of the flow
+   */
+  val audioUrl: AudioUrl,
+)
