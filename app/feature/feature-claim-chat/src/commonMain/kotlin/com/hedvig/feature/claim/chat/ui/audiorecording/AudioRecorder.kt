@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
+import com.hedvig.android.core.uidata.DecimalFormatter
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -71,7 +72,6 @@ import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
-import java.text.DecimalFormat
 import kotlin.math.sqrt
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -172,7 +172,7 @@ internal fun AudioRecorder(
             value = uiState.startedAt
           }
         }
-        val twoDigitsFormat = remember { DecimalFormat("00") }
+        val twoDigitsFormat = remember { DecimalFormatter("00") }
         isRecordingTransition.AnimatedContent(
           transitionSpec = {
             val animationSpec = tween<IntOffset>(MotionTokens.DurationLong1.toInt())

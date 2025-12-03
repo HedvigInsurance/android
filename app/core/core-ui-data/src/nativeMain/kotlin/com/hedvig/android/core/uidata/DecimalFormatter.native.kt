@@ -6,3 +6,5 @@ package com.hedvig.android.core.uidata
 internal actual val decimalFormatter: DecimalFormatter = DecimalFormatter {
   it.toInt().toString()
 }
+
+actual fun DecimalFormatter(pattern: String): DecimalFormatter = decimalFormatter
