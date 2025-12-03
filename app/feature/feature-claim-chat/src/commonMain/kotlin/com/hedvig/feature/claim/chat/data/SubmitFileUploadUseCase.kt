@@ -26,23 +26,33 @@ internal class SubmitFileUploadUseCase(
   private val uploadFileUseCase: UploadFileUseCase,
   private val fileService: FileService,
 ) {
-  suspend fun invoke(stepId: StepId, fileUri: Uri, uploadUrl: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId, fileUris: List<Uri>, uploadUrl: String): Either<ErrorMessage, ClaimIntent> {
     return either {
-      val commonFile = fileService.convertToCommonFile(fileUri)
-      val fileId = uploadFileUseCase.invoke(commonFile, uploadUrl).fileId
-      logcat { "SubmitFileUploadUseCase uploaded file with Uri:$fileUri got back fileId:$fileId" }
-      invoke(stepId, fileId)
+      val commonFiles = fileUris.map { fileUri ->
+        fileService.convertToCommonFile(fileUri)
+      }
+      val fileIds = buildList { //todo!!!
+        commonFiles.forEach {
+          add (uploadFileUseCase.invoke(
+            it,
+            uploadUrl).fileId)
+        }
+      }
+      logcat { "SubmitFileUploadUseCase uploaded file with Uris:$fileUris got back fileIds:$fileIds" }
+      invoke(stepId, fileIds)
     }
   }
 
   context(_: Raise<ErrorMessage>)
-  private suspend fun invoke(stepId: StepId, commonFileId: CommonFileId?): ClaimIntent {
+  private suspend fun invoke(stepId: StepId, commonFileIds: List<CommonFileId>): ClaimIntent {
     return apolloClient
       .mutation(
         ClaimIntentSubmitFileUploadMutation(
           ClaimIntentSubmitFileUploadInput(
             stepId = stepId.value,
-            fileIds = listOfNotNull(commonFileId?.value),
+            fileIds = commonFileIds.map {
+              it.value
+            },
           ),
         ),
       )

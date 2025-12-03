@@ -73,6 +73,8 @@ internal sealed interface ClaimChatEvent {
 
   data class FileUpload(val id: StepId, val fileUri: Uri?, val uploadUri: String) : ClaimChatEvent
 
+  data class FileSubmit(val id: StepId): ClaimChatEvent
+
   data object OpenFreeTextOverlay : ClaimChatEvent
 
   data object CloseFreeChatOverlay : ClaimChatEvent
@@ -383,24 +385,7 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.FileUpload -> {
-          val fileUri = event.fileUri ?: return@CollectEvents
-          launch {
-            submitFileUploadUseCase
-              .invoke(
-                stepId = event.id,
-                fileUri = fileUri,
-                uploadUrl = event.uploadUri,
-              )
-              .fold(
-                ifLeft = {
-                  errorSubmittingStep = it
-                  logcat { "ClaimChatEvent.FileUpload $it" }
-                },
-                ifRight = { claimIntent ->
-                  handleNext(steps, setOutcome, claimIntent.next)
-                },
-              )
-          }
+
         }
 
         ClaimChatEvent.CloseFreeChatOverlay -> showFreeTextOverlay = false
@@ -480,6 +465,29 @@ internal class ClaimChatPresenter(
         }
 
         ClaimChatEvent.DismissErrorDialog -> errorSubmittingStep = null
+        is ClaimChatEvent.FileSubmit -> {
+          val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
+          val fileUris = stepContent.localFiles.mapNotNull {
+            it.localPath
+          }
+          launch {
+            submitFileUploadUseCase
+              .invoke(
+                stepId = event.id,
+                fileUris = fileUri,
+                uploadUrl = stepContent.uploadUri,
+              )
+              .fold(
+                ifLeft = {
+                  errorSubmittingStep = it
+                  logcat { "ClaimChatEvent.FileUpload $it" }
+                },
+                ifRight = { claimIntent ->
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
+          }
+        }
       }
     }
 

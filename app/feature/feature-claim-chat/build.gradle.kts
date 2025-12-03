@@ -32,6 +32,7 @@ kotlin {
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
       implementation(projects.moleculePublic)
+      implementation(projects.coreUiData)
     }
     androidMain.dependencies {
       implementation(libs.bundles.kmpPreviewBugWorkaround)

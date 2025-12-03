@@ -1,5 +1,6 @@
 package com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ui
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
@@ -37,7 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -63,6 +66,7 @@ import com.hedvig.feature.claim.chat.ui.DateSelectBubble
 import com.hedvig.feature.claim.chat.ui.MultiSelectBubbleWithDialog
 import com.hedvig.feature.claim.chat.ui.SingleSelectBubbleWithDialog
 import com.hedvig.feature.claim.chat.ui.TextInputBubble
+import com.hedvig.feature.claim.chat.ui.UploadFilesBubble
 import com.hedvig.feature.claim.chat.ui.YesNoBubble
 import hedvig.resources.R
 import hedvig.resources.Res
@@ -77,6 +81,9 @@ import org.koin.core.parameter.parametersOf
 fun ClaimChatDestination(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  appPackageId: String,
+  imageLoader: ImageLoader,
   isDevelopmentFlow: Boolean,
 ) {
   val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
@@ -88,6 +95,9 @@ fun ClaimChatDestination(
       claimChatViewModel,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       openAppSettings = openAppSettings,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      appPackageId = appPackageId,
+      imageLoader = imageLoader,
     )
   }
 }
@@ -97,6 +107,9 @@ internal fun ClaimChatScreenContent(
   claimChatViewModel: ClaimChatViewModel,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  appPackageId: String,
+  imageLoader: ImageLoader,
 ) {
   val uiState = claimChatViewModel.uiState.collectAsState().value
 
@@ -109,6 +122,9 @@ internal fun ClaimChatScreenContent(
         onEvent = claimChatViewModel::emit,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         openAppSettings = openAppSettings,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader
       )
     }
   }
@@ -119,6 +135,9 @@ private fun ClaimChatScreen(
   uiState: ClaimChatUiState.ClaimChat,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  appPackageId: String,
+  imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
 ) {
   FreeTextOverlay(
@@ -140,6 +159,9 @@ private fun ClaimChatScreen(
         onEvent = onEvent,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         openAppSettings = openAppSettings,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader
       )
     },
   )
@@ -151,6 +173,9 @@ private fun ClaimChatScreenContent(
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  appPackageId: String,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   if (uiState.errorSubmittingStep != null) {
@@ -227,6 +252,14 @@ private fun ClaimChatScreenContent(
           itemText = item.text,
           isCurrentStep = isCurrentStep,
           stepContent = item.stepContent,
+          itemId = item.id,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          localFiles = item.stepContent.localFiles,
+          onEvent = onEvent,
+          addLocalFile = TODO(),
+          onRemoveFile = TODO(),
         )
 
         is StepContent.Form -> FormStep(
@@ -268,35 +301,60 @@ private fun ClaimChatScreenContent(
 
 @Composable
 private fun UploadFilesStep(
+  itemId: StepId,
   itemText: String,
   stepContent: StepContent.FileUpload,
+  appPackageId: String,
   isCurrentStep: Boolean,
+  imageLoader: ImageLoader,
+  localFiles: List<UiFile>,
+  addLocalFile: (uri: Uri) -> Unit,
+  onRemoveFile: (fileId: String) -> Unit,
+  onEvent: (ClaimChatEvent) -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     HedvigText(
       itemText,
     )
-    Spacer(Modifier.height(8.dp))
-//            UploadFilesBubble(
-//              isCurrentStep = TODO(),
-//              canSkip = stepContent.isSkippable,
-//              canBeChanged = stepContent.isRegrettable, //todo
-//              onSkip = {
-//                onEvent(ClaimChatEvent.Skip(item.id))
-//              },
-//              addLocalFile = TODO(),
-//              onRemoveFile = TODO(),
-//              onSubmitFiles = {
-//                onEvent(ClaimChatEvent.FileUpload())
-//              },
-//              appPackageId = appPackageId,
-//              localFiles = TODO(),
-//              uploadedFiles = TODO(),
-//              imageLoader = TODO(),
-//              onNavigateToImageViewer = TODO(),
-//              modifier = TODO(),
-//            )
+    if (isCurrentStep) {
+      Spacer(Modifier.height(8.dp))
+      UploadFilesBubble(
+        isCurrentStep = isCurrentStep,
+        addLocalFile = addLocalFile,
+        onRemoveFile = onRemoveFile,
+        appPackageId = appPackageId,
+        localFiles = localFiles,
+        imageLoader = imageLoader,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigButton(
+        text = stringResource(R.string.general_continue_button),
+        enabled = true, //todo
+        onClick = {
+          onEvent(
+            ClaimChatEvent.FileSubmit(
+              itemId,
+            ),
+          )
+        },
+        modifier = Modifier.fillMaxWidth(),
+      )
+      if (stepContent.isSkippable) {
+        HedvigButton(
+          text = stringResource(R.string.claims_skip_button),
+          enabled = true,
+          onClick = {
+            onEvent(ClaimChatEvent.Skip(itemId))
+          },
+          modifier = Modifier.fillMaxWidth(),
+          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+        )
+      }
+    }
+
   }
 }
 
@@ -457,13 +515,13 @@ private fun FormContent(
             MultiSelectBubbleWithDialog(
               questionLabel = field.title,
               options = field.options.map {
-              RadioOption(
-                id = RadioOptionId(it.second),
-                text = it.second,
-                label = it.first,
-                iconResource = null,
-              )
-            },
+                RadioOption(
+                  id = RadioOptionId(it.second),
+                  text = it.second,
+                  label = it.first,
+                  iconResource = null,
+                )
+              },
               selectedOptionIds = field.selectedOptions.map {
                 RadioOptionId(it)
               },
@@ -473,7 +531,7 @@ private fun FormContent(
                   field.options.firstOrNull { it.second == option.id }?.second,
                 )
               },
-              modifier = Modifier.fillMaxWidth()
+              modifier = Modifier.fillMaxWidth(),
             )
           }
 
