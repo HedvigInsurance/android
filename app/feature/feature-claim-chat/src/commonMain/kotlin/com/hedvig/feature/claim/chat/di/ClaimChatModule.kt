@@ -13,6 +13,7 @@ import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.UploadFileUseCase
+import com.hedvig.feature.claim.chat.data.file.FileService
 import io.ktor.client.HttpClient
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
@@ -33,6 +34,7 @@ val claimChatModule = module {
       get(),
       get(),
       get<SkipStepUseCase>(),
+      get<FileService>()
     )
   }
 

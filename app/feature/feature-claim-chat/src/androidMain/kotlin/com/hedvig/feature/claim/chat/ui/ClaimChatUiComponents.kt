@@ -341,7 +341,6 @@ internal fun MultiSelectBubbleWithDialog(
 
 @Composable
 internal fun UploadFilesBubble(
-  isCurrentStep: Boolean,
   addLocalFile: (uri: Uri) -> Unit,
   onRemoveFile: (fileId: String) -> Unit,
   appPackageId: String,
@@ -349,8 +348,8 @@ internal fun UploadFilesBubble(
   imageLoader: ImageLoader,
   onNavigateToImageViewer: (
     imageUrl: String,
-    cacheKey: String
-    ) -> Unit,
+    cacheKey: String,
+  ) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -390,7 +389,6 @@ internal fun UploadFilesBubble(
     onUploadButtonClick = {
       fileTypeSelectBottomSheetState.show()
     },
-    isCurrentStep = isCurrentStep,
     onRemoveFile = onRemoveFile,
     localFiles = localFiles,
     imageLoader = imageLoader,
@@ -401,7 +399,6 @@ internal fun UploadFilesBubble(
 
 @Composable
 private fun UploadFilesBubbleContent(
-  isCurrentStep: Boolean,
   onRemoveFile: (fileId: String) -> Unit,
   onUploadButtonClick: () -> Unit,
   localFiles: List<UiFile>,
@@ -434,17 +431,12 @@ private fun UploadFilesBubbleContent(
         }
       }
     }
-    Row(
-      Modifier.fillMaxWidth().padding(16.dp),
-      horizontalArrangement = Arrangement.End,
-    ) {
-      HedvigButton(
-        text = stringResource(Res.string.file_upload_upload_files),
-        onClick = onUploadButtonClick,
-        enabled = true,
-        buttonSize = ButtonDefaults.ButtonSize.Medium,
-      )
-    }
+    HedvigButton(
+      text = stringResource(Res.string.file_upload_upload_files),
+      onClick = onUploadButtonClick,
+      enabled = true,
+      modifier = Modifier.fillMaxWidth(),
+    )
   }
 }
 
@@ -929,7 +921,6 @@ private fun PreviewUploadFilesBubbleContent(
       ) {
         UploadFilesBubbleContent(
           modifier = Modifier.height(400.dp),
-          isCurrentStep = true,
           onRemoveFile = {},
           localFiles = if (hasFiles) {
             listOf(

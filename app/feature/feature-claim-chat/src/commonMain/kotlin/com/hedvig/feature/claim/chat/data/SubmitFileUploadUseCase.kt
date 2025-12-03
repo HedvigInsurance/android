@@ -5,17 +5,13 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Optional
 import com.eygraber.uri.Uri
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.jvm.JvmInline
-import octopus.ClaimIntentSubmitAudioMutation
 import octopus.ClaimIntentSubmitFileUploadMutation
-import octopus.type.ClaimIntentSubmitAudioInput
 import octopus.type.ClaimIntentSubmitFileUploadInput
 
 @JvmInline

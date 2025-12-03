@@ -258,8 +258,6 @@ private fun ClaimChatScreenContent(
           imageLoader = imageLoader,
           localFiles = item.stepContent.localFiles,
           onEvent = onEvent,
-          addLocalFile = TODO(),
-          onRemoveFile = TODO(),
         )
 
         is StepContent.Form -> FormStep(
@@ -308,8 +306,6 @@ private fun UploadFilesStep(
   isCurrentStep: Boolean,
   imageLoader: ImageLoader,
   localFiles: List<UiFile>,
-  addLocalFile: (uri: Uri) -> Unit,
-  onRemoveFile: (fileId: String) -> Unit,
   onEvent: (ClaimChatEvent) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
@@ -321,27 +317,36 @@ private fun UploadFilesStep(
     if (isCurrentStep) {
       Spacer(Modifier.height(8.dp))
       UploadFilesBubble(
-        isCurrentStep = isCurrentStep,
-        addLocalFile = addLocalFile,
-        onRemoveFile = onRemoveFile,
+        addLocalFile = { uri ->
+          onEvent(ClaimChatEvent.AddFile(itemId,
+            uri.toString() //todo: check!
+          ))
+        },
+        onRemoveFile = { fileId ->
+          onEvent(ClaimChatEvent.RemoveFile(itemId,
+            fileId
+          ))
+        },
         appPackageId = appPackageId,
         localFiles = localFiles,
         imageLoader = imageLoader,
         onNavigateToImageViewer = onNavigateToImageViewer,
       )
       Spacer(Modifier.height(8.dp))
-      HedvigButton(
-        text = stringResource(R.string.general_continue_button),
-        enabled = true, //todo
-        onClick = {
-          onEvent(
-            ClaimChatEvent.FileSubmit(
-              itemId,
-            ),
-          )
-        },
-        modifier = Modifier.fillMaxWidth(),
-      )
+      if (stepContent.localFiles.isNotEmpty()) {
+        HedvigButton(
+          text = stringResource(R.string.general_continue_button),
+          enabled = true, //todo
+          onClick = {
+            onEvent(
+              ClaimChatEvent.FileSubmit(
+                itemId,
+              ),
+            )
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
       if (stepContent.isSkippable) {
         HedvigButton(
           text = stringResource(R.string.claims_skip_button),
@@ -354,7 +359,6 @@ private fun UploadFilesStep(
         )
       }
     }
-
   }
 }
 
