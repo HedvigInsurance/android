@@ -84,7 +84,7 @@ internal sealed interface ClaimChatEvent {
 
   data object DismissErrorDialog : ClaimChatEvent
 
-  data object SubmitClaim : ClaimChatEvent
+  data class SubmitClaim(val id: StepId) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -449,8 +449,20 @@ internal class ClaimChatPresenter(
           freeText = event.text
         }
 
-        ClaimChatEvent.SubmitClaim -> {
-          // TODO: Implement submit claim logic
+        is ClaimChatEvent.SubmitClaim -> {
+          launch {
+            submitSummaryUseCase
+              .invoke(event.id)
+              .fold(
+                ifLeft = {
+                  errorSubmittingStep = it
+                  logcat { "SubmitClaim error: $it" }
+                },
+                ifRight = { claimIntent ->
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
+          }
         }
 
         is ClaimChatEvent.Regret -> {

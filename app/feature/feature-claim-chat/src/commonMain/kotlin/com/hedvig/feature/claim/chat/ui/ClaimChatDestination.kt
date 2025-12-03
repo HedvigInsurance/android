@@ -268,7 +268,7 @@ private fun ClaimChatScreenContent(
           recordingUrls = item.stepContent.audioRecordings.map { it.url },
           displayItems = item.stepContent.items.map { (title, value) -> title to value },
           onSubmit = {
-            onEvent(ClaimChatEvent.SubmitClaim)
+            onEvent(ClaimChatEvent.SubmitClaim(item.id))
           },
           isCurrentStep = isCurrentStep,
         )
