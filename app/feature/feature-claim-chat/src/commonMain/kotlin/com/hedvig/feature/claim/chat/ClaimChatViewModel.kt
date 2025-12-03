@@ -201,22 +201,23 @@ internal class ClaimChatPresenter(
     CollectEvents { event ->
       when (event) {
         is ClaimChatEvent.Select -> {
-          Snapshot.withMutableSnapshot {
-            val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect
-              ?: return@CollectEvents
-            val currentStepState = currentStep ?: return@CollectEvents
-            launch {
-              submitSelectUseCase
-                .invoke(
-                  id = event.id,
-                  selectedId = event.selectedId,
-                )
-                .fold(
-                  ifLeft = {
-                    errorSubmittingStep = it
-                    logcat { "ClaimChatEvent.Select error: $it" }
-                  },
-                  ifRight = { claimIntent ->
+
+          val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect
+            ?: return@CollectEvents
+          val currentStepState = currentStep ?: return@CollectEvents
+          launch {
+            submitSelectUseCase
+              .invoke(
+                id = event.id,
+                selectedId = event.selectedId,
+              )
+              .fold(
+                ifLeft = {
+                  errorSubmittingStep = it
+                  logcat { "ClaimChatEvent.Select error: $it" }
+                },
+                ifRight = { claimIntent ->
+                  Snapshot.withMutableSnapshot {
                     steps.remove(currentStepState)
                     steps.add(
                       currentStepState.copy(
@@ -225,10 +226,10 @@ internal class ClaimChatPresenter(
                         ),
                       ),
                     )
-                    handleNext(steps, setOutcome, claimIntent.next)
-                  },
-                )
-            }
+                  }
+                  handleNext(steps, setOutcome, claimIntent.next)
+                },
+              )
           }
         }
 

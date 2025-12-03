@@ -46,6 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import com.eygraber.uri.toAndroidUri
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -87,7 +88,7 @@ internal fun ChatInput(
   var text: String by rememberSaveable { mutableStateOf("") }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    onSendPhoto(listOf(uri))
+    onSendPhoto(listOf(uri.toAndroidUri()))
   }
   val photoPicker = rememberLauncherForActivityResult(
     contract = PickMultipleVisualMediaPermittingPersistentAccess(),

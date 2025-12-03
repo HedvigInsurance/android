@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
+import com.eygraber.uri.toAndroidUri
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -46,7 +47,7 @@ internal fun FileUploadDestination(
   }
 
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
-    viewModel.addLocalFile(uri)
+    viewModel.addLocalFile(uri.toAndroidUri())
   }
   val photoPicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.PickMultipleVisualMedia(),

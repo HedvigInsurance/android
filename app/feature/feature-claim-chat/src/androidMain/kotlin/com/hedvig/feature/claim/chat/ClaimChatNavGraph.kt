@@ -4,7 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.feature.claim.com.hedvig.feature.claim.chat.ui.ClaimChatDestination
+import com.hedvig.feature.claim.chat.ui.ClaimChatDestination
 import kotlinx.serialization.Serializable
 
 @Serializable

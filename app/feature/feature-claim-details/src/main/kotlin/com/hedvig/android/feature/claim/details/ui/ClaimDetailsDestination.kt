@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
+import com.eygraber.uri.toAndroidUri
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
@@ -193,7 +194,7 @@ private fun ClaimDetailScreen(
         is ClaimDetailUiState.Content -> {
           val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
             logcat { "ChatFileState sending photoCaptureState uri:$uri" }
-            onFilesToUploadSelected(listOf(uri), uiState.uploadUri)
+            onFilesToUploadSelected(listOf(uri.toAndroidUri()), uiState.uploadUri)
           }
           val photoPicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
