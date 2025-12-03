@@ -99,6 +99,7 @@ import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
+import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
@@ -106,6 +107,7 @@ import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
+import hedvig.resources.claim_status_claim_details_title
 import hedvig.resources.claims_skip_button
 import hedvig.resources.file_upload_choose_files
 import hedvig.resources.file_upload_photo_library
@@ -662,34 +664,50 @@ internal fun ChatClaimSummary(
 ) {
   Column(modifier) {
     HedvigText(text)
-    HorizontalDivider()
-    recordingUrls.forEach {
-      val audioPlayer = rememberAudioPlayer(
-        PlayableAudioSource.RemoteUrl(
-          SignedAudioUrl.fromSignedAudioUrlString(it),
-        ),
-      )
-      HedvigAudioPlayer(audioPlayer = audioPlayer)
-      Spacer(Modifier.height(8.dp))
-    }
-    CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
-      Column(modifier) {
-        for (displayItem in displayItems) {
-          HorizontalItemsWithMaximumSpaceTaken(
-            spaceBetween = 8.dp,
-            startSlot = {
-              HedvigText(text = displayItem.first)
-            },
-            endSlot = {
-              HedvigText(
-                text = displayItem.second,
-                textAlign = TextAlign.End,
+    Spacer(Modifier.height(8.dp))
+    HedvigCard(
+      color= HedvigTheme.colorScheme.fillNegative
+    ){
+      Column(Modifier.padding(16.dp)) {
+        HedvigText(
+          stringResource(Res.string.claim_status_claim_details_title)
+        )
+        Spacer(Modifier.height(8.dp))
+        CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
+          Column(modifier) {
+            for (displayItem in displayItems) {
+              HorizontalItemsWithMaximumSpaceTaken(
+                spaceBetween = 8.dp,
+                startSlot = {
+                  HedvigText(text = displayItem.first)
+                },
+                endSlot = {
+                  HedvigText(
+                    text = displayItem.second,
+                    textAlign = TextAlign.End,
+                  )
+                },
               )
-            },
+            }
+          }
+        }
+        Spacer(Modifier.height(24.dp))
+        HedvigText(
+          stringResource(Res.string.A11Y_AUDIO_RECORDING)
+        )
+        Spacer(Modifier.height(8.dp))
+        recordingUrls.forEach {
+          val audioPlayer = rememberAudioPlayer(
+            PlayableAudioSource.RemoteUrl(
+              SignedAudioUrl.fromSignedAudioUrlString(it),
+            ),
           )
+          HedvigAudioPlayer(audioPlayer = audioPlayer)
+          Spacer(Modifier.height(8.dp))
         }
       }
     }
+
     if (isCurrentStep) {
       Spacer(Modifier.height(16.dp))
       Row(
@@ -700,7 +718,7 @@ internal fun ChatClaimSummary(
           text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
           enabled = true,
           onClick = onSubmit,
-          buttonSize = ButtonDefaults.ButtonSize.Medium,
+          modifier = Modifier.fillMaxWidth().padding(16.dp)
         )
       }
     }
