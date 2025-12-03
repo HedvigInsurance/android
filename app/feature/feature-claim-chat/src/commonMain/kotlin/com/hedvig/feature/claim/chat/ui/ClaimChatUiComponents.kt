@@ -1,9 +1,5 @@
 package com.hedvig.feature.claim.chat.ui
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
@@ -50,9 +46,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
+import com.eygraber.uri.Uri
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
+import com.hedvig.android.compose.photo.capture.state.rememberGetMultipleContentsResultLauncher
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
+import com.hedvig.android.compose.photo.capture.state.rememberPickMultipleVisualMediaResultLauncher
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.AccordionData
@@ -375,16 +374,12 @@ internal fun UploadFilesBubble(
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     addLocalFile(uri)
   }
-  val photoPicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.PickMultipleVisualMedia(),
-  ) { resultingUriList: List<Uri> ->
+  val photoPicker = rememberPickMultipleVisualMediaResultLauncher { resultingUriList ->
     for (resultingUri in resultingUriList) {
       addLocalFile(resultingUri)
     }
   }
-  val filePicker = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.GetMultipleContents(),
-  ) { resultingUriList: List<Uri> ->
+  val filePicker = rememberGetMultipleContentsResultLauncher { resultingUriList ->
     for (resultingUri in resultingUriList) {
       addLocalFile(resultingUri)
     }
@@ -392,11 +387,11 @@ internal fun UploadFilesBubble(
   FilePickerBottomSheet(
     sheetState = fileTypeSelectBottomSheetState,
     onPickPhoto = {
-      photoPicker.launch(PickVisualMediaRequest())
+      photoPicker.launch()
       fileTypeSelectBottomSheetState.dismiss()
     },
     onPickFile = {
-      filePicker.launch("*/*")
+      filePicker.launch()
       fileTypeSelectBottomSheetState.dismiss()
     },
     onTakePhoto = {
