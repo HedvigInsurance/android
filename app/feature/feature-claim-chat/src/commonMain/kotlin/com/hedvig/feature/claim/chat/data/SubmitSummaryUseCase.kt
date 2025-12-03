@@ -12,10 +12,10 @@ import octopus.ClaimIntentSubmitSummaryMutation
 internal class SubmitSummaryUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend fun invoke(stepId: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId): Either<ErrorMessage, ClaimIntent> {
     return either {
       apolloClient
-        .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId))
+        .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId.value))
         .safeExecute()
         .mapLeft{
           logcat { "SubmitSummaryUseCase error: $it" }
