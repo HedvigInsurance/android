@@ -718,7 +718,7 @@ internal fun ChatClaimSummary(
           text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
           enabled = true,
           onClick = onSubmit,
-          modifier = Modifier.fillMaxWidth().padding(16.dp)
+          modifier = Modifier.fillMaxWidth()
         )
       }
     }
