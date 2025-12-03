@@ -31,6 +31,7 @@ internal data class ClaimIntentStep(
   val id: StepId,
   val text: String,
   val stepContent: StepContent,
+  val isRegrettable: Boolean
 )
 
 internal sealed interface ClaimIntentOutcome {
@@ -70,20 +71,17 @@ value class FieldId(val value: String)
 
 internal sealed interface StepContent {
   val isSkippable: Boolean
-  val isRegrettable: Boolean
 
   data class AudioRecording(
     val hint: String?,
     val uploadUri: String,
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
     val recordingState: AudioRecordingStepState
   ) : StepContent
 
   data class FileUpload(
     val uploadUri: String,
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
     val localFiles: List<UiFile>
   ) : StepContent
 
@@ -92,18 +90,16 @@ internal sealed interface StepContent {
     val isCompleted: Boolean,
   ) : StepContent {
     override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
   }
 
   data class Form(
     val fields: List<Field>,
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
   ) : StepContent {
 
     fun canContinue(): Boolean {
       return fields.filter { it.isRequired }.all {
-        logcat { "Mariia: field ${it.title} selectedOptions: ${it.selectedOptions}" }
+        logcat { "Mariia: required field ${it.title} selectedOptions: ${it.selectedOptions}" }
         it.selectedOptions.isNotEmpty()
 
       }
@@ -114,12 +110,17 @@ internal sealed interface StepContent {
       val isRequired: Boolean,
       val suffix: String?,
       val title: String,
-      val defaultValues: List<String>,
+      val defaultValues: List<FieldOption>,
       val maxValue: String?,
       val minValue: String?,
       val type: FieldType?,
-      val options: List<Pair<String, String>>,
-      val selectedOptions: List<String>,
+      val options: List<FieldOption>,
+      val selectedOptions: List<FieldOption>,
+    )
+
+    data class FieldOption(
+      val value: String,
+      val text: String
     )
 
     enum class FieldType {
@@ -136,7 +137,6 @@ internal sealed interface StepContent {
     val options: List<Option>,
     val selectedOptionId: String?, //todo: check
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
   ) : StepContent {
     data class Option(
       val id: String,
@@ -150,7 +150,6 @@ internal sealed interface StepContent {
     val fileUploads: List<FileUpload>,
   ) : StepContent {
     override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
 
     data class Item(val title: String, val value: String)
 
@@ -161,7 +160,6 @@ internal sealed interface StepContent {
 
   object Unknown : StepContent {
     override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
   }
 }
 

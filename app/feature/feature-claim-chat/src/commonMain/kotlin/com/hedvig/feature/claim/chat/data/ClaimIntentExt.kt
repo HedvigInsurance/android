@@ -46,6 +46,7 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep
     id = StepId(id),
     text = text,
     stepContent = this.content.toStepContent(),
+    isRegrettable = this.isRegrettable
   )
 }
 
@@ -54,13 +55,11 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
     is FormFragment -> StepContent.Form(
       fields = this.fields.toFields(),
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
     )
     is ContentSelectFragment -> StepContent.ContentSelect(
       options = options.toOptions(),
       selectedOptionId = null, //todo
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
     )
     is TaskFragment -> StepContent.Task(
       descriptions = listOf(element = description),
@@ -70,13 +69,11 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
       hint = hint,
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable,
       recordingState =  AudioRecordingStepState.AudioRecording.NotRecording
     )
     is FileUploadFragment -> StepContent.FileUpload(
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable,
       localFiles = emptyList()
     )
     is SummaryFragment -> StepContent.Summary(
@@ -105,7 +102,7 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       isRequired = field.isRequired,
       suffix = field.suffix,
       title = field.title,
-      defaultValues = field.defaultValues,
+      defaultValues = field.defaultValues.toFieldOptions(field.options),
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = when (field.type) {
@@ -117,9 +114,27 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
         ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
         ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
       },
-      options = field.options?.map { it.title to it.value } ?: emptyList(),
-      selectedOptions = emptyList()
+      options = field.options?.map {
+        StepContent.Form.FieldOption(
+          text = it.title,
+          value = it.value
+        ) } ?: emptyList(),
+      selectedOptions = field.defaultValues.toFieldOptions(field.options)
     )
+  }
+}
+
+private fun List<String>.toFieldOptions(allOptions: List<FormFragment.Field.Option>?):
+  List<StepContent.Form.FieldOption> {
+  return this.map { defaultStringValue ->
+    allOptions?.firstOrNull { it.value == defaultStringValue }
+      ?.let {
+        StepContent.Form.FieldOption(
+        value = it.value,
+        text = it.title //if we have a list to choose from
+      ) } ?:
+      //if it is just a value
+      StepContent.Form.FieldOption(defaultStringValue,defaultStringValue)
   }
 }
 

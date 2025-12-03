@@ -6,6 +6,7 @@ fragment ClaimIntentFragment on ClaimIntent {
     content {
       ...ClaimIntentStepContentFragment
     }
+    isRegrettable
   }
   outcome {
     ...ClaimIntentOutcomeClaimFragment
@@ -70,7 +71,6 @@ fragment FormFragment on ClaimIntentStepContentForm {
     maxValue
   }
   isSkippable
-  isRegrettable
 }
 
 fragment ContentSelectFragment on ClaimIntentStepContentSelect {
@@ -79,7 +79,6 @@ fragment ContentSelectFragment on ClaimIntentStepContentSelect {
     title
   }
   isSkippable
-  isRegrettable
 }
 
 fragment TaskFragment on ClaimIntentStepContentTask {
@@ -91,12 +90,10 @@ fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
   hint
   uploadUri
   isSkippable
-  isRegrettable
 }
 
 fragment FileUploadFragment on ClaimIntentStepContentFileUpload {
   uploadUri
-  isRegrettable
   isSkippable
 }
 
