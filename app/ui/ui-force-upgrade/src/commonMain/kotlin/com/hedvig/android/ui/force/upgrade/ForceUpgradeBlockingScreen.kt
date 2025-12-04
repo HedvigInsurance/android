@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.force.upgrade
+package com.hedvig.android.ui.force.upgrade
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

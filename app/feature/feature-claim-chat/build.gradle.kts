@@ -34,10 +34,11 @@ kotlin {
       implementation(projects.audioPlayerUi)
       implementation(projects.composePhotoCaptureState)
       implementation(projects.composeResultLauncher)
+      implementation(projects.coreUiData)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
       implementation(projects.uiClaimFlow)
-      implementation(projects.coreUiData)
+      implementation(projects.uiForceUpgrade)
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
