@@ -40,7 +40,12 @@ import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.file.FileService
+import kotlin.collections.emptyList
+import kotlin.time.Instant
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 internal sealed interface ClaimChatEvent {
   sealed interface AudioRecording : ClaimChatEvent {
@@ -374,15 +379,25 @@ internal class ClaimChatPresenter(
         is ClaimChatEvent.FormSubmit -> {
           val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
             ?: return@CollectEvents
-          val fieldsToSubmit = currentContent.fields.map {
-            Field(
-              it.id,
-              it.selectedOptions
-                //.ifEmpty { listOf(null) }
-                .map { selectedOption ->
-                  selectedOption.value
-                },
-            )
+          val fieldsToSubmit = currentContent.fields.map { field ->
+            when (field.type) {
+
+              StepContent.Form.FieldType.DATE -> Field(
+                field.id,
+                listOf(field.datePickerUiState?.datePickerState?.selectedDateMillis?.let { selectedDateMillis ->
+                  Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
+                }?.toString())
+
+              )
+              else -> Field(
+                field.id,
+                field.selectedOptions
+                  //.ifEmpty { listOf(null) }
+                  .map { selectedOption ->
+                    selectedOption.value
+                  },
+              )
+            }
           }
           launch {
             submitFormUseCase
@@ -491,7 +506,6 @@ internal class ClaimChatPresenter(
               if (field.id == event.fieldId) {
                 when (field.type) {
                   StepContent.Form.FieldType.TEXT,
-                  StepContent.Form.FieldType.DATE,
                   StepContent.Form.FieldType.NUMBER,
                   StepContent.Form.FieldType.BINARY,
                   StepContent.Form.FieldType.SINGLE_SELECT,
@@ -501,6 +515,10 @@ internal class ClaimChatPresenter(
                       listOf(it)
                     } ?: emptyList(),
                   )
+
+                  StepContent.Form.FieldType.DATE -> field
+                  //Date gets selected date from DatePickerState, not from Event
+
 
                   StepContent.Form.FieldType.MULTI_SELECT -> {
                     field.copy(
