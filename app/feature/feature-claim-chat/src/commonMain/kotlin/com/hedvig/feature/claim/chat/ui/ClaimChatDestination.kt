@@ -117,12 +117,7 @@ internal fun ClaimChatScreenContent(
       is ClaimChatUiState.ClaimChat -> {
         if (uiState.outcome != null) {
           LaunchedEffect(uiState.outcome) {
-            val outcome = uiState.outcome
-            when(outcome) {
-              is ClaimIntentOutcome.Claim -> navigateToClaimOutcome(outcome)
-              is ClaimIntentOutcome.Deflect -> TODO()
-              ClaimIntentOutcome.Unknown -> TODO()
-            }
+            navigateToClaimOutcome(uiState.outcome)
           }
         }
         ClaimChatScreen(

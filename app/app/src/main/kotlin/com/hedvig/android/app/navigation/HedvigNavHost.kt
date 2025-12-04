@@ -450,6 +450,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navigateToClaimDetails = { claimId: String ->
       hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
     },
+    tryOpenPlayStore = externalNavigator::tryOpenPlayStore,
     imageLoader = imageLoader,
     appPackageId = hedvigBuildConstants.appPackageId,
   )

@@ -24,54 +24,28 @@ import kotlin.time.Instant
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ClaimIntentOutcomeDestination(
-  outcome: ClaimIntentOutcome,
-  onNavigateToClaim: (String) -> Unit,
+internal fun ClaimOutcomeDeflectDestination(
+  deflect: ClaimIntentOutcome.Deflect,
   modifier: Modifier = Modifier,
 ) {
-  when (outcome) {
-    is ClaimIntentOutcome.Claim -> {
-      Column(
-        modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
-        HedvigText(stringResource(Res.string.CLAIMS_SUCCESS_TITLE))
-        Spacer(Modifier.height(16.dp))
-        Row(
-          Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.Center,
-        ) {
-          HedvigButton(
-            onClick = {
-              onNavigateToClaim(outcome.claimId)
-            },
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            buttonSize = ButtonDefaults.ButtonSize.Medium,
-            text = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
-          )
-        }
-      }
-    }
-
-    is ClaimIntentOutcome.Deflect -> {
-      HedvigText("Deflect")
-    }
-
-    ClaimIntentOutcome.Unknown -> {
-      HedvigText("Unknown")
-    }
-  }
+  HedvigText("Deflect")
 }
 
 @HedvigPreview
 @Composable
-private fun PreviewClaimIntentOutcome() {
+private fun PreviewClaimOutcomeDeflectDestination() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ClaimIntentOutcomeDestination(
-        ClaimIntentOutcome.Claim("123", Instant.parse("2024-05-01T00:00:00Z")),
-        {},
+      ClaimOutcomeDeflectDestination(
+        deflect = ClaimIntentOutcome.Deflect(
+          title = "title",
+          infoText = "infoText",
+          warningText = "warningText",
+          partners = emptyList(),
+          partnersInfo = ClaimIntentOutcome.Deflect.InfoBlock("title", "description"),
+          content = ClaimIntentOutcome.Deflect.InfoBlock("title", "description"),
+          faq = emptyList()
+        ),
       )
     }
   }
