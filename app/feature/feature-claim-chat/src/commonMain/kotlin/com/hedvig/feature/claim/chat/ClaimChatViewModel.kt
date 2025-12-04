@@ -377,45 +377,68 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.FormSubmit -> {
-          val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
-            ?: return@CollectEvents
-          val fieldsToSubmit = currentContent.fields.map { field ->
-            when (field.type) {
+          Snapshot.withMutableSnapshot {
+            val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
+              ?: return@CollectEvents
+            val fieldsToSubmit = currentContent.fields.map { field ->
+              when (field.type) {
+                StepContent.Form.FieldType.DATE -> {
+                  val selectedDateString =
+                    field.datePickerUiState?.datePickerState?.selectedDateMillis?.let { selectedDateMillis ->
+                      Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
+                    }?.toString()
+                  val stepToUpdate = steps.find { it.id == event.stepId } ?: return@withMutableSnapshot
+                  val index = steps.indexOf(stepToUpdate)
+                  if (index >= 0 && selectedDateString!=null) {
+                    steps[index] = stepToUpdate.copy(
+                      stepContent = currentContent.copy(
+                        fields = currentContent.fields.map { existingField ->
+                          if (existingField.id==field.id) existingField.copy(
+                            selectedOptions = listOf(
+                              StepContent.Form.FieldOption(
+                                selectedDateString,
+                                selectedDateString))
+                          ) else existingField
+                        }
+                      ),
+                    )
+                  }
+                  //TODO()
+                  Field(
+                    field.id,
+                    listOf(selectedDateString)
 
-              StepContent.Form.FieldType.DATE -> Field(
-                field.id,
-                listOf(field.datePickerUiState?.datePickerState?.selectedDateMillis?.let { selectedDateMillis ->
-                  Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
-                }?.toString())
+                  )
+                }
 
-              )
-              else -> Field(
-                field.id,
-                field.selectedOptions
-                  //.ifEmpty { listOf(null) }
-                  .map { selectedOption ->
-                    selectedOption.value
-                  },
-              )
+                else -> Field(
+                  field.id,
+                  field.selectedOptions
+                    //.ifEmpty { listOf(null) }
+                    .map { selectedOption ->
+                      selectedOption.value
+                    },
+                )
+              }
             }
-          }
-          launch {
-            submitFormUseCase
-              .invoke(
-                FormSubmissionData(
-                  event.stepId,
-                  fieldsToSubmit,
-                ),
-              )
-              .fold(
-                ifLeft = {
-                  errorSubmittingStep = it
-                  logcat { "FormSubmit error: $it" }
-                },
-                ifRight = { claimIntent ->
-                  handleNext(steps, setOutcome, claimIntent.next)
-                },
-              )
+            launch {
+              submitFormUseCase
+                .invoke(
+                  FormSubmissionData(
+                    event.stepId,
+                    fieldsToSubmit,
+                  ),
+                )
+                .fold(
+                  ifLeft = {
+                    errorSubmittingStep = it
+                    logcat { "FormSubmit error: $it" }
+                  },
+                  ifRight = { claimIntent ->
+                    handleNext(steps, setOutcome, claimIntent.next)
+                  },
+                )
+            }
           }
         }
 

@@ -99,11 +99,18 @@ internal sealed interface StepContent {
   ) : StepContent {
 
     fun canContinue(): Boolean {
-      return fields.filter { it.isRequired }.all {
-        logcat { "Mariia: required field ${it.title} selectedOptions: ${it.selectedOptions}" }
+      val requiredFields = fields
+        .filter { it.isRequired }
+      return requiredFields
+        .filter { it.type!= FieldType.DATE }
+        .all {
         it.selectedOptions.isNotEmpty()
+      } && requiredFields
+        .filter { it.type == FieldType.DATE }
+        .all {
+          it.datePickerUiState?.datePickerState?.selectedDateMillis!=null
+        }
 
-      }
     }
 
     data class Field(
