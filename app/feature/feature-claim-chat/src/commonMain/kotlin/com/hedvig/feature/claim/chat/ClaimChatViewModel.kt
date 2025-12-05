@@ -13,6 +13,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -39,7 +40,12 @@ import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.file.FileService
+import kotlin.collections.emptyList
+import kotlin.time.Instant
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 internal sealed interface ClaimChatEvent {
   sealed interface AudioRecording : ClaimChatEvent {
@@ -371,35 +377,68 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.FormSubmit -> {
-          val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
-            ?: return@CollectEvents
-          val fieldsToSubmit = currentContent.fields.map {
-            Field(
-              it.id,
-              it.selectedOptions
-                //.ifEmpty { listOf(null) }
-                .map { selectedOption ->
-                  selectedOption.value
-                },
-            )
-          }
-          launch {
-            submitFormUseCase
-              .invoke(
-                FormSubmissionData(
-                  event.stepId,
-                  fieldsToSubmit,
-                ),
-              )
-              .fold(
-                ifLeft = {
-                  errorSubmittingStep = it
-                  logcat { "FormSubmit error: $it" }
-                },
-                ifRight = { claimIntent ->
-                  handleNext(steps, setOutcome, claimIntent.next)
-                },
-              )
+          Snapshot.withMutableSnapshot {
+            val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
+              ?: return@CollectEvents
+            val fieldsToSubmit = currentContent.fields.map { field ->
+              when (field.type) {
+                StepContent.Form.FieldType.DATE -> {
+                  val selectedDateString =
+                    field.datePickerUiState?.datePickerState?.selectedDateMillis?.let { selectedDateMillis ->
+                      Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
+                    }?.toString()
+                  val stepToUpdate = steps.find { it.id == event.stepId } ?: return@withMutableSnapshot
+                  val index = steps.indexOf(stepToUpdate)
+                  if (index >= 0 && selectedDateString!=null) {
+                    steps[index] = stepToUpdate.copy(
+                      stepContent = currentContent.copy(
+                        fields = currentContent.fields.map { existingField ->
+                          if (existingField.id==field.id) existingField.copy(
+                            selectedOptions = listOf(
+                              StepContent.Form.FieldOption(
+                                selectedDateString,
+                                selectedDateString))
+                          ) else existingField
+                        }
+                      ),
+                    )
+                  }
+                  //TODO()
+                  Field(
+                    field.id,
+                    listOf(selectedDateString)
+
+                  )
+                }
+
+                else -> Field(
+                  field.id,
+                  field.selectedOptions
+                    //.ifEmpty { listOf(null) }
+                    .map { selectedOption ->
+                      selectedOption.value
+                    },
+                )
+              }
+            }
+            launch {
+              submitFormUseCase
+                .invoke(
+                  FormSubmissionData(
+                    event.stepId,
+                    fieldsToSubmit,
+                  ),
+                )
+                .fold(
+                  ifLeft = {
+                    errorSubmittingStep = it
+                    logcat { "FormSubmit error: $it" }
+                  },
+                  ifRight = { claimIntent ->
+                    handleNext(steps, setOutcome, claimIntent.next)
+                  },
+                )
+            }
           }
         }
 
@@ -490,7 +529,6 @@ internal class ClaimChatPresenter(
               if (field.id == event.fieldId) {
                 when (field.type) {
                   StepContent.Form.FieldType.TEXT,
-                  StepContent.Form.FieldType.DATE,
                   StepContent.Form.FieldType.NUMBER,
                   StepContent.Form.FieldType.BINARY,
                   StepContent.Form.FieldType.SINGLE_SELECT,
@@ -500,6 +538,10 @@ internal class ClaimChatPresenter(
                       listOf(it)
                     } ?: emptyList(),
                   )
+
+                  StepContent.Form.FieldType.DATE -> field
+                  //Date gets selected date from DatePickerState, not from Event
+
 
                   StepContent.Form.FieldType.MULTI_SELECT -> {
                     field.copy(

@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -82,7 +83,9 @@ import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.api.CommonLocale
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.api.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -573,14 +576,10 @@ data class DeflectPartner(
 
 @Composable
 internal fun DateSelectBubble(
+  datePickerState: DatePickerUiState,
   questionLabel: String?,
-  date: LocalDate?,
   modifier: Modifier = Modifier,
 ) {
-  val datePickerState = DatePickerUiState(
-    locale = getLocale(),
-    initiallySelectedDate = date,
-  )
   DatePickerWithDialog(
     datePickerState,
     canInteract = true,
@@ -794,7 +793,7 @@ private fun PreviewWithAssistantBubble() {
         )
         DateSelectBubble(
           questionLabel = "Date of occurence",
-          date = LocalDate(2025, 11, 10),
+          datePickerState = DatePickerUiState(previewCommonLocale, null),
         )
         AssistantMessageBubble(
           text = "Processing information",
@@ -870,7 +869,7 @@ private fun PreviewClaimChatComponents() {
         Spacer(Modifier.height(16.dp))
         DateSelectBubble(
           questionLabel = "Date of occurence",
-          date = LocalDate(2025, 11, 10),
+          datePickerState = DatePickerUiState(previewCommonLocale, null),
         )
         Spacer(Modifier.height(16.dp))
         TextInputBubble(

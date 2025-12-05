@@ -40,6 +40,7 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -47,7 +48,9 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
@@ -429,6 +432,7 @@ private fun FormStep(
         onEvent(ClaimChatEvent.Regret(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
+        logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
         onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
@@ -472,9 +476,7 @@ private fun FormContent(
           StepContent.Form.FieldType.DATE -> {
             DateSelectBubble(
               questionLabel = field.title,
-              date = field.selectedOptions.getOrNull(0)?.let {
-                LocalDate.parse(it.text) //todo: check
-              },
+              datePickerState = field.datePickerUiState!!, //todo - check "!!"
               modifier = Modifier.fillMaxWidth(),
             )
           }

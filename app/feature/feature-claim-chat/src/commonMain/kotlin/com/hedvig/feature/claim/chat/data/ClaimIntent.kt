@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat.data
 
 import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
@@ -98,11 +99,18 @@ internal sealed interface StepContent {
   ) : StepContent {
 
     fun canContinue(): Boolean {
-      return fields.filter { it.isRequired }.all {
-        logcat { "Mariia: required field ${it.title} selectedOptions: ${it.selectedOptions}" }
+      val requiredFields = fields
+        .filter { it.isRequired }
+      return requiredFields
+        .filter { it.type!= FieldType.DATE }
+        .all {
         it.selectedOptions.isNotEmpty()
+      } && requiredFields
+        .filter { it.type == FieldType.DATE }
+        .all {
+          it.datePickerUiState?.datePickerState?.selectedDateMillis!=null
+        }
 
-      }
     }
 
     data class Field(
@@ -116,6 +124,7 @@ internal sealed interface StepContent {
       val type: FieldType?,
       val options: List<FieldOption>,
       val selectedOptions: List<FieldOption>,
+      val datePickerUiState: DatePickerUiState?,
     )
 
     data class FieldOption(
