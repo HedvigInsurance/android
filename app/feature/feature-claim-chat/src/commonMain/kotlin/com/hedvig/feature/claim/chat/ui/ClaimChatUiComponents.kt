@@ -724,38 +724,6 @@ internal fun ChatClaimSummary(
   }
 }
 
-@Composable
-internal fun ChatClaimOutcome(
-  text: String,
-  claimId: String?,
-  onNavigateToClaim: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Column(
-    modifier,
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    HedvigText(text)
-    if (claimId != null) {
-      Spacer(Modifier.height(16.dp))
-      Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-      ) {
-        HedvigButton(
-          onClick = {
-            onNavigateToClaim(claimId)
-          },
-          enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-          buttonSize = ButtonDefaults.ButtonSize.Medium,
-          text = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
-        )
-      }
-    }
-  }
-}
-
 @HedvigPreview
 @Composable
 private fun PreviewWithAssistantBubble() {
@@ -904,11 +872,6 @@ private fun PreviewSummary() {
           onSubmit = {},
           text = "Is this what you have in mind?",
           isCurrentStep = true,
-        )
-        ChatClaimOutcome(
-          "All done! Here is your submitted claim.",
-          onNavigateToClaim = {},
-          claimId = "",
         )
       }
     }

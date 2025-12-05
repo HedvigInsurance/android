@@ -12,9 +12,6 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
 
 actual object HedvigDateTimeFormatterDefaults {
-  /**
-   * Example output: "2021.07.01"
-   */
   actual fun isoLocalDateWithDots(locale: CommonLocale): DateFormatter {
     val formatter = DateTimeFormatterBuilder()
       .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
@@ -26,9 +23,6 @@ actual object HedvigDateTimeFormatterDefaults {
     return JavaDateFormatter(formatter)
   }
 
-  /**
-   * Example output: "12:34"
-   */
   actual fun timeOnly(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
@@ -39,9 +33,6 @@ actual object HedvigDateTimeFormatterDefaults {
     )
   }
 
-  /**
-   * Example output: "Fri 12:34"
-   */
   actual fun dayOfTheWeekAndTime(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
@@ -54,9 +45,6 @@ actual object HedvigDateTimeFormatterDefaults {
     )
   }
 
-  /**
-   * Example output: "Nov 11 9:04"
-   */
   actual fun monthDateAndTime(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
@@ -71,9 +59,6 @@ actual object HedvigDateTimeFormatterDefaults {
     )
   }
 
-  /**
-   * Example output: "11 Nov 2024"
-   */
   actual fun dateMonthAndYear(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
@@ -86,9 +71,6 @@ actual object HedvigDateTimeFormatterDefaults {
     )
   }
 
-  /**
-   * Example output: "Nov 11 2024"
-   */
   actual fun monthDateAndYear(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
@@ -101,9 +83,6 @@ actual object HedvigDateTimeFormatterDefaults {
     )
   }
 
-  /**
-   * Example output: "2022 Nov 11 9:04"
-   */
   actual fun yearMonthDateAndTime(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
@@ -120,9 +99,6 @@ actual object HedvigDateTimeFormatterDefaults {
     )
   }
 
-  /**
-   * Example output: "16 Jan"
-   */
   actual fun dateAndMonth(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
@@ -133,9 +109,6 @@ actual object HedvigDateTimeFormatterDefaults {
     )
   }
 
-  /**
-   * Example output: "910113"
-   */
   actual fun yearMonthDayCombined(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()

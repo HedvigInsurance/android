@@ -195,7 +195,6 @@ dependencies {
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsAndroid)
   implementation(projects.featureFlagsPublic)
-  implementation(projects.featureForceUpgrade)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
@@ -230,6 +229,7 @@ dependencies {
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.uiForceUpgrade)
 
   "stagingImplementation".invoke(projects.featureImpersonation)
   debugImplementation(libs.androidx.compose.uiTooling)
