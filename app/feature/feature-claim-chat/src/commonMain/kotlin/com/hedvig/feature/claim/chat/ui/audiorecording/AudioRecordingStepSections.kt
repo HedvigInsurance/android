@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
@@ -80,8 +82,6 @@ internal fun AudioRecordingStep(
             allowFreeText = freeTextAvailable,
             launchFreeText = showFreeText,
             isCurrentStep = isCurrentStep,
-            onSkip = onSkip,
-            canSkip = canSkip,
           )
         }
 
@@ -93,11 +93,17 @@ internal fun AudioRecordingStep(
             freeText = freeText,
             hasError = uiStateAnimated.hasError,
             errorType = uiStateAnimated.errorType,
-            canSkip = canSkip,
-            onSkip = onSkip,
             isCurrentStep = isCurrentStep,
           )
         }
+      }
+      if (canSkip) {
+        HedvigTextButton(
+          stringResource(Res.string.claims_skip_button),
+          onClick = onSkip,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.width(16.dp))
       }
     }
   }
@@ -110,8 +116,6 @@ private fun FreeTextInputSection(
   onLaunchFullScreenEditText: () -> Unit,
   submitFreeText: () -> Unit,
   hasError: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
   isCurrentStep: Boolean,
   errorType: FreeTextErrorType?,
   modifier: Modifier = Modifier,
@@ -133,30 +137,17 @@ private fun FreeTextInputSection(
     )
     if (isCurrentStep) {
       Spacer(Modifier.height(16.dp))
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        if (canSkip) {
-          HedvigTextButton(
-            stringResource(Res.string.claims_skip_button),
-            onClick = onSkip,
-            buttonSize = ButtonDefaults.ButtonSize.Medium,
-          )
-          Spacer(Modifier.width(16.dp))
-        }
-
-        HedvigButton(
-          onClick = submitFreeText,
-          enabled = true,
-          buttonSize = ButtonDefaults.ButtonSize.Medium,
-          text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
-        )
-      }
+      HedvigButton(
+        onClick = submitFreeText,
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+        text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+      )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
         text = stringResource(Res.string.CLAIMS_USE_AUDIO_RECORDING),
         onClick = showAudioRecording,
-        buttonSize = ButtonDefaults.ButtonSize.Medium,
+        modifier = Modifier.fillMaxWidth(),
         enabled = true,
       )
     }
@@ -176,8 +167,6 @@ private fun AudioRecordingSection(
   launchFreeText: () -> Unit,
   allowFreeText: Boolean,
   isCurrentStep: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showPermissionDialog by remember { mutableStateOf(false) }
@@ -217,8 +206,6 @@ private fun AudioRecordingSection(
     allowFreeText = allowFreeText,
     onLaunchFreeText = launchFreeText,
     isCurrentStep = isCurrentStep,
-    canSkip = canSkip,
-    onSkip = onSkip,
   )
 }
 
@@ -234,8 +221,6 @@ private fun PreviewFreeTextInput() {
         {},
         hasError = false,
         errorType = null,
-        canSkip = true,
-        onSkip = {},
         isCurrentStep = true,
       )
     }

@@ -89,8 +89,6 @@ internal fun AudioRecorder(
   allowFreeText: Boolean,
   onLaunchFreeText: () -> Unit,
   isCurrentStep: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   when (uiState) {
@@ -320,8 +318,6 @@ private fun PreviewNotRecording() {
         allowFreeText = true,
         onLaunchFreeText = {},
         isCurrentStep = true,
-        onSkip = {},
-        canSkip = true,
       )
     }
   }
@@ -346,8 +342,6 @@ private fun PreviewRecording() {
         onLaunchFreeText = {},
         redo = { },
         isCurrentStep = true,
-        onSkip = {},
-        canSkip = true,
       )
     }
   }
