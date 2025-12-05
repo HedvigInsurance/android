@@ -59,6 +59,7 @@ import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
+import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
@@ -376,8 +377,29 @@ private fun UploadFilesStep(
           imageLoader = imageLoader,
           onNavigateToImageViewer = onNavigateToImageViewer,
           alignment = Alignment.End)
+      } else {
+        SkippedLabel()
       }
     }
+  }
+}
+
+@Composable
+internal fun SkippedLabel() {
+  Row(
+    Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.End
+  ) {
+    val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_LABEL)
+    HedvigChip(
+      skippedLabelText,
+      itemDisplayName = {
+        skippedLabelText
+      },
+      isSelected = false,
+      onItemClick = {},
+      showChipAnimatable = remember { Animatable(1f) },
+    )
   }
 }
 
