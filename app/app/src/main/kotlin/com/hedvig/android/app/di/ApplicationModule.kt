@@ -169,12 +169,12 @@ private val networkModule = module {
       .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>(), get<DemoManager>()))
       .addInterceptor(LoggingInterceptor())
   }
-  single<ApolloClient> {
-    get<ApolloClient.Builder>()
-      .copy()
-      .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
-      .build()
-  }
+//  single<ApolloClient> {
+//    get<ApolloClient.Builder>()
+//      .copy()
+//      .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
+//      .build()
+//  }
 }
 
 fun makeUserAgent(languageBCP47: String): String = buildString {
