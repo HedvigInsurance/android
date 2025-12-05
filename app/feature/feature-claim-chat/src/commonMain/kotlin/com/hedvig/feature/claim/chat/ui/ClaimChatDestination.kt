@@ -40,7 +40,6 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -48,7 +47,6 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
-import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.HedvigChip
@@ -68,7 +66,6 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -114,13 +111,13 @@ internal fun ClaimChatScreenContent(
       ClaimChatUiState.FailedToStart -> BasicText("FailedToStart") //todo
       ClaimChatUiState.Initializing -> HedvigFullScreenCenterAlignedProgress()
       is ClaimChatUiState.ClaimChat -> ClaimChatScreen(
-          uiState = uiState,
-          onEvent = claimChatViewModel::emit,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openAppSettings = openAppSettings,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
+        uiState = uiState,
+        onEvent = claimChatViewModel::emit,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openAppSettings = openAppSettings,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader,
       )
     }
   }
@@ -151,13 +148,13 @@ private fun ClaimChatScreen(
     shouldShowOverlay = uiState.showFreeTextOverlay,
     overlaidContent = {
       ClaimChatScreenContent(
-          uiState = uiState,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openAppSettings = openAppSettings,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
+        uiState = uiState,
+        onEvent = onEvent,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openAppSettings = openAppSettings,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader,
       )
     },
   )
@@ -315,18 +312,18 @@ private fun UploadFilesStep(
       UploadFilesBubble(
         addLocalFile = { uri ->
           onEvent(
-              ClaimChatEvent.AddFile(
-                  itemId,
-                  uri.toString(), //todo: check!
-              ),
+            ClaimChatEvent.AddFile(
+              itemId,
+              uri.toString(), //todo: check!
+            ),
           )
         },
         onRemoveFile = { fileId ->
           onEvent(
-              ClaimChatEvent.RemoveFile(
-                  itemId,
-                  fileId,
-              ),
+            ClaimChatEvent.RemoveFile(
+              itemId,
+              fileId,
+            ),
           )
         },
         appPackageId = appPackageId,
@@ -349,7 +346,7 @@ private fun UploadFilesStep(
           modifier = Modifier.fillMaxWidth(),
         )
       }
-      if (stepContent.isSkippable) {
+      if (stepContent.isSkippable && stepContent.localFiles.isEmpty()) {
         HedvigButton(
           text = stringResource(Res.string.claims_skip_button),
           enabled = true,
@@ -467,8 +464,10 @@ private fun FormContent(
               text = field.selectedOptions.getOrNull(0)?.text,
               suffix = field.suffix,
               onInput = { answer ->
-                onSelectFieldAnswer(field.id,
-                  answer?.let {StepContent.Form.FieldOption(it,it)})
+                onSelectFieldAnswer(
+                    field.id,
+                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                )
               },
             )
           }
@@ -487,8 +486,10 @@ private fun FormContent(
               text = field.selectedOptions.getOrNull(0)?.text,
               suffix = field.suffix,
               onInput = { answer ->
-                onSelectFieldAnswer(field.id,
-                  answer?.let {StepContent.Form.FieldOption(it,it)})
+                onSelectFieldAnswer(
+                    field.id,
+                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                )
               },
               keyboardType = KeyboardType.Number,
             )
@@ -537,7 +538,8 @@ private fun FormContent(
                 onSelectFieldAnswer(
                   field.id,
                   field.options.firstOrNull {
-                    it.value == option.id },
+                    it.value == option.id
+                  },
                 )
               },
               modifier = Modifier.fillMaxWidth(),
@@ -548,8 +550,8 @@ private fun FormContent(
             answerSelected = field.selectedOptions.firstOrNull()?.text,
             onSelect = {
               onSelectFieldAnswer(
-                field.id,
-                StepContent.Form.FieldOption(it,it)
+                  field.id,
+                  StepContent.Form.FieldOption(it, it),
               )
             },
             questionText = field.title,
