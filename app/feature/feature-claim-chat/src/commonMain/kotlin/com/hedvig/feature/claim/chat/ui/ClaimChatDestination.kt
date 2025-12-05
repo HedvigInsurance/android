@@ -173,9 +173,9 @@ private fun ClaimChatScreenContent(
 ) {
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
-      title = org.jetbrains.compose.resources.stringResource(Res.string.general_error),
+      title = stringResource(Res.string.general_error),
       message = uiState.errorSubmittingStep.message
-        ?: org.jetbrains.compose.resources.stringResource(Res.string.something_went_wrong),
+        ?: stringResource(Res.string.something_went_wrong),
       onDismiss = {
         onEvent(ClaimChatEvent.DismissErrorDialog)
       },
@@ -271,6 +271,17 @@ private fun ClaimChatScreenContent(
             onEvent(ClaimChatEvent.SubmitClaim(item.id))
           },
           isCurrentStep = isCurrentStep,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          imageLoader = imageLoader,
+          fileUploads = item.stepContent.fileUploads.map {
+            UiFile(
+              name = it.fileName,
+              localPath = null,
+              url = it.url,
+              mimeType = it.contentType,
+              id = it.url
+            )
+          }
         )
 
         is StepContent.Task -> TaskStep(
@@ -335,7 +346,7 @@ private fun UploadFilesStep(
       if (stepContent.localFiles.isNotEmpty()) {
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
-          enabled = true, //todo
+          enabled = true,
           onClick = {
             onEvent(
               ClaimChatEvent.FileSubmit(
@@ -356,6 +367,15 @@ private fun UploadFilesStep(
           modifier = Modifier.fillMaxWidth(),
           buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
         )
+      }
+    } else {
+      if (localFiles.isNotEmpty()) {
+        FilesRow(
+          uiFiles = localFiles,
+          onRemoveFile = null,
+          imageLoader = imageLoader,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          alignment = Alignment.End)
       }
     }
   }

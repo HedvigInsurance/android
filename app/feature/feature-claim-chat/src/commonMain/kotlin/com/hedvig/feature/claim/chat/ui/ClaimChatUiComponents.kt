@@ -389,7 +389,7 @@ internal fun UploadFilesBubble(
 
 @Composable
 private fun UploadFilesBubbleContent(
-  onRemoveFile: (fileId: String) -> Unit,
+  onRemoveFile: ((fileId: String) -> Unit)?,
   onAddFilesButtonClick: () -> Unit,
   localFiles: List<UiFile>,
   imageLoader: ImageLoader,
@@ -398,28 +398,13 @@ private fun UploadFilesBubbleContent(
 ) {
   Column(modifier) {
     if (localFiles.isNotEmpty()) {
-      LazyRow(
-        Modifier
-          .height(120.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(top = 8.dp),
-      ) {
-        items(
-          items = localFiles,
-          key = { it.id },
-        ) { uiFile ->
-          File(
-            id = uiFile.id,
-            name = uiFile.name,
-            path = uiFile.localPath ?: uiFile.url,
-            mimeType = uiFile.mimeType,
-            imageLoader = imageLoader,
-            onRemoveFile = onRemoveFile,
-            onClickFile = null,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-          )
-        }
-      }
+      FilesRow(
+        uiFiles = localFiles,
+        onRemoveFile = onRemoveFile,
+        imageLoader = imageLoader,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        alignment = Alignment.Start,
+      )
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
@@ -431,6 +416,41 @@ private fun UploadFilesBubbleContent(
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
     )
+  }
+}
+
+@Composable
+internal fun FilesRow(
+  uiFiles: List<UiFile>,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onRemoveFile: ((fileId: String) -> Unit)?,
+  alignment: Alignment.Horizontal,
+) {
+  LazyRow(
+    Modifier
+      .fillMaxWidth()
+      .height(120.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp, alignment),
+    contentPadding = PaddingValues(top = 8.dp),
+  ) {
+    items(
+      items = uiFiles,
+      key = { it.id },
+    ) { uiFile ->
+      File(
+        id = uiFile.id,
+        name = uiFile.name,
+        path = uiFile.localPath ?: uiFile.url,
+        mimeType = uiFile.mimeType,
+        imageLoader = imageLoader,
+        onRemoveFile = onRemoveFile,
+        onClickFile = {
+          onNavigateToImageViewer(it, it)
+        },
+        onNavigateToImageViewer = onNavigateToImageViewer,
+      )
+    }
   }
 }
 
@@ -470,7 +490,7 @@ private fun FilePickerBottomSheetContent(
         onClick = onPickPhoto,
         true,
         modifier = Modifier.fillMaxWidth(),
-        buttonStyle = ButtonDefaults.ButtonStyle.Ghost
+        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
       ) {
         Row {
           Icon(HedvigIcons.Image, null)
@@ -482,7 +502,7 @@ private fun FilePickerBottomSheetContent(
         onClick = onTakePhoto,
         true,
         modifier = Modifier.fillMaxWidth(),
-        buttonStyle = ButtonDefaults.ButtonStyle.Ghost
+        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
       ) {
         Row {
           Icon(HedvigIcons.Camera, null)
@@ -494,7 +514,7 @@ private fun FilePickerBottomSheetContent(
         onClick = onPickFile,
         enabled = true,
         modifier = Modifier.fillMaxWidth(),
-        buttonStyle = ButtonDefaults.ButtonStyle.Ghost
+        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
       ) {
         Row {
           Icon(HedvigIcons.Document, null)
@@ -656,20 +676,23 @@ internal fun TextInputBubble(
 internal fun ChatClaimSummary(
   text: String,
   recordingUrls: List<String>,
+  fileUploads: List<UiFile>,
   displayItems: List<Pair<String, String>>,
   onSubmit: () -> Unit,
   isCurrentStep: Boolean,
+  imageLoader: ImageLoader,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     HedvigText(text)
     Spacer(Modifier.height(8.dp))
     HedvigCard(
-      color= HedvigTheme.colorScheme.fillNegative
-    ){
+      color = HedvigTheme.colorScheme.fillNegative,
+    ) {
       Column(Modifier.padding(16.dp)) {
         HedvigText(
-          stringResource(Res.string.claim_status_claim_details_title)
+          stringResource(Res.string.claim_status_claim_details_title),
         )
         Spacer(Modifier.height(8.dp))
         CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
@@ -692,7 +715,7 @@ internal fun ChatClaimSummary(
         }
         Spacer(Modifier.height(24.dp))
         HedvigText(
-          stringResource(Res.string.A11Y_AUDIO_RECORDING)
+          stringResource(Res.string.A11Y_AUDIO_RECORDING),
         )
         Spacer(Modifier.height(8.dp))
         recordingUrls.forEach {
@@ -704,6 +727,13 @@ internal fun ChatClaimSummary(
           HedvigAudioPlayer(audioPlayer = audioPlayer)
           Spacer(Modifier.height(8.dp))
         }
+        FilesRow(
+          uiFiles = fileUploads,
+          imageLoader = imageLoader,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          onRemoveFile = null,
+          alignment = Alignment.Start,
+        )
       }
     }
 
@@ -717,7 +747,7 @@ internal fun ChatClaimSummary(
           text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
           enabled = true,
           onClick = onSubmit,
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
       }
     }
@@ -904,6 +934,9 @@ private fun PreviewSummary() {
           onSubmit = {},
           text = "Is this what you have in mind?",
           isCurrentStep = true,
+          fileUploads = listOf(),
+          imageLoader = rememberPreviewImageLoader(),
+          onNavigateToImageViewer = {_,_ -> }
         )
         ChatClaimOutcome(
           "All done! Here is your submitted claim.",
