@@ -53,6 +53,7 @@ import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
+import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -72,10 +73,11 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ClaimChatDestination(
+internal fun ClaimChatDestination(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToClaimOutcome: (ClaimIntentOutcome) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
   isDevelopmentFlow: Boolean,
@@ -86,10 +88,11 @@ fun ClaimChatDestination(
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     BlurredGradientBackground(radius = 100)
     ClaimChatScreenContent(
-      claimChatViewModel,
+      claimChatViewModel = claimChatViewModel,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       openAppSettings = openAppSettings,
       onNavigateToImageViewer = onNavigateToImageViewer,
+      navigateToClaimOutcome = navigateToClaimOutcome,
       appPackageId = appPackageId,
       imageLoader = imageLoader,
     )
@@ -102,6 +105,7 @@ internal fun ClaimChatScreenContent(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToClaimOutcome: (ClaimIntentOutcome) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
 ) {
@@ -111,15 +115,22 @@ internal fun ClaimChatScreenContent(
     when (uiState) {
       ClaimChatUiState.FailedToStart -> BasicText("FailedToStart") //todo
       ClaimChatUiState.Initializing -> HedvigFullScreenCenterAlignedProgress()
-      is ClaimChatUiState.ClaimChat -> ClaimChatScreen(
-        uiState = uiState,
-        onEvent = claimChatViewModel::emit,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openAppSettings = openAppSettings,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        appPackageId = appPackageId,
-        imageLoader = imageLoader,
-      )
+      is ClaimChatUiState.ClaimChat -> {
+        if (uiState.outcome != null) {
+          LaunchedEffect(uiState.outcome) {
+            navigateToClaimOutcome(uiState.outcome)
+          }
+        }
+        ClaimChatScreen(
+              uiState = uiState,
+              onEvent = claimChatViewModel::emit,
+              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+              openAppSettings = openAppSettings,
+              onNavigateToImageViewer = onNavigateToImageViewer,
+              appPackageId = appPackageId,
+              imageLoader = imageLoader,
+        )
+      }
     }
   }
 }
