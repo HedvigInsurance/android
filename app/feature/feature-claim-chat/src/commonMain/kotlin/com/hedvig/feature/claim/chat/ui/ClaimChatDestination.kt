@@ -48,6 +48,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
@@ -66,7 +67,6 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -127,7 +127,7 @@ internal fun ClaimChatScreenContent(
               openAppSettings = openAppSettings,
               onNavigateToImageViewer = onNavigateToImageViewer,
               appPackageId = appPackageId,
-              imageLoader = imageLoader
+              imageLoader = imageLoader,
         )
       }
     }
@@ -165,7 +165,7 @@ private fun ClaimChatScreen(
         openAppSettings = openAppSettings,
         onNavigateToImageViewer = onNavigateToImageViewer,
         appPackageId = appPackageId,
-        imageLoader = imageLoader
+        imageLoader = imageLoader,
       )
     },
   )
@@ -271,7 +271,7 @@ private fun ClaimChatScreenContent(
           onEvent = onEvent,
           isCurrentStep = isCurrentStep,
           canSkip = item.stepContent.isSkippable,
-          canBeChanged = item.stepContent.isRegrettable,
+          canBeChanged = item.isRegrettable,
         )
 
         is StepContent.Summary -> ChatClaimSummary(
@@ -322,14 +322,20 @@ private fun UploadFilesStep(
       Spacer(Modifier.height(8.dp))
       UploadFilesBubble(
         addLocalFile = { uri ->
-          onEvent(ClaimChatEvent.AddFile(itemId,
-            uri.toString() //todo: check!
-          ))
+          onEvent(
+            ClaimChatEvent.AddFile(
+              itemId,
+              uri.toString(), //todo: check!
+            ),
+          )
         },
         onRemoveFile = { fileId ->
-          onEvent(ClaimChatEvent.RemoveFile(itemId,
-            fileId
-          ))
+          onEvent(
+            ClaimChatEvent.RemoveFile(
+              itemId,
+              fileId,
+            ),
+          )
         },
         appPackageId = appPackageId,
         localFiles = localFiles,
@@ -351,7 +357,7 @@ private fun UploadFilesStep(
           modifier = Modifier.fillMaxWidth(),
         )
       }
-      if (stepContent.isSkippable) {
+      if (stepContent.isSkippable && stepContent.localFiles.isEmpty()) {
         HedvigButton(
           text = stringResource(Res.string.claims_skip_button),
           enabled = true,
@@ -434,6 +440,7 @@ private fun FormStep(
         onEvent(ClaimChatEvent.Regret(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
+        logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
         onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
@@ -452,7 +459,7 @@ private fun FormContent(
   canBeChanged: Boolean,
   onRegret: () -> Unit,
   onSubmit: () -> Unit,
-  onSelectFieldAnswer: (fieldId: FieldId, answer: String?) -> Unit,
+  onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -465,10 +472,13 @@ private fun FormContent(
           StepContent.Form.FieldType.TEXT -> {
             TextInputBubble(
               questionLabel = field.title,
-              text = field.selectedOptions.getOrNull(0),
+              text = field.selectedOptions.getOrNull(0)?.text,
               suffix = field.suffix,
               onInput = { answer ->
-                onSelectFieldAnswer(field.id, answer)
+                onSelectFieldAnswer(
+                    field.id,
+                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                )
               },
             )
           }
@@ -476,9 +486,7 @@ private fun FormContent(
           StepContent.Form.FieldType.DATE -> {
             DateSelectBubble(
               questionLabel = field.title,
-              date = field.selectedOptions.getOrNull(0)?.let {
-                LocalDate.parse(it)
-              },
+              datePickerState = field.datePickerUiState!!, //todo - check "!!"
               modifier = Modifier.fillMaxWidth(),
             )
           }
@@ -486,10 +494,13 @@ private fun FormContent(
           StepContent.Form.FieldType.NUMBER -> {
             TextInputBubble(
               questionLabel = field.title,
-              text = field.selectedOptions.getOrNull(0),
+              text = field.selectedOptions.getOrNull(0)?.text,
               suffix = field.suffix,
               onInput = { answer ->
-                onSelectFieldAnswer(field.id, answer)
+                onSelectFieldAnswer(
+                    field.id,
+                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                )
               },
               keyboardType = KeyboardType.Number,
             )
@@ -500,19 +511,20 @@ private fun FormContent(
               questionLabel = field.title,
               options = field.options.map {
                 RadioOption(
-                  id = RadioOptionId(it.second),
-                  text = it.second,
-                  label = it.first,
+                  id = RadioOptionId(it.value),
+                  text = it.text,
                   iconResource = null,
                 )
               },
-              selectedOptionId = field.selectedOptions.getOrNull(0)?.let {
-                RadioOptionId(it)
+              selectedOptionId = field.selectedOptions.getOrNull(0)?.let { selected ->
+                val option = field.options.firstOrNull { it.value == selected.value }
+                if (option != null)
+                  RadioOptionId(option.value) else null
               },
-              onSelect = { option ->
+              onSelect = { optionId ->
                 onSelectFieldAnswer(
                   field.id,
-                  field.options.firstOrNull { it.second == option.id }?.second,
+                  field.options.firstOrNull { it.value == optionId.id },
                 )
               },
               modifier = Modifier.fillMaxWidth(),
@@ -524,19 +536,21 @@ private fun FormContent(
               questionLabel = field.title,
               options = field.options.map {
                 RadioOption(
-                  id = RadioOptionId(it.second),
-                  text = it.second,
-                  label = it.first,
+                  id = RadioOptionId(it.value),
+                  text = it.text,
                   iconResource = null,
                 )
               },
-              selectedOptionIds = field.selectedOptions.map {
-                RadioOptionId(it)
+              selectedOptionIds = field.selectedOptions.mapNotNull { selected ->
+                field.options.firstOrNull { it.value == selected.value }
+                  ?.let { RadioOptionId(it.value) }
               },
               onSelect = { option ->
                 onSelectFieldAnswer(
                   field.id,
-                  field.options.firstOrNull { it.second == option.id }?.second,
+                  field.options.firstOrNull {
+                    it.value == option.id
+                  },
                 )
               },
               modifier = Modifier.fillMaxWidth(),
@@ -544,11 +558,11 @@ private fun FormContent(
           }
 
           StepContent.Form.FieldType.BINARY -> YesNoBubble(
-            answerSelected = field.selectedOptions.firstOrNull(),
+            answerSelected = field.selectedOptions.firstOrNull()?.text,
             onSelect = {
               onSelectFieldAnswer(
-                field.id,
-                it,
+                  field.id,
+                  StepContent.Form.FieldOption(it, it),
               )
             },
             questionText = field.title,
@@ -556,7 +570,7 @@ private fun FormContent(
 
           null -> {
             if (canSkip) {
-              onSkip()      //todo: check
+              onSkip()
             }
           }
         }
@@ -579,7 +593,7 @@ private fun FormContent(
       }
     } else {
       content.fields.forEach { field ->
-        val textValue = field.selectedOptions.joinToString()
+        val textValue = field.selectedOptions.joinToString { it.text }
         if (textValue.isNotEmpty()) {
           Column(
             Modifier.fillMaxWidth(),
@@ -740,7 +754,7 @@ private fun ContentSelectStep(
             )
           }
           EditButton(
-            item.stepContent.isRegrettable,
+            item.isRegrettable,
             onRegret = {
               onEvent(ClaimChatEvent.Regret(item.id))
             },

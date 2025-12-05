@@ -2,6 +2,9 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.Raise
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.design.system.hedvig.api.previewCommonLocale
+import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
@@ -43,9 +46,10 @@ internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
 
 private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
   return ClaimIntentStep(
-    id = StepId(id),
-    text = text,
-    stepContent = this.content.toStepContent(),
+      id = StepId(id),
+      text = text,
+      stepContent = this.content.toStepContent(),
+      isRegrettable = this.isRegrettable,
   )
 }
 
@@ -54,31 +58,32 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
     is FormFragment -> StepContent.Form(
       fields = this.fields.toFields(),
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
     )
+
     is ContentSelectFragment -> StepContent.ContentSelect(
       options = options.toOptions(),
       selectedOptionId = null, //todo
       isSkippable = isSkippable,
-      isRegrettable = isRegrettable
     )
+
     is TaskFragment -> StepContent.Task(
       descriptions = listOf(element = description),
       isCompleted = isCompleted,
     )
+
     is AudioRecordingFragment -> StepContent.AudioRecording(
-      hint = hint,
-      uploadUri = uploadUri,
-      isSkippable = isSkippable,
-      isRegrettable = isRegrettable,
-      recordingState =  AudioRecordingStepState.AudioRecording.NotRecording
+        hint = hint,
+        uploadUri = uploadUri,
+        isSkippable = isSkippable,
+        recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
     )
+
     is FileUploadFragment -> StepContent.FileUpload(
-      uploadUri = uploadUri,
-      isSkippable = isSkippable,
-      isRegrettable = isRegrettable,
-      localFiles = emptyList()
+        uploadUri = uploadUri,
+        isSkippable = isSkippable,
+        localFiles = emptyList(),
     )
+
     is SummaryFragment -> StepContent.Summary(
       items = items.map { StepContent.Summary.Item(it.title, it.value) },
       audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
@@ -101,25 +106,56 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
 private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
   return this.map { field ->
     StepContent.Form.Field(
-      id = FieldId(field.id),
-      isRequired = field.isRequired,
-      suffix = field.suffix,
-      title = field.title,
-      defaultValues = field.defaultValues,
-      maxValue = field.maxValue,
-      minValue = field.minValue,
-      type = when (field.type) {
-        ClaimIntentStepContentFormFieldType.TEXT -> StepContent.Form.FieldType.TEXT
-        ClaimIntentStepContentFormFieldType.DATE -> StepContent.Form.FieldType.DATE
-        ClaimIntentStepContentFormFieldType.NUMBER -> StepContent.Form.FieldType.NUMBER
-          ClaimIntentStepContentFormFieldType.SINGLE_SELECT -> StepContent.Form.FieldType.SINGLE_SELECT
-        ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
-        ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
-        ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
-      },
-      options = field.options?.map { it.title to it.value } ?: emptyList(),
-      selectedOptions = emptyList()
+        id = FieldId(field.id),
+        isRequired = field.isRequired,
+        suffix = field.suffix,
+        title = field.title,
+        defaultValues = field.defaultValues.toFieldOptions(field.options),
+        maxValue = field.maxValue,
+        minValue = field.minValue,
+        type = when (field.type) {
+            ClaimIntentStepContentFormFieldType.TEXT -> StepContent.Form.FieldType.TEXT
+            ClaimIntentStepContentFormFieldType.DATE -> StepContent.Form.FieldType.DATE
+            ClaimIntentStepContentFormFieldType.NUMBER -> StepContent.Form.FieldType.NUMBER
+            ClaimIntentStepContentFormFieldType.SINGLE_SELECT -> StepContent.Form.FieldType.SINGLE_SELECT
+            ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
+            ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
+            ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
+        },
+        options = field.options?.map {
+            StepContent.Form.FieldOption(
+                text = it.title,
+                value = it.value,
+            )
+        } ?: emptyList(),
+        selectedOptions = field.defaultValues.toFieldOptions(field.options),
+        datePickerUiState = when (field.type) {
+            ClaimIntentStepContentFormFieldType.DATE ->
+                DatePickerUiState(
+                    locale = previewCommonLocale, //TODO!!
+                    initiallySelectedDate = field.defaultValues.getOrNull(0)?.let { LocalDate.parse(it) },
+                    minDate = field.minValue?.let { LocalDate.parse(it) } ?: LocalDate(1900, 1, 1),
+                    maxDate = field.maxValue?.let { LocalDate.parse(it) } ?: LocalDate(2100, 1, 1),
+                )
+
+            else -> null
+        },
     )
+  }
+}
+
+private fun List<String>.toFieldOptions(allOptions: List<FormFragment.Field.Option>?):
+  List<StepContent.Form.FieldOption> {
+  return this.map { defaultStringValue ->
+    allOptions?.firstOrNull { it.value == defaultStringValue }
+      ?.let {
+        StepContent.Form.FieldOption(
+            value = it.value,
+            text = it.title, //if we have a list to choose from
+        )
+      } ?:
+    //if it is just a value
+    StepContent.Form.FieldOption(defaultStringValue, defaultStringValue)
   }
 }
 
