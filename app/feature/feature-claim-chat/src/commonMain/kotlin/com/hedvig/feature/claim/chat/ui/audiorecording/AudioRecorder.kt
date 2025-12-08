@@ -49,6 +49,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastCbrt
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.uidata.DecimalFormatter
@@ -63,6 +64,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.ui.SkippedLabel
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.EMBARK_RECORD_AGAIN
@@ -89,8 +91,7 @@ internal fun AudioRecorder(
   allowFreeText: Boolean,
   onLaunchFreeText: () -> Unit,
   isCurrentStep: Boolean,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
+  continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   when (uiState) {
@@ -100,123 +101,129 @@ internal fun AudioRecorder(
       redo = redo,
       modifier = modifier,
       isCurrentStep = isCurrentStep,
+      continueButtonLoading = continueButtonLoading
     )
 
     else -> {
-      val isRecording = uiState is AudioRecordingStepState.AudioRecording.Recording
-      val isRecordingTransition = updateTransition(isRecording)
-      if (isRecording) {
-        ScreenOnFlag()
-      }
+      if (!isCurrentStep) {
+        SkippedLabel()
+      } else {
 
-      val startRecordingText = stringResource(Res.string.EMBARK_START_RECORDING)
-      val stopRecordingText = stringResource(Res.string.EMBARK_STOP_RECORDING)
-      val audioRecordingText = stringResource(Res.string.A11Y_AUDIO_RECORDING)
-      val recordingState = stringResource(Res.string.TALKBACK_RECORDING_NOW)
-      Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxWidth(),
-      ) {
-        Spacer(Modifier.height(60.dp))
-        Box(
-          contentAlignment = Alignment.Center,
+        val isRecording = uiState is AudioRecordingStepState.AudioRecording.Recording
+        val isRecordingTransition = updateTransition(isRecording)
+        if (isRecording) {
+          ScreenOnFlag()
+        }
+
+        val startRecordingText = stringResource(Res.string.EMBARK_START_RECORDING)
+        val stopRecordingText = stringResource(Res.string.EMBARK_STOP_RECORDING)
+        val audioRecordingText = stringResource(Res.string.A11Y_AUDIO_RECORDING)
+        val recordingState = stringResource(Res.string.TALKBACK_RECORDING_NOW)
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = modifier.fillMaxWidth(),
         ) {
-          if (uiState is AudioRecordingStepState.AudioRecording.Recording && uiState.amplitudes.isNotEmpty()) {
-            RecordingAmplitudeIndicator(amplitude = uiState.amplitudes.last())
-          }
+          Spacer(Modifier.height(60.dp))
           Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier
-              .shadow(2.dp, CircleShape)
-              .size(72.dp)
-              .background(Color.White, CircleShape)
-              .semantics {
-                contentDescription = audioRecordingText
-                stateDescription = if (isRecording) recordingState else ""
-              }
-              .clickable(
-                onClickLabel = when (isRecording) {
-                  true -> stopRecordingText
-                  // todo: this one is not working somehow,
-                  // so added onClickLabel inside val recordingState
-                  false -> startRecordingText
-                },
-                role = Role.Button,
-              ) {
-                if (isRecording) {
-                  stopRecording()
-                } else {
-                  startRecording()
-                }
-              },
           ) {
-            val size by isRecordingTransition.animateDp(label = "sizeAnimation") { isRecording ->
-              if (isRecording) 18.dp else 32.dp
-            }
-            val color by isRecordingTransition.animateColor(label = "colorAnimation") { isRecording ->
-              if (isRecording) Color.Black else HedvigTheme.colorScheme.signalRedElement
-            }
-            val cornerRadius by isRecordingTransition.animateDp(label = "cornerRadiusAnimation") { isRecording ->
-              if (isRecording) 2.dp else 16.dp
+            if (uiState is AudioRecordingStepState.AudioRecording.Recording && uiState.amplitudes.isNotEmpty()) {
+              RecordingAmplitudeIndicator(amplitude = uiState.amplitudes.last())
             }
             Box(
-              Modifier.size(size).background(color, RoundedCornerShape(cornerRadius)),
-            )
+              contentAlignment = Alignment.Center,
+              modifier = Modifier
+                .shadow(2.dp, CircleShape)
+                .size(72.dp)
+                .background(Color.White, CircleShape)
+                .semantics {
+                  contentDescription = audioRecordingText
+                  stateDescription = if (isRecording) recordingState else ""
+                }
+                .clickable(
+                  onClickLabel = when (isRecording) {
+                    true -> stopRecordingText
+                    // todo: this one is not working somehow,
+                    // so added onClickLabel inside val recordingState
+                    false -> startRecordingText
+                  },
+                  role = Role.Button,
+                ) {
+                  if (isRecording) {
+                    stopRecording()
+                  } else {
+                    startRecording()
+                  }
+                },
+            ) {
+              val size by isRecordingTransition.animateDp(label = "sizeAnimation") { isRecording ->
+                if (isRecording) 18.dp else 32.dp
+              }
+              val color by isRecordingTransition.animateColor(label = "colorAnimation") { isRecording ->
+                if (isRecording) Color.Black else HedvigTheme.colorScheme.signalRedElement
+              }
+              val cornerRadius by isRecordingTransition.animateDp(label = "cornerRadiusAnimation") { isRecording ->
+                if (isRecording) 2.dp else 16.dp
+              }
+              Box(
+                Modifier.size(size).background(color, RoundedCornerShape(cornerRadius)),
+              )
+            }
           }
-        }
-        Spacer(Modifier.height(24.dp))
-        val startedRecordingAt by remember {
-          mutableStateOf<Instant?>(null)
-        }.apply {
-          if (uiState is AudioRecordingStepState.AudioRecording.Recording) {
-            value = uiState.startedAt
+          Spacer(Modifier.height(24.dp))
+          val startedRecordingAt by remember {
+            mutableStateOf<Instant?>(null)
+          }.apply {
+            if (uiState is AudioRecordingStepState.AudioRecording.Recording) {
+              value = uiState.startedAt
+            }
           }
-        }
-        val twoDigitsFormat = remember { DecimalFormatter("00") }
-        isRecordingTransition.AnimatedContent(
-          transitionSpec = {
-            val animationSpec = tween<IntOffset>(MotionTokens.DurationLong1.toInt())
-            val animationSpecFade = tween<Float>(MotionTokens.DurationMedium1.toInt())
-            val animationSpecFloat = tween<Float>(MotionTokens.DurationLong1.toInt())
-            val scale = 0.6f
-            val enterTransition = slideInVertically(animationSpec) + fadeIn(animationSpecFade) + scaleIn(
-              animationSpecFloat,
-              initialScale = scale,
-            )
-            val exitTransition = slideOutVertically(animationSpec) + fadeOut(animationSpecFade) + scaleOut(
-              animationSpecFloat,
-              targetScale = scale,
-            )
-            enterTransition togetherWith exitTransition
-          },
-          contentAlignment = Alignment.Center,
-          modifier = Modifier.fillMaxWidth(),
-        ) { isRecording ->
-          if (isRecording) {
-            val diff = clock.now() - (startedRecordingAt ?: clock.now())
-            val label =
-              "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
-            val durationDescription = stringResource(Res.string.TALKBACK_RECORDING_DURATION, label)
-            HedvigText(
-              text = label,
-              style = HedvigTheme.typography.bodySmall,
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(bottom = 16.dp).clearAndSetSemantics {
-                contentDescription = durationDescription
-              },
-            )
-          } else {
-            if (allowFreeText) {
-              HedvigTextButton(
-                text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
-                onClick = onLaunchFreeText,
+          val twoDigitsFormat = remember { DecimalFormatter("00") }
+          isRecordingTransition.AnimatedContent(
+            transitionSpec = {
+              val animationSpec = tween<IntOffset>(MotionTokens.DurationLong1.toInt())
+              val animationSpecFade = tween<Float>(MotionTokens.DurationMedium1.toInt())
+              val animationSpecFloat = tween<Float>(MotionTokens.DurationLong1.toInt())
+              val scale = 0.6f
+              val enterTransition = slideInVertically(animationSpec) + fadeIn(animationSpecFade) + scaleIn(
+                animationSpecFloat,
+                initialScale = scale,
+              )
+              val exitTransition = slideOutVertically(animationSpec) + fadeOut(animationSpecFade) + scaleOut(
+                animationSpecFloat,
+                targetScale = scale,
+              )
+              enterTransition togetherWith exitTransition
+            },
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxWidth(),
+          ) { isRecording ->
+            if (isRecording) {
+              val diff = clock.now() - (startedRecordingAt ?: clock.now())
+              val label =
+                "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
+              val durationDescription = stringResource(Res.string.TALKBACK_RECORDING_DURATION, label)
+              HedvigText(
+                text = label,
+                style = HedvigTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(bottom = 16.dp).clearAndSetSemantics {
+                  contentDescription = durationDescription
+                },
               )
             } else {
-              HedvigText(
-                text = startRecordingText,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp),
-              )
+              if (allowFreeText) {
+                HedvigTextButton(
+                  text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
+                  onClick = onLaunchFreeText,
+                )
+              } else {
+                HedvigText(
+                  text = startRecordingText,
+                  textAlign = TextAlign.Center,
+                  modifier = Modifier.padding(bottom = 16.dp),
+                )
+              }
             }
           }
         }
@@ -231,6 +238,7 @@ private fun Playback(
   submit: () -> Unit,
   redo: () -> Unit,
   isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -241,21 +249,23 @@ private fun Playback(
       HedvigCircularProgressIndicator()
     } else {
       val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
-      HedvigAudioPlayer(audioPlayer = audioPlayer)
+      HedvigAudioPlayer(audioPlayer = audioPlayer,
+        modifier = Modifier.then (
+          if (!isCurrentStep) Modifier.padding(start = 48.dp) else Modifier
+        ))
     }
     if (isCurrentStep) {
       HedvigButton(
         onClick = submit,
         text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
-        isLoading = uiState.isLoading,
-        enabled = uiState.canSubmit,
+        isLoading = continueButtonLoading,
+        enabled = !continueButtonLoading,
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
       )
-
       HedvigTextButton(
         text = stringResource(Res.string.EMBARK_RECORD_AGAIN),
         onClick = redo,
-        enabled = uiState.canSubmit,
+        enabled = true,
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
       )
     }
@@ -320,8 +330,7 @@ private fun PreviewNotRecording() {
         allowFreeText = true,
         onLaunchFreeText = {},
         isCurrentStep = true,
-        onSkip = {},
-        canSkip = true,
+        continueButtonLoading = false
       )
     }
   }
@@ -346,8 +355,7 @@ private fun PreviewRecording() {
         onLaunchFreeText = {},
         redo = { },
         isCurrentStep = true,
-        onSkip = {},
-        canSkip = true,
+        continueButtonLoading = false
       )
     }
   }
