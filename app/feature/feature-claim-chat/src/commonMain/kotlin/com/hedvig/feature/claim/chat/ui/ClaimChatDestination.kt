@@ -1,7 +1,6 @@
 package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -31,7 +30,6 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -122,13 +120,13 @@ internal fun ClaimChatScreenContent(
           }
         }
         ClaimChatScreen(
-              uiState = uiState,
-              onEvent = claimChatViewModel::emit,
-              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-              openAppSettings = openAppSettings,
-              onNavigateToImageViewer = onNavigateToImageViewer,
-              appPackageId = appPackageId,
-              imageLoader = imageLoader,
+          uiState = uiState,
+          onEvent = claimChatViewModel::emit,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          openAppSettings = openAppSettings,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
         )
       }
     }
@@ -208,43 +206,43 @@ private fun ClaimChatScreenContent(
       val isCurrentStep = item.id == uiState.currentStep?.id
       when (item.stepContent) {
         is StepContent.AudioRecording -> AudioRecordingStep(
-          item = item,
-          stepContent = item.stepContent,
-          onShowFreeText = {
-            onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(item.id))
-          },
-          onShowAudioRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
-          },
-          onLaunchFullScreenEditText = {
-            onEvent(ClaimChatEvent.OpenFreeTextOverlay)
-          },
-          startRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.StartRecording(item.id))
-          },
-          stopRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.StopRecording(item.id))
-          },
-          redoRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.RedoRecording(item.id))
-          },
-          submitFreeText = {
-            onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(item.id))
-          },
-          submitAudioFile = {
-            onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(item.id))
-          },
-          onSkip = {
-            onEvent(ClaimChatEvent.Skip(item.id))
-          },
-          isCurrentStep = isCurrentStep,
-          clock = Clock.System,
-          onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openAppSettings = openAppSettings,
-          freeText = uiState.freeText,
-          onEvent = onEvent,
-          continueButtonLoading = uiState.currentContinueButtonLoading,
-          skipButtonLoading = uiState.currentSkipButtonLoading
+            item = item,
+            stepContent = item.stepContent,
+            onShowFreeText = {
+                onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(item.id))
+            },
+            onShowAudioRecording = {
+                onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
+            },
+            onLaunchFullScreenEditText = {
+                onEvent(ClaimChatEvent.OpenFreeTextOverlay)
+            },
+            startRecording = {
+                onEvent(ClaimChatEvent.AudioRecording.StartRecording(item.id))
+            },
+            stopRecording = {
+                onEvent(ClaimChatEvent.AudioRecording.StopRecording(item.id))
+            },
+            redoRecording = {
+                onEvent(ClaimChatEvent.AudioRecording.RedoRecording(item.id))
+            },
+            submitFreeText = {
+                onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(item.id))
+            },
+            submitAudioFile = {
+                onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(item.id))
+            },
+            onSkip = {
+                onEvent(ClaimChatEvent.Skip(item.id))
+            },
+            isCurrentStep = isCurrentStep,
+            clock = Clock.System,
+            onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            openAppSettings = openAppSettings,
+            freeText = uiState.freeText,
+            onEvent = onEvent,
+            continueButtonLoading = uiState.currentContinueButtonLoading,
+            skipButtonLoading = uiState.currentSkipButtonLoading,
         )
 
         is StepContent.ContentSelect -> ContentSelectStep(
@@ -257,30 +255,30 @@ private fun ClaimChatScreenContent(
 
 
         is StepContent.FileUpload -> UploadFilesStep(
-          itemText = item.text,
-          isCurrentStep = isCurrentStep,
-          stepContent = item.stepContent,
-          itemId = item.id,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          localFiles = item.stepContent.localFiles,
-          onEvent = onEvent,
-          canEdit = item.isRegrettable,
-          continueButtonLoading = uiState.currentContinueButtonLoading,
-          skipButtonLoading = uiState.currentSkipButtonLoading
+            itemText = item.text,
+            isCurrentStep = isCurrentStep,
+            stepContent = item.stepContent,
+            itemId = item.id,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            localFiles = item.stepContent.localFiles,
+            onEvent = onEvent,
+            canEdit = item.isRegrettable,
+            continueButtonLoading = uiState.currentContinueButtonLoading,
+            skipButtonLoading = uiState.currentSkipButtonLoading,
         )
 
         is StepContent.Form -> FormStep(
-          itemId = item.id,
-          itemText = item.text,
-          content = item.stepContent,
-          onEvent = onEvent,
-          isCurrentStep = isCurrentStep,
-          canSkip = item.stepContent.isSkippable,
-          canBeChanged = item.isRegrettable,
-          continueButtonLoading = uiState.currentContinueButtonLoading,
-          skipButtonLoading = uiState.currentSkipButtonLoading
+            itemId = item.id,
+            itemText = item.text,
+            content = item.stepContent,
+            onEvent = onEvent,
+            isCurrentStep = isCurrentStep,
+            canSkip = item.stepContent.isSkippable,
+            canBeChanged = item.isRegrettable,
+            continueButtonLoading = uiState.currentContinueButtonLoading,
+            skipButtonLoading = uiState.currentSkipButtonLoading,
         )
 
         is StepContent.Summary -> ChatClaimSummary(
@@ -295,11 +293,11 @@ private fun ClaimChatScreenContent(
           imageLoader = imageLoader,
           fileUploads = item.stepContent.fileUploads.map {
             UiFile(
-              name = it.fileName,
-              localPath = null,
-              url = it.url,
-              mimeType = it.contentType,
-              id = it.url
+                name = it.fileName,
+                localPath = null,
+                url = it.url,
+                mimeType = it.contentType,
+                id = it.url,
             )
           },
           continueButtonLoading = uiState.currentContinueButtonLoading,
@@ -397,17 +395,21 @@ private fun UploadFilesStep(
     } else {
       if (localFiles.isNotEmpty()) {
         FilesRow(
-          uiFiles = localFiles,
-          onRemoveFile = null,
-          imageLoader = imageLoader,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          alignment = Alignment.End)
+            uiFiles = localFiles,
+            onRemoveFile = null,
+            imageLoader = imageLoader,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            alignment = Alignment.End,
+        )
       } else {
         SkippedLabel()
       }
-      EditButton(canEdit, onRegret = {
-        onEvent(ClaimChatEvent.Regret(itemId))
-      })
+      EditButton(
+          canEdit,
+          onRegret = {
+              onEvent(ClaimChatEvent.Regret(itemId))
+          },
+      )
     }
   }
 }
@@ -415,14 +417,15 @@ private fun UploadFilesStep(
 @Composable
 internal fun SkippedLabel() {
   Row(
-    Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.End
+      Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.End,
   ) {
     val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_LABEL)
     MemberSentAnswer(
-      onClick = null
+        onClick = null,
     ) {
-      HedvigText(skippedLabelText)
+      HedvigText(skippedLabelText,
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent)
     }
   }
 }
@@ -452,7 +455,7 @@ private fun TaskStep(
           Spacer(Modifier.width(8.dp))
           AnimatedContent(taskContent.descriptions.last()) { target ->
             MemberSentAnswer(
-              onClick = null
+                onClick = null,
             ) {
               HedvigText(target)
             }
@@ -482,25 +485,25 @@ private fun FormStep(
     )
     Spacer(Modifier.height(32.dp))
     FormContent(
-      content = content,
-      onSkip = {
-        onEvent(ClaimChatEvent.Skip(itemId))
-      },
-      isCurrentStep = isCurrentStep,
-      canSkip = canSkip,
-      canBeChanged = canBeChanged,
-      onRegret = {
-        onEvent(ClaimChatEvent.Regret(itemId))
-      },
-      onSelectFieldAnswer = { fieldId, answer ->
-        logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
-        onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
-      },
-      onSubmit = {
-        onEvent(ClaimChatEvent.FormSubmit(itemId))
-      },
-      continueButtonLoading = continueButtonLoading,
-      skipButtonLoading = skipButtonLoading
+        content = content,
+        onSkip = {
+            onEvent(ClaimChatEvent.Skip(itemId))
+        },
+        isCurrentStep = isCurrentStep,
+        canSkip = canSkip,
+        canBeChanged = canBeChanged,
+        onRegret = {
+            onEvent(ClaimChatEvent.Regret(itemId))
+        },
+        onSelectFieldAnswer = { fieldId, answer ->
+            logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
+            onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
+        },
+        onSubmit = {
+            onEvent(ClaimChatEvent.FormSubmit(itemId))
+        },
+        continueButtonLoading = continueButtonLoading,
+        skipButtonLoading = skipButtonLoading,
     )
   }
 }
@@ -524,116 +527,116 @@ private fun FormContent(
   ) {
     if (isCurrentStep) {
       Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+          verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-      content.fields.forEach { field ->
-        when (field.type) {
-          StepContent.Form.FieldType.TEXT -> {
-            TextInputBubble(
-              questionLabel = field.title,
-              text = field.selectedOptions.getOrNull(0)?.text,
-              suffix = field.suffix,
-              onInput = { answer ->
-                onSelectFieldAnswer(
+        content.fields.forEach { field ->
+          when (field.type) {
+            StepContent.Form.FieldType.TEXT -> {
+              TextInputBubble(
+                questionLabel = field.title,
+                text = field.selectedOptions.getOrNull(0)?.text,
+                suffix = field.suffix,
+                onInput = { answer ->
+                  onSelectFieldAnswer(
                     field.id,
                     answer?.let { StepContent.Form.FieldOption(it, it) },
-                )
-              },
-            )
-          }
+                  )
+                },
+              )
+            }
 
-          StepContent.Form.FieldType.DATE -> {
-            DateSelectBubble(
-              questionLabel = field.title,
-              datePickerState = field.datePickerUiState!!, //todo - check "!!"
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
+            StepContent.Form.FieldType.DATE -> {
+              DateSelectBubble(
+                questionLabel = field.title,
+                datePickerState = field.datePickerUiState!!, //todo - check "!!"
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
 
-          StepContent.Form.FieldType.NUMBER -> {
-            TextInputBubble(
-              questionLabel = field.title,
-              text = field.selectedOptions.getOrNull(0)?.text,
-              suffix = field.suffix,
-              onInput = { answer ->
-                onSelectFieldAnswer(
+            StepContent.Form.FieldType.NUMBER -> {
+              TextInputBubble(
+                questionLabel = field.title,
+                text = field.selectedOptions.getOrNull(0)?.text,
+                suffix = field.suffix,
+                onInput = { answer ->
+                  onSelectFieldAnswer(
                     field.id,
                     answer?.let { StepContent.Form.FieldOption(it, it) },
-                )
-              },
-              keyboardType = KeyboardType.Number,
-            )
-          }
+                  )
+                },
+                keyboardType = KeyboardType.Number,
+              )
+            }
 
-          StepContent.Form.FieldType.SINGLE_SELECT -> {
-            SingleSelectBubbleWithDialog(
-              questionLabel = field.title,
-              options = field.options.map {
-                RadioOption(
-                  id = RadioOptionId(it.value),
-                  text = it.text,
-                  iconResource = null,
-                )
-              },
-              selectedOptionId = field.selectedOptions.getOrNull(0)?.let { selected ->
-                val option = field.options.firstOrNull { it.value == selected.value }
-                if (option != null)
-                  RadioOptionId(option.value) else null
-              },
-              onSelect = { optionId ->
+            StepContent.Form.FieldType.SINGLE_SELECT -> {
+              SingleSelectBubbleWithDialog(
+                questionLabel = field.title,
+                options = field.options.map {
+                  RadioOption(
+                    id = RadioOptionId(it.value),
+                    text = it.text,
+                    iconResource = null,
+                  )
+                },
+                selectedOptionId = field.selectedOptions.getOrNull(0)?.let { selected ->
+                  val option = field.options.firstOrNull { it.value == selected.value }
+                  if (option != null)
+                    RadioOptionId(option.value) else null
+                },
+                onSelect = { optionId ->
+                  onSelectFieldAnswer(
+                    field.id,
+                    field.options.firstOrNull { it.value == optionId.id },
+                  )
+                },
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+
+            StepContent.Form.FieldType.MULTI_SELECT -> {
+              MultiSelectBubbleWithDialog(
+                questionLabel = field.title,
+                options = field.options.map {
+                  RadioOption(
+                    id = RadioOptionId(it.value),
+                    text = it.text,
+                    iconResource = null,
+                  )
+                },
+                selectedOptionIds = field.selectedOptions.mapNotNull { selected ->
+                  field.options.firstOrNull { it.value == selected.value }
+                    ?.let { RadioOptionId(it.value) }
+                },
+                onSelect = { option ->
+                  onSelectFieldAnswer(
+                    field.id,
+                    field.options.firstOrNull {
+                      it.value == option.id
+                    },
+                  )
+                },
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
+
+            StepContent.Form.FieldType.BINARY -> YesNoBubble(
+              answerSelected = field.selectedOptions.firstOrNull()?.text,
+              onSelect = {
                 onSelectFieldAnswer(
-                  field.id,
-                  field.options.firstOrNull { it.value == optionId.id },
-                )
-              },
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
-
-          StepContent.Form.FieldType.MULTI_SELECT -> {
-            MultiSelectBubbleWithDialog(
-              questionLabel = field.title,
-              options = field.options.map {
-                RadioOption(
-                  id = RadioOptionId(it.value),
-                  text = it.text,
-                  iconResource = null,
-                )
-              },
-              selectedOptionIds = field.selectedOptions.mapNotNull { selected ->
-                field.options.firstOrNull { it.value == selected.value }
-                  ?.let { RadioOptionId(it.value) }
-              },
-              onSelect = { option ->
-                onSelectFieldAnswer(
-                  field.id,
-                  field.options.firstOrNull {
-                    it.value == option.id
-                  },
-                )
-              },
-              modifier = Modifier.fillMaxWidth(),
-            )
-          }
-
-          StepContent.Form.FieldType.BINARY -> YesNoBubble(
-            answerSelected = field.selectedOptions.firstOrNull()?.text,
-            onSelect = {
-              onSelectFieldAnswer(
                   field.id,
                   StepContent.Form.FieldOption(it, it),
-              )
-            },
-            questionText = field.title,
-          )
+                )
+              },
+              questionText = field.title,
+            )
 
-          null -> {
-            if (canSkip) {
-              onSkip()
+            null -> {
+              if (canSkip) {
+                onSkip()
+              }
             }
           }
         }
-      }
       }
       Spacer(Modifier.height(16.dp))
       HedvigButton(
@@ -656,27 +659,31 @@ private fun FormContent(
       }
     } else {
       Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+          verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        content.fields.forEach { field ->
-          val textValue = field.selectedOptions.joinToString { it.text }
-          if (textValue.isNotEmpty()) {
-            Column(
-              Modifier.fillMaxWidth(),
-              horizontalAlignment = Alignment.End,
-            ) {
-              HedvigText(
-                field.title, style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textAccordion,
-              )
-              Spacer(Modifier.height(4.dp))
-              MemberSentAnswer(
-                onClick = null
+        if (content.fields.flatMap { it.selectedOptions } .isNotEmpty()) {
+          content.fields.forEach { field ->
+            val textValue = field.selectedOptions.joinToString { it.text }
+            if (textValue.isNotEmpty()) {
+              Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.End,
               ) {
-                HedvigText(textValue)
+                HedvigText(
+                  field.title, style = HedvigTheme.typography.label,
+                  color = HedvigTheme.colorScheme.textAccordion,
+                )
+                Spacer(Modifier.height(4.dp))
+                MemberSentAnswer(
+                    onClick = null,
+                ) {
+                  HedvigText(textValue)
+                }
               }
             }
           }
+        } else {
+          SkippedLabel()
         }
       }
       EditButton(canBeChanged, onRegret)
@@ -733,27 +740,27 @@ private fun AudioRecordingStep(
     HedvigText(item.text)
     Spacer(Modifier.height(32.dp))
     AudioRecorderBubble(
-      recordingState = stepContent.recordingState,
-      clock = clock,
-      onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-      startRecording = startRecording,
-      stopRecording = stopRecording,
-      submitAudioFile = {
-        submitAudioFile()
-      },
-      redoRecording = redoRecording,
-      openAppSettings = openAppSettings,
-      freeTextAvailable = true,
-      submitFreeText = submitFreeText,
-      onShowFreeText = onShowFreeText,
-      onShowAudioRecording = onShowAudioRecording,
-      onLaunchFullScreenEditText = onLaunchFullScreenEditText,
-      canSkip = stepContent.isSkippable,
-      onSkip = onSkip,
-      isCurrentStep = isCurrentStep,
-      freeText = freeText,
-      continueButtonLoading = continueButtonLoading,
-      skipButtonLoading = skipButtonLoading
+        recordingState = stepContent.recordingState,
+        clock = clock,
+        onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+        startRecording = startRecording,
+        stopRecording = stopRecording,
+        submitAudioFile = {
+            submitAudioFile()
+        },
+        redoRecording = redoRecording,
+        openAppSettings = openAppSettings,
+        freeTextAvailable = true,
+        submitFreeText = submitFreeText,
+        onShowFreeText = onShowFreeText,
+        onShowAudioRecording = onShowAudioRecording,
+        onLaunchFullScreenEditText = onLaunchFullScreenEditText,
+        canSkip = stepContent.isSkippable,
+        onSkip = onSkip,
+        isCurrentStep = isCurrentStep,
+        freeText = freeText,
+        continueButtonLoading = continueButtonLoading,
+        skipButtonLoading = skipButtonLoading,
     )
     if (item.isRegrettable && !isCurrentStep) {
       EditButton(
@@ -818,7 +825,7 @@ private fun ContentSelectStep(
               .fillMaxWidth(),
           ) {
             MemberSentAnswer(
-             onClick = null
+                onClick = null,
             ) {
               HedvigText(targetState.title)
             }
