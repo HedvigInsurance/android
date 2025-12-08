@@ -31,5 +31,9 @@ fragment ChatMessageFragment on ChatMessage {
   }
   ... on ChatMessageText {
     text
+    actions {
+      title
+      url
+    }
   }
 }

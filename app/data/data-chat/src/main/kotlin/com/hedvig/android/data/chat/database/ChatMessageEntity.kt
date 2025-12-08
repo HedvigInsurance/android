@@ -23,6 +23,8 @@ data class ChatMessageEntity(
   val isBeingSent: Boolean,
   @Embedded
   val banner: ChatMessageEntityBanner?,
+  @Embedded
+  val action: ChatMessageEntityAction?
 ) {
   enum class Sender {
     HEDVIG,
@@ -36,6 +38,11 @@ data class ChatMessageEntity(
     MEDIA,
   }
 }
+
+data class ChatMessageEntityAction(
+  val actionTitle: String,
+  val actionUrl: String
+)
 
 data class ChatMessageEntityBanner(
   val title: String?,

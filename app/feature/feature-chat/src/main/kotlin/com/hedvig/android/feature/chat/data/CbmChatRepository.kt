@@ -531,6 +531,12 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
         sentAt = sentAt,
         text = text,
         banner = disclaimer.toBanner(),
+        action = actions?.let { action ->
+          CbmChatMessage.ChatMessageTextAction(
+            title = action.title,
+            url = action.url
+          )
+        }
       )
     }
   }
@@ -577,6 +583,7 @@ private fun ConversationInput.toChatMessageEntity(
         failedToSend = null,
         isBeingSent = true,
         banner = null,
+        action = null
       )
     }
 
@@ -593,6 +600,7 @@ private fun ConversationInput.toChatMessageEntity(
         failedToSend = null,
         isBeingSent = true,
         banner = null,
+        action = null
       )
     }
   }

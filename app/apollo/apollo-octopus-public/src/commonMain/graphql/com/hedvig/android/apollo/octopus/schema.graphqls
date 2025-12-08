@@ -211,39 +211,6 @@ type BundleYearlySavings {
   """
   bundleDiscountCoversFullPeriod: Boolean!
 }
-type CampaignDiscount {
-  """
-  The type of discount, determines the relevancy of the other fields.
-  """
-  type: CampaignDiscountType!
-  months: Int!
-  amount: Money!
-  percentage: Int!
-}
-enum CampaignDiscountType {
-  """
-  A fixed deduction of cost. This means `CampaignDiscount.amount` is non-zero.
-  """
-  MONTHLY_COST
-  """
-  Free for a number of months. This means `CampaignDiscount.months` is non-zero.
-  """
-  FREE_MONTHS
-  """
-  A percentage discount for a number of months. This means both `CampaignDiscount.months`
-  and `CampaignDiscount.percentage` are non-zero.
-  """
-  MONTHLY_PERCENTAGE
-  """
-  A percentage discount indefinitely. This means `CampaignDiscount.percentage` is non-zero.
-  """
-  INDEFINITE_PERCENTAGE
-  """
-  A hack-case to support tagging the member with some kind of partner source. This isn't an actual discount,
-  but we want to display it someplace.
-  """
-  VISIBLE_NO_DISCOUNT
-}
 type CarItemNotification {
   message: String!
 }
@@ -513,6 +480,9 @@ interface ChatMessage {
   """
   disclaimer: ChatMessageDisclaimer
 }
+"""
+@deprecated Use ChatMessageText with actions field instead
+"""
 type ChatMessageAction implements ChatMessage {
   id: ID!
   sender: ChatMessageSender!
@@ -574,6 +544,11 @@ type ChatMessageText implements ChatMessage {
   sentAt: Instant!
   text: String!
   disclaimer: ChatMessageDisclaimer
+  actions: ChatMessageTextAction
+}
+type ChatMessageTextAction {
+  url: Url!
+  title: String!
 }
 scalar CheckoutPaymentsAction
 type Claim {
@@ -652,7 +627,6 @@ Root type expressing the entire flow for members trying to report a new claim.
 type ClaimIntent {
   id: ID!
   currentStep: ClaimIntentStep
-  sourceMessages: [ClaimIntentSourceMessage!]
   """
   The outcome of the intent.
   Once this value is returned, the intent is effectively over, and no steps
@@ -711,11 +685,6 @@ type ClaimIntentSourceMessage {
   text: String!
 }
 input ClaimIntentStartInput {
-  """
-  Optionally inject a chat message ID to start the claim intent from. This will replace the audio recording
-  as the first step, using the chat history as the implicit first step.
-  """
-  sourceMessageId: ID
   developmentFlow: Boolean
 }
 """
@@ -727,6 +696,7 @@ type ClaimIntentStep {
   id: ID!
   text: String!
   content: ClaimIntentStepContent!
+  isRegrettable: Boolean!
 }
 """
 A union of all the different kinds of "step content".
@@ -743,7 +713,6 @@ type ClaimIntentStepContentAudioRecording {
   """
   uploadUri: String!
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A file upload can be used to prompt the user to upload several files.
@@ -755,7 +724,6 @@ type ClaimIntentStepContentFileUpload {
   """
   uploadUri: String!
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A form step is one that contains a form in the shape of a list of "fields".
@@ -764,7 +732,6 @@ Submitted using `Mutation.claimIntentSubmitForm`.
 type ClaimIntentStepContentForm {
   fields: [ClaimIntentStepContentFormField!]!
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A single field to render in the form.
@@ -834,7 +801,6 @@ type ClaimIntentStepContentSelect {
   options: [ClaimIntentStepContentSelectOption!]!
   defaultSelectedId: ID
   isSkippable: Boolean!
-  isRegrettable: Boolean!
 }
 """
 A single choice in a "select" step.
@@ -856,6 +822,7 @@ Submitted using `Mutation.claimIntentSubmitSummary`.
 type ClaimIntentStepContentSummary {
   items: [ClaimIntentStepContentSummaryItem!]!
   audioRecordings: [ClaimIntentStepContentSummaryAudioRecording!]!
+  freeTexts: [String!]!
   fileUploads: [ClaimIntentStepContentSummaryFileUpload!]!
 }
 type ClaimIntentStepContentSummaryAudioRecording {
@@ -1113,6 +1080,7 @@ type Conversation {
   newestMessage: ChatMessage
   messagePage(olderToken: String, newerToken: String): ChatMessagePage!
   statusMessage: String
+  responseIsBeingGenerated: Boolean!
   """
   Return the claim for this conversation, if it has one.
   Conversations auto-created when a claim is opened will have this, others will not.
@@ -2070,9 +2038,12 @@ type Member {
   terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
   hasActivePaymentConnection: Boolean! @deprecated(reason: "Use `paymentInformation.status` instead")
   """
-  The currently redeemed campaign of this member, if any.
+  Current bundle discount information for this member's non terminated contracts (active, future or pending).
+  Returns null for members that have a contract configuration that don't enable bundle discount.
+  Bundle discount requires at least 2 eligible contracts (home, apartment, car, pet).
+  Accident and trial products are not eligible for bundle discount.
   """
-  redeemedCampaigns: [RedeemedCampaign!]!
+  bundleDiscount: MemberBundleDiscountInfo
   """
   The currently redeemed campaign of this member, if any.
   """
@@ -2150,6 +2121,20 @@ type MemberActions {
   isCancelInsuranceEnabled: Boolean
   firstVetAction: FirstVetAction
   isChangeTierEnabled: Boolean
+}
+"""
+Bundle discount savings information for a member
+"""
+type MemberBundleDiscountInfo {
+  """
+  Total yearly savings amount from bundle discount across all eligible contracts
+  """
+  yearlySavings: Money!
+  """
+  Whether the bundle discount covers the full period for all contracts.
+  False if some contracts have future start dates (discount doesn't apply until all are active).
+  """
+  bundleDiscountCoversFullPeriod: Boolean!
 }
 """
 Upcoming charge info, null in case of pending or fully settled members
@@ -3676,49 +3661,10 @@ type RecommendedCrossSellBackgroundPillowImages {
   rightImage: StoryblokImageAsset!
 }
 """
-A type describing a redeemed campaign.
-@deprecated Use 'RedeemedCampaignV2' instead.
+A campaign attached to a `Cart` which carries its related discount.
 """
 type RedeemedCampaign {
   id: ID!
-  """
-  The code the user input to attach this campaign.
-  """
-  code: String!
-  """
-  A user-readable description of this campaign.
-  """
-  description: String!
-  """
-  The discount information from this campaign.
-  """
-  discount: CampaignDiscount!
-  """
-  REFERRAL (you were invited by a friend) or VOUCHER (this is some kind of limited discount or similar)
-  """
-  type: RedeemedCampaignType!
-  """
-  The expiry of this campaign, this is non-null if the following is true:
-  - It is a kind of campaign that has an expiry (i.e. NOT a referral)
-  - It has been successfully redeemed by a signed member (i.e. not only in a ShopSession)
-  """
-  expiresAt: Date
-  """
-  Lists the currently active contracts that this campaign is applicable to.
-  If this is applicable to ALL insurances, `null` is returned. Otherwise we return the contracts here.
-  NOTE: The implementation of this is rather cursed, and thus this should be used sparingly.
-  """
-  onlyApplicableToContracts: [Contract!]
-}
-enum RedeemedCampaignType {
-  """
-  Invited by a friend (Hedvig Forever)
-  """
-  REFERRAL
-  """
-  Some kind of discount usually created in Hope.
-  """
-  VOUCHER
 }
 enum RedeemedCampaignTypeV2 {
   REFERRAL
