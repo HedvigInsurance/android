@@ -494,9 +494,9 @@ internal class ClaimChatPresenter(
         is ClaimChatEvent.Skip -> {
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
-          currentSkipButtonLoading = true
           val stepToUpdate = steps.find { it.id == event.id }
           val content = stepToUpdate?.stepContent ?: return@CollectEvents
+          currentSkipButtonLoading = true
           launch {
             skipStepUseCase.invoke(event.id)
               .fold(
