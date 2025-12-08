@@ -18,7 +18,6 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
-import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.AudioRecording
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.FreeTextDescription
 import com.hedvig.feature.claim.chat.data.ClaimIntent
@@ -445,8 +444,6 @@ internal class ClaimChatPresenter(
         is ClaimChatEvent.Skip -> {
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
-          val stepToUpdate = steps.find { it.id == event.id }
-          val content = stepToUpdate?.stepContent ?: return@CollectEvents
           currentSkipButtonLoading = true
           launch {
             skipStepUseCase.invoke(event.id)
@@ -457,46 +454,7 @@ internal class ClaimChatPresenter(
                   logcat { "ClaimChatEvent.Skip $it" }
                 },
                 ifRight = { claimIntent ->
-
-                  val updatedStep = when (content) {
-                    is StepContent.AudioRecording -> {
-                      val newContent =content.copy(
-                        recordingState = AudioRecordingStepState.AudioRecording.NotRecording
-                      )
-                      stepToUpdate.copy(
-                        stepContent = newContent
-                      )
-                    }
-                    is StepContent.ContentSelect -> {
-                      val newContent = content.copy(selectedOptionId = null)
-                      stepToUpdate.copy(
-                        stepContent = newContent
-                      )
-                    }
-                    is StepContent.FileUpload -> {
-                      val newContent = content.copy(localFiles = emptyList())
-                      stepToUpdate.copy(
-                        stepContent = newContent
-                      )
-                    }
-                    is StepContent.Form -> {
-                      val newFieldsWithoutSelection = content.fields.map { field ->
-                        field.copy(selectedOptions = emptyList())
-                      }
-                      stepToUpdate.copy(
-                        stepContent = content.copy(
-                          fields = newFieldsWithoutSelection,
-                        ),
-                      )
-                    }
-                    is StepContent.Summary,
-                    is StepContent.Task,
-                    StepContent.Unknown -> stepToUpdate
-                  }
-                  val index = steps.indexOf(currentStep)
-                  if (index >= 0) {
-                    steps[index] = updatedStep
-                  }
+                  steps.updateStep(event.id) { step -> step.clearContent() }
                   currentSkipButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -745,6 +703,41 @@ private inline fun <reified T : StepContent> SnapshotStateList<ClaimIntentStep>.
       this[index] = transform(stepToUpdate, stepContent)
     }
   }
+}
+
+private fun SnapshotStateList<ClaimIntentStep>.updateStep(
+  stepId: StepId,
+  transform: (ClaimIntentStep) -> ClaimIntentStep
+) {
+  Snapshot.withMutableSnapshot {
+    val stepToUpdate = find { it.id == stepId } ?: return@withMutableSnapshot
+    val index = indexOf(stepToUpdate)
+    if (index >= 0) {
+      this[index] = transform(stepToUpdate)
+    }
+  }
+}
+
+private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content = stepContent) {
+  is StepContent.AudioRecording -> copy(
+    stepContent = content.copy(recordingState = AudioRecording.NotRecording)
+  )
+  is StepContent.ContentSelect -> copy(
+    stepContent = content.copy(selectedOptionId = null)
+  )
+  is StepContent.FileUpload -> copy(
+    stepContent = content.copy(localFiles = emptyList())
+  )
+  is StepContent.Form -> copy(
+    stepContent = content.copy(
+      fields = content.fields.map { field ->
+        field.copy(selectedOptions = emptyList())
+      }
+    )
+  )
+  is StepContent.Summary,
+  is StepContent.Task,
+  StepContent.Unknown -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
