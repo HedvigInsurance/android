@@ -1,24 +1,40 @@
 package com.hedvig.android.design.system.hedvig.tokens
 
-import androidx.compose.ui.text.font.Font
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import hedvig.resources.Res
+import hedvig.resources.hedvig_letters_small
+import hedvig.resources.hedvig_letters_standard
+import org.jetbrains.compose.resources.Font
 
 internal object TypefaceTokens {
-  val Serif = SerifBookSmall
-  val Sans = SansStandard
+  val Serif = FontFamilyToken.Serif
+  val Sans = FontFamilyToken.Sans
   val WeightRegular = FontWeight.Normal
 }
 
-private val SerifBookSmall = FontFamily(
-  Font(hedvig.resources.R.font.hedvig_letters_small),
-)
+internal enum class FontFamilyToken {
+  Serif,
+  Sans,
+}
 
-private val SansStandard = FontFamily(
-  Font(hedvig.resources.R.font.hedvig_letters_standard),
-)
+@Composable
+internal fun FontFamilyToken.toFontFamily(): FontFamily {
+  return when (this) {
+    FontFamilyToken.Serif -> SerifBookSmall
+    FontFamilyToken.Sans -> SansStandard
+  }
+}
 
-val FontFamily.Companion.HedvigSerif
-  get() = SerifBookSmall
-val FontFamily.Companion.HedvigSans
-  get() = SansStandard
+private val SerifBookSmall: FontFamily
+  @Composable
+  get() = FontFamily(
+    Font(Res.font.hedvig_letters_small),
+  )
+
+private val SansStandard: FontFamily
+  @Composable
+  get() = FontFamily(
+    Font(Res.font.hedvig_letters_standard),
+  )
