@@ -13,12 +13,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiFile
-import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
+import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.AudioRecording
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.FreeTextDescription
 import com.hedvig.feature.claim.chat.data.ClaimIntent
@@ -43,7 +43,6 @@ import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.collections.emptyList
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -496,6 +495,8 @@ internal class ClaimChatPresenter(
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
           currentSkipButtonLoading = true
+          val stepToUpdate = steps.find { it.id == event.id }
+          val content = stepToUpdate?.stepContent ?: return@CollectEvents
           launch {
             skipStepUseCase.invoke(event.id)
               .fold(
@@ -505,9 +506,46 @@ internal class ClaimChatPresenter(
                   logcat { "ClaimChatEvent.Skip $it" }
                 },
                 ifRight = { claimIntent ->
-//                  val newFields = stepContent.fields.map { field ->
-//                          field.copy(selectedOptions = emptyList())
-//                  } //todo: remove selected options on all skipped steps!
+
+                  val updatedStep = when (content) {
+                    is StepContent.AudioRecording -> {
+                      val newContent =content.copy(
+                        recordingState = AudioRecordingStepState.AudioRecording.NotRecording
+                      )
+                      stepToUpdate.copy(
+                        stepContent = newContent
+                      )
+                    }
+                    is StepContent.ContentSelect -> {
+                      val newContent = content.copy(selectedOptionId = null)
+                      stepToUpdate.copy(
+                        stepContent = newContent
+                      )
+                    }
+                    is StepContent.FileUpload -> {
+                      val newContent = content.copy(localFiles = emptyList())
+                      stepToUpdate.copy(
+                        stepContent = newContent
+                      )
+                    }
+                    is StepContent.Form -> {
+                      val newFieldsWithoutSelection = content.fields.map { field ->
+                        field.copy(selectedOptions = emptyList())
+                      }
+                      stepToUpdate.copy(
+                        stepContent = content.copy(
+                          fields = newFieldsWithoutSelection,
+                        ),
+                      )
+                    }
+                    is StepContent.Summary,
+                    is StepContent.Task,
+                    StepContent.Unknown -> stepToUpdate
+                  }
+                  val index = steps.indexOf(currentStep)
+                  if (index >= 0) {
+                    steps[index] = updatedStep
+                  }
                   currentSkipButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
