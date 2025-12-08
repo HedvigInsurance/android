@@ -375,7 +375,6 @@ internal class ClaimChatPresenter(
                 else -> Field(
                   field.id,
                   field.selectedOptions
-                    //.ifEmpty { listOf(null) }
                     .map { selectedOption ->
                       selectedOption.value
                     },
