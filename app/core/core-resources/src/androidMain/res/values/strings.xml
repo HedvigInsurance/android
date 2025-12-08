@@ -184,6 +184,7 @@
   <string name="CLAIMS_USE_AUDIO_RECORDING">Use voice recording</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
+  <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
@@ -257,6 +258,7 @@
   <string name="DISCOUNTS_ACTIVE_FROM">Activates %1$s</string>
   <string name="DISCOUNTS_LABEL_ACTIVE">Active</string>
   <string name="DISCOUNTS_LABEL_PENDING">Pending</string>
+  <string name="DURATION_TITLE">Duration</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Address</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">I can’t find my address</string>
   <string name="EMBARK_RECORD_AGAIN">Record again</string>
