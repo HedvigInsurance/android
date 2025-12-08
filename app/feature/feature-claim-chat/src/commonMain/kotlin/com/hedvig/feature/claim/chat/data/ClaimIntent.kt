@@ -66,19 +66,16 @@ value class FieldId(val value: String)
 
 internal sealed interface StepContent {
   val isSkippable: Boolean
-  val isRegrettable: Boolean
 
   data class AudioRecording(
     val hint: String?,
     val uploadUri: String,
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
   ) : StepContent
 
   data class FileUpload(
     val uploadUri: String,
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
   ) : StepContent
 
   data class Task(
@@ -86,13 +83,11 @@ internal sealed interface StepContent {
     val isCompleted: Boolean,
   ) : StepContent {
     override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
   }
 
   data class Form(
     val fields: List<Field>,
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
   ) : StepContent {
     data class Field(
       val id: FieldId,
@@ -110,7 +105,6 @@ internal sealed interface StepContent {
   data class ContentSelect(
     val options: List<Option>,
     override val isSkippable: Boolean,
-    override val isRegrettable: Boolean,
   ) : StepContent {
     data class Option(
       val id: String,
@@ -124,7 +118,6 @@ internal sealed interface StepContent {
     val fileUploads: List<FileUpload>,
   ) : StepContent {
     override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
 
     data class Item(val title: String, val value: String)
 
@@ -135,6 +128,5 @@ internal sealed interface StepContent {
 
   object Unknown : StepContent {
     override val isSkippable: Boolean = false
-    override val isRegrettable: Boolean = false
   }
 }

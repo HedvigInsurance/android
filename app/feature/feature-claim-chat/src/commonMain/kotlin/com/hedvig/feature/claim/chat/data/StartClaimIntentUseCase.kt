@@ -17,7 +17,6 @@ internal class StartClaimIntentUseCase(
       apolloClient
         .mutation(
           ClaimIntentStartMutation(
-            sourceMessageId = Optional.presentIfNotNull(sourceMessageId),
             developmentFlow = Optional.present(developmentFlow),
           ),
         )
