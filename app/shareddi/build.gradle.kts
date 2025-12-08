@@ -8,6 +8,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.apollo.api)
+      implementation(libs.apollo.engine.ktor)
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
       implementation(libs.koin.core)

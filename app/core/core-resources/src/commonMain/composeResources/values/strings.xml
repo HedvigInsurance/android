@@ -17,7 +17,7 @@
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">This upgrade will take effect from %1$s and can only be removed when your insurance is renewed or cancelled.</string>
   <string name="ADDON_FLOW_CONFIRMATION_TITLE">Confirm upgraded coverage</string>
-  <string name="ADDON_FLOW_COVER_BUTTON">See what\'s included</string>
+  <string name="ADDON_FLOW_COVER_BUTTON">See what's included</string>
   <string name="ADDON_FLOW_LEARN_MORE_BUTTON">Learn more</string>
   <string name="ADDON_FLOW_PRICE_LABEL">+%s/mo</string>
   <string name="ADDON_FLOW_SEE_PRICE_BUTTON">See your price</string>
@@ -37,7 +37,7 @@
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT">Travel Insurance Plus is our extended travel insurance, for extra coverage on your trip.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION">Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_TITLE">What is Travel Insurance Plus?</string>
-  <string name="ADDON_LEARN_MORE_LABEL">See what\'s included</string>
+  <string name="ADDON_LEARN_MORE_LABEL">See what's included</string>
   <string name="ADDON_REMOVE_CANCEL_BUTTON">Keep current coverage</string>
   <string name="ADDON_REMOVE_CONFIRM_BUTTON">Cancel %1$s</string>
   <string name="ADDON_REMOVE_DESCRIPTION">By canceling this extended coverage, your home insurance will no longer include this extra protection.</string>
@@ -91,12 +91,12 @@
   <string name="CHANGE_ADDRESS_FAQ_PRICE_LABEL">The price of your insurance is determined based on several different, including how you live and the size of the home. Therefore, you can get a lower or higher price on home insurance when you move from one home to another</string>
   <string name="CHANGE_ADDRESS_FAQ_PRICE_TITLE">Why has the priced?</string>
   <string name="CHANGE_ADDRESS_FAQ_RENTBRF_LABEL">The amount that is insured is higher for owned apartment insurance and condominium coverage (bostadsrättstillägg) is always included.</string>
-  <string name="CHANGE_ADDRESS_FAQ_RENTBRF_TITLE">What\'s the difference between rental apartment insurance and owned apartment insurance?</string>
+  <string name="CHANGE_ADDRESS_FAQ_RENTBRF_TITLE">What's the difference between rental apartment insurance and owned apartment insurance?</string>
   <string name="CHANGE_ADDRESS_FAQ_STORAGE_LABEL">Yes, the storage space in your new apartment is insured, as long as the things stored are not defined as a theft-prone.</string>
   <string name="CHANGE_ADDRESS_FAQ_STORAGE_TITLE">Is the storage space in my attic or basement covered?</string>
   <string name="CHANGE_ADDRESS_FAQ_STUDENT_LABEL">The amount for which your personal belongings are insured is higher with regular home insurance.</string>
   <string name="CHANGE_ADDRESS_FAQ_STUDENT_TITLE">What is the difference between a regular home insurance and a home insurance for students?</string>
-  <string name="CHANGE_ADDRESS_INCLUDED">See what\'s included</string>
+  <string name="CHANGE_ADDRESS_INCLUDED">See what's included</string>
   <string name="CHANGE_ADDRESS_INFORMATION_ABOUT_YOUR_HOUSE">Information about your new house</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_ERROR">Please select a moving date</string>
   <string name="CHANGE_ADDRESS_MOVING_DATE_LABEL">Move-in date</string>
@@ -150,7 +150,7 @@
   <string name="CLAIMS_CHECKOUT_NOTICE">The money is paid out to the bank account you have linked to us within 1-3 working days</string>
   <string name="CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT">The compensation is based on any deductions made due to the age of your phone. You will find the full age deduction table in your full terms and conditions.</string>
   <string name="CLAIMS_CHECKOUT_PAYOUT_TEXT">The payment will be made to the account you have linked as your payment method for your insurance.</string>
-  <string name="CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT">We base the repair cost on the information available on the manufacturer\'s website.</string>
+  <string name="CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT">We base the repair cost on the information available on the manufacturer's website.</string>
   <string name="CLAIMS_CHECKOUT_REPAIR_INFO_TEXT">Based on the information you entered your phone appears to be repairable. Please reach out to a repair shop of your choice to have it fixed.</string>
   <string name="CLAIMS_CHECKOUT_REPAIR_TITLE">Repair cost (%s)</string>
   <string name="CLAIMS_CHECK_INFORMATION_TITLE">Kontrollera dina uppgifter</string>
@@ -170,7 +170,7 @@
   <string name="CLAIMS_SINGLE_ITEM_DETAILS">Fill in details about your item</string>
   <string name="CLAIMS_SINGLE_ITEM_NOTICE_LABEL">If you do not remember the purchase price or purchase date, you do not need to fill in anything.</string>
   <string name="CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL">If you do not remember, you do not need to fill in anything.</string>
-  <string name="CLAIMS_SUCCESS_LABEL">Your claim will now be handled by our service team. Depending on the extent of your claim, the response time varies. If you have any questions, don\'t hesitate to get in touch here in the app.</string>
+  <string name="CLAIMS_SUCCESS_LABEL">Your claim will now be handled by our service team. Depending on the extent of your claim, the response time varies. If you have any questions, don't hesitate to get in touch here in the app.</string>
   <string name="CLAIMS_SUCCESS_TITLE">Claim submitted</string>
   <string name="CLAIMS_SUMMARY_CLAIM">Skadeanmälan</string>
   <string name="CLAIMS_SUMMARY_DETAIL_INFO">Details</string>
@@ -219,7 +219,7 @@
   <string name="CONTRACT_COINSURED_MISSING_INFO_TEXT">Add more information about your co-insured for better help</string>
   <string name="CONTRACT_COINSURED_REMOVED">Co-insured removed</string>
   <string name="CONTRACT_COVERAGE_MORE_INFO">More information</string>
-  <string name="CONTRACT_DETAILS_ERROR">We couldn\'t load this contract</string>
+  <string name="CONTRACT_DETAILS_ERROR">We couldn't load this contract</string>
   <string name="CONTRACT_EDIT_COINSURED">Edit co-insured</string>
   <string name="CONTRACT_EDIT_INFO">Edit info</string>
   <string name="CONTRACT_EDIT_INFO_LABEL">Edit your insurance</string>
@@ -258,7 +258,6 @@
   <string name="DISCOUNTS_ACTIVE_FROM">Activates %1$s</string>
   <string name="DISCOUNTS_LABEL_ACTIVE">Active</string>
   <string name="DISCOUNTS_LABEL_PENDING">Pending</string>
-  <string name="DURATION_IN_DAYS">{{duration}} days</string>
   <string name="DURATION_TITLE">Duration</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Address</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">I can’t find my address</string>
@@ -272,7 +271,7 @@
   <string name="EMBARK_UPDATE_APP_TITLE">Update app</string>
   <string name="EXIT_DEMO_MODE_BUTTON">Exit\ndemo\nmode</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE">If you choose to become a member later on you will have to contact your old insurer to begin the move.</string>
-  <string name="EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE">We can\'t automatically move your insurance</string>
+  <string name="EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE">We can't automatically move your insurance</string>
   <string name="EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION">Other</string>
   <string name="FIELD_EXTRA_BUIDLINGS_ATTEFALL_LABEL">Attefall</string>
   <string name="FIELD_EXTRA_BUIDLINGS_BARN_LABEL">Barn</string>
@@ -326,7 +325,7 @@
   <string name="HC_CHAT_BUTTON">Start new conversation</string>
   <string name="HC_CHAT_GO_TO_INBOX">Go to inbox</string>
   <string name="HC_CHAT_QUESTION">Still need help?</string>
-  <string name="HC_CLAIMS_A_01">Make your claim anytime right here in the app. You can either do a voice recording or write to us. We will respond to you as soon as we can and keep you updated throughout the process.\n\nHere\'s how it works:\n* Go to [Make a claim](https://link.hedvig.com/submit-claim)\n* Report a claim by telling us what has happened in a voice recording or text\n* We will handle your claim as soon as we can\n\nTo report a claim via email, send your statement to hedvig@hedvig.com and include:\n* Your personal information\n* A statement of the incident\n* Description of damaged items and compensation sought\n* Supporting documents (e.g., receipts, bank statements, photos).\n\nFor security reasons, we cannot assist with reporting a claim or provide case updates over the phone.</string>
+  <string name="HC_CLAIMS_A_01">Make your claim anytime right here in the app. You can either do a voice recording or write to us. We will respond to you as soon as we can and keep you updated throughout the process.\n\nHere's how it works:\n* Go to [Make a claim](https://link.hedvig.com/submit-claim)\n* Report a claim by telling us what has happened in a voice recording or text\n* We will handle your claim as soon as we can\n\nTo report a claim via email, send your statement to hedvig@hedvig.com and include:\n* Your personal information\n* A statement of the incident\n* Description of damaged items and compensation sought\n* Supporting documents (e.g., receipts, bank statements, photos).\n\nFor security reasons, we cannot assist with reporting a claim or provide case updates over the phone.</string>
   <string name="HC_CLAIMS_A_02">Once you have reported a claim, our team will get back to you as soon as possible with the next steps. In some cases we might need more information from you to help you further.\n\nSome smaller claims can be handled within minutes in the app. Larger incidents often needs a little more assistance from our service team. If you have any questions about your specific claim, you are always welcome to write to us here in the app.</string>
   <string name="HC_CLAIMS_A_03">Processing times vary depending on what has happened and how extensive the specific damage is. For larger incidents, it usually takes a little longer. We always aim to provide our assistance as quickly as we can. \n\nIf you have any questions about your case, you are always welcome to write to us here in the app.</string>
   <string name="HC_CLAIMS_Q_01">How do I report a claim?</string>
@@ -347,7 +346,7 @@
   <string name="HC_COVERAGE_A_01">The insurance covers your spouse or partner and children – as long as they are added to your policy. You can easily add and remove co-insured [here](https://link.hedvig.com/insurances).\n\nThe co-insured is covered by the same conditions as the policyholder. In most cases, the price of the policy will be higher when you add co-insured, as it covers more people.</string>
   <string name="HC_COVERAGE_A_02">If you want to know more about your insurance with Hedvig, you can find your insurance conditions and your insurance letter [here](https://link.hedvig.com/insurances).\n\nIf you want to read more about any other insurance or purchase another one, you can easily do so here:\n[Home Insurance](https://www.hedvig.com/se-en/insurances/home-insurance)\n[Car Insurance](https://www.hedvig.com/se-en/insurances/car-insurance)\n[Pet Insurance](https://www.hedvig.com/se-en/insurances/pet-insurance)\n[Accident Insurance](https://www.hedvig.com/se-en/insurances/accident)</string>
   <string name="HC_COVERAGE_A_03">If an incident has occurred, it is crucial to promptly report the claim to us. This enables us to assess the situation, align it with the terms and conditions of your insurance, and determine eligibility for compensation. In some cases we may need to ask more questions to help you further.\n\nMake a claim [here](https://link.hedvig.com/home).</string>
-  <string name="HC_COVERAGE_A_25">Yes, for insurances signed or renewed after January 8, 2025, you can increase your base deductible at any time, as long as you don\'t already have the highest deductible level. Go to [your insurances](https://link.hedvig.com/insurances) and choose ‘Edit your insurance’.\n\nThe deductible level can affect your monthly premium. Choosing a higher deductible can lower your monthly premium, while a lower deductible can increase it.</string>
+  <string name="HC_COVERAGE_A_25">Yes, for insurances signed or renewed after January 8, 2025, you can increase your base deductible at any time, as long as you don't already have the highest deductible level. Go to [your insurances](https://link.hedvig.com/insurances) and choose ‘Edit your insurance’.\n\nThe deductible level can affect your monthly premium. Choosing a higher deductible can lower your monthly premium, while a lower deductible can increase it.</string>
   <string name="HC_COVERAGE_Q_01">Does home insurance cover the people I live with?</string>
   <string name="HC_COVERAGE_Q_02">Where can I find more in depth details about my insurances?</string>
   <string name="HC_COVERAGE_Q_03">How do I know if I will get compensated?</string>
@@ -396,7 +395,7 @@
   <string name="HONESTY_PLEDGE_DESCRIPTION">I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.</string>
   <string name="HONESTY_PLEDGE_TITLE">Before we start</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Discounts available</string>
-  <string name="INSURANCES_NO_ACTIVE">You don\'t have any active insurances</string>
+  <string name="INSURANCES_NO_ACTIVE">You don't have any active insurances</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Addons</string>
   <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">To return to your previous coverage, register your car as active again with Transportstyrelsen.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Any damage that occurs during a 30-day period after the moving out date is eligible for claims.</string>
@@ -426,7 +425,7 @@
   <string name="MY_DOUMENTS_INSURANCE_PREPURCHASE">Pre-purchase info</string>
   <string name="MY_DOUMENTS_INSURANCE_PREPURCHASE_SUBTITLE">All pre-purchase details</string>
   <string name="MY_PAYMENT_UPDATING_MESSAGE">You have just added or changed your bank account, your new bank account will appear here after your bank has accepted autogiro. Usually within 2 working days.</string>
-  <string name="NETWORK_ERROR_ALERT_MESSAGE">We couldn\'t reach Hedvig right now, are you sure you have an internet connection?</string>
+  <string name="NETWORK_ERROR_ALERT_MESSAGE">We couldn't reach Hedvig right now, are you sure you have an internet connection?</string>
   <string name="NETWORK_ERROR_ALERT_TRY_AGAIN_ACTION">Retry</string>
   <string name="NOTIFICATION_CHANNEL_CROSS_SELL_TITLE">Notifications regarding new products from Hedvig</string>
   <string name="NOTIFICATION_CHANNEL_GENERIC_TITLE">Other</string>
@@ -471,7 +470,7 @@
   <string name="OFFER_START_DATE_PLURAL">Start dates</string>
   <string name="ONBOARDING_ACTIVATE_NOTIFICATIONS_DISMISS">Skip</string>
   <string name="OPTOUT_FIELD_ENTER_HERE">Enter here</string>
-  <string name="OPTOUT_FIELD_PLACEHOLDER">Don\'t remember</string>
+  <string name="OPTOUT_FIELD_PLACEHOLDER">Don't remember</string>
   <string name="PAYMENTS__CAMPAIGNS">Campaigns</string>
   <string name="PAYMENTS_ACCOUNT">Account</string>
   <string name="PAYMENTS_ADD_CAMPAIGN_CODE">Add campaign code</string>
@@ -485,7 +484,7 @@
   <string name="PAYMENTS_HISTORY_INFO">For information about payments older than 12 months, please send us a message here in the app.</string>
   <string name="PAYMENTS_IN_PROGRESS">The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account</string>
   <string name="PAYMENTS_MANDATE">Mandate</string>
-  <string name="PAYMENTS_MISSED_PAYMENT">Your payment for the period %1$s – %2$s didn\'t process as expected. The amount has been added to this payment.</string>
+  <string name="PAYMENTS_MISSED_PAYMENT">Your payment for the period %1$s – %2$s didn't process as expected. The amount has been added to this payment.</string>
   <string name="PAYMENTS_NO_HISTORY_DATA">There is no record of your payment history</string>
   <string name="PAYMENTS_NO_PAYMENTS_IN_PROGRESS">You have no payments in progress</string>
   <string name="PAYMENTS_OUTSTANDING_PAYMENT">Outstanding payment</string>
@@ -523,7 +522,7 @@
   <string name="PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL">Allow notifications to get notified when we have new updates regarding your claim</string>
   <string name="PROFILE_DELETE_ACCOUNT_CONFIRM_DELETEION">Yes, delete</string>
   <string name="PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION">Delete my account</string>
-  <string name="PROFILE_DELETE_ACCOUNT_FAILED">We can\'t delete your account right now</string>
+  <string name="PROFILE_DELETE_ACCOUNT_FAILED">We can't delete your account right now</string>
   <string name="PROFILE_DELETE_ACCOUNT_FAILED_LABEL">In order to delete your account you need to have your open claims settled and not have any active insurances. Please reach out to our service team via message in the app.</string>
   <string name="PROFILE_FOREVER_TITLE">Hedvig Forever</string>
   <string name="PROFILE_LOGOUT_DIALOG_MESSAGE">Are you sure you want to log out?</string>
@@ -585,7 +584,7 @@
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE">What does it cost?</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL">Yes, your home insurance travel coverage has a base deductible. The amount of your deductible is stated in your insurance letter.\nThe deductible is the portion of the claim amount that you must pay yourself for each claim. If your claim costs are lower than the deductible, the insurance cannot cover them. If your claim costs exceed the deductible, the insurance can cover the amount above the deductible, and Hedvig has the right to reclaim the deductible from you if necessary.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE">Is there a deductible?</string>
-  <string name="SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL">Hedvig Global Assistance (SOS International) serves as Hedvig\'s emergency center for acute illnesses, accidents, and emergencies that occur while you are abroad. If you reach out to them, you can receive various forms of support, such as recommendations for the nearest doctor\'s office, assistance in rebooking flights if necessary, and even obtain a doctor\'s prescription. If you are traveling and require medical care or assistance, it is essential to contact them as soon as possible.</string>
+  <string name="SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL">Hedvig Global Assistance (SOS International) serves as Hedvig's emergency center for acute illnesses, accidents, and emergencies that occur while you are abroad. If you reach out to them, you can receive various forms of support, such as recommendations for the nearest doctor's office, assistance in rebooking flights if necessary, and even obtain a doctor's prescription. If you are traveling and require medical care or assistance, it is essential to contact them as soon as possible.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE">Who are Hedvig Global Assistance?</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL">Contact Hedvig Global Assistance (SOS International) as soon as you can for medical assistance and more information, they can determine what help and compensation you may be entitled to. Remember that you need to see a doctor on site and/or contact Hedvig Global Assistance for the insurance to be valid.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE">I am too sick to go to a doctor. What do I do?</string>
@@ -593,7 +592,7 @@
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE">How do I know if it counts as acute or not?</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL">Contact Hedvig Global Assistance (SOS International) as soon as you can for medical assistance and further information. They can determine if you are eligible for compensation for a new journey home and, if so, assist you in booking it. Remember that approval in advance by SOS International or Hedvig is required for you to be eligible for compensation for the new journey.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE">I cannot fly home as planned, what do I do?</string>
-  <string name="SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL">If you do not have our add-on, Travel Insurance Plus, your home insurance will not cover specific activities, excursions, or costs that you were unable to use.\n\nHowever, if you have Travel Insurance Plus as an add-on to your home insurance, you are entitled to compensation for unused activity trips and event costs that you were unable to attend due to a doctor\'s orders.\n\nIf you have been hospitalized, prescribed indoor bed rest by a doctor at your travel destination, or need to return home early (requires prior approval from SOS International or Hedvig), you are entitled to a fixed compensation of 500 SEK per day for unused travel costs. With Travel Protection Plus, this compensation increases to 1,200 – 2,000 SEK per day.</string>
+  <string name="SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL">If you do not have our add-on, Travel Insurance Plus, your home insurance will not cover specific activities, excursions, or costs that you were unable to use.\n\nHowever, if you have Travel Insurance Plus as an add-on to your home insurance, you are entitled to compensation for unused activity trips and event costs that you were unable to attend due to a doctor's orders.\n\nIf you have been hospitalized, prescribed indoor bed rest by a doctor at your travel destination, or need to return home early (requires prior approval from SOS International or Hedvig), you are entitled to a fixed compensation of 500 SEK per day for unused travel costs. With Travel Protection Plus, this compensation increases to 1,200 – 2,000 SEK per day.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE">I will miss a prebooked activity due to my illness. Is that covered?</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL">If you have the Travel Protection Plus add-on as a complement to your home insurance, you can receive compensation for a new trip, up to a maximum of 50 000 kr. This applies if you or your travel companion become acutely ill or suffer an accidental injury and are hospitalized or prescribed bed rest indoors at the destination.\n\nThe condition is that the hospital stay or prescribed bed rest exceeds more than half the number of the total travel days, and you must be able to provide a certificate from a qualified doctor at the destination or through a doctor via Hedvig Global Assistance (SOS International). Read your terms and conditions for  more information about your protection.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE">Can I get a new trip?</string>
@@ -605,7 +604,7 @@
   <string name="SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL">We cover costs due to acute illness, injury and acute dental injury abroad. If you are seriously ill and require emergency medical care, contact Hedvig Global Assistance (SOS International) immediately.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE">What your insurance covers</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_REBOOK_FLIGHT_LABEL"></string>
-  <string name="SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL">We collaborate with many different workshops across the country. You can easily book your repair online with one of our online partners. If you would rather call your workshop to book an appointment, you need to state that you have car insurance with Hedvig and in some cases you also need the company code \"02301\".</string>
+  <string name="SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL">We collaborate with many different workshops across the country. You can easily book your repair online with one of our online partners. If you would rather call your workshop to book an appointment, you need to state that you have car insurance with Hedvig and in some cases you also need the company code "02301".</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL">Get started quickly by contacting a workshop. We have established partnerships with Carglass and Ryds Bilglas.\n\nHowever, you are free to select a different workshop of your preference.</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_INFO_BUTTON_TEXT">We collaborate with both Ryds Bilglas and Carglass to ensure that you receive assistance with your glass damage as quickly as possible.</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL">You need to contact a car workshop to get further help with your claim</string>
@@ -714,7 +713,7 @@
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
   <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Your price after discounts: %1$s</string>
   <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Your price before discounts: %1$s</string>
-  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Your insurance will be cancelled on %s. If you have any questions, please visit \"Help and support\" in the app.</string>
+  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Your insurance will be cancelled on %s. If you have any questions, please visit "Help and support" in the app.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Confirmation</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Yes, continue</string>
   <string name="TERMINATE_CONTRACT_DELETION_TEXT">The selected insurance will be deleted which means it will not be activated on %s</string>
@@ -736,7 +735,7 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">If you don’t want to keep your decommission insurance, you can cancel it below.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Your insurance will switch to decommission insurance</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Cancel insurance</string>
-  <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab \"Payments\" here in the app.</string>
+  <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab "Payments" here in the app.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Cancelling your insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON">Cancel insurance</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_INFO">Please note that you can only cancel one insurance at a time</string>
@@ -770,7 +769,7 @@
   <string name="TERMINATION_Q_02">Can I still file a claim after I cancel my insurance?</string>
   <string name="TERMINATION_Q_03">How do I join Hedvig in the future?</string>
   <string name="TERMINATION_SUCCESSFUL_DELETION_TEXT">Thanks for being a part of %1$s and trusting us to protect you and your loved ones. The doors are always open if you decide to come back in the future.\n\nHelp us to get better. Take part in our survey, it will only take a few minutes.</string>
-  <string name="TERMINATION_SUCCESSFUL_TEXT">Your insurance will be cancelled on %1$s. We\'ll send you a confirmation email with all the details.\n\nThanks for being a part of %2$s and trusting us to protect you and your loved ones. The doors are always open if you decide to come back in the future.\n\nHelp us to get better. Take part in our survey, it will only take a few minutes.</string>
+  <string name="TERMINATION_SUCCESSFUL_TEXT">Your insurance will be cancelled on %1$s. We'll send you a confirmation email with all the details.\n\nThanks for being a part of %2$s and trusting us to protect you and your loved ones. The doors are always open if you decide to come back in the future.\n\nHelp us to get better. Take part in our survey, it will only take a few minutes.</string>
   <string name="TERMINATION_SUCCESSFUL_TITLE">Cancellation successful</string>
   <string name="TERMINATION_SURVEY_FEEDBACK_HINT">Leave a comment</string>
   <string name="TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT">Please provide feedback to help us improve</string>
@@ -782,7 +781,7 @@
   <string name="TIER_FLOW_ADDON_LABEL">Extended travel coverage</string>
   <string name="TIER_FLOW_ADDON_NO_COVERAGE_LABEL">No extended coverage</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Your updates will be effective from  %s.</string>
-  <string name="TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION">The changes couldn\'t be completed. Please try again.</string>
+  <string name="TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION">The changes couldn't be completed. Please try again.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE">Processing changes...</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_TITLE">Changes complete</string>
   <string name="TIER_FLOW_COMPARE_BUTTON">Compare coverage</string>
@@ -850,8 +849,8 @@
   <string name="claim_history_empty_state_title">No claims in history</string>
   <string name="claim_outcome_null">Your claim was closed.</string>
   <string name="claim_outcome_unresponsive_support_text">Your claim was closed as we didn’t hear back from you. Please see conversation for more details.</string>
-  <string name="claim_status_being_handled_support_text">Your claim is being reviewed by one of our insurance specialists. We\'ll get back to you soon with an update.</string>
-  <string name="claim_status_being_handled_reopened_support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We\'ll get back to you soon with an update.</string>
+  <string name="claim_status_being_handled_support_text">Your claim is being reviewed by one of our insurance specialists. We'll get back to you soon with an update.</string>
+  <string name="claim_status_being_handled_reopened_support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We'll get back to you soon with an update.</string>
   <string name="claim_status_claim_details_button">Show details</string>
   <string name="claim_status_claim_details_info_text">Is something missing? Send us a message here in the app.</string>
   <string name="claim_status_claim_details_submitted">Submitted</string>
@@ -870,7 +869,7 @@
   <string name="claim_status_detail_chat_button_description">Write a message</string>
   <string name="claim_status_detail_closed">Closed</string>
   <string name="claim_status_detail_documents_title">Claim documents</string>
-  <string name="claim_status_detail_info_error_body">The claim audio couldn\'t be downloaded. Please try again to be able to listen to it.</string>
+  <string name="claim_status_detail_info_error_body">The claim audio couldn't be downloaded. Please try again to be able to listen to it.</string>
   <string name="claim_status_detail_info_error_button">Try again</string>
   <string name="claim_status_detail_info_error_title">Downloading error</string>
   <string name="claim_status_detail_message_view_body">Go to conversation</string>
@@ -879,7 +878,7 @@
   <string name="claim_status_detail_submitted">Submitted</string>
   <string name="claim_status_detail_uploaded_files_info_title">Uploaded files</string>
   <string name="claim_status_detail_email">Contact the claims team</string>
-  <string name="claims_alert_body">If you exit, you\'ll go back to the start page and your inputted data will be lost.</string>
+  <string name="claims_alert_body">If you exit, you'll go back to the start page and your inputted data will be lost.</string>
   <string name="claims_continue_button">Continue</string>
   <string name="claims_edit_button">Edit</string>
   <string name="claims_history_overview">Overview</string>
@@ -961,13 +960,13 @@
   <string name="general_more_information_button">More information</string>
   <string name="general_save_button">Save</string>
   <plurals name="home_claim_closed_title">
-    <item quantity="one">Hi %1$s, we\'ve closed your claim.</item>
-    <item quantity="other">Hi %1$s, we\'ve closed your claims.</item>
+    <item quantity="one">Hi %1$s, we've closed your claim.</item>
+    <item quantity="other">Hi %1$s, we've closed your claims.</item>
   </plurals>
   <string name="home_claim_multiple_title">Hi %1$s, here’s your recent claims.</string>
   <plurals name="home_claim_reopened_title">
-    <item quantity="one">Hi %1$s, we\'ve reopened your claim.</item>
-    <item quantity="other">Hi %1$s, we\'ve reopened your claims.</item>
+    <item quantity="one">Hi %1$s, we've reopened your claim.</item>
+    <item quantity="other">Hi %1$s, we've reopened your claims.</item>
   </plurals>
   <string name="home_claim_card_pill_claim">Claim</string>
   <string name="home_first_login_welcome_message">Hi %1$s, welcome to the Hedvig app.</string>
@@ -1027,7 +1026,7 @@
   <string name="insurely_failure_title">Retrieval failed.</string>
   <string name="insurely_intro_continue_button_text">Yes, retrieve info</string>
   <string name="insurely_intro_description">This will allow you to compare your current plan with Hedvig’s.</string>
-  <string name="insurely_intro_footer">By clicking \"Yes, retrieve info\" you agree that Hedvig retrieves data from %1s in accordance with our Privacy Policy. This may include \"sensitive data\" in accordance with the GDPR.</string>
+  <string name="insurely_intro_footer">By clicking "Yes, retrieve info" you agree that Hedvig retrieves data from %1s in accordance with our Privacy Policy. This may include "sensitive data" in accordance with the GDPR.</string>
   <string name="insurely_intro_skip_button_text">No, skip</string>
   <string name="insurely_intro_title">Do you want to retrieve price info from %1s?</string>
   <string name="insurely_no_bankid_skip_button">Skip</string>
@@ -1055,7 +1054,7 @@
   <string name="login_open_email_app_button">Open email app</string>
   <string name="login_smedium_button_active_resend_code">Resend code</string>
   <string name="login_snackbar_code_resent">Code sent</string>
-  <string name="login_subtitle_verification_code_email">Click the log in button in the email or enter the 6-digit code we\'ve sent to %s.</string>
+  <string name="login_subtitle_verification_code_email">Click the log in button in the email or enter the 6-digit code we've sent to %s.</string>
   <string name="login_text_input_email_address">Email address</string>
   <string name="login_text_input_email_address_icon_description_clear_all">Clear all</string>
   <string name="login_text_input_email_error_enter_email">Enter email address to continue</string>
@@ -1080,7 +1079,7 @@
   <string name="offer_manual_switch_card_title">Manual switch needed</string>
   <string name="offer_previous_insurer_price_per_month">%1$s/mo.</string>
   <string name="offer_previous_insurer_price_per_month_label">Monthly price</string>
-  <string name="offer_switch_info_card_body">After signing, we\'ll cancel your old insurance and activate your new insurance with Hedvig on the same day as the old one expires.</string>
+  <string name="offer_switch_info_card_body">After signing, we'll cancel your old insurance and activate your new insurance with Hedvig on the same day as the old one expires.</string>
   <string name="offer_switch_info_card_title">Auto switch</string>
   <plurals name="offer_switcher_title">
     <item quantity="one">Your current insurance</item>
@@ -1127,7 +1126,7 @@
     <item quantity="other">Receipt exported</item>
   </plurals>
   <string name="payments_carried_adjustment">Carried adjustment</string>
-  <string name="payments_carried_adjustment_info">Your balance has been used to adjust this month\'s payment.</string>
+  <string name="payments_carried_adjustment_info">Your balance has been used to adjust this month's payment.</string>
   <string name="payments_history_done_button">Done</string>
   <string name="payments_history_export_all_button">Export</string>
   <string name="payments_history_export_button">Export all</string>
@@ -1141,7 +1140,7 @@
     <item quantity="other">Missed payments</item>
   </plurals>
   <string name="payments_settlement_adjustment">Settlement adjustment</string>
-  <string name="payments_settlement_adjustment_info">A portion of your balance has been used to adjust this month\'s payment. The rest will be used to adjust the upcoming month\'s payment.</string>
+  <string name="payments_settlement_adjustment_info">A portion of your balance has been used to adjust this month's payment. The rest will be used to adjust the upcoming month's payment.</string>
   <string name="profile_appSettingsSection_row_headline">Settings</string>
   <string name="profile_appSettingsSection_title">App Settings</string>
   <string name="profile_certificates_title">Certificates</string>
@@ -1167,7 +1166,7 @@
   <string name="referrals_change_code_sheet_error_claimed_code">That code is unfortunately already taken, choose another one</string>
   <string name="referrals_change_code_sheet_error_empty_code">The code must not be empty</string>
   <string name="referrals_change_code_sheet_error_max_length">The code can be maximum 24 characters</string>
-  <string name="referrals_change_code_sheet_general_error">Something went wrong, we can\'t update your code right now</string>
+  <string name="referrals_change_code_sheet_general_error">Something went wrong, we can't update your code right now</string>
   <string name="referrals_change_code_changed">Code changed</string>
   <string name="referrals_change_code_sheet_body">You can change your code into whatever you want it to be. Of course, it has to be unique for you.</string>
   <string name="referrals_change_code_sheet_headline">Edit your code</string>
@@ -1191,7 +1190,7 @@
   <string name="sas_integration_number">Number</string>
   <string name="sas_integration_number_placeholder">EBXXXXXXXXXX</string>
   <string name="sas_integration_title">EuroBonus</string>
-  <string name="select_insurance_select_all_footer">By selecting all, you\'re only able to change the amount of covered people to the same amount in all insurances.</string>
+  <string name="select_insurance_select_all_footer">By selecting all, you're only able to change the amount of covered people to the same amount in all insurances.</string>
   <string name="select_insurance_select_all_label">Select all</string>
   <string name="simple_sign_sign_in">Sign in with BankID</string>
   <string name="simple_sign_sign_in_dk">Sign in with MitID</string>

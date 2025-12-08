@@ -258,7 +258,6 @@
   <string name="DISCOUNTS_ACTIVE_FROM">Aktiveras %1$s</string>
   <string name="DISCOUNTS_LABEL_ACTIVE">Aktiv</string>
   <string name="DISCOUNTS_LABEL_PENDING">Aktiveras senare</string>
-  <string name="DURATION_IN_DAYS">{{duration}} dagar</string>
   <string name="DURATION_TITLE">Giltighetstid</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Adress</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">Jag hittar inte min adress</string>

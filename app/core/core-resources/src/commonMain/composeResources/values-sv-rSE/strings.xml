@@ -258,7 +258,6 @@
   <string name="DISCOUNTS_ACTIVE_FROM">Aktiveras %1$s</string>
   <string name="DISCOUNTS_LABEL_ACTIVE">Aktiv</string>
   <string name="DISCOUNTS_LABEL_PENDING">Aktiveras senare</string>
-  <string name="DURATION_IN_DAYS">{{duration}} dagar</string>
   <string name="DURATION_TITLE">Giltighetstid</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Adress</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">Jag hittar inte min adress</string>
@@ -455,7 +454,7 @@
   <string name="OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION">%1$s/mån</string>
   <string name="OFFER_DOCUMENTS_SECTION_TITLE">Viktiga dokument</string>
   <string name="OFFER_FOOTER_BUTTON_TEXT">Skriv till oss</string>
-  <string name="OFFER_FOOTER_GDPR_INFO">Genom att klicka \"%1$s\" bekräftar jag att jag har läst och förstått förköpsinformationen och villkoren, samt att mina personuppgifter hanteras [enligt GDPR.](%2$s)</string>
+  <string name="OFFER_FOOTER_GDPR_INFO">Genom att klicka "%1$s" bekräftar jag att jag har läst och förstått förköpsinformationen och villkoren, samt att mina personuppgifter hanteras [enligt GDPR.](%2$s)</string>
   <string name="OFFER_FOOTER_SUBTITLE">Hittar du inte svaret du letar efter?</string>
   <string name="OFFER_INSURANCE_BUNDLE_TITLE"></string>
   <string name="OFFER_PLAN_EXIRES_TEXT">Om du väljer detta alternativ, kommer \ndin Hedvig-försäkring att starta \nautomatiskt efter att ditt nuvarande \nförsäkringsavtal med %1$s gått ut.</string>
@@ -714,7 +713,7 @@
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
   <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Ditt pris efter rabatter: %1$s</string>
   <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Ditt pris före rabatter: %1$s</string>
-  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Din försäkring kommer att sägas upp den %s. Om du har några frågor, vänligen besök \"Hjälp och support\" här i appen.</string>
+  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Din försäkring kommer att sägas upp den %s. Om du har några frågor, vänligen besök "Hjälp och support" här i appen.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Bekräftelse</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Ja, fortsätt</string>
   <string name="TERMINATE_CONTRACT_DELETION_TEXT">Den valda försäkringen kommer att tas bort och inte aktiveras %s.</string>
@@ -736,7 +735,7 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">Vill du inte behålla din avställningsförsäkring kan du enkelt säga upp den nedan.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Din försäkring kommer övergå till en avställningsförsäkring</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Säg upp försäkring</string>
-  <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken \"Betalningar\" här i appen.</string>
+  <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken "Betalningar" här i appen.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Avsluta din försäkring</string>
   <string name="TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON">Avsluta försäkring</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_INFO">Observera att du bara kan säga upp en försäkring åt gången</string>
@@ -1027,7 +1026,7 @@
   <string name="insurely_failure_title">Hämtningen misslyckades.</string>
   <string name="insurely_intro_continue_button_text">Ja, hämta info</string>
   <string name="insurely_intro_description">Detta gör att du kan jämföra din nuvarande försäkring med Hedvigs.</string>
-  <string name="insurely_intro_footer">Genom att klicka på \"Ja, hämta info\" godkänner du att Hedvig hämtar data från %1s i enlighet med vår Privacy Policy. Detta kan komma att inkludera “känslig data” i enlighet med GDPR</string>
+  <string name="insurely_intro_footer">Genom att klicka på "Ja, hämta info" godkänner du att Hedvig hämtar data från %1s i enlighet med vår Privacy Policy. Detta kan komma att inkludera “känslig data” i enlighet med GDPR</string>
   <string name="insurely_intro_skip_button_text">Nej, hoppa över</string>
   <string name="insurely_intro_title">Vill du hämta prisinformation från %1s?</string>
   <string name="insurely_no_bankid_skip_button"></string>
@@ -1191,7 +1190,7 @@
   <string name="sas_integration_number">Nummer</string>
   <string name="sas_integration_number_placeholder">EBXXXXXXXXXX</string>
   <string name="sas_integration_title">EuroBonus</string>
-  <string name="select_insurance_select_all_footer">By selecting all, you\'re only able to change the amount of covered people to the same amount in all insurances.</string>
+  <string name="select_insurance_select_all_footer">By selecting all, you're only able to change the amount of covered people to the same amount in all insurances.</string>
   <string name="select_insurance_select_all_label">Select all</string>
   <string name="simple_sign_sign_in"></string>
   <string name="simple_sign_sign_in_dk"></string>

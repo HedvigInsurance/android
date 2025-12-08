@@ -11,6 +11,7 @@ lintGradlePlugin = "8.12.0"
 # gradlePlugin versions
 androidGradlePlugin = "8.12.0"
 apollo = "4.3.2"
+apolloEngineKtor = "0.1.1"
 apolloAdapters = "0.7.0"
 cacheFix = "3.0.1"
 crashlytics = "3.0.6"
@@ -146,6 +147,7 @@ apollo-adapters-core = { module = "com.apollographql.adapters:apollo-adapters-co
 apollo-adapters-datetime = { module = "com.apollographql.adapters:apollo-adapters-kotlinx-datetime", version.ref = "apolloAdapters" }
 apollo-annotations = { module = "com.apollographql.apollo:apollo-annotations", version.ref = "apollo" }
 apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
+apollo-engine-ktor = { module = "com.apollographql.ktor:apollo-engine-ktor", version.ref = "apolloEngineKtor" }
 apollo-normalizedCache = { module = "com.apollographql.apollo:apollo-normalized-cache", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 apollo-testingSupport = { module = "com.apollographql.apollo:apollo-testing-support", version.ref = "apollo" }

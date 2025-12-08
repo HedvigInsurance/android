@@ -72,9 +72,10 @@ abstract class DownloadStringsTask @Inject constructor(
     logger.debug("{} zip file path:{}", tag, tempFileForZipFile.absolutePath)
     dirRes.fillContentsByCopyingFromZipFile(tempFileForZipFile)
     logger.debug("{} dirRes:{}", tag, dirRes.asFileTree.map { it.absolutePath })
-    dirRes.editTranslations {
+    dirRes.editTranslations { resourcesType ->
       fixPercentageSigns()
         .removeDotsFromStringIds()
+        .removeEscapesFromMultiplatformStrings(resourcesType)
     }
     tempFileForZipFile.delete()
   }
@@ -109,8 +110,7 @@ abstract class DownloadStringsTask @Inject constructor(
       )
       .build()
     logger.debug("{} asyncDownloadRequest:{}", tag, asyncDownloadRequest)
-    val response = okHttpClient.newCall(asyncDownloadRequest).execute().body?.string()
-      ?: error("Lokalise responded with a null body")
+    val response = okHttpClient.newCall(asyncDownloadRequest).execute().body.string()
     logger.debug("{} post response:{}", tag, response)
     val processId = Json.parseToJsonElement(response).jsonObject["process_id"]?.jsonPrimitive?.content
       ?: error("Lokalise responded with a null processId")
@@ -132,8 +132,7 @@ abstract class DownloadStringsTask @Inject constructor(
         .get()
         .build()
       logger.debug("{} getProcessStatusRequest:{}", tag, getProcessStatusRequest)
-      val response = okHttpClient.newCall(getProcessStatusRequest).execute().body?.string()
-        ?: error("Lokalise responded with a null body")
+      val response = okHttpClient.newCall(getProcessStatusRequest).execute().body.string()
       logger.debug("{} get response:{}", tag, response)
       val process = Json
         .parseToJsonElement(response)
@@ -172,7 +171,7 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   private fun ConfigurableFileCollection.editTranslations(
-    block: String.() -> String,
+    block: String.(ResourcesType) -> String,
   ) {
     val allTranslationXmlFilePaths: List<okio.Path> = asFileTree
       .map { it.path.toPath() }
@@ -181,8 +180,12 @@ abstract class DownloadStringsTask @Inject constructor(
 
     val fileSystem = FileSystem.SYSTEM
     for (currentLanguageTranslationXmlFilePath in allTranslationXmlFilePaths) {
+      val resourcesType = when {
+        currentLanguageTranslationXmlFilePath.segments.any { it == "commonMain" } -> ResourcesType.KMP
+        else -> ResourcesType.Android
+      }
       val content = fileSystem.read(currentLanguageTranslationXmlFilePath) { readUtf8() }
-      val updatedContent = block(content)
+      val updatedContent = content.block(resourcesType)
       fileSystem.write(currentLanguageTranslationXmlFilePath) {
         writeUtf8(updatedContent)
       }
@@ -223,6 +226,16 @@ abstract class DownloadStringsTask @Inject constructor(
     }
   }
 
+  private fun String.removeEscapesFromMultiplatformStrings(resourcesType: ResourcesType): String {
+    return when (resourcesType) {
+      ResourcesType.Android -> this
+      ResourcesType.KMP -> {
+        replace("""\'""", """'""")
+          .replace("""\"""", """"""")
+      }
+    }
+  }
+
   private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {
     URI.create(bucketUrl).toURL().openStream().source().buffer().use { zipSource ->
       this.sink().buffer().use { localFileSink ->
@@ -252,10 +265,15 @@ private sealed interface ProcessStatus {
 }
 
 private fun String.toProcessStatus(): ProcessStatus {
-  when (this) {
-    "queued" -> return ProcessStatus.Queued
-    "running" -> return ProcessStatus.Running
-    "finished" -> return ProcessStatus.Finished
-    else -> return ProcessStatus.Other(this)
+  return when (this) {
+    "queued" -> ProcessStatus.Queued
+    "running" -> ProcessStatus.Running
+    "finished" -> ProcessStatus.Finished
+    else -> ProcessStatus.Other(this)
   }
+}
+
+private enum class ResourcesType {
+  KMP,
+  Android,
 }

@@ -258,7 +258,6 @@
   <string name="DISCOUNTS_ACTIVE_FROM">Activates %1$s</string>
   <string name="DISCOUNTS_LABEL_ACTIVE">Active</string>
   <string name="DISCOUNTS_LABEL_PENDING">Pending</string>
-  <string name="DURATION_IN_DAYS">{{duration}} days</string>
   <string name="DURATION_TITLE">Duration</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Address</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">I can’t find my address</string>
