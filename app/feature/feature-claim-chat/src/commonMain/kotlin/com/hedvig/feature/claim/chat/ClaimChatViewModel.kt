@@ -28,6 +28,7 @@ import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.Field
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
+import com.hedvig.feature.claim.chat.data.RegretStepUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -39,7 +40,6 @@ import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.file.FileService
-import kotlin.collections.emptyList
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -126,6 +126,7 @@ internal class ClaimChatViewModel(
   submitSummaryUseCase: SubmitSummaryUseCase,
   audioRecordingManager: AudioRecordingManager,
   skipStepUseCase: SkipStepUseCase,
+  regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
   ClaimChatUiState.Initializing,
@@ -142,6 +143,7 @@ internal class ClaimChatViewModel(
     skipStepUseCase,
     audioRecordingManager,
     fileService,
+    regretStepUseCase,
   ),
 )
 
@@ -158,6 +160,7 @@ internal class ClaimChatPresenter(
   private val skipStepUseCase: SkipStepUseCase,
   private val audioRecordingManager: AudioRecordingManager,
   private val fileService: FileService,
+  private val regretStepUseCase: RegretStepUseCase,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -229,12 +232,12 @@ internal class ClaimChatPresenter(
                 },
                 ifRight = { claimIntent ->
                   if (!steps.updateStepWithSuccess<StepContent.ContentSelect>(event.id) { step, content ->
-                    step.copy(
-                      stepContent = content.copy(
-                        selectedOptionId = event.selectedId,
-                      ),
-                    )
-                  }) return@launch
+                      step.copy(
+                        stepContent = content.copy(
+                          selectedOptionId = event.selectedId,
+                        ),
+                      )
+                    }) return@launch
                   currentContinueButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -351,26 +354,29 @@ internal class ClaimChatPresenter(
                     }?.toString()
                   val stepToUpdate = steps.find { it.id == event.stepId } ?: return@withMutableSnapshot
                   val index = steps.indexOf(stepToUpdate)
-                  if (index >= 0 && selectedDateString!=null) {
+                  if (index >= 0 && selectedDateString != null) {
                     steps[index] = stepToUpdate.copy(
                       stepContent = currentContent.copy(
                         fields = currentContent.fields.map { existingField ->
-                          if (existingField.id==field.id) existingField.copy(
+                          if (existingField.id == field.id) existingField.copy(
                             selectedOptions = listOf(
                               StepContent.Form.FieldOption(
                                 selectedDateString,
-                                selectedDateString))
+                                selectedDateString,
+                              ),
+                            ),
                           ) else existingField
-                        }
+                        },
                       ),
                     )
                   }
                   Field(
                     field.id,
-                    listOf(selectedDateString)
+                    listOf(selectedDateString),
 
-                  )
+                    )
                 }
+
                 else -> Field(
                   field.id,
                   field.selectedOptions
@@ -421,8 +427,8 @@ internal class ClaimChatPresenter(
               if (event.uri in content.localFiles.map { it.id }) return@updateStepWithSuccess step
               step.copy(
                 stepContent = content.copy(
-                  localFiles = content.localFiles + localFile
-                )
+                  localFiles = content.localFiles + localFile,
+                ),
               )
             }
           } catch (e: Exception) {
@@ -481,7 +487,28 @@ internal class ClaimChatPresenter(
           Snapshot.withMutableSnapshot {
             val stepToUpdate = steps.find { it.id == event.id } ?: return@CollectEvents
             if (!stepToUpdate.isRegrettable) return@CollectEvents
-            TODO()
+            currentContinueButtonLoading = true
+            currentSkipButtonLoading = true
+            launch {
+              regretStepUseCase.invoke(event.id)
+                .fold(
+                  ifLeft = {
+                    currentContinueButtonLoading = false
+                    currentSkipButtonLoading = false
+                    errorSubmittingStep = it
+                    logcat { "Regret error: $it" }
+                  },
+                  ifRight = { claimIntent ->
+                    val index = steps.indexOf(stepToUpdate)
+                    if (index >= 0) {
+                      steps.subList(index, steps.size).clear()
+                    }
+                    currentContinueButtonLoading = false
+                    currentSkipButtonLoading = false
+                    handleNext(steps, setOutcome, claimIntent.next)
+                  },
+                )
+            }
           }
         }
 
@@ -570,8 +597,8 @@ internal class ClaimChatPresenter(
             steps.updateStepWithSuccess<StepContent.FileUpload>(step.id) { currentStep, content ->
               currentStep.copy(
                 stepContent = content.copy(
-                  localFiles = content.localFiles.filterNot { it.id == event.fileId }
-                )
+                  localFiles = content.localFiles.filterNot { it.id == event.fileId },
+                ),
               )
             }
           }
@@ -591,7 +618,7 @@ internal class ClaimChatPresenter(
         freeText = freeText,
         errorSubmittingStep = errorSubmittingStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
-        currentSkipButtonLoading = currentSkipButtonLoading
+        currentSkipButtonLoading = currentSkipButtonLoading,
       )
 
       else -> error("")
@@ -680,7 +707,7 @@ private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: Cla
 
 private inline fun <reified T : StepContent> SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
   stepId: StepId,
-  transform: (ClaimIntentStep, T) -> ClaimIntentStep
+  transform: (ClaimIntentStep, T) -> ClaimIntentStep,
 ): Boolean {
   return Snapshot.withMutableSnapshot {
     val stepToUpdate = find { it.id == stepId } ?: return@withMutableSnapshot false
@@ -696,7 +723,7 @@ private inline fun <reified T : StepContent> SnapshotStateList<ClaimIntentStep>.
 
 private fun SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
   stepId: StepId,
-  transform: (ClaimIntentStep) -> ClaimIntentStep
+  transform: (ClaimIntentStep) -> ClaimIntentStep,
 ): Boolean {
   return Snapshot.withMutableSnapshot {
     val stepToUpdate = find { it.id == stepId } ?: return@withMutableSnapshot false
@@ -711,24 +738,29 @@ private fun SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
 
 private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content = stepContent) {
   is StepContent.AudioRecording -> copy(
-    stepContent = content.copy(recordingState = AudioRecording.NotRecording)
+    stepContent = content.copy(recordingState = AudioRecording.NotRecording),
   )
+
   is StepContent.ContentSelect -> copy(
-    stepContent = content.copy(selectedOptionId = null)
+    stepContent = content.copy(selectedOptionId = null),
   )
+
   is StepContent.FileUpload -> copy(
-    stepContent = content.copy(localFiles = emptyList())
+    stepContent = content.copy(localFiles = emptyList()),
   )
+
   is StepContent.Form -> copy(
     stepContent = content.copy(
       fields = content.fields.map { field ->
         field.copy(selectedOptions = emptyList())
-      }
-    )
+      },
+    ),
   )
+
   is StepContent.Summary,
   is StepContent.Task,
-  StepContent.Unknown -> this
+  StepContent.Unknown,
+    -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
