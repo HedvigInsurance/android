@@ -86,7 +86,8 @@ internal object TypographyTokens {
   )
 }
 
-private val DefaultPlatformTextStyle = PlatformTextStyle()
+expect val DefaultPlatformTextStyle: PlatformTextStyle
+internal expect val DefaultPlatformTextStyle: PlatformTextStyle
 
 internal val DefaultLineHeightStyle = LineHeightStyle(
   alignment = LineHeightStyle.Alignment.Center,
