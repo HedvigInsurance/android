@@ -4,6 +4,8 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -21,6 +23,7 @@ internal class StartClaimIntentUseCase(
             developmentFlow = Optional.present(developmentFlow),
           ),
         )
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .mapLeft {
           logcat { "StartClaimIntentUseCase error: $it" }
