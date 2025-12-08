@@ -94,9 +94,11 @@ import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorSnackbar
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -542,21 +544,37 @@ private fun ChatBubble(
             color = chatMessage.backgroundColor(),
             contentColor = chatMessage.onBackgroundColor(),
           ) {
-            TextWithClickableUrls(
-              text = chatMessage.text,
-              style = LocalTextStyle.current.copy(color = LocalContentColor.current),
-              modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .semantics {
-                  hideFromAccessibility()
-                },
-            )
+            Column {
+              TextWithClickableUrls(
+                text = chatMessage.text,
+                style = LocalTextStyle.current.copy(color = LocalContentColor.current),
+                modifier = Modifier
+                  .padding(horizontal = 16.dp, vertical = 12.dp)
+                  .semantics {
+                    hideFromAccessibility()
+                  },
+              )
+              if (chatMessage.action != null) {
+                HedvigButton(
+                  text = chatMessage.action.title,
+                  enabled = true,
+                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                  buttonSize = ButtonDefaults.ButtonSize.Medium,
+                  onClick = {
+                    openUrl(chatMessage.action.url)
+                  },
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 4.dp)
+                )
+              }
+            }
           }
         }
 
         is ChatMessageFile -> {
           when (chatMessage.mimeType) {
-            CbmChatMessage.ChatMessageFile.MimeType.IMAGE -> {
+            ChatMessageFile.MimeType.IMAGE -> {
               ChatAsyncImage(
                 model = chatMessage.url,
                 imageLoader = imageLoader,
@@ -616,7 +634,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-            -> {
+              -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -627,7 +645,7 @@ private fun ChatBubble(
           }
         }
 
-        is CbmChatMessage.ChatMessageGif -> {
+        is ChatMessageGif -> {
           ChatAsyncImage(
             model = chatMessage.gifUrl,
             imageLoader = imageLoader,
@@ -639,7 +657,7 @@ private fun ChatBubble(
           )
         }
 
-        is CbmChatMessage.FailedToBeSent -> {
+        is FailedToBeSent -> {
           when (chatMessage) {
             is ChatMessageText -> {
               Surface(
@@ -786,11 +804,11 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
       // At [%s:formattedInstant], [%s:sender] sent a GIF picture.
       is CbmChatMessage.ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
       // "at $instant, $sender said: $it.text."
-      is FailedToBeSent.ChatMessageMedia -> stringResource(R.string.TALKBACK_CHAT_FAILED_MEDIA, time)
+      is ChatMessageMedia -> stringResource(R.string.TALKBACK_CHAT_FAILED_MEDIA, time)
       // "at $instant, you tried to send a media file, but it failed. Double tap to try sending again."
-      is FailedToBeSent.ChatMessagePhoto -> stringResource(R.string.TALKBACK_CHAT_FAILED_PHOTO, time)
+      is ChatMessagePhoto -> stringResource(R.string.TALKBACK_CHAT_FAILED_PHOTO, time)
       // "at $instant, you tried to send a photo, but it failed. Double tap to try sending again."
-      is FailedToBeSent.ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
+      is ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
       // "at $instant, you tried to send a text message, but it failed. Double tap to try sending again. The message said: $it.text"
     }
   } ?: ""
@@ -1077,7 +1095,7 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
     horizontalAlignment = chatMessage.messageHorizontalAlignment(chatItemIndex),
     modifier = modifier,
   ) {
-    val failedToBeSent = chatMessage is CbmChatMessage.FailedToBeSent
+    val failedToBeSent = chatMessage is FailedToBeSent
     Row(
       verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -1195,7 +1213,10 @@ private fun PreviewChatLoadedScreen() {
         ChatMessageFile("4", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), banner2, "", IMAGE),
         ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
         ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
-        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), null, "Last message"),
+        CbmChatMessage.ChatMessageText(
+          "7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), null, "Last message",
+          action = CbmChatMessage.ChatMessageTextAction("go somewhere", ""),
+        ),
       )
         .reversed()
         .mapIndexed { index, item ->
