@@ -111,6 +111,8 @@ internal sealed interface ClaimChatUiState {
     val freeText: String?,
     val outcome: ClaimIntentOutcome?,
     val errorSubmittingStep: ErrorMessage?,
+    val currentContinueButtonLoading: Boolean = false,
+    val currentSkipButtonLoading: Boolean = false,
   ) : ClaimChatUiState
 }
 
@@ -178,6 +180,8 @@ internal class ClaimChatPresenter(
       derivedStateOf { steps.lastOrNull() }
     }
     var showFreeTextOverlay by remember { mutableStateOf(false) }
+    var currentContinueButtonLoading by remember { mutableStateOf(false) }
+    var currentSkipButtonLoading by remember { mutableStateOf(false) }
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -216,6 +220,7 @@ internal class ClaimChatPresenter(
           val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect
             ?: return@CollectEvents
           val currentStepState = currentStep ?: return@CollectEvents
+          currentContinueButtonLoading = true
           launch {
             submitSelectUseCase
               .invoke(
@@ -225,6 +230,7 @@ internal class ClaimChatPresenter(
               .fold(
                 ifLeft = {
                   errorSubmittingStep = it
+                  currentContinueButtonLoading = false
                   logcat { "ClaimChatEvent.Select error: $it" }
                 },
                 ifRight = { claimIntent ->
@@ -238,6 +244,7 @@ internal class ClaimChatPresenter(
                       ),
                     )
                   }
+                  currentContinueButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
@@ -257,16 +264,19 @@ internal class ClaimChatPresenter(
                 logcat { "Step content not found or not AudioRecording" }
                 return@CollectEvents
               }
+              currentContinueButtonLoading = true
               launch {
                 submitAudioRecordingUseCase
                   .invoke(event.id, recordedFile, stepContent.uploadUri)
                   .fold(
                     ifLeft = {
                       errorSubmittingStep = it
+                      currentContinueButtonLoading = false
                       logcat { "ClaimChatEvent.AudioRecording.SubmitAudioFile error: $it" }
                     },
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
+                      currentContinueButtonLoading = false
                       handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
@@ -275,15 +285,18 @@ internal class ClaimChatPresenter(
 
             is ClaimChatEvent.AudioRecording.SubmitTextInput -> {
               val freeTextInput = freeText ?: return@CollectEvents
+              currentContinueButtonLoading = true
               launch {
                 submitAudioRecordingUseCase
                   .invoke(event.id, freeTextInput)
                   .fold(
                     ifLeft = {
                       errorSubmittingStep = it
+                      currentContinueButtonLoading = false
                       logcat { "ClaimChatEvent.AudioRecording.SubmitTextInput error: $it" }
                     },
                     ifRight = { claimIntent ->
+                      currentContinueButtonLoading = false
                       handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
@@ -410,7 +423,6 @@ internal class ClaimChatPresenter(
 
                   )
                 }
-
                 else -> Field(
                   field.id,
                   field.selectedOptions
@@ -419,8 +431,10 @@ internal class ClaimChatPresenter(
                       selectedOption.value
                     },
                 )
+
               }
             }
+            currentContinueButtonLoading = true
             launch {
               submitFormUseCase
                 .invoke(
@@ -431,10 +445,12 @@ internal class ClaimChatPresenter(
                 )
                 .fold(
                   ifLeft = {
+                    currentContinueButtonLoading = false
                     errorSubmittingStep = it
                     logcat { "FormSubmit error: $it" }
                   },
                   ifRight = { claimIntent ->
+                    currentContinueButtonLoading = false
                     handleNext(steps, setOutcome, claimIntent.next)
                   },
                 )
@@ -479,17 +495,20 @@ internal class ClaimChatPresenter(
         is ClaimChatEvent.Skip -> {
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
+          currentSkipButtonLoading = true
           launch {
             skipStepUseCase.invoke(event.id)
               .fold(
                 ifLeft = {
                   errorSubmittingStep = it
+                  currentSkipButtonLoading = false
                   logcat { "ClaimChatEvent.Skip $it" }
                 },
                 ifRight = { claimIntent ->
 //                  val newFields = stepContent.fields.map { field ->
 //                          field.copy(selectedOptions = emptyList())
 //                  } //todo: remove selected options on all skipped steps!
+                  currentSkipButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
@@ -501,15 +520,18 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.SubmitClaim -> {
+          currentContinueButtonLoading = true
           launch {
             submitSummaryUseCase
               .invoke(event.id)
               .fold(
                 ifLeft = {
+                  currentContinueButtonLoading = false
                   errorSubmittingStep = it
                   logcat { "SubmitClaim error: $it" }
                 },
                 ifRight = { claimIntent ->
+                  currentContinueButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
@@ -584,6 +606,7 @@ internal class ClaimChatPresenter(
             .map {
               Uri.parse(it.localPath!!)
             }
+          currentContinueButtonLoading = true
           launch {
             submitFileUploadUseCase
               .invoke(
@@ -594,9 +617,11 @@ internal class ClaimChatPresenter(
               .fold(
                 ifLeft = {
                   errorSubmittingStep = it
+                  currentContinueButtonLoading = false
                   logcat { "ClaimChatEvent.FileUpload $it" }
                 },
                 ifRight = { claimIntent ->
+                  currentContinueButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
@@ -631,6 +656,8 @@ internal class ClaimChatPresenter(
         showFreeTextOverlay = showFreeTextOverlay,
         freeText = freeText,
         errorSubmittingStep = errorSubmittingStep,
+        currentContinueButtonLoading = currentContinueButtonLoading,
+        currentSkipButtonLoading = currentSkipButtonLoading
       )
 
       else -> error("")

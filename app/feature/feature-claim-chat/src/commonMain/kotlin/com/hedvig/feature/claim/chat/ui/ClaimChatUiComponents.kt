@@ -665,6 +665,7 @@ internal fun ChatClaimSummary(
   onSubmit: () -> Unit,
   isCurrentStep: Boolean,
   imageLoader: ImageLoader,
+  continueButtonLoading: Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -737,7 +738,8 @@ internal fun ChatClaimSummary(
       ) {
         HedvigButton(
           text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
-          enabled = true,
+          enabled = !continueButtonLoading,
+          isLoading = continueButtonLoading,
           onClick = onSubmit,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -829,6 +831,8 @@ private fun PreviewClaimChatComponents() {
           canSkip = true,
           onSkip = {},
           freeText = "some not really long free text",
+          continueButtonLoading = false,
+          skipButtonLoading = false,
         )
         Spacer(Modifier.height(16.dp))
         YesNoBubble(
@@ -897,6 +901,7 @@ private fun PreviewSummary() {
           fileUploads = listOf(),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
+          continueButtonLoading = false
         )
       }
     }

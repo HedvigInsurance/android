@@ -243,6 +243,8 @@ private fun ClaimChatScreenContent(
           openAppSettings = openAppSettings,
           freeText = uiState.freeText,
           onEvent = onEvent,
+          continueButtonLoading = uiState.currentContinueButtonLoading,
+          skipButtonLoading = uiState.currentSkipButtonLoading
         )
 
         is StepContent.ContentSelect -> ContentSelectStep(
@@ -264,7 +266,9 @@ private fun ClaimChatScreenContent(
           imageLoader = imageLoader,
           localFiles = item.stepContent.localFiles,
           onEvent = onEvent,
-          canEdit = item.isRegrettable
+          canEdit = item.isRegrettable,
+          continueButtonLoading = uiState.currentContinueButtonLoading,
+          skipButtonLoading = uiState.currentSkipButtonLoading
         )
 
         is StepContent.Form -> FormStep(
@@ -275,6 +279,8 @@ private fun ClaimChatScreenContent(
           isCurrentStep = isCurrentStep,
           canSkip = item.stepContent.isSkippable,
           canBeChanged = item.isRegrettable,
+          continueButtonLoading = uiState.currentContinueButtonLoading,
+          skipButtonLoading = uiState.currentSkipButtonLoading
         )
 
         is StepContent.Summary -> ChatClaimSummary(
@@ -295,7 +301,8 @@ private fun ClaimChatScreenContent(
               mimeType = it.contentType,
               id = it.url
             )
-          }
+          },
+          continueButtonLoading = uiState.currentContinueButtonLoading,
         )
 
         is StepContent.Task -> TaskStep(
@@ -323,6 +330,8 @@ private fun UploadFilesStep(
   appPackageId: String,
   isCurrentStep: Boolean,
   canEdit: Boolean,
+  continueButtonLoading: Boolean,
+  skipButtonLoading: Boolean,
   imageLoader: ImageLoader,
   localFiles: List<UiFile>,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -361,7 +370,7 @@ private fun UploadFilesStep(
       if (stepContent.localFiles.isNotEmpty()) {
         HedvigButton(
           text = stringResource(Res.string.general_continue_button),
-          enabled = true,
+          enabled = !continueButtonLoading,
           onClick = {
             onEvent(
               ClaimChatEvent.FileSubmit(
@@ -369,16 +378,18 @@ private fun UploadFilesStep(
               ),
             )
           },
+          isLoading = continueButtonLoading,
           modifier = Modifier.fillMaxWidth(),
         )
       }
       if (stepContent.isSkippable && stepContent.localFiles.isEmpty()) {
         HedvigButton(
           text = stringResource(Res.string.claims_skip_button),
-          enabled = true,
+          enabled = !skipButtonLoading,
           onClick = {
             onEvent(ClaimChatEvent.Skip(itemId))
           },
+          isLoading = skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
           buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
         )
@@ -461,6 +472,8 @@ private fun FormStep(
   isCurrentStep: Boolean,
   canSkip: Boolean,
   canBeChanged: Boolean,
+  continueButtonLoading: Boolean,
+  skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -486,6 +499,8 @@ private fun FormStep(
       onSubmit = {
         onEvent(ClaimChatEvent.FormSubmit(itemId))
       },
+      continueButtonLoading = continueButtonLoading,
+      skipButtonLoading = skipButtonLoading
     )
   }
 }
@@ -499,6 +514,8 @@ private fun FormContent(
   canBeChanged: Boolean,
   onRegret: () -> Unit,
   onSubmit: () -> Unit,
+  continueButtonLoading: Boolean,
+  skipButtonLoading: Boolean,
   onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -621,7 +638,8 @@ private fun FormContent(
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         text = stringResource(Res.string.general_continue_button),
-        enabled = content.canContinue(),
+        enabled = content.canContinue() && !continueButtonLoading,
+        isLoading = continueButtonLoading,
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth(),
       )
@@ -629,8 +647,9 @@ private fun FormContent(
         Spacer(Modifier.height(8.dp))
         HedvigButton(
           text = stringResource(Res.string.claims_skip_button),
-          enabled = true,
+          enabled = !skipButtonLoading,
           onClick = onSkip,
+          isLoading = skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
           buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
         )
@@ -701,6 +720,8 @@ private fun AudioRecordingStep(
   redoRecording: () -> Unit,
   onSkip: () -> Unit,
   isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
+  skipButtonLoading: Boolean,
   clock: Clock,
   onShouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
@@ -731,6 +752,8 @@ private fun AudioRecordingStep(
       onSkip = onSkip,
       isCurrentStep = isCurrentStep,
       freeText = freeText,
+      continueButtonLoading = continueButtonLoading,
+      skipButtonLoading = skipButtonLoading
     )
     if (item.isRegrettable && !isCurrentStep) {
       EditButton(

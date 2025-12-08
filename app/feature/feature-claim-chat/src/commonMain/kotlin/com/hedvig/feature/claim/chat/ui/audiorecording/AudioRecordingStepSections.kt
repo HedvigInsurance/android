@@ -59,6 +59,8 @@ internal fun AudioRecorderBubble(
   canSkip: Boolean,
   onSkip: () -> Unit,
   isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
+  skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   AnimatedContent(
@@ -85,6 +87,7 @@ internal fun AudioRecorderBubble(
               allowFreeText = freeTextAvailable,
               launchFreeText = onShowFreeText,
               isCurrentStep = isCurrentStep,
+              continueButtonLoading = continueButtonLoading
             )
           }
 
@@ -97,6 +100,7 @@ internal fun AudioRecorderBubble(
               hasError = uiStateAnimated.hasError,
               errorType = uiStateAnimated.errorType,
               isCurrentStep = isCurrentStep,
+              continueButtonLoading = continueButtonLoading
             )
           }
         }
@@ -106,6 +110,8 @@ internal fun AudioRecorderBubble(
         HedvigTextButton(
           stringResource(Res.string.claims_skip_button),
           onClick = onSkip,
+          isLoading = skipButtonLoading,
+          enabled = !skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.width(16.dp))
@@ -122,6 +128,7 @@ private fun FreeTextInputSection(
   submitFreeText: () -> Unit,
   hasError: Boolean,
   isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
   errorType: FreeTextErrorType?,
   modifier: Modifier = Modifier,
 ) {
@@ -180,6 +187,7 @@ private fun AudioRecordingSection(
   launchFreeText: () -> Unit,
   allowFreeText: Boolean,
   isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   var showPermissionDialog by remember { mutableStateOf(false) }
@@ -219,6 +227,7 @@ private fun AudioRecordingSection(
     allowFreeText = allowFreeText,
     onLaunchFreeText = launchFreeText,
     isCurrentStep = isCurrentStep,
+    continueButtonLoading = continueButtonLoading
   )
 }
 
@@ -235,6 +244,7 @@ private fun PreviewFreeTextInput() {
         hasError = false,
         errorType = null,
         isCurrentStep = true,
+        continueButtonLoading = false
       )
     }
   }

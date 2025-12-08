@@ -49,6 +49,7 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastCbrt
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.uidata.DecimalFormatter
@@ -90,6 +91,7 @@ internal fun AudioRecorder(
   allowFreeText: Boolean,
   onLaunchFreeText: () -> Unit,
   isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   when (uiState) {
@@ -99,6 +101,7 @@ internal fun AudioRecorder(
       redo = redo,
       modifier = modifier,
       isCurrentStep = isCurrentStep,
+      continueButtonLoading = continueButtonLoading
     )
 
     else -> {
@@ -235,6 +238,7 @@ private fun Playback(
   submit: () -> Unit,
   redo: () -> Unit,
   isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -254,15 +258,14 @@ private fun Playback(
       HedvigButton(
         onClick = submit,
         text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
-        isLoading = uiState.isLoading,
-        enabled = uiState.canSubmit,
+        isLoading = continueButtonLoading,
+        enabled = !continueButtonLoading,
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
       )
-
       HedvigTextButton(
         text = stringResource(Res.string.EMBARK_RECORD_AGAIN),
         onClick = redo,
-        enabled = uiState.canSubmit,
+        enabled = true,
         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
       )
     }
@@ -327,6 +330,7 @@ private fun PreviewNotRecording() {
         allowFreeText = true,
         onLaunchFreeText = {},
         isCurrentStep = true,
+        continueButtonLoading = false
       )
     }
   }
@@ -351,6 +355,7 @@ private fun PreviewRecording() {
         onLaunchFreeText = {},
         redo = { },
         isCurrentStep = true,
+        continueButtonLoading = false
       )
     }
   }

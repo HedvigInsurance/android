@@ -83,9 +83,7 @@ internal class AndroidAudioRecordingManager(
             isPlaying = false,
             isPrepared = true,
             amplitudes = amplitudes,
-            isLoading = false,
             hasError = false,
-            canSubmit = true,
           ),
         )
       }
