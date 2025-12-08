@@ -215,10 +215,6 @@ internal class ClaimChatPresenter(
     CollectEvents { event ->
       when (event) {
         is ClaimChatEvent.Select -> {
-
-          val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect
-            ?: return@CollectEvents
-          val currentStepState = currentStep ?: return@CollectEvents
           currentContinueButtonLoading = true
           launch {
             submitSelectUseCase
@@ -233,13 +229,10 @@ internal class ClaimChatPresenter(
                   logcat { "ClaimChatEvent.Select error: $it" }
                 },
                 ifRight = { claimIntent ->
-                  Snapshot.withMutableSnapshot {
-                    steps.remove(currentStepState)
-                    steps.add(
-                      currentStepState.copy(
-                        stepContent = currentStepContent.copy(
-                          selectedOptionId = event.selectedId,
-                        ),
+                  steps.updateStep<StepContent.ContentSelect>(event.id) { step, content ->
+                    step.copy(
+                      stepContent = content.copy(
+                        selectedOptionId = event.selectedId,
                       ),
                     )
                   }
@@ -304,85 +297,43 @@ internal class ClaimChatPresenter(
 
             is ClaimChatEvent.AudioRecording.StartRecording -> {
               audioRecordingManager.startRecording { recordingState ->
-                Snapshot.withMutableSnapshot {
-                  val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                  val stepContent =
-                    stepToUpdate.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                  val index = steps.indexOf(stepToUpdate)
-                  if (index >= 0) {
-                    steps[index] = stepToUpdate.copy(
-                      stepContent = stepContent.copy(recordingState = recordingState),
-                    )
-                  }
+                steps.updateStep<StepContent.AudioRecording>(event.id) { step, content ->
+                  step.copy(stepContent = content.copy(recordingState = recordingState))
                 }
               }
             }
 
             is ClaimChatEvent.AudioRecording.StopRecording -> {
               audioRecordingManager.stopRecording { playbackState ->
-                Snapshot.withMutableSnapshot {
-                  val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                  val stepContent =
-                    stepToUpdate.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                  val index = steps.indexOf(stepToUpdate)
-                  if (index >= 0) {
-                    steps[index] = stepToUpdate.copy(
-                      stepContent = stepContent.copy(recordingState = playbackState),
-                    )
-                  }
+                steps.updateStep<StepContent.AudioRecording>(event.id) { step, content ->
+                  step.copy(stepContent = content.copy(recordingState = playbackState))
                 }
               }
             }
 
             is ClaimChatEvent.AudioRecording.RedoRecording -> {
               audioRecordingManager.reset()
-              Snapshot.withMutableSnapshot {
-                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                val currentStepContent = currentStepState.stepContent as? StepContent.AudioRecording
-                  ?: return@withMutableSnapshot
-                val index = steps.indexOf(currentStepState)
-                if (index >= 0) {
-                  steps[index] = currentStepState.copy(
-                    stepContent = currentStepContent.copy(
-                      recordingState = AudioRecording.NotRecording,
-                    ),
-                  )
-                }
+              steps.updateStep<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
               }
             }
 
             is ClaimChatEvent.AudioRecording.ShowFreeText -> {
-              Snapshot.withMutableSnapshot {
-                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                val currentStepContent =
-                  currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                val index = steps.indexOf(currentStepState)
-                if (index >= 0) {
-                  steps[index] = currentStepState.copy(
-                    stepContent = currentStepContent.copy(
-                      recordingState = FreeTextDescription(
-                        showOverlay = showFreeTextOverlay,
-                        errorType = null,
-                      ),
+              steps.updateStep<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(
+                  stepContent = content.copy(
+                    recordingState = FreeTextDescription(
+                      showOverlay = showFreeTextOverlay,
+                      errorType = null,
                     ),
-                  )
-                }
+                  ),
+                )
               }
             }
 
             is ClaimChatEvent.AudioRecording.ShowAudioRecording -> {
-              Snapshot.withMutableSnapshot {
-                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                val currentStepContent =
-                  currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                val index = steps.indexOf(currentStepState)
-                if (index >= 0) {
-                  steps[index] = currentStepState.copy(
-                    stepContent = currentStepContent.copy(
-                      recordingState = AudioRecording.NotRecording,
-                    ),
-                  )
-                }
+              steps.updateStep<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
               }
             }
           }
@@ -779,6 +730,20 @@ private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: Cla
   Snapshot.withMutableSnapshot {
     removeLastIf { it.stepContent is StepContent.Task }
     add(step)
+  }
+}
+
+private inline fun <reified T : StepContent> SnapshotStateList<ClaimIntentStep>.updateStep(
+  stepId: StepId,
+  transform: (ClaimIntentStep, T) -> ClaimIntentStep
+) {
+  Snapshot.withMutableSnapshot {
+    val stepToUpdate = find { it.id == stepId } ?: return@withMutableSnapshot
+    val stepContent = stepToUpdate.stepContent as? T ?: return@withMutableSnapshot
+    val index = indexOf(stepToUpdate)
+    if (index >= 0) {
+      this[index] = transform(stepToUpdate, stepContent)
+    }
   }
 }
 
