@@ -49,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -58,6 +57,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
+import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
@@ -242,6 +242,7 @@ private fun ClaimChatScreenContent(
           onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openAppSettings = openAppSettings,
           freeText = uiState.freeText,
+          onEvent = onEvent,
         )
 
         is StepContent.ContentSelect -> ContentSelectStep(
@@ -263,6 +264,7 @@ private fun ClaimChatScreenContent(
           imageLoader = imageLoader,
           localFiles = item.stepContent.localFiles,
           onEvent = onEvent,
+          canEdit = item.isRegrettable
         )
 
         is StepContent.Form -> FormStep(
@@ -320,6 +322,7 @@ private fun UploadFilesStep(
   stepContent: StepContent.FileUpload,
   appPackageId: String,
   isCurrentStep: Boolean,
+  canEdit: Boolean,
   imageLoader: ImageLoader,
   localFiles: List<UiFile>,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -391,6 +394,9 @@ private fun UploadFilesStep(
       } else {
         SkippedLabel()
       }
+      EditButton(canEdit, onRegret = {
+        onEvent(ClaimChatEvent.Regret(itemId))
+      })
     }
   }
 }
@@ -402,15 +408,11 @@ internal fun SkippedLabel() {
     horizontalArrangement = Arrangement.End
   ) {
     val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_LABEL)
-    HedvigChip(
-      skippedLabelText,
-      itemDisplayName = {
-        skippedLabelText
-      },
-      isSelected = false,
-      onItemClick = {},
-      showChipAnimatable = remember { Animatable(1f) },
-    )
+    MemberSentAnswer(
+      onClick = null
+    ) {
+      HedvigText(skippedLabelText)
+    }
   }
 }
 
@@ -438,15 +440,11 @@ private fun TaskStep(
           )
           Spacer(Modifier.width(8.dp))
           AnimatedContent(taskContent.descriptions.last()) { target ->
-            HedvigChip(
-              item = target,
-              showChipAnimatable = remember { Animatable(1f) },
-              itemDisplayName = {
-                target
-              },
-              isSelected = false,
-              onItemClick = {},
-            )
+            MemberSentAnswer(
+              onClick = null
+            ) {
+              HedvigText(target)
+            }
           }
         }
       }
@@ -506,9 +504,11 @@ private fun FormContent(
 ) {
   Column(
     modifier,
-    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     if (isCurrentStep) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
       content.fields.forEach { field ->
         when (field.type) {
           StepContent.Form.FieldType.TEXT -> {
@@ -617,7 +617,8 @@ private fun FormContent(
           }
         }
       }
-      Spacer(Modifier.height(8.dp))
+      }
+      Spacer(Modifier.height(16.dp))
       HedvigButton(
         text = stringResource(Res.string.general_continue_button),
         enabled = content.canContinue(),
@@ -625,6 +626,7 @@ private fun FormContent(
         modifier = Modifier.fillMaxWidth(),
       )
       if (canSkip) {
+        Spacer(Modifier.height(8.dp))
         HedvigButton(
           text = stringResource(Res.string.claims_skip_button),
           enabled = true,
@@ -634,27 +636,27 @@ private fun FormContent(
         )
       }
     } else {
-      content.fields.forEach { field ->
-        val textValue = field.selectedOptions.joinToString { it.text }
-        if (textValue.isNotEmpty()) {
-          Column(
-            Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End,
-          ) {
-            HedvigText(
-              field.title, style = HedvigTheme.typography.label,
-              color = HedvigTheme.colorScheme.textAccordion,
-            )
-            Spacer(Modifier.height(4.dp))
-            HedvigChip(
-              item = textValue,
-              showChipAnimatable = remember { Animatable(1f) },
-              itemDisplayName = {
-                textValue
-              },
-              isSelected = false,
-              onItemClick = {},
-            )
+      Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+        content.fields.forEach { field ->
+          val textValue = field.selectedOptions.joinToString { it.text }
+          if (textValue.isNotEmpty()) {
+            Column(
+              Modifier.fillMaxWidth(),
+              horizontalAlignment = Alignment.End,
+            ) {
+              HedvigText(
+                field.title, style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textAccordion,
+              )
+              Spacer(Modifier.height(4.dp))
+              MemberSentAnswer(
+                onClick = null
+              ) {
+                HedvigText(textValue)
+              }
+            }
           }
         }
       }
@@ -703,6 +705,7 @@ private fun AudioRecordingStep(
   onShouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   startRecording: () -> Unit,
+  onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -729,6 +732,14 @@ private fun AudioRecordingStep(
       isCurrentStep = isCurrentStep,
       freeText = freeText,
     )
+    if (item.isRegrettable && !isCurrentStep) {
+      EditButton(
+        item.isRegrettable,
+        onRegret = {
+          onEvent(ClaimChatEvent.Regret(item.id))
+        },
+      )
+    }
   }
 }
 
@@ -783,17 +794,11 @@ private fun ContentSelectStep(
             modifier = Modifier
               .fillMaxWidth(),
           ) {
-            HedvigChip(
-              item = item,
-              showChipAnimatable = remember {
-                Animatable(1.0f)
-              },
-              itemDisplayName = {
-                targetState.title
-              },
-              isSelected = false,
-              onItemClick = {},
-            )
+            MemberSentAnswer(
+             onClick = null
+            ) {
+              HedvigText(targetState.title)
+            }
           }
           EditButton(
             item.isRegrettable,

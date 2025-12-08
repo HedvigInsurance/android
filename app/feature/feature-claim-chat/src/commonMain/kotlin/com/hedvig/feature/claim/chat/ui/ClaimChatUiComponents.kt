@@ -3,6 +3,7 @@ package com.hedvig.feature.claim.chat.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -94,9 +95,9 @@ import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.StepContent
-import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecordingStep
+import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
+
 import hedvig.resources.A11Y_AUDIO_RECORDING
-import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_REMOVE
@@ -148,46 +149,29 @@ internal fun ContentSelectChips(
 }
 
 @Composable
-internal fun AudioRecorderBubble(
-  recordingState: AudioRecordingStepState,
-  freeText: String?,
-  clock: Clock,
-  onShouldShowRequestPermissionRationale: (String) -> Boolean,
-  startRecording: () -> Unit,
-  stopRecording: () -> Unit,
-  submitAudioFile: () -> Unit,
-  redoRecording: () -> Unit,
-  openAppSettings: () -> Unit,
-  freeTextAvailable: Boolean,
-  submitFreeText: () -> Unit,
-  onShowFreeText: () -> Unit,
-  onShowAudioRecording: () -> Unit,
-  onLaunchFullScreenEditText: () -> Unit,
-  canSkip: Boolean,
-  onSkip: () -> Unit,
-  isCurrentStep: Boolean,
+internal fun MemberSentAnswer(
   modifier: Modifier = Modifier,
+  onClick: (() -> Unit)?, // expecting it to be instead edit button
+  content: @Composable () -> Unit,
 ) {
-  AudioRecordingStep(
-    uiState = recordingState,
-    freeText = freeText,
-    clock = clock,
-    shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-    startRecording = startRecording,
-    stopRecording = stopRecording,
-    submitAudioFile = submitAudioFile,
-    redo = redoRecording,
-    openAppSettings = openAppSettings,
-    freeTextAvailable = freeTextAvailable,
-    submitFreeText = submitFreeText,
-    showFreeText = onShowFreeText,
-    showAudioRecording = onShowAudioRecording,
-    onLaunchFullScreenEditText = onLaunchFullScreenEditText,
-    canSkip = canSkip,
-    onSkip = onSkip,
-    isCurrentStep = isCurrentStep,
-    modifier = modifier,
-  )
+  Surface(
+    modifier
+      .then(
+        if (onClick != null) Modifier.clickable(
+          onClick = onClick,
+        ) else Modifier,
+      ),
+    shape = HedvigTheme.shapes.cornerLarge,
+    color = HedvigTheme.colorScheme.buttonSecondaryResting,
+  ) {
+    Column(
+      Modifier.padding(
+        top = 7.dp, start = 14.dp, end = 14.dp, bottom = 9.dp,
+      ),
+    ) {
+      content()
+    }
+  }
 }
 
 @Composable
@@ -691,49 +675,57 @@ internal fun ChatClaimSummary(
       color = HedvigTheme.colorScheme.fillNegative,
     ) {
       Column(Modifier.padding(16.dp)) {
-        HedvigText(
-          stringResource(Res.string.claim_status_claim_details_title),
-        )
-        Spacer(Modifier.height(8.dp))
-        CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
-          Column(modifier) {
-            for (displayItem in displayItems) {
-              HorizontalItemsWithMaximumSpaceTaken(
-                spaceBetween = 8.dp,
-                startSlot = {
-                  HedvigText(text = displayItem.first)
-                },
-                endSlot = {
-                  HedvigText(
-                    text = displayItem.second,
-                    textAlign = TextAlign.End,
-                  )
-                },
-              )
+        if (displayItems.isNotEmpty()) {
+
+
+          HedvigText(
+            stringResource(Res.string.claim_status_claim_details_title),
+          )
+          Spacer(Modifier.height(8.dp))
+          CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
+            Column(modifier) {
+              for (displayItem in displayItems) {
+                HorizontalItemsWithMaximumSpaceTaken(
+                  spaceBetween = 8.dp,
+                  startSlot = {
+                    HedvigText(text = displayItem.first)
+                  },
+                  endSlot = {
+                    HedvigText(
+                      text = displayItem.second,
+                      textAlign = TextAlign.End,
+                    )
+                  },
+                )
+              }
             }
           }
         }
-        Spacer(Modifier.height(24.dp))
-        HedvigText(
-          stringResource(Res.string.A11Y_AUDIO_RECORDING),
-        )
-        Spacer(Modifier.height(8.dp))
-        recordingUrls.forEach {
-          val audioPlayer = rememberAudioPlayer(
-            PlayableAudioSource.RemoteUrl(
-              SignedAudioUrl.fromSignedAudioUrlString(it),
-            ),
+        if (recordingUrls.isNotEmpty()) {
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(Res.string.A11Y_AUDIO_RECORDING),
           )
-          HedvigAudioPlayer(audioPlayer = audioPlayer)
           Spacer(Modifier.height(8.dp))
+          recordingUrls.forEach {
+            val audioPlayer = rememberAudioPlayer(
+              PlayableAudioSource.RemoteUrl(
+                SignedAudioUrl.fromSignedAudioUrlString(it),
+              ),
+            )
+            HedvigAudioPlayer(audioPlayer = audioPlayer)
+            Spacer(Modifier.height(8.dp))
+          }
         }
-        FilesRow(
-          uiFiles = fileUploads,
-          imageLoader = imageLoader,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          onRemoveFile = null,
-          alignment = Alignment.Start,
-        )
+        if (fileUploads.isNotEmpty()) {
+          FilesRow(
+            uiFiles = fileUploads,
+            imageLoader = imageLoader,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            onRemoveFile = null,
+            alignment = Alignment.Start,
+          )
+        }
       }
     }
 
@@ -904,7 +896,7 @@ private fun PreviewSummary() {
           isCurrentStep = true,
           fileUploads = listOf(),
           imageLoader = rememberPreviewImageLoader(),
-          onNavigateToImageViewer = {_,_ -> }
+          onNavigateToImageViewer = { _, _ -> },
         )
       }
     }
