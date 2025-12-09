@@ -21,7 +21,7 @@ fun HedvigTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable
 private fun HedvigTheme(
   colorScheme: ColorScheme = HedvigTheme.colorScheme,
   shapes: Shapes = HedvigTheme.shapes,
-  typography: Typography = HedvigTheme.typography,
+  typography: Typography = HedvigTypography,
   content: @Composable () -> Unit,
 ) {
   val selectionColors = rememberTextSelectionColors(colorScheme)

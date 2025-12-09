@@ -49,7 +49,6 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -95,8 +94,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.design.system.hedvig.tokens.HedvigSerif
-import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
@@ -665,7 +662,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
       // todo custom style since new DS does not have this specification
       //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
       style = HedvigTheme.typography.headlineMedium.copy(
-        fontFamily = FontFamily.HedvigSerif,
+        fontFamily = HedvigTheme.typography.serif,
         fontSize = 28.0.sp,
         lineBreak = LineBreak.Heading,
         textAlign = TextAlign.Center,
