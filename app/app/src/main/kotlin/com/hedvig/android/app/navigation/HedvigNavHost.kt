@@ -424,6 +424,7 @@ internal fun HedvigNavHost(
         navigateToInbox(backStackEntry)
       },
       openUrl = openUrl,
+      tryToDialPhone = externalNavigator::tryToDialPhone,
     )
     imageViewerGraph(hedvigAppState.navController, imageLoader)
   }
@@ -451,6 +452,8 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
     },
     tryOpenPlayStore = externalNavigator::tryOpenPlayStore,
+    openUrl = openUrl,
+    tryToDialPhone = externalNavigator::tryToDialPhone,
     imageLoader = imageLoader,
     appPackageId = hedvigBuildConstants.appPackageId,
   )
@@ -514,6 +517,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       )
     },
     openUrl = openUrl,
+    tryToDialPhone = externalNavigator::tryToDialPhone,
     onNavigateToNewConversation = { backStackEntry ->
       navigateToNewConversation(backStackEntry, null)
     },

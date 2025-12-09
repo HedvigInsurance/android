@@ -31,6 +31,7 @@ fun NavGraphBuilder.helpCenterGraph(
   onNavigateToInbox: (NavBackStackEntry) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
 ) {
   navgraph<HelpCenterDestination>(
     startDestination = HelpCenterDestinations.HelpCenter::class,
@@ -137,6 +138,7 @@ fun NavGraphBuilder.helpCenterGraph(
         preferredPartnerImageHeight = preferredPartnerImageHeight,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
+        tryToDialPhone = tryToDialPhone,
       )
     }
   }

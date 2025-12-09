@@ -13,22 +13,30 @@ internal fun DeflectEmergencyDestination(
   deflectEmergency: ClaimFlowDestination.DeflectEmergency,
   navigateUp: () -> Unit,
   openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
 ) {
   DeflectEmergencyScreen(
     partners = deflectEmergency.partners,
     navigateUp = navigateUp,
     openUrl = openUrl,
+    tryToDialPhone = tryToDialPhone,
   )
 }
 
 @Composable
-private fun DeflectEmergencyScreen(partners: List<DeflectPartner>, navigateUp: () -> Unit, openUrl: (String) -> Unit) {
+private fun DeflectEmergencyScreen(
+  partners: List<DeflectPartner>,
+  navigateUp: () -> Unit,
+  openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
+) {
   val partner = partners.firstOrNull()
   EmergencyScreen(
     emergencyNumber = partner?.phoneNumber,
     emergencyUrl = partner?.url,
     navigateUp = navigateUp,
     openUrl = openUrl,
+    tryToDialPhone = tryToDialPhone,
     preferredPartnerImageHeight = partner?.preferredImageHeight,
   )
 }
@@ -50,6 +58,7 @@ private fun PreviewDeflectEmergencyScreen() {
         ),
         navigateUp = {},
         openUrl = {},
+        tryToDialPhone = {},
       )
     }
   }

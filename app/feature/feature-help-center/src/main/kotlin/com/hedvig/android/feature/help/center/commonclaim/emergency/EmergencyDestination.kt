@@ -12,6 +12,7 @@ internal fun EmergencyDestination(
   preferredPartnerImageHeight: Int?,
   navigateUp: () -> Unit,
   openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
 ) {
   EmergencyScreen(
     emergencyNumber = emergencyNumber,
@@ -20,5 +21,6 @@ internal fun EmergencyDestination(
     openUrl = openUrl,
     emergencyUrl = emergencyUrl,
     preferredPartnerImageHeight = preferredPartnerImageHeight,
+    tryToDialPhone = tryToDialPhone,
   )
 }

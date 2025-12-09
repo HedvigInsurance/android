@@ -50,6 +50,8 @@ fun NavGraphBuilder.claimChatGraph(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
   tryOpenPlayStore: () -> Unit,
+  openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
 ) {
@@ -87,7 +89,13 @@ fun NavGraphBuilder.claimChatGraph(
     )
   }
   navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
-    ClaimOutcomeDeflectDestination(deflect = outcome)
+    ClaimOutcomeDeflectDestination(
+      deflect = outcome,
+      imageLoader = imageLoader,
+      navigateUp = navController::navigateUp,
+      openUrl = openUrl,
+      tryToDialPhone = tryToDialPhone,
+    )
   }
   navdestination<ClaimOutcomeNewClaimDestination>(ClaimOutcomeNewClaimDestination) {
     ClaimOutcomeNewClaimDestination(
