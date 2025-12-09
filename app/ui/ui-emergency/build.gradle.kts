@@ -16,6 +16,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
-  implementation(projects.dataContractAndroid)
+  implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
 }

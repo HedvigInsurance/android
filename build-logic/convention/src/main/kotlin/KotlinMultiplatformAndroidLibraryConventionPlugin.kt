@@ -52,6 +52,8 @@ private fun Project.configureKotlinAndroidMultiplatform() {
 
   project.configure<KotlinMultiplatformExtension> {
     androidLibrary {
+      @Suppress("UnstableApiUsage")
+      androidResources.enable = true
       this.compileSdk = libs.versions.compileSdkVersion.get().toInt()
       this.minSdk = libs.versions.minSdkVersion.get().toInt()
       this.enableCoreLibraryDesugaring = true

@@ -22,7 +22,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreUiData)
   implementation(projects.dataChat)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.featureFlagsPublic)

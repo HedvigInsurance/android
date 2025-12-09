@@ -40,6 +40,21 @@ internal class ExternalNavigatorImpl(
     activity.tryOpenPlayStore()
   }
 
+  override fun tryToDialPhone(number: String) {
+    try {
+      activity.startActivity(
+        Intent(
+          Intent.ACTION_DIAL,
+          Uri.parse("tel:$number"),
+        ),
+      )
+    } catch (exception: Throwable) {
+      logcat(LogPriority.ERROR, exception) {
+        "Could not open dial activity in deflect emergency destination"
+      }
+    }
+  }
+
   /**
    * Currently opens a selection sheet with the title "Select code" always.
    * Todo look for a way to just open the default email app without having to also start a draft email in the process

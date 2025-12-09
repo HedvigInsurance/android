@@ -67,6 +67,7 @@ fun NavGraphBuilder.claimFlowGraph(
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
   imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
@@ -319,6 +320,7 @@ fun NavGraphBuilder.claimFlowGraph(
         deflectEmergency = this,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
+        tryToDialPhone = tryToDialPhone,
       )
     }
     navdestination<ClaimFlowDestination.DeflectPests>(

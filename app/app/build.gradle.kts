@@ -168,7 +168,7 @@ dependencies {
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
   implementation(projects.dataClaimFlow)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataCrossSellAfterFlow)
