@@ -96,7 +96,6 @@ import com.hedvig.audio.player.data.SignedAudioUrl
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
-
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.GENERAL_NO
@@ -157,16 +156,23 @@ internal fun MemberSentAnswer(
   Surface(
     modifier
       .then(
-        if (onClick != null) Modifier.clickable(
-          onClick = onClick,
-        ) else Modifier,
+        if (onClick != null) {
+          Modifier.clickable(
+            onClick = onClick,
+          )
+        } else {
+          Modifier
+        },
       ),
     shape = HedvigTheme.shapes.cornerLarge,
     color = HedvigTheme.colorScheme.buttonSecondaryResting,
   ) {
     Column(
       Modifier.padding(
-        top = 7.dp, start = 14.dp, end = 14.dp, bottom = 9.dp,
+        top = 7.dp,
+        start = 14.dp,
+        end = 14.dp,
+        bottom = 9.dp,
       ),
     ) {
       content()
@@ -225,10 +231,12 @@ internal fun YesNoBubble(
 ) {
   val options = listOf(
     StepContent.ContentSelect.Option(
-      "true", stringResource(Res.string.GENERAL_YES),
+      "true",
+      stringResource(Res.string.GENERAL_YES),
     ),
     StepContent.ContentSelect.Option(
-      "false", stringResource(Res.string.GENERAL_NO),
+      "false",
+      stringResource(Res.string.GENERAL_NO),
     ),
   )
   Row(
@@ -252,7 +260,6 @@ internal fun YesNoBubble(
     )
   }
 }
-
 
 @Composable
 internal fun SingleSelectBubbleWithDialog(
@@ -392,10 +399,16 @@ private fun UploadFilesBubbleContent(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      buttonStyle = if (localFiles.isNotEmpty()) ButtonDefaults.ButtonStyle.Ghost else
-        ButtonDefaults.ButtonStyle.Primary,
-      text = if (localFiles.isNotEmpty()) stringResource(Res.string.claim_status_detail_add_more_files)
-      else stringResource(Res.string.claim_status_detail_add_files),
+      buttonStyle = if (localFiles.isNotEmpty()) {
+        ButtonDefaults.ButtonStyle.Ghost
+      } else {
+        ButtonDefaults.ButtonStyle.Primary
+      },
+      text = if (localFiles.isNotEmpty()) {
+        stringResource(Res.string.claim_status_detail_add_more_files)
+      } else {
+        stringResource(Res.string.claim_status_detail_add_files)
+      },
       onClick = onAddFilesButtonClick,
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
@@ -661,6 +674,7 @@ internal fun ChatClaimSummary(
   text: String,
   recordingUrls: List<String>,
   fileUploads: List<UiFile>,
+  freeTexts: List<String>,
   displayItems: List<Pair<String, String>>,
   onSubmit: () -> Unit,
   isCurrentStep: Boolean,
@@ -677,8 +691,6 @@ internal fun ChatClaimSummary(
     ) {
       Column(Modifier.padding(16.dp)) {
         if (displayItems.isNotEmpty()) {
-
-
           HedvigText(
             stringResource(Res.string.claim_status_claim_details_title),
           )
@@ -708,14 +720,30 @@ internal fun ChatClaimSummary(
             stringResource(Res.string.A11Y_AUDIO_RECORDING),
           )
           Spacer(Modifier.height(8.dp))
-          recordingUrls.forEach {
+          recordingUrls.forEachIndexed { index, string ->
             val audioPlayer = rememberAudioPlayer(
               PlayableAudioSource.RemoteUrl(
-                SignedAudioUrl.fromSignedAudioUrlString(it),
+                SignedAudioUrl.fromSignedAudioUrlString(string),
               ),
             )
             HedvigAudioPlayer(audioPlayer = audioPlayer)
-            Spacer(Modifier.height(8.dp))
+            if (index != recordingUrls.lastIndex) {
+              Spacer(Modifier.height(8.dp))
+            }
+          }
+        }
+        if (freeTexts.isNotEmpty()) {
+          freeTexts.forEachIndexed { index, string ->
+            Spacer(Modifier.height(24.dp))
+            MemberSentAnswer(
+              modifier = Modifier.fillMaxWidth(),
+              onClick = null,
+            ) {
+              HedvigText(string)
+            }
+            if (index != recordingUrls.lastIndex) {
+              Spacer(Modifier.height(8.dp))
+            }
           }
         }
         if (fileUploads.isNotEmpty()) {
@@ -901,7 +929,8 @@ private fun PreviewSummary() {
           fileUploads = listOf(),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
-          continueButtonLoading = false
+          continueButtonLoading = false,
+          freeTexts = listOf("A quite short text short text short text short text"),
         )
       }
     }

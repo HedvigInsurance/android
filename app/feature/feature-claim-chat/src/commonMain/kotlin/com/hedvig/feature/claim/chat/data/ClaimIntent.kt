@@ -32,7 +32,7 @@ internal data class ClaimIntentStep(
   val id: StepId,
   val text: String,
   val stepContent: StepContent,
-  val isRegrettable: Boolean
+  val isRegrettable: Boolean,
 )
 
 @Serializable
@@ -83,13 +83,13 @@ internal sealed interface StepContent {
     val hint: String?,
     val uploadUri: String,
     override val isSkippable: Boolean,
-    val recordingState: AudioRecordingStepState
+    val recordingState: AudioRecordingStepState,
   ) : StepContent
 
   data class FileUpload(
     val uploadUri: String,
     override val isSkippable: Boolean,
-    val localFiles: List<UiFile>
+    val localFiles: List<UiFile>,
   ) : StepContent
 
   data class Task(
@@ -103,20 +103,18 @@ internal sealed interface StepContent {
     val fields: List<Field>,
     override val isSkippable: Boolean,
   ) : StepContent {
-
     fun canContinue(): Boolean {
       val requiredFields = fields
         .filter { it.isRequired }
       return requiredFields
-        .filter { it.type!= FieldType.DATE }
+        .filter { it.type != FieldType.DATE }
         .all {
-        it.selectedOptions.isNotEmpty()
-      } && requiredFields
+          it.selectedOptions.isNotEmpty()
+        } && requiredFields
         .filter { it.type == FieldType.DATE }
         .all {
-          it.datePickerUiState?.datePickerState?.selectedDateMillis!=null
+          it.datePickerUiState?.datePickerState?.selectedDateMillis != null
         }
-
     }
 
     data class Field(
@@ -135,7 +133,7 @@ internal sealed interface StepContent {
 
     data class FieldOption(
       val value: String,
-      val text: String
+      val text: String,
     )
 
     enum class FieldType {
@@ -150,7 +148,7 @@ internal sealed interface StepContent {
 
   data class ContentSelect(
     val options: List<Option>,
-    val selectedOptionId: String?, //todo: check
+    val selectedOptionId: String?, // todo: check
     override val isSkippable: Boolean,
   ) : StepContent {
     data class Option(
@@ -163,6 +161,7 @@ internal sealed interface StepContent {
     val items: List<Item>,
     val audioRecordings: List<AudioRecording>,
     val fileUploads: List<FileUpload>,
+    val freeTexts: List<String>,
   ) : StepContent {
     override val isSkippable: Boolean = false
 

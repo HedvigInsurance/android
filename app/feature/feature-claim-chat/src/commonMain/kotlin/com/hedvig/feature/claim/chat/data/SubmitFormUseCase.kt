@@ -31,7 +31,7 @@ internal class SubmitFormUseCase(
           ),
         )
         .safeExecute()
-        .mapLeft{
+        .mapLeft {
           logcat { "SubmitFormUseCase error: $it" }
           ErrorMessage()
         }

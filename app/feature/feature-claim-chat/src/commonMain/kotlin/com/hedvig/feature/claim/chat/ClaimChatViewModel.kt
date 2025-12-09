@@ -77,6 +77,7 @@ internal sealed interface ClaimChatEvent {
   data class Skip(val id: StepId) : ClaimChatEvent
 
   data class Regret(val id: StepId) : ClaimChatEvent
+
   data class FormSubmit(
     val stepId: StepId,
   ) : ClaimChatEvent
@@ -129,23 +130,23 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
-  ClaimChatUiState.Initializing,
-  ClaimChatPresenter(
-    developmentFlow,
-    startClaimIntentUseCase,
-    getClaimIntentUseCase,
-    submitTaskUseCase,
-    submitAudioRecordingUseCase,
-    submitFileUploadUseCase,
-    submitFormUseCase,
-    submitSelectUseCase,
-    submitSummaryUseCase,
-    skipStepUseCase,
-    audioRecordingManager,
-    fileService,
-    regretStepUseCase,
-  ),
-)
+    ClaimChatUiState.Initializing,
+    ClaimChatPresenter(
+      developmentFlow,
+      startClaimIntentUseCase,
+      getClaimIntentUseCase,
+      submitTaskUseCase,
+      submitAudioRecordingUseCase,
+      submitFileUploadUseCase,
+      submitFormUseCase,
+      submitSelectUseCase,
+      submitSummaryUseCase,
+      skipStepUseCase,
+      audioRecordingManager,
+      fileService,
+      regretStepUseCase,
+    ),
+  )
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
@@ -237,7 +238,10 @@ internal class ClaimChatPresenter(
                           selectedOptionId = event.selectedId,
                         ),
                       )
-                    }) return@launch
+                    }
+                  ) {
+                    return@launch
+                  }
                   currentContinueButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -358,14 +362,18 @@ internal class ClaimChatPresenter(
                     steps[index] = stepToUpdate.copy(
                       stepContent = currentContent.copy(
                         fields = currentContent.fields.map { existingField ->
-                          if (existingField.id == field.id) existingField.copy(
-                            selectedOptions = listOf(
-                              StepContent.Form.FieldOption(
-                                selectedDateString,
-                                selectedDateString,
+                          if (existingField.id == field.id) {
+                            existingField.copy(
+                              selectedOptions = listOf(
+                                StepContent.Form.FieldOption(
+                                  selectedDateString,
+                                  selectedDateString,
+                                ),
                               ),
-                            ),
-                          ) else existingField
+                            )
+                          } else {
+                            existingField
+                          }
                         },
                       ),
                     )
@@ -373,8 +381,7 @@ internal class ClaimChatPresenter(
                   Field(
                     field.id,
                     listOf(selectedDateString),
-
-                    )
+                  )
                 }
 
                 else -> Field(
@@ -384,7 +391,6 @@ internal class ClaimChatPresenter(
                       selectedOption.value
                     },
                 )
-
               }
             }
             currentContinueButtonLoading = true
@@ -522,15 +528,14 @@ internal class ClaimChatPresenter(
                   StepContent.Form.FieldType.BINARY,
                   StepContent.Form.FieldType.SINGLE_SELECT,
                   null,
-                    -> field.copy(
+                  -> field.copy(
                     selectedOptions = event.answer?.let {
                       listOf(it)
                     } ?: emptyList(),
                   )
 
                   StepContent.Form.FieldType.DATE -> field
-                  //Date gets selected date from DatePickerState, not from Event
-
+                  // Date gets selected date from DatePickerState, not from Event
 
                   StepContent.Form.FieldType.MULTI_SELECT -> {
                     field.copy(
@@ -760,7 +765,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Summary,
   is StepContent.Task,
   StepContent.Unknown,
-    -> this
+  -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {

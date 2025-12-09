@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -73,38 +74,37 @@ internal fun AudioRecorderBubble(
     },
   ) { uiStateAnimated ->
     Column(modifier) {
-        when (uiStateAnimated) {
-          is AudioRecordingStepState.AudioRecording -> {
-            AudioRecordingSection(
-              uiState = uiStateAnimated,
-              clock = clock,
-              shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-              startRecording = startRecording,
-              stopRecording = stopRecording,
-              submitAudioFile = submitAudioFile,
-              redo = redoRecording,
-              openAppSettings = openAppSettings,
-              allowFreeText = freeTextAvailable,
-              launchFreeText = onShowFreeText,
-              isCurrentStep = isCurrentStep,
-              continueButtonLoading = continueButtonLoading
-            )
-          }
-
-          is AudioRecordingStepState.FreeTextDescription -> {
-            FreeTextInputSection(
-              submitFreeText = submitFreeText,
-              showAudioRecording = onShowAudioRecording,
-              onLaunchFullScreenEditText = onLaunchFullScreenEditText,
-              freeText = freeText,
-              hasError = uiStateAnimated.hasError,
-              errorType = uiStateAnimated.errorType,
-              isCurrentStep = isCurrentStep,
-              continueButtonLoading = continueButtonLoading
-            )
-          }
+      when (uiStateAnimated) {
+        is AudioRecordingStepState.AudioRecording -> {
+          AudioRecordingSection(
+            uiState = uiStateAnimated,
+            clock = clock,
+            shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+            startRecording = startRecording,
+            stopRecording = stopRecording,
+            submitAudioFile = submitAudioFile,
+            redo = redoRecording,
+            openAppSettings = openAppSettings,
+            allowFreeText = freeTextAvailable,
+            launchFreeText = onShowFreeText,
+            isCurrentStep = isCurrentStep,
+            continueButtonLoading = continueButtonLoading,
+          )
         }
 
+        is AudioRecordingStepState.FreeTextDescription -> {
+          FreeTextInputSection(
+            submitFreeText = submitFreeText,
+            showAudioRecording = onShowAudioRecording,
+            onLaunchFullScreenEditText = onLaunchFullScreenEditText,
+            freeText = freeText,
+            hasError = uiStateAnimated.hasError,
+            errorType = uiStateAnimated.errorType,
+            isCurrentStep = isCurrentStep,
+            continueButtonLoading = continueButtonLoading,
+          )
+        }
+      }
 
       if (canSkip && isCurrentStep) {
         HedvigTextButton(
@@ -150,7 +150,8 @@ private fun FreeTextInputSection(
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         onClick = submitFreeText,
-        enabled = true,
+        enabled = !continueButtonLoading,
+        isLoading = continueButtonLoading,
         modifier = Modifier.fillMaxWidth(),
         text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
       )
@@ -162,10 +163,16 @@ private fun FreeTextInputSection(
         enabled = true,
       )
     } else {
-      if (freeText!=null) {
-        Row(Modifier.fillMaxWidth(),
-          horizontalArrangement = Arrangement.End) {
-          HedvigText(freeText, textAlign = TextAlign.End)
+      if (freeText != null) {
+        Row(
+          Modifier.fillMaxWidth().padding(start = 48.dp),
+          horizontalArrangement = Arrangement.End,
+        ) {
+          MemberSentAnswer(
+            onClick = null,
+          ) {
+            HedvigText(freeText, textAlign = TextAlign.End)
+          }
         }
       } else {
         SkippedLabel()
@@ -227,7 +234,7 @@ private fun AudioRecordingSection(
     allowFreeText = allowFreeText,
     onLaunchFreeText = launchFreeText,
     isCurrentStep = isCurrentStep,
-    continueButtonLoading = continueButtonLoading
+    continueButtonLoading = continueButtonLoading,
   )
 }
 
@@ -244,7 +251,7 @@ private fun PreviewFreeTextInput() {
         hasError = false,
         errorType = null,
         isCurrentStep = true,
-        continueButtonLoading = false
+        continueButtonLoading = false,
       )
     }
   }

@@ -24,10 +24,7 @@ import kotlin.time.Instant
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ClaimOutcomeDeflectDestination(
-  deflect: ClaimIntentOutcome.Deflect,
-  modifier: Modifier = Modifier,
-) {
+internal fun ClaimOutcomeDeflectDestination(deflect: ClaimIntentOutcome.Deflect, modifier: Modifier = Modifier) {
   HedvigText("Deflect")
 }
 
@@ -44,7 +41,7 @@ private fun PreviewClaimOutcomeDeflectDestination() {
           partners = emptyList(),
           partnersInfo = ClaimIntentOutcome.Deflect.InfoBlock("title", "description"),
           content = ClaimIntentOutcome.Deflect.InfoBlock("title", "description"),
-          faq = emptyList()
+          faq = emptyList(),
         ),
       )
     }

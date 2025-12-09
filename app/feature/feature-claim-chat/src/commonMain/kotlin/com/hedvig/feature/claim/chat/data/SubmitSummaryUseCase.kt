@@ -17,7 +17,7 @@ internal class SubmitSummaryUseCase(
       apolloClient
         .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId.value))
         .safeExecute()
-        .mapLeft{
+        .mapLeft {
           logcat { "SubmitSummaryUseCase error: $it" }
           ErrorMessage()
         }

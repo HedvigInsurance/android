@@ -41,9 +41,9 @@ val claimChatModule = module {
     )
   }
 
-single<SkipStepUseCase> {
-  SkipStepUseCaseImpl(get<ApolloClient>())
-}
+  single<SkipStepUseCase> {
+    SkipStepUseCaseImpl(get<ApolloClient>())
+  }
 
   single<StartClaimIntentUseCase> {
     StartClaimIntentUseCase(get<ApolloClient>())

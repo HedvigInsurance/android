@@ -6,4 +6,4 @@ fun interface DecimalFormatter {
 
 internal expect val decimalFormatter: DecimalFormatter
 
-expect fun DecimalFormatter(pattern: String) : DecimalFormatter
+expect fun DecimalFormatter(pattern: String): DecimalFormatter

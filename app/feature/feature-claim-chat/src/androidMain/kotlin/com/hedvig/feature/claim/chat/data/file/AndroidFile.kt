@@ -5,13 +5,13 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import com.eygraber.uri.Uri
 import com.eygraber.uri.toAndroidUri
+import java.io.File
+import java.util.Locale
 import kotlinx.io.IOException
 import kotlinx.io.Source
 import kotlinx.io.asSource
 import kotlinx.io.buffered
 import kotlinx.io.readByteArray
-import java.io.File
-import java.util.Locale
 
 class AndroidFile(
   override val fileName: String,
@@ -62,6 +62,7 @@ internal class AndroidFileService(
       .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
       ?: ""
   }
+
   private fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
 
   override fun getFileName(uriString: String): String? {
@@ -87,5 +88,4 @@ internal class AndroidFileService(
     }
     return uri.path
   }
-
 }

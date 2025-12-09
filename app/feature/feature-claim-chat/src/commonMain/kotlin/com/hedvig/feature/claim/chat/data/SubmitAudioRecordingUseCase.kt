@@ -43,7 +43,7 @@ internal class SubmitAudioRecordingUseCase(
         ),
       )
       .safeExecute()
-      .mapLeft{
+      .mapLeft {
         logcat { "SubmitAudioRecordingUseCase error: $it" }
         ErrorMessage()
       }

@@ -25,7 +25,7 @@ internal class SubmitSelectUseCase(
           ),
         )
         .safeExecute()
-        .mapLeft{
+        .mapLeft {
           logcat { "SubmitSelectUseCase error: $it" }
           ErrorMessage()
         }

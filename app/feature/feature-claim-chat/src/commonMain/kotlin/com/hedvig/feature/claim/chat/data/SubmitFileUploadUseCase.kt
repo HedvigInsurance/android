@@ -27,11 +27,15 @@ internal class SubmitFileUploadUseCase(
       val commonFiles = fileUris.map { fileUri ->
         fileService.convertToCommonFile(fileUri)
       }
-      val fileIds = buildList { //todo!!!
+      val fileIds = buildList {
+        // todo!!!
         commonFiles.forEach {
-          add (uploadFileUseCase.invoke(
-            it,
-            uploadUrl).fileId)
+          add(
+            uploadFileUseCase.invoke(
+              it,
+              uploadUrl,
+            ).fileId,
+          )
         }
       }
       logcat { "SubmitFileUploadUseCase uploaded file with Uris:$fileUris got back fileIds:$fileIds" }
@@ -53,7 +57,7 @@ internal class SubmitFileUploadUseCase(
         ),
       )
       .safeExecute()
-      .mapLeft{
+      .mapLeft {
         logcat { "SubmitFileUploadUseCase error: $it" }
         ErrorMessage()
       }

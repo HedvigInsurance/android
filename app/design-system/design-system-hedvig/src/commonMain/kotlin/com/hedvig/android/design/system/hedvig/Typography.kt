@@ -45,8 +45,7 @@ internal val HedvigTypography: Typography
     finePrint = TypographyTokens.FinePrint.toTextStyle(),
     serif = TypefaceTokens.Serif.toFontFamily(),
     sans = TypefaceTokens.Sans.toFontFamily(),
-    )
-
+  )
 
 @ReadOnlyComposable
 @Composable
