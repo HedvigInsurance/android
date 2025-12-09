@@ -67,6 +67,7 @@ fun EmergencyScreen(
   openUrl: (String) -> Unit,
   preferredPartnerImageHeight: Int?,
   navigateUp: () -> Unit,
+  tryToDialPhone: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigScaffold(
@@ -80,7 +81,9 @@ fun EmergencyScreen(
       Spacer(Modifier.height(8.dp))
       HedvigNotificationCard(
         message = stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_INFO_LABEL),
-        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
         style = NotificationDefaults.InfoCardStyle.Default,
         priority = NotificationDefaults.NotificationPriority.Attention,
       )
@@ -153,20 +156,7 @@ fun EmergencyScreen(
                   emergencyNumber,
                 ),
                 enabled = true,
-                onClick = {
-                  try {
-                    context.startActivity(
-                      Intent(
-                        Intent.ACTION_DIAL,
-                        Uri.parse("tel:$emergencyNumber"),
-                      ),
-                    )
-                  } catch (exception: Throwable) {
-                    logcat(LogPriority.ERROR, exception) {
-                      "Could not open dial activity in deflect emergency destination"
-                    }
-                  }
-                },
+                onClick = { tryToDialPhone(emergencyNumber) },
                 modifier = Modifier.fillMaxWidth(),
               )
             }
@@ -185,7 +175,9 @@ fun EmergencyScreen(
       Spacer(Modifier.height(24.dp))
       HedvigText(
         text = stringResource(Res.string.SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE),
-        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
       )
       Spacer(Modifier.height(8.dp))
       HedvigText(
@@ -246,6 +238,7 @@ private fun PreviewEmergencyScreen() {
         emergencyUrl = "url",
         preferredPartnerImageHeight = null,
         navigateUp = {},
+        tryToDialPhone = {},
         openUrl = {},
       )
     }
