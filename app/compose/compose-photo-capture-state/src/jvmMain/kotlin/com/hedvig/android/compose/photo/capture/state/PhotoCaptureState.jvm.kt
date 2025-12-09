@@ -4,10 +4,7 @@ import androidx.compose.runtime.Composable
 import com.eygraber.uri.Uri
 
 @Composable
-actual fun rememberPhotoCaptureState(
-  appPackageId: String,
-  onPhotoCaptured: (uri: Uri) -> Unit,
-): PhotoCaptureState {
+actual fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (uri: Uri) -> Unit): PhotoCaptureState {
   return object : PhotoCaptureState {
     override fun launchTakePhotoRequest() {
       TODO("Not yet implemented")

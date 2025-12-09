@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import com.eygraber.uri.Uri
 
 @Composable
-actual fun rememberPickMultipleVisualMediaResultLauncher(block: (uris: List<com.eygraber.uri.Uri>) -> Unit): ResultLauncher {
+actual fun rememberPickMultipleVisualMediaResultLauncher(
+  block: (uris: List<com.eygraber.uri.Uri>) -> Unit,
+): ResultLauncher {
   return ResultLauncher {
     TODO("Not yet implemented")
   }

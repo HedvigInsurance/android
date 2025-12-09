@@ -110,6 +110,7 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     contentType
     fileName
   }
+  freeTexts
 }
 
 fragment ClaimIntentOutcomeDeflectionInfoBlockFragment on ClaimIntentOutcomeDeflectionInfoBlock {

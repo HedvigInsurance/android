@@ -6,7 +6,6 @@ import kotlin.time.Clock
 internal class NativeAudioRecordingManager(
   private val clock: Clock,
 ) : AudioRecordingManager {
-
   override fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Recording) -> Unit) {
     // TODO: Implement iOS audio recording using AVAudioRecorder
     TODO("iOS audio recording not yet implemented")

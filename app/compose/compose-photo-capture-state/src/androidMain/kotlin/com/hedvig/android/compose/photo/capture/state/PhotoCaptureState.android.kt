@@ -39,7 +39,7 @@ class PhotoCaptureStateImpl internal constructor(
   private val context: Context,
   private val externalPhotosDirectory: File?,
   private val authority: String,
-): PhotoCaptureState {
+) : PhotoCaptureState {
   @Suppress("RemoveExplicitTypeArguments")
   internal var currentPhotoPath by mutableStateOf<String?>(initialPhotoPath)
     private set
@@ -68,9 +68,11 @@ class PhotoCaptureStateImpl internal constructor(
   }
 }
 
-
 @Composable
-actual fun rememberPhotoCaptureState(appPackageId: String, onPhotoCaptured: (uri: com.eygraber.uri.Uri) -> Unit): PhotoCaptureState {
+actual fun rememberPhotoCaptureState(
+  appPackageId: String,
+  onPhotoCaptured: (uri: com.eygraber.uri.Uri) -> Unit,
+): PhotoCaptureState {
   val context = LocalContext.current
   val activity = context.findActivity()
   val externalPhotosDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)

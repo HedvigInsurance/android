@@ -101,14 +101,13 @@ internal fun AudioRecorder(
       redo = redo,
       modifier = modifier,
       isCurrentStep = isCurrentStep,
-      continueButtonLoading = continueButtonLoading
+      continueButtonLoading = continueButtonLoading,
     )
 
     else -> {
       if (!isCurrentStep) {
         SkippedLabel()
       } else {
-
         val isRecording = uiState is AudioRecordingStepState.AudioRecording.Recording
         val isRecordingTransition = updateTransition(isRecording)
         if (isRecording) {
@@ -249,10 +248,12 @@ private fun Playback(
       HedvigCircularProgressIndicator()
     } else {
       val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
-      HedvigAudioPlayer(audioPlayer = audioPlayer,
-        modifier = Modifier.then (
-          if (!isCurrentStep) Modifier.padding(start = 48.dp) else Modifier
-        ))
+      HedvigAudioPlayer(
+        audioPlayer = audioPlayer,
+        modifier = Modifier.then(
+          if (!isCurrentStep) Modifier.padding(start = 48.dp) else Modifier,
+        ),
+      )
     }
     if (isCurrentStep) {
       HedvigButton(
@@ -330,7 +331,7 @@ private fun PreviewNotRecording() {
         allowFreeText = true,
         onLaunchFreeText = {},
         isCurrentStep = true,
-        continueButtonLoading = false
+        continueButtonLoading = false,
       )
     }
   }
@@ -355,7 +356,7 @@ private fun PreviewRecording() {
         onLaunchFreeText = {},
         redo = { },
         isCurrentStep = true,
-        continueButtonLoading = false
+        continueButtonLoading = false,
       )
     }
   }

@@ -4,7 +4,6 @@ import com.hedvig.feature.claim.chat.data.file.CommonFile
 import kotlin.time.Clock
 
 interface AudioRecordingManager {
-
   fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Recording) -> Unit)
 
   fun stopRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Playback) -> Unit)

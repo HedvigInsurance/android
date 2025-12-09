@@ -5,7 +5,9 @@ import com.eygraber.uri.Uri
 
 // todo ios: Pick media
 @Composable
-actual fun rememberPickMultipleVisualMediaResultLauncher(block: (uris: List<com.eygraber.uri.Uri>) -> Unit): ResultLauncher {
+actual fun rememberPickMultipleVisualMediaResultLauncher(
+  block: (uris: List<com.eygraber.uri.Uri>) -> Unit,
+): ResultLauncher {
   return ResultLauncher {
   }
 }

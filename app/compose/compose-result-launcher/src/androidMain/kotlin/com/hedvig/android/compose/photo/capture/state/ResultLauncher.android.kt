@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import com.eygraber.uri.toKmpUri
 
 @Composable
-actual fun rememberPickMultipleVisualMediaResultLauncher(block: (uris: List<com.eygraber.uri.Uri>) -> Unit): ResultLauncher {
+actual fun rememberPickMultipleVisualMediaResultLauncher(
+  block: (uris: List<com.eygraber.uri.Uri>) -> Unit,
+): ResultLauncher {
   val launcher = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.PickMultipleVisualMedia(),
   ) { resultingUriList: List<Uri> ->
@@ -20,7 +22,9 @@ actual fun rememberPickMultipleVisualMediaResultLauncher(block: (uris: List<com.
 }
 
 @Composable
-actual fun rememberGetMultipleContentsResultLauncher(block: (uris: List<com.eygraber.uri.Uri>) -> Unit): ResultLauncher {
+actual fun rememberGetMultipleContentsResultLauncher(
+  block: (uris: List<com.eygraber.uri.Uri>) -> Unit,
+): ResultLauncher {
   val filePicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.GetMultipleContents(),
   ) { resultingUriList: List<Uri> ->

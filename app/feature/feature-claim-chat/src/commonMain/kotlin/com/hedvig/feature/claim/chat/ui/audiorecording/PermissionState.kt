@@ -8,11 +8,13 @@ import androidx.compose.runtime.Composable
 interface PermissionState {
   val permission: String
   val status: PermissionStatus
+
   fun launchPermissionRequest()
 }
 
 sealed interface PermissionStatus {
   data object Granted : PermissionStatus
+
   data class Denied(val shouldShowRationale: Boolean) : PermissionStatus
 }
 
@@ -20,7 +22,4 @@ sealed interface PermissionStatus {
  * Remember a permission state for the given permission
  */
 @Composable
- expect fun rememberPermissionState(
-  permission: String,
-  onPermissionResult: (Boolean) -> Unit = {},
-): PermissionState
+expect fun rememberPermissionState(permission: String, onPermissionResult: (Boolean) -> Unit = {}): PermissionState

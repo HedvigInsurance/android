@@ -38,7 +38,7 @@ internal fun ClaimOutcomeNewClaimDestination(claim: ClaimIntentOutcome.Claim, na
   Column(
     modifier = Modifier.fillMaxSize().padding(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(16.dp)
+    verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     HedvigText(stringResource(Res.string.CLAIMS_SUCCESS_TITLE))
     val formattedDate = dateFormatter.format(
