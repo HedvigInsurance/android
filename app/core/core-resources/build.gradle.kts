@@ -43,6 +43,8 @@ lokalise {
 kotlin {
   androidLibrary {
     namespace = "hedvig.resources"
+    @Suppress("UnstableApiUsage")
+    androidResources.enable = true
   }
   sourceSets {
     commonMain.dependencies {
