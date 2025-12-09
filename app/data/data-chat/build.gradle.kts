@@ -15,7 +15,7 @@ dependencies {
   implementation(libs.uuid)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreUiData)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.dataProductVariantPublic)
 
   testImplementation(libs.assertK)

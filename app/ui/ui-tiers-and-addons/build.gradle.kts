@@ -24,8 +24,7 @@ dependencies {
   implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
-  implementation(projects.dataContractAndroid)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
 }

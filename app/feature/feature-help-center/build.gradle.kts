@@ -32,7 +32,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataTermination)
   implementation(projects.designSystemHedvig)

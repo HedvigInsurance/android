@@ -28,7 +28,7 @@ dependencies {
   implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
   implementation(projects.dataAddons)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)

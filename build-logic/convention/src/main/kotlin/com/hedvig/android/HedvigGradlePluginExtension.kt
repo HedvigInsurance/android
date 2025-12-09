@@ -62,8 +62,8 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     pluginManager.apply(libs.plugins.serialization.get().pluginId)
   }
 
-  fun androidResources() {
-    androidResHandler.configure(project)
+  fun androidResources(resourcesNamespace: String? = null, publicRes: Boolean = false) {
+    androidResHandler.configure(project, resourcesNamespace, publicRes)
   }
 
   fun room(isTestOnly: Boolean = false, resolveSchemaRelativeToRootDir: File.() -> File) {
@@ -234,7 +234,7 @@ private abstract class ComposeHandler {
 }
 
 private abstract class AndroidResHandler {
-  fun configure(project: Project) {
+  fun configure(project: Project, resourcesNamespace: String?, publicRes: Boolean) {
     project.configureIfPresent<LibraryExtension> {
       androidResources.enable = true
     }
@@ -245,8 +245,10 @@ private abstract class AndroidResHandler {
     project.configureIfPresent<ComposeExtension> {
       extensions.configure<ResourcesExtension> {
         generateResClass = ResourcesExtension.ResourceClassGeneration.Always
-        packageOfResClass = "hedvig.resources"
-        publicResClass = true
+        if (resourcesNamespace != null) {
+          packageOfResClass = resourcesNamespace
+        }
+        publicResClass = publicRes
       }
     }
   }

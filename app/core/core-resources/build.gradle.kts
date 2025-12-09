@@ -1,6 +1,5 @@
 import java.io.FileInputStream
 import java.util.Properties
-import org.jetbrains.compose.resources.ResourcesExtension
 
 plugins {
   alias(libs.plugins.composeKotlinCompilerGradlePlugin)
@@ -13,7 +12,7 @@ plugins {
 
 hedvig {
   compose()
-  androidResources()
+  androidResources(resourcesNamespace = "hedvig.resources", publicRes = true)
 }
 
 @Suppress("SpellCheckingInspection")
@@ -43,6 +42,8 @@ lokalise {
 kotlin {
   androidLibrary {
     namespace = "hedvig.resources"
+    @Suppress("UnstableApiUsage")
+    androidResources.enable = true
   }
   sourceSets {
     commonMain.dependencies {
