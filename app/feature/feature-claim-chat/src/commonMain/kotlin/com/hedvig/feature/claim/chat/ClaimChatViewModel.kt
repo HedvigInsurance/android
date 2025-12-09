@@ -18,7 +18,6 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
-import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.AudioRecording
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.FreeTextDescription
 import com.hedvig.feature.claim.chat.data.ClaimIntent
@@ -29,6 +28,7 @@ import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.Field
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
+import com.hedvig.feature.claim.chat.data.RegretStepUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -40,7 +40,6 @@ import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.file.FileService
-import kotlin.collections.emptyList
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -127,6 +126,7 @@ internal class ClaimChatViewModel(
   submitSummaryUseCase: SubmitSummaryUseCase,
   audioRecordingManager: AudioRecordingManager,
   skipStepUseCase: SkipStepUseCase,
+  regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
   ClaimChatUiState.Initializing,
@@ -143,6 +143,7 @@ internal class ClaimChatViewModel(
     skipStepUseCase,
     audioRecordingManager,
     fileService,
+    regretStepUseCase,
   ),
 )
 
@@ -159,6 +160,7 @@ internal class ClaimChatPresenter(
   private val skipStepUseCase: SkipStepUseCase,
   private val audioRecordingManager: AudioRecordingManager,
   private val fileService: FileService,
+  private val regretStepUseCase: RegretStepUseCase,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -215,10 +217,6 @@ internal class ClaimChatPresenter(
     CollectEvents { event ->
       when (event) {
         is ClaimChatEvent.Select -> {
-
-          val currentStepContent = currentStep?.stepContent as? StepContent.ContentSelect
-            ?: return@CollectEvents
-          val currentStepState = currentStep ?: return@CollectEvents
           currentContinueButtonLoading = true
           launch {
             submitSelectUseCase
@@ -233,16 +231,13 @@ internal class ClaimChatPresenter(
                   logcat { "ClaimChatEvent.Select error: $it" }
                 },
                 ifRight = { claimIntent ->
-                  Snapshot.withMutableSnapshot {
-                    steps.remove(currentStepState)
-                    steps.add(
-                      currentStepState.copy(
-                        stepContent = currentStepContent.copy(
+                  if (!steps.updateStepWithSuccess<StepContent.ContentSelect>(event.id) { step, content ->
+                      step.copy(
+                        stepContent = content.copy(
                           selectedOptionId = event.selectedId,
                         ),
-                      ),
-                    )
-                  }
+                      )
+                    }) return@launch
                   currentContinueButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -304,85 +299,43 @@ internal class ClaimChatPresenter(
 
             is ClaimChatEvent.AudioRecording.StartRecording -> {
               audioRecordingManager.startRecording { recordingState ->
-                Snapshot.withMutableSnapshot {
-                  val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                  val stepContent =
-                    stepToUpdate.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                  val index = steps.indexOf(stepToUpdate)
-                  if (index >= 0) {
-                    steps[index] = stepToUpdate.copy(
-                      stepContent = stepContent.copy(recordingState = recordingState),
-                    )
-                  }
+                steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                  step.copy(stepContent = content.copy(recordingState = recordingState))
                 }
               }
             }
 
             is ClaimChatEvent.AudioRecording.StopRecording -> {
               audioRecordingManager.stopRecording { playbackState ->
-                Snapshot.withMutableSnapshot {
-                  val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                  val stepContent =
-                    stepToUpdate.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                  val index = steps.indexOf(stepToUpdate)
-                  if (index >= 0) {
-                    steps[index] = stepToUpdate.copy(
-                      stepContent = stepContent.copy(recordingState = playbackState),
-                    )
-                  }
+                steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                  step.copy(stepContent = content.copy(recordingState = playbackState))
                 }
               }
             }
 
             is ClaimChatEvent.AudioRecording.RedoRecording -> {
               audioRecordingManager.reset()
-              Snapshot.withMutableSnapshot {
-                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                val currentStepContent = currentStepState.stepContent as? StepContent.AudioRecording
-                  ?: return@withMutableSnapshot
-                val index = steps.indexOf(currentStepState)
-                if (index >= 0) {
-                  steps[index] = currentStepState.copy(
-                    stepContent = currentStepContent.copy(
-                      recordingState = AudioRecording.NotRecording,
-                    ),
-                  )
-                }
+              steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
               }
             }
 
             is ClaimChatEvent.AudioRecording.ShowFreeText -> {
-              Snapshot.withMutableSnapshot {
-                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                val currentStepContent =
-                  currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                val index = steps.indexOf(currentStepState)
-                if (index >= 0) {
-                  steps[index] = currentStepState.copy(
-                    stepContent = currentStepContent.copy(
-                      recordingState = FreeTextDescription(
-                        showOverlay = showFreeTextOverlay,
-                        errorType = null,
-                      ),
+              steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(
+                  stepContent = content.copy(
+                    recordingState = FreeTextDescription(
+                      showOverlay = showFreeTextOverlay,
+                      errorType = null,
                     ),
-                  )
-                }
+                  ),
+                )
               }
             }
 
             is ClaimChatEvent.AudioRecording.ShowAudioRecording -> {
-              Snapshot.withMutableSnapshot {
-                val currentStepState = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-                val currentStepContent =
-                  currentStepState.stepContent as? StepContent.AudioRecording ?: return@withMutableSnapshot
-                val index = steps.indexOf(currentStepState)
-                if (index >= 0) {
-                  steps[index] = currentStepState.copy(
-                    stepContent = currentStepContent.copy(
-                      recordingState = AudioRecording.NotRecording,
-                    ),
-                  )
-                }
+              steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
               }
             }
           }
@@ -401,31 +354,32 @@ internal class ClaimChatPresenter(
                     }?.toString()
                   val stepToUpdate = steps.find { it.id == event.stepId } ?: return@withMutableSnapshot
                   val index = steps.indexOf(stepToUpdate)
-                  if (index >= 0 && selectedDateString!=null) {
+                  if (index >= 0 && selectedDateString != null) {
                     steps[index] = stepToUpdate.copy(
                       stepContent = currentContent.copy(
                         fields = currentContent.fields.map { existingField ->
-                          if (existingField.id==field.id) existingField.copy(
+                          if (existingField.id == field.id) existingField.copy(
                             selectedOptions = listOf(
                               StepContent.Form.FieldOption(
                                 selectedDateString,
-                                selectedDateString))
+                                selectedDateString,
+                              ),
+                            ),
                           ) else existingField
-                        }
+                        },
                       ),
                     )
                   }
-                  //TODO()
                   Field(
                     field.id,
-                    listOf(selectedDateString)
+                    listOf(selectedDateString),
 
-                  )
+                    )
                 }
+
                 else -> Field(
                   field.id,
                   field.selectedOptions
-                    //.ifEmpty { listOf(null) }
                     .map { selectedOption ->
                       selectedOption.value
                     },
@@ -458,34 +412,28 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.AddFile -> {
-          Snapshot.withMutableSnapshot {
-            val stepToUpdate = steps.find { it.id == event.id } ?: return@withMutableSnapshot
-            val stepContent = stepToUpdate.stepContent as? StepContent.FileUpload ?: return@withMutableSnapshot
-            if (event.uri in stepContent.localFiles.map { it.id }) {
-              return@CollectEvents
-            }
-            try {
-              val mimeType = fileService.getMimeType(event.uri)
-              val name = fileService.getFileName(event.uri) ?: event.uri
-              val localFile = UiFile(
-                name = name,
-                localPath = event.uri,
-                mimeType = mimeType,
-                id = event.uri,
-                url = null,
+          try {
+            val mimeType = fileService.getMimeType(event.uri)
+            val name = fileService.getFileName(event.uri) ?: event.uri
+            val localFile = UiFile(
+              name = name,
+              localPath = event.uri,
+              mimeType = mimeType,
+              id = event.uri,
+              url = null,
+            )
+
+            steps.updateStepWithSuccess<StepContent.FileUpload>(event.id) { step, content ->
+              if (event.uri in content.localFiles.map { it.id }) return@updateStepWithSuccess step
+              step.copy(
+                stepContent = content.copy(
+                  localFiles = content.localFiles + localFile,
+                ),
               )
-              val index = steps.indexOf(stepToUpdate)
-              if (index >= 0) {
-                steps[index] = stepToUpdate.copy(
-                  stepContent = stepContent.copy(
-                    localFiles = stepContent.localFiles + localFile,
-                  ),
-                )
-              }
-            } catch (e: Exception) {
-              logcat { "ClaimChatEvent.AddFile error: $e" }
-              errorSubmittingStep = ErrorMessage()
             }
+          } catch (e: Exception) {
+            logcat { "ClaimChatEvent.AddFile error: $e" }
+            errorSubmittingStep = ErrorMessage()
           }
         }
 
@@ -494,8 +442,6 @@ internal class ClaimChatPresenter(
         is ClaimChatEvent.Skip -> {
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
-          val stepToUpdate = steps.find { it.id == event.id }
-          val content = stepToUpdate?.stepContent ?: return@CollectEvents
           currentSkipButtonLoading = true
           launch {
             skipStepUseCase.invoke(event.id)
@@ -506,46 +452,7 @@ internal class ClaimChatPresenter(
                   logcat { "ClaimChatEvent.Skip $it" }
                 },
                 ifRight = { claimIntent ->
-
-                  val updatedStep = when (content) {
-                    is StepContent.AudioRecording -> {
-                      val newContent =content.copy(
-                        recordingState = AudioRecordingStepState.AudioRecording.NotRecording
-                      )
-                      stepToUpdate.copy(
-                        stepContent = newContent
-                      )
-                    }
-                    is StepContent.ContentSelect -> {
-                      val newContent = content.copy(selectedOptionId = null)
-                      stepToUpdate.copy(
-                        stepContent = newContent
-                      )
-                    }
-                    is StepContent.FileUpload -> {
-                      val newContent = content.copy(localFiles = emptyList())
-                      stepToUpdate.copy(
-                        stepContent = newContent
-                      )
-                    }
-                    is StepContent.Form -> {
-                      val newFieldsWithoutSelection = content.fields.map { field ->
-                        field.copy(selectedOptions = emptyList())
-                      }
-                      stepToUpdate.copy(
-                        stepContent = content.copy(
-                          fields = newFieldsWithoutSelection,
-                        ),
-                      )
-                    }
-                    is StepContent.Summary,
-                    is StepContent.Task,
-                    StepContent.Unknown -> stepToUpdate
-                  }
-                  val index = steps.indexOf(currentStep)
-                  if (index >= 0) {
-                    steps[index] = updatedStep
-                  }
+                  if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
                   handleNext(steps, setOutcome, claimIntent.next)
                 },
@@ -577,15 +484,37 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.Regret -> {
-          // TODO: Implement regret logic
+          Snapshot.withMutableSnapshot {
+            val stepToUpdate = steps.find { it.id == event.id } ?: return@CollectEvents
+            if (!stepToUpdate.isRegrettable) return@CollectEvents
+            currentContinueButtonLoading = true
+            currentSkipButtonLoading = true
+            launch {
+              regretStepUseCase.invoke(event.id)
+                .fold(
+                  ifLeft = {
+                    currentContinueButtonLoading = false
+                    currentSkipButtonLoading = false
+                    errorSubmittingStep = it
+                    logcat { "Regret error: $it" }
+                  },
+                  ifRight = { claimIntent ->
+                    val index = steps.indexOf(stepToUpdate)
+                    if (index >= 0) {
+                      steps.subList(index, steps.size).clear()
+                    }
+                    currentContinueButtonLoading = false
+                    currentSkipButtonLoading = false
+                    handleNext(steps, setOutcome, claimIntent.next)
+                  },
+                )
+            }
+          }
         }
 
         is ClaimChatEvent.UpdateFieldAnswer -> {
-          Snapshot.withMutableSnapshot {
-            val stepToUpdate = steps.find { it.id == event.stepId } ?: return@withMutableSnapshot
-            val stepContent = stepToUpdate.stepContent as? StepContent.Form ?: return@withMutableSnapshot
-
-            val newFields = stepContent.fields.map { field ->
+          steps.updateStepWithSuccess<StepContent.Form>(event.stepId) { step, content ->
+            val newFields = content.fields.map { field ->
               if (field.id == event.fieldId) {
                 when (field.type) {
                   StepContent.Form.FieldType.TEXT,
@@ -623,14 +552,11 @@ internal class ClaimChatPresenter(
               }
             }
 
-            val index = steps.indexOf(stepToUpdate)
-            if (index >= 0) {
-              steps[index] = stepToUpdate.copy(
-                stepContent = stepContent.copy(
-                  fields = newFields,
-                ),
-              )
-            }
+            step.copy(
+              stepContent = content.copy(
+                fields = newFields,
+              ),
+            )
           }
         }
 
@@ -667,14 +593,11 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.RemoveFile -> {
-          Snapshot.withMutableSnapshot {
-            val stepState = currentStep ?: return@CollectEvents
-            val stepContent = stepState.stepContent as? StepContent.FileUpload ?: return@CollectEvents
-            val index = steps.indexOf(currentStep)
-            if (index >= 0) {
-              steps[index] = stepState.copy(
-                stepContent = stepContent.copy(
-                  localFiles = stepContent.localFiles.filterNot { it.id == event.fileId },
+          currentStep?.let { step ->
+            steps.updateStepWithSuccess<StepContent.FileUpload>(step.id) { currentStep, content ->
+              currentStep.copy(
+                stepContent = content.copy(
+                  localFiles = content.localFiles.filterNot { it.id == event.fileId },
                 ),
               )
             }
@@ -695,7 +618,7 @@ internal class ClaimChatPresenter(
         freeText = freeText,
         errorSubmittingStep = errorSubmittingStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
-        currentSkipButtonLoading = currentSkipButtonLoading
+        currentSkipButtonLoading = currentSkipButtonLoading,
       )
 
       else -> error("")
@@ -780,6 +703,64 @@ private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: Cla
     removeLastIf { it.stepContent is StepContent.Task }
     add(step)
   }
+}
+
+private inline fun <reified T : StepContent> SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
+  stepId: StepId,
+  transform: (ClaimIntentStep, T) -> ClaimIntentStep,
+): Boolean {
+  return Snapshot.withMutableSnapshot {
+    val stepToUpdate = find { it.id == stepId } ?: return@withMutableSnapshot false
+    val stepContent = stepToUpdate.stepContent as? T ?: return@withMutableSnapshot false
+    val index = indexOf(stepToUpdate)
+    if (index >= 0) {
+      this[index] = transform(stepToUpdate, stepContent)
+      return@withMutableSnapshot true
+    }
+    return@withMutableSnapshot false
+  }
+}
+
+private fun SnapshotStateList<ClaimIntentStep>.updateStepWithSuccess(
+  stepId: StepId,
+  transform: (ClaimIntentStep) -> ClaimIntentStep,
+): Boolean {
+  return Snapshot.withMutableSnapshot {
+    val stepToUpdate = find { it.id == stepId } ?: return@withMutableSnapshot false
+    val index = indexOf(stepToUpdate)
+    if (index >= 0) {
+      this[index] = transform(stepToUpdate)
+      return@withMutableSnapshot true
+    }
+    return@withMutableSnapshot false
+  }
+}
+
+private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content = stepContent) {
+  is StepContent.AudioRecording -> copy(
+    stepContent = content.copy(recordingState = AudioRecording.NotRecording),
+  )
+
+  is StepContent.ContentSelect -> copy(
+    stepContent = content.copy(selectedOptionId = null),
+  )
+
+  is StepContent.FileUpload -> copy(
+    stepContent = content.copy(localFiles = emptyList()),
+  )
+
+  is StepContent.Form -> copy(
+    stepContent = content.copy(
+      fields = content.fields.map { field ->
+        field.copy(selectedOptions = emptyList())
+      },
+    ),
+  )
+
+  is StepContent.Summary,
+  is StepContent.Task,
+  StepContent.Unknown,
+    -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
