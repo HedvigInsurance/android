@@ -17,6 +17,6 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreUiData)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.featureFlagsPublic)
 }

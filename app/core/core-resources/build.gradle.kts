@@ -1,6 +1,5 @@
 import java.io.FileInputStream
 import java.util.Properties
-import org.jetbrains.compose.resources.ResourcesExtension
 
 plugins {
   alias(libs.plugins.composeKotlinCompilerGradlePlugin)
@@ -13,7 +12,7 @@ plugins {
 
 hedvig {
   compose()
-  androidResources()
+  androidResources(resourcesNamespace = "hedvig.resources", publicRes = true)
 }
 
 @Suppress("SpellCheckingInspection")
