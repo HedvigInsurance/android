@@ -56,6 +56,8 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.timber)
   implementation(projects.composeUi)
+  implementation(projects.coreResources)
+  implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
