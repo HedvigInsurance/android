@@ -2,10 +2,13 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -290,11 +293,15 @@ private fun StepContentSection(
   spacerModifier: Modifier,
   showSpacer: Boolean,
 ) {
-  Column {
+  Column() {
     HedvigText(stepItem.text)
     Spacer(Modifier.height(16.dp))
-    AnimatedVisibility(visible = showSpacer,
-      modifier = spacerModifier) {
+    AnimatedVisibility(
+      visible = showSpacer,
+      modifier = spacerModifier,
+      enter = expandVertically(animationSpec = tween(durationMillis = 100)),
+      exit = shrinkVertically(animationSpec = tween(durationMillis = 100)),
+    ) {
       Spacer(Modifier)
     }
     when (stepItem.stepContent) {
