@@ -9,6 +9,7 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.androidx.annotation)
       implementation(projects.coreCommonPublic)
+      implementation(projects.coreLocale)
     }
     androidMain.dependencies {
       implementation(libs.androidx.other.appCompat)
