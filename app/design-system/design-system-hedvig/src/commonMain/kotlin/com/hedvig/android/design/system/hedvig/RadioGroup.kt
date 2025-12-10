@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
@@ -43,6 +42,7 @@ import com.hedvig.android.design.system.hedvig.tokens.RadioGroupColorTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupSizeTokens
 import com.hedvig.android.design.system.hedvig.tokens.RadioGroupStyleTokens
 import kotlin.jvm.JvmInline
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun RadioGroup(
@@ -598,7 +598,7 @@ private fun RadioOptionIcon(iconResource: IconResource) {
 
       is IconResource.Painter -> {
         Image(
-          painter = painterResource(iconResource.painterResId),
+          painter = painterResource(iconResource.painterResource),
           contentDescription = EmptyContentDescription,
         )
       }
