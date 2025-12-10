@@ -237,11 +237,6 @@ type Cart {
   Currently redeemed campaign, if any
   It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
   """
-  redeemedCampaign: RedeemedCampaign @deprecated(reason: "Use 'redeemedCampaignV2' instead")
-  """
-  Currently redeemed campaign, if any
-  It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
-  """
   redeemedCampaignV2: RedeemedCampaignV2
 }
 """
@@ -1290,6 +1285,10 @@ type ExtendedItemDiscount {
    General discount information 
   """
   itemDiscount: ItemDiscount!
+  """
+   Monthly reduction applied by the discount. It's a negative number 
+  """
+  amount: Money!
   """
    Whether discount is on a pending state or not 
   """
@@ -3659,12 +3658,6 @@ type RecommendedCrossSell {
 type RecommendedCrossSellBackgroundPillowImages {
   leftImage: StoryblokImageAsset!
   rightImage: StoryblokImageAsset!
-}
-"""
-A campaign attached to a `Cart` which carries its related discount.
-"""
-type RedeemedCampaign {
-  id: ID!
 }
 enum RedeemedCampaignTypeV2 {
   REFERRAL
