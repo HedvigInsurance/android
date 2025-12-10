@@ -47,7 +47,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractGroup.DOG
-import com.hedvig.android.data.contract.toPillow
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -300,7 +300,7 @@ private fun QuoteIconAndTitle(
   Row(modifier) {
     if (contractGroup != null) {
       Image(
-        painter = painterResource(contractGroup.toPillow()),
+        painter = painterResource(contractGroup.pillowResource()),
         contentDescription = null, // CHECKED
         modifier = Modifier.size(48.dp),
       )

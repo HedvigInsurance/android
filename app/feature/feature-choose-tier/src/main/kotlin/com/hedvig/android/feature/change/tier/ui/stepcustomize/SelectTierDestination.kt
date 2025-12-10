@@ -43,7 +43,7 @@ import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.contract.toPillow
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
@@ -627,7 +627,7 @@ private fun DropdownContent(
 internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
-      painter = painterResource(contractGroup.toPillow()),
+      painter = painterResource(contractGroup.pillowResource()),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )

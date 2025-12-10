@@ -40,12 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.ACCIDENT
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_BRF
-import com.hedvig.android.data.contract.toPillow
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
@@ -286,7 +285,7 @@ private fun CoverageCard(
     ) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
-          painter = painterResource(tiersInfo.selectedCoverage.productVariant.contractGroup.toPillow()),
+          painter = painterResource(tiersInfo.selectedCoverage.productVariant.contractGroup.pillowResource()),
           contentDescription = null,
           modifier = Modifier.size(48.dp),
         )

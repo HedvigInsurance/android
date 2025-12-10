@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
-import com.hedvig.android.data.contract.toDrawableRes
+import com.hedvig.android.data.contract.gradientResource
 import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
@@ -93,7 +93,7 @@ internal fun InsuranceContract.createPainter(): Painter {
       ColorPainter(Color.Black.copy(alpha = 0.7f))
     else ->
       productVariant.contractGroup
-        .toDrawableRes()
+        .gradientResource()
         .let { drawableRes -> painterResource(drawableRes) }
   }
 }
