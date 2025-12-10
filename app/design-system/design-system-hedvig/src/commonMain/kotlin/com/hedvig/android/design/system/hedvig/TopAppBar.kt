@@ -106,20 +106,8 @@ fun TopAppBar(
     TopAppBarActionType.CLOSE -> stringResource(Res.string.general_close_button)
   }
   Surface(
-    color = if (customTopAppBarColors !=
-      null
-    ) {
-      customTopAppBarColors.containerColor
-    } else {
-      TopAppBarTokens.ContainerColor.value
-    },
-    contentColor = if (customTopAppBarColors !=
-      null
-    ) {
-      customTopAppBarColors.contentColor
-    } else {
-      TopAppBarTokens.ContentColor.value
-    },
+    color = customTopAppBarColors?.containerColor ?: TopAppBarTokens.ContainerColor.value,
+    contentColor = customTopAppBarColors?.contentColor ?: TopAppBarTokens.ContentColor.value,
     modifier = modifier
       .windowInsetsPadding(windowInsets)
       .fillMaxWidth()
