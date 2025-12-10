@@ -1,6 +1,5 @@
 package com.hedvig.android.design.system.hedvig
 
-import android.graphics.Color.parseColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -144,13 +143,18 @@ data class PerilData(
   val isEnabled: Boolean = true,
 )
 
+/**
+ * Assumes an input of type "#ABC456" and forces an alpha of `255`
+ */
 @Composable
 private fun parseColorString(colorString: String?): Color = with(HedvigTheme.colorScheme) {
-  remember(this) {
+  remember(this, colorString) {
     try {
-      Color(parseColor(colorString))
-    } catch (e: Exception) {
-      logcat(priority = LogPriority.ERROR) { "Parsing color with colorString:$colorString resulted in an error" }
+      val hexLong = colorString?.removePrefix("#")?.toLong(16) ?: return@remember fromToken(TextPrimary)
+      val maxAlpha = 0xFF000000
+      Color(maxAlpha or hexLong)
+    } catch (e: NumberFormatException) {
+      logcat(priority = LogPriority.ERROR, e) { "Parsing color with colorString:$colorString resulted in an error $e" }
       fromToken(TextPrimary)
     }
   }
