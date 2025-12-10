@@ -208,7 +208,9 @@ private fun ClaimChatScreenContent(
   val isScrolled by remember {
     derivedStateOf {
       logcat {"Mariia. lazyListState.lastScrolledForward: ${lazyListState.lastScrolledForward}"}
-      lazyListState.lastScrolledBackward
+      lazyListState.lastScrolledBackward || (lazyListState.lastScrolledForward &&
+        lazyListState.firstVisibleItemIndex<uiState.steps.lastIndex-1
+        )
      // lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex-2
         //&& lazyListState.isScrollInProgress
         //|| lazyListState.firstVisibleItemScrollOffset > 0
