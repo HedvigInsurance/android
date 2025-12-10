@@ -1,6 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
-import com.hedvig.android.design.system.hedvig.api.CommonLocale
+import com.hedvig.android.core.locale.CommonLocale
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 

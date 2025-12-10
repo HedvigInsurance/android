@@ -53,6 +53,7 @@ import com.hedvig.android.compose.photo.capture.state.rememberGetMultipleContent
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.photo.capture.state.rememberPickMultipleVisualMediaResultLauncher
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.locale.previewCommonLocale
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.AccordionData
 import com.hedvig.android.design.system.hedvig.AccordionList
@@ -81,7 +82,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.api.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.Document
