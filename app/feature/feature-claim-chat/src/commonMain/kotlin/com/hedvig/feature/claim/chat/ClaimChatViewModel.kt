@@ -94,6 +94,8 @@ internal sealed interface ClaimChatEvent {
   data object DismissErrorDialog : ClaimChatEvent
 
   data class SubmitClaim(val id: StepId) : ClaimChatEvent
+
+  data object HandledOutcomeNavigation : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -200,7 +202,7 @@ internal class ClaimChatPresenter(
                 claimIntentId = claimIntent.id
                 steps.clear()
                 when (val next = claimIntent.next) {
-                  is ClaimIntent.Next.Outcome -> setOutcome(next.claimIntentOutcome)
+                  is ClaimIntent.Next.Outcome -> outcome = next.claimIntentOutcome
                   is ClaimIntent.Next.Step -> steps.add(next.claimIntentStep)
                 }
               }
@@ -602,6 +604,10 @@ internal class ClaimChatPresenter(
               )
             }
           }
+        }
+
+        ClaimChatEvent.HandledOutcomeNavigation -> {
+          outcome = null
         }
       }
     }
