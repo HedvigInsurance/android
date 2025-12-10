@@ -19,5 +19,5 @@ interface LanguageService {
 
   fun getLanguage(): Language
 
-  fun getLocale(): Locale
+  fun getLocale(): CommonLocale
 }
