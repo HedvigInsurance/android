@@ -671,7 +671,6 @@ internal fun TextInputBubble(
 
 @Composable
 internal fun ChatClaimSummary(
-  text: String,
   recordingUrls: List<String>,
   fileUploads: List<UiFile>,
   freeTexts: List<String>,
@@ -684,8 +683,6 @@ internal fun ChatClaimSummary(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(text)
-    Spacer(Modifier.height(8.dp))
     HedvigCard(
       color = HedvigTheme.colorScheme.fillNegative,
     ) {
@@ -924,7 +921,6 @@ private fun PreviewSummary() {
             "Electric bike" to "Yes",
           ),
           onSubmit = {},
-          text = "Is this what you have in mind?",
           isCurrentStep = true,
           fileUploads = listOf(),
           imageLoader = rememberPreviewImageLoader(),
