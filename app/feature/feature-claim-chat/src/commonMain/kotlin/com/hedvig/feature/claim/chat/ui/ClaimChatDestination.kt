@@ -90,7 +90,10 @@ internal fun ClaimChatDestination(
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       openAppSettings = openAppSettings,
       onNavigateToImageViewer = onNavigateToImageViewer,
-      navigateToClaimOutcome = navigateToClaimOutcome,
+      navigateToClaimOutcome = {
+        claimChatViewModel.emit(ClaimChatEvent.HandledOutcomeNavigation)
+        navigateToClaimOutcome(it)
+      },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
     )
