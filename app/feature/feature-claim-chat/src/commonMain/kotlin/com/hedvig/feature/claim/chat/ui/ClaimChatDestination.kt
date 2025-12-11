@@ -220,8 +220,7 @@ private fun ClaimChatScreenContent(
     )
   }
   val lazyListState = rememberLazyListState()
-
-  val isScrolled by remember {
+  val isScrolled by remember(lazyListState) {
     derivedStateOf {
       lazyListState.lastScrolledBackward || (lazyListState.lastScrolledForward &&
         lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1)
@@ -253,9 +252,11 @@ private fun ClaimChatScreenContent(
             isCurrentStep = isCurrentStep,
             currentContinueButtonLoading = uiState.currentContinueButtonLoading,
             currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+            autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
             onEvent = onEvent,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
             appPackageId = appPackageId,
             imageLoader = imageLoader,
             openAppSettings = openAppSettings,
@@ -270,9 +271,11 @@ private fun ClaimChatScreenContent(
           isCurrentStep = isCurrentStep,
           currentContinueButtonLoading = uiState.currentContinueButtonLoading,
           currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+          autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
           onEvent = onEvent,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
           appPackageId = appPackageId,
           imageLoader = imageLoader,
           openAppSettings = openAppSettings,
@@ -296,9 +299,11 @@ private fun StepContentSection(
   isCurrentStep: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
+  autoNavigateForDeflectStepId: StepId?,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
@@ -419,11 +424,11 @@ private fun StepContentSection(
 
       is StepContent.Deflect -> {
         DeflectStep(
-          stepId = item.id,
-          text = item.text,
-          deflect = item.stepContent,
+          stepId = stepItem.id,
+          text = stepItem.text,
+          deflect = stepItem.stepContent,
           navigateToDeflect = navigateToDeflect,
-          autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
+          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
         )
       }
 
