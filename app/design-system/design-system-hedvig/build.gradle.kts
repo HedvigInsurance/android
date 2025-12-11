@@ -40,19 +40,25 @@ kotlin {
       implementation(libs.jetbrains.compose.ui.backhandler)
       implementation(libs.jetbrains.compose.ui.graphics)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
+      implementation(libs.jetbrains.graphics.shapes)
+      implementation(libs.jetbrains.lifecycle.runtime)
+      implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.jetbrains.navigationevent.compose)
-      implementation(libs.androidx.graphicsShapes)
+      implementation(libs.kotlinx.datetime)
       implementation(projects.composeUi)
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.designSystemInternals)
       implementation(projects.navigationCore)
-      implementation(libs.kotlinx.datetime)
+    }
+    val jvmAndAndroidMain by getting {
+      dependencies {
+        implementation(libs.compose.richtext)
+        implementation(libs.compose.richtextCommonmark)
+      }
     }
     androidMain.dependencies {
       implementation(libs.androidx.other.core)
-      implementation(libs.compose.richtext)
-      implementation(libs.compose.richtextCommonmark)
       implementation(libs.media3.exoplayer)
       implementation(libs.media3.exoplayer.dash)
       implementation(libs.media3.ui)

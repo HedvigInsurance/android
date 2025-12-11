@@ -28,11 +28,11 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
+import com.hedvig.feature.claim.chat.data.StepContent
 
 @Composable
 internal fun ClaimOutcomeDeflectDestination(
-  deflect: ClaimIntentOutcome.Deflect,
+  deflect: StepContent.Deflect,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   navigateUp: () -> Unit,
@@ -191,7 +191,7 @@ internal fun ClaimOutcomeDeflectDestination(
 
 @Composable
 private fun QuestionsAndAnswers(
-  faqList: List<ClaimIntentOutcome.Deflect.InfoBlock>,
+  faqList: List<StepContent.Deflect.InfoBlock>,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -209,13 +209,13 @@ private fun PreviewClaimOutcomeDeflectDestination() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ClaimOutcomeDeflectDestination(
-        deflect = ClaimIntentOutcome.Deflect(
+        deflect = StepContent.Deflect(
           title = "title",
           infoText = "infoText",
           warningText = "warningText",
           partners = emptyList(),
-          partnersInfo = ClaimIntentOutcome.Deflect.InfoBlock("title", "description"),
-          content = ClaimIntentOutcome.Deflect.InfoBlock("title", "description"),
+          partnersInfo = StepContent.Deflect.InfoBlock("title", "description"),
+          content = StepContent.Deflect.InfoBlock("title", "description"),
           faq = emptyList(),
         ),
         imageLoader = rememberPreviewImageLoader(),

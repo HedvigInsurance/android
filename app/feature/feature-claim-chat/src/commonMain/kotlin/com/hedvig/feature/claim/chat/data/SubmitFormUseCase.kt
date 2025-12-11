@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSubmitFormMutation
 import octopus.type.ClaimIntentFormSubmitInputField
@@ -13,6 +14,7 @@ import octopus.type.ClaimIntentSubmitFormInput
 
 internal class SubmitFormUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
   suspend fun invoke(formData: FormSubmissionData): Either<ErrorMessage, ClaimIntent> {
     return either {
@@ -37,7 +39,7 @@ internal class SubmitFormUseCase(
         }
         .bind()
         .claimIntentSubmitForm
-        .toClaimIntent()
+        .toClaimIntent(languageService.getLocale())
     }
   }
 }

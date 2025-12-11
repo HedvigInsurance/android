@@ -22,7 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.showcase.R
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.CheckboxGroup
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -92,7 +93,7 @@ private fun ColumnScope.RadioGroupOptions() {
   HedvigText("Icon")
   RadioGroup(
     options = defaultOptions.map {
-      it.copy(iconResource = IconResource.Painter(R.drawable.ic_pillow_cat))
+      it.copy(iconResource = IconResource.Painter(ContractGroup.CAT.pillowResource()))
     },
     selectedOption = selectedOption,
     onRadioOptionSelected = { selectedOption = it },
@@ -172,7 +173,7 @@ private fun ColumnScope.CheckboxGroupOptions() {
   HedvigText("Icon")
   CheckboxGroup(
     options = defaultOptions.map {
-      it.copy(iconResource = IconResource.Painter(R.drawable.ic_pillow_cat))
+      it.copy(iconResource = IconResource.Painter(ContractGroup.CAT.pillowResource()))
     },
     selectedOptions = selectedOptions.toList(),
     onRadioOptionSelected = onRadioOptionSelected,

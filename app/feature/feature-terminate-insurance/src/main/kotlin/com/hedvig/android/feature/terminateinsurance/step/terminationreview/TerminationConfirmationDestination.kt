@@ -26,7 +26,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
-import com.hedvig.android.data.contract.toPillow
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -258,7 +258,7 @@ private fun InsuranceInfoCard(
     Column(Modifier.padding(16.dp)) {
       Row {
         Image(
-          painter = painterResource(insuranceInfo.contractGroup.toPillow()),
+          painter = painterResource(insuranceInfo.contractGroup.pillowResource()),
           contentDescription = null,
           modifier = Modifier.size(48.dp),
         )

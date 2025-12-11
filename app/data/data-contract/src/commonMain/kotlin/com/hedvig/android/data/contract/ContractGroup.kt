@@ -32,7 +32,7 @@ enum class ContractGroup {
   UNKNOWN,
 }
 
-fun ContractGroup.toDrawableRes(): DrawableResource = when (this) {
+fun ContractGroup.gradientResource(): DrawableResource = when (this) {
   ContractGroup.HOMEOWNER -> Res.drawable.gradient_homeowner
   ContractGroup.HOUSE -> Res.drawable.gradient_villa
   ContractGroup.RENTAL -> Res.drawable.gradient_rental
@@ -45,7 +45,7 @@ fun ContractGroup.toDrawableRes(): DrawableResource = when (this) {
   ContractGroup.UNKNOWN -> Res.drawable.gradient_homeowner
 }
 
-fun ContractGroup.toPillow(): DrawableResource = when (this) {
+fun ContractGroup.pillowResource(): DrawableResource = when (this) {
   ContractGroup.HOMEOWNER -> Res.drawable.ic_pillow_homeowner
   ContractGroup.HOUSE -> Res.drawable.ic_pillow_villa
   ContractGroup.RENTAL -> Res.drawable.ic_pillow_rental

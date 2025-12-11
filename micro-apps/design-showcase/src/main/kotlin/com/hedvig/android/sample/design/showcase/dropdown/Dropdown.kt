@@ -19,7 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.design.showcase.R
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.DropdownDefaults
 import com.hedvig.android.design.system.hedvig.DropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
@@ -103,10 +104,10 @@ private val simpleItems = listOf(
   DropdownItem.SimpleDropdownItem("Canary"),
 )
 private val iconItems = listOf(
-  DropdownItem.DropdownItemWithIcon("Home", IconResource.Painter(R.drawable.ic_pillow_cat)),
-  DropdownItem.DropdownItemWithIcon("Cat", IconResource.Painter(R.drawable.ic_pillow_homeowner)),
-  DropdownItem.DropdownItemWithIcon("UFO", IconResource.Painter(R.drawable.ic_pillow_dog)),
-  DropdownItem.DropdownItemWithIcon("Canary", IconResource.Painter(R.drawable.ic_pillow_home)),
+  DropdownItem.DropdownItemWithIcon("Home", IconResource.Painter(ContractGroup.HOMEOWNER.pillowResource())),
+  DropdownItem.DropdownItemWithIcon("Cat", IconResource.Painter(ContractGroup.CAT.pillowResource())),
+  DropdownItem.DropdownItemWithIcon("UFO", IconResource.Painter(ContractGroup.DOG.pillowResource())),
+  DropdownItem.DropdownItemWithIcon("Canary", IconResource.Painter(ContractGroup.HOUSE.pillowResource())),
 )
 
 private val styles = listOf(
@@ -117,7 +118,7 @@ private val styles = listOf(
   ),
   DropdownDefaults.DropdownStyle.Icon(
     iconItems,
-    IconResource.Painter(R.drawable.ic_pillow_cat),
+    IconResource.Painter(ContractGroup.CAT.pillowResource()),
   ),
 )
 

@@ -10,11 +10,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.core.locale.previewCommonLocale
+import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
-import com.hedvig.android.design.system.hedvig.api.CommonLocale
 import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
-import com.hedvig.android.design.system.hedvig.api.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale

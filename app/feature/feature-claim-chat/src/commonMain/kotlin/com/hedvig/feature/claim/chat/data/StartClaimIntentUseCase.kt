@@ -9,11 +9,13 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentStartMutation
 
 internal class StartClaimIntentUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
   suspend fun invoke(developmentFlow: Boolean): Either<ErrorMessage, ClaimIntent> {
     return either {
@@ -31,7 +33,7 @@ internal class StartClaimIntentUseCase(
         }
         .bind()
         .claimIntentStart
-        .toClaimIntent()
+        .toClaimIntent(languageService.getLocale())
     }
   }
 }

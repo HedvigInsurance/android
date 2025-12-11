@@ -36,6 +36,7 @@ kotlin {
       implementation(projects.composeResultLauncher)
       implementation(projects.coreUiData)
       implementation(projects.designSystemHedvig)
+      implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.uiClaimFlow)
       implementation(projects.uiForceUpgrade)
@@ -43,7 +44,6 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.compose.uiToolingPreview)
-      implementation(libs.androidx.graphicsShapes)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(projects.composeUi)

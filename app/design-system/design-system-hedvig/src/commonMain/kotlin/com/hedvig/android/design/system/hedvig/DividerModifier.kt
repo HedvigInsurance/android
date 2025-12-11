@@ -1,6 +1,5 @@
 package com.hedvig.android.design.system.hedvig
 
-import android.annotation.SuppressLint
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -26,7 +25,6 @@ enum class DividerPosition {
   Bottom,
 }
 
-@SuppressLint("ModifierNodeInspectableProperties")
 private data class HorizontalDividerElement(
   val position: DividerPosition,
   val show: Boolean,
@@ -62,7 +60,7 @@ private class HorizontalDividerNode(
   CompositionLocalConsumerModifierNode {
   override fun ContentDrawScope.draw() {
     drawContent()
-    if (!show) return@draw
+    if (!show) return
     val borderColor = color ?: currentValueOf(LocalColorScheme).fromToken(ColorSchemeKeyTokens.BorderSecondary)
     val thickness = thickness.toPx()
     val yOffset = when (position) {

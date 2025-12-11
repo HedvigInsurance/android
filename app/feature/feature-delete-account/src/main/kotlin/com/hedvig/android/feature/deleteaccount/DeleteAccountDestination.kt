@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.deleteaccount
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -194,8 +193,8 @@ private class DeleteAccountUiStateProvider : CollectionPreviewParameterProvider<
     DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion,
     DeleteAccountUiState.CanNotDelete.HasOngoingClaim,
     DeleteAccountUiState.CanNotDelete.HasActiveInsurance,
-    DeleteAccountUiState.CanDelete(true, false),
-    DeleteAccountUiState.CanDelete(false, true),
-    DeleteAccountUiState.CanDelete(false, false),
+    DeleteAccountUiState.CanDelete(isPerformingDeletion = true, failedToPerformDeletion = false),
+    DeleteAccountUiState.CanDelete(isPerformingDeletion = false, failedToPerformDeletion = true),
+    DeleteAccountUiState.CanDelete(isPerformingDeletion = false, failedToPerformDeletion = false),
   ),
 )
