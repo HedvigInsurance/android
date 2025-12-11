@@ -2,7 +2,10 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -11,7 +14,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
@@ -207,13 +210,8 @@ private fun ClaimChatScreenContent(
 
   val isScrolled by remember {
     derivedStateOf {
-      logcat {"Mariia. lazyListState.lastScrolledForward: ${lazyListState.lastScrolledForward}"}
       lazyListState.lastScrolledBackward || (lazyListState.lastScrolledForward &&
-        lazyListState.firstVisibleItemIndex<uiState.steps.lastIndex-1
-        )
-     // lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex-2
-        //&& lazyListState.isScrollInProgress
-        //|| lazyListState.firstVisibleItemScrollOffset > 0
+        lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1)
     }
   }
 
@@ -274,7 +272,6 @@ private fun ClaimChatScreenContent(
   LaunchedEffect(uiState.steps.size) {
     if (uiState.steps.isNotEmpty()) {
       lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
-
     }
   }
 }
@@ -295,8 +292,13 @@ private fun StepContentSection(
   spacerModifier: Modifier,
   showSpacer: Boolean,
 ) {
-  Column() {
+  Column {
     HedvigText(stepItem.text)
+    if (stepItem.stepContent is StepContent.Task) {
+      TaskStep(
+        taskContent = stepItem.stepContent,
+      )
+    }
     Spacer(Modifier.height(16.dp))
     AnimatedVisibility(
       visible = showSpacer,
@@ -402,9 +404,7 @@ private fun StepContentSection(
         continueButtonLoading = currentContinueButtonLoading,
       )
 
-      is StepContent.Task -> TaskStep(
-        taskContent = stepItem.stepContent,
-      )
+      is StepContent.Task -> {}
 
       StepContent.Unknown -> HedvigText("Unknown") // todo
     }
@@ -524,20 +524,32 @@ private fun TaskStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    if (taskContent.descriptions.isNotEmpty()) {
-      Column {
-        Spacer(Modifier.height(8.dp))
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          val color = HedvigTheme.colorScheme.signalGreenElement
-          Spacer(
-            Modifier
-              .wrapContentSize(Alignment.Center)
-              .size(20.dp)
-              .padding(1.dp)
-              .background(color, CircleShape),
-          )
+    val infiniteTransition = rememberInfiniteTransition(label = "blink")
+    val alpha by infiniteTransition.animateFloat(
+      initialValue = 1f,
+      targetValue = 0f,
+      animationSpec = infiniteRepeatable(
+        animation = tween(durationMillis = 500),
+        repeatMode = RepeatMode.Reverse,
+      ),
+      label = "alpha",
+    )
+
+    Column {
+      Spacer(Modifier.height(8.dp))
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        val color = HedvigTheme.colorScheme.signalGreenElement
+        Spacer(
+          Modifier
+            .wrapContentSize(Alignment.Center)
+            .size(20.dp)
+            .padding(1.dp)
+            .alpha(alpha)
+            .background(color, CircleShape),
+        )
+        if (taskContent.descriptions.isNotEmpty()) {
           Spacer(Modifier.width(8.dp))
           AnimatedContent(taskContent.descriptions.last()) { target ->
             MemberSentAnswer(
