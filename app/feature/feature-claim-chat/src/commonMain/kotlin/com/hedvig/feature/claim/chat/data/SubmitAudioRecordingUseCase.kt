@@ -6,9 +6,9 @@ import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.data.file.CommonFile
 import octopus.ClaimIntentSubmitAudioMutation
