@@ -668,22 +668,24 @@ private fun FormContent(
         if (content.fields.flatMap { it.selectedOptions }.isNotEmpty()) {
           content.fields.forEach { field ->
             val textValue = field.selectedOptions.joinToString { it.text }
-            if (textValue.isNotEmpty()) {
-              Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.End,
-              ) {
-                HedvigText(
-                  field.title,
-                  style = HedvigTheme.typography.label,
-                  color = HedvigTheme.colorScheme.textAccordion,
-                )
+            Column(
+              Modifier.fillMaxWidth(),
+              horizontalAlignment = Alignment.End,
+            ) {
+              HedvigText(
+                field.title,
+                style = HedvigTheme.typography.label,
+                color = HedvigTheme.colorScheme.textAccordion,
+              )
+              if (textValue.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))
                 MemberSentAnswer(
                   onClick = null,
                 ) {
                   HedvigText(textValue)
                 }
+              } else {
+                SkippedLabel()
               }
             }
           }
