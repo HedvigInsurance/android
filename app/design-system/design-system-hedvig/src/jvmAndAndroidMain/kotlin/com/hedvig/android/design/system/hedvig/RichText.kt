@@ -90,7 +90,7 @@ inline fun <R : Any> AnnotatedString.Builder.withHedvigLink(url: String, block: 
 }
 
 /**
- * Wraps the given [child] with Hedvig Theme integration for [BasicRichText].
+ * Wraps the given [child] with Hedvig Theme integration for [com.halilibo.richtext.ui.BasicRichText].
  *
  * This function also keeps track of the parent context by using CompositionLocals
  * to not apply Material Theming if it already exists in the current composition.

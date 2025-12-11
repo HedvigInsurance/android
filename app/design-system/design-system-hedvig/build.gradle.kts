@@ -49,10 +49,14 @@ kotlin {
       implementation(projects.navigationCore)
       implementation(libs.kotlinx.datetime)
     }
+    val jvmAndAndroidMain by getting {
+      dependencies {
+        implementation(libs.compose.richtext)
+        implementation(libs.compose.richtextCommonmark)
+      }
+    }
     androidMain.dependencies {
       implementation(libs.androidx.other.core)
-      implementation(libs.compose.richtext)
-      implementation(libs.compose.richtextCommonmark)
       implementation(libs.media3.exoplayer)
       implementation(libs.media3.exoplayer.dash)
       implementation(libs.media3.ui)
