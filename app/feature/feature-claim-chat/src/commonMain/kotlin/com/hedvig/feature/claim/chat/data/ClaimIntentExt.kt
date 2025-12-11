@@ -3,7 +3,6 @@ package com.hedvig.feature.claim.chat.data
 import arrow.core.raise.Raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
-import com.hedvig.android.core.locale.previewCommonLocale
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment

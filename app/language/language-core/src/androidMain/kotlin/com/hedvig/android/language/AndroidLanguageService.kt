@@ -3,6 +3,7 @@ package com.hedvig.android.language
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.util.Locale
@@ -30,7 +31,7 @@ internal class AndroidLanguageService() : LanguageService {
     }
   }
 
-  override fun getLocale(): Locale {
+  override fun getLocale(): CommonLocale {
     return getSelectedLocale() ?: Locale("en", "SE")
   }
 

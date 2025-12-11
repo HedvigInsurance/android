@@ -1,7 +1,7 @@
 package com.hedvig.android.language
 
 import androidx.annotation.MainThread
-import java.util.Locale
+import com.hedvig.android.core.locale.CommonLocale
 
 interface LanguageService {
   /**
