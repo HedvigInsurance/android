@@ -43,7 +43,6 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.compose.uiToolingPreview)
-      implementation(libs.androidx.graphicsShapes)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(projects.composeUi)
