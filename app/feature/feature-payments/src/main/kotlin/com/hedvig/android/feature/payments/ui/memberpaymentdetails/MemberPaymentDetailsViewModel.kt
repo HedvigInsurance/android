@@ -36,7 +36,7 @@ private class MemberPaymentDetailsPresenter(
 
     CollectEvents {
       when (it) {
-        MemberPaymentDetailsEvent.Retry -> TODO()
+        MemberPaymentDetailsEvent.Retry -> dataLoadIteration++
       }
     }
 
@@ -67,5 +67,4 @@ internal sealed interface MemberPaymentDetailsUiState {
 
 internal sealed interface MemberPaymentDetailsEvent {
   data object Retry : MemberPaymentDetailsEvent
-  // todo
 }

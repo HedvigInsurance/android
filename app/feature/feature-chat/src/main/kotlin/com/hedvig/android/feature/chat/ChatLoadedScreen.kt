@@ -93,9 +93,11 @@ import coil3.compose.AsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorSnackbar
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -557,15 +559,31 @@ private fun ChatBubble(
             color = chatMessage.backgroundColor(),
             contentColor = chatMessage.onBackgroundColor(),
           ) {
-            TextWithClickableUrls(
-              text = chatMessage.text,
-              style = LocalTextStyle.current.copy(color = LocalContentColor.current),
-              modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .semantics {
-                  hideFromAccessibility()
-                },
-            )
+            Column {
+              TextWithClickableUrls(
+                text = chatMessage.text,
+                style = LocalTextStyle.current.copy(color = LocalContentColor.current),
+                modifier = Modifier
+                  .padding(horizontal = 16.dp, vertical = 12.dp)
+                  .semantics {
+                    hideFromAccessibility()
+                  },
+              )
+              if (chatMessage.action != null) {
+                HedvigButton(
+                  text = chatMessage.action.title,
+                  enabled = true,
+                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                  buttonSize = ButtonDefaults.ButtonSize.Medium,
+                  onClick = {
+                    openUrl(chatMessage.action.url)
+                  },
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 4.dp)
+                )
+              }
+            }
           }
         }
 
@@ -631,7 +649,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-            -> {
+              -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -1210,7 +1228,10 @@ private fun PreviewChatLoadedScreen() {
         ChatMessageFile("4", MEMBER, Instant.parse("2024-05-01T00:00:00Z"), banner2, "", IMAGE),
         ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
         ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
-        CbmChatMessage.ChatMessageText("7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), null, "Last message"),
+        CbmChatMessage.ChatMessageText(
+          "7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), null, "Last message",
+          action = CbmChatMessage.ChatMessageTextAction("go somewhere", ""),
+        ),
       )
         .reversed()
         .mapIndexed { index, item ->
