@@ -15,7 +15,6 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.androidx.other.appCompat)
       implementation(projects.coreResources)
-      implementation(projects.languageCore)
     }
   }
 }
