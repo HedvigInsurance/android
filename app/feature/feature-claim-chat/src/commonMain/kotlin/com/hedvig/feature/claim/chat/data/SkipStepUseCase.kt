@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSkipStepMutation
 
@@ -15,6 +16,7 @@ internal interface SkipStepUseCase {
 
 internal class SkipStepUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) : SkipStepUseCase {
   override suspend fun invoke(id: StepId): Either<ErrorMessage, ClaimIntent> = either {
     val data = apolloClient
@@ -32,7 +34,7 @@ internal class SkipStepUseCaseImpl(
       .claimIntentSkipStep
     when {
       data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> data.intent.toClaimIntent()
+      data.intent != null -> data.intent.toClaimIntent(languageService.getLocale())
       else -> raise(ErrorMessage("No data"))
     }
   }

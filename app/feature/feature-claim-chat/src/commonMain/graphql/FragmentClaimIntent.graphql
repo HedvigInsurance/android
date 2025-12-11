@@ -8,9 +8,9 @@ fragment ClaimIntentFragment on ClaimIntent {
     }
     isRegrettable
   }
-  outcome {
-    ...ClaimIntentOutcomeClaimFragment
-    ...ClaimIntentOutcomeDeflectionFragment
+  createdClaim {
+    id
+    submittedAt
   }
 }
 
@@ -21,38 +21,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...AudioRecordingFragment
   ...FileUploadFragment
   ...SummaryFragment
-}
-
-fragment ClaimIntentOutcomeClaimFragment on ClaimIntentOutcomeClaim {
-  claimId
-  claim {
-    submittedAt
-  }
-}
-
-fragment ClaimIntentOutcomeDeflectionFragment on ClaimIntentOutcomeDeflection {
-  title
-  infoText
-  warningText
-  partners {
-    id
-    imageUrl
-    phoneNumber
-    title
-    description
-    info
-    url
-    urlButtonTitle
-  }
-  partnersInfo {
-    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
-  }
-  content {
-    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
-  }
-  faq {
-    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
-  }
+  ...DeflectionFragment
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {
@@ -113,7 +82,32 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
   freeTexts
 }
 
-fragment ClaimIntentOutcomeDeflectionInfoBlockFragment on ClaimIntentOutcomeDeflectionInfoBlock {
+fragment DeflectionFragment on ClaimIntentStepContentDeflection {
+  title
+  infoText
+  warningText
+  partners {
+    id
+    imageUrl
+    phoneNumber
+    title
+    description
+    info
+    url
+    urlButtonTitle
+  }
+  partnersInfo {
+    ...DeflectionInfoBlockFragment
+  }
+  content {
+    ...DeflectionInfoBlockFragment
+  }
+  faq {
+    ...DeflectionInfoBlockFragment
+  }
+}
+
+fragment DeflectionInfoBlockFragment on ClaimIntentStepContentDeflectionInfoBlock {
   title
   description
 }

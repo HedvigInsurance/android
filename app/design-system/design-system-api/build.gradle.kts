@@ -10,8 +10,9 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
+      api(projects.coreLocale)
       implementation(libs.jetbrains.compose.material3)
-      implementation(libs.jetbrains.compose.runtime)
+      implementation(libs.jetbrains.compose.material3)
     }
   }
 }

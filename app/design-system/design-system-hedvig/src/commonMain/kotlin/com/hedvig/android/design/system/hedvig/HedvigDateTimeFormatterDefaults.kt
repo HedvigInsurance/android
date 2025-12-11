@@ -2,7 +2,7 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.hedvig.android.design.system.hedvig.api.CommonLocale
+import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 
 @Composable

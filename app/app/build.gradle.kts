@@ -210,7 +210,6 @@ dependencies {
   implementation(projects.featureTravelCertificate)
   implementation(projects.foreverUi)
   implementation(projects.initializable)
-  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.languageMigration)

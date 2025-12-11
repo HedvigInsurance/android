@@ -214,7 +214,7 @@ private fun ColumnScope.PreferencesSheetContent(
     options = Language.entries.map { language ->
       RadioOption(
         id = RadioOptionId(language.name),
-        text = androidx.compose.ui.res.stringResource(language.label),
+        text = stringResource(language.label),
         iconResource = IconResource.Vector(language.flag()),
       )
     },
