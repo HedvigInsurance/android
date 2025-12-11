@@ -3,7 +3,6 @@ package com.hedvig.feature.claim.chat.data
 import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
-import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
@@ -38,39 +37,7 @@ internal data class ClaimIntentStep(
 @Serializable
 internal sealed interface ClaimIntentOutcome {
   @Serializable
-  data class Deflect(
-    val title: String?,
-    val infoText: String?,
-    val warningText: String?,
-    val partners: List<Partner>,
-    val partnersInfo: InfoBlock?,
-    val content: InfoBlock,
-    val faq: List<InfoBlock>,
-  ) : ClaimIntentOutcome {
-    @Serializable
-    data class Partner(
-      val id: String,
-      val imageUrl: String?,
-      val phoneNumber: String?,
-      val title: String?,
-      val description: String?,
-      val info: String?,
-      val url: String?,
-      val urlButtonTitle: String?,
-    )
-
-    @Serializable
-    data class InfoBlock(
-      val title: String,
-      val description: String,
-    )
-  }
-
-  @Serializable
   data class Claim(val claimId: String, val claimSubmissionDate: Instant) : ClaimIntentOutcome
-
-  @Serializable
-  data object Unknown : ClaimIntentOutcome
 }
 
 @JvmInline
@@ -144,6 +111,7 @@ internal sealed interface StepContent {
       MULTI_SELECT,
       BINARY,
     }
+
   }
 
   data class ContentSelect(
@@ -170,6 +138,37 @@ internal sealed interface StepContent {
     data class AudioRecording(val url: String)
 
     data class FileUpload(val url: String, val contentType: String, val fileName: String)
+  }
+
+  @Serializable
+  data class Deflect(
+    val title: String?,
+    val infoText: String?,
+    val warningText: String?,
+    val partners: List<Partner>,
+    val partnersInfo: InfoBlock?,
+    val content: InfoBlock,
+    val faq: List<InfoBlock>,
+  ) : StepContent {
+    override val isSkippable: Boolean = false
+
+    @Serializable
+    data class Partner(
+      val id: String,
+      val imageUrl: String?,
+      val phoneNumber: String?,
+      val title: String?,
+      val description: String?,
+      val info: String?,
+      val url: String?,
+      val urlButtonTitle: String?,
+    )
+
+    @Serializable
+    data class InfoBlock(
+      val title: String,
+      val description: String,
+    )
   }
 
   object Unknown : StepContent {
