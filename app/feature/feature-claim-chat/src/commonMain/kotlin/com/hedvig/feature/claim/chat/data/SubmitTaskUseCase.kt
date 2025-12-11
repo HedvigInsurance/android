@@ -6,11 +6,13 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSubmitTaskMutation
 
 internal class SubmitTaskUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
   suspend fun invoke(stepId: String): Either<ErrorMessage, ClaimIntent> {
     return either {
@@ -23,7 +25,7 @@ internal class SubmitTaskUseCase(
         }
         .bind()
         .claimIntentSubmitTask
-        .toClaimIntent()
+        .toClaimIntent(languageService.getLocale())
     }
   }
 }

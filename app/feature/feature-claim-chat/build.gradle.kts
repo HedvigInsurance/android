@@ -36,6 +36,7 @@ kotlin {
       implementation(projects.composeResultLauncher)
       implementation(projects.coreUiData)
       implementation(projects.designSystemHedvig)
+      implementation(projects.languageCore)
       implementation(projects.moleculePublic)
       implementation(projects.uiClaimFlow)
       implementation(projects.uiForceUpgrade)
