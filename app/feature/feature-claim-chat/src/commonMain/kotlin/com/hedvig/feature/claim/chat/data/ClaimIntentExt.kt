@@ -2,8 +2,8 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.Raise
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
-import com.hedvig.android.design.system.hedvig.api.previewCommonLocale
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
@@ -20,23 +20,23 @@ import octopus.fragment.TaskFragment
 import octopus.type.ClaimIntentStepContentFormFieldType
 
 context(raise: Raise<ErrorMessage>)
-internal fun ClaimIntentMutationOutputFragment.toClaimIntent(): ClaimIntent {
+internal fun ClaimIntentMutationOutputFragment.toClaimIntent(locale: CommonLocale): ClaimIntent {
   val userError = userError
   val intent = intent
   return with(raise) {
     when {
       userError != null -> raise(ErrorMessage(userError.message))
-      intent != null -> intent.toClaimIntent()
+      intent != null -> intent.toClaimIntent(locale)
       else -> raise(ErrorMessage("No data"))
     }
   }
 }
 
-internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
+internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimIntent {
   return ClaimIntent(
     id = ClaimIntentId(id),
     next = when {
-      currentStep != null -> ClaimIntent.Next.Step(currentStep!!.toClaimIntentStep())
+      currentStep != null -> ClaimIntent.Next.Step(currentStep!!.toClaimIntentStep(locale))
       outcome != null -> ClaimIntent.Next.Outcome(outcome!!.toClaimIntentOutcome())
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
@@ -44,19 +44,19 @@ internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
   )
 }
 
-private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
+private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLocale): ClaimIntentStep {
   return ClaimIntentStep(
     id = StepId(id),
     text = text,
-    stepContent = this.content.toStepContent(),
+    stepContent = this.content.toStepContent(locale),
     isRegrettable = this.isRegrettable,
   )
 }
 
-private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
+private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): StepContent {
   return when (this) {
     is FormFragment -> StepContent.Form(
-      fields = this.fields.toFields(),
+      fields = this.fields.toFields(locale),
       isSkippable = isSkippable,
     )
 
@@ -104,7 +104,7 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
   }
 }
 
-private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
+private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepContent.Form.Field> {
   return this.map { field ->
     StepContent.Form.Field(
       id = FieldId(field.id),
@@ -133,7 +133,7 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       datePickerUiState = when (field.type) {
         ClaimIntentStepContentFormFieldType.DATE ->
           DatePickerUiState(
-            locale = previewCommonLocale, // TODO!!
+            locale = locale,
             initiallySelectedDate = field.defaultValues.getOrNull(0)?.let { LocalDate.parse(it) },
             minDate = field.minValue?.let { LocalDate.parse(it) } ?: LocalDate(1900, 1, 1),
             maxDate = field.maxValue?.let { LocalDate.parse(it) } ?: LocalDate(2100, 1, 1),

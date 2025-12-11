@@ -42,39 +42,39 @@ val claimChatModule = module {
   }
 
   single<SkipStepUseCase> {
-    SkipStepUseCaseImpl(get<ApolloClient>())
+    SkipStepUseCaseImpl(get<ApolloClient>(), get())
   }
 
   single<StartClaimIntentUseCase> {
-    StartClaimIntentUseCase(get<ApolloClient>())
+    StartClaimIntentUseCase(get<ApolloClient>(), get())
   }
 
   single<GetClaimIntentUseCase> {
-    GetClaimIntentUseCase(get<ApolloClient>())
+    GetClaimIntentUseCase(get<ApolloClient>(), get())
   }
 
   single<SubmitTaskUseCase> {
-    SubmitTaskUseCase(get<ApolloClient>())
+    SubmitTaskUseCase(get<ApolloClient>(), get())
   }
 
   single<SubmitAudioRecordingUseCase> {
-    SubmitAudioRecordingUseCase(get<ApolloClient>(), get())
+    SubmitAudioRecordingUseCase(get<ApolloClient>(), get(), get())
   }
 
   single<SubmitFileUploadUseCase> {
-    SubmitFileUploadUseCase(get<ApolloClient>(), get(), get())
+    SubmitFileUploadUseCase(get<ApolloClient>(), get(), get(), get())
   }
 
   single<SubmitFormUseCase> {
-    SubmitFormUseCase(get<ApolloClient>())
+    SubmitFormUseCase(get<ApolloClient>(), get())
   }
 
   single<SubmitSelectUseCase> {
-    SubmitSelectUseCase(get<ApolloClient>())
+    SubmitSelectUseCase(get<ApolloClient>(), get())
   }
 
   single<SubmitSummaryUseCase> {
-    SubmitSummaryUseCase(get<ApolloClient>())
+    SubmitSummaryUseCase(get<ApolloClient>(), get())
   }
 
   single<UploadFileUseCase> {
@@ -82,7 +82,7 @@ val claimChatModule = module {
   }
 
   single<RegretStepUseCase> {
-    RegretStepUseCaseImpl(get<ApolloClient>())
+    RegretStepUseCaseImpl(get<ApolloClient>(), get())
   }
 }
 

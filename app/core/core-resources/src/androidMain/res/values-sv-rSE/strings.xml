@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+  <string name="swedish">Svenska</string>
+  <string name="english_swedish">English</string>
   <string name="A11Y_AUDIO_RECORDING">Röstinspelning</string>
   <string name="A11Y_BACK">Tillbaka</string>
   <string name="A11Y_CHARACTER_LIMIT">%1$d av %2$d tecken angivna</string>

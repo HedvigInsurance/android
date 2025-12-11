@@ -8,6 +8,7 @@ import com.apollographql.apollo.ApolloClient
 import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.jvm.JvmInline
@@ -21,6 +22,7 @@ internal class SubmitFileUploadUseCase(
   private val apolloClient: ApolloClient,
   private val uploadFileUseCase: UploadFileUseCase,
   private val fileService: FileService,
+  private val languageService: LanguageService,
 ) {
   suspend fun invoke(stepId: StepId, fileUris: List<Uri>, uploadUrl: String): Either<ErrorMessage, ClaimIntent> {
     return either {
@@ -63,6 +65,6 @@ internal class SubmitFileUploadUseCase(
       }
       .bind()
       .claimIntentSubmitFileUpload
-      .toClaimIntent()
+      .toClaimIntent(languageService.getLocale())
   }
 }
