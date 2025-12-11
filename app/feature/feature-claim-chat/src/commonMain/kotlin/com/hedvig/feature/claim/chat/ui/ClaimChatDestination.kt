@@ -41,8 +41,10 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
@@ -64,6 +66,7 @@ import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
+import hedvig.resources.important_message_read_more
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
@@ -76,6 +79,7 @@ internal fun ClaimChatDestination(
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToClaimOutcome: (ClaimIntentOutcome) -> Unit,
+  navigateToDeflect: (StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
   isDevelopmentFlow: Boolean,
@@ -94,6 +98,10 @@ internal fun ClaimChatDestination(
         claimChatViewModel.emit(ClaimChatEvent.HandledOutcomeNavigation)
         navigateToClaimOutcome(it)
       },
+      navigateToDeflect = { stepId, deflect ->
+        claimChatViewModel.emit(ClaimChatEvent.HandledDeflectNavigation(stepId))
+        navigateToDeflect(deflect)
+      },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
     )
@@ -107,6 +115,7 @@ internal fun ClaimChatScreenContent(
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToClaimOutcome: (ClaimIntentOutcome) -> Unit,
+  navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
 ) {
@@ -128,6 +137,7 @@ internal fun ClaimChatScreenContent(
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           openAppSettings = openAppSettings,
           onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
           appPackageId = appPackageId,
           imageLoader = imageLoader,
         )
@@ -142,6 +152,7 @@ private fun ClaimChatScreen(
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
@@ -166,6 +177,7 @@ private fun ClaimChatScreen(
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
         openAppSettings = openAppSettings,
         onNavigateToImageViewer = onNavigateToImageViewer,
+        navigateToDeflect = navigateToDeflect,
         appPackageId = appPackageId,
         imageLoader = imageLoader,
       )
@@ -180,6 +192,7 @@ private fun ClaimChatScreenContent(
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -305,6 +318,16 @@ private fun ClaimChatScreenContent(
           freeTexts = item.stepContent.freeTexts,
           continueButtonLoading = uiState.currentContinueButtonLoading,
         )
+
+        is StepContent.Deflect -> {
+          DeflectStep(
+            stepId = item.id,
+            text = item.text,
+            deflect = item.stepContent,
+            navigateToDeflect = navigateToDeflect,
+            autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
+          )
+        }
 
         is StepContent.Task -> TaskStep(
           itemText = item.text,
@@ -433,6 +456,31 @@ internal fun SkippedLabel() {
       )
     }
   }
+}
+
+@Composable
+private fun DeflectStep(
+  stepId: StepId,
+  text: String,
+  deflect: StepContent.Deflect,
+  navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
+  autoNavigateForDeflectStepId: StepId?,
+  modifier: Modifier = Modifier,
+) {
+  if (autoNavigateForDeflectStepId != null) {
+    LaunchedEffect(Unit) {
+      navigateToDeflect(stepId, deflect)
+    }
+  }
+  HedvigNotificationCard(
+    message = text,
+    priority = NotificationDefaults.NotificationPriority.Info,
+    style = NotificationDefaults.InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.important_message_read_more),
+      onButtonClick = { navigateToDeflect(stepId, deflect) },
+    ),
+    modifier = modifier,
+  )
 }
 
 @Composable

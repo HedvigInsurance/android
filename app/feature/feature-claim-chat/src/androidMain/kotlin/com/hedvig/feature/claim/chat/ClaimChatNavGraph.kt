@@ -9,6 +9,7 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
+import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.ClaimChatDestination
 import com.hedvig.feature.claim.chat.ui.outcome.ClaimOutcomeDeflectDestination
 import com.hedvig.feature.claim.chat.ui.outcome.ClaimOutcomeNewClaimDestination
@@ -24,10 +25,10 @@ data class ClaimChatDestination(
 
 @Serializable
 internal data class ClaimOutcomeDeflectDestination(
-  val outcome: ClaimIntentOutcome.Deflect,
+  val deflect: StepContent.Deflect,
 ) : Destination {
   companion object Companion : DestinationNavTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<ClaimIntentOutcome.Deflect>())
+    override val typeList: List<KType> = listOf(typeOf<StepContent.Deflect>())
   }
 }
 
@@ -41,7 +42,7 @@ internal data class ClaimOutcomeNewClaimDestination(
 }
 
 @Serializable
-internal data object ClaimOutcomeUpdateAppDestination : Destination
+internal data object UpdateAppDestination : Destination
 
 fun NavGraphBuilder.claimChatGraph(
   navController: NavController,
@@ -70,19 +71,15 @@ fun NavGraphBuilder.claimChatGraph(
               }
             }
           }
-
-          is ClaimIntentOutcome.Deflect -> {
-            navController.navigate(ClaimOutcomeDeflectDestination(outcome = outcome))
-          }
-
-          ClaimIntentOutcome.Unknown -> {
-            navController.navigate(ClaimOutcomeUpdateAppDestination) {
-              typedPopUpTo<ClaimChatDestination> {
-                inclusive = true
-              }
-            }
-          }
         }
+      },
+      navigateToDeflect = { deflect: StepContent.Deflect ->
+//        navController.navigate(UpdateAppDestination) {
+//          typedPopUpTo<ClaimChatDestination> {
+//            inclusive = true
+//          }
+//        }
+        navController.navigate(ClaimOutcomeDeflectDestination(deflect = deflect))
       },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
@@ -90,7 +87,7 @@ fun NavGraphBuilder.claimChatGraph(
   }
   navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
     ClaimOutcomeDeflectDestination(
-      deflect = outcome,
+      deflect = deflect,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
       openUrl = openUrl,
@@ -103,7 +100,7 @@ fun NavGraphBuilder.claimChatGraph(
       navigateToClaimDetails = { navigateToClaimDetails(outcome.claimId) },
     )
   }
-  navdestination<ClaimOutcomeUpdateAppDestination> {
+  navdestination<UpdateAppDestination> {
     ForceUpgradeBlockingScreen(
       goToPlayStore = tryOpenPlayStore,
     )

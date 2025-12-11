@@ -8,11 +8,10 @@ import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
-import octopus.fragment.ClaimIntentOutcomeClaimFragment
-import octopus.fragment.ClaimIntentOutcomeDeflectionFragment
-import octopus.fragment.ClaimIntentOutcomeDeflectionInfoBlockFragment
 import octopus.fragment.ClaimIntentStepContentFragment
 import octopus.fragment.ContentSelectFragment
+import octopus.fragment.DeflectionFragment
+import octopus.fragment.DeflectionInfoBlockFragment
 import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
 import octopus.fragment.SummaryFragment
@@ -37,7 +36,7 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
     id = ClaimIntentId(id),
     next = when {
       currentStep != null -> ClaimIntent.Next.Step(currentStep!!.toClaimIntentStep(locale))
-      outcome != null -> ClaimIntent.Next.Outcome(outcome!!.toClaimIntentOutcome())
+      createdClaim != null -> ClaimIntent.Next.Outcome(createdClaim!!.toClaimIntentOutcome())
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
     // todo also render source messages
@@ -90,6 +89,32 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       fileUploads = fileUploads.map { StepContent.Summary.FileUpload(it.url, it.contentType, it.fileName) },
       freeTexts = freeTexts,
     )
+
+    is DeflectionFragment -> {
+      fun DeflectionInfoBlockFragment.toInfoBlock(): StepContent.Deflect.InfoBlock {
+        return StepContent.Deflect.InfoBlock(title, description)
+      }
+      StepContent.Deflect(
+        title = title,
+        infoText = infoText,
+        warningText = warningText,
+        partners = partners.map { partner ->
+          StepContent.Deflect.Partner(
+            id = partner.id,
+            imageUrl = partner.imageUrl,
+            phoneNumber = partner.phoneNumber,
+            title = partner.title,
+            description = partner.description,
+            info = partner.info,
+            url = partner.url,
+            urlButtonTitle = partner.urlButtonTitle,
+          )
+        },
+        partnersInfo = partnersInfo?.toInfoBlock(),
+        content = content.toInfoBlock(),
+        faq = faq.map { it.toInfoBlock() },
+      )
+    }
 
     else -> StepContent.Unknown
   }
@@ -161,47 +186,9 @@ private fun List<String>.toFieldOptions(
   }
 }
 
-private fun ClaimIntentFragment.Outcome.toClaimIntentOutcome(): ClaimIntentOutcome {
-  return when (this) {
-    is ClaimIntentOutcomeClaimFragment -> {
-      ClaimIntentOutcome.Claim(
-        claimId,
-        claim.submittedAt,
-      )
-    }
-
-    is ClaimIntentOutcomeDeflectionFragment -> {
-      ClaimIntentOutcome.Deflect(
-        title = title,
-        infoText = infoText,
-        warningText = warningText,
-        partners = partners.map { partner ->
-          ClaimIntentOutcome.Deflect.Partner(
-            id = partner.id,
-            imageUrl = partner.imageUrl,
-            phoneNumber = partner.phoneNumber,
-            title = partner.title,
-            description = partner.description,
-            info = partner.info,
-            url = partner.url,
-            urlButtonTitle = partner.urlButtonTitle,
-          )
-        },
-        partnersInfo = partnersInfo?.toInfoBlock(),
-        content = content.toInfoBlock(),
-        faq = faq.map { it.toInfoBlock() },
-      )
-    }
-
-    else -> {
-      ClaimIntentOutcome.Unknown
-    }
-  }
-}
-
-private fun ClaimIntentOutcomeDeflectionInfoBlockFragment.toInfoBlock(): ClaimIntentOutcome.Deflect.InfoBlock {
-  return ClaimIntentOutcome.Deflect.InfoBlock(
-    title,
-    description,
+private fun ClaimIntentFragment.CreatedClaim.toClaimIntentOutcome(): ClaimIntentOutcome {
+  return ClaimIntentOutcome.Claim(
+    id,
+    submittedAt,
   )
 }
