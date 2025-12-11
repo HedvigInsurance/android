@@ -474,7 +474,7 @@ private fun DeflectStep(
   }
   HedvigNotificationCard(
     message = text,
-    priority = NotificationDefaults.NotificationPriority.Info,
+    priority = NotificationDefaults.NotificationPriority.InfoInline,
     style = NotificationDefaults.InfoCardStyle.Button(
       buttonText = stringResource(Res.string.important_message_read_more),
       onButtonClick = { navigateToDeflect(stepId, deflect) },
