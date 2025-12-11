@@ -1,13 +1,14 @@
 package com.hedvig.android.language
 
-import androidx.annotation.StringRes
 import com.hedvig.android.language.Language.EN_SE
 import com.hedvig.android.language.Language.SV_SE
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.english_swedish
+import hedvig.resources.swedish
+import org.jetbrains.compose.resources.StringResource
 
-val Language.label: Int
-  @StringRes
+val Language.label: StringResource
   get() = when (this) {
-    SV_SE -> R.string.swedish
-    EN_SE -> R.string.english_swedish
+    SV_SE -> Res.string.swedish
+    EN_SE -> Res.string.english_swedish
   }
