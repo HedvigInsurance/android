@@ -75,6 +75,7 @@ import com.hedvig.feature.claim.chat.ui.SkippedLabel
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.CLAIM_CHAT_AUDIO_RECORDING_LABEL
+import hedvig.resources.CLAIM_CHAT_FREE_TEXT_LABEL
 import hedvig.resources.EMBARK_RECORD_AGAIN
 import hedvig.resources.EMBARK_START_RECORDING
 import hedvig.resources.EMBARK_STOP_RECORDING
@@ -257,7 +258,9 @@ private fun Playback(
     } else {
       val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
       if (!isCurrentStep) {
-        VoiceRecordingLabel {
+        VoiceRecordingLabel(
+          labelType = AudioRecordingLabelType.AUDIO
+        ) {
           HedvigAudioPlayer(
             audioPlayer = audioPlayer,
             modifier = Modifier.then(
@@ -290,7 +293,8 @@ private fun Playback(
 }
 
 @Composable
-private fun VoiceRecordingLabel(
+internal fun VoiceRecordingLabel(
+  labelType: AudioRecordingLabelType,
   extendedContent: @Composable () -> Unit,
 ) {
   var showExtended by remember { mutableStateOf(false) }
@@ -314,13 +318,21 @@ private fun VoiceRecordingLabel(
             )
             Spacer(Modifier.width(4.dp))
             HedvigText(
-              text = stringResource(Res.string.CLAIM_CHAT_AUDIO_RECORDING_LABEL),
+              text = when (labelType) {
+                AudioRecordingLabelType.TEXT -> stringResource(Res.string.CLAIM_CHAT_FREE_TEXT_LABEL)
+                AudioRecordingLabelType.AUDIO ->  stringResource(Res.string.CLAIM_CHAT_AUDIO_RECORDING_LABEL)
+              }
             )
           }
         }
       }
     }
   }
+}
+
+internal enum class AudioRecordingLabelType {
+  TEXT,
+  AUDIO
 }
 
 /**

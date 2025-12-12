@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -175,14 +176,18 @@ private fun FreeTextInputSection(
       )
     } else {
       if (freeText != null) {
-        Row(
-          Modifier.fillMaxWidth().padding(start = 48.dp),
-          horizontalArrangement = Arrangement.End,
+        VoiceRecordingLabel(
+          labelType = AudioRecordingLabelType.TEXT
         ) {
-          MemberSentAnswer(
-            onClick = null,
+          Row(
+            Modifier.fillMaxWidth().padding(start = 48.dp),
+            horizontalArrangement = Arrangement.End,
           ) {
-            HedvigText(freeText, textAlign = TextAlign.End)
+            MemberSentAnswer(
+              onClick = null,
+            ) {
+              HedvigText(freeText, textAlign = TextAlign.End)
+            }
           }
         }
       } else {
