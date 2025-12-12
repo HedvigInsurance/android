@@ -51,7 +51,7 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.runtime)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.datadog.sdk.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.timber)

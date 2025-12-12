@@ -14,7 +14,7 @@ kotlin {
       api(libs.androidx.lifecycle.viewModel)
       implementation(libs.coroutines.core)
       implementation(libs.molecule)
-      implementation(libs.androidx.compose.runtime)
+      implementation(libs.jetbrains.compose.runtime)
       implementation(libs.coroutines.core)
     }
   }

@@ -9,6 +9,6 @@ hedvig {
 
 dependencies {
   implementation(libs.androidx.compose.animationCore)
-  implementation(libs.androidx.compose.runtime)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(projects.designSystemHedvig)
 }

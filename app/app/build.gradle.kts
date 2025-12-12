@@ -110,7 +110,7 @@ dependencies {
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.compose.runtime)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiUnit)

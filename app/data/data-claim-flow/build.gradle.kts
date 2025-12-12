@@ -15,7 +15,7 @@ dependencies {
   api(libs.retrofit)
   api(libs.retrofitArrow)
 
-  implementation(libs.androidx.compose.runtime)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)

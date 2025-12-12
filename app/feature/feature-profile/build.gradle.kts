@@ -16,7 +16,7 @@ android {
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.runtime)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)

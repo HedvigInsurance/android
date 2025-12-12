@@ -109,8 +109,6 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-compose-materialIconsCore = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple" }
-androidx-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
-androidx-compose-runtimeSaveable = { module = "androidx.compose.runtime:runtime-saveable" }
 
 androidx-compose-uiCore = { module = "androidx.compose.ui:ui", version.ref = "androidx-ui-alpha" }
 androidx-compose-uiText = { module = "androidx.compose.ui:ui-text", version.ref = "androidx-ui-alpha" }
@@ -186,6 +184,7 @@ jetbrains-compose-material-ripple = { module = "org.jetbrains.compose.material:m
 jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "jetbrains-material3" }
 jetbrains-compose-material3-windowSizeClass = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "jetbrains-material3" }
 jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrains-compose" }
+jetbrains-compose-runtime-saveable = { module = "org.jetbrains.compose.runtime:runtime-saveable", version.ref = "jetbrains-compose" }
 jetbrains-compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "jetbrains-compose" }
 jetbrains-compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "jetbrains-compose" }
 jetbrains-compose-ui-graphics = { module = "org.jetbrains.compose.ui:ui-graphics", version.ref = "jetbrains-compose" }
