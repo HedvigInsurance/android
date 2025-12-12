@@ -51,6 +51,8 @@ internal sealed interface StepContent {
     val uploadUri: String,
     override val isSkippable: Boolean,
     val recordingState: AudioRecordingStepState,
+    val freeTextMinLength: Int,
+    val freeTextMaxLength: Int
   ) : StepContent
 
   data class FileUpload(
@@ -180,6 +182,7 @@ sealed interface AudioRecordingStepState {
   data class FreeTextDescription(
     val showOverlay: Boolean,
     val errorType: FreeTextErrorType?,
+    val canSubmit: Boolean,
     val hasError: Boolean = false,
   ) : AudioRecordingStepState
 
@@ -205,20 +208,3 @@ sealed interface AudioRecordingStepState {
 sealed interface FreeTextErrorType {
   data class TooShort(val minLength: Int) : FreeTextErrorType
 }
-
-@Serializable
-@JvmInline
-value class AudioUrl(val value: String)
-
-@Immutable
-@Serializable
-data class AudioContent(
-  /**
-   * The url to be used to play back the audio file
-   */
-  val signedUrl: AudioUrl,
-  /**
-   * The url that the backend expects when trying to go to the next step of the flow
-   */
-  val audioUrl: AudioUrl,
-)

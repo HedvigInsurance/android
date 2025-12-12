@@ -26,17 +26,16 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.PermissionDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
-import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.feature.claim.chat.ui.MemberSentAnswer
 import com.hedvig.feature.claim.chat.ui.SkippedLabel
-import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
+import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import hedvig.resources.claims_skip_button
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
@@ -102,6 +101,7 @@ internal fun AudioRecorderBubble(
             errorType = uiStateAnimated.errorType,
             isCurrentStep = isCurrentStep,
             continueButtonLoading = continueButtonLoading,
+            canSubmit = uiStateAnimated.canSubmit
           )
         }
       }
@@ -130,6 +130,7 @@ private fun FreeTextInputSection(
   isCurrentStep: Boolean,
   continueButtonLoading: Boolean,
   errorType: FreeTextErrorType?,
+  canSubmit: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -140,20 +141,23 @@ private fun FreeTextInputSection(
         onClick = { onLaunchFullScreenEditText() },
         freeTextValue = freeText,
         freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-        supportingText = if (errorType is FreeTextErrorType.TooShort) {
-          stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength)
-        } else {
-          null
+        supportingText = when (errorType) {
+          is FreeTextErrorType.TooShort ->
+            stringResource(
+              Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR,
+              errorType.minLength,
+            )
+          else -> null
         },
         hasError = hasError,
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         onClick = submitFreeText,
-        enabled = !continueButtonLoading,
+        enabled = canSubmit,
         isLoading = continueButtonLoading,
         modifier = Modifier.fillMaxWidth(),
-        text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+        text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
@@ -252,6 +256,7 @@ private fun PreviewFreeTextInput() {
         errorType = null,
         isCurrentStep = true,
         continueButtonLoading = false,
+        canSubmit = true
       )
     }
   }

@@ -52,6 +52,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
+import com.hedvig.feature.claim.chat.FreeTextRestrictions
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
@@ -158,7 +159,7 @@ private fun ClaimChatScreen(
   openAppSettings: () -> Unit,
 ) {
   FreeTextOverlay(
-    freeTextMaxLength = 3000,
+    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
     freeTextValue = uiState.freeText,
     freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
     freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
@@ -169,7 +170,7 @@ private fun ClaimChatScreen(
       onEvent(ClaimChatEvent.UpdateFreeText(feedback))
       onEvent(ClaimChatEvent.CloseFreeChatOverlay)
     },
-    shouldShowOverlay = uiState.showFreeTextOverlay,
+    shouldShowOverlay = uiState.showFreeTextOverlay!=null,
     overlaidContent = {
       ClaimChatScreenContent(
         uiState = uiState,
@@ -230,8 +231,8 @@ private fun ClaimChatScreenContent(
           onShowAudioRecording = {
             onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
           },
-          onLaunchFullScreenEditText = {
-            onEvent(ClaimChatEvent.OpenFreeTextOverlay)
+          onLaunchFullScreenEditText = {  restrictions ->
+            onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
           },
           startRecording = {
             onEvent(ClaimChatEvent.AudioRecording.StartRecording(item.id))
@@ -771,7 +772,7 @@ private fun AudioRecordingStep(
   stepContent: StepContent.AudioRecording,
   onShowFreeText: () -> Unit,
   onShowAudioRecording: () -> Unit,
-  onLaunchFullScreenEditText: () -> Unit,
+  onLaunchFullScreenEditText: (restrictions: FreeTextRestrictions) -> Unit,
   submitFreeText: () -> Unit,
   submitAudioFile: () -> Unit,
   stopRecording: () -> Unit,
@@ -805,7 +806,12 @@ private fun AudioRecordingStep(
       submitFreeText = submitFreeText,
       onShowFreeText = onShowFreeText,
       onShowAudioRecording = onShowAudioRecording,
-      onLaunchFullScreenEditText = onLaunchFullScreenEditText,
+      onLaunchFullScreenEditText = {
+        onLaunchFullScreenEditText(FreeTextRestrictions(
+          stepContent.freeTextMinLength,
+          stepContent.freeTextMaxLength
+        ))
+      },
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
       isCurrentStep = isCurrentStep,
