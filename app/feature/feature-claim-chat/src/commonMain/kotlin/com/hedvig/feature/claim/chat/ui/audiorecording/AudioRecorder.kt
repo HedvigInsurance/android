@@ -23,20 +23,24 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -49,7 +53,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastCbrt
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.uidata.DecimalFormatter
@@ -59,14 +62,20 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.ui.MemberSentAnswer
 import com.hedvig.feature.claim.chat.ui.SkippedLabel
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
+import hedvig.resources.CLAIM_CHAT_AUDIO_RECORDING_LABEL
+import hedvig.resources.CLAIM_CHAT_FREE_TEXT_LABEL
 import hedvig.resources.EMBARK_RECORD_AGAIN
 import hedvig.resources.EMBARK_START_RECORDING
 import hedvig.resources.EMBARK_STOP_RECORDING
@@ -248,12 +257,22 @@ private fun Playback(
       HedvigCircularProgressIndicator()
     } else {
       val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(uiState.filePath))
-      HedvigAudioPlayer(
-        audioPlayer = audioPlayer,
-        modifier = Modifier.then(
-          if (!isCurrentStep) Modifier.padding(start = 48.dp) else Modifier,
-        ),
-      )
+      if (!isCurrentStep) {
+        VoiceRecordingLabel(
+          labelType = AudioRecordingLabelType.AUDIO
+        ) {
+          HedvigAudioPlayer(
+            audioPlayer = audioPlayer,
+            modifier = Modifier.then(
+              Modifier.padding(start = 48.dp),
+            ),
+          )
+        }
+      } else {
+        HedvigAudioPlayer(
+          audioPlayer = audioPlayer,
+        )
+      }
     }
     if (isCurrentStep) {
       HedvigButton(
@@ -271,6 +290,49 @@ private fun Playback(
       )
     }
   }
+}
+
+@Composable
+internal fun VoiceRecordingLabel(
+  labelType: AudioRecordingLabelType,
+  extendedContent: @Composable () -> Unit,
+) {
+  var showExtended by remember { mutableStateOf(false) }
+  AnimatedContent(showExtended) { target ->
+    if (target) {
+      extendedContent()
+    } else {
+      Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        MemberSentAnswer(
+          onClick = { showExtended = true },
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Icon(
+              HedvigIcons.Checkmark, null,
+              tint = HedvigTheme.colorScheme.signalGreenElement,
+            )
+            Spacer(Modifier.width(4.dp))
+            HedvigText(
+              text = when (labelType) {
+                AudioRecordingLabelType.TEXT -> stringResource(Res.string.CLAIM_CHAT_FREE_TEXT_LABEL)
+                AudioRecordingLabelType.AUDIO ->  stringResource(Res.string.CLAIM_CHAT_AUDIO_RECORDING_LABEL)
+              }
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
+internal enum class AudioRecordingLabelType {
+  TEXT,
+  AUDIO
 }
 
 /**
