@@ -467,8 +467,6 @@ private fun StepContentSection(
   }
 }
 
-}
-
 @Composable
 private fun UploadFilesStep(
   itemId: StepId,
