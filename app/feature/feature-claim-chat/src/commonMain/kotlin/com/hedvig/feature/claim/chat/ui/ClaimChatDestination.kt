@@ -39,6 +39,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorDialog
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -61,7 +62,11 @@ import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
+import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
+import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.GENERAL_NO
+import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
@@ -170,7 +175,7 @@ private fun ClaimChatScreen(
       onEvent(ClaimChatEvent.UpdateFreeText(feedback))
       onEvent(ClaimChatEvent.CloseFreeChatOverlay)
     },
-    shouldShowOverlay = uiState.showFreeTextOverlay!=null,
+    shouldShowOverlay = uiState.showFreeTextOverlay != null,
     overlaidContent = {
       ClaimChatScreenContent(
         uiState = uiState,
@@ -208,6 +213,28 @@ private fun ClaimChatScreenContent(
       },
     )
   }
+  if (uiState.errorSubmittingStep != null) {
+    ErrorDialog(
+      title = stringResource(Res.string.general_error),
+      message = uiState.errorSubmittingStep.message
+        ?: stringResource(Res.string.something_went_wrong),
+      onDismiss = {
+        onEvent(ClaimChatEvent.DismissErrorDialog)
+      },
+    )
+  }
+  if (uiState.showConfirmEditDialogForStep != null) {
+    HedvigAlertDialog(
+      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(Res.string.CLAIM_CHAT_EDIT_EXPLANATION),
+      onDismissRequest = {
+        onEvent(ClaimChatEvent.DismissConfirmEditDialog)
+      },
+      onConfirmClick = {
+        onEvent(ClaimChatEvent.Regret(uiState.showConfirmEditDialogForStep))
+      },
+    )
+  }
   val lazyListState = rememberLazyListState()
   LazyColumn(
     modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -231,7 +258,7 @@ private fun ClaimChatScreenContent(
           onShowAudioRecording = {
             onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
           },
-          onLaunchFullScreenEditText = {  restrictions ->
+          onLaunchFullScreenEditText = { restrictions ->
             onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
           },
           startRecording = {
@@ -434,7 +461,7 @@ private fun UploadFilesStep(
       EditButton(
         canEdit,
         onRegret = {
-          onEvent(ClaimChatEvent.Regret(itemId))
+          onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
         },
       )
     }
@@ -543,7 +570,7 @@ private fun FormStep(
       canSkip = canSkip,
       canBeChanged = canBeChanged,
       onRegret = {
-        onEvent(ClaimChatEvent.Regret(itemId))
+        onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
         logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
@@ -807,10 +834,12 @@ private fun AudioRecordingStep(
       onShowFreeText = onShowFreeText,
       onShowAudioRecording = onShowAudioRecording,
       onLaunchFullScreenEditText = {
-        onLaunchFullScreenEditText(FreeTextRestrictions(
-          stepContent.freeTextMinLength,
-          stepContent.freeTextMaxLength
-        ))
+        onLaunchFullScreenEditText(
+          FreeTextRestrictions(
+            stepContent.freeTextMinLength,
+            stepContent.freeTextMaxLength,
+          ),
+        )
       },
       canSkip = stepContent.isSkippable,
       onSkip = onSkip,
@@ -823,7 +852,7 @@ private fun AudioRecordingStep(
       EditButton(
         item.isRegrettable,
         onRegret = {
-          onEvent(ClaimChatEvent.Regret(item.id))
+          onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
         },
       )
     }
@@ -890,7 +919,7 @@ private fun ContentSelectStep(
           EditButton(
             item.isRegrettable,
             onRegret = {
-              onEvent(ClaimChatEvent.Regret(item.id))
+              onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
             },
           )
         }

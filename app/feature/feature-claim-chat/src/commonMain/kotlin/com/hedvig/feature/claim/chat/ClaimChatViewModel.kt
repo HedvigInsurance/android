@@ -28,11 +28,13 @@ import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.Field
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
+import com.hedvig.feature.claim.chat.data.FreeTextErrorType.*
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.data.StepContent.Form.*
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
@@ -79,6 +81,10 @@ internal sealed interface ClaimChatEvent {
 
   data class Regret(val id: StepId) : ClaimChatEvent
 
+  data class ShowConfirmEditDialog(val id: StepId) : ClaimChatEvent
+
+  data object DismissConfirmEditDialog: ClaimChatEvent
+
   data class FormSubmit(
     val stepId: StepId,
   ) : ClaimChatEvent
@@ -120,6 +126,7 @@ internal sealed interface ClaimChatUiState {
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
+    val showConfirmEditDialogForStep: StepId?
   ) : ClaimChatUiState
 }
 
@@ -195,6 +202,7 @@ internal class ClaimChatPresenter(
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
+    var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
     val setAutoNavigateForDeflectStepId: (StepId) -> Unit = { autoNavigateForDeflectStepId = it }
@@ -378,7 +386,7 @@ internal class ClaimChatPresenter(
                           if (existingField.id == field.id) {
                             existingField.copy(
                               selectedOptions = listOf(
-                                StepContent.Form.FieldOption(
+                                FieldOption(
                                   selectedDateString,
                                   selectedDateString,
                                 ),
@@ -495,7 +503,7 @@ internal class ClaimChatPresenter(
                 stepContent = content.copy(
                   recordingState = recordingState.copy(
                     hasError = textTooShort,
-                    errorType = if (textTooShort) FreeTextErrorType.TooShort(
+                    errorType = if (textTooShort) TooShort(
                       currentContent.freeTextMinLength,
                     ) else null,
                     canSubmit = canSubmit,
@@ -656,6 +664,9 @@ internal class ClaimChatPresenter(
             autoNavigateForDeflectStepId = null
           }
         }
+
+        ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
+        is ClaimChatEvent.ShowConfirmEditDialog -> showConfirmEditDialogForStep = event.id
       }
     }
 
@@ -673,6 +684,7 @@ internal class ClaimChatPresenter(
         errorSubmittingStep = errorSubmittingStep,
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
+        showConfirmEditDialogForStep = showConfirmEditDialogForStep,
       )
 
       else -> error("")

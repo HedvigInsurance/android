@@ -187,6 +187,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
+  <string name="CLAIM_CHAT_EDIT_EXPLANATION">Detta tar bort alla stegs indata fram till och med detta steg.</string>
   <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Fritextinmatning</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
