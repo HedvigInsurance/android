@@ -65,8 +65,6 @@ import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
 import hedvig.resources.GENERAL_ARE_YOU_SURE
-import hedvig.resources.GENERAL_NO
-import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
@@ -577,7 +575,7 @@ private fun FormStep(
         onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
-        onEvent(ClaimChatEvent.FormSubmit(itemId))
+        onEvent(ClaimChatEvent.SubmitForm(itemId))
       },
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,

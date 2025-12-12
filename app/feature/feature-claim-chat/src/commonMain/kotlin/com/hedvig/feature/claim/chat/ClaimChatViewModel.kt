@@ -27,7 +27,6 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.Field
-import com.hedvig.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType.*
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
@@ -74,7 +73,7 @@ internal sealed interface ClaimChatEvent {
   data class UpdateFieldAnswer(
     val stepId: StepId,
     val fieldId: FieldId,
-    val answer: StepContent.Form.FieldOption?,
+    val answer: FieldOption?,
   ) : ClaimChatEvent
 
   data class Skip(val id: StepId) : ClaimChatEvent
@@ -85,7 +84,7 @@ internal sealed interface ClaimChatEvent {
 
   data object DismissConfirmEditDialog: ClaimChatEvent
 
-  data class FormSubmit(
+  data class SubmitForm(
     val stepId: StepId,
   ) : ClaimChatEvent
 
@@ -366,13 +365,13 @@ internal class ClaimChatPresenter(
           }
         }
 
-        is ClaimChatEvent.FormSubmit -> {
+        is ClaimChatEvent.SubmitForm -> {
           Snapshot.withMutableSnapshot {
             val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
               ?: return@CollectEvents
             val fieldsToSubmit = currentContent.fields.map { field ->
               when (field.type) {
-                StepContent.Form.FieldType.DATE -> {
+                FieldType.DATE -> {
                   val selectedDateString =
                     field.datePickerUiState?.datePickerState?.selectedDateMillis?.let { selectedDateMillis ->
                       Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
@@ -409,7 +408,7 @@ internal class ClaimChatPresenter(
                   field.id,
                   field.selectedOptions
                     .map { selectedOption ->
-                      selectedOption.value
+                      selectedOption.value.ifEmpty { null }
                     },
                 )
               }
@@ -569,10 +568,10 @@ internal class ClaimChatPresenter(
             val newFields = content.fields.map { field ->
               if (field.id == event.fieldId) {
                 when (field.type) {
-                  StepContent.Form.FieldType.TEXT,
-                  StepContent.Form.FieldType.NUMBER,
-                  StepContent.Form.FieldType.BINARY,
-                  StepContent.Form.FieldType.SINGLE_SELECT,
+                  FieldType.TEXT,
+                  FieldType.NUMBER,
+                  FieldType.BINARY,
+                  FieldType.SINGLE_SELECT,
                   null,
                     -> field.copy(
                     selectedOptions = event.answer?.let {
@@ -580,10 +579,10 @@ internal class ClaimChatPresenter(
                     } ?: emptyList(),
                   )
 
-                  StepContent.Form.FieldType.DATE -> field
+                  FieldType.DATE -> field
                   // Date gets selected date from DatePickerState, not from Event
 
-                  StepContent.Form.FieldType.MULTI_SELECT -> {
+                  FieldType.MULTI_SELECT -> {
                     field.copy(
                       selectedOptions = event.answer?.let {
                         val oldSelected = field.selectedOptions
