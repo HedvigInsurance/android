@@ -15,12 +15,13 @@ android {
 
 dependencies {
   api(libs.androidx.navigation.common)
+
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
@@ -33,6 +34,7 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
+  implementation(projects.designSystemApi)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
@@ -53,5 +55,4 @@ dependencies {
   testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
   testImplementation(projects.testClock)
-  implementation(projects.designSystemApi)
 }

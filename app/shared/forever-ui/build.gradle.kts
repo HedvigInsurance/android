@@ -10,11 +10,11 @@ hedvig {
 }
 
 dependencies {
-  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.androidx.other.core)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(projects.apolloCore)

@@ -33,12 +33,12 @@ dependencies {
   implementation(projects.navigationCore)
 
   testImplementation(libs.apollo.testingSupport)
-  testImplementation(projects.apolloOctopusTest)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.testParameterInjector)
   testImplementation(libs.turbine)
+  testImplementation(projects.apolloOctopusTest)
   testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
   testImplementation(projects.loggingTest)

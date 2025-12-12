@@ -15,12 +15,12 @@ android {
 
 dependencies {
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.jetbrains.compose.runtime)
-  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
+  implementation(libs.jetbrains.compose.runtime)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

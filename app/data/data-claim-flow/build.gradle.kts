@@ -15,9 +15,9 @@ dependencies {
   api(libs.retrofit)
   api(libs.retrofitArrow)
 
-  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
