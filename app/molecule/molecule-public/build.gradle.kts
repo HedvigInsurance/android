@@ -11,10 +11,10 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      api(libs.androidx.lifecycle.viewModel)
+      api(libs.jetbrains.lifecycle.viewmodel)
       implementation(libs.coroutines.core)
       implementation(libs.molecule)
-      implementation(libs.androidx.compose.runtime)
+      implementation(libs.jetbrains.compose.runtime)
       implementation(libs.coroutines.core)
     }
   }
