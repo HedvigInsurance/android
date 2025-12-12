@@ -2,17 +2,16 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.Raise
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
-import com.hedvig.android.design.system.hedvig.api.previewCommonLocale
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
-import octopus.fragment.ClaimIntentOutcomeClaimFragment
-import octopus.fragment.ClaimIntentOutcomeDeflectionFragment
-import octopus.fragment.ClaimIntentOutcomeDeflectionInfoBlockFragment
 import octopus.fragment.ClaimIntentStepContentFragment
 import octopus.fragment.ContentSelectFragment
+import octopus.fragment.DeflectionFragment
+import octopus.fragment.DeflectionInfoBlockFragment
 import octopus.fragment.FileUploadFragment
 import octopus.fragment.FormFragment
 import octopus.fragment.SummaryFragment
@@ -20,43 +19,43 @@ import octopus.fragment.TaskFragment
 import octopus.type.ClaimIntentStepContentFormFieldType
 
 context(raise: Raise<ErrorMessage>)
-internal fun ClaimIntentMutationOutputFragment.toClaimIntent(): ClaimIntent {
+internal fun ClaimIntentMutationOutputFragment.toClaimIntent(locale: CommonLocale): ClaimIntent {
   val userError = userError
   val intent = intent
   return with(raise) {
     when {
       userError != null -> raise(ErrorMessage(userError.message))
-      intent != null -> intent.toClaimIntent()
+      intent != null -> intent.toClaimIntent(locale)
       else -> raise(ErrorMessage("No data"))
     }
   }
 }
 
-internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
+internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimIntent {
   return ClaimIntent(
     id = ClaimIntentId(id),
     next = when {
-      currentStep != null -> ClaimIntent.Next.Step(currentStep!!.toClaimIntentStep())
-      outcome != null -> ClaimIntent.Next.Outcome(outcome!!.toClaimIntentOutcome())
+      currentStep != null -> ClaimIntent.Next.Step(currentStep!!.toClaimIntentStep(locale))
+      createdClaim != null -> ClaimIntent.Next.Outcome(createdClaim!!.toClaimIntentOutcome())
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
     // todo also render source messages
   )
 }
 
-private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
+private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLocale): ClaimIntentStep {
   return ClaimIntentStep(
     id = StepId(id),
     text = text,
-    stepContent = this.content.toStepContent(),
+    stepContent = this.content.toStepContent(locale),
     isRegrettable = this.isRegrettable,
   )
 }
 
-private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
+private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): StepContent {
   return when (this) {
     is FormFragment -> StepContent.Form(
-      fields = this.fields.toFields(),
+      fields = this.fields.toFields(locale),
       isSkippable = isSkippable,
     )
 
@@ -91,6 +90,32 @@ private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
       freeTexts = freeTexts,
     )
 
+    is DeflectionFragment -> {
+      fun DeflectionInfoBlockFragment.toInfoBlock(): StepContent.Deflect.InfoBlock {
+        return StepContent.Deflect.InfoBlock(title, description)
+      }
+      StepContent.Deflect(
+        title = title,
+        infoText = infoText,
+        warningText = warningText,
+        partners = partners.map { partner ->
+          StepContent.Deflect.Partner(
+            id = partner.id,
+            imageUrl = partner.imageUrl,
+            phoneNumber = partner.phoneNumber,
+            title = partner.title,
+            description = partner.description,
+            info = partner.info,
+            url = partner.url,
+            urlButtonTitle = partner.urlButtonTitle,
+          )
+        },
+        partnersInfo = partnersInfo?.toInfoBlock(),
+        content = content.toInfoBlock(),
+        faq = faq.map { it.toInfoBlock() },
+      )
+    }
+
     else -> StepContent.Unknown
   }
 }
@@ -104,7 +129,7 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
   }
 }
 
-private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
+private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepContent.Form.Field> {
   return this.map { field ->
     StepContent.Form.Field(
       id = FieldId(field.id),
@@ -133,7 +158,7 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       datePickerUiState = when (field.type) {
         ClaimIntentStepContentFormFieldType.DATE ->
           DatePickerUiState(
-            locale = previewCommonLocale, // TODO!!
+            locale = locale,
             initiallySelectedDate = field.defaultValues.getOrNull(0)?.let { LocalDate.parse(it) },
             minDate = field.minValue?.let { LocalDate.parse(it) } ?: LocalDate(1900, 1, 1),
             maxDate = field.maxValue?.let { LocalDate.parse(it) } ?: LocalDate(2100, 1, 1),
@@ -161,47 +186,9 @@ private fun List<String>.toFieldOptions(
   }
 }
 
-private fun ClaimIntentFragment.Outcome.toClaimIntentOutcome(): ClaimIntentOutcome {
-  return when (this) {
-    is ClaimIntentOutcomeClaimFragment -> {
-      ClaimIntentOutcome.Claim(
-        claimId,
-        claim.submittedAt,
-      )
-    }
-
-    is ClaimIntentOutcomeDeflectionFragment -> {
-      ClaimIntentOutcome.Deflect(
-        title = title,
-        infoText = infoText,
-        warningText = warningText,
-        partners = partners.map { partner ->
-          ClaimIntentOutcome.Deflect.Partner(
-            id = partner.id,
-            imageUrl = partner.imageUrl,
-            phoneNumber = partner.phoneNumber,
-            title = partner.title,
-            description = partner.description,
-            info = partner.info,
-            url = partner.url,
-            urlButtonTitle = partner.urlButtonTitle,
-          )
-        },
-        partnersInfo = partnersInfo?.toInfoBlock(),
-        content = content.toInfoBlock(),
-        faq = faq.map { it.toInfoBlock() },
-      )
-    }
-
-    else -> {
-      ClaimIntentOutcome.Unknown
-    }
-  }
-}
-
-private fun ClaimIntentOutcomeDeflectionInfoBlockFragment.toInfoBlock(): ClaimIntentOutcome.Deflect.InfoBlock {
-  return ClaimIntentOutcome.Deflect.InfoBlock(
-    title,
-    description,
+private fun ClaimIntentFragment.CreatedClaim.toClaimIntentOutcome(): ClaimIntentOutcome {
+  return ClaimIntentOutcome.Claim(
+    id,
+    submittedAt,
   )
 }

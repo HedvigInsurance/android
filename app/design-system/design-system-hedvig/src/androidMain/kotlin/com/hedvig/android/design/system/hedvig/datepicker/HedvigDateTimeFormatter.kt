@@ -7,7 +7,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
-import com.hedvig.android.design.system.hedvig.api.CommonLocale
+import com.hedvig.android.core.locale.CommonLocale
 import kotlin.time.Instant
 
 fun formatInstantForTalkBack(context: Context, instant: Instant): String {

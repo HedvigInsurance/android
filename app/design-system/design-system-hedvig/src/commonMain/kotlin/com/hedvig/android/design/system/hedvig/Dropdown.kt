@@ -38,7 +38,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -71,6 +70,7 @@ import com.hedvig.android.design.system.hedvig.tokens.SmallSizeLabeledDropdownTo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun DropdownWithDialog(
@@ -381,7 +381,7 @@ fun IconStyleStartSlot(text: String, textStyle: TextStyle, textColor: Color, ico
   Row(verticalAlignment = Alignment.CenterVertically) {
     when (icon) {
       is IconResource.Painter -> Icon(
-        painterResource(icon.painterResId),
+        painterResource(icon.painterResource),
         "",
         Modifier.size(DropdownTokens.IconSize),
         tint = Color.Unspecified,

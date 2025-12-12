@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.halilibo.richtext.commonmark.Markdown
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -271,7 +270,7 @@ private fun TerminationSurveyScreen(
 }
 
 @Composable
-private fun ColumnScope.SelectedSurveyInfoBox(
+private fun SelectedSurveyInfoBox(
   selectedOption: TerminationSurveyOption?,
   actionButtonLoading: Boolean,
   navigateToMovingFlow: () -> Unit,

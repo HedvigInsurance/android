@@ -220,7 +220,7 @@ internal fun LanguageWithDialog(
       options = languageOptions.map { language ->
         RadioOption(
           id = RadioOptionId(language.name),
-          text = androidx.compose.ui.res.stringResource(language.label),
+          text = stringResource(language.label),
         )
       },
       selectedOption = RadioOptionId(selectedLanguage.name),
@@ -234,7 +234,7 @@ internal fun LanguageWithDialog(
   HedvigBigCard(
     onClick = { showLanguagePickerDialog = true },
     labelText = stringResource(Res.string.language_picker_modal_title),
-    inputText = androidx.compose.ui.res.stringResource(selectedLanguage.label),
+    inputText = stringResource(selectedLanguage.label),
     enabled = enabled,
     modifier = modifier,
   )

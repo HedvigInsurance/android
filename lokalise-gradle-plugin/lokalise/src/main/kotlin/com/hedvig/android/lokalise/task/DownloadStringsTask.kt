@@ -76,6 +76,7 @@ abstract class DownloadStringsTask @Inject constructor(
       fixPercentageSigns()
         .removeDotsFromStringIds()
         .removeEscapesFromMultiplatformStrings(resourcesType)
+        .addUntranslatableStrings()
     }
     tempFileForZipFile.delete()
   }
@@ -234,6 +235,16 @@ abstract class DownloadStringsTask @Inject constructor(
           .replace("""\"""", """"""")
       }
     }
+  }
+  private fun String.addUntranslatableStrings(): String {
+    return this.replace(
+      """<resources>""",
+      """
+      |<resources>
+      |  <string name="swedish">Svenska</string>
+      |  <string name="english_swedish">English</string>
+      """.trimMargin("|")
+    )
   }
 
   private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {
