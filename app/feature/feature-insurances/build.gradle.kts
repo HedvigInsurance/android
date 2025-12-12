@@ -16,11 +16,11 @@ android {
 dependencies {
   api(libs.coil.coil)
 
-  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.testingSupport)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

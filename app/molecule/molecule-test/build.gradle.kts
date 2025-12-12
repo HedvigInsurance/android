@@ -10,7 +10,7 @@ hedvig {
 dependencies {
   api(projects.moleculePublic)
   implementation(libs.androidx.annotation)
-  implementation(libs.androidx.compose.runtime)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.molecule)
   implementation(libs.turbine)
 }

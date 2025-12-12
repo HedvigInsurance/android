@@ -9,17 +9,17 @@ hedvig {
 }
 
 dependencies {
-  api(libs.androidx.compose.runtime)
-  api(libs.androidx.compose.uiCore)
+  api(libs.jetbrains.compose.runtime)
+  api(libs.jetbrains.compose.ui)
 
   implementation(libs.androidx.compose.animation)
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.runtimeSaveable)
-  implementation(libs.androidx.compose.uiGraphics)
-  implementation(libs.androidx.compose.uiText)
-  implementation(libs.androidx.compose.uiUnit)
+  implementation(libs.jetbrains.compose.runtime.saveable)
+  implementation(libs.jetbrains.compose.ui.graphics)
+  implementation(libs.jetbrains.compose.ui.text)
+  implementation(libs.jetbrains.compose.ui.unit)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.composeUi)
   implementation(projects.coreResources)

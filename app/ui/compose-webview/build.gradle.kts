@@ -10,5 +10,5 @@ hedvig {
 dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.runtime)
+  implementation(libs.jetbrains.compose.runtime)
 }
