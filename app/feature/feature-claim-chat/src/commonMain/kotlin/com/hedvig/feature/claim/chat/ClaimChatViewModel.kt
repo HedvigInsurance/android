@@ -26,7 +26,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
-import com.hedvig.feature.claim.chat.data.FormSubmissionData.Field
+import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType.*
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
@@ -398,13 +398,13 @@ internal class ClaimChatPresenter(
                       ),
                     )
                   }
-                  Field(
+                  FieldToSubmit(
                     field.id,
                     listOf(selectedDateString),
                   )
                 }
 
-                else -> Field(
+                else -> FieldToSubmit(
                   field.id,
                   field.selectedOptions
                     .map { selectedOption ->

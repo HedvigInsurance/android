@@ -98,7 +98,14 @@ internal sealed interface StepContent {
       val options: List<FieldOption>,
       val selectedOptions: List<FieldOption>,
       val datePickerUiState: DatePickerUiState?,
+      val hasError: FieldError? = null
     )
+
+    sealed interface FieldError {
+      data object BiggerThanMaxValue
+      data object LessThanMinValue
+      data object Missing
+    }
 
     data class FieldOption(
       val value: String,
