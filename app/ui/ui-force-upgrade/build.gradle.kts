@@ -11,6 +11,7 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
+      implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
     }

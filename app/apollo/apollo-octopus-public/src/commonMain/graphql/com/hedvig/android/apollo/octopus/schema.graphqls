@@ -673,6 +673,8 @@ type ClaimIntentStepContentAudioRecording {
   The relative URI towards where one should upload the audio recording.
   """
   uploadUri: String!
+  freeTextMinLength: Int!
+  freeTextMaxLength: Int!
   isSkippable: Boolean!
 }
 """

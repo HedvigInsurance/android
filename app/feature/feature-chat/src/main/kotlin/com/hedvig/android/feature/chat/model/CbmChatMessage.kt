@@ -6,6 +6,7 @@ import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
+import com.hedvig.android.data.chat.database.ChatMessageEntityAction
 import com.hedvig.android.data.chat.database.ChatMessageEntityBanner
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.logger.LogPriority
@@ -24,6 +25,7 @@ internal sealed interface CbmChatMessage {
     override val sentAt: Instant,
     override val banner: Banner?,
     val text: String,
+    val action: ChatMessageTextAction?
   ) : CbmChatMessage
 
   data class ChatMessageGif(
@@ -49,6 +51,11 @@ internal sealed interface CbmChatMessage {
       OTHER,
     }
   }
+
+  data class ChatMessageTextAction(
+    val title: String,
+    val url: String
+  )
 
   /**
    * A message which failed to be sent due to network errors, but should be retryable.
@@ -142,6 +149,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = null,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null
     )
 
     is CbmChatMessage.ChatMessageGif -> ChatMessageEntity(
@@ -156,6 +164,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = null,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null
     )
 
     is CbmChatMessage.ChatMessageText -> ChatMessageEntity(
@@ -170,6 +179,12 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = null,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = action?.let {
+        ChatMessageEntityAction(
+          actionTitle = it.title,
+          actionUrl = it.url
+        )
+      }
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageText -> ChatMessageEntity(
@@ -184,6 +199,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = TEXT,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> ChatMessageEntity(
@@ -198,6 +214,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = PHOTO,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> ChatMessageEntity(
@@ -212,6 +229,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = MEDIA,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null
     )
   }
 }
@@ -242,7 +260,19 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
       }
     }
 
-    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, banner.toBanner(), text!!.trim())
+    text != null -> CbmChatMessage.ChatMessageText(
+      id = id.toString(),
+      sender = sender,
+      sentAt = sentAt,
+      banner = banner.toBanner(),
+      text = text!!.trim(),
+      action = action?.let { entityAction ->
+        CbmChatMessage.ChatMessageTextAction(
+          title = entityAction.actionTitle,
+          url = entityAction.actionUrl
+        )
+      },
+    )
     gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, banner.toBanner(), gifUrl!!)
     url != null && mimeType != null -> {
       val mimeType = CbmChatMessage.ChatMessageFile.MimeType.valueOf(mimeType!!)

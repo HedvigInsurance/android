@@ -59,6 +59,8 @@ fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
   hint
   uploadUri
   isSkippable
+  freeTextMinLength
+  freeTextMaxLength
 }
 
 fragment FileUploadFragment on ClaimIntentStepContentFileUpload {

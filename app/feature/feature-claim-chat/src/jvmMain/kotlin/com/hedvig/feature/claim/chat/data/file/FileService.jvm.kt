@@ -20,4 +20,12 @@ internal class JvmFileService : FileService {
   override fun convertToCommonFile(uri: Uri): CommonFile {
     return JvmFile("todo", "todo")
   }
+
+  override fun getFileName(uriString: String): String? {
+    TODO("Not yet implemented")
+  }
+
+  override fun getMimeType(path: String): String {
+    TODO("Not yet implemented")
+  }
 }

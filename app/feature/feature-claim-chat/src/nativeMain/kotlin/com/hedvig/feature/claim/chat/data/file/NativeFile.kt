@@ -3,9 +3,9 @@ package com.hedvig.feature.claim.chat.data.file
 import com.eygraber.uri.Uri
 import kotlinx.io.Source
 
+// todo ios
 internal class NativeFileService : FileService {
   override fun convertToCommonFile(uri: Uri): CommonFile {
-    // TODO: Implement iOS file conversion from URI
     return object : CommonFile {
       override val fileName: String = "file"
       override val description: String = "TODO: iOS file"
@@ -18,5 +18,13 @@ internal class NativeFileService : FileService {
         TODO("iOS file read not yet implemented")
       }
     }
+  }
+
+  override fun getFileName(uriString: String): String? {
+    TODO("Not yet implemented")
+  }
+
+  override fun getMimeType(path: String): String {
+    TODO("Not yet implemented")
   }
 }

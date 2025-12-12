@@ -838,6 +838,7 @@ private fun PreviewClaimChatComponents() {
           recordingState = AudioRecordingStepState.FreeTextDescription(
             showOverlay = false,
             errorType = null,
+            canSubmit = true
           ),
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = {
