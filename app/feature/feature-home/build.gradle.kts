@@ -18,8 +18,8 @@ dependencies {
 
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.uiUtil)
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.jetbrains.compose.ui.util)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)

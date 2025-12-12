@@ -10,8 +10,8 @@ hedvig {
 dependencies {
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.jetbrains.compose.runtime)
-  implementation(libs.androidx.compose.uiCore)
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.jetbrains.compose.ui)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.arrow.core)
   implementation(libs.coil.coil) //todo: or api?
   implementation(projects.placeholder)

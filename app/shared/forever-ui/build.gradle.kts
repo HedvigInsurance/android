@@ -10,7 +10,7 @@ hedvig {
 }
 
 dependencies {
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.androidx.other.core)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)

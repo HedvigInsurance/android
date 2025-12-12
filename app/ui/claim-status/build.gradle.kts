@@ -10,7 +10,7 @@ hedvig {
 dependencies {
   implementation(libs.androidx.compose.foundationLayout)
   implementation(libs.jetbrains.compose.runtime)
-  implementation(libs.androidx.compose.uiCore)
+  implementation(libs.jetbrains.compose.ui)
   implementation(libs.arrow.core)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composePagerIndicator)

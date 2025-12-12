@@ -12,7 +12,7 @@ hedvig {
 dependencies {
   api(libs.androidx.navigation.common)
 
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)

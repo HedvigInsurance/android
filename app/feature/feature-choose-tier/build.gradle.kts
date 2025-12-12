@@ -16,7 +16,7 @@ android {
 dependencies {
   api(libs.androidx.navigation.common)
 
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)

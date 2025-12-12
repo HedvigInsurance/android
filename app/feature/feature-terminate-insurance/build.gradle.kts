@@ -18,8 +18,8 @@ dependencies {
 
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.lifecycle.viewmodelCompose)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
+  implementation(libs.jetbrains.lifecycle.viewmodel.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)

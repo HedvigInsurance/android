@@ -13,7 +13,7 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.androidx.lifecycle.compose)
+      implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.apollo.api)
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)

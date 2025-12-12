@@ -16,7 +16,7 @@ android {
 dependencies {
   api(libs.coil.coil)
 
-  implementation(libs.androidx.lifecycle.compose)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.testingSupport)
   implementation(libs.arrow.core)
