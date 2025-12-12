@@ -186,6 +186,8 @@
   <string name="CLAIMS_USE_AUDIO_RECORDING">Gör röstinspelning</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
+  <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
+  <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Fritextinmatning</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>

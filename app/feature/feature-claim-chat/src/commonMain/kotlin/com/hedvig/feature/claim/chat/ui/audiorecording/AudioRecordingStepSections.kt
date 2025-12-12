@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
@@ -23,9 +24,12 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.PermissionDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.feature.claim.chat.ui.MemberSentAnswer
@@ -101,7 +105,7 @@ internal fun AudioRecorderBubble(
             errorType = uiStateAnimated.errorType,
             isCurrentStep = isCurrentStep,
             continueButtonLoading = continueButtonLoading,
-            canSubmit = uiStateAnimated.canSubmit
+            canSubmit = uiStateAnimated.canSubmit,
           )
         }
       }
@@ -119,6 +123,8 @@ internal fun AudioRecorderBubble(
     }
   }
 }
+
+
 
 @Composable
 private fun FreeTextInputSection(
@@ -147,6 +153,7 @@ private fun FreeTextInputSection(
               Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR,
               errorType.minLength,
             )
+
           else -> null
         },
         hasError = hasError,
@@ -256,7 +263,7 @@ private fun PreviewFreeTextInput() {
         errorType = null,
         isCurrentStep = true,
         continueButtonLoading = false,
-        canSubmit = true
+        canSubmit = true,
       )
     }
   }
