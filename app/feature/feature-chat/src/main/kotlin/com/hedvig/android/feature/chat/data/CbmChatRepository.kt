@@ -50,7 +50,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import octopus.ConversationInfoQuery
 import octopus.ConversationQuery
@@ -173,6 +172,7 @@ internal class CbmChatRepositoryImpl(
               val existingRemoteKey =
                 remoteKeyDao.remoteKeyForConversation(conversationId) ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
+              chatDao.deleteAiGenerationIndicators(conversationId)
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
             }
           },
@@ -351,13 +351,17 @@ internal class CbmChatRepositoryImpl(
       ).doNotStore(true).fetchPolicy(FetchPolicy.NetworkOnly).safeExecute().mapLeft {
         "$it + ${it.throwable?.message}"
       }.bind()
+      val isBeingGenerated = data.conversation?.responseIsBeingGenerated ?: false
       val messagePage = data.conversation?.messagePage
       ensureNotNull(messagePage) {
         "Empty message page for conversation $conversationId"
       }
       val messages = messagePage.messages.mapNotNull { it.toChatMessage() }
+      val messagesWithIndicator = if (isBeingGenerated) messages +
+        CbmChatMessage.aiGeneratingIndicator(Clock.System.now())
+      else messages
       ChatMessagePageResponse(
-        messages = messages,
+        messages = messagesWithIndicator,
         newerToken = messagePage.newerToken,
         olderToken = messagePage.olderToken,
       )
@@ -583,7 +587,8 @@ private fun ConversationInput.toChatMessageEntity(
         failedToSend = null,
         isBeingSent = true,
         banner = null,
-        action = null
+        action = null,
+        isAiGenerationIndicator = false
       )
     }
 
@@ -600,7 +605,8 @@ private fun ConversationInput.toChatMessageEntity(
         failedToSend = null,
         isBeingSent = true,
         banner = null,
-        action = null
+        action = null,
+        isAiGenerationIndicator = false
       )
     }
   }

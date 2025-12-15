@@ -5,9 +5,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
 import octopus.fragment.ClaimIntentMutationOutputFragment
-import octopus.fragment.ClaimIntentOutcomeClaimFragment
-import octopus.fragment.ClaimIntentOutcomeDeflectionFragment
-import octopus.fragment.ClaimIntentOutcomeDeflectionInfoBlockFragment
 import octopus.fragment.ClaimIntentStepContentFragment
 import octopus.fragment.ContentSelectFragment
 import octopus.fragment.FileUploadFragment
@@ -33,7 +30,6 @@ internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
     id = ClaimIntentId(id),
     next = when {
       currentStep != null -> ClaimIntent.Next.Step(currentStep!!.toClaimIntentStep())
-      outcome != null -> ClaimIntent.Next.Outcome(outcome!!.toClaimIntentOutcome())
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
     // todo also render source messages
@@ -88,49 +84,4 @@ private fun List<FormFragment.Field>.toFields(): List<StepContent.Form.Field> {
       options = field.options?.map { it.title to it.value } ?: emptyList(),
     )
   }
-}
-
-private fun ClaimIntentFragment.Outcome.toClaimIntentOutcome(): ClaimIntentOutcome {
-  return when (this) {
-    is ClaimIntentOutcomeClaimFragment -> {
-      ClaimIntentOutcome.Claim(
-        claimId,
-        claim.submittedAt,
-      )
-    }
-
-    is ClaimIntentOutcomeDeflectionFragment -> {
-      ClaimIntentOutcome.Deflect(
-        title = title,
-        infoText = infoText,
-        warningText = warningText,
-        partners = partners.map { partner ->
-          ClaimIntentOutcome.Deflect.Partner(
-            id = partner.id,
-            imageUrl = partner.imageUrl,
-            phoneNumber = partner.phoneNumber,
-            title = partner.title,
-            description = partner.description,
-            info = partner.info,
-            url = partner.url,
-            urlButtonTitle = partner.urlButtonTitle,
-          )
-        },
-        partnersInfo = partnersInfo?.toInfoBlock(),
-        content = content.toInfoBlock(),
-        faq = faq.map { it.toInfoBlock() },
-      )
-    }
-
-    else -> {
-      ClaimIntentOutcome.Unknown
-    }
-  }
-}
-
-private fun ClaimIntentOutcomeDeflectionInfoBlockFragment.toInfoBlock(): ClaimIntentOutcome.Deflect.InfoBlock {
-  return ClaimIntentOutcome.Deflect.InfoBlock(
-    title,
-    description,
-  )
 }

@@ -3,6 +3,7 @@ query Conversation($id: UUID!, $newerToken: String, $olderToken: String) {
     messagePage(newerToken: $newerToken, olderToken: $olderToken) {
       ...ChatMessagePageFragment
     }
+    responseIsBeingGenerated
   }
 }
 
