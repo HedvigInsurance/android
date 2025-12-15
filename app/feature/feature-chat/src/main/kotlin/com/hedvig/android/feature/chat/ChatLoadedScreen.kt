@@ -105,6 +105,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
@@ -515,99 +516,130 @@ private fun ChatBubble(
 ) {
   val chatMessage = uiChatMessage?.chatMessage
   val description = getMessageDescription(chatMessage)
-  ChatMessageWithTimeAndDeliveryStatus(
-    messageSlot = {
-      when (chatMessage) {
-        null -> {
-          Box(
-            Modifier.hedvigPlaceholder(
-              true,
-              shape = HedvigTheme.shapes.cornerLarge,
-              highlight = PlaceholderHighlight.shimmer(),
-            ),
-          ) {
-            HedvigText(
-              text = "HHHHHHHHHH",
-              modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .withoutPlacement()
-                .semantics {
-                  hideFromAccessibility()
-                },
-            )
-          }
-        }
-
-        is CbmChatMessage.ChatMessageText -> {
-          Surface(
-            shape = HedvigTheme.shapes.cornerLarge,
-            color = chatMessage.backgroundColor(),
-            contentColor = chatMessage.onBackgroundColor(),
-          ) {
-            Column {
-              TextWithClickableUrls(
-                text = chatMessage.text,
-                style = LocalTextStyle.current.copy(color = LocalContentColor.current),
+  if (chatMessage is CbmChatMessage.ChatMessageText
+    && chatMessage.isAiGenerationIndicator) {
+      AiResponseBeingGeneratedIndicator(chatMessage)
+  } else {
+    ChatMessageWithTimeAndDeliveryStatus(
+      messageSlot = {
+        when (chatMessage) {
+          null -> {
+            Box(
+              Modifier.hedvigPlaceholder(
+                true,
+                shape = HedvigTheme.shapes.cornerLarge,
+                highlight = PlaceholderHighlight.shimmer(),
+              ),
+            ) {
+              HedvigText(
+                text = "HHHHHHHHHH",
                 modifier = Modifier
                   .padding(horizontal = 16.dp, vertical = 12.dp)
+                  .withoutPlacement()
                   .semantics {
                     hideFromAccessibility()
                   },
               )
-              if (chatMessage.action != null) {
-                HedvigButton(
-                  text = chatMessage.action.title,
-                  enabled = true,
-                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                  buttonSize = ButtonDefaults.ButtonSize.Medium,
-                  onClick = {
-                    openUrl(chatMessage.action.url)
-                  },
+            }
+          }
+
+          is CbmChatMessage.ChatMessageText -> {
+            Surface(
+              shape = HedvigTheme.shapes.cornerLarge,
+              color = chatMessage.backgroundColor(),
+              contentColor = chatMessage.onBackgroundColor(),
+            ) {
+              Column {
+                TextWithClickableUrls(
+                  text = chatMessage.text,
+                  style = LocalTextStyle.current.copy(color = LocalContentColor.current),
                   modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 4.dp)
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .semantics {
+                      hideFromAccessibility()
+                    },
                 )
+                if (chatMessage.action != null) {
+                  HedvigButton(
+                    text = chatMessage.action.title,
+                    enabled = true,
+                    buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                    buttonSize = ButtonDefaults.ButtonSize.Medium,
+                    onClick = {
+                      openUrl(chatMessage.action.url)
+                    },
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 4.dp),
+                  )
+                }
               }
             }
           }
-        }
 
-        is ChatMessageFile -> {
-          when (chatMessage.mimeType) {
-            ChatMessageFile.MimeType.IMAGE -> {
-              ChatAsyncImage(
-                model = chatMessage.url,
-                imageLoader = imageLoader,
-                cacheKey = chatMessage.id,
-                isFailedToBeSentMessage = false,
-                modifier = Modifier
-                  .clickable {
-                    onNavigateToImageViewer(chatMessage.url, chatMessage.id)
-                  }
-                  .semantics {
-                    hideFromAccessibility()
-                  },
-              )
-            }
+          is ChatMessageFile -> {
+            when (chatMessage.mimeType) {
+              ChatMessageFile.MimeType.IMAGE -> {
+                ChatAsyncImage(
+                  model = chatMessage.url,
+                  imageLoader = imageLoader,
+                  cacheKey = chatMessage.id,
+                  isFailedToBeSentMessage = false,
+                  modifier = Modifier
+                    .clickable {
+                      onNavigateToImageViewer(chatMessage.url, chatMessage.id)
+                    }
+                    .semantics {
+                      hideFromAccessibility()
+                    },
+                )
+              }
 
-            ChatMessageFile.MimeType.MP4 -> {
-              if (enableInlineMediaPlayer) {
-                val mediaState = mediaStatesWithPlayersMap.getOrPut(
-                  chatMessage.id,
-                  {
-                    videoPlayerMediaState(simpleVideoCache, chatMessage.url)
-                  },
+              ChatMessageFile.MimeType.MP4 -> {
+                if (enableInlineMediaPlayer) {
+                  val mediaState = mediaStatesWithPlayersMap.getOrPut(
+                    chatMessage.id,
+                    {
+                      videoPlayerMediaState(simpleVideoCache, chatMessage.url)
+                    },
+                  )
+                  VideoMessage(
+                    state = mediaState,
+                    onGoFullWidth = onGoFullWidth,
+                    onGoDefaultWidth = onGoDefaultWidth,
+                    showingFullWidth = showingFullWidth,
+                    modifier = Modifier.semantics {
+                      hideFromAccessibility()
+                    },
+                  )
+                } else {
+                  AttachedFileMessage(
+                    onClick = { openUrl(chatMessage.url) },
+                    modifier = Modifier.semantics {
+                      hideFromAccessibility()
+                    },
+                  )
+                }
+              }
+
+              ChatMessageFile.MimeType.PDF -> {
+                ChatAsyncImage(
+                  model = chatMessage.url,
+                  imageLoader = imageLoader,
+                  cacheKey = chatMessage.id,
+                  isFailedToBeSentMessage = false,
+                  modifier = Modifier
+                    .clickable {
+                      openUrl(chatMessage.url)
+                    }
+                    .semantics {
+                      hideFromAccessibility()
+                    },
                 )
-                VideoMessage(
-                  state = mediaState,
-                  onGoFullWidth = onGoFullWidth,
-                  onGoDefaultWidth = onGoDefaultWidth,
-                  showingFullWidth = showingFullWidth,
-                  modifier = Modifier.semantics {
-                    hideFromAccessibility()
-                  },
-                )
-              } else {
+              }
+
+              ChatMessageFile.MimeType.OTHER,
+                -> {
                 AttachedFileMessage(
                   onClick = { openUrl(chatMessage.url) },
                   modifier = Modifier.semantics {
@@ -616,111 +648,100 @@ private fun ChatBubble(
                 )
               }
             }
+          }
 
-            ChatMessageFile.MimeType.PDF -> {
-              ChatAsyncImage(
-                model = chatMessage.url,
-                imageLoader = imageLoader,
-                cacheKey = chatMessage.id,
-                isFailedToBeSentMessage = false,
-                modifier = Modifier
-                  .clickable {
-                    openUrl(chatMessage.url)
-                  }
-                  .semantics {
+          is ChatMessageGif -> {
+            ChatAsyncImage(
+              model = chatMessage.gifUrl,
+              imageLoader = imageLoader,
+              cacheKey = chatMessage.gifUrl,
+              isFailedToBeSentMessage = false,
+              modifier = Modifier.semantics {
+                hideFromAccessibility()
+              },
+            )
+          }
+
+          is FailedToBeSent -> {
+            when (chatMessage) {
+              is ChatMessageText -> {
+                Surface(
+                  shape = HedvigTheme.shapes.cornerLarge,
+                  color = HedvigTheme.colorScheme.signalRedFill,
+                  contentColor = HedvigTheme.colorScheme.signalRedText,
+                  onClick = {
+                    onRetrySendChatMessage(chatMessage.id)
+                  },
+                  modifier = Modifier.semantics {
                     hideFromAccessibility()
                   },
-              )
-            }
-
-            ChatMessageFile.MimeType.OTHER,
-              -> {
-              AttachedFileMessage(
-                onClick = { openUrl(chatMessage.url) },
-                modifier = Modifier.semantics {
-                  hideFromAccessibility()
-                },
-              )
-            }
-          }
-        }
-
-        is ChatMessageGif -> {
-          ChatAsyncImage(
-            model = chatMessage.gifUrl,
-            imageLoader = imageLoader,
-            cacheKey = chatMessage.gifUrl,
-            isFailedToBeSentMessage = false,
-            modifier = Modifier.semantics {
-              hideFromAccessibility()
-            },
-          )
-        }
-
-        is FailedToBeSent -> {
-          when (chatMessage) {
-            is ChatMessageText -> {
-              Surface(
-                shape = HedvigTheme.shapes.cornerLarge,
-                color = HedvigTheme.colorScheme.signalRedFill,
-                contentColor = HedvigTheme.colorScheme.signalRedText,
-                onClick = {
-                  onRetrySendChatMessage(chatMessage.id)
-                },
-                modifier = Modifier.semantics {
-                  hideFromAccessibility()
-                },
-              ) {
-                Row(
-                  horizontalArrangement = Arrangement.spacedBy(8.dp),
-                  verticalAlignment = Alignment.CenterVertically,
-                  modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 ) {
-                  Icon(
-                    imageVector = HedvigIcons.Refresh,
-                    contentDescription = null,
-                    tint = HedvigTheme.colorScheme.signalRedElement,
-                    modifier = Modifier.size(20.dp),
-                  )
-                  HedvigText(text = chatMessage.text)
+                  Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                  ) {
+                    Icon(
+                      imageVector = HedvigIcons.Refresh,
+                      contentDescription = null,
+                      tint = HedvigTheme.colorScheme.signalRedElement,
+                      modifier = Modifier.size(20.dp),
+                    )
+                    HedvigText(text = chatMessage.text)
+                  }
                 }
               }
-            }
 
-            is ChatMessagePhoto -> {
-              FailedToBeSentUri(
-                chatMessage.id,
-                chatMessage.uri,
-                onRetrySendChatMessage,
-                imageLoader,
-                modifier = Modifier.semantics {
-                  hideFromAccessibility()
-                },
-              )
-            }
+              is ChatMessagePhoto -> {
+                FailedToBeSentUri(
+                  chatMessage.id,
+                  chatMessage.uri,
+                  onRetrySendChatMessage,
+                  imageLoader,
+                  modifier = Modifier.semantics {
+                    hideFromAccessibility()
+                  },
+                )
+              }
 
-            is ChatMessageMedia -> {
-              FailedToBeSentUri(
-                chatMessage.id,
-                chatMessage.uri,
-                onRetrySendChatMessage,
-                imageLoader,
-                modifier = Modifier.semantics {
-                  hideFromAccessibility()
-                },
-              )
+              is ChatMessageMedia -> {
+                FailedToBeSentUri(
+                  chatMessage.id,
+                  chatMessage.uri,
+                  onRetrySendChatMessage,
+                  imageLoader,
+                  modifier = Modifier.semantics {
+                    hideFromAccessibility()
+                  },
+                )
+              }
             }
           }
         }
-      }
-    },
-    uiChatMessage = uiChatMessage,
-    enableMessageSenderLabeling = enableMessageSenderLabeling,
-    chatItemIndex = chatItemIndex,
-    modifier = modifier.semantics(mergeDescendants = true) {
-      contentDescription = description
-    },
-  )
+      },
+      uiChatMessage = uiChatMessage,
+      enableMessageSenderLabeling = enableMessageSenderLabeling,
+      chatItemIndex = chatItemIndex,
+      modifier = modifier.semantics(mergeDescendants = true) {
+        contentDescription = description
+      },
+    )
+  }
+}
+
+@Composable
+private fun AiResponseBeingGeneratedIndicator(
+  chatMessage: CbmChatMessage
+) {
+  Surface(
+    shape = HedvigTheme.shapes.cornerLarge,
+    color = chatMessage.backgroundColor(),
+    contentColor = chatMessage.onBackgroundColor(),
+    modifier = Modifier
+      .padding(horizontal = 16.dp, vertical = 12.dp)
+  ) {
+    HedvigThreeDotsProgressIndicator(modifier = Modifier.padding(10.dp))
+  }
 }
 
 @Composable

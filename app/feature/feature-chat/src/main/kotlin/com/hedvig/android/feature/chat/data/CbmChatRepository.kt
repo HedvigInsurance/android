@@ -351,13 +351,16 @@ internal class CbmChatRepositoryImpl(
       ).doNotStore(true).fetchPolicy(FetchPolicy.NetworkOnly).safeExecute().mapLeft {
         "$it + ${it.throwable?.message}"
       }.bind()
+      val isBeingGenerated = data.conversation?.responseIsBeingGenerated ?: false
       val messagePage = data.conversation?.messagePage
       ensureNotNull(messagePage) {
         "Empty message page for conversation $conversationId"
       }
       val messages = messagePage.messages.mapNotNull { it.toChatMessage() }
+      val messagesWithIndicator = if (isBeingGenerated) messages + CbmChatMessage.AiGeneratingIndicator
+      else messages
       ChatMessagePageResponse(
-        messages = messages,
+        messages = messagesWithIndicator,
         newerToken = messagePage.newerToken,
         olderToken = messagePage.olderToken,
       )
@@ -583,7 +586,8 @@ private fun ConversationInput.toChatMessageEntity(
         failedToSend = null,
         isBeingSent = true,
         banner = null,
-        action = null
+        action = null,
+        isAiGenerationIndicator = false
       )
     }
 
@@ -600,7 +604,8 @@ private fun ConversationInput.toChatMessageEntity(
         failedToSend = null,
         isBeingSent = true,
         banner = null,
-        action = null
+        action = null,
+        isAiGenerationIndicator = false
       )
     }
   }
