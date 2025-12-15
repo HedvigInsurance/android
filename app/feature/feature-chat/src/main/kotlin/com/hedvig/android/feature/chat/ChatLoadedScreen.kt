@@ -105,6 +105,7 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
@@ -420,44 +421,53 @@ private fun ChatLazyColumn(
       val alignment: Alignment.Horizontal = uiChatMessage?.chatMessage.messageHorizontalAlignment(index)
       val defaultWidth = 0.8f
       var dynamicBubbleWidthFraction by remember { mutableFloatStateOf(defaultWidth) }
-      Column {
-        SelectionContainer {
-          ChatBubble(
-            uiChatMessage = uiChatMessage,
-            chatItemIndex = index,
-            enableMessageSenderLabeling = enableMessageSenderLabeling,
-            imageLoader = imageLoader,
-            enableInlineMediaPlayer = enableInlineMediaPlayer,
-            simpleVideoCache = simpleVideoCache,
-            mediaStatesWithPlayersMap = mediaStatesWithPlayers,
-            openUrl = openUrl,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            onRetrySendChatMessage = onRetrySendChatMessage,
-            onGoFullWidth = {
-              dynamicBubbleWidthFraction = 1f
-            },
-            onGoDefaultWidth = {
-              dynamicBubbleWidthFraction = defaultWidth
-            },
-            showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
-            modifier = Modifier
-              .fillParentMaxWidth()
-              .padding(horizontal = 16.dp)
-              .wrapContentWidth(alignment)
-              .fillMaxWidth(dynamicBubbleWidthFraction)
-              .wrapContentWidth(alignment)
-              .padding(bottom = 8.dp),
-          )
-        }
-        val banner = uiChatMessage?.chatMessage?.banner
-        if (banner != null) {
-          MessageBanner(
-            banner,
-            Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .padding(bottom = 8.dp),
-          )
+      val isLastMessage = index == 0
+      val isThisIndicator = uiChatMessage?.chatMessage is CbmChatMessage.ChatMessageText
+        && uiChatMessage.chatMessage.isAiGenerationIndicator
+      if (isThisIndicator && isLastMessage) {
+        AiResponseBeingGeneratedIndicator(uiChatMessage.chatMessage)
+      } else {
+        if (!isThisIndicator) {
+          Column {
+            SelectionContainer {
+              ChatBubble(
+                uiChatMessage = uiChatMessage,
+                chatItemIndex = index,
+                enableMessageSenderLabeling = enableMessageSenderLabeling,
+                imageLoader = imageLoader,
+                enableInlineMediaPlayer = enableInlineMediaPlayer,
+                simpleVideoCache = simpleVideoCache,
+                mediaStatesWithPlayersMap = mediaStatesWithPlayers,
+                openUrl = openUrl,
+                onNavigateToImageViewer = onNavigateToImageViewer,
+                onRetrySendChatMessage = onRetrySendChatMessage,
+                onGoFullWidth = {
+                  dynamicBubbleWidthFraction = 1f
+                },
+                onGoDefaultWidth = {
+                  dynamicBubbleWidthFraction = defaultWidth
+                },
+                showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
+                modifier = Modifier
+                  .fillParentMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .wrapContentWidth(alignment)
+                  .fillMaxWidth(dynamicBubbleWidthFraction)
+                  .wrapContentWidth(alignment)
+                  .padding(bottom = 8.dp),
+              )
+            }
+            val banner = uiChatMessage?.chatMessage?.banner
+            if (banner != null) {
+              MessageBanner(
+                banner,
+                Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .padding(bottom = 8.dp),
+              )
+            }
+          }
         }
       }
     }
@@ -539,6 +549,7 @@ private fun ChatBubble(
         }
 
         is CbmChatMessage.ChatMessageText -> {
+
           Surface(
             shape = HedvigTheme.shapes.cornerLarge,
             color = chatMessage.backgroundColor(),
@@ -565,7 +576,7 @@ private fun ChatBubble(
                   },
                   modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 4.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 4.dp),
                 )
               }
             }
@@ -721,6 +732,21 @@ private fun ChatBubble(
       contentDescription = description
     },
   )
+}
+
+@Composable
+private fun AiResponseBeingGeneratedIndicator(
+  chatMessage: CbmChatMessage,
+) {
+  Surface(
+    shape = HedvigTheme.shapes.cornerLarge,
+    color = chatMessage.backgroundColor(),
+    contentColor = chatMessage.onBackgroundColor(),
+    modifier = Modifier
+      .padding(horizontal = 16.dp, vertical = 12.dp),
+  ) {
+    HedvigThreeDotsProgressIndicator(modifier = Modifier.padding(10.dp))
+  }
 }
 
 @Composable
