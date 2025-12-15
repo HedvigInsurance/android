@@ -428,46 +428,46 @@ private fun ChatLazyColumn(
         AiResponseBeingGeneratedIndicator(uiChatMessage.chatMessage)
       } else {
         if (!isThisIndicator) {
-        Column {
-          SelectionContainer {
-            ChatBubble(
-              uiChatMessage = uiChatMessage,
-              chatItemIndex = index,
-              enableMessageSenderLabeling = enableMessageSenderLabeling,
-              imageLoader = imageLoader,
-              enableInlineMediaPlayer = enableInlineMediaPlayer,
-              simpleVideoCache = simpleVideoCache,
-              mediaStatesWithPlayersMap = mediaStatesWithPlayers,
-              openUrl = openUrl,
-              onNavigateToImageViewer = onNavigateToImageViewer,
-              onRetrySendChatMessage = onRetrySendChatMessage,
-              onGoFullWidth = {
-                dynamicBubbleWidthFraction = 1f
-              },
-              onGoDefaultWidth = {
-                dynamicBubbleWidthFraction = defaultWidth
-              },
-              showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
-              modifier = Modifier
-                .fillParentMaxWidth()
-                .padding(horizontal = 16.dp)
-                .wrapContentWidth(alignment)
-                .fillMaxWidth(dynamicBubbleWidthFraction)
-                .wrapContentWidth(alignment)
-                .padding(bottom = 8.dp),
-            )
+          Column {
+            SelectionContainer {
+              ChatBubble(
+                uiChatMessage = uiChatMessage,
+                chatItemIndex = index,
+                enableMessageSenderLabeling = enableMessageSenderLabeling,
+                imageLoader = imageLoader,
+                enableInlineMediaPlayer = enableInlineMediaPlayer,
+                simpleVideoCache = simpleVideoCache,
+                mediaStatesWithPlayersMap = mediaStatesWithPlayers,
+                openUrl = openUrl,
+                onNavigateToImageViewer = onNavigateToImageViewer,
+                onRetrySendChatMessage = onRetrySendChatMessage,
+                onGoFullWidth = {
+                  dynamicBubbleWidthFraction = 1f
+                },
+                onGoDefaultWidth = {
+                  dynamicBubbleWidthFraction = defaultWidth
+                },
+                showingFullWidth = dynamicBubbleWidthFraction != defaultWidth,
+                modifier = Modifier
+                  .fillParentMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .wrapContentWidth(alignment)
+                  .fillMaxWidth(dynamicBubbleWidthFraction)
+                  .wrapContentWidth(alignment)
+                  .padding(bottom = 8.dp),
+              )
+            }
+            val banner = uiChatMessage?.chatMessage?.banner
+            if (banner != null) {
+              MessageBanner(
+                banner,
+                Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp)
+                  .padding(bottom = 8.dp),
+              )
+            }
           }
-        }
-        }
-        val banner = uiChatMessage?.chatMessage?.banner
-        if (banner != null) {
-          MessageBanner(
-            banner,
-            Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .padding(bottom = 8.dp),
-          )
         }
       }
     }
