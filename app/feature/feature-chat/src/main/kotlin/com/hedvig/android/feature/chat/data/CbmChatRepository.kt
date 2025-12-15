@@ -172,6 +172,7 @@ internal class CbmChatRepositoryImpl(
               val existingRemoteKey =
                 remoteKeyDao.remoteKeyForConversation(conversationId) ?: RemoteKeyEntity(conversationId, null, null)
               remoteKeyDao.insert(existingRemoteKey.copy(newerToken = messagePageResponse.newerToken))
+              chatDao.deleteAiGenerationIndicators(conversationId)
               chatDao.insertAll(messagePageResponse.messages.map { it.toChatMessageEntity(conversationId) })
             }
           },

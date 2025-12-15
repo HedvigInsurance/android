@@ -73,10 +73,18 @@ interface ChatDao {
     """
     SELECT * FROM chat_messages
     WHERE conversationId LIKE :conversationId
-        AND failedToSend IS NOT NULL 
+        AND failedToSend IS NOT NULL
         AND id LIKE :messageId
     LIMIT 1
     """,
   )
   suspend fun getFailedMessage(conversationId: Uuid, messageId: String): ChatMessageEntity?
+
+  @Query(
+    """
+    DELETE FROM chat_messages
+    WHERE conversationId LIKE :conversationId AND isAiGenerationIndicator = 1
+    """,
+  )
+  suspend fun deleteAiGenerationIndicators(conversationId: Uuid)
 }
