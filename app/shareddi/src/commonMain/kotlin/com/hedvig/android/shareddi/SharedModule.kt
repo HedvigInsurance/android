@@ -5,6 +5,9 @@ import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.ktor.ktorClient
+import com.datadog.kmp.ktor.TracingHeaderType
+import com.datadog.kmp.ktor.datadogKtorPlugin
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -39,7 +42,7 @@ val sharedModule = module {
   }
   single<HttpClient> {
     get<HttpClient>(baseHttpClientQualifier).config {
-      ktorClient(get<AccessTokenFetcher>())
+      ktorClient(get<AccessTokenFetcher>(), get<HedvigBuildConstants>())
     }
   }
 }
@@ -56,7 +59,10 @@ internal class NoopExtraApolloClientConfiguration : ExtraApolloClientConfigurati
   }
 }
 
-private fun HttpClientConfig<*>.ktorClient(accessTokenFetcher: AccessTokenFetcher) {
+private fun HttpClientConfig<*>.ktorClient(
+  accessTokenFetcher: AccessTokenFetcher,
+  hedvigBuildConstants: HedvigBuildConstants,
+) {
   install(Auth) {
     bearer {
       loadTokens {
@@ -65,4 +71,12 @@ private fun HttpClientConfig<*>.ktorClient(accessTokenFetcher: AccessTokenFetche
       }
     }
   }
+  install(
+    datadogKtorPlugin(
+      tracedHosts = mapOf(
+        hedvigBuildConstants.urlGraphqlOctopus.removePrefix("""https://""") to setOf(TracingHeaderType.DATADOG),
+      ),
+      traceSampleRate = 100f
+    )
+  )
 }

@@ -11,6 +11,7 @@ kotlin {
       implementation(libs.apollo.engine.ktor)
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
+      implementation(libs.datadog.sdk.ktor)
       implementation(libs.koin.core)
       implementation(libs.ktor.client.auth)
       implementation(projects.authCoreApi)
