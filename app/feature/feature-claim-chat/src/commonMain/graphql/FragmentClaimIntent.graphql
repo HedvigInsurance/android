@@ -7,10 +7,6 @@ fragment ClaimIntentFragment on ClaimIntent {
       ...ClaimIntentStepContentFragment
     }
   }
-  outcome {
-    ...ClaimIntentOutcomeClaimFragment
-    ...ClaimIntentOutcomeDeflectionFragment
-  }
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
@@ -20,38 +16,6 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...AudioRecordingFragment
   ...FileUploadFragment
   ...SummaryFragment
-}
-
-fragment ClaimIntentOutcomeClaimFragment on ClaimIntentOutcomeClaim {
-  claimId
-  claim {
-    submittedAt
-  }
-}
-
-fragment ClaimIntentOutcomeDeflectionFragment on ClaimIntentOutcomeDeflection {
-  title
-  infoText
-  warningText
-  partners {
-    id
-    imageUrl
-    phoneNumber
-    title
-    description
-    info
-    url
-    urlButtonTitle
-  }
-  partnersInfo {
-    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
-  }
-  content {
-    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
-  }
-  faq {
-    ...ClaimIntentOutcomeDeflectionInfoBlockFragment
-  }
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {
@@ -109,9 +73,4 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     contentType
     fileName
   }
-}
-
-fragment ClaimIntentOutcomeDeflectionInfoBlockFragment on ClaimIntentOutcomeDeflectionInfoBlock {
-  title
-  description
 }
