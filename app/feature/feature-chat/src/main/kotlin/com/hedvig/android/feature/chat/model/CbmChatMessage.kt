@@ -61,10 +61,10 @@ internal sealed interface CbmChatMessage {
   )
 
   companion object {
-    val AiGeneratingIndicator = ChatMessageText(
+    fun aiGeneratingIndicator(sentAt: Instant) = ChatMessageText(
       id = UUID.randomUUID().toString(),
       sender = Sender.HEDVIG,
-      sentAt = Clock.System.now(),
+      sentAt = sentAt,
       banner = null,
       text = "",
       action = null,

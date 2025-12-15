@@ -50,7 +50,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import octopus.ConversationInfoQuery
 import octopus.ConversationQuery
@@ -357,7 +356,8 @@ internal class CbmChatRepositoryImpl(
         "Empty message page for conversation $conversationId"
       }
       val messages = messagePage.messages.mapNotNull { it.toChatMessage() }
-      val messagesWithIndicator = if (isBeingGenerated) messages + CbmChatMessage.AiGeneratingIndicator
+      val messagesWithIndicator = if (isBeingGenerated) messages +
+        CbmChatMessage.aiGeneratingIndicator(Clock.System.now())
       else messages
       ChatMessagePageResponse(
         messages = messagesWithIndicator,
