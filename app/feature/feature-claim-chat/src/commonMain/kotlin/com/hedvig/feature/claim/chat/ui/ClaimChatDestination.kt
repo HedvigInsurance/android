@@ -329,13 +329,19 @@ private fun StepContentSection(
   showSpacer: Boolean,
 ) {
   Column {
-    HedvigText(stepItem.text)
+    stepItem.text?.let {
+      HedvigText(stepItem.text)
+    }
+
     if (stepItem.stepContent is StepContent.Task) {
+      Spacer(Modifier.height(16.dp))
       TaskStep(
         taskContent = stepItem.stepContent,
       )
     }
-    Spacer(Modifier.height(16.dp))
+    stepItem.text?.let {
+      Spacer(Modifier.height(16.dp))
+    }
     AnimatedVisibility(
       visible = showSpacer,
       modifier = spacerModifier,
@@ -460,7 +466,6 @@ private fun StepContentSection(
 @Composable
 private fun UploadFilesStep(
   itemId: StepId,
-  itemText: String?,
   stepContent: StepContent.FileUpload,
   appPackageId: String,
   isCurrentStep: Boolean,
@@ -594,7 +599,6 @@ private fun DeflectStep(
 }
 @Composable
 private fun TaskStep(
-  itemText: String?,
   taskContent: StepContent.Task,
   modifier: Modifier = Modifier,
 ) {
@@ -609,12 +613,6 @@ private fun TaskStep(
       ),
       label = "alpha",
     )
-    itemText?.let {
-      HedvigText(
-        itemText,
-      )
-      Spacer(Modifier.height(8.dp))
-    }
     if (taskContent.descriptions.isNotEmpty()) {
       Column {
         Row(
@@ -630,15 +628,15 @@ private fun TaskStep(
               .background(color, CircleShape),
           )
           if (taskContent.descriptions.isNotEmpty()) {
-          Spacer(Modifier.width(8.dp))
-          AnimatedContent(taskContent.descriptions.last()) { target ->
-            MemberSentAnswer(
-              onClick = null,
-            ) {
-              HedvigText(target)
+            Spacer(Modifier.width(8.dp))
+            AnimatedContent(taskContent.descriptions.last()) { target ->
+              MemberSentAnswer(
+                onClick = null,
+              ) {
+                HedvigText(target)
+              }
             }
           }
-        }
           }
       }
     }
