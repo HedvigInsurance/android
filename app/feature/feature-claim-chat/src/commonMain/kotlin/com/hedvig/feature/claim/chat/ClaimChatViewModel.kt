@@ -82,7 +82,7 @@ internal sealed interface ClaimChatEvent {
 
   data class ShowConfirmEditDialog(val id: StepId) : ClaimChatEvent
 
-  data object DismissConfirmEditDialog: ClaimChatEvent
+  data object DismissConfirmEditDialog : ClaimChatEvent
 
   data class SubmitForm(
     val stepId: StepId,
@@ -125,7 +125,7 @@ internal sealed interface ClaimChatUiState {
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
-    val showConfirmEditDialogForStep: StepId?
+    val showConfirmEditDialogForStep: StepId?,
   ) : ClaimChatUiState
 }
 
@@ -566,7 +566,7 @@ internal class ClaimChatPresenter(
                     val index = steps.indexOf(stepToUpdate)
                     if (index >= 0) {
                       steps.subList(index, steps.size).clear()
-                      if (steps.none { it.stepContent is  StepContent.AudioRecording }) freeText = null
+                      if (steps.none { it.stepContent is StepContent.AudioRecording }) freeText = null
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false

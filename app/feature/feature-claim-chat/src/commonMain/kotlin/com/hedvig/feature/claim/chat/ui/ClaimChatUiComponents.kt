@@ -292,14 +292,14 @@ internal fun SingleSelectBubbleWithDialog(
       modifier = modifier,
       enabled = true,
     )
-    AnimatedVisibility(errorText!=null) {
+    AnimatedVisibility(errorText != null) {
       Column {
         Spacer(Modifier.height(4.dp))
-        if (errorText!=null) {
+        if (errorText != null) {
           HedvigText(
             errorText,
             style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textSecondaryTranslucent
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           )
         }
       }
@@ -339,14 +339,14 @@ internal fun MultiSelectBubbleWithDialog(
       modifier = modifier,
       enabled = true,
     )
-    AnimatedVisibility(errorText!=null) {
+    AnimatedVisibility(errorText != null) {
       Column {
         Spacer(Modifier.height(4.dp))
-        if (errorText!=null) {
+        if (errorText != null) {
           HedvigText(
             errorText,
             style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textSecondaryTranslucent
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           )
         }
       }
@@ -636,18 +636,19 @@ internal fun DateSelectBubble(
       startText = questionLabel ?: "",
       modifier = modifier,
     )
-    AnimatedVisibility(errorText!=null
-      && datePickerState.datePickerState.selectedDateMillis==null
-    //adding this since datePickerState handles update internally
-    // and it's hard to clear the error state as with other fields
+    AnimatedVisibility(
+      errorText != null
+        && datePickerState.datePickerState.selectedDateMillis == null,
+      //adding this since datePickerState handles update internally
+      // and it's hard to clear the error state as with other fields
     ) {
       Column {
         Spacer(Modifier.height(4.dp))
-        if (errorText!=null) {
+        if (errorText != null) {
           HedvigText(
             errorText,
             style = HedvigTheme.typography.label,
-            color = HedvigTheme.colorScheme.textSecondaryTranslucent
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           )
         }
       }
@@ -684,8 +685,8 @@ internal fun TextInputBubble(
     labelText = questionLabel,
     modifier = modifier.focusRequester(focusRequester),
     enabled = true,
-    errorState = if (errorText!=null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
-      else HedvigTextFieldDefaults.ErrorState.NoError,
+    errorState = if (errorText != null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
+    else HedvigTextFieldDefaults.ErrorState.NoError,
     suffix = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (suffix != null) {
@@ -897,7 +898,7 @@ private fun PreviewClaimChatComponents() {
           recordingState = AudioRecordingStepState.FreeTextDescription(
             showOverlay = false,
             errorType = null,
-            canSubmit = true
+            canSubmit = true,
           ),
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = {
