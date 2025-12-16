@@ -26,8 +26,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
-import com.hedvig.feature.claim.chat.data.FormSubmissionData.Field
-import com.hedvig.feature.claim.chat.data.FreeTextErrorType
+import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType.*
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
@@ -74,7 +73,7 @@ internal sealed interface ClaimChatEvent {
   data class UpdateFieldAnswer(
     val stepId: StepId,
     val fieldId: FieldId,
-    val answer: StepContent.Form.FieldOption?,
+    val answer: FieldOption?,
   ) : ClaimChatEvent
 
   data class Skip(val id: StepId) : ClaimChatEvent
@@ -83,9 +82,9 @@ internal sealed interface ClaimChatEvent {
 
   data class ShowConfirmEditDialog(val id: StepId) : ClaimChatEvent
 
-  data object DismissConfirmEditDialog: ClaimChatEvent
+  data object DismissConfirmEditDialog : ClaimChatEvent
 
-  data class FormSubmit(
+  data class SubmitForm(
     val stepId: StepId,
   ) : ClaimChatEvent
 
@@ -126,7 +125,7 @@ internal sealed interface ClaimChatUiState {
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
-    val showConfirmEditDialogForStep: StepId?
+    val showConfirmEditDialogForStep: StepId?,
   ) : ClaimChatUiState
 }
 
@@ -366,13 +365,27 @@ internal class ClaimChatPresenter(
           }
         }
 
-        is ClaimChatEvent.FormSubmit -> {
+        is ClaimChatEvent.SubmitForm -> {
           Snapshot.withMutableSnapshot {
             val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
               ?: return@CollectEvents
+
+            val validatedFields = currentContent.fields.map { field ->
+              validateField(field)
+            }
+            val hasValidationErrors = validatedFields.any { it.hasError != null }
+            if (hasValidationErrors) {
+              steps.updateStepWithSuccess<StepContent.Form>(event.stepId) { step, content ->
+                step.copy(
+                  stepContent = content.copy(fields = validatedFields),
+                )
+              }
+              return@CollectEvents
+            }
+
             val fieldsToSubmit = currentContent.fields.map { field ->
               when (field.type) {
-                StepContent.Form.FieldType.DATE -> {
+                FieldType.DATE -> {
                   val selectedDateString =
                     field.datePickerUiState?.datePickerState?.selectedDateMillis?.let { selectedDateMillis ->
                       Instant.fromEpochMilliseconds(selectedDateMillis).toLocalDateTime(TimeZone.UTC).date
@@ -399,17 +412,17 @@ internal class ClaimChatPresenter(
                       ),
                     )
                   }
-                  Field(
+                  FieldToSubmit(
                     field.id,
                     listOf(selectedDateString),
                   )
                 }
 
-                else -> Field(
+                else -> FieldToSubmit(
                   field.id,
                   field.selectedOptions
                     .map { selectedOption ->
-                      selectedOption.value
+                      selectedOption.value.ifEmpty { null }
                     },
                 )
               }
@@ -553,7 +566,7 @@ internal class ClaimChatPresenter(
                     val index = steps.indexOf(stepToUpdate)
                     if (index >= 0) {
                       steps.subList(index, steps.size).clear()
-                      if (steps.none { it.stepContent is  StepContent.AudioRecording }) freeText = null
+                      if (steps.none { it.stepContent is StepContent.AudioRecording }) freeText = null
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
@@ -569,21 +582,22 @@ internal class ClaimChatPresenter(
             val newFields = content.fields.map { field ->
               if (field.id == event.fieldId) {
                 when (field.type) {
-                  StepContent.Form.FieldType.TEXT,
-                  StepContent.Form.FieldType.NUMBER,
-                  StepContent.Form.FieldType.BINARY,
-                  StepContent.Form.FieldType.SINGLE_SELECT,
+                  FieldType.TEXT,
+                  FieldType.NUMBER,
+                  FieldType.BINARY,
+                  FieldType.SINGLE_SELECT,
                   null,
                     -> field.copy(
                     selectedOptions = event.answer?.let {
                       listOf(it)
                     } ?: emptyList(),
+                    hasError = null,
                   )
 
-                  StepContent.Form.FieldType.DATE -> field
+                  FieldType.DATE -> field.copy(hasError = null)
                   // Date gets selected date from DatePickerState, not from Event
 
-                  StepContent.Form.FieldType.MULTI_SELECT -> {
+                  FieldType.MULTI_SELECT -> {
                     field.copy(
                       selectedOptions = event.answer?.let {
                         val oldSelected = field.selectedOptions
@@ -595,6 +609,7 @@ internal class ClaimChatPresenter(
                         newSelected
                       }
                         ?: field.selectedOptions,
+                      hasError = null,
                     )
                   }
                 }
@@ -844,4 +859,38 @@ private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
   if (predicate(last)) {
     removeAt(this.lastIndex)
   }
+}
+
+private fun validateField(field: Field): Field {
+
+  if (field.isRequired) {
+    val isMissing = when (field.type) {
+      FieldType.DATE -> field.datePickerUiState?.datePickerState?.selectedDateMillis == null
+      else -> field.selectedOptions.isEmpty() || field.selectedOptions.all { it.value.isEmpty() }
+    }
+    if (isMissing) {
+      return field.copy(hasError = FieldError.Missing)
+    }
+  }
+
+  if (field.type == FieldType.NUMBER && field.selectedOptions.isNotEmpty()) {
+    val selectedValue = field.selectedOptions.firstOrNull()?.value
+    if (!selectedValue.isNullOrEmpty()) {
+      val numericValue = selectedValue.toDoubleOrNull()
+      if (numericValue != null) {
+        field.maxValue?.toDoubleOrNull()?.let { maxValue ->
+          if (numericValue > maxValue) {
+            return field.copy(hasError = FieldError.BiggerThanMaxValue)
+          }
+        }
+        field.minValue?.toDoubleOrNull()?.let { minValue ->
+          if (numericValue < minValue) {
+            return field.copy(hasError = FieldError.LessThanMinValue)
+          }
+        }
+      }
+    }
+  }
+
+  return field.copy(hasError = null)
 }

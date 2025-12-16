@@ -49,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
-import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -63,10 +62,11 @@ import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
+import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
+import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
+import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
 import hedvig.resources.GENERAL_ARE_YOU_SURE
-import hedvig.resources.GENERAL_NO
-import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
@@ -203,16 +203,6 @@ private fun ClaimChatScreenContent(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  if (uiState.errorSubmittingStep != null) {
-    ErrorDialog(
-      title = stringResource(Res.string.general_error),
-      message = uiState.errorSubmittingStep.message
-        ?: stringResource(Res.string.something_went_wrong),
-      onDismiss = {
-        onEvent(ClaimChatEvent.DismissErrorDialog)
-      },
-    )
-  }
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
@@ -377,7 +367,7 @@ private fun ClaimChatScreenContent(
 @Composable
 private fun UploadFilesStep(
   itemId: StepId,
-  itemText: String,
+  itemText: String?,
   stepContent: StepContent.FileUpload,
   appPackageId: String,
   isCurrentStep: Boolean,
@@ -391,9 +381,11 @@ private fun UploadFilesStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(
-      itemText,
-    )
+    itemText?.let {
+      HedvigText(
+        itemText,
+      )
+    }
     if (isCurrentStep) {
       Spacer(Modifier.height(8.dp))
       UploadFilesBubble(
@@ -489,7 +481,7 @@ internal fun SkippedLabel() {
 @Composable
 private fun DeflectStep(
   stepId: StepId,
-  text: String,
+  text: String?,
   deflect: StepContent.Deflect,
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   autoNavigateForDeflectStepId: StepId?,
@@ -500,24 +492,35 @@ private fun DeflectStep(
       navigateToDeflect(stepId, deflect)
     }
   }
-  HedvigNotificationCard(
-    message = text,
-    priority = NotificationDefaults.NotificationPriority.InfoInline,
-    style = NotificationDefaults.InfoCardStyle.Button(
-      buttonText = stringResource(Res.string.important_message_read_more),
-      onButtonClick = { navigateToDeflect(stepId, deflect) },
-    ),
-    modifier = modifier,
-  )
+  if (text != null) {
+    HedvigNotificationCard(
+      message = text,
+      priority = NotificationDefaults.NotificationPriority.InfoInline,
+      style = NotificationDefaults.InfoCardStyle.Button(
+        buttonText = stringResource(Res.string.important_message_read_more),
+        onButtonClick = { navigateToDeflect(stepId, deflect) },
+      ),
+      modifier = modifier,
+    )
+  }
+
 }
 
 @Composable
-private fun TaskStep(itemText: String, taskContent: StepContent.Task, modifier: Modifier = Modifier) {
+private fun TaskStep(
+  itemText: String?,
+  taskContent: StepContent.Task,
+  modifier: Modifier = Modifier,
+) {
   Column(modifier) {
-    HedvigText(itemText)
+    itemText?.let {
+      HedvigText(
+        itemText,
+      )
+      Spacer(Modifier.height(8.dp))
+    }
     if (taskContent.descriptions.isNotEmpty()) {
       Column {
-        Spacer(Modifier.height(8.dp))
         Row(
           verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -546,7 +549,7 @@ private fun TaskStep(itemText: String, taskContent: StepContent.Task, modifier: 
 @Composable
 private fun FormStep(
   itemId: StepId,
-  itemText: String,
+  itemText: String?,
   content: StepContent.Form,
   onEvent: (ClaimChatEvent) -> Unit,
   isCurrentStep: Boolean,
@@ -557,10 +560,12 @@ private fun FormStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(
-      itemText,
-    )
-    Spacer(Modifier.height(32.dp))
+    itemText?.let {
+      HedvigText(
+        itemText,
+      )
+      Spacer(Modifier.height(32.dp))
+    }
     FormContent(
       content = content,
       onSkip = {
@@ -573,15 +578,24 @@ private fun FormStep(
         onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
-        logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
         onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
-        onEvent(ClaimChatEvent.FormSubmit(itemId))
+        onEvent(ClaimChatEvent.SubmitForm(itemId))
       },
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
     )
+  }
+}
+
+@Composable
+private fun getErrorText(field: StepContent.Form.Field): String? {
+  return when (field.hasError) {
+    StepContent.Form.FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
+    StepContent.Form.FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
+    StepContent.Form.FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
+    null -> null
   }
 }
 
@@ -619,6 +633,7 @@ private fun FormContent(
                     answer?.let { StepContent.Form.FieldOption(it, it) },
                   )
                 },
+                errorText = getErrorText(field),
               )
             }
 
@@ -627,6 +642,7 @@ private fun FormContent(
                 questionLabel = field.title,
                 datePickerState = field.datePickerUiState!!, // todo - check "!!"
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -642,6 +658,7 @@ private fun FormContent(
                   )
                 },
                 keyboardType = KeyboardType.Number,
+                errorText = getErrorText(field),
               )
             }
 
@@ -670,6 +687,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -696,6 +714,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -708,6 +727,7 @@ private fun FormContent(
                 )
               },
               questionText = field.title,
+              errorText = getErrorText(field),
             )
 
             null -> {
@@ -721,7 +741,7 @@ private fun FormContent(
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         text = stringResource(Res.string.general_continue_button),
-        enabled = content.canContinue() && !continueButtonLoading,
+        enabled = !continueButtonLoading,
         isLoading = continueButtonLoading,
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth(),
@@ -816,8 +836,12 @@ private fun AudioRecordingStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(item.text)
-    Spacer(Modifier.height(32.dp))
+    item.text?.let {
+      HedvigText(
+        item.text,
+      )
+      Spacer(Modifier.height(32.dp))
+    }
     AudioRecorderBubble(
       recordingState = stepContent.recordingState,
       clock = clock,
@@ -869,9 +893,11 @@ private fun ContentSelectStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(
-      item.text,
-    )
+    item.text?.let {
+      HedvigText(
+        item.text,
+      )
+    }
     AnimatedContent(
       isCurrentStep,
       transitionSpec = {
