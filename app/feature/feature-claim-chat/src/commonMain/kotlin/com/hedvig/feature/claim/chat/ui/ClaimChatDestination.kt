@@ -49,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
-import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -375,7 +374,7 @@ private fun ClaimChatScreenContent(
 @Composable
 private fun UploadFilesStep(
   itemId: StepId,
-  itemText: String,
+  itemText: String?,
   stepContent: StepContent.FileUpload,
   appPackageId: String,
   isCurrentStep: Boolean,
@@ -389,9 +388,11 @@ private fun UploadFilesStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(
-      itemText,
-    )
+    itemText?.let {
+      HedvigText(
+        itemText,
+      )
+    }
     if (isCurrentStep) {
       Spacer(Modifier.height(8.dp))
       UploadFilesBubble(
@@ -487,7 +488,7 @@ internal fun SkippedLabel() {
 @Composable
 private fun DeflectStep(
   stepId: StepId,
-  text: String,
+  text: String?,
   deflect: StepContent.Deflect,
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   autoNavigateForDeflectStepId: StepId?,
@@ -498,21 +499,32 @@ private fun DeflectStep(
       navigateToDeflect(stepId, deflect)
     }
   }
-  HedvigNotificationCard(
-    message = text,
-    priority = NotificationDefaults.NotificationPriority.InfoInline,
-    style = NotificationDefaults.InfoCardStyle.Button(
-      buttonText = stringResource(Res.string.important_message_read_more),
-      onButtonClick = { navigateToDeflect(stepId, deflect) },
-    ),
-    modifier = modifier,
-  )
+  if (text != null) {
+    HedvigNotificationCard(
+      message = text,
+      priority = NotificationDefaults.NotificationPriority.InfoInline,
+      style = NotificationDefaults.InfoCardStyle.Button(
+        buttonText = stringResource(Res.string.important_message_read_more),
+        onButtonClick = { navigateToDeflect(stepId, deflect) },
+      ),
+      modifier = modifier,
+    )
+  }
+
 }
 
 @Composable
-private fun TaskStep(itemText: String, taskContent: StepContent.Task, modifier: Modifier = Modifier) {
+private fun TaskStep(
+  itemText: String?,
+  taskContent: StepContent.Task,
+  modifier: Modifier = Modifier,
+) {
   Column(modifier) {
-    HedvigText(itemText)
+    itemText?.let {
+      HedvigText(
+        itemText,
+      )
+    }
     if (taskContent.descriptions.isNotEmpty()) {
       Column {
         Spacer(Modifier.height(8.dp))
@@ -544,7 +556,7 @@ private fun TaskStep(itemText: String, taskContent: StepContent.Task, modifier: 
 @Composable
 private fun FormStep(
   itemId: StepId,
-  itemText: String,
+  itemText: String?,
   content: StepContent.Form,
   onEvent: (ClaimChatEvent) -> Unit,
   isCurrentStep: Boolean,
@@ -555,10 +567,12 @@ private fun FormStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(
-      itemText,
-    )
-    Spacer(Modifier.height(32.dp))
+    itemText?.let {
+      HedvigText(
+        itemText,
+      )
+      Spacer(Modifier.height(32.dp))
+    }
     FormContent(
       content = content,
       onSkip = {
@@ -571,7 +585,6 @@ private fun FormStep(
         onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
-        logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
         onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
@@ -814,8 +827,12 @@ private fun AudioRecordingStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(item.text)
-    Spacer(Modifier.height(32.dp))
+    item.text?.let {
+      HedvigText(
+        item.text,
+      )
+      Spacer(Modifier.height(32.dp))
+    }
     AudioRecorderBubble(
       recordingState = stepContent.recordingState,
       clock = clock,
@@ -867,9 +884,11 @@ private fun ContentSelectStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(
-      item.text,
-    )
+    item.text?.let {
+      HedvigText(
+        item.text,
+      )
+    }
     AnimatedContent(
       isCurrentStep,
       transitionSpec = {

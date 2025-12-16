@@ -671,7 +671,7 @@ internal fun TextInputBubble(
 
 @Composable
 internal fun ChatClaimSummary(
-  text: String,
+  text: String?,
   recordingUrls: List<String>,
   fileUploads: List<UiFile>,
   freeTexts: List<String>,
