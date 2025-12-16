@@ -673,6 +673,7 @@ internal fun DateSelectBubble(
             errorText,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            modifier = Modifier.padding(start = 16.dp)
           )
         }
       }
@@ -759,6 +760,7 @@ internal fun ChatClaimSummary(
   imageLoader: ImageLoader,
   continueButtonLoading: Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  spacerModifier: Modifier,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -833,7 +835,7 @@ internal fun ChatClaimSummary(
         }
       }
     }
-
+    Spacer(spacerModifier)
     if (isCurrentStep) {
       Spacer(Modifier.height(16.dp))
       Row(
@@ -1007,6 +1009,7 @@ private fun PreviewSummary() {
           onNavigateToImageViewer = { _, _ -> },
           continueButtonLoading = false,
           freeTexts = listOf("A quite short text short text short text short text"),
+          spacerModifier = Modifier
         )
       }
     }
