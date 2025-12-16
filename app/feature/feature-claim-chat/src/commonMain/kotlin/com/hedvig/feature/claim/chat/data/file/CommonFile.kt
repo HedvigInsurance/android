@@ -5,6 +5,7 @@ import kotlinx.io.Source
 interface CommonFile {
   val fileName: String
   val description: String
+  val mimeType: String
 
   fun source(): Source
 
