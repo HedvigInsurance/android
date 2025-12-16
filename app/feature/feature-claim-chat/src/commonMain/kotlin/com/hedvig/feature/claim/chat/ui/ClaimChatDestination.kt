@@ -517,10 +517,10 @@ private fun TaskStep(
       HedvigText(
         itemText,
       )
+      Spacer(Modifier.height(8.dp))
     }
     if (taskContent.descriptions.isNotEmpty()) {
       Column {
-        Spacer(Modifier.height(8.dp))
         Row(
           verticalAlignment = Alignment.CenterVertically,
         ) {
