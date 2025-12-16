@@ -684,8 +684,10 @@ internal fun ChatClaimSummary(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    HedvigText(text)
-    Spacer(Modifier.height(8.dp))
+    text?.let {
+      HedvigText(text)
+      Spacer(Modifier.height(8.dp))
+    }
     HedvigCard(
       color = HedvigTheme.colorScheme.fillNegative,
     ) {
