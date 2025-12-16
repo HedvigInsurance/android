@@ -228,6 +228,7 @@ internal fun YesNoBubble(
   answerSelected: String?,
   onSelect: (String) -> Unit,
   modifier: Modifier = Modifier,
+  errorText: String? = null
 ) {
   val options = listOf(
     StepContent.ContentSelect.Option(
@@ -239,25 +240,46 @@ internal fun YesNoBubble(
       stringResource(Res.string.GENERAL_NO),
     ),
   )
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.End,
-  ) {
-    HedvigText(
-      style = HedvigTheme.typography.label,
-      text = questionText,
-    )
-    Spacer(Modifier.width(16.dp))
-    ContentSelectChips(
-      options = options,
-      selectedOption = answerSelected?.let {
-        if (it == options[0].title) options[0] else options[1]
-      },
-      onOptionClick = { option ->
-        onSelect(option.title)
-      },
-    )
+  Column {
+    Row(
+      modifier = modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.End,
+    ) {
+      HedvigText(
+        style = HedvigTheme.typography.label,
+        text = questionText,
+      )
+      Spacer(Modifier.width(16.dp))
+      ContentSelectChips(
+        options = options,
+        selectedOption = answerSelected?.let {
+          if (it == options[0].title) options[0] else options[1]
+        },
+        onOptionClick = { option ->
+          onSelect(option.title)
+        },
+      )
+    }
+    AnimatedVisibility(errorText != null) {
+      Column {
+        if (errorText != null) {
+          Spacer(Modifier.height(4.dp))
+          Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+          ) {
+            HedvigText(
+              errorText,
+              style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            )
+          }
+
+        }
+      }
+    }
   }
 }
 
@@ -294,12 +316,13 @@ internal fun SingleSelectBubbleWithDialog(
     )
     AnimatedVisibility(errorText != null) {
       Column {
-        Spacer(Modifier.height(4.dp))
         if (errorText != null) {
+          Spacer(Modifier.height(4.dp))
           HedvigText(
             errorText,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            modifier = Modifier.padding(start = 16.dp)
           )
         }
       }
@@ -347,6 +370,7 @@ internal fun MultiSelectBubbleWithDialog(
             errorText,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            modifier = Modifier.padding(start = 16.dp)
           )
         }
       }

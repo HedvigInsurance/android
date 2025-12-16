@@ -727,6 +727,7 @@ private fun FormContent(
                 )
               },
               questionText = field.title,
+              errorText = getErrorText(field),
             )
 
             null -> {
