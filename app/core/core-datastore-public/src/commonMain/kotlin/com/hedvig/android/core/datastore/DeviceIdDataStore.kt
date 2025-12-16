@@ -4,9 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import java.util.UUID
+import com.benasher44.uuid.uuid4
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
@@ -35,7 +36,7 @@ internal class DeviceIdDataStoreImpl(
   }
 
   private suspend fun generateDeviceId() {
-    val deviceId = UUID.randomUUID().toString()
+    val deviceId = uuid4().toString()
     dataStore.edit {
       it[key] = deviceId
     }

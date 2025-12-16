@@ -338,13 +338,6 @@ private val sharedPreferencesModule = module {
   }
 }
 
-private val datastoreAndroidModule = module {
-  single<File>(datastoreFileQualifier) {
-    // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
-    get<Context>().applicationContext.filesDir
-  }
-}
-
 private val databaseChatAndroidModule = module {
   single<File>(databaseFileQualifier) {
     val applicationContext = get<Context>().applicationContext
@@ -411,7 +404,6 @@ val applicationModule = module {
       databaseModule,
       datadogDemoTrackingModule,
       datadogModule,
-      datastoreAndroidModule,
       deepLinkModule,
       deleteAccountModule,
       demoModule,
