@@ -210,16 +210,6 @@ private fun ClaimChatScreenContent(
       },
     )
   }
-  if (uiState.errorSubmittingStep != null) {
-    ErrorDialog(
-      title = stringResource(Res.string.general_error),
-      message = uiState.errorSubmittingStep.message
-        ?: stringResource(Res.string.something_went_wrong),
-      onDismiss = {
-        onEvent(ClaimChatEvent.DismissErrorDialog)
-      },
-    )
-  }
   if (uiState.showConfirmEditDialogForStep != null) {
     HedvigAlertDialog(
       title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),

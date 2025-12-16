@@ -102,9 +102,9 @@ internal sealed interface StepContent {
     )
 
     sealed interface FieldError {
-      data object BiggerThanMaxValue
-      data object LessThanMinValue
-      data object Missing
+      data object BiggerThanMaxValue : FieldError
+      data object LessThanMinValue : FieldError
+      data object Missing : FieldError
     }
 
     data class FieldOption(

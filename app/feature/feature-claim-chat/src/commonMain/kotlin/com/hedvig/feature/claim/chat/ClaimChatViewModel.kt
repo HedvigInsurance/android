@@ -369,6 +369,20 @@ internal class ClaimChatPresenter(
           Snapshot.withMutableSnapshot {
             val currentContent = steps.firstOrNull { it.id == event.stepId }?.stepContent as? StepContent.Form
               ?: return@CollectEvents
+
+            val validatedFields = currentContent.fields.map { field ->
+              validateField(field)
+            }
+            val hasValidationErrors = validatedFields.any { it.hasError != null }
+            if (hasValidationErrors) {
+              steps.updateStepWithSuccess<StepContent.Form>(event.stepId) { step, content ->
+                step.copy(
+                  stepContent = content.copy(fields = validatedFields),
+                )
+              }
+              return@CollectEvents
+            }
+
             val fieldsToSubmit = currentContent.fields.map { field ->
               when (field.type) {
                 FieldType.DATE -> {
@@ -577,9 +591,10 @@ internal class ClaimChatPresenter(
                     selectedOptions = event.answer?.let {
                       listOf(it)
                     } ?: emptyList(),
+                    hasError = null,
                   )
 
-                  FieldType.DATE -> field
+                  FieldType.DATE -> field.copy(hasError = null)
                   // Date gets selected date from DatePickerState, not from Event
 
                   FieldType.MULTI_SELECT -> {
@@ -594,6 +609,7 @@ internal class ClaimChatPresenter(
                         newSelected
                       }
                         ?: field.selectedOptions,
+                      hasError = null,
                     )
                   }
                 }
@@ -843,4 +859,38 @@ private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
   if (predicate(last)) {
     removeAt(this.lastIndex)
   }
+}
+
+private fun validateField(field: Field): Field {
+
+  if (field.isRequired) {
+    val isMissing = when (field.type) {
+      FieldType.DATE -> field.datePickerUiState?.datePickerState?.selectedDateMillis == null
+      else -> field.selectedOptions.isEmpty() || field.selectedOptions.all { it.value.isEmpty() }
+    }
+    if (isMissing) {
+      return field.copy(hasError = FieldError.Missing)
+    }
+  }
+
+  if (field.type == FieldType.NUMBER && field.selectedOptions.isNotEmpty()) {
+    val selectedValue = field.selectedOptions.firstOrNull()?.value
+    if (!selectedValue.isNullOrEmpty()) {
+      val numericValue = selectedValue.toDoubleOrNull()
+      if (numericValue != null) {
+        field.maxValue?.toDoubleOrNull()?.let { maxValue ->
+          if (numericValue > maxValue) {
+            return field.copy(hasError = FieldError.BiggerThanMaxValue)
+          }
+        }
+        field.minValue?.toDoubleOrNull()?.let { minValue ->
+          if (numericValue < minValue) {
+            return field.copy(hasError = FieldError.LessThanMinValue)
+          }
+        }
+      }
+    }
+  }
+
+  return field.copy(hasError = null)
 }
