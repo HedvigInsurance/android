@@ -293,12 +293,15 @@ internal fun SingleSelectBubbleWithDialog(
       enabled = true,
     )
     AnimatedVisibility(errorText!=null) {
-      if (errorText!=null) {
-        HedvigText(
-          errorText,
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent
-        )
+      Column {
+        Spacer(Modifier.height(4.dp))
+        if (errorText!=null) {
+          HedvigText(
+            errorText,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent
+          )
+        }
       }
     }
   }
@@ -337,12 +340,15 @@ internal fun MultiSelectBubbleWithDialog(
       enabled = true,
     )
     AnimatedVisibility(errorText!=null) {
-      if (errorText!=null) {
-        HedvigText(
-          errorText,
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent
-        )
+      Column {
+        Spacer(Modifier.height(4.dp))
+        if (errorText!=null) {
+          HedvigText(
+            errorText,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent
+          )
+        }
       }
     }
   }
@@ -630,13 +636,20 @@ internal fun DateSelectBubble(
       startText = questionLabel ?: "", // todo
       modifier = modifier,
     )
-    AnimatedVisibility(errorText!=null) {
-      if (errorText!=null) {
-        HedvigText(
-          errorText,
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent
-        )
+    AnimatedVisibility(errorText!=null
+      && datePickerState.datePickerState.selectedDateMillis==null
+    //adding this since datePickerState handles update internally
+    // and it's hard to clear the error state as with other fields
+    ) {
+      Column {
+        Spacer(Modifier.height(4.dp))
+        if (errorText!=null) {
+          HedvigText(
+            errorText,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent
+          )
+        }
       }
     }
   }

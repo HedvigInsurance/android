@@ -72,19 +72,6 @@ internal sealed interface StepContent {
     val fields: List<Field>,
     override val isSkippable: Boolean,
   ) : StepContent {
-    fun canContinue(): Boolean {
-      val requiredFields = fields
-        .filter { it.isRequired }
-      return requiredFields
-        .filter { it.type != FieldType.DATE }
-        .all {
-          it.selectedOptions.isNotEmpty()
-        } && requiredFields
-        .filter { it.type == FieldType.DATE }
-        .all {
-          it.datePickerUiState?.datePickerState?.selectedDateMillis != null
-        }
-    }
 
     data class Field(
       val id: FieldId,

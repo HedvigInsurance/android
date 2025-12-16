@@ -740,7 +740,7 @@ private fun FormContent(
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         text = stringResource(Res.string.general_continue_button),
-        enabled = content.canContinue() && !continueButtonLoading,
+        enabled = !continueButtonLoading,
         isLoading = continueButtonLoading,
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth(),
