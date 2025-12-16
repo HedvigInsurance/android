@@ -268,6 +268,7 @@ internal fun SingleSelectBubbleWithDialog(
   selectedOptionId: RadioOptionId?,
   onSelect: (RadioOptionId) -> Unit,
   modifier: Modifier = Modifier,
+  errorText: String? = null,
 ) {
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
@@ -281,15 +282,26 @@ internal fun SingleSelectBubbleWithDialog(
       },
     )
   }
-  HedvigBigCard(
-    onClick = { showDialog = true },
-    labelText = questionLabel,
-    inputText = options.firstOrNull {
-      it.id == selectedOptionId
-    }?.text,
-    modifier = modifier,
-    enabled = true,
-  )
+  Column {
+    HedvigBigCard(
+      onClick = { showDialog = true },
+      labelText = questionLabel,
+      inputText = options.firstOrNull {
+        it.id == selectedOptionId
+      }?.text,
+      modifier = modifier,
+      enabled = true,
+    )
+    AnimatedVisibility(errorText!=null) {
+      if (errorText!=null) {
+        HedvigText(
+          errorText,
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent
+        )
+      }
+    }
+  }
 }
 
 @Composable
@@ -299,6 +311,7 @@ internal fun MultiSelectBubbleWithDialog(
   selectedOptionIds: List<RadioOptionId>,
   onSelect: (RadioOptionId) -> Unit,
   modifier: Modifier = Modifier,
+  errorText: String? = null,
 ) {
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
@@ -311,17 +324,29 @@ internal fun MultiSelectBubbleWithDialog(
       buttonText = stringResource(Res.string.general_save_button),
     )
   }
-  HedvigBigCard(
-    onClick = { showDialog = true },
-    labelText = questionLabel,
-    inputText = when {
-      selectedOptionIds.isEmpty() -> null
-      else -> options.filter { it.id in selectedOptionIds }
-        .joinToString(transform = RadioOption::text)
-    },
-    modifier = modifier,
-    enabled = true,
-  )
+  Column {
+    HedvigBigCard(
+      onClick = { showDialog = true },
+      labelText = questionLabel,
+      inputText = when {
+        selectedOptionIds.isEmpty() -> null
+        else -> options.filter { it.id in selectedOptionIds }
+          .joinToString(transform = RadioOption::text)
+      },
+      modifier = modifier,
+      enabled = true,
+    )
+    AnimatedVisibility(errorText!=null) {
+      if (errorText!=null) {
+        HedvigText(
+          errorText,
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent
+        )
+      }
+    }
+  }
+
 }
 
 @Composable
@@ -596,13 +621,26 @@ internal fun DateSelectBubble(
   datePickerState: DatePickerUiState,
   questionLabel: String?,
   modifier: Modifier = Modifier,
+  errorText: String? = null,
 ) {
-  DatePickerWithDialog(
-    datePickerState,
-    canInteract = true,
-    startText = questionLabel ?: "", // todo
-    modifier = modifier,
-  )
+  Column {
+    DatePickerWithDialog(
+      datePickerState,
+      canInteract = true,
+      startText = questionLabel ?: "", // todo
+      modifier = modifier,
+    )
+    AnimatedVisibility(errorText!=null) {
+      if (errorText!=null) {
+        HedvigText(
+          errorText,
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent
+        )
+      }
+    }
+  }
+
 }
 
 @Composable
@@ -613,6 +651,7 @@ internal fun TextInputBubble(
   onInput: (String?) -> Unit,
   modifier: Modifier = Modifier,
   keyboardType: KeyboardType = KeyboardType.Unspecified,
+  errorText: String? = null,
 ) {
   val focusRequester = remember { FocusRequester() }
   var textValue by rememberSaveable {
@@ -632,6 +671,8 @@ internal fun TextInputBubble(
     labelText = questionLabel,
     modifier = modifier.focusRequester(focusRequester),
     enabled = true,
+    errorState = if (errorText!=null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
+      else HedvigTextFieldDefaults.ErrorState.NoError,
     suffix = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (suffix != null) {

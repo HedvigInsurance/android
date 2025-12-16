@@ -62,6 +62,9 @@ import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
+import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
+import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
+import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
@@ -587,6 +590,16 @@ private fun FormStep(
 }
 
 @Composable
+private fun getErrorText(field: StepContent.Form.Field): String? {
+  return when (field.hasError) {
+    StepContent.Form.FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
+    StepContent.Form.FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
+    StepContent.Form.FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
+    null -> null
+  }
+}
+
+@Composable
 private fun FormContent(
   content: StepContent.Form,
   isCurrentStep: Boolean,
@@ -620,6 +633,7 @@ private fun FormContent(
                     answer?.let { StepContent.Form.FieldOption(it, it) },
                   )
                 },
+                errorText = getErrorText(field),
               )
             }
 
@@ -628,6 +642,7 @@ private fun FormContent(
                 questionLabel = field.title,
                 datePickerState = field.datePickerUiState!!, // todo - check "!!"
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -643,6 +658,7 @@ private fun FormContent(
                   )
                 },
                 keyboardType = KeyboardType.Number,
+                errorText = getErrorText(field),
               )
             }
 
@@ -671,6 +687,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -697,6 +714,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
