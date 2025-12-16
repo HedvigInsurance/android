@@ -3,7 +3,6 @@ package com.hedvig.feature.claim.chat.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.language.LanguageService
@@ -23,7 +22,7 @@ internal class SubmitFormUseCase(
           ClaimIntentSubmitFormMutation(
             ClaimIntentSubmitFormInput(
               stepId = formData.stepId.value,
-              fields = formData.fields.map { field ->
+              fields = formData.fieldsToSubmit.map { field ->
                 ClaimIntentFormSubmitInputField(
                   fieldId = field.fieldId.value,
                   values = field.values.filterNotNull(),
@@ -46,9 +45,9 @@ internal class SubmitFormUseCase(
 
 internal data class FormSubmissionData(
   val stepId: StepId,
-  val fields: List<Field>,
+  val fieldsToSubmit: List<FieldToSubmit>,
 ) {
-  data class Field(
+  data class FieldToSubmit(
     val fieldId: FieldId,
     val values: List<String?>,
   )
