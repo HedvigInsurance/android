@@ -11,6 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -55,10 +57,14 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
+import com.hedvig.android.design.system.hedvig.icon.ArrowDown
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -85,6 +91,7 @@ import hedvig.resources.general_error
 import hedvig.resources.important_message_read_more
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -236,17 +243,21 @@ private fun ClaimChatScreenContent(
     )
   }
   val lazyListState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
   val isScrolled by remember(lazyListState) {
     derivedStateOf {
       lazyListState.lastScrolledBackward || (lazyListState.lastScrolledForward &&
         lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1)
     }
   }
+  Box (modifier = modifier
+    .padding(horizontal = 16.dp)
+    .fillMaxSize(),
+    ) {
+
 
   LazyColumn(
-    modifier = modifier
-      .padding(horizontal = 16.dp)
-      .fillMaxSize(),
+    modifier = Modifier.fillMaxSize(),
     state = lazyListState,
     contentPadding = WindowInsets.safeDrawing.asPaddingValues().plus(PaddingValues(vertical = 16.dp)),
     verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
@@ -277,7 +288,7 @@ private fun ClaimChatScreenContent(
             imageLoader = imageLoader,
             openAppSettings = openAppSettings,
             spacerModifier = Modifier.weight(1f),
-            showSpacer = !isScrolled,
+            showBottomContent = !isScrolled,
           )
         }
       } else {
@@ -296,14 +307,54 @@ private fun ClaimChatScreenContent(
           imageLoader = imageLoader,
           openAppSettings = openAppSettings,
           spacerModifier = Modifier,
-          showSpacer = true,
+          showBottomContent = true,
         )
       }
+    }
+  }
+    if (isScrolled) {
+      ScrollToBottomButton(
+        onClick = {
+          coroutineScope.launch {
+            lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+          }
+        },
+        modifier = Modifier.align(Alignment.BottomCenter).padding(
+          WindowInsets.safeDrawing.asPaddingValues()
+            .plus(PaddingValues(vertical = 16.dp))
+        )
+      )
     }
   }
   LaunchedEffect(uiState.steps.size) {
     if (uiState.steps.isNotEmpty()) {
       lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+    }
+  }
+}
+
+@Composable
+private fun ScrollToBottomButton(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  IconButton(
+    onClick = onClick,
+    modifier = modifier,
+  )  {
+    val whiteColor = HedvigTheme.colorScheme.backgroundWhite
+    Box(
+      contentAlignment = Alignment.Center
+    ) {
+      Canvas(
+        modifier = Modifier.size(42.dp),
+        onDraw = {
+          drawCircle(color = whiteColor)
+        }
+      )
+      Icon(HedvigIcons.ArrowDown,
+        "Scroll down" //todo
+      )
     }
   }
 }
@@ -324,7 +375,7 @@ private fun StepContentSection(
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
   spacerModifier: Modifier,
-  showSpacer: Boolean,
+  showBottomContent: Boolean,
 ) {
   Column {
     stepItem.text?.let {
@@ -340,7 +391,7 @@ private fun StepContentSection(
       Spacer(Modifier.height(16.dp))
     }
     AnimatedVisibility(
-      visible = showSpacer,
+      visible = showBottomContent,
       enter = fadeIn(),
       exit = fadeOut(),
     ) {
