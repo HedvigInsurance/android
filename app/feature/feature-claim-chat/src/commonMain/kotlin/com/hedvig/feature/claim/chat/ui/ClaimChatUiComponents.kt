@@ -633,7 +633,7 @@ internal fun DateSelectBubble(
     DatePickerWithDialog(
       datePickerState,
       canInteract = true,
-      startText = questionLabel ?: "", // todo
+      startText = questionLabel ?: "",
       modifier = modifier,
     )
     AnimatedVisibility(errorText!=null
