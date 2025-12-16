@@ -57,6 +57,15 @@ internal class AndroidFileService(
   }
 
   override fun getMimeType(path: String): String {
+    val uri = android.net.Uri.parse(path)
+
+    if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+      val resolvedMimeType = contentResolver.getType(uri)
+      if (resolvedMimeType != null) {
+        return resolvedMimeType
+      }
+    }
+
     val fileExtension = getFileExtension(path)
     return MimeTypeMap.getSingleton()
       .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
