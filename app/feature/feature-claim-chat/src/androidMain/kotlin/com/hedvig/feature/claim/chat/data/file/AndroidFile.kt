@@ -16,6 +16,7 @@ import kotlinx.io.readByteArray
 class AndroidFile(
   override val fileName: String,
   override val description: String,
+  override val mimeType: String,
   private val getSource: () -> Source,
 ) : CommonFile {
   override fun source(): Source {
@@ -27,10 +28,11 @@ class AndroidFile(
   }
 
   companion object {
-    fun fromFile(file: File, description: String = "File"): AndroidFile {
+    fun fromFile(file: File, description: String = "File", mimeType: String = ""): AndroidFile {
       return AndroidFile(
         fileName = file.name,
         description = description,
+        mimeType = mimeType,
         getSource = { file.inputStream().asSource().buffered() },
       )
     }
@@ -45,10 +47,12 @@ internal class AndroidFileService(
     val androidUri = uri.toAndroidUri()
 
     val fileName = coreFileService.getFileName(androidUri) ?: "media"
+    val mimeType = getMimeType(uri.toString())
 
     return AndroidFile(
       fileName = fileName,
       description = "description",
+      mimeType = mimeType,
       getSource = {
         contentResolver.openInputStream(androidUri)?.asSource()?.buffered()
           ?: throw IOException("Could not open input stream for uri:$uri")
@@ -57,6 +61,15 @@ internal class AndroidFileService(
   }
 
   override fun getMimeType(path: String): String {
+    val uri = android.net.Uri.parse(path)
+
+    if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
+      val resolvedMimeType = contentResolver.getType(uri)
+      if (resolvedMimeType != null) {
+        return resolvedMimeType
+      }
+    }
+
     val fileExtension = getFileExtension(path)
     return MimeTypeMap.getSingleton()
       .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))

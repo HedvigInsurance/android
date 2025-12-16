@@ -61,7 +61,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
-import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -75,10 +74,11 @@ import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
+import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
+import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
+import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
 import hedvig.resources.GENERAL_ARE_YOU_SURE
-import hedvig.resources.GENERAL_NO
-import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
@@ -215,16 +215,6 @@ private fun ClaimChatScreenContent(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  if (uiState.errorSubmittingStep != null) {
-    ErrorDialog(
-      title = stringResource(Res.string.general_error),
-      message = uiState.errorSubmittingStep.message
-        ?: stringResource(Res.string.something_went_wrong),
-      onDismiss = {
-        onEvent(ClaimChatEvent.DismissErrorDialog)
-      },
-    )
-  }
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
@@ -470,6 +460,7 @@ private fun StepContentSection(
 @Composable
 private fun UploadFilesStep(
   itemId: StepId,
+  itemText: String?,
   stepContent: StepContent.FileUpload,
   appPackageId: String,
   isCurrentStep: Boolean,
@@ -577,7 +568,7 @@ internal fun SkippedLabel() {
 @Composable
 private fun DeflectStep(
   stepId: StepId,
-  text: String,
+  text: String?,
   deflect: StepContent.Deflect,
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   autoNavigateForDeflectStepId: StepId?,
@@ -588,19 +579,22 @@ private fun DeflectStep(
       navigateToDeflect(stepId, deflect)
     }
   }
-  HedvigNotificationCard(
-    message = text,
-    priority = NotificationDefaults.NotificationPriority.InfoInline,
-    style = NotificationDefaults.InfoCardStyle.Button(
-      buttonText = stringResource(Res.string.important_message_read_more),
-      onButtonClick = { navigateToDeflect(stepId, deflect) },
-    ),
-    modifier = modifier,
-  )
-}
+  if (text != null) {
+    HedvigNotificationCard(
+      message = text,
+      priority = NotificationDefaults.NotificationPriority.InfoInline,
+      style = NotificationDefaults.InfoCardStyle.Button(
+        buttonText = stringResource(Res.string.important_message_read_more),
+        onButtonClick = { navigateToDeflect(stepId, deflect) },
+      ),
+      modifier = modifier,
+    )
+  }
 
+}
 @Composable
 private fun TaskStep(
+  itemText: String?,
   taskContent: StepContent.Task,
   modifier: Modifier = Modifier,
 ) {
@@ -615,22 +609,27 @@ private fun TaskStep(
       ),
       label = "alpha",
     )
-
-    Column {
+    itemText?.let {
+      HedvigText(
+        itemText,
+      )
       Spacer(Modifier.height(8.dp))
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        val color = HedvigTheme.colorScheme.signalGreenElement
-        Spacer(
-          Modifier
-            .wrapContentSize(Alignment.Center)
-            .size(20.dp)
-            .padding(1.dp)
-            .alpha(alpha)
-            .background(color, CircleShape),
-        )
-        if (taskContent.descriptions.isNotEmpty()) {
+    }
+    if (taskContent.descriptions.isNotEmpty()) {
+      Column {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          val color = HedvigTheme.colorScheme.signalGreenElement
+          Spacer(
+            Modifier
+              .wrapContentSize(Alignment.Center)
+              .size(20.dp)
+              .padding(1.dp)
+              .alpha(alpha)
+              .background(color, CircleShape),
+          )
+          if (taskContent.descriptions.isNotEmpty()) {
           Spacer(Modifier.width(8.dp))
           AnimatedContent(taskContent.descriptions.last()) { target ->
             MemberSentAnswer(
@@ -640,6 +639,7 @@ private fun TaskStep(
             }
           }
         }
+          }
       }
     }
   }
@@ -670,15 +670,24 @@ private fun FormStep(
         onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
       },
       onSelectFieldAnswer = { fieldId, answer ->
-        logcat { "Mariia. onSelectFieldAnswer answer: $answer" }
         onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
       },
       onSubmit = {
-        onEvent(ClaimChatEvent.FormSubmit(itemId))
+        onEvent(ClaimChatEvent.SubmitForm(itemId))
       },
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
     )
+  }
+}
+
+@Composable
+private fun getErrorText(field: StepContent.Form.Field): String? {
+  return when (field.hasError) {
+    StepContent.Form.FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
+    StepContent.Form.FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
+    StepContent.Form.FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
+    null -> null
   }
 }
 
@@ -716,6 +725,7 @@ private fun FormContent(
                     answer?.let { StepContent.Form.FieldOption(it, it) },
                   )
                 },
+                errorText = getErrorText(field),
               )
             }
 
@@ -724,6 +734,7 @@ private fun FormContent(
                 questionLabel = field.title,
                 datePickerState = field.datePickerUiState!!, // todo - check "!!"
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -739,6 +750,7 @@ private fun FormContent(
                   )
                 },
                 keyboardType = KeyboardType.Number,
+                errorText = getErrorText(field),
               )
             }
 
@@ -767,6 +779,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -793,6 +806,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
+                errorText = getErrorText(field),
               )
             }
 
@@ -805,6 +819,7 @@ private fun FormContent(
                 )
               },
               questionText = field.title,
+              errorText = getErrorText(field),
             )
 
             null -> {
@@ -818,7 +833,7 @@ private fun FormContent(
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         text = stringResource(Res.string.general_continue_button),
-        enabled = content.canContinue() && !continueButtonLoading,
+        enabled = !continueButtonLoading,
         isLoading = continueButtonLoading,
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth(),

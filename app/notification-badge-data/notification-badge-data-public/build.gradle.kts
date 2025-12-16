@@ -9,8 +9,8 @@ hedvig {
 
 dependencies {
   implementation(libs.androidx.datastore.core)
-  implementation(libs.apollo.normalizedCache)
   implementation(libs.androidx.datastore.preferencesCore)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.koin.core)
   implementation(projects.apolloCore)

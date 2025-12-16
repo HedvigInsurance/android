@@ -190,6 +190,9 @@
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">This will remove all the steps' input up to and including this one.</string>
   <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Free text input</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
+  <string name="CLAIM_CHAT_FORM_REQUIRED_FIELD">This field is required</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Value is below minimum</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Value exceeds maximum</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>

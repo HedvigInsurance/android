@@ -228,6 +228,7 @@ internal fun YesNoBubble(
   answerSelected: String?,
   onSelect: (String) -> Unit,
   modifier: Modifier = Modifier,
+  errorText: String? = null
 ) {
   val options = listOf(
     StepContent.ContentSelect.Option(
@@ -239,25 +240,46 @@ internal fun YesNoBubble(
       stringResource(Res.string.GENERAL_NO),
     ),
   )
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.End,
-  ) {
-    HedvigText(
-      style = HedvigTheme.typography.label,
-      text = questionText,
-    )
-    Spacer(Modifier.width(16.dp))
-    ContentSelectChips(
-      options = options,
-      selectedOption = answerSelected?.let {
-        if (it == options[0].title) options[0] else options[1]
-      },
-      onOptionClick = { option ->
-        onSelect(option.title)
-      },
-    )
+  Column {
+    Row(
+      modifier = modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.End,
+    ) {
+      HedvigText(
+        style = HedvigTheme.typography.label,
+        text = questionText,
+      )
+      Spacer(Modifier.width(16.dp))
+      ContentSelectChips(
+        options = options,
+        selectedOption = answerSelected?.let {
+          if (it == options[0].title) options[0] else options[1]
+        },
+        onOptionClick = { option ->
+          onSelect(option.title)
+        },
+      )
+    }
+    AnimatedVisibility(errorText != null) {
+      Column {
+        if (errorText != null) {
+          Spacer(Modifier.height(4.dp))
+          Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End,
+          ) {
+            HedvigText(
+              errorText,
+              style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            )
+          }
+
+        }
+      }
+    }
   }
 }
 
@@ -268,6 +290,7 @@ internal fun SingleSelectBubbleWithDialog(
   selectedOptionId: RadioOptionId?,
   onSelect: (RadioOptionId) -> Unit,
   modifier: Modifier = Modifier,
+  errorText: String? = null,
 ) {
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
@@ -281,15 +304,30 @@ internal fun SingleSelectBubbleWithDialog(
       },
     )
   }
-  HedvigBigCard(
-    onClick = { showDialog = true },
-    labelText = questionLabel,
-    inputText = options.firstOrNull {
-      it.id == selectedOptionId
-    }?.text,
-    modifier = modifier,
-    enabled = true,
-  )
+  Column {
+    HedvigBigCard(
+      onClick = { showDialog = true },
+      labelText = questionLabel,
+      inputText = options.firstOrNull {
+        it.id == selectedOptionId
+      }?.text,
+      modifier = modifier,
+      enabled = true,
+    )
+    AnimatedVisibility(errorText != null) {
+      Column {
+        if (errorText != null) {
+          Spacer(Modifier.height(4.dp))
+          HedvigText(
+            errorText,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            modifier = Modifier.padding(start = 16.dp)
+          )
+        }
+      }
+    }
+  }
 }
 
 @Composable
@@ -299,6 +337,7 @@ internal fun MultiSelectBubbleWithDialog(
   selectedOptionIds: List<RadioOptionId>,
   onSelect: (RadioOptionId) -> Unit,
   modifier: Modifier = Modifier,
+  errorText: String? = null,
 ) {
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
@@ -311,17 +350,33 @@ internal fun MultiSelectBubbleWithDialog(
       buttonText = stringResource(Res.string.general_save_button),
     )
   }
-  HedvigBigCard(
-    onClick = { showDialog = true },
-    labelText = questionLabel,
-    inputText = when {
-      selectedOptionIds.isEmpty() -> null
-      else -> options.filter { it.id in selectedOptionIds }
-        .joinToString(transform = RadioOption::text)
-    },
-    modifier = modifier,
-    enabled = true,
-  )
+  Column {
+    HedvigBigCard(
+      onClick = { showDialog = true },
+      labelText = questionLabel,
+      inputText = when {
+        selectedOptionIds.isEmpty() -> null
+        else -> options.filter { it.id in selectedOptionIds }
+          .joinToString(transform = RadioOption::text)
+      },
+      modifier = modifier,
+      enabled = true,
+    )
+    AnimatedVisibility(errorText != null) {
+      Column {
+        Spacer(Modifier.height(4.dp))
+        if (errorText != null) {
+          HedvigText(
+            errorText,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            modifier = Modifier.padding(start = 16.dp)
+          )
+        }
+      }
+    }
+  }
+
 }
 
 @Composable
@@ -596,13 +651,34 @@ internal fun DateSelectBubble(
   datePickerState: DatePickerUiState,
   questionLabel: String?,
   modifier: Modifier = Modifier,
+  errorText: String? = null,
 ) {
-  DatePickerWithDialog(
-    datePickerState,
-    canInteract = true,
-    startText = questionLabel ?: "", // todo
-    modifier = modifier,
-  )
+  Column {
+    DatePickerWithDialog(
+      datePickerState,
+      canInteract = true,
+      startText = questionLabel ?: "",
+      modifier = modifier,
+    )
+    AnimatedVisibility(
+      errorText != null
+        && datePickerState.datePickerState.selectedDateMillis == null,
+      //adding this since datePickerState handles update internally
+      // and it's hard to clear the error state as with other fields
+    ) {
+      Column {
+        Spacer(Modifier.height(4.dp))
+        if (errorText != null) {
+          HedvigText(
+            errorText,
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+          )
+        }
+      }
+    }
+  }
+
 }
 
 @Composable
@@ -613,6 +689,7 @@ internal fun TextInputBubble(
   onInput: (String?) -> Unit,
   modifier: Modifier = Modifier,
   keyboardType: KeyboardType = KeyboardType.Unspecified,
+  errorText: String? = null,
 ) {
   val focusRequester = remember { FocusRequester() }
   var textValue by rememberSaveable {
@@ -632,6 +709,8 @@ internal fun TextInputBubble(
     labelText = questionLabel,
     modifier = modifier.focusRequester(focusRequester),
     enabled = true,
+    errorState = if (errorText != null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
+    else HedvigTextFieldDefaults.ErrorState.NoError,
     suffix = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (suffix != null) {
@@ -838,7 +917,7 @@ private fun PreviewClaimChatComponents() {
           recordingState = AudioRecordingStepState.FreeTextDescription(
             showOverlay = false,
             errorType = null,
-            canSubmit = true
+            canSubmit = true,
           ),
           clock = Clock.System,
           onShouldShowRequestPermissionRationale = {

@@ -29,7 +29,7 @@ value class StepId(val value: String)
 
 internal data class ClaimIntentStep(
   val id: StepId,
-  val text: String,
+  val text: String?,
   val stepContent: StepContent,
   val isRegrettable: Boolean,
 )
@@ -72,19 +72,6 @@ internal sealed interface StepContent {
     val fields: List<Field>,
     override val isSkippable: Boolean,
   ) : StepContent {
-    fun canContinue(): Boolean {
-      val requiredFields = fields
-        .filter { it.isRequired }
-      return requiredFields
-        .filter { it.type != FieldType.DATE }
-        .all {
-          it.selectedOptions.isNotEmpty()
-        } && requiredFields
-        .filter { it.type == FieldType.DATE }
-        .all {
-          it.datePickerUiState?.datePickerState?.selectedDateMillis != null
-        }
-    }
 
     data class Field(
       val id: FieldId,
@@ -98,7 +85,14 @@ internal sealed interface StepContent {
       val options: List<FieldOption>,
       val selectedOptions: List<FieldOption>,
       val datePickerUiState: DatePickerUiState?,
+      val hasError: FieldError? = null
     )
+
+    sealed interface FieldError {
+      data object BiggerThanMaxValue : FieldError
+      data object LessThanMinValue : FieldError
+      data object Missing : FieldError
+    }
 
     data class FieldOption(
       val value: String,

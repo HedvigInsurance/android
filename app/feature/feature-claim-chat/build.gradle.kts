@@ -13,7 +13,7 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.androidx.lifecycle.compose)
+      implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.apollo.api)
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
@@ -21,6 +21,7 @@ kotlin {
       implementation(libs.jetbrains.compose.animation)
       implementation(libs.jetbrains.compose.foundation)
       implementation(libs.jetbrains.compose.ui)
+      implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
@@ -46,7 +47,6 @@ kotlin {
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)
-      implementation(libs.androidx.compose.uiToolingPreview)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(projects.composeUi)

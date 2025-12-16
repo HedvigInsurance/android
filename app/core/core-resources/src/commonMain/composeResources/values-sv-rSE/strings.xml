@@ -190,6 +190,9 @@
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Detta tar bort alla stegs indata fram till och med detta steg.</string>
   <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Fritextinmatning</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
+  <string name="CLAIM_CHAT_FORM_REQUIRED_FIELD">Det här fältet är obligatoriskt</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Värdet är under minimum</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Värdet överskrider maximum</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>

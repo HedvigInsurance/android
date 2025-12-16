@@ -11,7 +11,7 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.androidx.compose.runtime)
+      implementation(libs.jetbrains.compose.runtime)
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.apolloOctopusPublic)
     }

@@ -9,5 +9,5 @@ hedvig {
 
 dependencies {
   implementation(libs.androidx.compose.materialIconsCore)
-  implementation(libs.androidx.compose.uiCore)
+  implementation(libs.jetbrains.compose.ui)
 }
