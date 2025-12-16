@@ -1,6 +1,8 @@
 package com.hedvig.android.shareddi
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.datastore.DeviceIdDataStore
+import io.ktor.client.HttpClientConfig
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -45,4 +47,8 @@ private val JvmHedvigBuildConstants = object : HedvigBuildConstants {
     get() = false
   override val buildApiVersion: Int
     get() = -1
+}
+
+internal actual fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildConstants: HedvigBuildConstants) {
+  // noop
 }

@@ -5,8 +5,6 @@ import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.ktor.ktorClient
-import com.datadog.kmp.ktor.TracingHeaderType
-import com.datadog.kmp.ktor.datadogKtorPlugin
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import io.ktor.client.HttpClient
@@ -58,6 +56,8 @@ internal class NoopExtraApolloClientConfiguration : ExtraApolloClientConfigurati
     return builder
   }
 }
+
+internal expect fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildConstants: HedvigBuildConstants)
 
 private fun HttpClientConfig<*>.ktorClient(
   accessTokenFetcher: AccessTokenFetcher,
