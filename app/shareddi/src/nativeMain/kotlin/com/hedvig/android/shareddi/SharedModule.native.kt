@@ -63,4 +63,10 @@ private class IosHedvigBuildConstants : HedvigBuildConstants {
     get() = false
   override val buildApiVersion: Int
     get() = -1
+  override val platformName: String
+    get() = "ios"
+  override val model: String
+    get() = "noop"
+  override val userAgent: String
+    get() = "noop"
 }
