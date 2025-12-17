@@ -7,8 +7,8 @@
   <string name="A11Y_CHARACTER_LIMIT">%1$d of %2$d characters entered</string>
   <string name="A11Y_CLEAR_FIELD">Clear field</string>
   <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
-    <item quantity="one">You have %d eligible insurance.</item>
-    <item quantity="other">You have %d eligible insurances.</item>
+    <item quantity="one">You have %1$d eligible insurance.</item>
+    <item quantity="other">You have %1$d eligible insurances.</item>
   </plurals>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
@@ -21,7 +21,7 @@
   <string name="ADDON_FLOW_CONFIRMATION_TITLE">Confirm upgraded coverage</string>
   <string name="ADDON_FLOW_COVER_BUTTON">See what's included</string>
   <string name="ADDON_FLOW_LEARN_MORE_BUTTON">Learn more</string>
-  <string name="ADDON_FLOW_PRICE_LABEL">+%s/mo</string>
+  <string name="ADDON_FLOW_PRICE_LABEL">+%1$s/mo</string>
   <string name="ADDON_FLOW_SEE_PRICE_BUTTON">See your price</string>
   <string name="ADDON_FLOW_SELECT_BUTTON">Select</string>
   <string name="ADDON_FLOW_SELECT_DAYS_PLACEHOLDER">Maximum travel limit</string>
@@ -29,7 +29,7 @@
   <string name="ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE">Days covered when travelling</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_TITLE">Choose your maximum travel limit</string>
   <string name="ADDON_FLOW_SUBTITLE">For extra safety when you are travelling abroad</string>
-  <string name="ADDON_FLOW_SUCCESS_SUBTITLE">Your extended coverage will be effective from  %s.</string>
+  <string name="ADDON_FLOW_SUCCESS_SUBTITLE">Your extended coverage will be effective from  %1$s.</string>
   <string name="ADDON_FLOW_SUCCESS_TITLE">Added successfully</string>
   <string name="ADDON_FLOW_SUMMARY_ACTIVE_FROM">Activates %1$s</string>
   <string name="ADDON_FLOW_SUMMARY_CONFIRM_BUTTON">Add and confirm</string>
@@ -108,7 +108,7 @@
   <string name="CHANGE_ADDRESS_ONLY_YOU">Only me</string>
   <string name="CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT">Your other insurance policies are affected when you move to a new address. Your price and coverage may have changed.</string>
   <string name="CHANGE_ADDRESS_POSTAL_CODE_ERROR">Please enter the postal code</string>
-  <string name="CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL">%s/month</string>
+  <string name="CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL">%1$s/month</string>
   <string name="CHANGE_ADDRESS_QA">Questions and answers</string>
   <string name="CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE">What type of home will you move to?</string>
   <string name="CHANGE_ADDRESS_SIZE_SUFFIX">m²</string>
@@ -154,7 +154,7 @@
   <string name="CLAIMS_CHECKOUT_PAYOUT_TEXT">The payment will be made to the account you have linked as your payment method for your insurance.</string>
   <string name="CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT">We base the repair cost on the information available on the manufacturer's website.</string>
   <string name="CLAIMS_CHECKOUT_REPAIR_INFO_TEXT">Based on the information you entered your phone appears to be repairable. Please reach out to a repair shop of your choice to have it fixed.</string>
-  <string name="CLAIMS_CHECKOUT_REPAIR_TITLE">Repair cost (%s)</string>
+  <string name="CLAIMS_CHECKOUT_REPAIR_TITLE">Repair cost (%1$s)</string>
   <string name="CLAIMS_CHECK_INFORMATION_TITLE">Kontrollera dina uppgifter</string>
   <string name="CLAIMS_COMPLEMENT__CLAIM">You can easily add photos, files and other details later.</string>
   <string name="CLAIMS_CONFIRM_NUMBER_TITLE">Confirm your phone number</string>
@@ -188,11 +188,27 @@
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">This will remove all the steps' input up to and including this one.</string>
-  <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Free text input</string>
-  <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
+  <string name="CLAIM_CHAT_ERROR_MESSAGE">Make sure you fill in all the required fields</string>
+  <string name="CLAIM_CHAT_FILE_TITLE">Uploaded files</string>
+  <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Send files</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Value must be at most %1$d</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Value must be at least %1$d</string>
   <string name="CLAIM_CHAT_FORM_REQUIRED_FIELD">This field is required</string>
-  <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Value is below minimum</string>
-  <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Value exceeds maximum</string>
+  <string name="CLAIM_CHAT_FORM_TEXT_MAX_CHAR">Value must be at most %1$d characters long</string>
+  <string name="CLAIM_CHAT_FORM_TEXT_MIN_CHAR">Value must be at least %1$d characters long</string>
+  <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Written description</string>
+  <string name="CLAIM_CHAT_OTHER_TITLE">Other information</string>
+  <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Please provide phone number in the case we need to contact you</string>
+  <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
+  <string name="CLAIM_CHAT_RECORDING_TITLE">Recording</string>
+  <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
+  <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
+  <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
+  <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Go to claim</string>
+  <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Your claim was submitted successfully</string>
+  <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
+  <string name="CLAIM_CHAT_USE_AUDIO">Record voice note</string>
+  <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe with text</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
@@ -202,7 +218,7 @@
   <string name="COINSURED_ERROR_TEXT">You can’t edit your co-insured at this moment. Send us a message here in the app for further assistance</string>
   <string name="COINSURED_WITHOUT_SSN_INFO">We were unable to retrieve the information linked to this Social Security number. Please enter it manually.</string>
   <string name="CONFIRM_AND_PROCEED_BUTTON">Confirm and proceed</string>
-  <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your updates will be effective on %s.</string>
+  <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your updates will be effective on %1$s.</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>
@@ -296,11 +312,11 @@
   <string name="FIELD_EXTRA_BUIDLINGS_SHED_LABEL">Shed</string>
   <string name="FIELD_EXTRA_BUIDLINGS_STOREHOUSE_LABEL">Storehouse</string>
   <string name="FILE_UPLOAD_IMAGE">Image</string>
-  <string name="FOREVER_REFERRAL_INVITED_BY_YOU">%d friends invited</string>
-  <string name="FOREVER_REFERRAL_INVITED_YOU">Invite from %s</string>
+  <string name="FOREVER_REFERRAL_INVITED_BY_YOU">%1$d friends invited</string>
+  <string name="FOREVER_REFERRAL_INVITED_YOU">Invite from %1$s</string>
   <plurals name="FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL">
-    <item quantity="one">%d friend invited</item>
-    <item quantity="other">%d friends invited</item>
+    <item quantity="one">%1$d friend invited</item>
+    <item quantity="other">%1$d friends invited</item>
   </plurals>
   <string name="FOREVER_REFERRAL_LIST_LABEL">Invited friends</string>
   <string name="FOREVER_TAB_MONTHLY_DISCOUNT">Monthly discount</string>
@@ -660,7 +676,7 @@
   <string name="SUMMARY_PURCHASE_DATE_DESCRIPTION">Purchased %1$s</string>
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Learn more</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Damage %1$s</string>
-  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activate %s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activate %1$s</string>
   <string name="TAB_HOME_TITLE">Home</string>
   <string name="TAB_INSURANCES_TITLE">Insurances</string>
   <string name="TAB_PAYMENTS_TITLE">Payments</string>
@@ -670,17 +686,17 @@
   <string name="TALKBACK_ADD_DOCUMENTS">Add documents</string>
   <string name="TALKBACK_ADD_IMAGES">Add images</string>
   <string name="TALKBACK_BOTTOM_SHEET_ANNOUNCEMENT">Bottom sheet open. Swipe down with two fingers to close.</string>
-  <string name="TALKBACK_CHAT_FAILED_MEDIA">At %s, you tried to send a media file, but it failed. Double tap to try sending again.</string>
-  <string name="TALKBACK_CHAT_FAILED_PHOTO">At %s, you tried to send a photo, but it failed. Double tap to try sending again.</string>
-  <string name="TALKBACK_CHAT_FAILED_TEXT" formatted="false">At %s, you tried to send a text message, but it failed. Double tap to try sending again. The message said: %s</string>
-  <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">At %s, %s sent a file with type: %s, double tap to open.</string>
-  <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">At %s, %s sent a GIF picture.</string>
-  <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">At %s, %s said: %s</string>
-  <string name="TALKBACK_CLAIM_STATUS">Claim status: %s</string>
+  <string name="TALKBACK_CHAT_FAILED_MEDIA">At %1$s, you tried to send a media file, but it failed. Double tap to try sending again.</string>
+  <string name="TALKBACK_CHAT_FAILED_PHOTO">At %1$s, you tried to send a photo, but it failed. Double tap to try sending again.</string>
+  <string name="TALKBACK_CHAT_FAILED_TEXT" formatted="false">At %1$s, you tried to send a text message, but it failed. Double tap to try sending again. The message said: %2$s</string>
+  <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">At %1$s, %2$s sent a file with type: %3$s, double tap to open.</string>
+  <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">At %1$s, %2$s sent a GIF picture.</string>
+  <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">At %1$s, %2$s said: %3$s</string>
+  <string name="TALKBACK_CLAIM_STATUS">Claim status: %1$s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information about your claim</string>
-  <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %s. Last message at %s.</string>
+  <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %1$s. Last message at %2$s.</string>
   <string name="TALKBACK_COVERED">Covered</string>
-  <string name="TALKBACK_DOCUMENT">Document %s, double tap to open.</string>
+  <string name="TALKBACK_DOCUMENT">Document %1$s, double tap to open.</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Double tap to choose</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Double tap to read details</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Double tap to see all options</string>
@@ -701,7 +717,7 @@
   <string name="TALKBACK_OPEN_SENDING_OPTIONS">Open sending options</string>
   <string name="TALKBACK_OPTION_NOT_SELECTED">Not selected</string>
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
-  <string name="TALKBACK_PER_MONTH">%s per month</string>
+  <string name="TALKBACK_PER_MONTH">%1$s per month</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Pinch to zoom</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Increase</string>
   <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
@@ -721,10 +737,10 @@
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
   <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Your price after discounts: %1$s</string>
   <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Your price before discounts: %1$s</string>
-  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Your insurance will be cancelled on %s. If you have any questions, please visit "Help and support" in the app.</string>
+  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Your insurance will be cancelled on %1$s. If you have any questions, please visit "Help and support" in the app.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Confirmation</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Yes, continue</string>
-  <string name="TERMINATE_CONTRACT_DELETION_TEXT">The selected insurance will be deleted which means it will not be activated on %s</string>
+  <string name="TERMINATE_CONTRACT_DELETION_TEXT">The selected insurance will be deleted which means it will not be activated on %1$s</string>
   <string name="TERMINATE_CONTRACT_TERMINATING_PROGRESS">Cancelling...</string>
   <string name="TERMINATE_CONTRACT_TERMINATION_COMPLETE">Your insurance was cancelled before the activation date. You will not be charged anything.</string>
   <string name="TERMINATION_ADDON_COVERAGE_TITLE">Extra coverage</string>
@@ -750,7 +766,7 @@
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE">Select the insurance you want to cancel</string>
   <string name="TERMINATION_FLOW_CONFIRMATION">Your insurance will be cancelled directly</string>
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_DELETION">Your insurance will be cancelled before the activation date</string>
-  <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Your insurance will be cancelled on %s</string>
+  <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Your insurance will be cancelled on %1$s</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Yes, cancel</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Confirm your information</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER">Select date...</string>
@@ -765,7 +781,7 @@
   <string name="TERMINATION_FLOW_NOT_ELIGIBLE_TITLE">Unable to cancel insurance</string>
   <string name="TERMINATION_FLOW_PAYMENT_PER_MONTH">%1$s SEK/month</string>
   <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITHOUT_DATE">Your insurance was cancelled before the activation date. You will not be charged anything.</string>
-  <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE">Your insurance will be cancelled  on %s. We will send you an email with all the details.</string>
+  <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE">Your insurance will be cancelled  on %1$s. We will send you an email with all the details.</string>
   <string name="TERMINATION_FLOW_SUCCESS_TITLE">Insurance cancelled</string>
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Review and confirm</string>
   <string name="TERMINATION_FLOW_TODAY">Today</string>
@@ -788,7 +804,7 @@
   <string name="TIER_COMPARISON_TITLE">Compare coverage levels</string>
   <string name="TIER_FLOW_ADDON_LABEL">Extended travel coverage</string>
   <string name="TIER_FLOW_ADDON_NO_COVERAGE_LABEL">No extended coverage</string>
-  <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Your updates will be effective from  %s.</string>
+  <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Your updates will be effective from  %1$s.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION">The changes couldn't be completed. Please try again.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE">Processing changes...</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_TITLE">Changes complete</string>
@@ -801,9 +817,9 @@
   <string name="TIER_FLOW_LOCKED_INFO_DESCRIPTION">You are unable to make changes to this coverage level</string>
   <string name="TIER_FLOW_LOCKED_INFO_TITLE">Already at the highest coverage level</string>
   <string name="TIER_FLOW_PREVIOUS_PRICE">Your previous price %1$s</string>
-  <string name="TIER_FLOW_PRICE_LABEL">from %s SEK/mo</string>
-  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%s/mo</string>
-  <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">From %s/mo</string>
+  <string name="TIER_FLOW_PRICE_LABEL">from %1$s SEK/mo</string>
+  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%1$s/mo</string>
+  <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">From %1$s/mo</string>
   <string name="TIER_FLOW_PROCESSING">Fetching coverage levels...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Answers to our most frequently asked questions.</string>
   <string name="TIER_FLOW_QA_TITLE">Questions and answers</string>
@@ -827,14 +843,14 @@
   <string name="TOAST_NEW_OFFER">New offer</string>
   <string name="TOAST_READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
-  <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %s</string>
+  <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %1$s</string>
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>
   <string name="app_info_submit_bug_button">Report technical issue</string>
   <string name="app_info_submit_bug_continue">Continue</string>
   <string name="app_info_submit_bug_go_back">Go back</string>
-  <string name="app_info_submit_bug_prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %s\nDID: %s\nAVC: %s\nSV: %s</string>
+  <string name="app_info_submit_bug_prefilled_letter_body" formatted="false">I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %1$s\nDID: %2$s\nAVC: %3$s\nSV: %4$s</string>
   <string name="app_info_submit_bug_prefilled_letter_subject">Technical Issue Report</string>
   <string name="app_info_submit_bug_warning">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.</string>
   <string name="app_info_submit_bug_warning_with_chat_link_1">Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please</string>
@@ -1062,7 +1078,7 @@
   <string name="login_open_email_app_button">Open email app</string>
   <string name="login_smedium_button_active_resend_code">Resend code</string>
   <string name="login_snackbar_code_resent">Code sent</string>
-  <string name="login_subtitle_verification_code_email">Click the log in button in the email or enter the 6-digit code we've sent to %s.</string>
+  <string name="login_subtitle_verification_code_email">Click the log in button in the email or enter the 6-digit code we've sent to %1$s.</string>
   <string name="login_text_input_email_address">Email address</string>
   <string name="login_text_input_email_address_icon_description_clear_all">Clear all</string>
   <string name="login_text_input_email_error_enter_email">Enter email address to continue</string>
