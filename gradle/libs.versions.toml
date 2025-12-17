@@ -65,7 +65,7 @@ coil = "3.3.0"
 composeRichtext = "1.0.0-alpha03"
 coreLibraryDesugaring = "2.1.5"
 coroutines = "1.10.2"
-datadog = "2.25.0"
+datadog = "3.4.0"
 dependencyAnalysis = "2.19.0"
 firebaseCrashlyticsBuildtools = "3.0.6"
 junit = "4.13.2"
@@ -156,7 +156,7 @@ datadog-sdk-core = { module = "com.datadoghq:dd-sdk-android-core", version.ref =
 datadog-sdk-logs = { module = "com.datadoghq:dd-sdk-android-logs", version.ref = "datadog" }
 datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.ref = "datadog" }
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
-datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
+datadog-sdk-trace-otel = { module = "com.datadoghq:dd-sdk-android-trace-otel", version.ref = "datadog" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version = "34.1.0" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
