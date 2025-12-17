@@ -27,6 +27,7 @@ kotlin {
       implementation(projects.authCoreApi)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
+      implementation(projects.coreDatastorePublic)
       implementation(projects.featureClaimChat)
     }
     val mobileMain by getting {

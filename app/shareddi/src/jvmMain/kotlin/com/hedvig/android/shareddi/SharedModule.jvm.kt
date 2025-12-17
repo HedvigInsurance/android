@@ -20,6 +20,9 @@ internal actual val platformModule: Module = module {
   single<HedvigBuildConstants> {
     JvmHedvigBuildConstants
   }
+  single<DeviceIdFetcher> {
+    JvmDeviceIdFetcher(get<DeviceIdDataStore>())
+  }
 }
 
 private val JvmHedvigBuildConstants = object : HedvigBuildConstants {

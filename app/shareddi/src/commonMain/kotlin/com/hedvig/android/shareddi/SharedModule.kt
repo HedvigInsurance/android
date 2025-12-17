@@ -61,6 +61,24 @@ internal expect fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildCons
 
 private fun HttpClientConfig<*>.ktorClient(
   accessTokenFetcher: AccessTokenFetcher,
+private fun buildKtorClient(
+  hedvigBuildConstants: HedvigBuildConstants,
+  languageService: LanguageService,
+  deviceIdFetcher: DeviceIdFetcher,
+): HttpClient {
+  return HttpClient {
+    if (!hedvigBuildConstants.isProduction) {
+      Logging {
+        level = LogLevel.BODY
+        logger = HedvigHttpLogger()
+      }
+    }
+    install(HttpSend)
+  }.apply {
+    plugin(HttpSend).intercept(DeviceIdInterceptor(deviceIdFetcher))
+  }
+}
+
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   install(Auth) {

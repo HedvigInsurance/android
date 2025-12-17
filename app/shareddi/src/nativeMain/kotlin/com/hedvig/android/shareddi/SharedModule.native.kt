@@ -15,7 +15,10 @@ internal actual val platformModule: Module = module {
 /**
  * Like [platformModule] but allows for dynamic input, for pieces that need to be injected from iOS
  */
-internal fun iosPlatformModule(accessTokenFetcher: AccessTokenFetcher) = module {
+internal fun iosPlatformModule(
+  accessTokenFetcher: AccessTokenFetcher,
+  deviceIdFetcher: DeviceIdFetcher,
+) = module {
   single<AccessTokenFetcher> {
     accessTokenFetcher
   }
@@ -24,6 +27,9 @@ internal fun iosPlatformModule(accessTokenFetcher: AccessTokenFetcher) = module 
   }
   single<HedvigBuildConstants> {
     IosHedvigBuildConstants()
+  }
+  single<DeviceIdFetcher> {
+    deviceIdFetcher
   }
 }
 
