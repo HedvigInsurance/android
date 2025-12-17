@@ -10,7 +10,7 @@ dependencies {
   implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.logs)
   implementation(libs.datadog.sdk.rum)
-  implementation(libs.datadog.sdk.trace)
+  implementation(libs.datadog.sdk.trace.otel)
   implementation(libs.koin.core)
   implementation(libs.timber)
   implementation(projects.authCorePublic)

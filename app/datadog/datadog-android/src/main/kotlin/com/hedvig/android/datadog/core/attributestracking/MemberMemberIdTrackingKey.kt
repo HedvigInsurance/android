@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.onEach
 internal class DatadogMemberIdProviderImpl(
   private val memberIdService: MemberIdService,
 ) : DatadogMemberIdProvider {
-  override fun provide(): Flow<Pair<String, String?>> {
+  override fun provide(): Flow<DatadogMemberIdInfo> {
     return memberIdService
       .getMemberId()
       .onEach { memberId ->
@@ -22,7 +22,9 @@ internal class DatadogMemberIdProviderImpl(
           }
         }
       }
-      .map { MEMBER_ID_TRACKING_KEY to it }
+      .map { memberId ->
+        DatadogMemberIdInfo(MEMBER_ID_TRACKING_KEY, memberId)
+      }
   }
 
   companion object {
