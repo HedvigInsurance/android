@@ -112,7 +112,7 @@ actual object HedvigDateTimeFormatterDefaults {
   actual fun yearMonthDayCombined(locale: CommonLocale): DateFormatter {
     return JavaDateFormatter(
       DateTimeFormatterBuilder()
-        .appendValue(ChronoField.YEAR, 2)
+        .appendPattern("yy")
         .appendValue(ChronoField.MONTH_OF_YEAR, 2)
         .appendValue(ChronoField.DAY_OF_MONTH, 2)
         .toFormatter(locale),
