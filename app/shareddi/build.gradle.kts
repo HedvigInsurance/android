@@ -24,6 +24,7 @@ kotlin {
       implementation(libs.apollo.runtime)
       implementation(libs.koin.core)
       implementation(libs.ktor.client.auth)
+      implementation(libs.ktor.client.logging)
       implementation(projects.authCoreApi)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
