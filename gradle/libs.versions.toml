@@ -155,7 +155,6 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 datadog-sdk-compose = { module = "com.datadoghq:dd-sdk-android-compose", version.ref = "datadog" }
 datadog-sdk-core = { module = "com.datadoghq:dd-sdk-android-core", version.ref = "datadog" }
 datadog-sdk-logs = { module = "com.datadoghq:dd-sdk-android-logs", version.ref = "datadog" }
-datadog-sdk-okhttp = { module = "com.datadoghq:dd-sdk-android-okhttp", version.ref = "datadog" }
 datadog-sdk-rum = { module = "com.datadoghq:dd-sdk-android-rum", version.ref = "datadog" }
 datadog-sdk-trace = { module = "com.datadoghq:dd-sdk-android-trace", version.ref = "datadog" }
 datadog-sdk-ktor = { module = "com.datadoghq:dd-sdk-kotlin-multiplatform-ktor3", version.ref = "datadogKtor" }

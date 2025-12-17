@@ -23,7 +23,6 @@ import com.apollographql.apollo.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
-import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
 import com.hedvig.android.app.logginginterceptor.HedvigHttpLoggingInterceptor
@@ -42,10 +41,8 @@ import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
-import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
@@ -61,7 +58,6 @@ import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
 import com.hedvig.android.database.di.databaseAndroidModule
 import com.hedvig.android.database.di.databaseModule
-import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
@@ -114,35 +110,9 @@ import org.koin.dsl.module
 import timber.log.Timber
 
 private val networkModule = module {
-  single<HttpClient>(baseHttpClientQualifier) {
-    // todo add common headers and logging. Do not add authentication which should only be added to specific versions
-    //  of the http client
-    HttpClient()
-  }
   factory<OkHttpClient.Builder> {
-    val languageService = get<LanguageService>()
     val builder: OkHttpClient.Builder = OkHttpClient
       .Builder()
-      .addDatadogConfiguration(get<HedvigBuildConstants>())
-      .addInterceptor { chain ->
-        chain.proceed(
-          chain
-            .request()
-            .newBuilder()
-            .header("User-Agent", makeUserAgent(languageService.getLanguage().toBcp47Format()))
-            .header("Accept-Language", languageService.getLanguage().toBcp47Format())
-            .header("hedvig-language", languageService.getLanguage().toBcp47Format())
-            .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
-            .header("apollographql-client-version", BuildConfig.VERSION_NAME)
-            .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
-            .header("X-App-Version", BuildConfig.VERSION_NAME)
-            .header("X-System-Version", Build.VERSION.SDK_INT.toString())
-            .header("X-Platform", "ANDROID")
-            .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
-            .header("Hedvig-App-Version", "android;${BuildConfig.VERSION_NAME}")
-            .build(),
-        )
-      }.addInterceptor(DeviceIdInterceptor(get(), get()))
     if (!get<HedvigBuildConstants>().isProduction) {
       val logger = HedvigHttpLoggingInterceptor { message ->
         if (message.contains("Content-Disposition")) {
