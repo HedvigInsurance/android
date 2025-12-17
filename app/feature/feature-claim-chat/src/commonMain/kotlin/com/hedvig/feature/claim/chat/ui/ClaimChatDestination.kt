@@ -1,10 +1,17 @@
 package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,8 +37,13 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
@@ -45,10 +57,14 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
+import com.hedvig.android.design.system.hedvig.icon.ArrowDown
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -75,6 +91,7 @@ import hedvig.resources.general_error
 import hedvig.resources.important_message_read_more
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -226,8 +243,21 @@ private fun ClaimChatScreenContent(
     )
   }
   val lazyListState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
+  val isScrolled by remember(lazyListState) {
+    derivedStateOf {
+      lazyListState.lastScrolledBackward || (lazyListState.lastScrolledForward &&
+        lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1)
+    }
+  }
+  Box (modifier = modifier
+    .padding(horizontal = 16.dp)
+    .fillMaxSize(),
+    ) {
+
+
   LazyColumn(
-    modifier = modifier.fillMaxSize().padding(horizontal = 16.dp),
+    modifier = Modifier.fillMaxSize(),
     state = lazyListState,
     contentPadding = WindowInsets.safeDrawing.asPaddingValues().plus(PaddingValues(vertical = 16.dp)),
     verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
@@ -238,125 +268,64 @@ private fun ClaimChatScreenContent(
       contentType = { it.stepContent::class },
     ) { item ->
       val isCurrentStep = item.id == uiState.currentStep?.id
-      when (item.stepContent) {
-        is StepContent.AudioRecording -> AudioRecordingStep(
-          item = item,
-          stepContent = item.stepContent,
-          onShowFreeText = {
-            onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(item.id))
-          },
-          onShowAudioRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(item.id))
-          },
-          onLaunchFullScreenEditText = { restrictions ->
-            onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
-          },
-          startRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.StartRecording(item.id))
-          },
-          stopRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.StopRecording(item.id))
-          },
-          redoRecording = {
-            onEvent(ClaimChatEvent.AudioRecording.RedoRecording(item.id))
-          },
-          submitFreeText = {
-            onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(item.id))
-          },
-          submitAudioFile = {
-            onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(item.id))
-          },
-          onSkip = {
-            onEvent(ClaimChatEvent.Skip(item.id))
-          },
-          isCurrentStep = isCurrentStep,
-          clock = Clock.System,
-          onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openAppSettings = openAppSettings,
-          freeText = uiState.freeText,
-          onEvent = onEvent,
-          continueButtonLoading = uiState.currentContinueButtonLoading,
-          skipButtonLoading = uiState.currentSkipButtonLoading,
-        )
-
-        is StepContent.ContentSelect -> ContentSelectStep(
-          item = item,
-          isCurrentStep = isCurrentStep,
-          options = item.stepContent.options,
-          selectedOptionId = item.stepContent.selectedOptionId,
-          onEvent = onEvent,
-        )
-
-        is StepContent.FileUpload -> UploadFilesStep(
-          itemText = item.text,
-          isCurrentStep = isCurrentStep,
-          stepContent = item.stepContent,
-          itemId = item.id,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          localFiles = item.stepContent.localFiles,
-          onEvent = onEvent,
-          canEdit = item.isRegrettable,
-          continueButtonLoading = uiState.currentContinueButtonLoading,
-          skipButtonLoading = uiState.currentSkipButtonLoading,
-        )
-
-        is StepContent.Form -> FormStep(
-          itemId = item.id,
-          itemText = item.text,
-          content = item.stepContent,
-          onEvent = onEvent,
-          isCurrentStep = isCurrentStep,
-          canSkip = item.stepContent.isSkippable,
-          canBeChanged = item.isRegrettable,
-          continueButtonLoading = uiState.currentContinueButtonLoading,
-          skipButtonLoading = uiState.currentSkipButtonLoading,
-        )
-
-        is StepContent.Summary -> ChatClaimSummary(
-          text = item.text,
-          recordingUrls = item.stepContent.audioRecordings.map { it.url },
-          displayItems = item.stepContent.items.map { (title, value) -> title to value },
-          onSubmit = {
-            onEvent(ClaimChatEvent.SubmitClaim(item.id))
-          },
-          isCurrentStep = isCurrentStep,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          imageLoader = imageLoader,
-          fileUploads = item.stepContent.fileUploads.map {
-            UiFile(
-              name = it.fileName,
-              localPath = null,
-              url = it.url,
-              mimeType = it.contentType,
-              id = it.url,
-            )
-          },
-          freeTexts = item.stepContent.freeTexts,
-          continueButtonLoading = uiState.currentContinueButtonLoading,
-        )
-
-        is StepContent.Deflect -> {
-          DeflectStep(
-            stepId = item.id,
-            text = item.text,
-            deflect = item.stepContent,
-            navigateToDeflect = navigateToDeflect,
+      val isLastItem = item == uiState.steps.lastOrNull()
+      if (isLastItem) {
+        Column(
+          modifier = Modifier.fillParentMaxHeight(),
+        ) {
+          StepContentSection(
+            stepItem = item,
+            freeText = uiState.freeText,
+            isCurrentStep = isCurrentStep,
+            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
             autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            spacerModifier = Modifier.weight(1f),
+            showBottomContent = !isScrolled,
           )
         }
-
-        is StepContent.Task -> TaskStep(
-          itemText = item.text,
-          taskContent = item.stepContent,
+      } else {
+        StepContentSection(
+          stepItem = item,
+          freeText = uiState.freeText,
+          isCurrentStep = isCurrentStep,
+          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+          autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
+          onEvent = onEvent,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          openAppSettings = openAppSettings,
+          spacerModifier = Modifier,
+          showBottomContent = true,
         )
-
-        StepContent.Unknown -> HedvigText("Unknown") // todo
       }
     }
   }
-
+    if (isScrolled) {
+      ScrollToBottomButton(
+        onClick = {
+          coroutineScope.launch {
+            lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+          }
+        },
+        modifier = Modifier.align(Alignment.BottomCenter).padding(
+          WindowInsets.safeDrawing.asPaddingValues()
+            .plus(PaddingValues(vertical = 16.dp))
+        )
+      )
+    }
+  }
   LaunchedEffect(uiState.steps.size) {
     if (uiState.steps.isNotEmpty()) {
       lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
@@ -365,9 +334,188 @@ private fun ClaimChatScreenContent(
 }
 
 @Composable
+private fun ScrollToBottomButton(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  IconButton(
+    onClick = onClick,
+    modifier = modifier,
+  )  {
+    val whiteColor = HedvigTheme.colorScheme.backgroundWhite
+    Box(
+      contentAlignment = Alignment.Center
+    ) {
+      Canvas(
+        modifier = Modifier.size(42.dp),
+        onDraw = {
+          drawCircle(color = whiteColor)
+        }
+      )
+      Icon(HedvigIcons.ArrowDown,
+        "Scroll down" //todo
+      )
+    }
+  }
+}
+
+@Composable
+private fun StepContentSection(
+  stepItem: ClaimIntentStep,
+  freeText: String?,
+  isCurrentStep: Boolean,
+  currentContinueButtonLoading: Boolean,
+  currentSkipButtonLoading: Boolean,
+  autoNavigateForDeflectStepId: StepId?,
+  onEvent: (ClaimChatEvent) -> Unit,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
+  appPackageId: String,
+  imageLoader: ImageLoader,
+  openAppSettings: () -> Unit,
+  spacerModifier: Modifier,
+  showBottomContent: Boolean,
+) {
+  Column {
+    stepItem.text?.let {
+      HedvigText(stepItem.text)
+    }
+    if (stepItem.stepContent is StepContent.Task) {
+      Spacer(Modifier.height(16.dp))
+      TaskStep(
+        taskContent = stepItem.stepContent,
+      )
+    }
+    stepItem.text?.let {
+      Spacer(Modifier.height(16.dp))
+    }
+    AnimatedVisibility(
+      visible = showBottomContent,
+      enter = fadeIn(),
+      exit = fadeOut(),
+    ) {
+      Column {
+        Spacer(spacerModifier)
+        when (stepItem.stepContent) {
+          is StepContent.AudioRecording -> AudioRecordingStep(
+            item = stepItem,
+            stepContent = stepItem.stepContent,
+            onShowFreeText = {
+              onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(stepItem.id))
+            },
+            onShowAudioRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(stepItem.id))
+            },
+            onLaunchFullScreenEditText = { restrictions ->
+              onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
+            },
+            startRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.StartRecording(stepItem.id))
+            },
+            stopRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.StopRecording(stepItem.id))
+            },
+            redoRecording = {
+              onEvent(ClaimChatEvent.AudioRecording.RedoRecording(stepItem.id))
+            },
+            submitFreeText = {
+              onEvent(ClaimChatEvent.AudioRecording.SubmitTextInput(stepItem.id))
+            },
+            submitAudioFile = {
+              onEvent(ClaimChatEvent.AudioRecording.SubmitAudioFile(stepItem.id))
+            },
+            onSkip = {
+              onEvent(ClaimChatEvent.Skip(stepItem.id))
+            },
+            isCurrentStep = isCurrentStep,
+            clock = Clock.System,
+            onShouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            openAppSettings = openAppSettings,
+            freeText = freeText,
+            onEvent = onEvent,
+            continueButtonLoading = currentContinueButtonLoading,
+            skipButtonLoading = currentSkipButtonLoading,
+          )
+
+          is StepContent.ContentSelect -> ContentSelectStep(
+            item = stepItem,
+            isCurrentStep = isCurrentStep,
+            options = stepItem.stepContent.options,
+            selectedOptionId = stepItem.stepContent.selectedOptionId,
+            onEvent = onEvent,
+          )
+
+          is StepContent.FileUpload -> UploadFilesStep(
+            isCurrentStep = isCurrentStep,
+            stepContent = stepItem.stepContent,
+            itemId = stepItem.id,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            localFiles = stepItem.stepContent.localFiles,
+            onEvent = onEvent,
+            canEdit = stepItem.isRegrettable,
+            continueButtonLoading = currentContinueButtonLoading,
+            skipButtonLoading = currentSkipButtonLoading,
+          )
+
+          is StepContent.Form -> FormStep(
+            itemId = stepItem.id,
+            content = stepItem.stepContent,
+            onEvent = onEvent,
+            isCurrentStep = isCurrentStep,
+            canSkip = stepItem.stepContent.isSkippable,
+            canBeChanged = stepItem.isRegrettable,
+            continueButtonLoading = currentContinueButtonLoading,
+            skipButtonLoading = currentSkipButtonLoading,
+          )
+
+          is StepContent.Summary -> ChatClaimSummary(
+            recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
+            displayItems = stepItem.stepContent.items.map { (title, value) -> title to value },
+            onSubmit = {
+              onEvent(ClaimChatEvent.SubmitClaim(stepItem.id))
+            },
+            isCurrentStep = isCurrentStep,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            imageLoader = imageLoader,
+            fileUploads = stepItem.stepContent.fileUploads.map {
+              UiFile(
+                name = it.fileName,
+                localPath = null,
+                url = it.url,
+                mimeType = it.contentType,
+                id = it.url,
+              )
+            },
+            freeTexts = stepItem.stepContent.freeTexts,
+            continueButtonLoading = currentContinueButtonLoading,
+            spacerModifier = spacerModifier,
+          )
+
+          is StepContent.Deflect -> {
+            DeflectStep(
+              stepId = stepItem.id,
+              text = stepItem.text,
+              deflect = stepItem.stepContent,
+              navigateToDeflect = navigateToDeflect,
+              autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
+            )
+          }
+
+          is StepContent.Task -> {}
+
+          StepContent.Unknown -> HedvigText("Unknown") // todo
+        }
+      }
+    }
+  }
+}
+
+@Composable
 private fun UploadFilesStep(
   itemId: StepId,
-  itemText: String?,
   stepContent: StepContent.FileUpload,
   appPackageId: String,
   isCurrentStep: Boolean,
@@ -381,13 +529,7 @@ private fun UploadFilesStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    itemText?.let {
-      HedvigText(
-        itemText,
-      )
-    }
     if (isCurrentStep) {
-      Spacer(Modifier.height(8.dp))
       UploadFilesBubble(
         addLocalFile = { uri ->
           onEvent(
@@ -508,17 +650,20 @@ private fun DeflectStep(
 
 @Composable
 private fun TaskStep(
-  itemText: String?,
   taskContent: StepContent.Task,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    itemText?.let {
-      HedvigText(
-        itemText,
-      )
-      Spacer(Modifier.height(8.dp))
-    }
+    val infiniteTransition = rememberInfiniteTransition(label = "blink")
+    val alpha by infiniteTransition.animateFloat(
+      initialValue = 1f,
+      targetValue = 0f,
+      animationSpec = infiniteRepeatable(
+        animation = tween(durationMillis = 500),
+        repeatMode = RepeatMode.Reverse,
+      ),
+      label = "alpha",
+    )
     if (taskContent.descriptions.isNotEmpty()) {
       Column {
         Row(
@@ -530,14 +675,17 @@ private fun TaskStep(
               .wrapContentSize(Alignment.Center)
               .size(20.dp)
               .padding(1.dp)
+              .alpha(alpha)
               .background(color, CircleShape),
           )
-          Spacer(Modifier.width(8.dp))
-          AnimatedContent(taskContent.descriptions.last()) { target ->
-            MemberSentAnswer(
-              onClick = null,
-            ) {
-              HedvigText(target)
+          if (taskContent.descriptions.isNotEmpty()) {
+            Spacer(Modifier.width(8.dp))
+            AnimatedContent(taskContent.descriptions.last()) { target ->
+              MemberSentAnswer(
+                onClick = null,
+              ) {
+                HedvigText(target)
+              }
             }
           }
         }
@@ -549,7 +697,6 @@ private fun TaskStep(
 @Composable
 private fun FormStep(
   itemId: StepId,
-  itemText: String?,
   content: StepContent.Form,
   onEvent: (ClaimChatEvent) -> Unit,
   isCurrentStep: Boolean,
@@ -560,12 +707,6 @@ private fun FormStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    itemText?.let {
-      HedvigText(
-        itemText,
-      )
-      Spacer(Modifier.height(32.dp))
-    }
     FormContent(
       content = content,
       onSkip = {
@@ -836,12 +977,6 @@ private fun AudioRecordingStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    item.text?.let {
-      HedvigText(
-        item.text,
-      )
-      Spacer(Modifier.height(32.dp))
-    }
     AudioRecorderBubble(
       recordingState = stepContent.recordingState,
       clock = clock,
@@ -893,11 +1028,6 @@ private fun ContentSelectStep(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    item.text?.let {
-      HedvigText(
-        item.text,
-      )
-    }
     AnimatedContent(
       isCurrentStep,
       transitionSpec = {
