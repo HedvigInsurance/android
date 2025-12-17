@@ -75,6 +75,7 @@ abstract class DownloadStringsTask @Inject constructor(
     dirRes.editTranslations { resourcesType ->
       fixPercentageSigns()
         .removeDotsFromStringIds()
+        .convertSimpleFormatToNumberedFormat(resourcesType)
         .removeEscapesFromMultiplatformStrings(resourcesType)
         .addUntranslatableStrings()
     }
@@ -224,6 +225,34 @@ abstract class DownloadStringsTask @Inject constructor(
       val nameValue = matchResult.groupValues[1]
       val nameWithoutDots = nameValue.replace(".", "_")
       """name="$nameWithoutDots""""
+    }
+  }
+
+  /**
+   * Compose Multiplatform resources only support numbered format arguments like %1$s, %2$d
+   * but NOT simple %s, %d. Convert simple placeholders to numbered ones for KMP resources.
+   * We process each <string> and <item> tag separately to reset the counter for each resource.
+   * Reference: StringResourcesUtils uses regex pattern that matches %1$s, %2$d, etc.
+   * Source: https://youtrack.jetbrains.com/projects/CMP/issues/CMP-8385/Resources-Support-for-d-and-s-in-StringResourcesUtils-for-single-argument-string-resource
+   */
+  private fun String.convertSimpleFormatToNumberedFormat(resourcesType: ResourcesType): String {
+    return when (resourcesType) {
+      ResourcesType.Android -> this
+      ResourcesType.KMP -> {
+        val resourceTagRegex = Regex("""<(string|item)[^>]*>([^<]*)</(string|item)>""")
+        val simpleFormatRegex = Regex("""%(?!\d+\$)([sidf])""")
+
+        resourceTagRegex.replace(this) { tagMatch ->
+          val tagContent = tagMatch.groupValues[2]
+          var counter = 0
+          val updatedContent = simpleFormatRegex.replace(tagContent) { formatMatch ->
+            counter++
+            val formatType = formatMatch.groupValues[1]
+            "%$counter\$$formatType"
+          }
+          tagMatch.value.replace(tagContent, updatedContent)
+        }
+      }
     }
   }
 

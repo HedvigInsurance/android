@@ -655,7 +655,7 @@ shapes (see the `ClaimIntentStepContent` union).
 """
 type ClaimIntentStep {
   id: ID!
-  text: String!
+  text: String
   content: ClaimIntentStepContent!
   isRegrettable: Boolean!
 }
@@ -673,6 +673,8 @@ type ClaimIntentStepContentAudioRecording {
   The relative URI towards where one should upload the audio recording.
   """
   uploadUri: String!
+  freeTextMinLength: Int!
+  freeTextMaxLength: Int!
   isSkippable: Boolean!
 }
 """
@@ -3297,6 +3299,11 @@ type Product {
   Localized tagline of the product.
   """
   tagline: String!
+  """
+  Localized tagline of the product to be used during purchase flow. This gives editors
+  a couple of tagline options to choose for.
+  """
+  purchaseFlowTagline: String!
   """
   The pillow image asset associated with this product.
   """

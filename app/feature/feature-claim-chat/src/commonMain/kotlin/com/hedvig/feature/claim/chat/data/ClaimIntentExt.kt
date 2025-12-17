@@ -4,6 +4,7 @@ import arrow.core.raise.Raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
@@ -75,6 +76,8 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       uploadUri = uploadUri,
       isSkippable = isSkippable,
       recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+      freeTextMinLength = freeTextMinLength,
+      freeTextMaxLength = freeTextMaxLength,
     )
 
     is FileUploadFragment -> StepContent.FileUpload(
@@ -86,7 +89,14 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is SummaryFragment -> StepContent.Summary(
       items = items.map { StepContent.Summary.Item(it.title, it.value) },
       audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
-      fileUploads = fileUploads.map { StepContent.Summary.FileUpload(it.url, it.contentType, it.fileName) },
+      fileUploads = fileUploads.map {
+        logcat {"Mariia: url: ${it.url} contentType: ${it.contentType}"}
+        StepContent.Summary.FileUpload(
+          it.url,
+          it.contentType,
+          it.fileName,
+        )
+      },
       freeTexts = freeTexts,
     )
 

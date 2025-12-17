@@ -14,29 +14,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.PermissionDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
-import com.hedvig.feature.claim.chat.ClaimChatEvent
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.feature.claim.chat.ui.MemberSentAnswer
 import com.hedvig.feature.claim.chat.ui.SkippedLabel
-import hedvig.resources.CHAT_UPLOAD_PRESS_SEND_LABEL
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
+import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import hedvig.resources.claims_skip_button
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
@@ -102,6 +106,7 @@ internal fun AudioRecorderBubble(
             errorType = uiStateAnimated.errorType,
             isCurrentStep = isCurrentStep,
             continueButtonLoading = continueButtonLoading,
+            canSubmit = uiStateAnimated.canSubmit,
           )
         }
       }
@@ -120,6 +125,8 @@ internal fun AudioRecorderBubble(
   }
 }
 
+
+
 @Composable
 private fun FreeTextInputSection(
   freeText: String?,
@@ -130,6 +137,7 @@ private fun FreeTextInputSection(
   isCurrentStep: Boolean,
   continueButtonLoading: Boolean,
   errorType: FreeTextErrorType?,
+  canSubmit: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -140,20 +148,24 @@ private fun FreeTextInputSection(
         onClick = { onLaunchFullScreenEditText() },
         freeTextValue = freeText,
         freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-        supportingText = if (errorType is FreeTextErrorType.TooShort) {
-          stringResource(Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR, errorType.minLength)
-        } else {
-          null
+        supportingText = when (errorType) {
+          is FreeTextErrorType.TooShort ->
+            stringResource(
+              Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR,
+              errorType.minLength,
+            )
+
+          else -> null
         },
         hasError = hasError,
       )
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         onClick = submitFreeText,
-        enabled = !continueButtonLoading,
+        enabled = canSubmit,
         isLoading = continueButtonLoading,
         modifier = Modifier.fillMaxWidth(),
-        text = stringResource(Res.string.CHAT_UPLOAD_PRESS_SEND_LABEL),
+        text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
@@ -164,14 +176,18 @@ private fun FreeTextInputSection(
       )
     } else {
       if (freeText != null) {
-        Row(
-          Modifier.fillMaxWidth().padding(start = 48.dp),
-          horizontalArrangement = Arrangement.End,
+        VoiceRecordingLabel(
+          labelType = AudioRecordingLabelType.TEXT
         ) {
-          MemberSentAnswer(
-            onClick = null,
+          Row(
+            Modifier.fillMaxWidth().padding(start = 48.dp),
+            horizontalArrangement = Arrangement.End,
           ) {
-            HedvigText(freeText, textAlign = TextAlign.End)
+            MemberSentAnswer(
+              onClick = null,
+            ) {
+              HedvigText(freeText, textAlign = TextAlign.End)
+            }
           }
         }
       } else {
@@ -252,6 +268,7 @@ private fun PreviewFreeTextInput() {
         errorType = null,
         isCurrentStep = true,
         continueButtonLoading = false,
+        canSubmit = true,
       )
     }
   }
