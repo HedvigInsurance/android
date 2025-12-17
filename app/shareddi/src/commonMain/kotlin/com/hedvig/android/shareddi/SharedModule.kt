@@ -7,11 +7,19 @@ import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.ktor.ktorClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
+import com.hedvig.android.language.LanguageService
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.plugin
+import io.ktor.client.request.headers
 import org.koin.core.module.Module
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
@@ -38,9 +46,12 @@ val sharedModule = module {
       .run { extra.configure(this) }
       .build()
   }
+  single<HttpClient>(baseHttpClientQualifier) {
+    buildKtorClient(get<HedvigBuildConstants>(), get<LanguageService>(), get<DeviceIdFetcher>())
+  }
   single<HttpClient> {
     get<HttpClient>(baseHttpClientQualifier).config {
-      ktorClient(get<AccessTokenFetcher>(), get<HedvigBuildConstants>())
+      addAuthPlugin(get<AccessTokenFetcher>())
     }
   }
 }
@@ -59,14 +70,16 @@ internal class NoopExtraApolloClientConfiguration : ExtraApolloClientConfigurati
 
 internal expect fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildConstants: HedvigBuildConstants)
 
-private fun HttpClientConfig<*>.ktorClient(
-  accessTokenFetcher: AccessTokenFetcher,
 private fun buildKtorClient(
   hedvigBuildConstants: HedvigBuildConstants,
   languageService: LanguageService,
   deviceIdFetcher: DeviceIdFetcher,
 ): HttpClient {
   return HttpClient {
+    installDatadogKtorPlugin(hedvigBuildConstants)
+    defaultRequest {
+      commonHeaders(hedvigBuildConstants, languageService)
+    }
     if (!hedvigBuildConstants.isProduction) {
       Logging {
         level = LogLevel.BODY
@@ -79,7 +92,27 @@ private fun buildKtorClient(
   }
 }
 
+private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
   hedvigBuildConstants: HedvigBuildConstants,
+  languageService: LanguageService,
+) {
+  headers {
+    append("User-Agent", hedvigBuildConstants.userAgent)
+    append("Accept-Language", languageService.getLanguage().toBcp47Format())
+    append("hedvig-language", languageService.getLanguage().toBcp47Format())
+    append("apollographql-client-name", hedvigBuildConstants.appPackageId)
+    append("apollographql-client-version", hedvigBuildConstants.appVersionName)
+    append("X-Build-Version", hedvigBuildConstants.appVersionCode)
+    append("X-App-Version", hedvigBuildConstants.appVersionName)
+    append("X-System-Version", hedvigBuildConstants.buildApiVersion.toString())
+    append("X-Platform", hedvigBuildConstants.platformName)
+    append("X-Model", hedvigBuildConstants.model)
+    append("Hedvig-App-Version", "android;${hedvigBuildConstants.appVersionName}")
+  }
+}
+
+private fun HttpClientConfig<*>.addAuthPlugin(
+  accessTokenFetcher: AccessTokenFetcher,
 ) {
   install(Auth) {
     bearer {
@@ -89,12 +122,4 @@ private fun buildKtorClient(
       }
     }
   }
-  install(
-    datadogKtorPlugin(
-      tracedHosts = mapOf(
-        hedvigBuildConstants.urlGraphqlOctopus.removePrefix("""https://""") to setOf(TracingHeaderType.DATADOG),
-      ),
-      traceSampleRate = 100f
-    )
-  )
 }

@@ -29,6 +29,7 @@ kotlin {
       implementation(projects.coreCommonPublic)
       implementation(projects.coreDatastorePublic)
       implementation(projects.featureClaimChat)
+      implementation(projects.languageCore)
     }
     val mobileMain by getting {
       dependencies {
