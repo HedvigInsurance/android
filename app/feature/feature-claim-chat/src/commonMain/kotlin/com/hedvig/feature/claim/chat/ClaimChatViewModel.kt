@@ -797,11 +797,11 @@ private fun handleNext(
     }
 
     is ClaimIntent.Next.Step -> {
+      showFakeAiDot()
       if (next.claimIntentStep.stepContent is StepContent.Deflect) {
         setAutoNavigateForDeflectStepId(next.claimIntentStep.id)
       }
       steps.replaceTaskWithNextStep(next.claimIntentStep)
-      showFakeAiDot()
     }
   }
 }
