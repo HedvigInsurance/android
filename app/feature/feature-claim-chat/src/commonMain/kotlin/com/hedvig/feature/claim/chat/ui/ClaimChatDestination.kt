@@ -257,10 +257,9 @@ private fun ClaimChatScreenContent(
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
-  val isScrolled by remember(lazyListState) {
+  val isScrolled by remember(lazyListState,uiState.currentStep?.id ) {
     derivedStateOf {
-      lazyListState.lastScrolledBackward || (lazyListState.lastScrolledForward &&
-        lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1)
+          lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1
     }
   }
   Box(
@@ -422,17 +421,10 @@ private fun StepContentSection(
       LaunchedEffect(stepItem.id) {
         textVisibleState.targetState = true
       }
-//      LaunchedEffect(stepItem.id, textVisibleState.currentState, textVisibleState.isIdle) {
-//        if (!isCurrentStep) {
-//          showBottomContentAnimated = true
-//        } else if (textVisibleState.currentState && textVisibleState.isIdle) {
-//          showBottomContentAnimated = true
-//        }
-//      }
 
       Column {
-        stepItem.text?.let {
-          if (isCurrentStep) {
+        if (isCurrentStep) {
+          stepItem.text?.let {
             AnimatedRevealText(
               text = stepItem.text,
               visibleState = textVisibleState,
@@ -440,27 +432,25 @@ private fun StepContentSection(
                 showBottomContentAnimated = true
               },
             )
-          } else {
-            HedvigText(stepItem.text)
+          } ?: {
             showBottomContentAnimated = true
           }
-        }
-        AnimatedVisibility(
-          visibleState = textVisibleState,
-          enter = fadeIn(animationSpec = tween(300)),
-          exit = fadeOut(animationSpec = tween(300)),
-        ) {
+        } else {
+          showBottomContentAnimated = true
           Column {
-            if (stepItem.stepContent is StepContent.Task) {
-              Spacer(Modifier.height(16.dp))
-              TaskStep(
-                taskContent = stepItem.stepContent,
-              )
-            }
             stepItem.text?.let {
-              Spacer(Modifier.height(16.dp))
+              HedvigText(stepItem.text)
             }
           }
+        }
+        if (stepItem.stepContent is StepContent.Task) {
+          Spacer(Modifier.height(16.dp))
+          TaskStep(
+            taskContent = stepItem.stepContent,
+          )
+        }
+        stepItem.text?.let {
+          Spacer(Modifier.height(16.dp))
         }
       }
 
