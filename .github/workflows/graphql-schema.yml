@@ -30,6 +30,6 @@ jobs:
         with:
           token: ${{ secrets.ANDROID_REPO_PAT }}
           commit-message: "Update GQL Schema"
-          branch: "maintenance/update-schema"
+          branch: "chore/update-schema"
           title: "Maintenance: Update GQL Schema"
           body: ""
