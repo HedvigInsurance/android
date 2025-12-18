@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -385,10 +386,10 @@ private fun StepContentSection(
   showBottomContent: Boolean,
   showFakeAiDot: Boolean,
 ) {
+  // Visibility for fake AI dot vs actual step content
   var showContent by remember(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
-
   LaunchedEffect(stepItem.id, showFakeAiDot) {
     if (showFakeAiDot && stepItem.stepContent !is StepContent.Task) {
       showContent = false
@@ -400,42 +401,69 @@ private fun StepContentSection(
     }
   }
   if (!showContent && showFakeAiDot &&
-    stepItem.stepContent !is StepContent.Task) {
+    stepItem.stepContent !is StepContent.Task
+  ) {
     BlinkingAiDot()
   } else {
     Column {
-      stepItem.text?.let {
-        HedvigText(stepItem.text)
+      // animation chain. First top text appears, and after it has appeared, the bottom part comes.
+      val textVisibleState = remember(stepItem.id) { MutableTransitionState(!isCurrentStep) }
+      var showBottomContentAnimated by remember(stepItem.id) { mutableStateOf(!isCurrentStep) }
+
+      LaunchedEffect(stepItem.id) {
+          textVisibleState.targetState = true
       }
-      if (stepItem.stepContent is StepContent.Task) {
-        Spacer(Modifier.height(16.dp))
-        TaskStep(
-          taskContent = stepItem.stepContent,
-        )
+      LaunchedEffect(stepItem.id, textVisibleState.currentState, textVisibleState.isIdle) {
+        if (!isCurrentStep) {
+          showBottomContentAnimated = true
+        } else if (textVisibleState.currentState && textVisibleState.isIdle) {
+          showBottomContentAnimated = true
+        }
       }
-      stepItem.text?.let {
-        Spacer(Modifier.height(16.dp))
-      }
+
+
       AnimatedVisibility(
-        visible = showBottomContent,
-        enter = fadeIn(),
-        exit = fadeOut(),
-      ) {
+        visibleState = textVisibleState,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)),
+      )  {
+        Column {
+          stepItem.text?.let {
+            HedvigText(stepItem.text)
+          }
+          if (stepItem.stepContent is StepContent.Task) {
+            Spacer(Modifier.height(16.dp))
+            TaskStep(
+              taskContent = stepItem.stepContent,
+            )
+          }
+          stepItem.text?.let {
+            Spacer(Modifier.height(16.dp))
+          }
+        }
+      }
+
+      AnimatedVisibility(
+        visible = showBottomContent && showBottomContentAnimated,
+        enter = fadeIn(animationSpec = tween(300)),
+        exit = fadeOut(animationSpec = tween(300)),
+
+        ) {
         StepBottomContent(
-          stepItem = stepItem,
-          freeText = freeText,
-          isCurrentStep = isCurrentStep,
-          currentContinueButtonLoading = currentContinueButtonLoading,
-          currentSkipButtonLoading = currentSkipButtonLoading,
-          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          navigateToDeflect = navigateToDeflect,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          openAppSettings = openAppSettings,
-          spacerModifier = spacerModifier
+            stepItem = stepItem,
+            freeText = freeText,
+            isCurrentStep = isCurrentStep,
+            currentContinueButtonLoading = currentContinueButtonLoading,
+            currentSkipButtonLoading = currentSkipButtonLoading,
+            autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            spacerModifier = spacerModifier,
         )
       }
     }
