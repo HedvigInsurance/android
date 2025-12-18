@@ -2,9 +2,11 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -47,7 +49,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
@@ -62,6 +69,8 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
@@ -335,7 +344,7 @@ private fun ClaimChatScreenContent(
   }
   LaunchedEffect(uiState.steps.size) {
     if (uiState.steps.isNotEmpty()) {
-      lazyListState.animateScrollToItem(index = uiState.steps.lastIndex)
+      lazyListState.scrollToItem(index = uiState.steps.lastIndex)
     }
   }
 }
@@ -411,34 +420,46 @@ private fun StepContentSection(
       var showBottomContentAnimated by remember(stepItem.id) { mutableStateOf(!isCurrentStep) }
 
       LaunchedEffect(stepItem.id) {
-          textVisibleState.targetState = true
+        textVisibleState.targetState = true
       }
-      LaunchedEffect(stepItem.id, textVisibleState.currentState, textVisibleState.isIdle) {
-        if (!isCurrentStep) {
-          showBottomContentAnimated = true
-        } else if (textVisibleState.currentState && textVisibleState.isIdle) {
-          showBottomContentAnimated = true
-        }
-      }
+//      LaunchedEffect(stepItem.id, textVisibleState.currentState, textVisibleState.isIdle) {
+//        if (!isCurrentStep) {
+//          showBottomContentAnimated = true
+//        } else if (textVisibleState.currentState && textVisibleState.isIdle) {
+//          showBottomContentAnimated = true
+//        }
+//      }
 
-
-      AnimatedVisibility(
-        visibleState = textVisibleState,
-        enter = fadeIn(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(300)),
-      )  {
-        Column {
-          stepItem.text?.let {
-            HedvigText(stepItem.text)
-          }
-          if (stepItem.stepContent is StepContent.Task) {
-            Spacer(Modifier.height(16.dp))
-            TaskStep(
-              taskContent = stepItem.stepContent,
+      Column {
+        stepItem.text?.let {
+          if (isCurrentStep) {
+            AnimatedRevealText(
+              text = stepItem.text,
+              visibleState = textVisibleState,
+              onAnimationFinished = {
+                showBottomContentAnimated = true
+              },
             )
+          } else {
+            HedvigText(stepItem.text)
+            showBottomContentAnimated = true
           }
-          stepItem.text?.let {
-            Spacer(Modifier.height(16.dp))
+        }
+        AnimatedVisibility(
+          visibleState = textVisibleState,
+          enter = fadeIn(animationSpec = tween(300)),
+          exit = fadeOut(animationSpec = tween(300)),
+        ) {
+          Column {
+            if (stepItem.stepContent is StepContent.Task) {
+              Spacer(Modifier.height(16.dp))
+              TaskStep(
+                taskContent = stepItem.stepContent,
+              )
+            }
+            stepItem.text?.let {
+              Spacer(Modifier.height(16.dp))
+            }
           }
         }
       }
@@ -446,28 +467,82 @@ private fun StepContentSection(
       AnimatedVisibility(
         visible = showBottomContent && showBottomContentAnimated,
         enter = fadeIn(animationSpec = tween(300)),
-        exit = fadeOut(animationSpec = tween(300)),
+        exit = ExitTransition.None,
 
         ) {
         StepBottomContent(
-            stepItem = stepItem,
-            freeText = freeText,
-            isCurrentStep = isCurrentStep,
-            currentContinueButtonLoading = currentContinueButtonLoading,
-            currentSkipButtonLoading = currentSkipButtonLoading,
-            autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
-            onEvent = onEvent,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            navigateToDeflect = navigateToDeflect,
-            appPackageId = appPackageId,
-            imageLoader = imageLoader,
-            openAppSettings = openAppSettings,
-            spacerModifier = spacerModifier,
+          stepItem = stepItem,
+          freeText = freeText,
+          isCurrentStep = isCurrentStep,
+          currentContinueButtonLoading = currentContinueButtonLoading,
+          currentSkipButtonLoading = currentSkipButtonLoading,
+          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
+          onEvent = onEvent,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          openAppSettings = openAppSettings,
+          spacerModifier = spacerModifier,
         )
       }
     }
   }
+}
+
+@Composable
+fun AnimatedRevealText(
+  text: String,
+  visibleState: MutableTransitionState<Boolean>,
+  modifier: Modifier = Modifier,
+  style: TextStyle = LocalTextStyle.current,
+  delayPerChar: Int = 30,
+  charAnimDuration: Int = 150,
+  onAnimationFinished: () -> Unit = {},
+) {
+  var visibleChars by remember { mutableStateOf(0) }
+
+  LaunchedEffect(visibleState.targetState, text) {
+    if (visibleState.targetState) {
+      visibleChars = 0
+      repeat(text.length) { index ->
+        delay(delayPerChar.toLong())
+        visibleChars = index + 1
+      }
+      // Wait for the last character's fade-in animation to complete
+      delay(charAnimDuration.toLong())
+      onAnimationFinished()
+    } else {
+      visibleChars = 0
+    }
+  }
+  val baseColor = style.color.takeOrElse { LocalContentColor.current }
+  HedvigText(
+    text = buildAnnotatedString {
+      text.forEachIndexed { index, char ->
+        if (index < visibleChars) {
+          val progress by animateFloatAsState(
+            targetValue = 1f,
+            animationSpec = tween(charAnimDuration),
+            label = "char_$index",
+          )
+          withStyle(
+            style = SpanStyle(color = baseColor.copy(alpha = progress)),
+            //.copy(alpha = progress)
+          ) {
+            append(char)
+          }
+        } else {
+          withStyle(style = SpanStyle(color = baseColor.copy(alpha = 0f))) {
+            append(char)
+          }
+        }
+      }
+    },
+    style = style,
+    modifier = modifier,
+  )
 }
 
 @Composable
