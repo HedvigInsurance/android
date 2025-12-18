@@ -768,7 +768,7 @@ private fun ObserveIncompleteTaskEffect(
 private fun SubmitCompleteTaskEffect(
   submitTaskUseCase: SubmitTaskUseCase,
   currentStep: ClaimIntentStep?,
-  onSuccess: suspend (ClaimIntent) -> Unit,
+  onSuccess: (ClaimIntent) -> Unit,
 ) {
   val isCompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted == true
   LaunchedEffect(isCompleteTask) {
