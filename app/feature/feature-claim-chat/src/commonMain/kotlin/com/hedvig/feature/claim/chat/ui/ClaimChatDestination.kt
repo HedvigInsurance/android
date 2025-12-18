@@ -39,8 +39,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -383,55 +385,58 @@ private fun StepContentSection(
   showBottomContent: Boolean,
   showFakeAiDot: Boolean,
 ) {
-  AnimatedContent(
-    showFakeAiDot,
-    transitionSpec = {
-    fadeIn(animationSpec = tween(220, delayMillis = 90))
-      .togetherWith(fadeOut(animationSpec = tween(90)))
+  var showContent by remember(stepItem.id) {
+    mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
-  ) { target ->
-    if (target && stepItem.stepContent !is StepContent.Task) {
-      LaunchedEffect(Unit) {
-        delay(1000)
-        onEvent(ClaimChatEvent.FakeGreenAiDotShown)
-      }
-      BlinkingAiDot()
+
+  LaunchedEffect(stepItem.id, showFakeAiDot) {
+    if (showFakeAiDot && stepItem.stepContent !is StepContent.Task) {
+      showContent = false
+      delay(1000)
+      showContent = true
+      onEvent(ClaimChatEvent.FakeGreenAiDotShown)
     } else {
-      Column {
-        stepItem.text?.let {
-          HedvigText(stepItem.text)
-        }
-        if (stepItem.stepContent is StepContent.Task) {
-          Spacer(Modifier.height(16.dp))
-          TaskStep(
-            taskContent = stepItem.stepContent,
-          )
-        }
-        stepItem.text?.let {
-          Spacer(Modifier.height(16.dp))
-        }
-        AnimatedVisibility(
-          visible = showBottomContent,
-          enter = fadeIn(),
-          exit = fadeOut(),
-        ) {
-          StepBottomContent(
-            stepItem = stepItem,
-            freeText = freeText,
-            isCurrentStep = isCurrentStep,
-            currentContinueButtonLoading = currentContinueButtonLoading,
-            currentSkipButtonLoading = currentSkipButtonLoading,
-            autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
-            onEvent = onEvent,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            navigateToDeflect = navigateToDeflect,
-            appPackageId = appPackageId,
-            imageLoader = imageLoader,
-            openAppSettings = openAppSettings,
-            spacerModifier = spacerModifier
-          )
-        }
+      showContent = true
+    }
+  }
+  if (!showContent && showFakeAiDot &&
+    stepItem.stepContent !is StepContent.Task) {
+    BlinkingAiDot()
+  } else {
+    Column {
+      stepItem.text?.let {
+        HedvigText(stepItem.text)
+      }
+      if (stepItem.stepContent is StepContent.Task) {
+        Spacer(Modifier.height(16.dp))
+        TaskStep(
+          taskContent = stepItem.stepContent,
+        )
+      }
+      stepItem.text?.let {
+        Spacer(Modifier.height(16.dp))
+      }
+      AnimatedVisibility(
+        visible = showBottomContent,
+        enter = fadeIn(),
+        exit = fadeOut(),
+      ) {
+        StepBottomContent(
+          stepItem = stepItem,
+          freeText = freeText,
+          isCurrentStep = isCurrentStep,
+          currentContinueButtonLoading = currentContinueButtonLoading,
+          currentSkipButtonLoading = currentSkipButtonLoading,
+          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
+          onEvent = onEvent,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          openAppSettings = openAppSettings,
+          spacerModifier = spacerModifier
+        )
       }
     }
   }
