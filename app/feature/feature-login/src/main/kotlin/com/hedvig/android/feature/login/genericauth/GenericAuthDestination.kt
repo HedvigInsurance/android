@@ -17,16 +17,16 @@ internal fun GenericAuthDestination(
   navigateUp: () -> Unit,
   onStartOtpInput: (verifyUrl: String, resendUrl: String, email: String) -> Unit,
 ) {
-  val uiState by viewModel.viewState.collectAsStateWithLifecycle()
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   GenericAuthScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     onStartOtpInput = { verifyUrl: String, resendUrl: String ->
-      viewModel.onStartOtpInput()
+      viewModel.emit(GenericAuthEvent.OnStartOtpInput)
       onStartOtpInput(verifyUrl, resendUrl, uiState.emailInputWithoutWhitespaces.value)
     },
-    setEmailInput = viewModel::setEmailInput,
-    submitEmail = viewModel::submitEmail,
+    setEmailInput = { viewModel.emit(GenericAuthEvent.SetEmailInput(it)) },
+    submitEmail = { viewModel.emit(GenericAuthEvent.SubmitEmail) },
   )
 }
 

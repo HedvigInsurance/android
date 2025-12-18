@@ -1,149 +1,165 @@
 package com.hedvig.android.feature.login.otpinput
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.AuthTokenResult
-import com.hedvig.authlib.ResendOtpResult.Error
-import com.hedvig.authlib.ResendOtpResult.Success
+import com.hedvig.authlib.Grant
+import com.hedvig.authlib.ResendOtpResult
 import com.hedvig.authlib.SubmitOtpResult
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class OtpInputViewModel(
-  private val verifyUrl: String,
-  private val resendUrl: String,
+  verifyUrl: String,
+  resendUrl: String,
   credential: String,
-  private val authTokenService: AuthTokenService,
-  private val authRepository: AuthRepository,
-  coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob()),
-) : ViewModel(coroutineScope) {
-  private val _viewState = MutableStateFlow(ViewState.initial(credential = credential))
-  val viewState = combine(
-    _viewState,
-    authTokenService.authStatus,
-  ) { viewState, authStatus ->
-    viewState.copy(
-      navigateToLoginScreen = authStatus is AuthStatus.LoggedIn,
-    )
-  }.stateIn(
-    viewModelScope,
-    SharingStarted.WhileSubscribed(5.seconds),
-    _viewState.value,
+  authTokenService: AuthTokenService,
+  authRepository: AuthRepository,
+) : MoleculeViewModel<OtpInputEvent, OtpInputUiState>(
+    initialState = OtpInputUiState(credential = credential),
+    presenter = OtpInputPresenter(
+      verifyUrl = verifyUrl,
+      resendUrl = resendUrl,
+      credential = credential,
+      submitOtp = authRepository::submitOtp,
+      resendOtp = authRepository::resendOtp,
+      exchange = authRepository::exchange,
+      loginWithTokens = authTokenService::loginWithTokens,
+      authStatus = authTokenService.authStatus,
+    ),
   )
 
-  private val _events = Channel<Event>(Channel.UNLIMITED)
-  val events = _events.receiveAsFlow()
+internal class OtpInputPresenter(
+  private val verifyUrl: String,
+  private val resendUrl: String,
+  private val credential: String,
+  private val submitOtp: suspend (verifyUrl: String, otp: String) -> SubmitOtpResult,
+  private val resendOtp: suspend (resendUrl: String) -> ResendOtpResult,
+  private val exchange: suspend (grant: Grant) -> AuthTokenResult,
+  private val loginWithTokens: suspend (
+    accessToken: com.hedvig.authlib.AccessToken,
+    refreshToken: com.hedvig.authlib.RefreshToken,
+  ) -> Unit,
+  private val authStatus: Flow<AuthStatus?>,
+) : MoleculePresenter<OtpInputEvent, OtpInputUiState> {
+  @Composable
+  override fun MoleculePresenterScope<OtpInputEvent>.present(lastState: OtpInputUiState): OtpInputUiState {
+    var uiState by remember { mutableStateOf(lastState.copy(credential = credential)) }
 
-  fun setInput(value: String) {
-    _viewState.update {
-      it.copy(input = value, networkErrorMessage = null)
-    }
-  }
-
-  fun submitCode(code: String) {
-    _viewState.update {
-      it.copy(loadingCode = true, networkErrorMessage = null)
-    }
-
-    viewModelScope.launch {
-      when (val otpResult = authRepository.submitOtp(verifyUrl, code)) {
-        is SubmitOtpResult.Error -> setErrorState(otpResult.message)
-        is SubmitOtpResult.Success -> submitAuthCode(otpResult)
+    // Observe auth status for navigation
+    val currentAuthStatus by authStatus.collectAsState(initial = null)
+    LaunchedEffect(currentAuthStatus) {
+      if (currentAuthStatus is AuthStatus.LoggedIn) {
+        uiState = uiState.copy(navigateToLoginScreen = true)
       }
     }
-  }
 
-  fun resendCode() {
-    _viewState.update {
-      it.copy(networkErrorMessage = null, loadingResend = true)
-    }
-    viewModelScope.launch {
-      when (val result = authRepository.resendOtp(resendUrl)) {
-        is Error -> {
-          _viewState.update {
-            it.copy(networkErrorMessage = result.message, loadingResend = false)
+    CollectEvents { event ->
+      when (event) {
+        is OtpInputEvent.SetInput -> {
+          uiState = uiState.copy(input = event.value, networkErrorMessage = null)
+        }
+
+        is OtpInputEvent.SubmitCode -> {
+          if (uiState.loadingCode) return@CollectEvents
+          uiState = uiState.copy(loadingCode = true, networkErrorMessage = null)
+          launch {
+            when (val otpResult = submitOtp(verifyUrl, event.code)) {
+              is SubmitOtpResult.Error -> {
+                uiState = uiState.copy(
+                  networkErrorMessage = otpResult.message,
+                  loadingCode = false,
+                )
+              }
+              is SubmitOtpResult.Success -> {
+                when (val authCodeResult = exchange(otpResult.loginAuthorizationCode)) {
+                  is AuthTokenResult.Error -> {
+                    val errorMessage = when (authCodeResult) {
+                      is AuthTokenResult.Error.BackendErrorResponse -> "Error:${authCodeResult.message}"
+                      is AuthTokenResult.Error.IOError -> "IO Error:${authCodeResult.message}"
+                      is AuthTokenResult.Error.UnknownError -> authCodeResult.message
+                    }
+                    uiState = uiState.copy(
+                      networkErrorMessage = errorMessage,
+                      loadingCode = false,
+                    )
+                  }
+                  is AuthTokenResult.Success -> {
+                    loginWithTokens(authCodeResult.accessToken, authCodeResult.refreshToken)
+                    uiState = uiState.copy(loadingCode = false)
+                  }
+                }
+              }
+            }
           }
         }
 
-        Success -> {
-          _events.trySend(Event.CodeResent)
-          _viewState.update {
-            it.copy(networkErrorMessage = null, input = "", loadingResend = false)
+        is OtpInputEvent.ResendCode -> {
+          if (uiState.loadingResend) return@CollectEvents
+          uiState = uiState.copy(networkErrorMessage = null, loadingResend = true)
+          launch {
+            when (val result = resendOtp(resendUrl)) {
+              is ResendOtpResult.Error -> {
+                uiState = uiState.copy(
+                  networkErrorMessage = result.message,
+                  loadingResend = false,
+                )
+              }
+              ResendOtpResult.Success -> {
+                uiState = uiState.copy(
+                  networkErrorMessage = null,
+                  input = "",
+                  loadingResend = false,
+                  codeResentEvent = true,
+                )
+              }
+            }
           }
         }
-      }
-    }
-  }
 
-  fun dismissError() {
-    _viewState.update {
-      it.copy(networkErrorMessage = null)
-    }
-  }
+        is OtpInputEvent.DismissError -> {
+          uiState = uiState.copy(networkErrorMessage = null)
+        }
 
-  private suspend fun submitAuthCode(otpResult: SubmitOtpResult.Success) {
-    when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
-      is AuthTokenResult.Error -> setErrorState(
-        when (authCodeResult) {
-          is AuthTokenResult.Error.BackendErrorResponse -> "Error:${authCodeResult.message}"
-          is AuthTokenResult.Error.IOError -> "IO Error:${authCodeResult.message}"
-          is AuthTokenResult.Error.UnknownError -> authCodeResult.message
-        },
-      )
-
-      is AuthTokenResult.Success -> {
-        authTokenService.loginWithTokens(
-          authCodeResult.accessToken,
-          authCodeResult.refreshToken,
-        )
-        _viewState.update {
-          it.copy(loadingCode = false)
+        is OtpInputEvent.HandledCodeResentEvent -> {
+          uiState = uiState.copy(codeResentEvent = false)
         }
       }
     }
-  }
 
-  private fun setErrorState(message: String) {
-    _viewState.update {
-      it.copy(networkErrorMessage = message, loadingCode = false)
-    }
-  }
-
-  data class ViewState(
-    val input: String = "",
-    val credential: String,
-    val networkErrorMessage: String?,
-    val loadingResend: Boolean,
-    val loadingCode: Boolean,
-    val navigateToLoginScreen: Boolean,
-  ) {
-    companion object {
-      fun initial(credential: String): ViewState = ViewState(
-        credential = credential,
-        input = "",
-        networkErrorMessage = null,
-        loadingResend = false,
-        loadingCode = false,
-        navigateToLoginScreen = false,
-      )
-    }
-  }
-
-  sealed class Event {
-    object CodeResent : Event()
+    return uiState
   }
 }
+
+sealed interface OtpInputEvent {
+  data class SetInput(val value: String) : OtpInputEvent
+
+  data class SubmitCode(val code: String) : OtpInputEvent
+
+  data object ResendCode : OtpInputEvent
+
+  data object DismissError : OtpInputEvent
+
+  data object HandledCodeResentEvent : OtpInputEvent
+}
+
+data class OtpInputUiState(
+  val input: String = "",
+  val credential: String,
+  val networkErrorMessage: String? = null,
+  val loadingResend: Boolean = false,
+  val loadingCode: Boolean = false,
+  val navigateToLoginScreen: Boolean = false,
+  val codeResentEvent: Boolean = false,
+)

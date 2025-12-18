@@ -46,7 +46,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 
 @Composable
@@ -57,38 +56,38 @@ fun OtpInputDestination(
   onOpenEmailApp: () -> Unit,
 ) {
   var showResentMessageNotification by remember { mutableStateOf(false) }
-  LaunchedEffect(viewModel) {
-    viewModel.events.collectLatest { event ->
-      when (event) {
-        OtpInputViewModel.Event.CodeResent -> {
-          try {
-            delay(1.seconds)
-            showResentMessageNotification = true
-            delay(1.seconds)
-          } finally {
-            showResentMessageNotification = false
-          }
-        }
+  val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+  // Handle code resent event
+  LaunchedEffect(uiState.codeResentEvent) {
+    if (uiState.codeResentEvent) {
+      try {
+        delay(1.seconds)
+        showResentMessageNotification = true
+        delay(1.seconds)
+      } finally {
+        showResentMessageNotification = false
+        viewModel.emit(OtpInputEvent.HandledCodeResentEvent)
       }
     }
   }
-  val viewState by viewModel.viewState.collectAsStateWithLifecycle()
-  val navigateToLoginScreen = viewState.navigateToLoginScreen
+
+  val navigateToLoginScreen = uiState.navigateToLoginScreen
   LaunchedEffect(navigateToLoginScreen) {
     if (!navigateToLoginScreen) return@LaunchedEffect
     onNavigateToLoggedIn()
   }
   OtpInputScreen(
-    onInputChanged = viewModel::setInput,
+    onInputChanged = { viewModel.emit(OtpInputEvent.SetInput(it)) },
     onOpenEmailApp = onOpenEmailApp,
-    onSubmitCode = viewModel::submitCode,
-    onResendCode = viewModel::resendCode,
+    onSubmitCode = { viewModel.emit(OtpInputEvent.SubmitCode(it)) },
+    onResendCode = { viewModel.emit(OtpInputEvent.ResendCode) },
     navigateUp = navigateUp,
-    inputValue = viewState.input,
-    credential = viewState.credential,
-    networkErrorMessage = viewState.networkErrorMessage,
-    loadingResend = viewState.loadingResend,
-    loadingCode = viewState.loadingCode,
+    inputValue = uiState.input,
+    credential = uiState.credential,
+    networkErrorMessage = uiState.networkErrorMessage,
+    loadingResend = uiState.loadingResend,
+    loadingCode = uiState.loadingCode,
     showResentMessageNotification = showResentMessageNotification,
   )
 }
