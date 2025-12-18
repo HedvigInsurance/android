@@ -57,25 +57,26 @@ internal fun ClaimEntryPointsDestination(
     val nextStep = uiState.nextStep
     if (nextStep != null) {
       startClaimFlow(nextStep)
+      viewModel.emit(ClaimEntryPointsEvent.HandledNextStepNavigation)
     }
   }
   ClaimEntryPointsScreen(
     uiState = uiState,
-    onSelectEntryPoint = viewModel::onSelectEntryPoint,
+    onSelectEntryPoint = { viewModel.emit(ClaimEntryPointsEvent.SelectEntryPoint(it)) },
     onContinue = {
       val selectedEntryPoint = uiState.selectedEntryPoint
       if (selectedEntryPoint != null) {
         val entryPointOptions = selectedEntryPoint.entryPointOptions
         if (entryPointOptions.isNullOrEmpty()) {
-          viewModel.startClaimFlow()
+          viewModel.emit(ClaimEntryPointsEvent.StartClaimFlow)
         } else {
           onEntryPointWithOptionsSubmit(selectedEntryPoint.id, entryPointOptions)
         }
       } else {
-        viewModel.continueWithoutSelection()
+        viewModel.emit(ClaimEntryPointsEvent.ContinueWithoutSelection)
       }
     },
-    showedStartClaimError = viewModel::showedStartClaimError,
+    showedStartClaimError = { viewModel.emit(ClaimEntryPointsEvent.DismissStartClaimError) },
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,

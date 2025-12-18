@@ -1,60 +1,95 @@
 package com.hedvig.android.feature.claimtriaging.claimentrypoints
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.EntryPoint
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.coroutines.launch
 
 internal class ClaimEntryPointsViewModel(
-  private val entryPoints: List<EntryPoint>,
+  entryPoints: List<EntryPoint>,
+  claimFlowRepository: ClaimFlowRepository,
+) : MoleculeViewModel<ClaimEntryPointsEvent, ClaimEntryPointsUiState>(
+    initialState = ClaimEntryPointsUiState(entryPoints),
+    presenter = ClaimEntryPointsPresenter(claimFlowRepository),
+  )
+
+internal class ClaimEntryPointsPresenter(
   private val claimFlowRepository: ClaimFlowRepository,
-) : ViewModel() {
-  private val _uiState = MutableStateFlow(ClaimEntryPointsUiState(entryPoints))
-  val uiState = _uiState.asStateFlow()
+) : MoleculePresenter<ClaimEntryPointsEvent, ClaimEntryPointsUiState> {
+  @Composable
+  override fun MoleculePresenterScope<ClaimEntryPointsEvent>.present(
+    lastState: ClaimEntryPointsUiState,
+  ): ClaimEntryPointsUiState {
+    var uiState by remember { mutableStateOf(lastState) }
 
-  fun continueWithoutSelection() {
-    _uiState.update { it.copy(haveTriedContinuingWithoutSelection = true) }
-  }
+    CollectEvents { event ->
+      when (event) {
+        ClaimEntryPointsEvent.ContinueWithoutSelection -> {
+          uiState = uiState.copy(haveTriedContinuingWithoutSelection = true)
+        }
 
-  fun onSelectEntryPoint(entryPoint: EntryPoint) {
-    _uiState.update {
-      it.copy(
-        selectedEntryPoint = entryPoint,
-        haveTriedContinuingWithoutSelection = false,
-      )
+        is ClaimEntryPointsEvent.SelectEntryPoint -> {
+          uiState = uiState.copy(
+            selectedEntryPoint = event.entryPoint,
+            haveTriedContinuingWithoutSelection = false,
+          )
+        }
+
+        ClaimEntryPointsEvent.StartClaimFlow -> {
+          if (uiState.isLoading) return@CollectEvents
+          val selectedEntryPoint = uiState.selectedEntryPoint ?: return@CollectEvents
+          uiState = uiState.copy(isLoading = true)
+          launch {
+            claimFlowRepository.startClaimFlow(selectedEntryPoint.id, null).fold(
+              ifLeft = { errorMessage ->
+                uiState = uiState.copy(
+                  isLoading = false,
+                  startClaimErrorMessage = errorMessage.message,
+                )
+              },
+              ifRight = { claimFlowStep ->
+                uiState = uiState.copy(
+                  isLoading = false,
+                  nextStep = claimFlowStep,
+                )
+              },
+            )
+          }
+        }
+
+        ClaimEntryPointsEvent.DismissStartClaimError -> {
+          uiState = uiState.copy(startClaimErrorMessage = null)
+        }
+
+        ClaimEntryPointsEvent.HandledNextStepNavigation -> {
+          uiState = uiState.copy(nextStep = null)
+        }
+      }
     }
-  }
 
-  fun startClaimFlow() {
-    val uiState = _uiState.value
-    if (uiState.isLoading) return
-    val selectedEntryPoint = uiState.selectedEntryPoint ?: return
-    _uiState.update { it.copy(isLoading = true) }
-    viewModelScope.launch {
-      claimFlowRepository.startClaimFlow(selectedEntryPoint.id, null).fold(
-        ifLeft = { errorMessage ->
-          _uiState.update { it.copy(isLoading = false, startClaimErrorMessage = errorMessage.message) }
-        },
-        ifRight = { claimFlowStep ->
-          _uiState.update { it.copy(isLoading = false, nextStep = claimFlowStep) }
-        },
-      )
-    }
+    return uiState
   }
+}
 
-  fun showedStartClaimError() {
-    _uiState.update { it.copy(startClaimErrorMessage = null) }
-  }
+internal sealed interface ClaimEntryPointsEvent {
+  data object ContinueWithoutSelection : ClaimEntryPointsEvent
 
-  fun handledNextStepNavigation() {
-    _uiState.update { it.copy(nextStep = null) }
-  }
+  data class SelectEntryPoint(val entryPoint: EntryPoint) : ClaimEntryPointsEvent
+
+  data object StartClaimFlow : ClaimEntryPointsEvent
+
+  data object DismissStartClaimError : ClaimEntryPointsEvent
+
+  data object HandledNextStepNavigation : ClaimEntryPointsEvent
 }
 
 @Immutable

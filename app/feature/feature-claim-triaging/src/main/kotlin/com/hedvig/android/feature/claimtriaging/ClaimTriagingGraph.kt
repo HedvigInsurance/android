@@ -67,7 +67,6 @@ fun NavGraphBuilder.claimTriagingDestinations(
         }
       },
       startClaimFlow = { claimFlowStep ->
-        viewModel.handledNextStepNavigation()
         startClaimFlow(backStackEntry, claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
@@ -88,7 +87,6 @@ fun NavGraphBuilder.claimTriagingDestinations(
         }
       },
       startClaimFlow = { claimFlowStep ->
-        viewModel.handledNextStepNavigation()
         startClaimFlow(backStackEntry, claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
@@ -105,7 +103,6 @@ fun NavGraphBuilder.claimTriagingDestinations(
     ClaimEntryPointOptionsDestination(
       viewModel = viewModel,
       startClaimFlow = { claimFlowStep ->
-        viewModel.handledNextStepNavigation()
         startClaimFlow(backStackEntry, claimFlowStep)
       },
       navigateUp = navigator::navigateUp,

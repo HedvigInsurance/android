@@ -58,25 +58,26 @@ internal fun ClaimGroupsDestination(
     val nextStep = uiState.nextStep
     if (nextStep != null) {
       startClaimFlow(nextStep)
+      viewModel.emit(ClaimGroupsEvent.HandledNextStepNavigation)
     }
   }
   ClaimGroupsScreen(
     uiState = uiState,
-    loadClaimGroups = viewModel::loadClaimGroups,
-    onSelectClaimGroup = viewModel::onSelectClaimGroup,
+    loadClaimGroups = { viewModel.emit(ClaimGroupsEvent.LoadClaimGroups) },
+    onSelectClaimGroup = { viewModel.emit(ClaimGroupsEvent.SelectClaimGroup(it)) },
     onContinue = {
       val selectedClaimGroup = uiState.selectedClaimGroup
       if (selectedClaimGroup != null) {
         if (selectedClaimGroup.entryPoints.isEmpty()) {
-          viewModel.startClaimFlow()
+          viewModel.emit(ClaimGroupsEvent.StartClaimFlow)
         } else {
           onClaimGroupWithEntryPointsSubmit(selectedClaimGroup)
         }
       } else {
-        viewModel.continueWithoutSelection()
+        viewModel.emit(ClaimGroupsEvent.ContinueWithoutSelection)
       }
     },
-    showedStartClaimError = viewModel::showedStartClaimError,
+    showedStartClaimError = { viewModel.emit(ClaimGroupsEvent.DismissStartClaimError) },
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
     windowSizeClass = windowSizeClass,

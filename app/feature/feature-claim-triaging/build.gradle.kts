@@ -8,6 +8,10 @@ hedvig {
   compose()
 }
 
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.lifecycle.compose)
@@ -24,9 +28,17 @@ dependencies {
   implementation(projects.dataClaimFlow)
   implementation(projects.dataClaimTriaging)
   implementation(projects.designSystemHedvig)
+  implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.uiClaimFlow)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.moleculeTest)
 }
