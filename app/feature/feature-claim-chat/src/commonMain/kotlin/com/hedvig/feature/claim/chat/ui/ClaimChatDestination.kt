@@ -257,9 +257,9 @@ private fun ClaimChatScreenContent(
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
-  val isScrolled by remember(lazyListState,uiState.currentStep?.id ) {
+  val isScrolled by remember(lazyListState, uiState.currentStep?.id) {
     derivedStateOf {
-          lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1
+      lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1
     }
   }
   Box(
@@ -267,8 +267,6 @@ private fun ClaimChatScreenContent(
       .padding(horizontal = 16.dp)
       .fillMaxSize(),
   ) {
-
-
     LazyColumn(
       modifier = Modifier.fillMaxSize(),
       state = lazyListState,
