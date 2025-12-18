@@ -1,97 +1,155 @@
 package com.hedvig.android.feature.claim.details.ui
 
 import android.net.Uri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.apollo.NetworkCacheManager
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.fileupload.UploadFileUseCase
+import com.hedvig.android.core.fileupload.UploadSuccess
 import com.hedvig.android.core.uidata.UiFile
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.hedvig.android.molecule.public.MoleculePresenter
+import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.coroutines.launch
 
 internal class AddFilesViewModel(
-  private val uploadFileUseCase: UploadFileUseCase,
-  private val fileService: FileService,
-  private val targetUploadUrl: String,
-  private val cacheManager: NetworkCacheManager,
+  uploadFileUseCase: UploadFileUseCase,
+  fileService: FileService,
+  targetUploadUrl: String,
+  cacheManager: NetworkCacheManager,
   initialFilesUri: List<String>,
-) : ViewModel() {
-  private val _uiState = MutableStateFlow(FileUploadUiState())
-  val uiState: StateFlow<FileUploadUiState> = _uiState.asStateFlow()
+) : MoleculeViewModel<AddFilesEvent, FileUploadUiState>(
+    initialState = FileUploadUiState(),
+    presenter = AddFilesPresenter(
+      uploadFiles = { url, uriStrings ->
+        uploadFileUseCase.invoke(url, uriStrings.map { Uri.parse(it) })
+      },
+      getMimeType = { uriString -> fileService.getMimeType(Uri.parse(uriString)) },
+      getFileName = { uriString -> fileService.getFileName(Uri.parse(uriString)) },
+      targetUploadUrl = targetUploadUrl,
+      clearCache = cacheManager::clearCache,
+      initialFilesUri = initialFilesUri,
+    ),
+  )
 
-  init {
-    try {
-      for (uri in initialFilesUri) {
-        addLocalFile(Uri.parse(uri))
+internal class AddFilesPresenter(
+  private val uploadFiles: suspend (url: String, uriStrings: List<String>) -> Either<ErrorMessage, UploadSuccess>,
+  private val getMimeType: (String) -> String?,
+  private val getFileName: (String) -> String?,
+  private val targetUploadUrl: String,
+  private val clearCache: suspend () -> Unit,
+  private val initialFilesUri: List<String>,
+) : MoleculePresenter<AddFilesEvent, FileUploadUiState> {
+  @Composable
+  override fun MoleculePresenterScope<AddFilesEvent>.present(lastState: FileUploadUiState): FileUploadUiState {
+    var uiState by remember { mutableStateOf(lastState) }
+
+    // Process initial files on first launch
+    LaunchedEffect(Unit) {
+      // State preservation - already have files loaded
+      if (lastState.localFiles.isNotEmpty()) {
+        return@LaunchedEffect
       }
-    } catch (e: Exception) {
-      _uiState.update { it.copy(errorMessage = e.message) }
-    }
-  }
-
-  fun uploadFiles() {
-    viewModelScope.launch {
-      _uiState.update { it.copy(isLoading = true) }
-      either {
-        val uris = uiState.value.localFiles.map { Uri.parse(it.localPath) }
-        if (uris.isNotEmpty()) {
-          val result = uploadFileUseCase.invoke(url = targetUploadUrl, uris = uris).bind()
-          result.fileIds
-        } else {
-          emptyList()
-        }
-      }.fold(
-        ifRight = { uploadedFileIds ->
-          cacheManager.clearCache()
-          _uiState.update { it.copy(uploadedFileIds = uploadedFileIds, isLoading = false) }
-        },
-        ifLeft = { errorMessage ->
-          _uiState.update { it.copy(errorMessage = errorMessage.message, isLoading = false) }
-        },
-      )
-    }
-  }
-
-  fun addLocalFile(uri: Uri) {
-    if (uri.toString() in _uiState.value.localFiles.map { it.id }) {
-      return
-    }
-    _uiState.update {
       try {
-        val mimeType = fileService.getMimeType(uri)
-        val name = fileService.getFileName(uri) ?: uri.toString()
-        val localFile = UiFile(
-          name = name,
-          localPath = uri.toString(),
-          mimeType = mimeType,
-          id = uri.toString(),
-          url = null,
-        )
-        it.copy(localFiles = it.localFiles + localFile)
+        for (uriString in initialFilesUri) {
+          if (uriString in uiState.localFiles.map { it.id }) {
+            continue
+          }
+          val mimeType = getMimeType(uriString) ?: ""
+          val name = getFileName(uriString) ?: uriString
+          val localFile = UiFile(
+            name = name,
+            localPath = uriString,
+            mimeType = mimeType,
+            id = uriString,
+            url = null,
+          )
+          uiState = uiState.copy(localFiles = uiState.localFiles + localFile)
+        }
       } catch (e: Exception) {
-        it.copy(errorMessage = e.message)
+        uiState = uiState.copy(errorMessage = e.message)
       }
     }
-  }
 
-  fun dismissError() {
-    _uiState.update {
-      it.copy(errorMessage = null)
-    }
-  }
+    CollectEvents { event ->
+      when (event) {
+        is AddFilesEvent.AddLocalFile -> {
+          val uriString = event.uriString
+          if (uriString in uiState.localFiles.map { it.id }) {
+            return@CollectEvents
+          }
+          try {
+            val mimeType = getMimeType(uriString) ?: ""
+            val name = getFileName(uriString) ?: uriString
+            val localFile = UiFile(
+              name = name,
+              localPath = uriString,
+              mimeType = mimeType,
+              id = uriString,
+              url = null,
+            )
+            uiState = uiState.copy(localFiles = uiState.localFiles + localFile)
+          } catch (e: Exception) {
+            uiState = uiState.copy(errorMessage = e.message)
+          }
+        }
 
-  fun onRemoveFile(fileId: String) {
-    _uiState.update {
-      it.copy(
-        localFiles = it.localFiles.filterNot { it.id == fileId },
-      )
+        AddFilesEvent.UploadFiles -> {
+          if (uiState.isLoading) return@CollectEvents
+          uiState = uiState.copy(isLoading = true)
+          launch {
+            either {
+              val uriStrings = uiState.localFiles.mapNotNull { it.localPath }
+              if (uriStrings.isNotEmpty()) {
+                val result = uploadFiles(targetUploadUrl, uriStrings).bind()
+                result.fileIds
+              } else {
+                emptyList()
+              }
+            }.fold(
+              ifRight = { uploadedFileIds ->
+                clearCache()
+                uiState = uiState.copy(uploadedFileIds = uploadedFileIds, isLoading = false)
+              },
+              ifLeft = { errorMessage ->
+                uiState = uiState.copy(errorMessage = errorMessage.message, isLoading = false)
+              },
+            )
+          }
+        }
+
+        AddFilesEvent.DismissError -> {
+          uiState = uiState.copy(errorMessage = null)
+        }
+
+        is AddFilesEvent.RemoveFile -> {
+          uiState = uiState.copy(
+            localFiles = uiState.localFiles.filterNot { it.id == event.fileId },
+          )
+        }
+      }
     }
+
+    return uiState
   }
+}
+
+internal sealed interface AddFilesEvent {
+  data class AddLocalFile(val uriString: String) : AddFilesEvent
+
+  data object UploadFiles : AddFilesEvent
+
+  data object DismissError : AddFilesEvent
+
+  data class RemoveFile(val fileId: String) : AddFilesEvent
 }
 
 internal data class FileUploadUiState(

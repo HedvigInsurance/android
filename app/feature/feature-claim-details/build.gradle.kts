@@ -53,4 +53,11 @@ dependencies {
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(libs.turbine)
+  testImplementation(projects.loggingTest)
+  testImplementation(projects.moleculeTest)
 }

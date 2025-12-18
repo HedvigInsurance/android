@@ -61,7 +61,9 @@ internal fun AddFilesDestination(
     }
   }
 
-  val addLocalFile = viewModel::addLocalFile
+  val addLocalFile: (Uri) -> Unit = { uri ->
+    viewModel.emit(AddFilesEvent.AddLocalFile(uri.toString()))
+  }
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
     addLocalFile(uri)
@@ -85,9 +87,9 @@ internal fun AddFilesDestination(
     uiState = uiState,
     navigateUp = navigateUp,
     imageLoader = imageLoader,
-    onContinue = viewModel::uploadFiles,
-    onRemove = viewModel::onRemoveFile,
-    onDismissError = viewModel::dismissError,
+    onContinue = { viewModel.emit(AddFilesEvent.UploadFiles) },
+    onRemove = { viewModel.emit(AddFilesEvent.RemoveFile(it)) },
+    onDismissError = { viewModel.emit(AddFilesEvent.DismissError) },
     launchTakePhotoRequest = photoCaptureState::launchTakePhotoRequest,
     onPickPhoto = { photoPicker.launch(PickVisualMediaRequest()) },
     onPickFile = { filePicker.launch("*/*") },
