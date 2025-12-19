@@ -1,0 +1,5 @@
+# Ignore local plans (these are user-specific)
+plans/
+
+# Ignore audit logs (contain sensitive data, stored locally only)
+audit-logs/

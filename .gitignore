@@ -21,3 +21,6 @@ lokalise.properties
 
 # Local jks store
 Jks
+
+# Claude Code MCP config (contains API keys)
+.mcp.json

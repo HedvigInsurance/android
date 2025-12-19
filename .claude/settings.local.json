@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git stash show:*)",
+      "Bash(git stash:*)",
+      "Bash(git add:*)",
+      "WebSearch",
+      "WebFetch(domain:developers.notion.com)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "notion"
+  ]
+}
