@@ -464,7 +464,9 @@ private fun StepContentSection(
 
       // TaskStep content
       if (stepItem.stepContent is StepContent.Task) {
-        Spacer(Modifier.height(16.dp))
+        stepItem.text?.let {
+          Spacer(Modifier.height(16.dp))
+        }
         TaskStep(
           taskContent = stepItem.stepContent,
         )
