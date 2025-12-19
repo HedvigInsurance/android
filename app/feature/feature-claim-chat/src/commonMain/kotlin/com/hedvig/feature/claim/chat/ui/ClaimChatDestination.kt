@@ -45,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -395,26 +396,34 @@ private fun StepContentSection(
 ) {
   // Guard flag to prevent flash of content before animations start
   // For non-Task steps, start with content hidden
-  var showContent by remember(stepItem.id) {
+  // Use rememberSaveable to persist state across scroll (LazyColumn recomposition)
+  var showContent by rememberSaveable(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
 
-  var showBottomContentAnimated by remember(stepItem.id) {
+  var showBottomContentAnimated by rememberSaveable(stepItem.id) {
+    mutableStateOf(stepItem.stepContent is StepContent.Task)
+  }
+
+  // Track if animation has already been shown for this step
+  var hasShownAnimation by rememberSaveable(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
 
   // Animation sequence controlled by showFakeAiDot parameter
+  // Only run animation once per step using hasShownAnimation flag
   LaunchedEffect(stepItem.id, showFakeAiDot) {
-    if (showFakeAiDot) {
-      // Current non-Task step: hide content and show dot first
+    if (showFakeAiDot && !hasShownAnimation) {
+      // Current non-Task step: hide content and show dot first (only once)
       showContent = false
       showBottomContentAnimated = false
 
       // After 1 second, show content (which triggers text animation)
       delay(1000)
       showContent = true
+      hasShownAnimation = true
       // Bottom content will be shown by AnimatedRevealText onAnimationFinished callback
-    } else {
+    } else if (!hasShownAnimation) {
       // Previous steps or Task steps: add small delay to let state settle
       // This prevents flash if step briefly appears as non-current before becoming current
       delay(50)
