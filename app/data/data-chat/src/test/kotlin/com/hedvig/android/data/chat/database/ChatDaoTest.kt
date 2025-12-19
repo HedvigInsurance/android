@@ -80,7 +80,7 @@ private fun textChatMessageEntity(
   isBeingSent = isBeingSent,
   banner = null,
   action = null,
-  isAiGenerationIndicator = false
+  isAiGenerationIndicator = false,
 )
 
 @Database(
