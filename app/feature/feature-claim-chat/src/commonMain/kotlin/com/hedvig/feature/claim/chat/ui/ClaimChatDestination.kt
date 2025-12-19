@@ -279,6 +279,7 @@ private fun ClaimChatScreenContent(
         contentType = { it.stepContent::class },
       ) { item ->
         val isCurrentStep = item.id == uiState.currentStep?.id
+        val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
         val isLastItem = item == uiState.steps.lastOrNull()
         if (isLastItem) {
           Column(
@@ -288,6 +289,7 @@ private fun ClaimChatScreenContent(
               stepItem = item,
               freeText = uiState.freeText,
               isCurrentStep = isCurrentStep,
+              showFakeAiDot = showFakeAiDot,
               currentContinueButtonLoading = uiState.currentContinueButtonLoading,
               currentSkipButtonLoading = uiState.currentSkipButtonLoading,
               autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
@@ -307,6 +309,7 @@ private fun ClaimChatScreenContent(
             stepItem = item,
             freeText = uiState.freeText,
             isCurrentStep = isCurrentStep,
+            showFakeAiDot = showFakeAiDot,
             currentContinueButtonLoading = uiState.currentContinueButtonLoading,
             currentSkipButtonLoading = uiState.currentSkipButtonLoading,
             autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
@@ -376,6 +379,7 @@ private fun StepContentSection(
   stepItem: ClaimIntentStep,
   freeText: String?,
   isCurrentStep: Boolean,
+  showFakeAiDot: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
   autoNavigateForDeflectStepId: StepId?,
@@ -389,41 +393,40 @@ private fun StepContentSection(
   spacerModifier: Modifier,
   showBottomContent: Boolean,
 ) {
-  // State machine for animation sequence
-  var showFakeAiDot by remember(stepItem.id) {
-    mutableStateOf(isCurrentStep && stepItem.stepContent !is StepContent.Task)
-  }
-  var showTextAnimation by remember(stepItem.id) {
-    mutableStateOf(!isCurrentStep || stepItem.stepContent is StepContent.Task)
-  }
-  var showBottomContentAnimated by remember(stepItem.id) {
-    mutableStateOf(!isCurrentStep || stepItem.stepContent is StepContent.Task)
+  // Guard flag to prevent flash of content before animations start
+  // For non-Task steps, start with content hidden
+  var showContent by remember(stepItem.id) {
+    mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
 
-  // Animation sequence for current non-Task steps
-  LaunchedEffect(stepItem.id, isCurrentStep) {
-    if (isCurrentStep && stepItem.stepContent !is StepContent.Task) {
-      // Step 1: Show fake dot
-      showFakeAiDot = true
-      showTextAnimation = false
+  var showBottomContentAnimated by remember(stepItem.id) {
+    mutableStateOf(stepItem.stepContent is StepContent.Task)
+  }
+
+  // Animation sequence controlled by showFakeAiDot parameter
+  LaunchedEffect(stepItem.id, showFakeAiDot) {
+    if (showFakeAiDot) {
+      // Current non-Task step: hide content and show dot first
+      showContent = false
       showBottomContentAnimated = false
 
-      // Step 2: After 1 second, hide dot and show text animation
+      // After 1 second, show content (which triggers text animation)
       delay(1000)
-      showFakeAiDot = false
-      showTextAnimation = true
+      showContent = true
       // Bottom content will be shown by AnimatedRevealText onAnimationFinished callback
     } else {
-      // Previous steps or Task steps: show everything immediately
-      showFakeAiDot = false
-      showTextAnimation = true
+      // Previous steps or Task steps: add small delay to let state settle
+      // This prevents flash if step briefly appears as non-current before becoming current
+      delay(50)
+      showContent = true
       showBottomContentAnimated = true
     }
   }
 
-  if (showFakeAiDot) {
+  // Show BlinkingAiDot only when content is hidden for showFakeAiDot steps
+  if (!showContent && showFakeAiDot) {
     BlinkingAiDot()
-  } else if (showTextAnimation) {
+  } else if (showContent) {
     Column {
       // Text content
       if (isCurrentStep) {
