@@ -39,7 +39,7 @@ internal fun ClaimIntentFragment.toClaimIntent(): ClaimIntent {
 private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep {
   return ClaimIntentStep(
     id = StepId(id),
-    text = text,
+    text = text ?: "",
     stepContent = this.content.toStepContent(),
   )
 }
@@ -47,10 +47,10 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(): ClaimIntentStep
 private fun ClaimIntentStepContentFragment.toStepContent(): StepContent {
   return when (this) {
     is FormFragment -> StepContent.Form(this.fields.toFields(), isSkippable)
-    is ContentSelectFragment -> StepContent.ContentSelect(options.toOptions(), isSkippable )
+    is ContentSelectFragment -> StepContent.ContentSelect(options.toOptions(), isSkippable)
     is TaskFragment -> StepContent.Task(listOf(description), isCompleted)
     is AudioRecordingFragment -> StepContent.AudioRecording(hint, uploadUri, isSkippable)
-    is FileUploadFragment -> StepContent.FileUpload(uploadUri, isSkippable )
+    is FileUploadFragment -> StepContent.FileUpload(uploadUri, isSkippable)
     is SummaryFragment -> StepContent.Summary(
       items = items.map { StepContent.Summary.Item(it.title, it.value) },
       audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
