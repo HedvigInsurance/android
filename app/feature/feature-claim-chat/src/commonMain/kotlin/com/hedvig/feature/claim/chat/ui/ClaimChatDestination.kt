@@ -389,73 +389,84 @@ private fun StepContentSection(
   spacerModifier: Modifier,
   showBottomContent: Boolean,
 ) {
-  // Visibility for fake AI dot vs actual step content
-  var showContent by remember(stepItem.id) {
-    mutableStateOf(stepItem.stepContent is StepContent.Task)
-  }
+  // State machine for animation sequence
   var showFakeAiDot by remember(stepItem.id) {
-    mutableStateOf(stepItem.stepContent !is StepContent.Task && isCurrentStep) //todo
+    mutableStateOf(isCurrentStep && stepItem.stepContent !is StepContent.Task)
   }
-  LaunchedEffect(stepItem.id) {
-    if (stepItem.stepContent !is StepContent.Task) {
-      showContent = false
+  var showTextAnimation by remember(stepItem.id) {
+    mutableStateOf(!isCurrentStep || stepItem.stepContent is StepContent.Task)
+  }
+  var showBottomContentAnimated by remember(stepItem.id) {
+    mutableStateOf(!isCurrentStep || stepItem.stepContent is StepContent.Task)
+  }
+
+  // Animation sequence for current non-Task steps
+  LaunchedEffect(stepItem.id, isCurrentStep) {
+    if (isCurrentStep && stepItem.stepContent !is StepContent.Task) {
+      // Step 1: Show fake dot
+      showFakeAiDot = true
+      showTextAnimation = false
+      showBottomContentAnimated = false
+
+      // Step 2: After 1 second, hide dot and show text animation
       delay(1000)
       showFakeAiDot = false
-      showContent = true
+      showTextAnimation = true
+      // Bottom content will be shown by AnimatedRevealText onAnimationFinished callback
     } else {
-      showContent = true
+      // Previous steps or Task steps: show everything immediately
+      showFakeAiDot = false
+      showTextAnimation = true
+      showBottomContentAnimated = true
     }
   }
-  if (!showContent && showFakeAiDot) {
+
+  if (showFakeAiDot) {
     BlinkingAiDot()
-  } else {
+  } else if (showTextAnimation) {
     Column {
-      // animation chain. First top text appears, and after it has appeared, the bottom part comes.
-      val textVisibleState = remember(stepItem.id) { MutableTransitionState(!isCurrentStep) }
-      var showBottomContentAnimated by remember(stepItem.id) { mutableStateOf(!isCurrentStep) }
-
-      LaunchedEffect(stepItem.id) {
-        textVisibleState.targetState = true
-      }
-
-      Column {
-        if (isCurrentStep) {
-          stepItem.text?.let {
-            AnimatedRevealText(
-              text = stepItem.text,
-              visibleState = textVisibleState,
-              onAnimationFinished = {
-                showBottomContentAnimated = true
-              },
-            )
-          } ?: {
+      // Text content
+      if (isCurrentStep) {
+        if (stepItem.text != null) {
+          AnimatedRevealText(
+            text = stepItem.text,
+            visibleState = remember(stepItem.id) {
+              MutableTransitionState(false).apply { targetState = true }
+            },
+            onAnimationFinished = {
+              showBottomContentAnimated = true
+            },
+          )
+        } else {
+          // No text - show bottom content immediately
+          LaunchedEffect(stepItem.id) {
             showBottomContentAnimated = true
           }
-        } else {
-          showBottomContentAnimated = true
-          Column {
-            stepItem.text?.let {
-              HedvigText(stepItem.text)
-            }
-          }
         }
-        if (stepItem.stepContent is StepContent.Task) {
-          Spacer(Modifier.height(16.dp))
-          TaskStep(
-            taskContent = stepItem.stepContent,
-          )
-        }
+      } else {
+        // Previous step - static text
         stepItem.text?.let {
-          Spacer(Modifier.height(16.dp))
+          HedvigText(stepItem.text)
         }
       }
 
+      // TaskStep content
+      if (stepItem.stepContent is StepContent.Task) {
+        Spacer(Modifier.height(16.dp))
+        TaskStep(
+          taskContent = stepItem.stepContent,
+        )
+      }
+      stepItem.text?.let {
+        Spacer(Modifier.height(16.dp))
+      }
+
+      // Bottom content - appears after text animation finishes
       AnimatedVisibility(
         visible = showBottomContent && showBottomContentAnimated,
         enter = fadeIn(animationSpec = tween(300)),
         exit = ExitTransition.None,
-
-        ) {
+      ) {
         StepBottomContent(
           stepItem = stepItem,
           freeText = freeText,
