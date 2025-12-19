@@ -1,9 +1,8 @@
-package com.hedvig.android.shareddi
+package com.hedvig.android.core.datastore
 
-import com.hedvig.android.core.datastore.DeviceIdDataStore
 import kotlinx.coroutines.flow.firstOrNull
 
-internal class AndroidDeviceIdFetcher(
+internal class JvmDeviceIdFetcher(
   private val deviceIdDataStore: DeviceIdDataStore
 ) : DeviceIdFetcher {
   override suspend fun fetch(): String? {

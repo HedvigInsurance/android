@@ -17,7 +17,4 @@ internal actual val platformModule: Module = module {
   single<ExtraApolloClientConfiguration> {
     NoopExtraApolloClientConfiguration()
   }
-  single<DeviceIdFetcher> {
-    AndroidDeviceIdFetcher(get<DeviceIdDataStore>())
-  }
 }

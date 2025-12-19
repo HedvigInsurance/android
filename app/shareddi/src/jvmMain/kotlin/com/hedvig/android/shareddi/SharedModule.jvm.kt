@@ -17,47 +17,4 @@ internal actual val platformModule: Module = module {
   single<ExtraApolloClientConfiguration> {
     NoopExtraApolloClientConfiguration()
   }
-  single<HedvigBuildConstants> {
-    JvmHedvigBuildConstants
-  }
-  single<DeviceIdFetcher> {
-    JvmDeviceIdFetcher(get<DeviceIdDataStore>())
-  }
-}
-
-private val JvmHedvigBuildConstants = object : HedvigBuildConstants {
-  override val urlGraphqlOctopus: String
-    get() = "noop"
-  override val urlBaseWeb: String
-    get() = "noop"
-  override val urlOdyssey: String
-    get() = "noop"
-  override val urlBotService: String
-    get() = "noop"
-  override val urlClaimsService: String
-    get() = "noop"
-  override val deepLinkHosts: List<String>
-    get() = listOf("noop")
-  override val appVersionName: String
-    get() = "noop"
-  override val appVersionCode: String
-    get() = "noop"
-  override val appPackageId: String
-    get() = "noop"
-  override val isDebug: Boolean
-    get() = true
-  override val isProduction: Boolean
-    get() = false
-  override val buildApiVersion: Int
-    get() = -1
-  override val platformName: String
-    get() = "desktop"
-  override val model: String
-    get() = "noop"
-  override val userAgent: String
-    get() = "noop"
-}
-
-internal actual fun HttpClientConfig<*>.installDatadogKtorPlugin(hedvigBuildConstants: HedvigBuildConstants) {
-  // noop
 }

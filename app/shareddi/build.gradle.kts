@@ -7,15 +7,6 @@ plugins {
 }
 
 kotlin {
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    common {
-      group("mobile") {
-        withAndroidLibraryTarget()
-        withNative()
-      }
-    }
-  }
   sourceSets {
     commonMain.dependencies {
       implementation(libs.apollo.api)
@@ -31,11 +22,7 @@ kotlin {
       implementation(projects.coreDatastorePublic)
       implementation(projects.featureClaimChat)
       implementation(projects.languageCore)
-    }
-    val mobileMain by getting {
-      dependencies {
-        implementation(libs.datadog.sdk.ktor)
-      }
+      implementation(projects.networkClients)
     }
   }
 }

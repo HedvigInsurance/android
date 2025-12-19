@@ -13,11 +13,11 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 val dataStoreModule = module {
-  includes(platformModule)
+  includes(platformDataStoreModule)
   single<DeviceIdDataStore> { DeviceIdDataStoreImpl(get<DataStore<Preferences>>(), get<ApplicationScope>()) }
 }
 
-internal expect val platformModule: Module
+internal expect val platformDataStoreModule: Module
 
 internal fun createDataStore(producePath: () -> String): DataStore<Preferences> {
   return PreferenceDataStoreFactory.createWithPath(produceFile = { producePath().toPath() })
