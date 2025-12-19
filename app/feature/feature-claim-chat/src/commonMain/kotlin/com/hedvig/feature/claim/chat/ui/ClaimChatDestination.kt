@@ -300,7 +300,6 @@ private fun ClaimChatScreenContent(
               openAppSettings = openAppSettings,
               spacerModifier = Modifier.weight(1f),
               showBottomContent = !isScrolled,
-              showFakeAiDot = uiState.showFakeAiDot,
             )
           }
         } else {
@@ -320,7 +319,6 @@ private fun ClaimChatScreenContent(
             openAppSettings = openAppSettings,
             spacerModifier = Modifier,
             showBottomContent = true,
-            showFakeAiDot = false,
           )
         }
       }
@@ -390,25 +388,25 @@ private fun StepContentSection(
   openAppSettings: () -> Unit,
   spacerModifier: Modifier,
   showBottomContent: Boolean,
-  showFakeAiDot: Boolean,
 ) {
   // Visibility for fake AI dot vs actual step content
   var showContent by remember(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
-  LaunchedEffect(stepItem.id, showFakeAiDot) {
-    if (showFakeAiDot && stepItem.stepContent !is StepContent.Task) {
+  var showFakeAiDot by remember(stepItem.id) {
+    mutableStateOf(stepItem.stepContent !is StepContent.Task && isCurrentStep) //todo
+  }
+  LaunchedEffect(stepItem.id) {
+    if (stepItem.stepContent !is StepContent.Task) {
       showContent = false
       delay(1000)
+      showFakeAiDot = false
       showContent = true
-      onEvent(ClaimChatEvent.FakeGreenAiDotShown)
     } else {
       showContent = true
     }
   }
-  if (!showContent && showFakeAiDot &&
-    stepItem.stepContent !is StepContent.Task
-  ) {
+  if (!showContent && showFakeAiDot) {
     BlinkingAiDot()
   } else {
     Column {
