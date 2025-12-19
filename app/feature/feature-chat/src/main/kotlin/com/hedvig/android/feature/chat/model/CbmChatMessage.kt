@@ -28,7 +28,7 @@ internal sealed interface CbmChatMessage {
     override val banner: Banner?,
     val text: String,
     val action: ChatMessageTextAction?,
-    val isAiGenerationIndicator: Boolean = false
+    val isAiGenerationIndicator: Boolean = false,
   ) : CbmChatMessage
 
   data class ChatMessageGif(
@@ -57,7 +57,7 @@ internal sealed interface CbmChatMessage {
 
   data class ChatMessageTextAction(
     val title: String,
-    val url: String
+    val url: String,
   )
 
   companion object {
@@ -68,7 +68,7 @@ internal sealed interface CbmChatMessage {
       banner = null,
       text = "",
       action = null,
-      isAiGenerationIndicator = true
+      isAiGenerationIndicator = true,
     )
   }
 
@@ -165,7 +165,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       isBeingSent = false,
       banner = banner.toBannerEntity(),
       action = null,
-      isAiGenerationIndicator = false
+      isAiGenerationIndicator = false,
     )
 
     is CbmChatMessage.ChatMessageGif -> ChatMessageEntity(
@@ -181,7 +181,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       isBeingSent = false,
       banner = banner.toBannerEntity(),
       action = null,
-      isAiGenerationIndicator = false
+      isAiGenerationIndicator = false,
     )
 
     is CbmChatMessage.ChatMessageText -> ChatMessageEntity(
@@ -199,10 +199,10 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       action = action?.let {
         ChatMessageEntityAction(
           actionTitle = it.title,
-          actionUrl = it.url
+          actionUrl = it.url,
         )
       },
-      isAiGenerationIndicator =  isAiGenerationIndicator
+      isAiGenerationIndicator = isAiGenerationIndicator,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageText -> ChatMessageEntity(
@@ -218,7 +218,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       isBeingSent = false,
       banner = banner.toBannerEntity(),
       action = null,
-      isAiGenerationIndicator = false
+      isAiGenerationIndicator = false,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> ChatMessageEntity(
@@ -234,7 +234,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       isBeingSent = false,
       banner = banner.toBannerEntity(),
       action = null,
-      isAiGenerationIndicator = false
+      isAiGenerationIndicator = false,
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> ChatMessageEntity(
@@ -250,7 +250,7 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       isBeingSent = false,
       banner = banner.toBannerEntity(),
       action = null,
-      isAiGenerationIndicator = false
+      isAiGenerationIndicator = false,
     )
   }
 }
@@ -290,10 +290,10 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
       action = action?.let { entityAction ->
         CbmChatMessage.ChatMessageTextAction(
           title = entityAction.actionTitle,
-          url = entityAction.actionUrl
+          url = entityAction.actionUrl,
         )
       },
-      isAiGenerationIndicator = isAiGenerationIndicator
+      isAiGenerationIndicator = isAiGenerationIndicator,
     )
     gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, banner.toBanner(), gifUrl!!)
     url != null && mimeType != null -> {
