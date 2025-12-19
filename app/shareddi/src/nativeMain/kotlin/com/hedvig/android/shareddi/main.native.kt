@@ -1,5 +1,6 @@
 package com.hedvig.android.shareddi
 
+import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.feature.claim.chat.di.claimChatModule
 import org.koin.core.context.startKoin
 
@@ -7,8 +8,9 @@ import org.koin.core.context.startKoin
 fun initKoin(
   accessTokenFetcher: AccessTokenFetcher,
   deviceIdFetcher: DeviceIdFetcher,
+  appBuildConfig: AppBuildConfig,
 ) {
   startKoin {
-    modules(iosPlatformModule(accessTokenFetcher, deviceIdFetcher), sharedModule, claimChatModule)
+    modules(iosPlatformModule(accessTokenFetcher, deviceIdFetcher), sharedModule(appBuildConfig), claimChatModule)
   }
 }

@@ -40,6 +40,8 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
+import com.hedvig.android.core.buildconstants.AppBuildConfig
+import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
@@ -406,7 +408,7 @@ val applicationModule = module {
       paymentsModule,
       profileModule,
       settingsDatastoreModule,
-      sharedModule,
+      sharedModule(AndroidBuildConfig()),
       sharedPreferencesModule,
       terminateInsuranceModule,
       terminationDataModule,
@@ -415,4 +417,24 @@ val applicationModule = module {
       videoPlayerModule,
     ),
   )
+}
+
+private class AndroidBuildConfig() : AppBuildConfig {
+  override val debug: Boolean = BuildConfig.DEBUG
+  override val applicationId: String = BuildConfig.APPLICATION_ID
+  override val buildType: String = BuildConfig.BUILD_TYPE
+  override val versionCode: Int = BuildConfig.VERSION_CODE
+  override val versionName: String = BuildConfig.VERSION_NAME
+  override val appFlavor: Flavor = when (applicationId) {
+    "com.hedvig.dev.app" if buildType == "develop" -> Flavor.Develop
+    "com.hedvig.app" if buildType == "staging" -> Flavor.Staging
+    "com.hedvig.app" if buildType == "release" -> Flavor.Production
+    else -> error("Wrong mix of applicationId and buildType [$applicationId | $buildType]")
+  }
+  override val osReleaseVersion: String = Build.VERSION.RELEASE
+  override val osSdkVersion: Int = Build.VERSION.SDK_INT
+  override val brand: String = Build.BRAND
+  override val model: String = Build.MODEL
+  override val device: String = Build.DEVICE
+  override val manufacturer: String = Build.MANUFACTURER
 }
