@@ -89,6 +89,7 @@ import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
+import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
@@ -370,7 +371,7 @@ private fun ScrollToBottomButton(
       )
       Icon(
         HedvigIcons.ArrowDown,
-        "Scroll down", //todo
+        stringResource(Res.string.A11Y_SCROLL_DOWN)
       )
     }
   }
