@@ -394,9 +394,6 @@ private fun StepContentSection(
   spacerModifier: Modifier,
   showBottomContent: Boolean,
 ) {
-  // Guard flag to prevent flash of content before animations start
-  // For non-Task steps, start with content hidden
-  // Use rememberSaveable to persist state across scroll (LazyColumn recomposition)
   var showContent by rememberSaveable(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
@@ -405,7 +402,6 @@ private fun StepContentSection(
     mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
 
-  // Track if animation has already been shown for this step
   var hasShownAnimation by rememberSaveable(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
   }
@@ -414,15 +410,11 @@ private fun StepContentSection(
   // Only run animation once per step using hasShownAnimation flag
   LaunchedEffect(stepItem.id, showFakeAiDot) {
     if (showFakeAiDot && !hasShownAnimation) {
-      // Current non-Task step: hide content and show dot first (only once)
       showContent = false
       showBottomContentAnimated = false
-
-      // After 1 second, show content (which triggers text animation)
       delay(1000)
       showContent = true
       hasShownAnimation = true
-      // Bottom content will be shown by AnimatedRevealText onAnimationFinished callback
     } else if (!hasShownAnimation) {
       // Previous steps or Task steps: add small delay to let state settle
       // This prevents flash if step briefly appears as non-current before becoming current
@@ -432,12 +424,10 @@ private fun StepContentSection(
     }
   }
 
-  // Show BlinkingAiDot only when content is hidden for showFakeAiDot steps
   if (!showContent && showFakeAiDot) {
     BlinkingAiDot()
   } else if (showContent) {
     Column {
-      // Text content
       if (isCurrentStep) {
         if (stepItem.text != null) {
           AnimatedRevealText(
@@ -450,19 +440,16 @@ private fun StepContentSection(
             },
           )
         } else {
-          // No text - show bottom content immediately
           LaunchedEffect(stepItem.id) {
             showBottomContentAnimated = true
           }
         }
       } else {
-        // Previous step - static text
         stepItem.text?.let {
           HedvigText(stepItem.text)
         }
       }
 
-      // TaskStep content
       if (stepItem.stepContent is StepContent.Task) {
         stepItem.text?.let {
           Spacer(Modifier.height(16.dp))
@@ -475,7 +462,6 @@ private fun StepContentSection(
         Spacer(Modifier.height(16.dp))
       }
 
-      // Bottom content - appears after text animation finishes
       AnimatedVisibility(
         visible = showBottomContent && showBottomContentAnimated,
         enter = fadeIn(animationSpec = tween(300)),
@@ -521,7 +507,6 @@ fun AnimatedRevealText(
         delay(delayPerChar.toLong())
         visibleChars = index + 1
       }
-      // Wait for the last character's fade-in animation to complete
       delay(charAnimDuration.toLong())
       onAnimationFinished()
     } else {
@@ -540,7 +525,6 @@ fun AnimatedRevealText(
           )
           withStyle(
             style = SpanStyle(color = baseColor.copy(alpha = progress)),
-            //.copy(alpha = progress)
           ) {
             append(char)
           }
