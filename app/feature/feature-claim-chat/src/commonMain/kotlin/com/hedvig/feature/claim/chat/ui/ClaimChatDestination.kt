@@ -50,6 +50,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
@@ -359,21 +361,25 @@ private fun ScrollToBottomButton(
 ) {
   IconButton(
     onClick = onClick,
-    modifier = modifier,
+    modifier = modifier.size(50.dp),
   ) {
-    val whiteColor = HedvigTheme.colorScheme.backgroundWhite
+    val whiteColor = HedvigTheme.colorScheme.fillNegative
     Box(
       contentAlignment = Alignment.Center,
+      modifier = Modifier.padding(4.dp),
     ) {
       Canvas(
-        modifier = Modifier.size(42.dp),
+        modifier = Modifier.size(42.dp)
+          .shadow(1.dp, shape = CircleShape),
         onDraw = {
           drawCircle(color = whiteColor)
         },
       )
       Icon(
-        HedvigIcons.ArrowDown,
-        stringResource(Res.string.A11Y_SCROLL_DOWN)
+          HedvigIcons.ArrowDown,
+          stringResource(Res.string.A11Y_SCROLL_DOWN),
+          tint = HedvigTheme.colorScheme.fillPrimary,
+        modifier = Modifier.size (24.dp)
       )
     }
   }
@@ -626,12 +632,12 @@ private fun StepBottomContent(
       )
 
       is StepContent.ContentSelect -> ContentSelectStep(
-        item = stepItem,
-        isCurrentStep = isCurrentStep,
-        options = stepItem.stepContent.options,
-        selectedOptionId = stepItem.stepContent.selectedOptionId,
-        onEvent = onEvent,
-        currentContinueButtonLoading = currentContinueButtonLoading
+          item = stepItem,
+          isCurrentStep = isCurrentStep,
+          options = stepItem.stepContent.options,
+          selectedOptionId = stepItem.stepContent.selectedOptionId,
+          onEvent = onEvent,
+          currentContinueButtonLoading = currentContinueButtonLoading,
       )
 
       is StepContent.FileUpload -> UploadFilesStep(
@@ -1134,14 +1140,20 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
       modifier = modifier.fillMaxWidth().padding(top = 8.dp),
       horizontalArrangement = Arrangement.End,
     ) {
-      RoundCornersPill( onClick = onRegret,
-        modifier = Modifier.semantics(true){}) {
+      RoundCornersPill(
+          onClick = onRegret,
+          modifier = Modifier.semantics(true) {},
+      ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-          HedvigText(stringResource(Res.string.claims_edit_button),
-            fontStyle = HedvigTheme.typography.label.fontStyle)
+          HedvigText(
+              stringResource(Res.string.claims_edit_button),
+              fontStyle = HedvigTheme.typography.label.fontStyle,
+          )
           Spacer(Modifier.width(6.dp))
-          Icon(HedvigIcons.ChevronDown, null,
-            tint = HedvigTheme.colorScheme.fillTertiaryTransparent)
+          Icon(
+              HedvigIcons.ChevronDown, null,
+              tint = HedvigTheme.colorScheme.fillTertiaryTransparent,
+          )
         }
       }
     }
