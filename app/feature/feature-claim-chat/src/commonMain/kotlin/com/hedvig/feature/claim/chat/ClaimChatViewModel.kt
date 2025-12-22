@@ -343,14 +343,19 @@ internal class ClaimChatPresenter(
             }
 
             is ClaimChatEvent.AudioRecording.ShowFreeText -> {
+              val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
+                ?: return@CollectEvents
+              val textTooShort = freeText?.length?.let {
+                currentContent.freeTextMinLength > it
+              } ?: true
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
                       showOverlay = false,
                       errorType = null,
-                      canSubmit =
-                        !currentContinueButtonLoading && !freeText.isNullOrEmpty(),
+                      canSubmit = canSubmit,
                     ),
                   ),
                 )
