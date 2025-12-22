@@ -217,6 +217,7 @@ private fun PreviewClaimOutcomeDeflectDestination() {
           partnersInfo = StepContent.Deflect.InfoBlock("title", "description"),
           content = StepContent.Deflect.InfoBlock("title", "description"),
           faq = emptyList(),
+          buttonText = "See our partners"
         ),
         imageLoader = rememberPreviewImageLoader(),
         modifier = Modifier,

@@ -50,7 +50,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.semantics.semantics
@@ -299,7 +298,6 @@ private fun ClaimChatScreenContent(
               showFakeAiDot = showFakeAiDot,
               currentContinueButtonLoading = uiState.currentContinueButtonLoading,
               currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-              autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
               onEvent = onEvent,
               shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
               onNavigateToImageViewer = onNavigateToImageViewer,
@@ -319,7 +317,6 @@ private fun ClaimChatScreenContent(
             showFakeAiDot = showFakeAiDot,
             currentContinueButtonLoading = uiState.currentContinueButtonLoading,
             currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-            autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
             onEvent = onEvent,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             onNavigateToImageViewer = onNavigateToImageViewer,
@@ -393,7 +390,6 @@ private fun StepContentSection(
   showFakeAiDot: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
-  autoNavigateForDeflectStepId: StepId?,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -487,7 +483,6 @@ private fun StepContentSection(
           isCurrentStep = isCurrentStep,
           currentContinueButtonLoading = currentContinueButtonLoading,
           currentSkipButtonLoading = currentSkipButtonLoading,
-          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
           onEvent = onEvent,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           onNavigateToImageViewer = onNavigateToImageViewer,
@@ -578,7 +573,6 @@ private fun StepBottomContent(
   isCurrentStep: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
-  autoNavigateForDeflectStepId: StepId?,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -691,10 +685,10 @@ private fun StepBottomContent(
       is StepContent.Deflect -> {
         DeflectStep(
           stepId = stepItem.id,
-          text = stepItem.text,
+          buttonText = stepItem.stepContent.buttonText,
           deflect = stepItem.stepContent,
           navigateToDeflect = navigateToDeflect,
-          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
+          modifier= Modifier.fillMaxWidth()
         )
       }
 
@@ -815,29 +809,17 @@ internal fun SkippedLabel() {
 @Composable
 private fun DeflectStep(
   stepId: StepId,
-  text: String?,
+  buttonText: String,
   deflect: StepContent.Deflect,
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
-  autoNavigateForDeflectStepId: StepId?,
   modifier: Modifier = Modifier,
 ) {
-  if (autoNavigateForDeflectStepId != null) {
-    LaunchedEffect(Unit) {
-      navigateToDeflect(stepId, deflect)
-    }
-  }
-  if (text != null) {
-    HedvigNotificationCard(
-      message = text,
-      priority = NotificationDefaults.NotificationPriority.InfoInline,
-      style = NotificationDefaults.InfoCardStyle.Button(
-        buttonText = stringResource(Res.string.important_message_read_more),
-        onButtonClick = { navigateToDeflect(stepId, deflect) },
-      ),
-      modifier = modifier,
-    )
-  }
-
+  HedvigButton(
+    modifier = modifier,
+    text = buttonText,
+    onClick =  { navigateToDeflect(stepId, deflect) },
+    enabled = true
+  )
 }
 
 @Composable
