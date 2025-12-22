@@ -27,13 +27,16 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
-import com.hedvig.feature.claim.chat.data.FreeTextErrorType.*
+import com.hedvig.feature.claim.chat.data.FreeTextErrorType.TooShort
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
-import com.hedvig.feature.claim.chat.data.StepContent.Form.*
+import com.hedvig.feature.claim.chat.data.StepContent.Form.Field
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldError
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldOption
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldType
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
@@ -43,7 +46,6 @@ import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.time.Instant
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -231,7 +233,7 @@ internal class ClaimChatPresenter(
 
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
-      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next,)
+      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
     }
 
     CollectEvents { event ->
@@ -262,7 +264,7 @@ internal class ClaimChatPresenter(
                     return@launch
                   }
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next,)
+                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
                 },
               )
           }
@@ -294,7 +296,7 @@ internal class ClaimChatPresenter(
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next,)
+                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
                     },
                   )
               }
@@ -314,7 +316,7 @@ internal class ClaimChatPresenter(
                     },
                     ifRight = { claimIntent ->
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next,)
+                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
                     },
                   )
               }
@@ -445,7 +447,7 @@ internal class ClaimChatPresenter(
                   },
                   ifRight = { claimIntent ->
                     currentContinueButtonLoading = false
-                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next)
+                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
                   },
                 )
             }
@@ -495,7 +497,7 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next,)
+                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
                 },
               )
           }
@@ -542,7 +544,7 @@ internal class ClaimChatPresenter(
                 },
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next,)
+                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
                 },
               )
           }
@@ -571,7 +573,7 @@ internal class ClaimChatPresenter(
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
-                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next,)
+                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
                   },
                 )
             }

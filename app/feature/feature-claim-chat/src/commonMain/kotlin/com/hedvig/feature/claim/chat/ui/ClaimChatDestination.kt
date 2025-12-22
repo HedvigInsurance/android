@@ -451,7 +451,7 @@ private fun StepContentSection(
         }
       } else {
         stepItem.text?.let {
-            HedvigText(stepItem.text)
+          HedvigText(stepItem.text)
         }
       }
 
