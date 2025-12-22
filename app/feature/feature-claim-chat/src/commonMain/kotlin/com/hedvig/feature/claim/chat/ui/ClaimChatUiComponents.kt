@@ -34,6 +34,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -148,13 +149,14 @@ internal fun ContentSelectChips(
 }
 
 @Composable
-internal fun MemberSentAnswer(
+internal fun RoundCornersPill(
   modifier: Modifier = Modifier,
-  onClick: (() -> Unit)?, // expecting it to be instead edit button
+  onClick: (() -> Unit)?,
   content: @Composable () -> Unit,
 ) {
   Surface(
     modifier
+      .clip(HedvigTheme.shapes.cornerXXLarge)
       .then(
         if (onClick != null) {
           Modifier.clickable(
@@ -164,7 +166,7 @@ internal fun MemberSentAnswer(
           Modifier
         },
       ),
-    shape = HedvigTheme.shapes.cornerLarge,
+    shape = HedvigTheme.shapes.cornerXXLarge,
     color = HedvigTheme.colorScheme.buttonSecondaryResting,
   ) {
     Column(
@@ -813,7 +815,7 @@ internal fun ChatClaimSummary(
         if (freeTexts.isNotEmpty()) {
           freeTexts.forEachIndexed { index, string ->
             Spacer(Modifier.height(24.dp))
-            MemberSentAnswer(
+            RoundCornersPill(
               modifier = Modifier.fillMaxWidth(),
               onClick = null,
             ) {

@@ -51,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -78,6 +79,7 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
+import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
@@ -96,7 +98,7 @@ import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
-import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
+import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
@@ -502,7 +504,7 @@ private fun CommonPaddingWrapper(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     content()
-    MemberSentAnswer(
+    RoundCornersPill(
       onClick = null,
       modifier = Modifier.withoutPlacement(),
     ) {
@@ -792,8 +794,8 @@ internal fun SkippedLabel() {
     Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.End,
   ) {
-    val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_LABEL)
-    MemberSentAnswer(
+    val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_STEP)
+    RoundCornersPill(
       onClick = null,
     ) {
       HedvigText(
@@ -848,7 +850,7 @@ private fun TaskStep(
           if (taskContent.descriptions.isNotEmpty()) {
             Spacer(Modifier.width(8.dp))
             AnimatedContent(taskContent.descriptions.last()) { target ->
-              MemberSentAnswer(
+              RoundCornersPill(
                 onClick = null,
               ) {
                 HedvigText(target)
@@ -1106,7 +1108,7 @@ private fun FormContent(
               )
               if (textValue.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))
-                MemberSentAnswer(
+                RoundCornersPill(
                   onClick = null,
                 ) {
                   HedvigText(textValue)
@@ -1132,13 +1134,16 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
       modifier = modifier.fillMaxWidth().padding(top = 8.dp),
       horizontalArrangement = Arrangement.End,
     ) {
-      HedvigButton(
-        text = stringResource(Res.string.claims_edit_button),
-        enabled = true,
-        onClick = onRegret,
-        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        buttonSize = ButtonDefaults.ButtonSize.Small,
-      )
+      RoundCornersPill( onClick = onRegret,
+        modifier = Modifier.semantics(true){}) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(stringResource(Res.string.claims_edit_button),
+            fontStyle = HedvigTheme.typography.label.fontStyle)
+          Spacer(Modifier.width(6.dp))
+          Icon(HedvigIcons.ChevronDown, null,
+            tint = HedvigTheme.colorScheme.fillTertiaryTransparent)
+        }
+      }
     }
   }
 }
@@ -1259,7 +1264,7 @@ private fun ContentSelectStep(
             modifier = Modifier
               .fillMaxWidth(),
           ) {
-            MemberSentAnswer(
+            RoundCornersPill(
               onClick = null,
             ) {
               HedvigText(targetState.title)
