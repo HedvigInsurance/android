@@ -629,6 +629,7 @@ private fun StepBottomContent(
         options = stepItem.stepContent.options,
         selectedOptionId = stepItem.stepContent.selectedOptionId,
         onEvent = onEvent,
+        currentContinueButtonLoading = currentContinueButtonLoading
       )
 
       is StepContent.FileUpload -> UploadFilesStep(
@@ -1214,6 +1215,7 @@ private fun ContentSelectStep(
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
   onEvent: (ClaimChatEvent) -> Unit,
+  currentContinueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -1230,12 +1232,14 @@ private fun ContentSelectStep(
             options = options,
             selectedOption = null,
             onOptionClick = { option ->
-              onEvent(
-                ClaimChatEvent.Select(
-                  item.id,
-                  option.id,
-                ),
-              )
+              if (!currentContinueButtonLoading) {
+                onEvent(
+                  ClaimChatEvent.Select(
+                    item.id,
+                    option.id,
+                  ),
+                )
+              }
             },
           )
         }
