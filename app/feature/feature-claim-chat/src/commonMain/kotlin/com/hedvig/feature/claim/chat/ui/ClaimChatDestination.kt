@@ -59,6 +59,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.withoutPlacement
@@ -817,7 +818,7 @@ private fun DeflectStep(
   HedvigButton(
     modifier = modifier,
     text = buttonText,
-    onClick =  { navigateToDeflect(stepId, deflect) },
+    onClick =  dropUnlessResumed {navigateToDeflect(stepId, deflect)},
     enabled = true
   )
 }
