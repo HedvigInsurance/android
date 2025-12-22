@@ -59,6 +59,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -425,20 +426,24 @@ private fun StepContentSection(
   }
 
   if (!showContent && showFakeAiDot) {
-    BlinkingAiDot()
+    CommonPaddingWrapper {
+      BlinkingAiDot()
+    }
   } else if (showContent) {
     Column {
       if (isCurrentStep) {
         if (stepItem.text != null) {
-          AnimatedRevealText(
-            text = stepItem.text,
-            visibleState = remember(stepItem.id) {
-              MutableTransitionState(false).apply { targetState = true }
-            },
-            onAnimationFinished = {
-              showBottomContentAnimated = true
-            },
-          )
+          CommonPaddingWrapper {
+            AnimatedRevealText(
+              text = stepItem.text,
+              visibleState = remember(stepItem.id) {
+                MutableTransitionState(false).apply { targetState = true }
+              },
+              onAnimationFinished = {
+                showBottomContentAnimated = true
+              },
+            )
+          }
         } else {
           LaunchedEffect(stepItem.id) {
             showBottomContentAnimated = true
@@ -446,7 +451,7 @@ private fun StepContentSection(
         }
       } else {
         stepItem.text?.let {
-          HedvigText(stepItem.text)
+            HedvigText(stepItem.text)
         }
       }
 
@@ -489,7 +494,24 @@ private fun StepContentSection(
 }
 
 @Composable
-fun AnimatedRevealText(
+private fun CommonPaddingWrapper(
+  content: @Composable () -> Unit,
+) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    content()
+    MemberSentAnswer(
+      onClick = null,
+      modifier = Modifier.withoutPlacement(),
+    ) {
+      HedvigText("C")
+    } //to align blinking dot, task step and questions to appear in the same place vertically
+  }
+}
+
+@Composable
+private fun AnimatedRevealText(
   text: String,
   visibleState: MutableTransitionState<Boolean>,
   modifier: Modifier = Modifier,
