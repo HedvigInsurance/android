@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -21,16 +22,26 @@ internal class DatadogAttributesManager(
       combine(
         memberIdProvider.provide(),
         combine(attributeProviders.map { it.provide() }) { it.toMap() },
-      ) { memberId: Pair<String, String?>, attributes: Map<String, Any?> ->
-        memberId to attributes
-      }.collect { (memberIdAttribute, attributes): Pair<Pair<String, String?>, Map<String, Any?>> ->
-        logcat(LogPriority.VERBOSE) { "DatadogAttributesManager storing: $memberIdAttribute, $attributes" }
-        sdkCore.setUserInfo(id = memberIdAttribute.second, name = null, email = null, extraInfo = attributes)
-        rumMonitor.addAttribute(memberIdAttribute.first, memberIdAttribute.second)
+      ) { memberIdInfo, attributes ->
+        logcat(LogPriority.VERBOSE) { "DatadogAttributesManager storing: $memberIdInfo, $attributes" }
+        val memberId = memberIdInfo.memberId
+        if (memberId != null) {
+          sdkCore.setUserInfo(id = memberId, name = null, email = null, extraInfo = attributes)
+        } else {
+          sdkCore.setUserInfo(id = LoggedOutMemberId, name = null, email = null, extraInfo = attributes)
+        }
+        rumMonitor.addAttribute(memberIdInfo.trackingKey, memberIdInfo.memberId)
         for (attribute in attributes) {
           rumMonitor.addAttribute(attribute.key, attribute.value)
         }
-      }
+      }.collect()
     }
   }
 }
+
+/**
+ * When we do not possess a member ID, we still want to maintain the list of `extraInfo` instead of simply calling
+ * [com.datadog.android.api.SdkCore.clearUserInfo] which would make us lose this piece of valuable debugging
+ * information
+ */
+private const val LoggedOutMemberId: String = "-1"

@@ -7,8 +7,8 @@
   <string name="A11Y_CHARACTER_LIMIT">%1$d av %2$d tecken angivna</string>
   <string name="A11Y_CLEAR_FIELD">Rensa fält</string>
   <plurals name="A11Y_NUMBER_OF_ELIGIBLE_INSURANCES">
-    <item quantity="one">Du har %d berättigad försäkring.</item>
-    <item quantity="other">Du har %d berättigade försäkringar.</item>
+    <item quantity="one">Du har %1$d berättigad försäkring.</item>
+    <item quantity="other">Du har %1$d berättigade försäkringar.</item>
   </plurals>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
@@ -22,7 +22,7 @@
   <string name="ADDON_FLOW_CONFIRMATION_TITLE">Bekräfta uppgraderat skydd</string>
   <string name="ADDON_FLOW_COVER_BUTTON">Se vad som ingår</string>
   <string name="ADDON_FLOW_LEARN_MORE_BUTTON">Läs mer</string>
-  <string name="ADDON_FLOW_PRICE_LABEL">+%s/mån</string>
+  <string name="ADDON_FLOW_PRICE_LABEL">+%1$s/mån</string>
   <string name="ADDON_FLOW_SEE_PRICE_BUTTON">Se ditt pris</string>
   <string name="ADDON_FLOW_SELECT_BUTTON">Välj</string>
   <string name="ADDON_FLOW_SELECT_DAYS_PLACEHOLDER">Antal resdagar</string>
@@ -30,7 +30,7 @@
   <string name="ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE">Välj antalet resdagar som täcks</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_TITLE">Välj antal resdagar</string>
   <string name="ADDON_FLOW_SUBTITLE">För extra trygghet när du reser utomlands</string>
-  <string name="ADDON_FLOW_SUCCESS_SUBTITLE">Din nya tilläggsförsäkring börjar gälla från och med %s.</string>
+  <string name="ADDON_FLOW_SUCCESS_SUBTITLE">Din nya tilläggsförsäkring börjar gälla från och med %1$s.</string>
   <string name="ADDON_FLOW_SUCCESS_TITLE">Tilläggsförsäkring tillagd</string>
   <string name="ADDON_FLOW_SUMMARY_ACTIVE_FROM">Aktiveras %1$s</string>
   <string name="ADDON_FLOW_SUMMARY_CONFIRM_BUTTON">Lägg till och bekräfta</string>
@@ -109,7 +109,7 @@
   <string name="CHANGE_ADDRESS_ONLY_YOU">Bara jag</string>
   <string name="CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT">Dina andra försäkringar påverkas när du byter till en ny adress. Ditt pris och skydd kan ha ändrats.</string>
   <string name="CHANGE_ADDRESS_POSTAL_CODE_ERROR">Vänligen ange postnumret</string>
-  <string name="CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL">%s/mån</string>
+  <string name="CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL">%1$s/mån</string>
   <string name="CHANGE_ADDRESS_QA">Frågor och svar</string>
   <string name="CHANGE_ADDRESS_SELECT_HOUSING_TYPE_TITLE">Vilken typ av bostad ska du flytta till?</string>
   <string name="CHANGE_ADDRESS_SIZE_SUFFIX">m²</string>
@@ -155,7 +155,7 @@
   <string name="CLAIMS_CHECKOUT_PAYOUT_TEXT">Utbetalningen kommer att göras till det konto du kopplat som betalningsmetod för din försäkring.</string>
   <string name="CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT">Vi baserar reparationskostnaden på den information som finns på tillverkarens hemsida.</string>
   <string name="CLAIMS_CHECKOUT_REPAIR_INFO_TEXT">Baserat på informationen du angett verkar din telefon kunna repareras. Kontakta valfri reparatör för att få den lagad.</string>
-  <string name="CLAIMS_CHECKOUT_REPAIR_TITLE">Reparationskostnad ( %s )</string>
+  <string name="CLAIMS_CHECKOUT_REPAIR_TITLE">Reparationskostnad ( %1$s )</string>
   <string name="CLAIMS_CHECK_INFORMATION_TITLE">Kontrollera dina uppgifter</string>
   <string name="CLAIMS_COMPLEMENT__CLAIM">Du kan enkelt komplettera med bilder, filer och andra detaljer senare.</string>
   <string name="CLAIMS_CONFIRM_NUMBER_TITLE">Bekräfta ditt telefonnummer</string>
@@ -192,11 +192,11 @@
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Dubbelkolla att du fyllt i alla obligatoriska fält</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uppladdade filer</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Ladda upp filer</string>
-  <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Värdet får vara högst %d</string>
-  <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Värdet måste vara minst %d</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Värdet får vara högst %1$d</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Värdet måste vara minst %1$d</string>
   <string name="CLAIM_CHAT_FORM_REQUIRED_FIELD">Fält är obligatoriskt</string>
-  <string name="CLAIM_CHAT_FORM_TEXT_MAX_CHAR">Värdet får vara högst %d tecken</string>
-  <string name="CLAIM_CHAT_FORM_TEXT_MIN_CHAR">Värdet måste vara minst %d tecken</string>
+  <string name="CLAIM_CHAT_FORM_TEXT_MAX_CHAR">Värdet får vara högst %1$d tecken</string>
+  <string name="CLAIM_CHAT_FORM_TEXT_MIN_CHAR">Värdet måste vara minst %1$d tecken</string>
   <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Skriven beskrivning</string>
   <string name="CLAIM_CHAT_OTHER_TITLE">Övrig information</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Vänligen ange telefonnummer ifall vi behöver kontakta dig</string>
@@ -220,7 +220,7 @@
   <string name="COINSURED_ERROR_TEXT">Du kan inte redigera din medförsäkrade just nu. Skicka ett meddelande i appen till oss för ytterligare hjälp</string>
   <string name="COINSURED_WITHOUT_SSN_INFO">Vi kunde inte hämta informationen kopplat till personnumret. Ange det manuellt.</string>
   <string name="CONFIRM_AND_PROCEED_BUTTON">Bekräfta och fortsätt</string>
-  <string name="CONFIRM_CHANGES_SUBTITLE">Notera att dina ändringar börjar gälla från och med %s.</string>
+  <string name="CONFIRM_CHANGES_SUBTITLE">Notera att dina ändringar börjar gälla från och med %1$s.</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Giltigt till %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Giltigt till imorgon</string>
@@ -314,11 +314,11 @@
   <string name="FIELD_EXTRA_BUIDLINGS_SHED_LABEL">Förråd</string>
   <string name="FIELD_EXTRA_BUIDLINGS_STOREHOUSE_LABEL">Magasin</string>
   <string name="FILE_UPLOAD_IMAGE">Bild</string>
-  <string name="FOREVER_REFERRAL_INVITED_BY_YOU">%d vänner inbjudna</string>
-  <string name="FOREVER_REFERRAL_INVITED_YOU">Inbjudan från %s</string>
+  <string name="FOREVER_REFERRAL_INVITED_BY_YOU">%1$d vänner inbjudna</string>
+  <string name="FOREVER_REFERRAL_INVITED_YOU">Inbjudan från %1$s</string>
   <plurals name="FOREVER_REFERRAL_INVITED_BY_YOU_PLURAL">
-    <item quantity="one">%d vän inbjuden</item>
-    <item quantity="other">%d vänner inbjudna</item>
+    <item quantity="one">%1$d vän inbjuden</item>
+    <item quantity="other">%1$d vänner inbjudna</item>
   </plurals>
   <string name="FOREVER_REFERRAL_LIST_LABEL">Inbjudna vänner</string>
   <string name="FOREVER_TAB_MONTHLY_DISCOUNT">Rabatt per månad</string>
@@ -681,7 +681,7 @@
   <string name="SUMMARY_PURCHASE_DATE_DESCRIPTION">Köpt %1$s</string>
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Läs mer</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Skada %1$s</string>
-  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Ändringar aktiveras %s</string>
+  <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Ändringar aktiveras %1$s</string>
   <string name="TAB_HOME_TITLE">Hem</string>
   <string name="TAB_INSURANCES_TITLE">Försäkringar</string>
   <string name="TAB_PAYMENTS_TITLE">Betalningar</string>
@@ -691,17 +691,17 @@
   <string name="TALKBACK_ADD_DOCUMENTS">Lägg till dokument</string>
   <string name="TALKBACK_ADD_IMAGES">Lägg till bilder</string>
   <string name="TALKBACK_BOTTOM_SHEET_ANNOUNCEMENT">Bottenark öppet. Svep nedåt med två fingrar för att stänga.</string>
-  <string name="TALKBACK_CHAT_FAILED_MEDIA">Vid %s försökte du skicka en mediafil, men det misslyckades. Dubbeltryck för att försöka igen.</string>
-  <string name="TALKBACK_CHAT_FAILED_PHOTO">Vid %s försökte du skicka ett foto, men det misslyckades. Dubbeltryck för att försöka igen.</string>
-  <string name="TALKBACK_CHAT_FAILED_TEXT" formatted="false">Vid %s försökte du skicka ett textmeddelande, men det misslyckades. Dubbeltryck för att försöka igen. Meddelandet löd: %s</string>
-  <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">Vid %s skickade %s en fil av typen: %s, dubbeltryck för att öppna.</string>
-  <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">Vid %s skickade %s en GIF-bild.</string>
-  <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">Vid %s sa %s: %s</string>
-  <string name="TALKBACK_CLAIM_STATUS">Status på skadeanmälan: %s</string>
+  <string name="TALKBACK_CHAT_FAILED_MEDIA">Vid %1$s försökte du skicka en mediafil, men det misslyckades. Dubbeltryck för att försöka igen.</string>
+  <string name="TALKBACK_CHAT_FAILED_PHOTO">Vid %1$s försökte du skicka ett foto, men det misslyckades. Dubbeltryck för att försöka igen.</string>
+  <string name="TALKBACK_CHAT_FAILED_TEXT" formatted="false">Vid %1$s försökte du skicka ett textmeddelande, men det misslyckades. Dubbeltryck för att försöka igen. Meddelandet löd: %2$s</string>
+  <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">Vid %1$s skickade %2$s en fil av typen: %3$s, dubbeltryck för att öppna.</string>
+  <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">Vid %1$s skickade %2$s en GIF-bild.</string>
+  <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">Vid %1$s sa %2$s: %3$s</string>
+  <string name="TALKBACK_CLAIM_STATUS">Status på skadeanmälan: %1$s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information om din skadeanmalän</string>
-  <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Konversation om %s. Senaste meddelandet den %s.</string>
+  <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Konversation om %1$s. Senaste meddelandet den %2$s.</string>
   <string name="TALKBACK_COVERED">Ingår</string>
-  <string name="TALKBACK_DOCUMENT">Dokument %s, dubbeltryck för att öppna.</string>
+  <string name="TALKBACK_DOCUMENT">Dokument %1$s, dubbeltryck för att öppna.</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_CHOOSE">Dubbeltryck för att välja</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_READ_DETAILS">Dubbeltryck för att läsa detaljer</string>
   <string name="TALKBACK_DOUBLE_TAP_TO_SEE_ALL_OPTIONS">Dubbeltryck för att se alla alternativ</string>
@@ -722,7 +722,7 @@
   <string name="TALKBACK_OPEN_SENDING_OPTIONS">Öppna sändningsalternativ</string>
   <string name="TALKBACK_OPTION_NOT_SELECTED">Ej valt</string>
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
-  <string name="TALKBACK_PER_MONTH">%s per månad</string>
+  <string name="TALKBACK_PER_MONTH">%1$s per månad</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Nyp för att zooma</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Öka</string>
   <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
@@ -742,10 +742,10 @@
   <string name="TALKBACK_YOUR_REFERRAL_DISCOUNT">Your referral discount</string>
   <string name="TALK_BACK_YOUR_PRICE_AFTER_DISCOUNTS">Ditt pris efter rabatter: %1$s</string>
   <string name="TALK_BACK_YOUR_PRICE_BEFORE_DISCOUNTS">Ditt pris före rabatter: %1$s</string>
-  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Din försäkring kommer att sägas upp den %s. Om du har några frågor, vänligen besök "Hjälp och support" här i appen.</string>
+  <string name="TERMINATE_CONTRACT_CONFIRMATION_INFO_TEXT">Din försäkring kommer att sägas upp den %1$s. Om du har några frågor, vänligen besök "Hjälp och support" här i appen.</string>
   <string name="TERMINATE_CONTRACT_CONFIRMATION_TITLE">Bekräftelse</string>
   <string name="TERMINATE_CONTRACT_DELETION_CONTINUE_BUTTON">Ja, fortsätt</string>
-  <string name="TERMINATE_CONTRACT_DELETION_TEXT">Den valda försäkringen kommer att tas bort och inte aktiveras %s.</string>
+  <string name="TERMINATE_CONTRACT_DELETION_TEXT">Den valda försäkringen kommer att tas bort och inte aktiveras %1$s.</string>
   <string name="TERMINATE_CONTRACT_TERMINATING_PROGRESS">Avslutar...</string>
   <string name="TERMINATE_CONTRACT_TERMINATION_COMPLETE">Din försäkring har avslutats innan startdatumet. Du kommer inte debiteras någonting.</string>
   <string name="TERMINATION_ADDON_COVERAGE_TITLE">Utökat skydd</string>
@@ -771,7 +771,7 @@
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE">Välj den försäkring du vill säga upp</string>
   <string name="TERMINATION_FLOW_CONFIRMATION">Din försäkring kommer avlutas direkt</string>
   <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_DELETION">Din försäkring kommer att avslutas före startdatumet</string>
-  <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Din försäkring kommer att avslutas den %s</string>
+  <string name="TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION">Din försäkring kommer att avslutas den %1$s</string>
   <string name="TERMINATION_FLOW_CONFIRM_BUTTON">Ja, avsluta</string>
   <string name="TERMINATION_FLOW_CONFIRM_INFORMATION">Bekräfta din information</string>
   <string name="TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER">Välj datum...</string>
@@ -786,7 +786,7 @@
   <string name="TERMINATION_FLOW_NOT_ELIGIBLE_TITLE">Kan inte säga upp försäkring</string>
   <string name="TERMINATION_FLOW_PAYMENT_PER_MONTH">%1$s kr/mån</string>
   <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITHOUT_DATE">Din försäkring har avslutats innan startdatumet. Du kommer inte att debiteras någonting.</string>
-  <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE">Din försäkring kommer att avslutas %s. En bekräftelse kommer att skickas till din e-post.</string>
+  <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE">Din försäkring kommer att avslutas %1$s. En bekräftelse kommer att skickas till din e-post.</string>
   <string name="TERMINATION_FLOW_SUCCESS_TITLE">Försäkring avslutad</string>
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Granska och bekräfta</string>
   <string name="TERMINATION_FLOW_TODAY">Idag</string>
@@ -809,7 +809,7 @@
   <string name="TIER_COMPARISON_TITLE">Jämför skyddsnivåer</string>
   <string name="TIER_FLOW_ADDON_LABEL">Utökat reseskydd</string>
   <string name="TIER_FLOW_ADDON_NO_COVERAGE_LABEL">Inget utökat skydd</string>
-  <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Dina ändringar börjar gälla från och med %s.</string>
+  <string name="TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION">Dina ändringar börjar gälla från och med %1$s.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION">Det gick inte att genomföra ändringen. Vänligen försök igen.</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_LOADING_TITLE">Genomför ändringar...</string>
   <string name="TIER_FLOW_COMMIT_PROCESSING_TITLE">Ändring genomförd</string>
@@ -822,9 +822,9 @@
   <string name="TIER_FLOW_LOCKED_INFO_DESCRIPTION">Du kan inte göra ändringar i den här skyddsnivån</string>
   <string name="TIER_FLOW_LOCKED_INFO_TITLE">Already at the highest coverage level</string>
   <string name="TIER_FLOW_PREVIOUS_PRICE">Ditt tidigare pris %1$s</string>
-  <string name="TIER_FLOW_PRICE_LABEL">från %s kr/mån</string>
-  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%s/mån</string>
-  <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">Från %s/mån</string>
+  <string name="TIER_FLOW_PRICE_LABEL">från %1$s kr/mån</string>
+  <string name="TIER_FLOW_PRICE_LABEL_CURRENCY">%1$s/mån</string>
+  <string name="TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY">Från %1$s/mån</string>
   <string name="TIER_FLOW_PROCESSING">Hämtar skyddsnivåer...</string>
   <string name="TIER_FLOW_QA_SUBTITLE">Svar på våra medlemmars vanligaste funderingar.</string>
   <string name="TIER_FLOW_QA_TITLE">Frågor och svar</string>
@@ -848,14 +848,14 @@
   <string name="TOAST_NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST_READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
-  <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
+  <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %1$s</string>
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>
   <string name="app_info_submit_bug_button">Rapportera tekniska problem</string>
   <string name="app_info_submit_bug_continue">Fortsätt</string>
   <string name="app_info_submit_bug_go_back">Gå tillbaka</string>
-  <string name="app_info_submit_bug_prefilled_letter_body" formatted="false">Jag stötte på ett tekniskt problem i Hedvig-appen!\n\nBeskrivning av det tekniska problemet: \n(Håll det kort och enkelt)\n\nBifoga skärmdump:\n(Har du en skärmdump? Bifoga den i det här e-postmeddelandet)\n\nInformation för utvecklare (Ändra inte)\nMITT: %s\nDID: %s\nAVC: %s\nSV: %s</string>
+  <string name="app_info_submit_bug_prefilled_letter_body" formatted="false">Jag stötte på ett tekniskt problem i Hedvig-appen!\n\nBeskrivning av det tekniska problemet: \n(Håll det kort och enkelt)\n\nBifoga skärmdump:\n(Har du en skärmdump? Bifoga den i det här e-postmeddelandet)\n\nInformation för utvecklare (Ändra inte)\nMITT: %1$s\nDID: %2$s\nAVC: %3$s\nSV: %4$s</string>
   <string name="app_info_submit_bug_prefilled_letter_subject">Rapport om tekniska problem</string>
   <string name="app_info_submit_bug_warning">Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor, skicka ett meddelande direkt här i appen.</string>
   <string name="app_info_submit_bug_warning_with_chat_link_1">Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor,</string>
@@ -1083,7 +1083,7 @@
   <string name="login_open_email_app_button">Öppna mail-appen</string>
   <string name="login_smedium_button_active_resend_code">Skicka koden igen</string>
   <string name="login_snackbar_code_resent">Kod skickad</string>
-  <string name="login_subtitle_verification_code_email">Klicka på inloggningsknappen i mejlet eller fyll i den 6-siffriga kod vi skickat till %s</string>
+  <string name="login_subtitle_verification_code_email">Klicka på inloggningsknappen i mejlet eller fyll i den 6-siffriga kod vi skickat till %1$s</string>
   <string name="login_text_input_email_address">Email address</string>
   <string name="login_text_input_email_address_icon_description_clear_all">Rensa allt</string>
   <string name="login_text_input_email_error_enter_email">Enter email address to continue</string>

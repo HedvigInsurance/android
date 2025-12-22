@@ -13,12 +13,12 @@ fun OkHttpClient.Builder.addDatadogConfiguration(hedvigBuildConstants: HedvigBui
     .eventListenerFactory(DatadogEventListener.Factory())
     .addInterceptor(
       DatadogInterceptor.Builder(tracedHosts)
-        .setTraceSampler(RateBasedSampler(sampleRate = 100f))
+        .setTraceSampleRate(100f)
         .build(),
     )
     .addNetworkInterceptor(
       TracingInterceptor.Builder(tracedHosts)
-        .setTraceSampler(RateBasedSampler(sampleRate = 100f))
+        .setTraceSampleRate(100f)
         .build(),
     )
 }

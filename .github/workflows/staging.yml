@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - cmp/ds
   workflow_dispatch:
 
 concurrency:
