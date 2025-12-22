@@ -129,7 +129,7 @@ internal fun ClaimChatDestination(
     parametersOf(isDevelopmentFlow)
   }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
-    BlurredGradientBackground(radius = 100)
+    BlurredGradientBackground()
     ClaimChatScreenContent(
       claimChatViewModel = claimChatViewModel,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
