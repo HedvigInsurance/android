@@ -456,6 +456,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     tryToDialPhone = externalNavigator::tryToDialPhone,
     imageLoader = imageLoader,
     appPackageId = hedvigBuildConstants.appPackageId,
+    onNavigateToNewConversation = { backStackEntry ->
+      navigateToNewConversation(backStackEntry, null)
+    },
   )
   claimDetailsGraph(
     navigator = navigator,

@@ -123,6 +123,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
         partnersInfo = partnersInfo?.toInfoBlock(),
         content = content.toInfoBlock(),
         faq = faq.map { it.toInfoBlock() },
+        buttonText = buttonTitle
       )
     }
 
@@ -157,6 +158,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
         ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
         ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
+        ClaimIntentStepContentFormFieldType.PHONE_NUMBER -> StepContent.Form.FieldType.NUMBER
       },
       options = field.options?.map {
         StepContent.Form.FieldOption(

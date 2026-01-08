@@ -107,6 +107,7 @@ fragment DeflectionFragment on ClaimIntentStepContentDeflection {
   faq {
     ...DeflectionInfoBlockFragment
   }
+  buttonTitle
 }
 
 fragment DeflectionInfoBlockFragment on ClaimIntentStepContentDeflectionInfoBlock {
