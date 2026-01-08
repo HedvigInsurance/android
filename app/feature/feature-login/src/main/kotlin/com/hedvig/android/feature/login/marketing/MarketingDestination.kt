@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,8 +51,6 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import kotlin.system.exitProcess
-import kotlinx.coroutines.launch
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
@@ -64,6 +60,8 @@ import com.hedvig.android.feature.login.marketing.ui.LoginBackgroundVideo
 import com.hedvig.android.language.Language
 import com.hedvig.android.language.label
 import hedvig.resources.R
+import kotlin.system.exitProcess
+import kotlinx.coroutines.runBlocking
 
 @Composable
 internal fun MarketingDestination(
@@ -213,7 +211,6 @@ private fun ColumnScope.PreferencesSheetContent(
   selectLanguage: (Language) -> Unit,
   dismissSheet: () -> Unit,
 ) {
-  val coroutineScope = rememberCoroutineScope()
   var showRestartDialog by remember { mutableStateOf(false) }
   var pendingEnvironmentIsProduction by remember { mutableStateOf<Boolean?>(null) }
 
@@ -233,10 +230,10 @@ private fun ColumnScope.PreferencesSheetContent(
       },
       onConfirmClick = {
         pendingEnvironmentIsProduction?.let { isProduction ->
-          coroutineScope.launch {
+          runBlocking {
             environmentManager.setProductionEnvironment(isProduction)
-            exitProcess(0)
           }
+          exitProcess(0)
         }
       },
     )
