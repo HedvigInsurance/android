@@ -18,9 +18,9 @@ import kotlinx.coroutines.flow.onEach
 interface EnvironmentManager {
   /**
    * Observes whether production environment is selected.
-   * Returns null if no preference has been set (defaults to staging).
+   * Defaults to false (staging) if no preference has been set.
    */
-  fun isProductionEnvironment(): Flow<Boolean?>
+  fun isProductionEnvironment(): Flow<Boolean>
 
   /**
    * Sets the environment preference.
@@ -32,9 +32,9 @@ interface EnvironmentManager {
 internal class DataStoreEnvironmentManager(
   private val dataStore: DataStore<Preferences>,
 ) : EnvironmentManager {
-  override fun isProductionEnvironment(): Flow<Boolean?> {
+  override fun isProductionEnvironment(): Flow<Boolean> {
     return dataStore.data.map {
-      it[environmentKey]
+      it[environmentKey] ?: false
     }.distinctUntilChanged().onEach {
       logcat { "EnvironmentManager: isProductionEnvironment:$it" }
     }

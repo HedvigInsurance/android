@@ -47,8 +47,6 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.core.demomode.di.demoModule
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.runBlocking
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.addons.di.dataAddonsModule
 import com.hedvig.android.data.changetier.di.dataChangeTierModule
@@ -107,6 +105,8 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.feature.claim.chat.di.claimChatModule
 import java.io.File
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -218,7 +218,7 @@ private val buildConstantsModule = module {
     } else {
       // Read environment preference - defaults to false (staging) if not set
       runBlocking {
-        environmentManager.isProductionEnvironment().firstOrNull() ?: false
+        environmentManager.isProductionEnvironment().first()
       }
     }
 
