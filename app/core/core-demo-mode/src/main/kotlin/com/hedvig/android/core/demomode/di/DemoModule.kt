@@ -3,8 +3,8 @@ package com.hedvig.android.core.demomode.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.hedvig.android.auth.event.AuthEventListener
-import com.hedvig.android.core.demomode.DataStoreEnvironmentManager
 import com.hedvig.android.core.demomode.DataStoreDemoManager
+import com.hedvig.android.core.demomode.DataStoreEnvironmentManager
 import com.hedvig.android.core.demomode.DemoAuthEventListener
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.EnvironmentManager
