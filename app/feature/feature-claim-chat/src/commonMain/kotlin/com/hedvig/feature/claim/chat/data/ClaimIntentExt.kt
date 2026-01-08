@@ -123,6 +123,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
         partnersInfo = partnersInfo?.toInfoBlock(),
         content = content.toInfoBlock(),
         faq = faq.map { it.toInfoBlock() },
+        buttonText = buttonTitle
       )
     }
 

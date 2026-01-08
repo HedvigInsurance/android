@@ -145,6 +145,7 @@ internal sealed interface StepContent {
     val partnersInfo: InfoBlock?,
     val content: InfoBlock,
     val faq: List<InfoBlock>,
+    val buttonText: String
   ) : StepContent {
     override val isSkippable: Boolean = false
 

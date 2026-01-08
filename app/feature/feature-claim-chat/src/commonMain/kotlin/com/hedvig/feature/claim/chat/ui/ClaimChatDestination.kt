@@ -50,13 +50,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.withoutPlacement
@@ -78,6 +81,7 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
+import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
@@ -96,7 +100,7 @@ import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
-import hedvig.resources.CLAIM_CHAT_SKIPPED_LABEL
+import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
@@ -127,7 +131,7 @@ internal fun ClaimChatDestination(
     parametersOf(isDevelopmentFlow)
   }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
-    BlurredGradientBackground(radius = 100)
+    BlurredGradientBackground()
     ClaimChatScreenContent(
       claimChatViewModel = claimChatViewModel,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -295,7 +299,6 @@ private fun ClaimChatScreenContent(
               showFakeAiDot = showFakeAiDot,
               currentContinueButtonLoading = uiState.currentContinueButtonLoading,
               currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-              autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
               onEvent = onEvent,
               shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
               onNavigateToImageViewer = onNavigateToImageViewer,
@@ -315,7 +318,6 @@ private fun ClaimChatScreenContent(
             showFakeAiDot = showFakeAiDot,
             currentContinueButtonLoading = uiState.currentContinueButtonLoading,
             currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-            autoNavigateForDeflectStepId = uiState.autoNavigateForDeflectStepId,
             onEvent = onEvent,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             onNavigateToImageViewer = onNavigateToImageViewer,
@@ -357,21 +359,25 @@ private fun ScrollToBottomButton(
 ) {
   IconButton(
     onClick = onClick,
-    modifier = modifier,
+    modifier = modifier.size(50.dp),
   ) {
-    val whiteColor = HedvigTheme.colorScheme.backgroundWhite
+    val whiteColor = HedvigTheme.colorScheme.fillNegative
     Box(
       contentAlignment = Alignment.Center,
+      modifier = Modifier.padding(4.dp),
     ) {
       Canvas(
-        modifier = Modifier.size(42.dp),
+        modifier = Modifier.size(42.dp)
+          .shadow(1.dp, shape = CircleShape),
         onDraw = {
           drawCircle(color = whiteColor)
         },
       )
       Icon(
-        HedvigIcons.ArrowDown,
-        stringResource(Res.string.A11Y_SCROLL_DOWN)
+          HedvigIcons.ArrowDown,
+          stringResource(Res.string.A11Y_SCROLL_DOWN),
+          tint = HedvigTheme.colorScheme.fillPrimary,
+        modifier = Modifier.size (24.dp)
       )
     }
   }
@@ -385,7 +391,6 @@ private fun StepContentSection(
   showFakeAiDot: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
-  autoNavigateForDeflectStepId: StepId?,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -479,7 +484,6 @@ private fun StepContentSection(
           isCurrentStep = isCurrentStep,
           currentContinueButtonLoading = currentContinueButtonLoading,
           currentSkipButtonLoading = currentSkipButtonLoading,
-          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
           onEvent = onEvent,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           onNavigateToImageViewer = onNavigateToImageViewer,
@@ -502,7 +506,7 @@ private fun CommonPaddingWrapper(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     content()
-    MemberSentAnswer(
+    RoundCornersPill(
       onClick = null,
       modifier = Modifier.withoutPlacement(),
     ) {
@@ -570,7 +574,6 @@ private fun StepBottomContent(
   isCurrentStep: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
-  autoNavigateForDeflectStepId: StepId?,
   onEvent: (ClaimChatEvent) -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -624,11 +627,12 @@ private fun StepBottomContent(
       )
 
       is StepContent.ContentSelect -> ContentSelectStep(
-        item = stepItem,
-        isCurrentStep = isCurrentStep,
-        options = stepItem.stepContent.options,
-        selectedOptionId = stepItem.stepContent.selectedOptionId,
-        onEvent = onEvent,
+          item = stepItem,
+          isCurrentStep = isCurrentStep,
+          options = stepItem.stepContent.options,
+          selectedOptionId = stepItem.stepContent.selectedOptionId,
+          onEvent = onEvent,
+          currentContinueButtonLoading = currentContinueButtonLoading,
       )
 
       is StepContent.FileUpload -> UploadFilesStep(
@@ -682,10 +686,10 @@ private fun StepBottomContent(
       is StepContent.Deflect -> {
         DeflectStep(
           stepId = stepItem.id,
-          text = stepItem.text,
+          buttonText = stepItem.stepContent.buttonText,
           deflect = stepItem.stepContent,
           navigateToDeflect = navigateToDeflect,
-          autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
+          modifier= Modifier.fillMaxWidth()
         )
       }
 
@@ -791,8 +795,8 @@ internal fun SkippedLabel() {
     Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.End,
   ) {
-    val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_LABEL)
-    MemberSentAnswer(
+    val skippedLabelText = stringResource(Res.string.CLAIM_CHAT_SKIPPED_STEP)
+    RoundCornersPill(
       onClick = null,
     ) {
       HedvigText(
@@ -806,29 +810,17 @@ internal fun SkippedLabel() {
 @Composable
 private fun DeflectStep(
   stepId: StepId,
-  text: String?,
+  buttonText: String,
   deflect: StepContent.Deflect,
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
-  autoNavigateForDeflectStepId: StepId?,
   modifier: Modifier = Modifier,
 ) {
-  if (autoNavigateForDeflectStepId != null) {
-    LaunchedEffect(Unit) {
-      navigateToDeflect(stepId, deflect)
-    }
-  }
-  if (text != null) {
-    HedvigNotificationCard(
-      message = text,
-      priority = NotificationDefaults.NotificationPriority.InfoInline,
-      style = NotificationDefaults.InfoCardStyle.Button(
-        buttonText = stringResource(Res.string.important_message_read_more),
-        onButtonClick = { navigateToDeflect(stepId, deflect) },
-      ),
-      modifier = modifier,
-    )
-  }
-
+  HedvigButton(
+    modifier = modifier,
+    text = buttonText,
+    onClick =  dropUnlessResumed {navigateToDeflect(stepId, deflect)},
+    enabled = true
+  )
 }
 
 @Composable
@@ -847,7 +839,7 @@ private fun TaskStep(
           if (taskContent.descriptions.isNotEmpty()) {
             Spacer(Modifier.width(8.dp))
             AnimatedContent(taskContent.descriptions.last()) { target ->
-              MemberSentAnswer(
+              RoundCornersPill(
                 onClick = null,
               ) {
                 HedvigText(target)
@@ -1105,7 +1097,7 @@ private fun FormContent(
               )
               if (textValue.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))
-                MemberSentAnswer(
+                RoundCornersPill(
                   onClick = null,
                 ) {
                   HedvigText(textValue)
@@ -1131,13 +1123,22 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
       modifier = modifier.fillMaxWidth().padding(top = 8.dp),
       horizontalArrangement = Arrangement.End,
     ) {
-      HedvigButton(
-        text = stringResource(Res.string.claims_edit_button),
-        enabled = true,
-        onClick = onRegret,
-        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        buttonSize = ButtonDefaults.ButtonSize.Small,
-      )
+      RoundCornersPill(
+          onClick = onRegret,
+          modifier = Modifier.semantics(true) {},
+      ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          HedvigText(
+              stringResource(Res.string.claims_edit_button),
+              fontStyle = HedvigTheme.typography.label.fontStyle,
+          )
+          Spacer(Modifier.width(6.dp))
+          Icon(
+              HedvigIcons.ChevronDown, null,
+              tint = HedvigTheme.colorScheme.fillTertiaryTransparent,
+          )
+        }
+      }
     }
   }
 }
@@ -1214,6 +1215,7 @@ private fun ContentSelectStep(
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
   onEvent: (ClaimChatEvent) -> Unit,
+  currentContinueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -1230,12 +1232,14 @@ private fun ContentSelectStep(
             options = options,
             selectedOption = null,
             onOptionClick = { option ->
-              onEvent(
-                ClaimChatEvent.Select(
-                  item.id,
-                  option.id,
-                ),
-              )
+              if (!currentContinueButtonLoading) {
+                onEvent(
+                  ClaimChatEvent.Select(
+                    item.id,
+                    option.id,
+                  ),
+                )
+              }
             },
           )
         }
@@ -1255,7 +1259,7 @@ private fun ContentSelectStep(
             modifier = Modifier
               .fillMaxWidth(),
           ) {
-            MemberSentAnswer(
+            RoundCornersPill(
               onClick = null,
             ) {
               HedvigText(targetState.title)

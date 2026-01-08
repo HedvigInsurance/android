@@ -121,7 +121,6 @@ internal sealed interface ClaimChatUiState {
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
     val currentStep: ClaimIntentStep?,
-    val autoNavigateForDeflectStepId: StepId?,
     val freeText: String?,
     val outcome: ClaimIntentOutcome?,
     val errorSubmittingStep: ErrorMessage?,
@@ -198,7 +197,6 @@ internal class ClaimChatPresenter(
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }
-    var autoNavigateForDeflectStepId: StepId? by remember { mutableStateOf(null) }
     var showFreeTextOverlay by remember { mutableStateOf<FreeTextRestrictions?>(null) }
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
@@ -207,7 +205,6 @@ internal class ClaimChatPresenter(
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
-    val setAutoNavigateForDeflectStepId: (StepId) -> Unit = { autoNavigateForDeflectStepId = it }
 
     if (initializing) {
       LaunchedEffect(Unit) {
@@ -233,7 +230,7 @@ internal class ClaimChatPresenter(
 
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
-      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+      handleNext(steps, setOutcome, claimIntent.next)
     }
 
     CollectEvents { event ->
@@ -264,7 +261,7 @@ internal class ClaimChatPresenter(
                     return@launch
                   }
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -296,7 +293,7 @@ internal class ClaimChatPresenter(
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+                      handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
               }
@@ -316,7 +313,7 @@ internal class ClaimChatPresenter(
                     },
                     ifRight = { claimIntent ->
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+                      handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
               }
@@ -346,14 +343,19 @@ internal class ClaimChatPresenter(
             }
 
             is ClaimChatEvent.AudioRecording.ShowFreeText -> {
+              val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
+                ?: return@CollectEvents
+              val textTooShort = freeText?.length?.let {
+                currentContent.freeTextMinLength > it
+              } ?: true
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
                       showOverlay = false,
                       errorType = null,
-                      canSubmit =
-                        !currentContinueButtonLoading && !freeText.isNullOrEmpty(),
+                      canSubmit = canSubmit,
                     ),
                   ),
                 )
@@ -447,7 +449,7 @@ internal class ClaimChatPresenter(
                   },
                   ifRight = { claimIntent ->
                     currentContinueButtonLoading = false
-                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+                    handleNext(steps, setOutcome, claimIntent.next)
                   },
                 )
             }
@@ -497,7 +499,7 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -544,7 +546,7 @@ internal class ClaimChatPresenter(
                 },
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -573,7 +575,7 @@ internal class ClaimChatPresenter(
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
-                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next)
+                    handleNext(steps, setOutcome, claimIntent.next)
                   },
                 )
             }
@@ -656,7 +658,7 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next,
+                    steps, setOutcome, claimIntent.next,
                   )
                 },
               )
@@ -680,9 +682,7 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.HandledDeflectNavigation -> {
-          if (autoNavigateForDeflectStepId == event.stepId) {
-            autoNavigateForDeflectStepId = null
-          }
+    //todo or remove
         }
 
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
@@ -697,7 +697,6 @@ internal class ClaimChatPresenter(
         claimIntentId = claimIntentId!!,
         steps = steps,
         currentStep = currentStep,
-        autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
         outcome = outcome,
         showFreeTextOverlay = showFreeTextOverlay,
         freeText = freeText,
@@ -776,7 +775,6 @@ private fun SubmitCompleteTaskEffect(
 private fun handleNext(
   steps: SnapshotStateList<ClaimIntentStep>,
   setOutcome: (outcome: ClaimIntentOutcome) -> Unit,
-  setAutoNavigateForDeflectStepId: (StepId) -> Unit,
   next: ClaimIntent.Next,
 ) {
   when (next) {
@@ -785,9 +783,6 @@ private fun handleNext(
     }
 
     is ClaimIntent.Next.Step -> {
-      if (next.claimIntentStep.stepContent is StepContent.Deflect) {
-        setAutoNavigateForDeflectStepId(next.claimIntentStep.id)
-      }
       steps.replaceTaskWithNextStep(next.claimIntentStep)
     }
   }

@@ -70,7 +70,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.ui.MemberSentAnswer
+import com.hedvig.feature.claim.chat.ui.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.SkippedLabel
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
@@ -306,7 +306,7 @@ internal fun VoiceRecordingLabel(
         horizontalArrangement = Arrangement.End,
         modifier = Modifier.fillMaxWidth(),
       ) {
-        MemberSentAnswer(
+        RoundCornersPill(
           onClick = { showExtended = true },
         ) {
           Row(
