@@ -1262,6 +1262,7 @@ private fun ContentSelectStep(
             },
           )
           if (canSkip) {
+            Spacer(Modifier.height(16.dp))
             HedvigButton(
               stringResource(Res.string.claims_skip_button),
               onClick = onSkip,
@@ -1270,37 +1271,34 @@ private fun ContentSelectStep(
               modifier = Modifier.fillMaxWidth(),
               buttonStyle = ButtonDefaults.ButtonStyle.Secondary
             )
-            Spacer(Modifier.width(16.dp))
+            Spacer(Modifier.height(16.dp))
           }
-        }
-      }
-    }
-    AnimatedContent(
-      options.firstOrNull { it.id == selectedOptionId },
-      transitionSpec = {
-        (fadeIn() + scaleIn()).togetherWith(fadeOut())
-      },
-    ) { targetState ->
-      if (targetState != null) {
-        Column {
-          Spacer(Modifier.height(8.dp))
-          Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier
-              .fillMaxWidth(),
-          ) {
-            RoundCornersPill(
-              onClick = null,
-            ) {
-              HedvigText(targetState.title)
+        } else {
+          Column {
+            val selected = options.firstOrNull { it.id == selectedOptionId }
+            Spacer(Modifier.height(8.dp))
+            if (selected != null) {
+              Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                  .fillMaxWidth(),
+              ) {
+                RoundCornersPill(
+                  onClick = null,
+                ) {
+                  HedvigText(selected.title)
+                }
+              }
+            } else {
+              SkippedLabel()
             }
+            EditButton(
+              item.isRegrettable,
+              onRegret = {
+                onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
+              },
+            )
           }
-          EditButton(
-            item.isRegrettable,
-            onRegret = {
-              onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
-            },
-          )
         }
       }
     }
