@@ -97,6 +97,7 @@ import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
+import hedvig.resources.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
@@ -633,6 +634,11 @@ private fun StepBottomContent(
           selectedOptionId = stepItem.stepContent.selectedOptionId,
           onEvent = onEvent,
           currentContinueButtonLoading = currentContinueButtonLoading,
+        canSkip = stepItem.stepContent.isSkippable,
+        onSkip = {
+          onEvent(ClaimChatEvent.Skip(stepItem.id))
+        },
+        skipButtonLoading = currentSkipButtonLoading,
       )
 
       is StepContent.FileUpload -> UploadFilesStep(
@@ -742,7 +748,7 @@ private fun UploadFilesStep(
       Spacer(Modifier.height(8.dp))
       if (stepContent.localFiles.isNotEmpty()) {
         HedvigButton(
-          text = stringResource(Res.string.general_continue_button),
+          text = stringResource(Res.string.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON),
           enabled = !continueButtonLoading,
           onClick = {
             onEvent(
@@ -764,7 +770,7 @@ private fun UploadFilesStep(
           },
           isLoading = skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )
       }
     } else {
@@ -1076,7 +1082,7 @@ private fun FormContent(
           onClick = onSkip,
           isLoading = skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )
       }
     } else {
@@ -1216,6 +1222,9 @@ private fun ContentSelectStep(
   selectedOptionId: String?,
   onEvent: (ClaimChatEvent) -> Unit,
   currentContinueButtonLoading: Boolean,
+  canSkip: Boolean,
+  onSkip: () -> Unit,
+  skipButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -1242,6 +1251,17 @@ private fun ContentSelectStep(
               }
             },
           )
+          if (canSkip) {
+            HedvigButton(
+              stringResource(Res.string.claims_skip_button),
+              onClick = onSkip,
+              isLoading = skipButtonLoading,
+              enabled = !skipButtonLoading,
+              modifier = Modifier.fillMaxWidth(),
+              buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+            )
+            Spacer(Modifier.width(16.dp))
+          }
         }
       }
     }
