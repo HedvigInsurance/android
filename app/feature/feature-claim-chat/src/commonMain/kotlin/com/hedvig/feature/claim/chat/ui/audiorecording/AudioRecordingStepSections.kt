@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -107,12 +108,13 @@ internal fun AudioRecorderBubble(
       }
 
       if (canSkip && isCurrentStep) {
-        HedvigTextButton(
+        HedvigButton(
           stringResource(Res.string.claims_skip_button),
           onClick = onSkip,
           isLoading = skipButtonLoading,
           enabled = !skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary
         )
         Spacer(Modifier.width(16.dp))
       }

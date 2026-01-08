@@ -457,7 +457,7 @@ private fun UploadFilesBubbleContent(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonStyle = if (localFiles.isNotEmpty()) {
-        ButtonDefaults.ButtonStyle.Ghost
+        ButtonDefaults.ButtonStyle.Secondary
       } else {
         ButtonDefaults.ButtonStyle.Primary
       },
