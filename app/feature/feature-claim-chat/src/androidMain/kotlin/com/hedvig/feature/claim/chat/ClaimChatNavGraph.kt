@@ -92,13 +92,12 @@ fun NavGraphBuilder.claimChatGraph(
       tryToDialPhone = tryToDialPhone,
       onNavigateToNewConversation = {
         onNavigateToNewConversation(backStackEntry)
-      }
+      },
     )
   }
   navdestination<ClaimOutcomeNewClaimDestination>(ClaimOutcomeNewClaimDestination) {
     ClaimOutcomeNewClaimDestination(
-      claim = outcome,
-      navigateToClaimDetails = { navigateToClaimDetails(outcome.claimId) },
+      navController::navigateUp,
     )
   }
   navdestination<UpdateAppDestination> {
