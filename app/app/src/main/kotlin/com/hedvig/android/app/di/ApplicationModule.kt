@@ -45,7 +45,10 @@ import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.core.demomode.di.demoModule
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.addons.di.dataAddonsModule
 import com.hedvig.android.data.changetier.di.dataChangeTierModule
@@ -205,17 +208,59 @@ private val videoPlayerModule = module {
 private val buildConstantsModule = module {
   single<HedvigBuildConstants> {
     val context = get<Context>()
+    val environmentManager = get<EnvironmentManager>()
+    val buildTypeIsRelease = BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+
+    // For staging builds, check if user has overridden to production environment
+    // For production builds, always use production (ignore any saved preference)
+    val environmentIsProduction = if (buildTypeIsRelease) {
+      true
+    } else {
+      // Read environment preference - defaults to false (staging) if not set
+      runBlocking {
+        environmentManager.isProductionEnvironment().firstOrNull() ?: false
+      }
+    }
+
     object : HedvigBuildConstants {
-      override val urlGraphqlOctopus: String = context.getString(R.string.OCTOPUS_GRAPHQL_URL)
-      override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
-      override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
-      override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
-      override val urlClaimsService: String = context.getString(R.string.CLAIMS_SERVICE)
-      override val deepLinkHosts: List<String> = listOf(
-        context.getString(R.string.DEEP_LINK_DOMAIN_HOST_NEW),
-        context.getString(R.string.DEEP_LINK_DOMAIN_HOST) + context.getString(R.string.DEEP_LINK_DOMAIN_PATH_PREFIX),
-        context.getString(R.string.DEEP_LINK_DOMAIN_HOST_OLD),
-      )
+      override val urlGraphqlOctopus: String = if (environmentIsProduction) {
+        "https://apollo-router.prod.hedvigit.com"
+      } else {
+        "https://apollo-router.dev.hedvigit.com"
+      }
+      override val urlBaseWeb: String = if (environmentIsProduction) {
+        "https://www.hedvig.com"
+      } else {
+        "https://www.dev.hedvigit.com"
+      }
+      override val urlOdyssey: String = if (environmentIsProduction) {
+        "https://odyssey.prod.hedvigit.com"
+      } else {
+        "https://odyssey.dev.hedvigit.com"
+      }
+      override val urlBotService: String = if (environmentIsProduction) {
+        "https://gateway.hedvig.com/bot-service"
+      } else {
+        "https://gateway.dev.hedvigit.com/bot-service"
+      }
+      override val urlClaimsService: String = if (environmentIsProduction) {
+        "https://gateway.hedvig.com/claims"
+      } else {
+        "https://gateway.dev.hedvigit.com/claims"
+      }
+      override val deepLinkHosts: List<String> = if (environmentIsProduction) {
+        listOf(
+          "link.hedvig.com",
+          "www.hedvig.com/deeplink",
+          "hedvig.page.link",
+        )
+      } else {
+        listOf(
+          "link.dev.hedvigit.com",
+          "dev.hedvigit.com/deeplink",
+          "hedvigtest.page.link",
+        )
+      }
 
       override val appVersionName: String = BuildConfig.VERSION_NAME
       override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()
@@ -223,8 +268,8 @@ private val buildConstantsModule = module {
       override val appPackageId: String = BuildConfig.APPLICATION_ID
 
       override val isDebug: Boolean = BuildConfig.DEBUG
-      override val isProduction: Boolean =
-        BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
+      override val isProduction: Boolean = environmentIsProduction
+      override val isReleaseBuild: Boolean = buildTypeIsRelease
       override val buildApiVersion: Int = Build.VERSION.SDK_INT
     }
   }

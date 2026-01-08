@@ -32,6 +32,7 @@ import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
@@ -66,6 +67,7 @@ internal fun HedvigApp(
   splashIsRemovedSignal: Channel<Unit>,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
+  environmentManager: EnvironmentManager,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
@@ -133,6 +135,7 @@ internal fun HedvigApp(
             imageLoader = imageLoader,
             languageService = languageService,
             hedvigBuildConstants = hedvigBuildConstants,
+            environmentManager = environmentManager,
             simpleVideoCache = simpleVideoCache,
             demoManager = demoManager,
             logoutUseCase = logoutUseCase,

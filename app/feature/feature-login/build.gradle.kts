@@ -29,6 +29,7 @@ dependencies {
   implementation(projects.authCorePublic)
   implementation(projects.authCoreTest)
   implementation(projects.composeUi)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)

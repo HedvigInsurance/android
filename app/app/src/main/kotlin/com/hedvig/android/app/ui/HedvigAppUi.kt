@@ -38,6 +38,7 @@ import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -63,6 +64,7 @@ internal fun HedvigAppUi(
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
+  environmentManager: EnvironmentManager,
   demoManager: DemoManager,
   logoutUseCase: LogoutUseCase,
 ) {
@@ -89,6 +91,7 @@ internal fun HedvigAppUi(
           simpleVideoCache = simpleVideoCache,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
+          environmentManager = environmentManager,
           modifier = Modifier
             .fillMaxHeight()
             .weight(1f)

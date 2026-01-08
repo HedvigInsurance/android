@@ -13,6 +13,7 @@ import coil.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -99,6 +100,7 @@ internal fun HedvigNavHost(
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
+  environmentManager: EnvironmentManager,
   modifier: Modifier = Modifier,
 ) {
   LocalConfiguration.current
@@ -152,6 +154,8 @@ internal fun HedvigNavHost(
       navigator = navigator,
       appVersionName = hedvigBuildConstants.appVersionName,
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
+      hedvigBuildConstants = hedvigBuildConstants,
+      environmentManager = environmentManager,
       openUrl = openUrl,
       onOpenEmailApp = externalNavigator::openEmailApp,
       onNavigateToLoggedIn = hedvigAppState::navigateToLoggedIn,

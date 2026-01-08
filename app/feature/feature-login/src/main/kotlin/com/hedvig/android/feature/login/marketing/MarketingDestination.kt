@@ -19,6 +19,10 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -31,7 +35,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
@@ -46,6 +53,8 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import kotlin.system.exitProcess
+import kotlinx.coroutines.launch
 import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import com.hedvig.android.design.system.hedvig.icon.flag.FlagUk
@@ -60,6 +69,8 @@ import hedvig.resources.R
 internal fun MarketingDestination(
   viewModel: MarketingViewModel,
   appVersionName: String,
+  hedvigBuildConstants: HedvigBuildConstants,
+  environmentManager: EnvironmentManager,
   openWebOnboarding: () -> Unit,
   navigateToLoginScreen: () -> Unit,
 ) {
@@ -67,6 +78,8 @@ internal fun MarketingDestination(
   MarketingScreen(
     uiState = uiState,
     appVersionName = appVersionName,
+    hedvigBuildConstants = hedvigBuildConstants,
+    environmentManager = environmentManager,
     selectLanguage = { language -> viewModel.emit(MarketingEvent.SelectLanguage(language)) },
     openWebOnboarding = openWebOnboarding,
     navigateToLoginScreen = navigateToLoginScreen,
@@ -77,6 +90,8 @@ internal fun MarketingDestination(
 private fun MarketingScreen(
   uiState: MarketingUiState,
   appVersionName: String,
+  hedvigBuildConstants: HedvigBuildConstants,
+  environmentManager: EnvironmentManager,
   selectLanguage: (Language) -> Unit,
   openWebOnboarding: () -> Unit,
   navigateToLoginScreen: () -> Unit,
@@ -90,6 +105,8 @@ private fun MarketingScreen(
       PreferencesSheetContent(
         chosenLanguage = uiState.language,
         appVersionName = appVersionName,
+        hedvigBuildConstants = hedvigBuildConstants,
+        environmentManager = environmentManager,
         selectLanguage = selectLanguage,
         dismissSheet = preferencesSheetState::dismiss,
       )
@@ -191,9 +208,40 @@ private fun MarketingScreen(
 private fun ColumnScope.PreferencesSheetContent(
   chosenLanguage: Language,
   appVersionName: String,
+  hedvigBuildConstants: HedvigBuildConstants,
+  environmentManager: EnvironmentManager,
   selectLanguage: (Language) -> Unit,
   dismissSheet: () -> Unit,
 ) {
+  val coroutineScope = rememberCoroutineScope()
+  var showRestartDialog by remember { mutableStateOf(false) }
+  var pendingEnvironmentIsProduction by remember { mutableStateOf<Boolean?>(null) }
+
+  // Only show environment switcher in non-release builds (staging/debug)
+  // Use isReleaseBuild to check compile-time build type, not runtime environment
+  val showEnvironmentSwitcher = !hedvigBuildConstants.isReleaseBuild
+
+  if (showRestartDialog) {
+    HedvigAlertDialog(
+      title = "Restart Required",
+      text = "The app will close to apply the environment change. Please start the app manually after closing.",
+      confirmButtonLabel = "Close app",
+      dismissButtonLabel = "Cancel",
+      onDismissRequest = {
+        showRestartDialog = false
+        pendingEnvironmentIsProduction = null
+      },
+      onConfirmClick = {
+        pendingEnvironmentIsProduction?.let { isProduction ->
+          coroutineScope.launch {
+            environmentManager.setProductionEnvironment(isProduction)
+            exitProcess(0)
+          }
+        }
+      },
+    )
+  }
+
   HedvigText(
     text = stringResource(R.string.SETTINGS_LANGUAGE_TITLE),
     textAlign = TextAlign.Center,
@@ -216,6 +264,44 @@ private fun ColumnScope.PreferencesSheetContent(
     size = RadioGroupSize.Large,
     modifier = Modifier.padding(horizontal = 16.dp),
   )
+
+  if (showEnvironmentSwitcher) {
+    Spacer(Modifier.height(24.dp))
+    HedvigText(
+      text = "Environment",
+      textAlign = TextAlign.Center,
+      modifier = Modifier
+        .semantics { heading() }
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(16.dp))
+    RadioGroup(
+      options = listOf(
+        RadioOption(
+          id = RadioOptionId("STAGING"),
+          text = "Staging",
+        ),
+        RadioOption(
+          id = RadioOptionId("PRODUCTION"),
+          text = "Production",
+        ),
+      ),
+      selectedOption = RadioOptionId(
+        if (hedvigBuildConstants.isProduction) "PRODUCTION" else "STAGING",
+      ),
+      onRadioOptionSelected = { selectedOption ->
+        val newIsProduction = selectedOption.id == "PRODUCTION"
+        if (newIsProduction != hedvigBuildConstants.isProduction) {
+          pendingEnvironmentIsProduction = newIsProduction
+          showRestartDialog = true
+        }
+      },
+      size = RadioGroupSize.Large,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+  }
+
   Spacer(Modifier.height(8.dp))
   HedvigButton(
     text = stringResource(R.string.general_done_button),
@@ -245,24 +331,4 @@ private fun Language.flag(): ImageVector {
   }
 }
 
-@Preview
-@Composable
-private fun PreviewMarketingScreen() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      MarketingScreen(MarketingUiState.Success(Language.EN_SE), "X.Y.Z", {}, {}, {})
-    }
-  }
-}
-
-@Preview
-@Composable
-private fun PreviewPreferencesSheetContent() {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      Column {
-        PreferencesSheetContent(Language.EN_SE, "X.Y.Z", {}, {})
-      }
-    }
-  }
-}
+// Previews removed - require runtime dependencies (HedvigBuildConstants, EnvironmentManager)

@@ -57,11 +57,18 @@ interface HedvigBuildConstants {
   val isDebug: Boolean
 
   /**
-   * Returns whether we are running in release mode.
+   * Returns whether we are running in production environment (can be overridden at runtime in staging builds).
    * This is useful as [isDebug] only returns true for dev environment but false for staging environment and we
    * do sometimes want to know the difference.
    */
   val isProduction: Boolean
+
+  /**
+   * Returns whether this is a release build type (compile-time constant, cannot be overridden).
+   * True for production release builds, false for debug and staging builds.
+   * Use this to determine if environment switching should be allowed.
+   */
+  val isReleaseBuild: Boolean
 
   /**
    * The Android SDK version we are currently running on

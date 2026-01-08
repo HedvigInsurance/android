@@ -2,6 +2,8 @@ package com.hedvig.android.feature.login.navigation
 
 import android.net.Uri
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.login.genericauth.GenericAuthDestination
 import com.hedvig.android.feature.login.genericauth.GenericAuthViewModel
@@ -24,6 +26,8 @@ fun NavGraphBuilder.loginGraph(
   navigator: Navigator,
   appVersionName: String,
   urlBaseWeb: String,
+  hedvigBuildConstants: HedvigBuildConstants,
+  environmentManager: EnvironmentManager,
   openUrl: (String) -> Unit,
   onOpenEmailApp: () -> Unit,
   onNavigateToLoggedIn: () -> Unit,
@@ -37,6 +41,8 @@ fun NavGraphBuilder.loginGraph(
       MarketingDestination(
         viewModel = marketingViewModel,
         appVersionName = appVersionName,
+        hedvigBuildConstants = hedvigBuildConstants,
+        environmentManager = environmentManager,
         openWebOnboarding = {
           val baseUrl = urlBaseWeb.substringAfter("//")
           val uri = createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()

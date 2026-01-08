@@ -35,6 +35,7 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.EnvironmentManager
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
@@ -58,6 +59,7 @@ import org.koin.android.ext.android.inject
 class MainActivity : AppCompatActivity() {
   private val authTokenService: AuthTokenService by inject()
   private val demoManager: DemoManager by inject()
+  private val environmentManager: EnvironmentManager by inject()
   private val featureManager: FeatureManager by inject()
   private val getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider by inject()
   private val hedvigBuildConstants: HedvigBuildConstants by inject()
@@ -140,6 +142,7 @@ class MainActivity : AppCompatActivity() {
         splashIsRemovedSignal = splashIsRemovedSignal,
         authTokenService = authTokenService,
         demoManager = demoManager,
+        environmentManager = environmentManager,
         hedvigDeepLinkContainer = hedvigDeepLinkContainer,
         imageLoader = imageLoader,
         simpleVideoCache = simpleVideoCache,
