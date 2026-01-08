@@ -25,7 +25,7 @@ value class StepId(val value: String)
 
 internal data class ClaimIntentStep(
   val id: StepId,
-  val text: String,
+  val text: String?,
   val stepContent: StepContent,
 )
 
