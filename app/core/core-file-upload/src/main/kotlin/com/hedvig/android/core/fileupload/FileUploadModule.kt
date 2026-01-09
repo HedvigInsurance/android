@@ -18,16 +18,10 @@ val fileUploadModule = module {
     )
   }
 
-  single<ClaimsServiceUploadFileService> {
-    ClaimsServiceUploadFileService(
-      fileUploadService = get<FileUploadService>(),
-      buildConstants = get<HedvigBuildConstants>(),
-    )
-  }
-
   single<ClaimsServiceUploadFileUseCase> {
     ClaimsServiceUploadFileUseCaseImpl(
-      claimsServiceUploadFileService = get<ClaimsServiceUploadFileService>(),
+      fileUploadService = get<FileUploadService>(),
+      buildConstants = get<HedvigBuildConstants>(),
       fileService = get<FileService>(),
     )
   }
