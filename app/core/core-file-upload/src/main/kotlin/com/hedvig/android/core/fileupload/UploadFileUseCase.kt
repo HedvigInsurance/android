@@ -79,48 +79,12 @@ internal class UploadFileService(
 ) {
   context(_: Raise<ErrorMessage>)
   suspend fun uploadFile(claimId: String, uri: Uri): List<FileUploadResponse> {
-    val fileName = fileService.getFileName(uri) ?: "media"
-    val mimeType = fileService.getMimeType(uri)
-
-    logcat { "UploadFileService: Uploading file: $fileName with mimeType: $mimeType for claimId: $claimId" }
-
-    val response = client.post("${buildConstants.urlClaimsService}/api/claim-files/upload?claimId=$claimId") {
-      setBody(
-        MultiPartFormDataContent(
-          formData {
-            append(
-              "files",
-              InputProvider {
-                val inputStream = contentResolver.openInputStream(uri)
-                  ?: throw Exception("Could not open input stream for uri:$uri")
-                inputStream.asInput()
-              },
-              Headers.build {
-                append(HttpHeaders.ContentType, mimeType)
-                append(HttpHeaders.ContentDisposition, """filename="$fileName"""")
-              },
-            )
-          },
-        ),
-      )
-    }
-
-    return if (response.status.isSuccess()) {
-      val responseBody = response.bodyAsText()
-      logcat { "UploadFileService: Upload successful, response: $responseBody" }
-      Json.decodeFromString<List<FileUploadResponse>>(responseBody)
-    } else {
-      val errorBody = response.bodyAsText()
-      logcat(LogPriority.ERROR) {
-        "UploadFileService failed with status ${response.status}: $errorBody"
-      }
-      raise(ErrorMessage("File upload failed with status ${response.status}: $errorBody"))
-    }
+    return uploadFiles(claimId = claimId, uris = listOf(uri))
   }
 
   context(_: Raise<ErrorMessage>)
   suspend fun uploadFiles(claimId: String, uris: List<Uri>): List<FileUploadResponse> {
-    logcat { "UploadFileService: Uploading ${uris.size} files for claimId: $claimId" }
+    logcat { "UploadFileService: Uploading ${uris.size} file(s) for claimId: $claimId" }
 
     val response = client.post("${buildConstants.urlClaimsService}/api/claim-files/upload?claimId=$claimId") {
       setBody(

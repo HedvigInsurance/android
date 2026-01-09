@@ -32,37 +32,45 @@ internal class BotServiceService(
 ) {
   context(_: Raise<ErrorMessage>)
   suspend fun uploadFile(uri: Uri): List<FileUploadResponse> {
-    val fileName = fileService.getFileName(uri) ?: "media"
-    val mimeType = fileService.getMimeType(uri)
+    return uploadFiles(uris = listOf(uri))
+  }
 
-    logcat { "BotServiceService: Uploading file: $fileName with mimeType: $mimeType" }
+  context(_: Raise<ErrorMessage>)
+  suspend fun uploadFiles(uris: List<Uri>): List<FileUploadResponse> {
+    logcat { "BotServiceService: Uploading ${uris.size} file(s)" }
 
-    // Check file size before uploading
-    if (!fileService.isFileSizeWithinBackendLimits(uri)) {
-      raise(
-        ErrorMessage(
-          "Failed to upload with uri:$uri. Content size above backend limit",
-          BackendFileLimitException(uri),
-        ),
-      )
+    // Check file sizes before uploading
+    uris.forEach { uri ->
+      if (!fileService.isFileSizeWithinBackendLimits(uri)) {
+        raise(
+          ErrorMessage(
+            "Failed to upload with uri:$uri. Content size above backend limit",
+            BackendFileLimitException(uri),
+          ),
+        )
+      }
     }
 
     val response = client.post("${buildConstants.urlBotService}/api/files/upload") {
       setBody(
         MultiPartFormDataContent(
           formData {
-            append(
-              "files",
-              InputProvider {
-                val inputStream = contentResolver.openInputStream(uri)
-                  ?: throw Exception("Could not open input stream for uri:$uri")
-                inputStream.asInput()
-              },
-              Headers.build {
-                append(HttpHeaders.ContentType, mimeType)
-                append(HttpHeaders.ContentDisposition, """filename="$fileName"""")
-              },
-            )
+            uris.forEach { uri ->
+              val fileName = fileService.getFileName(uri) ?: "media"
+              val mimeType = fileService.getMimeType(uri)
+              append(
+                "files",
+                InputProvider {
+                  val inputStream = contentResolver.openInputStream(uri)
+                    ?: throw Exception("Could not open input stream for uri:$uri")
+                  inputStream.asInput()
+                },
+                Headers.build {
+                  append(HttpHeaders.ContentType, mimeType)
+                  append(HttpHeaders.ContentDisposition, """filename="$fileName"""")
+                },
+              )
+            }
           },
         ),
       )
