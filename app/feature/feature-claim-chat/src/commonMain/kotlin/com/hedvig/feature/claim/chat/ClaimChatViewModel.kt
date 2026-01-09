@@ -95,7 +95,7 @@ internal sealed interface ClaimChatEvent {
 
   data class RemoveFile(val id: StepId, val fileId: String) : ClaimChatEvent
 
-  data class FileSubmit(val id: StepId) : ClaimChatEvent
+  data class SubmitFile(val id: StepId) : ClaimChatEvent
 
   data class OpenFreeTextOverlay(
     val restrictions: FreeTextRestrictions,
@@ -632,7 +632,7 @@ internal class ClaimChatPresenter(
         }
 
         ClaimChatEvent.DismissErrorDialog -> errorSubmittingStep = null
-        is ClaimChatEvent.FileSubmit -> {
+        is ClaimChatEvent.SubmitFile -> {
           val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
           val fileUris = stepContent.localFiles
             .filter {

@@ -3,6 +3,7 @@ package com.hedvig.feature.claim.chat.ui
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -13,6 +14,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -70,14 +72,12 @@ import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
@@ -109,7 +109,6 @@ import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
-import hedvig.resources.important_message_read_more
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlinx.coroutines.delay
@@ -290,30 +289,19 @@ private fun ClaimChatScreenContent(
         val isCurrentStep = item.id == uiState.currentStep?.id
         val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
         val isLastItem = item == uiState.steps.lastOrNull()
-        if (isLastItem) {
-          val fraction = if (uiState.steps.size==1) 1f else 0.9f
-          Column(
-            modifier = Modifier.fillParentMaxHeight(fraction),
-          ) {
-            StepContentSection(
-              stepItem = item,
-              freeText = uiState.freeText,
-              isCurrentStep = isCurrentStep,
-              showFakeAiDot = showFakeAiDot,
-              currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-              currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-              onEvent = onEvent,
-              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-              onNavigateToImageViewer = onNavigateToImageViewer,
-              navigateToDeflect = navigateToDeflect,
-              appPackageId = appPackageId,
-              imageLoader = imageLoader,
-              openAppSettings = openAppSettings,
-              spacerModifier = Modifier.weight(1f),
-              showBottomContent = !isScrolled,
-            )
-          }
+
+        val heightModifier = if (isLastItem) {
+          val fraction = if (uiState.steps.size == 1) 1f else 0.9f
+          Modifier.fillParentMaxHeight(fraction)
         } else {
+          Modifier
+        }
+
+        Column(
+          modifier = heightModifier.animateContentSize(
+            animationSpec = tween(durationMillis = 300)
+          ),
+        ) {
           StepContentSection(
             stepItem = item,
             freeText = uiState.freeText,
@@ -328,8 +316,8 @@ private fun ClaimChatScreenContent(
             appPackageId = appPackageId,
             imageLoader = imageLoader,
             openAppSettings = openAppSettings,
-            spacerModifier = Modifier,
-            showBottomContent = true,
+            spacerModifier = if (isLastItem) Modifier.weight(1f) else Modifier,
+            showBottomContent = if (isLastItem) !isScrolled else true,
           )
         }
       }
@@ -767,7 +755,7 @@ private fun UploadFilesStep(
           enabled = !continueButtonLoading,
           onClick = {
             onEvent(
-              ClaimChatEvent.FileSubmit(
+              ClaimChatEvent.SubmitFile(
                 itemId,
               ),
             )
@@ -1240,7 +1228,7 @@ private fun ContentSelectStep(
     AnimatedContent(
       isCurrentStep,
       transitionSpec = {
-        (fadeIn() + scaleIn()).togetherWith(fadeOut())
+        (fadeIn() + scaleIn()).togetherWith(fadeOut(animationSpec = tween(0)))
       },
     ) { targetState ->
       Column {
