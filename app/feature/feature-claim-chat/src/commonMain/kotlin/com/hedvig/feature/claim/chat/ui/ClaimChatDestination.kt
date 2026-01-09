@@ -16,6 +16,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -290,8 +291,9 @@ private fun ClaimChatScreenContent(
         val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
         val isLastItem = item == uiState.steps.lastOrNull()
         if (isLastItem) {
+          val fraction = if (uiState.steps.size==1) 1f else 0.9f
           Column(
-            modifier = Modifier.fillParentMaxHeight(),
+            modifier = Modifier.fillParentMaxHeight(fraction),
           ) {
             StepContentSection(
               stepItem = item,
@@ -349,6 +351,9 @@ private fun ClaimChatScreenContent(
   LaunchedEffect(uiState.steps.size) {
     if (uiState.steps.isNotEmpty()) {
       lazyListState.scrollToItem(index = uiState.steps.lastIndex)
+      // Give layout time to measure, then scroll to reveal bottom content
+      delay(100)
+      lazyListState.animateScrollBy(value = 10000f) // Scroll down as far as possible
     }
   }
 }
