@@ -114,14 +114,13 @@ internal fun AudioRecorderBubble(
           isLoading = skipButtonLoading,
           enabled = !skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )
         Spacer(Modifier.width(16.dp))
       }
     }
   }
 }
-
 
 
 @Composable
@@ -173,20 +172,17 @@ private fun FreeTextInputSection(
       )
     } else {
       if (freeText != null) {
-        VoiceRecordingLabel(
-          labelType = AudioRecordingLabelType.TEXT
+        Row(
+          Modifier.fillMaxWidth().padding(start = 48.dp),
+          horizontalArrangement = Arrangement.End,
         ) {
-          Row(
-            Modifier.fillMaxWidth().padding(start = 48.dp),
-            horizontalArrangement = Arrangement.End,
+          RoundCornersPill(
+            onClick = null,
           ) {
-            RoundCornersPill(
-              onClick = null,
-            ) {
-              HedvigText(freeText, textAlign = TextAlign.End)
-            }
+            HedvigText(freeText, textAlign = TextAlign.End)
           }
         }
+
       } else {
         SkippedLabel()
       }
