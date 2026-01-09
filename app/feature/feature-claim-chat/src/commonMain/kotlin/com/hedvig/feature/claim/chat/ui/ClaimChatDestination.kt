@@ -1097,7 +1097,7 @@ private fun FormContent(
       }
     } else {
       Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         if (content.fields.flatMap { it.selectedOptions }.isNotEmpty()) {
           content.fields.forEach { field ->
@@ -1106,13 +1106,7 @@ private fun FormContent(
               Modifier.fillMaxWidth(),
               horizontalAlignment = Alignment.End,
             ) {
-              HedvigText(
-                field.title,
-                style = HedvigTheme.typography.label,
-                color = HedvigTheme.colorScheme.textAccordion,
-              )
               if (textValue.isNotEmpty()) {
-                Spacer(Modifier.height(4.dp))
                 RoundCornersPill(
                   onClick = null,
                 ) {
@@ -1136,7 +1130,7 @@ private fun FormContent(
 private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Modifier = Modifier) {
   if (canBeChanged) {
     Row(
-      modifier = modifier.fillMaxWidth().padding(top = 8.dp),
+      modifier = modifier.fillMaxWidth().padding(top = 4.dp),
       horizontalArrangement = Arrangement.End,
     ) {
       RoundCornersPill(
