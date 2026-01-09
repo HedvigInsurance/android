@@ -23,17 +23,8 @@ internal data class ClaimsServiceUploadFileUseCaseImpl(
   private val buildConstants: HedvigBuildConstants,
   private val fileService: FileService,
 ) : ClaimsServiceUploadFileUseCase {
-  override suspend fun invoke(url: String, uri: Uri): Either<ErrorMessage, UploadSuccess> = either {
-    val claimId = Uri.parse(url).getQueryParameter("claimId") ?: raise(ErrorMessage("No claim id found in url"))
-    val result = either {
-      uploadFile(claimId = claimId, uri = uri)
-    }
-      .onLeft {
-        logcat(LogPriority.ERROR) { "Failed to upload file. Error:$it" }
-      }
-      .bind()
-
-    handleResult(result)
+  override suspend fun invoke(url: String, uri: Uri): Either<ErrorMessage, UploadSuccess> {
+    return invoke(url, listOf(uri))
   }
 
   override suspend fun invoke(url: String, uris: List<Uri>): Either<ErrorMessage, UploadSuccess> = either {
@@ -47,11 +38,6 @@ internal data class ClaimsServiceUploadFileUseCaseImpl(
       .bind()
 
     handleResult(result)
-  }
-
-  context(_: Raise<ErrorMessage>)
-  private suspend fun uploadFile(claimId: String, uri: Uri): List<FileUploadResponse> {
-    return uploadFiles(claimId = claimId, uris = listOf(uri))
   }
 
   context(_: Raise<ErrorMessage>)
