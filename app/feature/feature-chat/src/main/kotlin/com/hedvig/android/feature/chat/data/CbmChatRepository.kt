@@ -89,7 +89,6 @@ internal class CbmChatRepositoryImpl(
   private val database: RoomDatabase,
   private val chatDao: ChatDao,
   private val remoteKeyDao: RemoteKeyDao,
-  private val fileService: FileService,
   private val botServiceService: BotServiceService,
   private val contentResolver: ContentResolver,
   private val clock: Clock,

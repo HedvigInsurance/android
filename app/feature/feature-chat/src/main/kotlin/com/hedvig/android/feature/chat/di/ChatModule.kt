@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.core.fileupload.FileService
+import com.hedvig.android.core.fileupload.FileUploadService
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.RemoteKeyDao
 import com.hedvig.android.feature.chat.CbmChatViewModel
@@ -25,10 +25,8 @@ import org.koin.dsl.module
 val chatModule = module {
   single<BotServiceService> {
     BotServiceService(
-      client = get<HttpClient>(),
+      fileUploadService = get<FileUploadService>(),
       buildConstants = get<HedvigBuildConstants>(),
-      contentResolver = get<Context>().contentResolver,
-      fileService = get<FileService>(),
     )
   }
 
@@ -46,7 +44,6 @@ val chatModule = module {
       database = get<RoomDatabase>(),
       chatDao = get<ChatDao>(),
       remoteKeyDao = get<RemoteKeyDao>(),
-      fileService = get<FileService>(),
       botServiceService = get<BotServiceService>(),
       contentResolver = get<Context>().contentResolver,
       clock = get<Clock>(),

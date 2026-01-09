@@ -9,20 +9,29 @@ import org.koin.dsl.module
 
 val fileUploadModule = module {
   single<FileService> { FileService(get<Context>().contentResolver) }
-  single<UploadFileService> {
-    UploadFileService(
+
+  single<FileUploadService> {
+    FileUploadService(
       client = get<HttpClient>(),
-      buildConstants = get<HedvigBuildConstants>(),
       contentResolver = get<Context>().contentResolver,
       fileService = get<FileService>(),
     )
   }
-  single<UploadFileUseCase> {
-    UploadFileUseCaseImpl(
-      uploadFileService = get<UploadFileService>(),
+
+  single<ClaimsServiceUploadFileService> {
+    ClaimsServiceUploadFileService(
+      fileUploadService = get<FileUploadService>(),
+      buildConstants = get<HedvigBuildConstants>(),
+    )
+  }
+
+  single<ClaimsServiceUploadFileUseCase> {
+    ClaimsServiceUploadFileUseCaseImpl(
+      claimsServiceUploadFileService = get<ClaimsServiceUploadFileService>(),
       fileService = get<FileService>(),
     )
   }
+
   single<DownloadPdfUseCase> {
     DownloadPdfUseCaseImpl(
       get<Context>(),
