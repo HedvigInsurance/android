@@ -2,7 +2,6 @@ package com.hedvig.android.feature.chat.di
 
 import android.content.Context
 import androidx.room.RoomDatabase
-import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -18,25 +17,19 @@ import com.hedvig.android.feature.chat.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.data.GetCbmChatRepositoryProvider
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.featureflags.FeatureManager
+import io.ktor.client.HttpClient
 import kotlin.time.Clock
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
-import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 
 val chatModule = module {
   single<BotServiceService> {
-    val retrofit = Retrofit
-      .Builder()
-      .callFactory(get<OkHttpClient>())
-      .baseUrl("${get<HedvigBuildConstants>().urlBotService}/api/")
-      .addCallAdapterFactory(EitherCallAdapterFactory.create())
-      .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-      .build()
-    retrofit.create(BotServiceService::class.java)
+    BotServiceService(
+      client = get<HttpClient>(),
+      buildConstants = get<HedvigBuildConstants>(),
+      contentResolver = get<Context>().contentResolver,
+      fileService = get<FileService>(),
+    )
   }
 
   single<GetAllConversationsUseCase> {

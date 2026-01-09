@@ -27,7 +27,9 @@ class FileService(
       }
 
       override fun writeTo(sink: BufferedSink) {
-        requireFileSizeWithinBackendLimits(uri)
+        if (!isFileSizeWithinBackendLimits(uri)) {
+          throw BackendFileLimitException(uri)
+        }
         contentResolver.openInputStream(uri)?.use { inputStream ->
           sink.writeAll(inputStream.source())
         } ?: throw IOException("Could not open input stream for uri:$uri")
@@ -58,6 +60,15 @@ class FileService(
     return uri.path
   }
 
+  fun isFileSizeWithinBackendLimits(uri: Uri): Boolean {
+    val size = getFileSize(uri)
+    logcat {
+      "FileService: Size of the file: ${size / 1024 / 1024} Mb, " +
+        "Backend limit: ${backendContentSizeLimit / 1024 / 1024} Mb"
+    }
+    return size < backendContentSizeLimit
+  }
+
   fun getMimeType(uri: Uri): String {
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
       val resolvedMimeType = contentResolver.getType(uri)
@@ -69,6 +80,20 @@ class FileService(
     return getMimeType(uri.toString())
   }
 
+  private fun getFileSize(uri: Uri): Long {
+    val statSize = contentResolver.openFileDescriptor(uri, "r")?.use {
+      it.statSize
+    } ?: -1
+
+    val sizeFromCursor =
+      contentResolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { cursor ->
+        val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+        if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else null
+      } ?: -1
+    logcat { "getFileSize for uri:$uri | statSize:$statSize | contentSize:$sizeFromCursor" }
+    return max(statSize, sizeFromCursor)
+  }
+
   private fun getMimeType(path: String): String {
     val fileExtension = getFileExtension(path)
     return MimeTypeMap.getSingleton()
@@ -77,36 +102,11 @@ class FileService(
   }
 
   private fun getFileExtension(path: String): String = MimeTypeMap.getFileExtensionFromUrl(path)
-
-  @Throws(IOException::class)
-  private fun requireFileSizeWithinBackendLimits(uri: Uri) {
-    val size = getFileSize(contentResolver, uri)
-    logcat {
-      "FileService: Size of the file: ${size / 1024 / 1024} Mb, " +
-        "Backend limit: ${backendContentSizeLimit / 1024 / 1024} Mb"
-    }
-    if (size >= backendContentSizeLimit) {
-      throw BackendFileLimitException(
-        "Failed to upload with uri:$uri. Content size above backend limit:$backendContentSizeLimit",
-      )
-    }
-  }
 }
 
-private fun getFileSize(contentResolver: ContentResolver, uri: Uri): Long {
-  val statSize = contentResolver.openFileDescriptor(uri, "r")?.use {
-    it.statSize
-  } ?: -1
 
-  val sizeFromCursor =
-    contentResolver.query(uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { cursor ->
-      val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-      if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else null
-    } ?: -1
-  logcat { "getFileSize for uri:$uri | statSize:$statSize | contentSize:$sizeFromCursor" }
-  return max(statSize, sizeFromCursor)
+class BackendFileLimitException(message: String) : IOException(message) {
+  constructor(uri: Uri) : this("Failed to upload with uri:$uri. Content size above backend limit:$backendContentSizeLimit")
 }
-
-class BackendFileLimitException(message: String) : IOException(message)
 
 private const val backendContentSizeLimit = 512 * 1024 * 1024 // 512 Mb

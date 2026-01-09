@@ -27,7 +27,6 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.core.fileupload.FileService
-import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
@@ -50,7 +49,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import octopus.ConversationInfoQuery
 import octopus.ConversationQuery
@@ -61,7 +59,6 @@ import octopus.fragment.ChatMessageFileChatMessageFragment
 import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
 import octopus.type.ChatMessageDisclaimerType
-import okhttp3.MediaType.Companion.toMediaType
 
 internal interface CbmChatRepository {
   suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info>
@@ -365,11 +362,12 @@ internal class CbmChatRepositoryImpl(
   }
 
   private suspend fun Raise<MessageSendError>.uploadPhotoToBotService(uri: Uri): String {
-    val contentType = fileService.getMimeType(uri).toMediaType()
     val file = uri.toFile()
-    val uploadToken = botServiceService.uploadFile(file, contentType).mapLeft {
+    val uploadToken = either {
+      botServiceService.uploadFile(uri)
+    }.mapLeft {
       logcat(LogPriority.ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
-      it.toErrorMessage().toMessageSendError()
+      it.toMessageSendError()
     }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with path:${file.absolutePath}. UploadToken:$uploadToken" }
@@ -377,9 +375,11 @@ internal class CbmChatRepositoryImpl(
   }
 
   private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
-    val uploadToken = botServiceService.uploadFile(fileService.createFormData(uri)).mapLeft {
+    val uploadToken = either {
+      botServiceService.uploadFile(uri)
+    }.mapLeft {
       logcat(LogPriority.ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
-      it.toErrorMessage().toMessageSendError()
+      it.toMessageSendError()
     }.bind().firstOrNull()?.uploadToken
     ensureNotNull(uploadToken) { ErrorMessage("No upload token").toMessageSendError() }
     logcat { "Uploaded file with uri:$uri. UploadToken:$uploadToken" }
@@ -434,11 +434,7 @@ internal sealed interface ConversationInfo {
 }
 
 private fun octopus.fragment.ConversationInfo?.toConversationInfo(): ConversationInfo {
-  return if (this == null) {
-    ConversationInfo.NoConversation
-  } else {
-    toConversationInfo()
-  }
+  return this?.toConversationInfo() ?: ConversationInfo.NoConversation
 }
 
 private fun octopus.fragment.ConversationInfo.toConversationInfo(): Info {
