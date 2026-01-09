@@ -7,8 +7,10 @@ import io.ktor.client.plugins.logging.Logger
 class HedvigHttpLogger : Logger {
   override fun log(message: String) {
     // todo do we need to filter content disposition?
-//    if (message.contains("Content-Disposition")) { ... }
-//    "File upload omitted from log"
-    logcat(LogPriority.VERBOSE, tag = "Ktor") { message }
+    if (message.contains("Content-Disposition")) {
+      logcat(LogPriority.VERBOSE, tag = "Ktor") { "File upload omitted from log" }
+    } else {
+      logcat(LogPriority.VERBOSE, tag = "Ktor") { message }
+    }
   }
 }
