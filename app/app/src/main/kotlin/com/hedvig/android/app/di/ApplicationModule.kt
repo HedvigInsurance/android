@@ -41,6 +41,7 @@ import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.buildconstants.di.buildConstantsModule
+import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
@@ -243,7 +244,7 @@ private val coilModule = module {
     val applicationContext = get<Context>().applicationContext
     ImageLoader.Builder(get<Context>())
       .components {
-        add(KtorNetworkFetcherFactory(get<HttpClient>()))
+        add(KtorNetworkFetcherFactory(get<HttpClient>(baseHttpClientQualifier)))
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
           add(AnimatedImageDecoder.Factory())
