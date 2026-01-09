@@ -18,7 +18,6 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.streams.asInput
-import kotlinx.serialization.json.Json
 
 class FileUploadService(
   private val client: HttpClient,
@@ -92,20 +91,5 @@ class FileUploadService(
       }
       raise(ErrorMessage("File upload failed with status ${response.status}: $errorBody"))
     }
-  }
-
-  context(_: Raise<ErrorMessage>)
-  suspend fun <T> uploadFile(
-    url: String,
-    uri: Uri,
-    validateFileSize: Boolean = false,
-    deserializer: (String) -> T,
-  ): T {
-    return uploadFiles(
-      url = url,
-      uris = listOf(uri),
-      validateFileSize = validateFileSize,
-      deserializer = deserializer,
-    )
   }
 }

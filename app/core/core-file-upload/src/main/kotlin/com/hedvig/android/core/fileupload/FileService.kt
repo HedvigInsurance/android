@@ -7,36 +7,11 @@ import android.webkit.MimeTypeMap
 import com.hedvig.android.logger.logcat
 import java.util.Locale
 import kotlin.math.max
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okio.BufferedSink
 import okio.IOException
-import okio.source
 
 class FileService(
   private val contentResolver: ContentResolver,
 ) {
-  fun createFormData(uri: Uri): MultipartBody.Part = MultipartBody.Part.createFormData(
-    name = "files",
-    filename = getFileName(uri) ?: "media",
-    body = object : RequestBody() {
-      override fun contentType(): MediaType {
-        return getMimeType(uri).toMediaType()
-      }
-
-      override fun writeTo(sink: BufferedSink) {
-        if (!isFileSizeWithinBackendLimits(uri)) {
-          throw BackendFileLimitException(uri)
-        }
-        contentResolver.openInputStream(uri)?.use { inputStream ->
-          sink.writeAll(inputStream.source())
-        } ?: throw IOException("Could not open input stream for uri:$uri")
-      }
-    },
-  )
-
   fun getFileName(uri: Uri): String? {
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
       val cursor = contentResolver.query(uri, null, null, null, null)
