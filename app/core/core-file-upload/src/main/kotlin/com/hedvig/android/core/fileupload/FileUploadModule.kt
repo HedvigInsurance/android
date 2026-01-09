@@ -3,6 +3,8 @@ package com.hedvig.android.core.fileupload
 import android.content.Context
 import arrow.retrofit.adapter.either.EitherCallAdapterFactory
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.baseHttpClientQualifier
+import io.ktor.client.HttpClient
 import kotlin.time.Clock
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -32,7 +34,7 @@ val fileUploadModule = module {
     DownloadPdfUseCaseImpl(
       get<Context>(),
       get<Clock>(),
-      get<OkHttpClient.Builder>().build(),
+      get<HttpClient>(baseHttpClientQualifier),
     )
   }
 }

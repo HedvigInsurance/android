@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
+  implementation(libs.ktor.client.core)
   implementation(libs.okhttp.core)
   implementation(libs.retrofit)
   implementation(libs.retrofitArrow)
@@ -24,4 +25,5 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.coreRetrofit)
   implementation(projects.designSystemHedvig)
+  implementation(projects.networkClients)
 }
