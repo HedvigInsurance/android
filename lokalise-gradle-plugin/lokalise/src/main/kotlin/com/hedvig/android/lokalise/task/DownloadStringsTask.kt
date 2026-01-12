@@ -1,7 +1,18 @@
 package com.hedvig.android.lokalise.task
 
 import com.hedvig.android.lokalise.config.DownloadConfig
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import java.io.File
+import kotlinx.coroutines.runBlocking
 import java.net.URI
 import javax.inject.Inject
 import kotlinx.serialization.json.Json
@@ -12,11 +23,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -83,43 +89,44 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   private fun fetchBucketUrl(): String {
-    val okHttpClient = OkHttpClient()
-    val processId = initiateAsyncDownloadAndReturnProcessId(okHttpClient)
-    val amazonDownloadUrl = pollForDownloadUrl(okHttpClient, processId)
-    logger.debug("{} amazonBucketUrl:{}", tag, amazonDownloadUrl)
-    return amazonDownloadUrl
+    return runBlocking {
+      val httpClient = HttpClient(CIO)
+      httpClient.use { client ->
+        val processId = initiateAsyncDownloadAndReturnProcessId(client)
+        val amazonDownloadUrl = pollForDownloadUrl(client, processId)
+        logger.debug("{} amazonBucketUrl:{}", tag, amazonDownloadUrl)
+        amazonDownloadUrl
+      }
+    }
   }
 
-  private fun initiateAsyncDownloadAndReturnProcessId(okHttpClient: OkHttpClient): String {
-    val asyncDownloadRequest = Request.Builder()
-      .url("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download")
-      .commonLokaliseHeaders()
-      .post(
-        buildJsonObject {
-          put("format", "xml")
-          put("export_sort", downloadConfig.get().stringsOrder.value)
-          put("export_empty_as", downloadConfig.get().emptyTranslationStrategy.value)
-          put("replace_breaks", true)
-          put("escape_percent", true)
-          put(
-            "filter_langs",
-            buildJsonArray {
-              add("en")
-              add("sv_SE")
-            },
-          )
-        }.toRequestBody(),
+  private suspend fun initiateAsyncDownloadAndReturnProcessId(httpClient: HttpClient): String {
+    val requestBody = buildJsonObject {
+      put("format", "xml")
+      put("export_sort", downloadConfig.get().stringsOrder.value)
+      put("export_empty_as", downloadConfig.get().emptyTranslationStrategy.value)
+      put("replace_breaks", true)
+      put("escape_percent", true)
+      put(
+        "filter_langs",
+        buildJsonArray {
+          add("en")
+          add("sv_SE")
+        },
       )
-      .build()
-    logger.debug("{} asyncDownloadRequest:{}", tag, asyncDownloadRequest)
-    val response = okHttpClient.newCall(asyncDownloadRequest).execute().body.string()
+    }
+    logger.debug("{} asyncDownloadRequest body:{}", tag, requestBody)
+    val response = httpClient.post("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download") {
+      commonLokaliseHeaders()
+      setBody(requestBody.toString())
+    }.bodyAsText()
     logger.debug("{} post response:{}", tag, response)
     val processId = Json.parseToJsonElement(response).jsonObject["process_id"]?.jsonPrimitive?.content
       ?: error("Lokalise responded with a null processId")
     return processId
   }
 
-  private fun pollForDownloadUrl(okHttpClient: OkHttpClient, processId: String): String {
+  private suspend fun pollForDownloadUrl(httpClient: HttpClient, processId: String): String {
     var iteration = 0
     while (true) {
       iteration++
@@ -128,13 +135,11 @@ abstract class DownloadStringsTask @Inject constructor(
         error("Lokalise failed after 20 retries")
       }
       Thread.sleep(3000L)
-      val getProcessStatusRequest = Request.Builder()
-        .url("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/processes/$processId")
-        .commonLokaliseHeaders()
-        .get()
-        .build()
-      logger.debug("{} getProcessStatusRequest:{}", tag, getProcessStatusRequest)
-      val response = okHttpClient.newCall(getProcessStatusRequest).execute().body.string()
+      val url = "https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/processes/$processId"
+      logger.debug("{} getProcessStatusRequest url:{}", tag, url)
+      val response = httpClient.get(url) {
+        commonLokaliseHeaders()
+      }.bodyAsText()
       logger.debug("{} get response:{}", tag, response)
       val process = Json
         .parseToJsonElement(response)
@@ -163,13 +168,9 @@ abstract class DownloadStringsTask @Inject constructor(
     }
   }
 
-  private fun Request.Builder.commonLokaliseHeaders(): Request.Builder {
-    return header("x-api-token", lokaliseToken.get())
-      .header("content-type", "application/json")
-  }
-
-  private fun JsonObject.toRequestBody(): RequestBody {
-    return this.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
+  private fun HttpRequestBuilder.commonLokaliseHeaders() {
+    header("x-api-token", lokaliseToken.get())
+    contentType(ContentType.Application.Json)
   }
 
   private fun ConfigurableFileCollection.editTranslations(
