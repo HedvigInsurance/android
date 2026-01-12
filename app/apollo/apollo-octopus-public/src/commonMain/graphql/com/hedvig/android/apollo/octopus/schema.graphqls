@@ -690,6 +690,7 @@ type ClaimIntentStepContentDeflection {
   partnersInfo: ClaimIntentStepContentDeflectionInfoBlock
   content: ClaimIntentStepContentDeflectionInfoBlock!
   faq: [ClaimIntentStepContentDeflectionInfoBlock!]!
+  buttonTitle: String!
 }
 type ClaimIntentStepContentDeflectionInfoBlock {
   title: String!
@@ -774,6 +775,7 @@ enum ClaimIntentStepContentFormFieldType {
   TEXT
   DATE
   NUMBER
+  PHONE_NUMBER
   SINGLE_SELECT
   MULTI_SELECT
   BINARY

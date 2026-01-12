@@ -27,13 +27,16 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
-import com.hedvig.feature.claim.chat.data.FreeTextErrorType.*
+import com.hedvig.feature.claim.chat.data.FreeTextErrorType.TooShort
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
 import com.hedvig.feature.claim.chat.data.SkipStepUseCase
 import com.hedvig.feature.claim.chat.data.StartClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.StepContent
-import com.hedvig.feature.claim.chat.data.StepContent.Form.*
+import com.hedvig.feature.claim.chat.data.StepContent.Form.Field
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldError
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldOption
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldType
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.data.SubmitAudioRecordingUseCase
 import com.hedvig.feature.claim.chat.data.SubmitFileUploadUseCase
@@ -43,7 +46,6 @@ import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.time.Instant
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -85,8 +87,6 @@ internal sealed interface ClaimChatEvent {
 
   data object DismissConfirmEditDialog : ClaimChatEvent
 
-  data object FakeGreenAiDotShown : ClaimChatEvent
-
   data class SubmitForm(
     val stepId: StepId,
   ) : ClaimChatEvent
@@ -121,7 +121,6 @@ internal sealed interface ClaimChatUiState {
     val claimIntentId: ClaimIntentId,
     val steps: List<ClaimIntentStep>,
     val currentStep: ClaimIntentStep?,
-    val autoNavigateForDeflectStepId: StepId?,
     val freeText: String?,
     val outcome: ClaimIntentOutcome?,
     val errorSubmittingStep: ErrorMessage?,
@@ -129,7 +128,6 @@ internal sealed interface ClaimChatUiState {
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
-    val showFakeAiDot: Boolean = false
   ) : ClaimChatUiState
 }
 
@@ -199,7 +197,6 @@ internal class ClaimChatPresenter(
     val currentStep by remember {
       derivedStateOf { steps.lastOrNull() }
     }
-    var autoNavigateForDeflectStepId: StepId? by remember { mutableStateOf(null) }
     var showFreeTextOverlay by remember { mutableStateOf<FreeTextRestrictions?>(null) }
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
@@ -208,9 +205,6 @@ internal class ClaimChatPresenter(
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
-    val setAutoNavigateForDeflectStepId: (StepId) -> Unit = { autoNavigateForDeflectStepId = it }
-    var showFakeAiDot by remember { mutableStateOf(false) }
-    val setShowFakeAiDot: () -> Unit = { showFakeAiDot = true }
 
     if (initializing) {
       LaunchedEffect(Unit) {
@@ -236,7 +230,7 @@ internal class ClaimChatPresenter(
 
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
-      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next, setShowFakeAiDot)
+      handleNext(steps, setOutcome, claimIntent.next)
     }
 
     CollectEvents { event ->
@@ -267,7 +261,7 @@ internal class ClaimChatPresenter(
                     return@launch
                   }
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next, setShowFakeAiDot)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -299,7 +293,7 @@ internal class ClaimChatPresenter(
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next, setShowFakeAiDot)
+                      handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
               }
@@ -319,7 +313,7 @@ internal class ClaimChatPresenter(
                     },
                     ifRight = { claimIntent ->
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next, setShowFakeAiDot)
+                      handleNext(steps, setOutcome, claimIntent.next)
                     },
                   )
               }
@@ -349,14 +343,19 @@ internal class ClaimChatPresenter(
             }
 
             is ClaimChatEvent.AudioRecording.ShowFreeText -> {
+              val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
+                ?: return@CollectEvents
+              val textTooShort = freeText?.length?.let {
+                currentContent.freeTextMinLength > it
+              } ?: true
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
+                val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
                       showOverlay = false,
                       errorType = null,
-                      canSubmit =
-                        !currentContinueButtonLoading && !freeText.isNullOrEmpty(),
+                      canSubmit = canSubmit,
                     ),
                   ),
                 )
@@ -450,10 +449,7 @@ internal class ClaimChatPresenter(
                   },
                   ifRight = { claimIntent ->
                     currentContinueButtonLoading = false
-                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next,
-                      showFakeAiDot = {
-                        showFakeAiDot = true
-                      })
+                    handleNext(steps, setOutcome, claimIntent.next)
                   },
                 )
             }
@@ -503,7 +499,7 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId,  claimIntent.next, setShowFakeAiDot)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -550,8 +546,7 @@ internal class ClaimChatPresenter(
                 },
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next,
-                    setShowFakeAiDot)
+                  handleNext(steps, setOutcome, claimIntent.next)
                 },
               )
           }
@@ -580,8 +575,7 @@ internal class ClaimChatPresenter(
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
-                    handleNext(steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next,
-                      setShowFakeAiDot)
+                    handleNext(steps, setOutcome, claimIntent.next)
                   },
                 )
             }
@@ -664,8 +658,7 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, setAutoNavigateForDeflectStepId, claimIntent.next,
-                    setShowFakeAiDot
+                    steps, setOutcome, claimIntent.next,
                   )
                 },
               )
@@ -689,14 +682,11 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.HandledDeflectNavigation -> {
-          if (autoNavigateForDeflectStepId == event.stepId) {
-            autoNavigateForDeflectStepId = null
-          }
+    //todo or remove
         }
 
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
         is ClaimChatEvent.ShowConfirmEditDialog -> showConfirmEditDialogForStep = event.id
-        ClaimChatEvent.FakeGreenAiDotShown -> showFakeAiDot = false
       }
     }
 
@@ -707,7 +697,6 @@ internal class ClaimChatPresenter(
         claimIntentId = claimIntentId!!,
         steps = steps,
         currentStep = currentStep,
-        autoNavigateForDeflectStepId = autoNavigateForDeflectStepId,
         outcome = outcome,
         showFreeTextOverlay = showFreeTextOverlay,
         freeText = freeText,
@@ -715,7 +704,6 @@ internal class ClaimChatPresenter(
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
-        showFakeAiDot = showFakeAiDot
       )
 
       else -> error("")
@@ -787,9 +775,7 @@ private fun SubmitCompleteTaskEffect(
 private fun handleNext(
   steps: SnapshotStateList<ClaimIntentStep>,
   setOutcome: (outcome: ClaimIntentOutcome) -> Unit,
-  setAutoNavigateForDeflectStepId: (StepId) -> Unit,
   next: ClaimIntent.Next,
-  showFakeAiDot: () -> Unit
 ) {
   when (next) {
     is ClaimIntent.Next.Outcome -> {
@@ -797,10 +783,6 @@ private fun handleNext(
     }
 
     is ClaimIntent.Next.Step -> {
-      showFakeAiDot()
-      if (next.claimIntentStep.stepContent is StepContent.Deflect) {
-        setAutoNavigateForDeflectStepId(next.claimIntentStep.id)
-      }
       steps.replaceTaskWithNextStep(next.claimIntentStep)
     }
   }

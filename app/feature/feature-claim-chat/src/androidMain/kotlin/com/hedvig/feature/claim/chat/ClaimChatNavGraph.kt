@@ -1,5 +1,6 @@
 package com.hedvig.feature.claim.chat
 
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
@@ -55,6 +56,7 @@ fun NavGraphBuilder.claimChatGraph(
   tryToDialPhone: (String) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
+  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
 ) {
   navdestination<ClaimChatDestination> {
     ClaimChatDestination(
@@ -74,30 +76,28 @@ fun NavGraphBuilder.claimChatGraph(
         }
       },
       navigateToDeflect = { deflect: StepContent.Deflect ->
-//        navController.navigate(UpdateAppDestination) {
-//          typedPopUpTo<ClaimChatDestination> {
-//            inclusive = true
-//          }
-//        }
         navController.navigate(ClaimOutcomeDeflectDestination(deflect = deflect))
       },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
     )
   }
-  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
+  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination)
+  { backStackEntry ->
     ClaimOutcomeDeflectDestination(
       deflect = deflect,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
       openUrl = openUrl,
       tryToDialPhone = tryToDialPhone,
+      onNavigateToNewConversation = {
+        onNavigateToNewConversation(backStackEntry)
+      },
     )
   }
   navdestination<ClaimOutcomeNewClaimDestination>(ClaimOutcomeNewClaimDestination) {
     ClaimOutcomeNewClaimDestination(
-      claim = outcome,
-      navigateToClaimDetails = { navigateToClaimDetails(outcome.claimId) },
+      navController::navigateUp,
     )
   }
   navdestination<UpdateAppDestination> {
