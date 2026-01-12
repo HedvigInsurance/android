@@ -752,17 +752,13 @@ internal fun TextInputBubble(
 }
 
 @Composable
-internal fun ChatClaimSummary(
+internal fun ChatClaimSummaryTopContent(
   recordingUrls: List<String>,
   fileUploads: List<UiFile>,
   freeTexts: List<String>,
   displayItems: List<Pair<String, String>>,
-  onSubmit: () -> Unit,
-  isCurrentStep: Boolean,
   imageLoader: ImageLoader,
-  continueButtonLoading: Boolean,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-  spacerModifier: Modifier,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -837,6 +833,18 @@ internal fun ChatClaimSummary(
         }
       }
     }
+  }
+}
+
+@Composable
+internal fun ChatClaimSummaryBottomContent(
+  onSubmit: () -> Unit,
+  isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
+  spacerModifier: Modifier,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
     Spacer(spacerModifier)
     if (isCurrentStep) {
       Spacer(Modifier.height(16.dp))
@@ -989,7 +997,7 @@ private fun PreviewClaimChatComponents() {
 
 @HedvigPreview
 @Composable
-private fun PreviewSummary() {
+private fun PreviewSummaryTopContent() {
   HedvigTheme {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -998,20 +1006,16 @@ private fun PreviewSummary() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.padding(horizontal = 16.dp),
       ) {
-        ChatClaimSummary(
+        ChatClaimSummaryTopContent(
           recordingUrls = listOf("", ""),
           displayItems = listOf(
             "Locked" to "Yes",
             "Electric bike" to "Yes",
           ),
-          onSubmit = {},
-          isCurrentStep = true,
           fileUploads = listOf(),
           imageLoader = rememberPreviewImageLoader(),
           onNavigateToImageViewer = { _, _ -> },
-          continueButtonLoading = false,
           freeTexts = listOf("A quite short text short text short text short text"),
-          spacerModifier = Modifier
         )
       }
     }

@@ -21,6 +21,7 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -86,7 +87,6 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
@@ -298,7 +298,7 @@ private fun ClaimChatScreenContent(
         onActionClick = navigateUp,
         customTopAppBarColors = TopAppBarColors(
           containerColor = Color.Transparent,
-          contentColor = HedvigTheme.colorScheme.textPrimary
+          contentColor = HedvigTheme.colorScheme.textPrimary,
         ),
         topAppBarActions = {
           IconButton(
@@ -343,7 +343,7 @@ private fun ClaimChatScreenContent(
               animationSpec = tween(durationMillis = 300),
             ),
           ) {
-            if(isFirstItem) {
+            if (isFirstItem) {
               Spacer(Modifier.height(16.dp))
             }
             StepContentSection(
@@ -476,52 +476,16 @@ private fun StepContentSection(
       BlinkingAiDot()
     }
   } else if (showContent) {
-    val hint = (stepItem.stepContent as? StepContent.AudioRecording)?.hint?.let {
-      "\n\n$it"
-    }
-    val stepItemText = when {
-      stepItem.text != null && hint != null -> stepItem.text + hint
-      stepItem.text != null -> stepItem.text
-      hint != null -> hint
-      else -> null
-    }
     Column(modifier) {
-      if (isCurrentStep) {
-        if (stepItemText != null) {
-          CommonPaddingWrapper {
-            AnimatedRevealText(
-              text = stepItemText,
-              visibleState = remember(stepItem.id) {
-                MutableTransitionState(false).apply { targetState = true }
-              },
-              onAnimationFinished = {
-                showBottomContentAnimated = true
-              },
-            )
-          }
-        } else {
-          LaunchedEffect(stepItem.id) {
-            showBottomContentAnimated = true
-          }
-        }
-      } else {
-        stepItemText?.let {
-          HedvigText(stepItemText)
-        }
-      }
-
-      if (stepItem.stepContent is StepContent.Task) {
-        stepItemText?.let {
-          Spacer(Modifier.height(16.dp))
-        }
-        TaskStep(
-          taskContent = stepItem.stepContent,
-        )
-      }
-
-      stepItemText?.let {
-        Spacer(Modifier.height(16.dp))
-      }
+      StepTopContent(
+        stepItem = stepItem,
+        isCurrentStep = isCurrentStep,
+        showBottomContentAnimated = {
+          showBottomContentAnimated = true
+        },
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        imageLoader = imageLoader,
+      )
 
       AnimatedVisibility(
         visible = showBottomContent && showBottomContentAnimated,
@@ -549,6 +513,82 @@ private fun StepContentSection(
 }
 
 @Composable
+private fun ColumnScope.StepTopContent(
+  stepItem: ClaimIntentStep,
+  isCurrentStep: Boolean,
+  showBottomContentAnimated: () -> Unit,
+  onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  imageLoader: ImageLoader,
+) {
+  val hint = (stepItem.stepContent as? StepContent.AudioRecording)?.hint?.let {
+    "\n\n$it"
+  }
+  val stepItemText = when {
+    stepItem.text != null && hint != null -> stepItem.text + hint
+    stepItem.text != null -> stepItem.text
+    hint != null -> hint
+    else -> null
+  }
+
+  if (isCurrentStep) {
+    if (stepItemText != null) {
+      CommonPaddingWrapper {
+        AnimatedRevealText(
+          text = stepItemText,
+          visibleState = remember(stepItem.id) {
+            MutableTransitionState(false).apply { targetState = true }
+          },
+          onAnimationFinished = showBottomContentAnimated,
+        )
+      }
+    } else {
+      LaunchedEffect(stepItem.id) {
+        showBottomContentAnimated()
+      }
+    }
+  } else {
+    stepItemText?.let {
+      HedvigText(stepItemText)
+    }
+  }
+
+  if (stepItem.stepContent is StepContent.Task) {
+    stepItemText?.let {
+      Spacer(Modifier.height(16.dp))
+    }
+    TaskStep(
+      taskContent = stepItem.stepContent,
+    )
+  }
+
+  if (stepItem.stepContent is StepContent.Summary) {
+    stepItemText?.let {
+      Spacer(Modifier.height(16.dp))
+    }
+    ChatClaimSummaryTopContent(
+      recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
+      displayItems = stepItem.stepContent.items.map { (title, value) -> title to value },
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      imageLoader = imageLoader,
+      fileUploads = stepItem.stepContent.fileUploads.map {
+        UiFile(
+          name = it.fileName,
+          localPath = null,
+          url = it.url,
+          mimeType = it.contentType,
+          id = it.url,
+        )
+      },
+      freeTexts = stepItem.stepContent.freeTexts,
+    )
+  }
+
+  stepItemText?.let {
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
 private fun CommonPaddingWrapper(
   content: @Composable () -> Unit,
 ) {
@@ -561,7 +601,8 @@ private fun CommonPaddingWrapper(
       modifier = Modifier.withoutPlacement(),
     ) {
       HedvigText("C")
-    } //to align blinking dot, task step and questions to appear in the same place vertically
+    }
+    //to align blinking dot, task step and questions to appear in the same place vertically
   }
 }
 
@@ -715,25 +756,11 @@ private fun StepBottomContent(
         skipButtonLoading = currentSkipButtonLoading,
       )
 
-      is StepContent.Summary -> ChatClaimSummary(
-        recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
-        displayItems = stepItem.stepContent.items.map { (title, value) -> title to value },
+      is StepContent.Summary -> ChatClaimSummaryBottomContent(
         onSubmit = {
           onEvent(ClaimChatEvent.SubmitClaim(stepItem.id))
         },
         isCurrentStep = isCurrentStep,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        imageLoader = imageLoader,
-        fileUploads = stepItem.stepContent.fileUploads.map {
-          UiFile(
-            name = it.fileName,
-            localPath = null,
-            url = it.url,
-            mimeType = it.contentType,
-            id = it.url,
-          )
-        },
-        freeTexts = stepItem.stepContent.freeTexts,
         continueButtonLoading = currentContinueButtonLoading,
         spacerModifier = spacerModifier,
       )
