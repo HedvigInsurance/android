@@ -7,12 +7,12 @@ plugins {
 }
 
 dependencies {
-  implementation(libs.kotlinx.serialization.json)
   implementation(libs.coroutines.core)
-  implementation(libs.ktor.client.core)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(libs.ktor.client.cio)
   implementation(libs.ktor.client.contentNegotiation)
+  implementation(libs.ktor.client.core)
   implementation(libs.ktor.client.json)
-  implementation("io.ktor:ktor-client-cio:3.2.3") // CIO engine for JVM
   implementation(libs.okio)
 }
 
