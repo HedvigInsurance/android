@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -61,6 +62,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -287,14 +289,18 @@ private fun ClaimChatScreenContent(
   val coroutineScope = rememberCoroutineScope()
   val isScrolled by remember(lazyListState, uiState.currentStep?.id) {
     derivedStateOf {
-      lazyListState.firstVisibleItemIndex < uiState.steps.lastIndex - 1
+      val layoutInfo = lazyListState.layoutInfo
+      val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
+      val lastItemIndex = uiState.steps.lastIndex
+      lastVisibleItem?.index != lastItemIndex
     }
   }
-  Box(
+  BoxWithConstraints(
     modifier = modifier
       .fillMaxSize(),
   ) {
-    Column {
+    val isLandscape = maxHeight < maxWidth
+    Column(Modifier.fillMaxSize()) {
       TopAppBar(
         title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
         actionType = TopAppBarActionType.BACK,
@@ -333,11 +339,14 @@ private fun ClaimChatScreenContent(
           val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
           val isLastItem = item == uiState.steps.lastOrNull()
           val isFirstItem = item == uiState.steps.firstOrNull()
-          val heightModifier = if (isLastItem) {
+
+          val fontScale = LocalDensity.current.fontScale
+          val isFontEnlarged = fontScale > 1.0f
+
+          val heightModifier = if (isLastItem && !isLandscape && !isFontEnlarged) {
             val fraction = if (uiState.steps.size == 1) 1f
             else 0.85f
             Modifier.fillParentMaxHeight(fraction)
-            //  .wrapContentHeight(align = Alignment.Top, unbounded = true)
           } else {
             Modifier
           }
@@ -480,16 +489,8 @@ private fun StepContentSection(
       BlinkingAiDot()
     }
   } else if (showContent) {
-//    val scrollState = rememberScrollState()
-//    val needsInternalScroll = spacerModifier != Modifier
-//    val scrollModifier = if (needsInternalScroll) {
-//      Modifier.verticalScroll(scrollState)
-//    } else {
-//      Modifier
-//    }
-
-    Column(modifier
-    //  .then(scrollModifier)
+    Column(
+        modifier,
     ) {
       StepTopContent(
         stepItem = stepItem,
@@ -507,7 +508,7 @@ private fun StepContentSection(
         exit = ExitTransition.None,
       ) {
         Column {
-          Spacer(spacerModifier)
+           Spacer(spacerModifier)
           StepBottomContent(
             stepItem = stepItem,
             freeText = freeText,
@@ -771,11 +772,11 @@ private fun StepBottomContent(
       )
 
       is StepContent.Summary -> ChatClaimSummaryBottomContent(
-        onSubmit = {
-          onEvent(ClaimChatEvent.SubmitClaim(stepItem.id))
-        },
-        isCurrentStep = isCurrentStep,
-        continueButtonLoading = currentContinueButtonLoading
+          onSubmit = {
+              onEvent(ClaimChatEvent.SubmitClaim(stepItem.id))
+          },
+          isCurrentStep = isCurrentStep,
+          continueButtonLoading = currentContinueButtonLoading,
       )
 
       is StepContent.Deflect -> {
