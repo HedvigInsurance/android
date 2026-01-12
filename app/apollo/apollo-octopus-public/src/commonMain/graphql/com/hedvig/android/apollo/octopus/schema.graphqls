@@ -655,7 +655,7 @@ shapes (see the `ClaimIntentStepContent` union).
 """
 type ClaimIntentStep {
   id: ID!
-  text: String!
+  text: String
   content: ClaimIntentStepContent!
   isRegrettable: Boolean!
 }
@@ -690,6 +690,7 @@ type ClaimIntentStepContentDeflection {
   partnersInfo: ClaimIntentStepContentDeflectionInfoBlock
   content: ClaimIntentStepContentDeflectionInfoBlock!
   faq: [ClaimIntentStepContentDeflectionInfoBlock!]!
+  buttonTitle: String!
 }
 type ClaimIntentStepContentDeflectionInfoBlock {
   title: String!
@@ -774,6 +775,7 @@ enum ClaimIntentStepContentFormFieldType {
   TEXT
   DATE
   NUMBER
+  PHONE_NUMBER
   SINGLE_SELECT
   MULTI_SELECT
   BINARY
@@ -3299,6 +3301,11 @@ type Product {
   Localized tagline of the product.
   """
   tagline: String!
+  """
+  Localized tagline of the product to be used during purchase flow. This gives editors
+  a couple of tagline options to choose for.
+  """
+  purchaseFlowTagline: String!
   """
   The pillow image asset associated with this product.
   """

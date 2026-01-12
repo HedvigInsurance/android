@@ -156,8 +156,11 @@
   </application>
 
   <queries>
+    <!-- Direct package query for BankID -->
+    <package android:name="com.bankid.bus" />
+
     <!--
-    Allow querying for BankID app
+    Allow querying for BankID app via intent filter
     https://developer.android.com/training/package-visibility/declaring#intent-filter-signature
     -->
     <intent>

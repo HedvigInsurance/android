@@ -30,6 +30,6 @@ jobs:
         with:
           token: ${{ secrets.ANDROID_REPO_PAT }}
           commit-message: "Download Strings"
-          branch: "maintenance/download-strings"
+          branch: "chore/download-strings"
           title: "Maintenance: Download Strings"
           body: ""
