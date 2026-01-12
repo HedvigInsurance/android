@@ -296,11 +296,18 @@ private fun ClaimChatScreenContent(
       lastVisibleItem?.index != lastItemIndex
     }
   }
-  var isLastItemAppearAnimationFinished by remember { mutableStateOf(false) }
 
-  // Reset animation flag when a new step is added
-  LaunchedEffect(uiState.steps.size) {
-    isLastItemAppearAnimationFinished = false
+  // Track the size of the last item to scroll when it grows
+  val lastItemSize by remember(lazyListState, uiState.steps.lastOrNull()?.id) {
+    derivedStateOf {
+      val layoutInfo = lazyListState.layoutInfo
+      val lastItem = layoutInfo.visibleItemsInfo.lastOrNull()
+      if (lastItem?.index == uiState.steps.lastIndex) {
+        lastItem.size
+      } else {
+        null
+      }
+    }
   }
 
   BoxWithConstraints(
@@ -383,9 +390,6 @@ private fun ClaimChatScreenContent(
               openAppSettings = openAppSettings,
               spacerModifier = if (isLastItem) Modifier.weight(1f) else Modifier,
               showBottomContent = if (isLastItem) !isScrolled else true,
-              lastItemAppearAnimationFinished = {
-                isLastItemAppearAnimationFinished = true
-              }
             )
           }
         }
@@ -405,24 +409,24 @@ private fun ClaimChatScreenContent(
       )
     }
   }
-  LaunchedEffect(
-    uiState.steps.size,
-    isLastItemAppearAnimationFinished,
-    uiState.steps.last().stepContent is StepContent.Task
-    ) {
+  LaunchedEffect(uiState.steps.lastOrNull()?.id) {
     if (uiState.steps.isNotEmpty()) {
-      // First, instantly scroll to the last item
+      // Scroll to last item instantly when the last step changes
       lazyListState.scrollToItem(index = uiState.steps.lastIndex)
+    }
+  }
 
-      // After animations finish, smoothly scroll to reveal bottom content
-      if (isLastItemAppearAnimationFinished) {
-        delay(50) // Small delay to ensure layout is stable
-        // Smooth scroll with custom easing
-        lazyListState.animateScrollBy(
-          value = 10000f,
-          animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
-        )
-      }
+  // Scroll whenever the last item grows
+  LaunchedEffect(lastItemSize) {
+    if (lastItemSize != null && uiState.steps.isNotEmpty()) {
+      // Small delay to let the animation start
+      delay(50)
+
+      // Smooth scroll to the maximum scroll position
+      lazyListState.animateScrollBy(
+        value = 3000f, // Large enough to reach bottom, will be clamped
+        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
+      )
     }
   }
 }
@@ -475,7 +479,6 @@ private fun StepContentSection(
   openAppSettings: () -> Unit,
   spacerModifier: Modifier,
   showBottomContent: Boolean,
-  lastItemAppearAnimationFinished: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showContent by rememberSaveable(stepItem.id) {
@@ -488,14 +491,6 @@ private fun StepContentSection(
 
   var hasShownAnimation by rememberSaveable(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
-  }
-
-  LaunchedEffect(showBottomContent, showBottomContentAnimated) {
-    if (showBottomContent && showBottomContentAnimated) {
-      // Wait for AnimatedVisibility fadeIn animation (300ms) plus buffer for layout
-      delay(350)
-      lastItemAppearAnimationFinished()
-    }
   }
 
   // Animation sequence controlled by showFakeAiDot parameter
