@@ -9,7 +9,7 @@ class HedvigHttpLogger : Logger {
     // todo do we need to filter content disposition?
     if (message.contains("Content-Disposition")) {
       logcat(LogPriority.VERBOSE, tag = "Ktor") { "File upload omitted from log" }
-    if (message.contains("Content-Type: image/jpeg")) {
+    } else if (message.contains("Content-Type: image/jpeg")) {
       logcat(LogPriority.VERBOSE, tag = "Ktor") { "File download omitted from log" }
     } else {
       logcat(LogPriority.VERBOSE, tag = "Ktor") { message }
