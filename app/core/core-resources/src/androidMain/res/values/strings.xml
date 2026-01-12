@@ -188,7 +188,9 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
+  <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Edit answer</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Changing this answer will reset everything you’ve filled in after it. You’ll need to go through those steps again.</string>
+  <string name="CLAIM_CHAT_EDIT_TITLE">Previous answers will be reset</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Make sure you fill in all the required fields</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uploaded files</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Send files</string>
@@ -273,7 +275,7 @@
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION">As an insurance company, Hedvig is obliged to save the insurance contract and related information as long as it is possible to claim insurance compensation. This period can vary depending on the type of insurance, but is at least 10 years after the insurance has ended.\n\nIf you want us to delete the information we are not required by law to save, you can use the button below.\n\n[Here](https://www.hedvig.com/se-en/hedvig/privacy-policy) you can read about how Hedvig handles your personal data.</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE">Important information</string>
   <string name="DELETE_ACCOUNT_PROCESSED_DESCRIPTION">You will get an email from us within 30 days to confirm that your account has been deleted</string>
-  <string name="DELETE_ACCOUNT_PROCESSED_TITLE">Your account will be deleted</string>
+  <string name="DELETE_ACCOUNT_PROCESSED_TITLE">We will delete the information that we are not required to store by law.</string>
   <string name="DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION">As we use our app for our claims handling, we recommend that you keep your account active until your claims are solved.</string>
   <string name="DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE">You have an ongoing claim</string>
   <string name="DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION">As you have an active insurance policy with us, we cannot delete your account. If you want to terminate your insurance, you can do it [here](https://link.hedvig.com/terminate-contract).</string>
@@ -786,7 +788,7 @@
   <string name="TERMINATION_FLOW_NOT_ELIGIBLE_TITLE">Unable to cancel insurance</string>
   <string name="TERMINATION_FLOW_PAYMENT_PER_MONTH">%1$s SEK/month</string>
   <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITHOUT_DATE">Your insurance was cancelled before the activation date. You will not be charged anything.</string>
-  <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE">Your insurance will be cancelled  on %s. We will send you an email with all the details.</string>
+  <string name="TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE">Your insurance will be cancelled on %s. We will send you an email with all the details.</string>
   <string name="TERMINATION_FLOW_SUCCESS_TITLE">Insurance cancelled</string>
   <string name="TERMINATION_FLOW_SUMMARY_SUBTITLE">Review and confirm</string>
   <string name="TERMINATION_FLOW_TODAY">Today</string>
@@ -848,7 +850,9 @@
   <string name="TOAST_NEW_OFFER">New offer</string>
   <string name="TOAST_READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Sorry, we couldn’t generate a price. Please make sure you have Kivra\'s digital mailbox and then try again. \n\nYou can get Kivra\'s digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %s</string>
+  <string name="VOICEOVER_CHANGE_VALUE">change value</string>
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>
