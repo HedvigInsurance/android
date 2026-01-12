@@ -14,7 +14,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -26,10 +25,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
@@ -54,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
@@ -74,15 +76,21 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.TopAppBar
+import com.hedvig.android.design.system.hedvig.TopAppBarActionType
+import com.hedvig.android.design.system.hedvig.TopAppBarColors
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
+import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
@@ -95,6 +103,7 @@ import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.A11Y_SCROLL_DOWN
+import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
@@ -107,6 +116,7 @@ import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
+import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
@@ -127,6 +137,7 @@ internal fun ClaimChatDestination(
   appPackageId: String,
   imageLoader: ImageLoader,
   isDevelopmentFlow: Boolean,
+  navigateUp: () -> Unit,
 ) {
   val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
     parametersOf(isDevelopmentFlow)
@@ -148,6 +159,7 @@ internal fun ClaimChatDestination(
       },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
+      navigateUp = navigateUp,
     )
   }
 }
@@ -162,6 +174,7 @@ internal fun ClaimChatScreenContent(
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
+  navigateUp: () -> Unit,
 ) {
   val uiState = claimChatViewModel.uiState.collectAsState().value
 
@@ -184,6 +197,7 @@ internal fun ClaimChatScreenContent(
           navigateToDeflect = navigateToDeflect,
           appPackageId = appPackageId,
           imageLoader = imageLoader,
+          navigateUp = navigateUp,
         )
       }
     }
@@ -199,6 +213,7 @@ private fun ClaimChatScreen(
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
+  navigateUp: () -> Unit,
   openAppSettings: () -> Unit,
 ) {
   FreeTextOverlay(
@@ -224,6 +239,7 @@ private fun ClaimChatScreen(
         navigateToDeflect = navigateToDeflect,
         appPackageId = appPackageId,
         imageLoader = imageLoader,
+        navigateUp = navigateUp,
       )
     },
   )
@@ -239,6 +255,7 @@ private fun ClaimChatScreenContent(
   navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
+  navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   if (uiState.errorSubmittingStep != null) {
@@ -272,53 +289,81 @@ private fun ClaimChatScreenContent(
   }
   Box(
     modifier = modifier
-      .padding(horizontal = 16.dp)
       .fillMaxSize(),
   ) {
-    LazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      state = lazyListState,
-      contentPadding = WindowInsets.safeDrawing.asPaddingValues().plus(PaddingValues(vertical = 16.dp)),
-      verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-    ) {
-      items(
-        items = uiState.steps,
-        key = { step -> step.id.value },
-        contentType = { it.stepContent::class },
-      ) { item ->
-        val isCurrentStep = item.id == uiState.currentStep?.id
-        val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
-        val isLastItem = item == uiState.steps.lastOrNull()
+    Column {
+      TopAppBar(
+        title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
+        actionType = TopAppBarActionType.BACK,
+        onActionClick = navigateUp,
+        customTopAppBarColors = TopAppBarColors(
+          containerColor = Color.Transparent,
+          contentColor = HedvigTheme.colorScheme.textPrimary
+        ),
+        topAppBarActions = {
+          IconButton(
+            onClick = navigateUp,
+          ) {
+            Icon(
+              HedvigIcons.Close,
+              stringResource(Res.string.general_close_button),
+            )
+          }
+        },
+      )
+      HorizontalDivider()
+      LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+        state = lazyListState,
+        contentPadding = WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+          .asPaddingValues()
+          .plus(PaddingValues(bottom = 16.dp)),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+      ) {
+        items(
+          items = uiState.steps,
+          key = { step -> step.id.value },
+          contentType = { it.stepContent::class },
+        ) { item ->
+          val isCurrentStep = item.id == uiState.currentStep?.id
+          val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
+          val isLastItem = item == uiState.steps.lastOrNull()
+          val isFirstItem = item == uiState.steps.firstOrNull()
+          val heightModifier = if (isLastItem) {
+            val fraction = if (uiState.steps.size == 1) 1f
+            else 0.85f
+            Modifier.fillParentMaxHeight(fraction)
+          } else {
+            Modifier
+          }
 
-        val heightModifier = if (isLastItem) {
-          val fraction = if (uiState.steps.size == 1) 1f else 0.9f
-          Modifier.fillParentMaxHeight(fraction)
-        } else {
-          Modifier
-        }
-
-        Column(
-          modifier = heightModifier.animateContentSize(
-            animationSpec = tween(durationMillis = 300)
-          ),
-        ) {
-          StepContentSection(
-            stepItem = item,
-            freeText = uiState.freeText,
-            isCurrentStep = isCurrentStep,
-            showFakeAiDot = showFakeAiDot,
-            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-            onEvent = onEvent,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            navigateToDeflect = navigateToDeflect,
-            appPackageId = appPackageId,
-            imageLoader = imageLoader,
-            openAppSettings = openAppSettings,
-            spacerModifier = if (isLastItem) Modifier.weight(1f) else Modifier,
-            showBottomContent = if (isLastItem) !isScrolled else true,
-          )
+          Column(
+            modifier = heightModifier.animateContentSize(
+              animationSpec = tween(durationMillis = 300),
+            ),
+          ) {
+            if(isFirstItem) {
+              Spacer(Modifier.height(16.dp))
+            }
+            StepContentSection(
+              stepItem = item,
+              freeText = uiState.freeText,
+              isCurrentStep = isCurrentStep,
+              showFakeAiDot = showFakeAiDot,
+              currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+              currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+              onEvent = onEvent,
+              shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+              onNavigateToImageViewer = onNavigateToImageViewer,
+              navigateToDeflect = navigateToDeflect,
+              appPackageId = appPackageId,
+              imageLoader = imageLoader,
+              openAppSettings = openAppSettings,
+              spacerModifier = if (isLastItem) Modifier.weight(1f) else Modifier,
+              showBottomContent = if (isLastItem) !isScrolled else true,
+            )
+          }
         }
       }
     }
@@ -341,7 +386,7 @@ private fun ClaimChatScreenContent(
       lazyListState.scrollToItem(index = uiState.steps.lastIndex)
       // Give layout time to measure, then scroll to reveal bottom content
       delay(100)
-      lazyListState.animateScrollBy(value = 10000f) // Scroll down as far as possible
+      lazyListState.animateScrollBy(value = 10000f)
     }
   }
 }
@@ -368,10 +413,10 @@ private fun ScrollToBottomButton(
         },
       )
       Icon(
-          HedvigIcons.ArrowDown,
-          stringResource(Res.string.A11Y_SCROLL_DOWN),
-          tint = HedvigTheme.colorScheme.fillPrimary,
-        modifier = Modifier.size (24.dp)
+        HedvigIcons.ArrowDown,
+        stringResource(Res.string.A11Y_SCROLL_DOWN),
+        tint = HedvigTheme.colorScheme.fillPrimary,
+        modifier = Modifier.size(24.dp),
       )
     }
   }
@@ -394,6 +439,7 @@ private fun StepContentSection(
   openAppSettings: () -> Unit,
   spacerModifier: Modifier,
   showBottomContent: Boolean,
+  modifier: Modifier = Modifier,
 ) {
   var showContent by rememberSaveable(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
@@ -439,7 +485,7 @@ private fun StepContentSection(
       hint != null -> hint
       else -> null
     }
-    Column {
+    Column(modifier) {
       if (isCurrentStep) {
         if (stepItemText != null) {
           CommonPaddingWrapper {
@@ -631,12 +677,12 @@ private fun StepBottomContent(
       )
 
       is StepContent.ContentSelect -> ContentSelectStep(
-          item = stepItem,
-          isCurrentStep = isCurrentStep,
-          options = stepItem.stepContent.options,
-          selectedOptionId = stepItem.stepContent.selectedOptionId,
-          onEvent = onEvent,
-          currentContinueButtonLoading = currentContinueButtonLoading,
+        item = stepItem,
+        isCurrentStep = isCurrentStep,
+        options = stepItem.stepContent.options,
+        selectedOptionId = stepItem.stepContent.selectedOptionId,
+        onEvent = onEvent,
+        currentContinueButtonLoading = currentContinueButtonLoading,
         canSkip = stepItem.stepContent.isSkippable,
         onSkip = {
           onEvent(ClaimChatEvent.Skip(stepItem.id))
@@ -698,7 +744,7 @@ private fun StepBottomContent(
           buttonText = stepItem.stepContent.buttonText,
           deflect = stepItem.stepContent,
           navigateToDeflect = navigateToDeflect,
-          modifier= Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
       }
 
@@ -827,8 +873,8 @@ private fun DeflectStep(
   HedvigButton(
     modifier = modifier,
     text = buttonText,
-    onClick =  dropUnlessResumed {navigateToDeflect(stepId, deflect)},
-    enabled = true
+    onClick = dropUnlessResumed { navigateToDeflect(stepId, deflect) },
+    enabled = true,
   )
 }
 
@@ -1127,18 +1173,18 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
       horizontalArrangement = Arrangement.End,
     ) {
       RoundCornersPill(
-          onClick = onRegret,
-          modifier = Modifier.semantics(true) {},
+        onClick = onRegret,
+        modifier = Modifier.semantics(true) {},
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
-              stringResource(Res.string.claims_edit_button),
-              fontStyle = HedvigTheme.typography.label.fontStyle,
+            stringResource(Res.string.claims_edit_button),
+            fontStyle = HedvigTheme.typography.label.fontStyle,
           )
           Spacer(Modifier.width(6.dp))
           Icon(
-              HedvigIcons.ChevronDown, null,
-              tint = HedvigTheme.colorScheme.fillTertiaryTransparent,
+            HedvigIcons.ChevronDown, null,
+            tint = HedvigTheme.colorScheme.fillTertiaryTransparent,
           )
         }
       }
@@ -1256,7 +1302,7 @@ private fun ContentSelectStep(
               isLoading = skipButtonLoading,
               enabled = !skipButtonLoading,
               modifier = Modifier.fillMaxWidth(),
-              buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+              buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
             )
             Spacer(Modifier.height(16.dp))
           }
