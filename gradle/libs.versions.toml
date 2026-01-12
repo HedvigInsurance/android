@@ -76,7 +76,6 @@ kotlinxDatetime = "0.7.1"
 media3 = "1.8.0"
 modalSheet = "0.7.0"
 navigationRecentsUrlSharing = "1.0.0"
-okhttpBom = "5.3.2"
 okio = "3.16.4"
 paging = "3.3.6"
 playReview = "2.0.2"
@@ -214,8 +213,6 @@ media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", vers
 media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 navigationRecentsUrlSharing = { module = "com.stylianosgakis.navigation.recents.url.sharing:navigation-recents-url-sharing", version.ref = "navigationRecentsUrlSharing" }
-okhttp-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttpBom" }
-okhttp-core = { module = "com.squareup.okhttp3:okhttp" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 paging-compose = { module = "androidx.paging:paging-compose", version.ref = "paging" }
