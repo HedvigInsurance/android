@@ -146,8 +146,6 @@ dependencies {
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
   implementation(libs.navigationRecentsUrlSharing)
-  implementation(libs.okhttp.core)
-  implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)

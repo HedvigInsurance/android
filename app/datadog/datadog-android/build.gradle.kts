@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
   api(libs.androidx.other.startup)
-  api(libs.okhttp.core)
 
   implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.logs)

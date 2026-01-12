@@ -9,7 +9,6 @@ hedvig {
 
 dependencies {
   api(libs.kotlinx.datetime)
-  api(libs.okhttp.core)
   api(projects.authCoreApi)
   api(projects.authlib)
 
@@ -28,7 +27,6 @@ dependencies {
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
-  testImplementation(libs.okhttp.mockWebServer)
   testImplementation(libs.turbine)
   testImplementation(projects.authCoreTest)
   testImplementation(projects.coreDatastoreTest)

@@ -19,7 +19,6 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor.client.core)
-  implementation(libs.ktor.client.okhttp)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
