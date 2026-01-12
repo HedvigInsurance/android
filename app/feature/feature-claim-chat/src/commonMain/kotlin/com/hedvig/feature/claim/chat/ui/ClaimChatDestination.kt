@@ -409,22 +409,12 @@ private fun ClaimChatScreenContent(
       )
     }
   }
-  LaunchedEffect(uiState.steps.lastOrNull()?.id) {
-    if (uiState.steps.isNotEmpty()) {
-      // Scroll to last item instantly when the last step changes
-      lazyListState.scrollToItem(index = uiState.steps.lastIndex)
-    }
-  }
 
-  // Scroll whenever the last item grows
+
   LaunchedEffect(lastItemSize) {
     if (lastItemSize != null && uiState.steps.isNotEmpty()) {
-      // Small delay to let the animation start
-      delay(50)
-
-      // Smooth scroll to the maximum scroll position
       lazyListState.animateScrollBy(
-        value = 3000f, // Large enough to reach bottom, will be clamped
+        value = 3000f,
         animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
       )
     }
