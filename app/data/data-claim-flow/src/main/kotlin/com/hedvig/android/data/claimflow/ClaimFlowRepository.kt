@@ -3,7 +3,6 @@ package com.hedvig.android.data.claimflow
 import arrow.core.Either
 import arrow.core.raise.Raise
 import arrow.core.raise.either
-import arrow.retrofit.adapter.either.networkhandling.CallError
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
@@ -11,12 +10,10 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.retrofit.toErrorMessage
 import com.hedvig.android.data.claimflow.model.AudioUrl
 import com.hedvig.android.data.claimflow.model.FlowId
 import com.hedvig.android.data.claimtriaging.EntryPointId
 import com.hedvig.android.data.claimtriaging.EntryPointOptionId
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import java.io.File
 import kotlinx.datetime.LocalDate
@@ -56,9 +53,6 @@ import octopus.type.FlowClaimSingleItemStep
 import octopus.type.FlowClaimSuccessStep
 import octopus.type.FlowClaimSummaryInput
 import octopus.type.FlowClaimSummaryStep
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 
 interface ClaimFlowRepository {
   suspend fun startClaimFlow(
@@ -385,21 +379,10 @@ internal class ClaimFlowRepositoryImpl(
   }
 
   private suspend fun Raise<ErrorMessage>.uploadAudioFile(flowId: String, file: File): AudioUrl {
-    val result = odysseyService
-      .uploadAudioRecordingFile(
-        flowId = flowId,
-        file = MultipartBody.Part.createFormData(
-          // Same name for both due to this: https://hedviginsurance.slack.com/archives/C03RP2M458V/p1680004365854429
-          name = file.name,
-          filename = file.name,
-          body = file.asRequestBody("audio/mp4".toMediaType()),
-        ),
-      )
-      .onLeft {
-        logcat(LogPriority.ERROR) { "Failed to upload file for flowId:$flowId. Error:$it" }
-      }
-      .mapLeft(CallError::toErrorMessage)
-      .bind()
+    val result = odysseyService.uploadAudioRecordingFile(
+      flowId = flowId,
+      file = file,
+    )
     return AudioUrl(result.audioUrl)
   }
 

@@ -12,16 +12,14 @@ hedvig {
 }
 
 dependencies {
-  api(libs.retrofit)
-  api(libs.retrofitArrow)
-
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.jetbrains.compose.runtime)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
-  implementation(libs.retrofitKotlinxSerializationConverter)
+  implementation(libs.ktor.client.core)
+  implementation(libs.ktor.client.okhttp)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
   implementation(projects.apolloOctopusPublic)
@@ -30,9 +28,9 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
   implementation(projects.dataClaimTriaging)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.navigationCommon)
+  implementation(projects.networkClients)
 }
