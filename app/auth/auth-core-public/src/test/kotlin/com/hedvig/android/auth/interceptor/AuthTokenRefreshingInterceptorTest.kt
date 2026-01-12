@@ -3,7 +3,6 @@ package com.hedvig.android.auth.interceptor
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import com.hedvig.android.auth.AccessTokenProvider
 import com.hedvig.android.auth.AndroidAccessTokenProvider
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.AuthTokenServiceImpl
@@ -16,31 +15,19 @@ import com.hedvig.android.test.clock.TestClock
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.AuthTokenResult
 import com.hedvig.authlib.RefreshToken
-import java.io.IOException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
-class AuthTokenRefreshingInterceptorTest {
+class AndroidAccessTokenProviderTest {
   @get:Rule
   val testFolder = TemporaryFolder()
 
@@ -48,20 +35,7 @@ class AuthTokenRefreshingInterceptorTest {
   val testLogcatLogger = TestLogcatLoggingRule()
 
   @Test
-  fun `The token in the header contains the 'Bearer ' prefix as the backend expects it`() = runTest {
-    val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
-    val okHttpClient = testOkHttpClient(
-      AuthTokenRefreshingInterceptor(accessTokenProvider = { "token" }),
-    )
-
-    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-    val requestSent: RecordedRequest = webServer.takeRequest()
-
-    assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer token")
-  }
-
-  @Test
-  fun `when a token already exists, simply goes through adding the header`() = runTest {
+  fun `when providing a simple token, returns the token`() = runTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
@@ -69,19 +43,31 @@ class AuthTokenRefreshingInterceptorTest {
       RefreshToken("", 0),
     )
     val authTokenService = authTokenService(authTokenStorage)
-    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
-    val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
-    val okHttpClient = testOkHttpClient(interceptor)
-    runCurrent()
+    val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
 
-    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-    val requestSent: RecordedRequest = webServer.takeRequest()
+    val token = accessTokenProvider.provide()
 
-    assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer token")
+    assertThat(token).isEqualTo("token")
   }
 
   @Test
-  fun `when the access token is expired, and the refresh token is not expired, refresh and add header`() = runTest {
+  fun `when a token already exists, simply returns the token`() = runTest {
+    val clock = TestClock()
+    val authTokenStorage = authTokenStorage(clock)
+    authTokenStorage.updateTokens(
+      AccessToken("token", 10.minutes.inWholeSeconds),
+      RefreshToken("", 0),
+    )
+    val authTokenService = authTokenService(authTokenStorage)
+    val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
+
+    val token = accessTokenProvider.provide()
+
+    assertThat(token).isEqualTo("token")
+  }
+
+  @Test
+  fun `when the access token is expired, and the refresh token is not expired, refresh and return new token`() = runTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
@@ -90,10 +76,7 @@ class AuthTokenRefreshingInterceptorTest {
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
-    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
-    val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
-    val okHttpClient = testOkHttpClient(interceptor)
-    runCurrent()
+    val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
 
     clock.advanceTimeBy(30.minutes)
     authRepository.exchangeResponse.add(
@@ -102,17 +85,16 @@ class AuthTokenRefreshingInterceptorTest {
         RefreshToken("refreshedRefreshToken", 0),
       ),
     )
-    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-    val requestSent: RecordedRequest = webServer.takeRequest()
+    val token = accessTokenProvider.provide()
 
     val storedAuthTokens = authTokenStorage.getTokens().first()!!
     assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
     assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
-    assertThat(requestSent.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
+    assertThat(token).isEqualTo("refreshedToken")
   }
 
   @Test
-  fun `when the access token and the refresh token are expired, clear tokens and proceed without a header`() = runTest {
+  fun `when the access token and the refresh token are expired, clear tokens and return null`() = runTest {
     val clock = TestClock()
     val authTokenStorage = authTokenStorage(clock)
     authTokenStorage.updateTokens(
@@ -121,18 +103,14 @@ class AuthTokenRefreshingInterceptorTest {
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
-    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
-    val webServer = MockWebServer().also { it.enqueue(MockResponse()) }
-    val okHttpClient = testOkHttpClient(interceptor)
-    runCurrent()
+    val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
 
     clock.advanceTimeBy(1.hours)
-    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-    val requestSent: RecordedRequest = webServer.takeRequest()
+    val token = accessTokenProvider.provide()
 
     val storedAuthTokens = authTokenStorage.getTokens().first()
     assertThat(storedAuthTokens).isNull()
-    assertThat(requestSent.headers["Authorization"]).isNull()
+    assertThat(token).isNull()
   }
 
   @Test
@@ -145,12 +123,7 @@ class AuthTokenRefreshingInterceptorTest {
     )
     val authRepository = FakeAuthRepository()
     val authTokenService = authTokenService(authTokenStorage, authRepository)
-    val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
-    val webServer = MockWebServer().also { mockWebServer ->
-      repeat(2) { mockWebServer.enqueue(MockResponse()) }
-    }
-    val okHttpClient = testOkHttpClient(interceptor)
-    runCurrent()
+    val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
 
     clock.advanceTimeBy(30.minutes)
     authRepository.exchangeResponse.add(
@@ -159,17 +132,15 @@ class AuthTokenRefreshingInterceptorTest {
         RefreshToken("refreshedRefreshToken", 0),
       ),
     )
-    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-    okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-    runCurrent()
-    val requestSent1: RecordedRequest = webServer.takeRequest()
-    val requestSent2: RecordedRequest = webServer.takeRequest()
+    val token1Deferred = async { accessTokenProvider.provide() }
+    val token2Deferred = async { accessTokenProvider.provide() }
+    val (token1, token2) = awaitAll(token1Deferred, token2Deferred)
 
     val storedAuthTokens = authTokenStorage.getTokens().first()!!
     assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
     assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
-    assertThat(requestSent1.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
-    assertThat(requestSent2.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
+    assertThat(token1).isEqualTo("refreshedToken")
+    assertThat(token2).isEqualTo("refreshedToken")
   }
 
   @Test
@@ -183,12 +154,7 @@ class AuthTokenRefreshingInterceptorTest {
       )
       val authRepository = FakeAuthRepository()
       val authTokenService = authTokenService(authTokenStorage, authRepository)
-      val interceptor = AuthTokenRefreshingInterceptor(accessTokenProvider(authTokenService, clock))
-      val webServer = MockWebServer().also { mockWebServer ->
-        repeat(3) { mockWebServer.enqueue(MockResponse()) }
-      }
-      val okHttpClient = testOkHttpClient(interceptor)
-      runCurrent()
+      val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
 
       clock.advanceTimeBy(30.minutes)
       authRepository.exchangeResponse.add(
@@ -197,27 +163,21 @@ class AuthTokenRefreshingInterceptorTest {
           RefreshToken("refreshedRefreshToken", 0),
         ),
       )
-      okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-      okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-      runCurrent()
+      val token1Deferred = async { accessTokenProvider.provide() }
+      val token2Deferred = async { accessTokenProvider.provide() }
 
-      okHttpClient.newCall(webServer.testRequest()).enqueueAndSuspendUntilCallbackIgnoringResponse()
-
-      val requestSent1: RecordedRequest = webServer.takeRequest()
-      val requestSent2: RecordedRequest = webServer.takeRequest()
-      val requestSent3: RecordedRequest = webServer.takeRequest()
+      val (token1, token2) = awaitAll(token1Deferred, token2Deferred)
 
       val storedAuthTokens = authTokenStorage.getTokens().first()!!
       assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
       assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
-      assertThat(requestSent1.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
-      assertThat(requestSent2.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
-      assertThat(requestSent3.headers["Authorization"]).isEqualTo("Bearer refreshedToken")
-    }
 
-  private fun MockWebServer.testRequest(): Request {
-    return Request.Builder().url(url("test")).build()
-  }
+      assertThat(token1).isEqualTo("refreshedToken")
+      assertThat(token2).isEqualTo("refreshedToken")
+
+      val token3 = accessTokenProvider.provide()
+      assertThat(token3).isEqualTo("refreshedToken")
+    }
 
   private fun TestScope.authTokenService(
     authTokenStorage: AuthTokenStorage,
@@ -238,35 +198,4 @@ class AuthTokenRefreshingInterceptorTest {
     ),
     clock,
   )
-
-  private fun accessTokenProvider(authTokenService: AuthTokenService, clock: Clock): AccessTokenProvider {
-    return AndroidAccessTokenProvider(authTokenService, clock)
-  }
-
-  private fun testOkHttpClient(interceptor: Interceptor) = OkHttpClient
-    .Builder()
-    .addInterceptor(interceptor)
-    .build()
-}
-
-/**
- * Without this, just doing .execute() makes the tests running with `runTest` in combination with having a datastore
- * running on their `backgroundScope` hang indefinitely. Using `enqueue` stops this problem.
- * Not sure about the details of this and can't find a public issue.
- * If removing this function suddenly makes tests still pass feel free to remove it in the future.
- */
-private suspend fun Call.enqueueAndSuspendUntilCallbackIgnoringResponse() {
-  suspendCancellableCoroutine<Unit> { cont ->
-    enqueue(
-      object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-          cont.resumeWithException(e)
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-          cont.resume(Unit)
-        }
-      },
-    )
-  }
 }
