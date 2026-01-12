@@ -18,6 +18,8 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -334,6 +337,7 @@ private fun ClaimChatScreenContent(
             val fraction = if (uiState.steps.size == 1) 1f
             else 0.85f
             Modifier.fillParentMaxHeight(fraction)
+            //  .wrapContentHeight(align = Alignment.Top, unbounded = true)
           } else {
             Modifier
           }
@@ -476,7 +480,17 @@ private fun StepContentSection(
       BlinkingAiDot()
     }
   } else if (showContent) {
-    Column(modifier) {
+//    val scrollState = rememberScrollState()
+//    val needsInternalScroll = spacerModifier != Modifier
+//    val scrollModifier = if (needsInternalScroll) {
+//      Modifier.verticalScroll(scrollState)
+//    } else {
+//      Modifier
+//    }
+
+    Column(modifier
+    //  .then(scrollModifier)
+    ) {
       StepTopContent(
         stepItem = stepItem,
         isCurrentStep = isCurrentStep,
@@ -492,21 +506,23 @@ private fun StepContentSection(
         enter = fadeIn(animationSpec = tween(300)),
         exit = ExitTransition.None,
       ) {
-        StepBottomContent(
-          stepItem = stepItem,
-          freeText = freeText,
-          isCurrentStep = isCurrentStep,
-          currentContinueButtonLoading = currentContinueButtonLoading,
-          currentSkipButtonLoading = currentSkipButtonLoading,
-          onEvent = onEvent,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          onNavigateToImageViewer = onNavigateToImageViewer,
-          navigateToDeflect = navigateToDeflect,
-          appPackageId = appPackageId,
-          imageLoader = imageLoader,
-          openAppSettings = openAppSettings,
-          spacerModifier = spacerModifier,
-        )
+        Column {
+          Spacer(spacerModifier)
+          StepBottomContent(
+            stepItem = stepItem,
+            freeText = freeText,
+            isCurrentStep = isCurrentStep,
+            currentContinueButtonLoading = currentContinueButtonLoading,
+            currentSkipButtonLoading = currentSkipButtonLoading,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+          )
+        }
       }
     }
   }
@@ -672,10 +688,8 @@ private fun StepBottomContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  spacerModifier: Modifier,
 ) {
   Column {
-    Spacer(spacerModifier)
     when (stepItem.stepContent) {
       is StepContent.AudioRecording -> AudioRecordingStep(
         item = stepItem,
@@ -761,8 +775,7 @@ private fun StepBottomContent(
           onEvent(ClaimChatEvent.SubmitClaim(stepItem.id))
         },
         isCurrentStep = isCurrentStep,
-        continueButtonLoading = currentContinueButtonLoading,
-        spacerModifier = spacerModifier,
+        continueButtonLoading = currentContinueButtonLoading
       )
 
       is StepContent.Deflect -> {

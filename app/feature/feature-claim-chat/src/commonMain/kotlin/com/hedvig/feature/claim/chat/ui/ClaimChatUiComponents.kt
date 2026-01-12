@@ -841,11 +841,9 @@ internal fun ChatClaimSummaryBottomContent(
   onSubmit: () -> Unit,
   isCurrentStep: Boolean,
   continueButtonLoading: Boolean,
-  spacerModifier: Modifier,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    Spacer(spacerModifier)
     if (isCurrentStep) {
       Spacer(Modifier.height(16.dp))
       Row(
