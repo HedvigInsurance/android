@@ -188,7 +188,9 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
+  <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Redigera svar</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Om du ändrar det här svaret kommer allt du fyllt i efter det att rensas. Du behöver gå igenom de stegen igen.</string>
+  <string name="CLAIM_CHAT_EDIT_TITLE">Tidigare svar kommer att återställas</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Dubbelkolla att du fyllt i alla obligatoriska fält</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uppladdade filer</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Ladda upp filer</string>
@@ -273,7 +275,7 @@
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION">Som försäkringsbolag är Hedvig skyldig att spara försäkringsavtalet och relaterad information så länge det är möjligt att göra anspråk på försäkringsersättning. Denna period kan variera beroende på vilken typ av försäkring det gäller men är minst 10 år efter försäkringens utgång baserat på preskriptionstider.\n\nOm du vill ta bort den information som vi enligt lag inte måste lagra, gör du det genom knappen nedan.\n\n[Här](https://www.hedvig.com/se/hedvig/personuppgifter) kan du läsa mer om hur dina personuppgifter hanteras hos Hedvig.</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE">Viktig information</string>
   <string name="DELETE_ACCOUNT_PROCESSED_DESCRIPTION">Du kommer få ett bekräftelsemail från oss inom 30 dagar som bekräftar att ditt konto har raderats</string>
-  <string name="DELETE_ACCOUNT_PROCESSED_TITLE">Ditt konto kommer att raderas</string>
+  <string name="DELETE_ACCOUNT_PROCESSED_TITLE">Vi kommer att radera den information som vi enligt lag inte måste lagra</string>
   <string name="DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION">Eftersom vi använder vår app för vår skadehantering rekommenderar vi att du håller ditt konto aktivt tills din skadeanmälan är klar.</string>
   <string name="DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_TITLE">Du har en aktiv skadeanmälan</string>
   <string name="DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION">Då du har en aktiv försäkring hos oss kan vi inte radera ditt konto. Om du vill avsluta din försäkring kan du göra detta [här](https://link.hedvig.com/terminate-contract).</string>
@@ -848,7 +850,9 @@
   <string name="TOAST_NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST_READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
+  <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>

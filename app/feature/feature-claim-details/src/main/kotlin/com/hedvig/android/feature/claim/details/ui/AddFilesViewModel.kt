@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.fileupload.FileService
-import com.hedvig.android.core.fileupload.UploadFileUseCase
+import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.uidata.UiFile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 internal class AddFilesViewModel(
-  private val uploadFileUseCase: UploadFileUseCase,
+  private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val fileService: FileService,
   private val targetUploadUrl: String,
   private val cacheManager: NetworkCacheManager,
@@ -40,7 +40,7 @@ internal class AddFilesViewModel(
       either {
         val uris = uiState.value.localFiles.map { Uri.parse(it.localPath) }
         if (uris.isNotEmpty()) {
-          val result = uploadFileUseCase.invoke(url = targetUploadUrl, uris = uris).bind()
+          val result = claimsServiceUploadFileUseCase.invoke(url = targetUploadUrl, uris = uris).bind()
           result.fileIds
         } else {
           emptyList()

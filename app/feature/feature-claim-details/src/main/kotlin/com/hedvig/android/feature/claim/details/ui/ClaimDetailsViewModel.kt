@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
-import com.hedvig.android.core.fileupload.UploadFileUseCase
+import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
@@ -32,17 +32,17 @@ import kotlinx.datetime.LocalDateTime
 internal class ClaimDetailsViewModel(
   claimId: String,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
-  uploadFileUseCase: UploadFileUseCase,
+  claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
-    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, uploadFileUseCase, downloadPdfUseCase),
+    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, claimsServiceUploadFileUseCase, downloadPdfUseCase),
   )
 
 private class ClaimDetailPresenter(
   private val claimId: String,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
-  private val uploadFileUseCase: UploadFileUseCase,
+  private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculePresenter<ClaimDetailsEvent, ClaimDetailUiState> {
   @Composable
@@ -103,7 +103,7 @@ private class ClaimDetailPresenter(
             isUploadingFile = true,
             uploadError = null,
           )
-          uploadFileUseCase.invoke(uploadUri, uri).fold(
+          claimsServiceUploadFileUseCase.invoke(uploadUri, uri).fold(
             ifLeft = {
               content = content?.copy(
                 isUploadingFile = false,

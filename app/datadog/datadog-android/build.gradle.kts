@@ -5,11 +5,9 @@ plugins {
 
 dependencies {
   api(libs.androidx.other.startup)
-  api(libs.okhttp.core)
 
   implementation(libs.datadog.sdk.core)
   implementation(libs.datadog.sdk.logs)
-  implementation(libs.datadog.sdk.okhttp)
   implementation(libs.datadog.sdk.rum)
   implementation(libs.datadog.sdk.trace.otel)
   implementation(libs.koin.core)
