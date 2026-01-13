@@ -339,7 +339,10 @@ private fun ClaimChatScreenContent(
         Box(
           Modifier
             .padding(contentPadding)
-            .onSizeChanged { minHeightForFullScreenItem = with(density) { it.height.toDp() } },
+            .onSizeChanged { minHeightForFullScreenItem = with(density) {
+              val height = if (uiState.steps.size==1)it.height*1f else it.height*0.85f
+              height.toDp()
+            } },
         )
         LazyColumn(
           modifier = Modifier.padding(horizontal = 16.dp),
