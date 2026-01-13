@@ -490,7 +490,6 @@ private fun ColumnScope.StepContentSection(
 
   val bottomContentAnimationDuration = 300
 
-  // Run animation sequence - doesn't depend on showAnimationSequence to avoid restarting
   LaunchedEffect(stepItem.id) {
     if (isAnimationInProcess) {
       delay(1000)
@@ -500,7 +499,6 @@ private fun ColumnScope.StepContentSection(
     }
   }
 
-  // Mark animation as complete and update global state
   LaunchedEffect(showBottomContent) {
     if (showBottomContent && isAnimationInProcess) {
       delay(bottomContentAnimationDuration.toLong())
@@ -514,20 +512,10 @@ private fun ColumnScope.StepContentSection(
       BlinkingAiDot()
     }
   }
-  if (showTopContent && !isAnimationInProcess) {
+  if (showTopContent) {
     StepTopContent(
       stepItem = stepItem,
-      hasAnimation = false,
-      onAnimationFinished = {
-        showBottomContent = true
-      },
-      onNavigateToImageViewer = onNavigateToImageViewer,
-      imageLoader = imageLoader,
-    )
-  } else if (showTopContent && isAnimationInProcess) {
-    StepTopContent(
-      stepItem = stepItem,
-      hasAnimation = true,
+      hasAnimation = isAnimationInProcess,
       onAnimationFinished = {
         showBottomContent = true
       },
@@ -536,7 +524,7 @@ private fun ColumnScope.StepContentSection(
     )
   }
 
-  if(showBottomContent && !isAnimationInProcess) {
+  if (showBottomContent && !isAnimationInProcess) {
     StepBottomContent(
       stepItem = stepItem,
       freeText = freeText,
