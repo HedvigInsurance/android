@@ -47,7 +47,6 @@ internal class HomePresenter(
     var successData: SuccessData? by remember { mutableStateOf(SuccessData.fromLastState(lastState)) }
     var loadIteration by remember { mutableIntStateOf(0) }
     var crossSellToolTipShownEpochDay by remember { mutableStateOf<Long?>(null) }
-    var navigateToClaimChat by remember { mutableStateOf<Unit?>(null) }
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
     val isExperimentalClaimChatEnabled by remember(featureManager) {
@@ -69,13 +68,6 @@ internal class HomePresenter(
 
         is HomeEvent.CrossSellToolTipShown -> {
           crossSellToolTipShownEpochDay = homeEvent.epochDay
-        }
-
-        HomeEvent.ClearNavigation -> {
-          navigateToClaimChat = null
-        }
-        HomeEvent.NavigateToClaimChat -> {
-          navigateToClaimChat = Unit
         }
       }
     }
@@ -149,7 +141,6 @@ internal class HomePresenter(
           crossSellsAction = successData.crossSellsAction,
           travelAddonBannerInfo = successData.travelAddonBannerInfo,
           isExperimentalClaimChatEnabled = isExperimentalClaimChatEnabled,
-          navigateToClaimChat = navigateToClaimChat,
         )
       }
     }
@@ -164,8 +155,6 @@ internal sealed interface HomeEvent {
   data object MarkCardCrossSellsAsSeen : HomeEvent
 
   data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
-  data object ClearNavigation : HomeEvent
-  data object NavigateToClaimChat : HomeEvent
 }
 
 internal sealed interface HomeUiState {
@@ -178,12 +167,8 @@ internal sealed interface HomeUiState {
   val hasUnseenChatMessages: Boolean
     get() = false
 
-  val navigateToClaimChat: Unit?
-    get() = null
-
   data class Success(
     override val isReloading: Boolean = false,
-    override val navigateToClaimChat: Unit?,
     val homeText: HomeText,
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: List<HomeData.VeryImportantMessage>,

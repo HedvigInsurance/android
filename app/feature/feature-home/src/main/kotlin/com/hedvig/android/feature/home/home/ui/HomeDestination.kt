@@ -180,20 +180,13 @@ internal fun HomeDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
-  LaunchedEffect(uiState.navigateToClaimChat) {
-    if (uiState.navigateToClaimChat!=null) {
-      delay(10)
-      navigateToClaimChat()
-      viewModel.emit(HomeEvent.ClearNavigation)
-    }
-  }
   HomeScreen(
     uiState = uiState,
     notificationPermissionState = notificationPermissionState,
     reload = { viewModel.emit(HomeEvent.RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
-    navigateToClaimChat = { viewModel.emit(HomeEvent.NavigateToClaimChat) },
+    navigateToClaimChat = navigateToClaimChat,
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
@@ -254,7 +247,7 @@ private fun HomeScreen(
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
-    onStartClaimClick = navigateToClaimChat, //todo
+    onStartClaimClick = navigateToClaimChat,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -414,8 +407,9 @@ private fun StartClaimBottomSheet(
           text =  stringResource(Res.string.general_continue_button),
           enabled = isChecked,
           onClick = dropUnlessResumed {
-            state.dismiss()
-            onStartClaimClick()
+            state.dismiss {
+              onStartClaimClick()
+            }
           },
           modifier = Modifier.fillMaxWidth()
         )
@@ -902,7 +896,6 @@ private fun PreviewHomeScreen(
             eligibleInsurancesIds = nonEmptyListOf("id"),
           ),
           isExperimentalClaimChatEnabled = true,
-          navigateToClaimChat = null,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -986,7 +979,6 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           chatAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = true,
-          navigateToClaimChat = null,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
