@@ -90,7 +90,6 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       items = items.map { StepContent.Summary.Item(it.title, it.value) },
       audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
       fileUploads = fileUploads.map {
-        logcat {"Mariia: url: ${it.url} contentType: ${it.contentType}"}
         StepContent.Summary.FileUpload(
           it.url,
           it.contentType,

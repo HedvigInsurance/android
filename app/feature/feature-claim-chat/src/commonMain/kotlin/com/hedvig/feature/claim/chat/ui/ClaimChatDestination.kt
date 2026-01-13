@@ -363,10 +363,6 @@ private fun ClaimChatScreenContent(
             val showAnimationSequence = isCurrentStep
               && item.stepContent !is StepContent.Task
               && !uiState.stepsWithShownAnimations.contains(item.id)
-
-            logcat { "Mariia: showAnimationSequence, step ${item.id} - isCurrentStep: $isCurrentStep, isTask: ${item.stepContent is StepContent.Task}, inList: ${uiState.stepsWithShownAnimations.contains(item.id)}" }
-
-
             val isLastItem = item == uiState.steps.lastOrNull()
 
             val heightModifier = if (isLastItem) {
@@ -477,7 +473,6 @@ private fun ColumnScope.StepContentSection(
   // 1) fake ai dot
   // 2) top part of content
   // 3) bottom part of content
-  logcat { "Mariia: step with id: ${stepItem.id} showAnimationSequence: $showAnimationSequence" }
 
   var isAnimationInProcess by rememberSaveable(stepItem.id) {
     mutableStateOf(showAnimationSequence)
@@ -601,7 +596,6 @@ private fun StepTopContent(
 
   Column(modifier) {
     if (hasAnimation) {
-      logcat { "Mariia: stepItem with id: ${stepItem.id} has animation: $hasAnimation" }
       if (stepItemText != null) {
         CommonPaddingWrapper {
           AnimatedRevealText(

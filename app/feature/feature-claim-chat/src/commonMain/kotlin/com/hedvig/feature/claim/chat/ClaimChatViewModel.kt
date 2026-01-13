@@ -693,9 +693,7 @@ internal class ClaimChatPresenter(
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
         is ClaimChatEvent.ShowConfirmEditDialog -> showConfirmEditDialogForStep = event.id
         is ClaimChatEvent.AddToShownAnimations -> {
-          logcat { "Mariia: step with id: ${event.stepId} added to the list" }
           stepsWithShownAnimations.add(event.stepId)
-          logcat { "Mariia: list: $stepsWithShownAnimations" }
         }
       }
     }
