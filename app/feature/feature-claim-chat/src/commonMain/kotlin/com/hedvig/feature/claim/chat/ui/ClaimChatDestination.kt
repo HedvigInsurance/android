@@ -49,11 +49,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -68,7 +71,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -93,6 +95,7 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
@@ -338,25 +341,42 @@ private fun ClaimChatScreenContent(
           .asPaddingValues()
           .plus(PaddingValues(bottom = 16.dp, top = 16.dp))
         var minHeightForFullScreenItem by remember { mutableStateOf(0.dp) }
+        val spaceBetweenItems = 16.dp
         Box(
           Modifier
             .padding(contentPadding)
+            .debugBorder()
             .onSizeChanged { minHeightForFullScreenItem = with(density) { it.height.toDp() } },
         )
-        var heightOfLastAnsweredQuestion by remember { mutableStateOf(0.dp) }
-        val preferredMinHeightForFullScreenItem by remember {
-          derivedStateOf { minHeightForFullScreenItem - heightOfLastAnsweredQuestion }
+        val heightOfItemBottomContentMap: SnapshotStateMap<StepId, IntSize> = remember {
+          mutableStateMapOf()
         }
-        LaunchedEffect(uiState.steps.size) {
-          if (uiState.steps.size < 2) {
-            heightOfLastAnsweredQuestion = 0.dp
+        val preferredMinHeightForFullScreenItem by remember(density, uiState.steps) {
+          derivedStateOf {
+            minHeightForFullScreenItem - spaceBetweenItems - if (uiState.steps.size < 2) {
+              0.dp
+            } else {
+              val stepId = uiState.steps.dropLast(1).last().id
+              with(density) {
+                heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
+              }
+            }
+          }
+        }
+        LaunchedEffect(uiState.steps) {
+          Snapshot.withMutableSnapshot {
+            val prunedFromDeletedStepsMap = heightOfItemBottomContentMap.filter { (stepId, _) ->
+              stepId in uiState.steps.map { it.id }
+            }
+            heightOfItemBottomContentMap.clear()
+            heightOfItemBottomContentMap.putAll(prunedFromDeletedStepsMap)
           }
         }
         LazyColumn(
           modifier = Modifier.padding(horizontal = 16.dp),
           state = lazyListState,
           contentPadding = contentPadding,
-          verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+          verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
         ) {
           items(
             items = uiState.steps,
@@ -394,9 +414,7 @@ private fun ClaimChatScreenContent(
                 openAppSettings = openAppSettings,
                 showBottomContent = if (isLastItem) !isScrolled else true,
                 onResponseHeightChanged = { size ->
-                  if (isSecondLastItem) {
-                    heightOfLastAnsweredQuestion = with(density) { size.height.toDp() }
-                  }
+                  heightOfItemBottomContentMap[item.id] = size
                 },
               )
             }
