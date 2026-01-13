@@ -442,7 +442,6 @@ private fun ClaimChatScrollableContent(
         val isCurrentStep = item.id == uiState.currentStep?.id
         val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
         val isLastItem = item == uiState.steps.lastOrNull()
-        val isSecondLastItem = uiState.steps.size > 1 && item == uiState.steps.dropLast(1).lastOrNull()
 
         val heightModifier = if (isLastItem) {
           Modifier.requiredHeightIn(preferredMinHeightForFullScreenItem)
