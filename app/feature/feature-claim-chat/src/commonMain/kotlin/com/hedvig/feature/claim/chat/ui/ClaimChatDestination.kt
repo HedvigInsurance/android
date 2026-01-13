@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -334,93 +335,19 @@ private fun ClaimChatScreenContent(
         },
       )
       HorizontalDivider()
-      Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
-        val density = LocalDensity.current
-        val contentPadding = WindowInsets.safeDrawing
-          .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
-          .asPaddingValues()
-          .plus(PaddingValues(bottom = 16.dp, top = 16.dp))
-        var minHeightForFullScreenItem by remember { mutableStateOf(0.dp) }
-        val spaceBetweenItems = 16.dp
-        Box(
-          Modifier
-            .padding(contentPadding)
-            .debugBorder()
-            .onSizeChanged { minHeightForFullScreenItem = with(density) { it.height.toDp() } },
-        )
-        val heightOfItemBottomContentMap: SnapshotStateMap<StepId, IntSize> = remember {
-          mutableStateMapOf()
-        }
-        val preferredMinHeightForFullScreenItem by remember(density, uiState.steps) {
-          derivedStateOf {
-            minHeightForFullScreenItem - spaceBetweenItems - if (uiState.steps.size < 2) {
-              0.dp
-            } else {
-              val stepId = uiState.steps.dropLast(1).last().id
-              with(density) {
-                heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
-              }
-            }
-          }
-        }
-        LaunchedEffect(uiState.steps) {
-          Snapshot.withMutableSnapshot {
-            val prunedFromDeletedStepsMap = heightOfItemBottomContentMap.filter { (stepId, _) ->
-              stepId in uiState.steps.map { it.id }
-            }
-            heightOfItemBottomContentMap.clear()
-            heightOfItemBottomContentMap.putAll(prunedFromDeletedStepsMap)
-          }
-        }
-        LazyColumn(
-          modifier = Modifier.padding(horizontal = 16.dp),
-          state = lazyListState,
-          contentPadding = contentPadding,
-          verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
-        ) {
-          items(
-            items = uiState.steps,
-            key = { step -> step.id.value },
-            contentType = { it.stepContent::class },
-          ) { item ->
-            val isCurrentStep = item.id == uiState.currentStep?.id
-            val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
-            val isLastItem = item == uiState.steps.lastOrNull()
-            val isSecondLastItem = uiState.steps.size > 1 && item == uiState.steps.dropLast(1).lastOrNull()
-
-            val heightModifier = if (isLastItem) {
-              Modifier.requiredHeightIn(preferredMinHeightForFullScreenItem)
-            } else {
-              Modifier
-            }
-
-            Column(
-              modifier = heightModifier.animateContentSize(animationSpec = tween(durationMillis = 300)),
-              verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-              StepContentSection(
-                stepItem = item,
-                freeText = uiState.freeText,
-                isCurrentStep = isCurrentStep,
-                showFakeAiDot = showFakeAiDot,
-                currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-                currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-                onEvent = onEvent,
-                shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-                onNavigateToImageViewer = onNavigateToImageViewer,
-                navigateToDeflect = navigateToDeflect,
-                appPackageId = appPackageId,
-                imageLoader = imageLoader,
-                openAppSettings = openAppSettings,
-                showBottomContent = if (isLastItem) !isScrolled else true,
-                onResponseHeightChanged = { size ->
-                  heightOfItemBottomContentMap[item.id] = size
-                },
-              )
-            }
-          }
-        }
-      }
+      ClaimChatScrollableContent(
+        uiState = uiState,
+        lazyListState = lazyListState,
+        onEvent = onEvent,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        navigateToDeflect = navigateToDeflect,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader,
+        openAppSettings = openAppSettings,
+        isScrolled = isScrolled,
+        modifier = Modifier.fillMaxSize(),
+      )
     }
     if (isScrolled) {
       ScrollToBottomButton(
@@ -444,6 +371,110 @@ private fun ClaimChatScreenContent(
         value = 3000f,
         animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
       )
+    }
+  }
+}
+
+@Composable
+private fun ClaimChatScrollableContent(
+  uiState: ClaimChatUiState.ClaimChat,
+  lazyListState: LazyListState,
+  onEvent: (ClaimChatEvent) -> Unit,
+  shouldShowRequestPermissionRationale: (String) -> Boolean,
+  onNavigateToImageViewer: (String, String) -> Unit,
+  navigateToDeflect: (StepId, StepContent.Deflect) -> Unit,
+  appPackageId: String,
+  imageLoader: ImageLoader,
+  openAppSettings: () -> Unit,
+  isScrolled: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  val density = LocalDensity.current
+  val spaceBetweenItems = 16.dp
+  val contentPadding = WindowInsets.safeDrawing
+    .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+    .asPaddingValues()
+    .plus(PaddingValues(bottom = 16.dp, top = 16.dp))
+
+  val heightOfItemBottomContentMap: SnapshotStateMap<StepId, IntSize> = remember {
+    mutableStateMapOf()
+  }
+  var minHeightForFullScreenItem by remember { mutableStateOf(0.dp) }
+
+  Box(modifier, propagateMinConstraints = true) {
+    Box(
+      Modifier
+        .padding(contentPadding)
+        .onSizeChanged { minHeightForFullScreenItem = with(density) { it.height.toDp() } },
+    )
+    val preferredMinHeightForFullScreenItem by remember(density, uiState.steps) {
+      derivedStateOf {
+        minHeightForFullScreenItem - spaceBetweenItems - if (uiState.steps.size < 2) {
+          0.dp
+        } else {
+          val stepId = uiState.steps.dropLast(1).last().id
+          with(density) {
+            heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
+          }
+        }
+      }
+    }
+    LaunchedEffect(uiState.steps) {
+      Snapshot.withMutableSnapshot {
+        val prunedFromDeletedStepsMap = heightOfItemBottomContentMap.filter { (stepId, _) ->
+          stepId in uiState.steps.map { it.id }
+        }
+        heightOfItemBottomContentMap.clear()
+        heightOfItemBottomContentMap.putAll(prunedFromDeletedStepsMap)
+      }
+    }
+    LazyColumn(
+      modifier = Modifier.padding(horizontal = 16.dp),
+      state = lazyListState,
+      contentPadding = contentPadding,
+      verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
+    ) {
+      items(
+        items = uiState.steps,
+        key = { step -> step.id.value },
+        contentType = { it.stepContent::class },
+      ) { item ->
+        val isCurrentStep = item.id == uiState.currentStep?.id
+        val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
+        val isLastItem = item == uiState.steps.lastOrNull()
+        val isSecondLastItem = uiState.steps.size > 1 && item == uiState.steps.dropLast(1).lastOrNull()
+
+        val heightModifier = if (isLastItem) {
+          Modifier.requiredHeightIn(preferredMinHeightForFullScreenItem)
+        } else {
+          Modifier
+        }
+
+        Column(
+          modifier = heightModifier.animateContentSize(animationSpec = tween(durationMillis = 300)),
+          verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+          StepContentSection(
+            stepItem = item,
+            freeText = uiState.freeText,
+            isCurrentStep = isCurrentStep,
+            showFakeAiDot = showFakeAiDot,
+            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+            onEvent = onEvent,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            navigateToDeflect = navigateToDeflect,
+            appPackageId = appPackageId,
+            imageLoader = imageLoader,
+            openAppSettings = openAppSettings,
+            showBottomContent = if (isLastItem) !isScrolled else true,
+            onResponseHeightChanged = { size ->
+              heightOfItemBottomContentMap[item.id] = size
+            },
+          )
+        }
+      }
     }
   }
 }
