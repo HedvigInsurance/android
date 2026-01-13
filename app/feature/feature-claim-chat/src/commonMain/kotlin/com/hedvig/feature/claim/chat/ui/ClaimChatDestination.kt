@@ -658,7 +658,7 @@ private fun CommonPaddingWrapper(
     ) {
       HedvigText("C")
     }
-    //to align blinking dot, task step and questions to appear in the same place vertically
+    //to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
   }
 }
 
@@ -1362,7 +1362,6 @@ private fun ContentSelectStep(
           Spacer(Modifier.height(32.dp))
           ContentSelectChips(
             options = options,
-            selectedOption = null,
             onOptionClick = { option ->
               if (!currentContinueButtonLoading) {
                 onEvent(

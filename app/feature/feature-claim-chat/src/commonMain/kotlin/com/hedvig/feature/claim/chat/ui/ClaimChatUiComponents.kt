@@ -117,7 +117,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ContentSelectChips(
   options: List<StepContent.ContentSelect.Option>,
-  selectedOption: StepContent.ContentSelect.Option?,
   onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -130,19 +129,12 @@ internal fun ContentSelectChips(
   ) {
     for (item in options) {
       key(item) {
-        val isPreview = LocalInspectionMode.current
-        val showChipAnimatable = remember {
-          Animatable(1.0f)
+        RoundCornersPill(
+          onClick = {
+            onOptionClick(item)
+          }) {
+          HedvigText(item.title)
         }
-        HedvigChip(
-          item = item,
-          showChipAnimatable = showChipAnimatable,
-          itemDisplayName = {
-            item.title
-          },
-          isSelected = item == selectedOption,
-          onItemClick = onOptionClick,
-        )
       }
     }
   }
@@ -255,9 +247,6 @@ internal fun YesNoBubble(
       Spacer(Modifier.width(16.dp))
       ContentSelectChips(
         options = options,
-        selectedOption = answerSelected?.let {
-          if (it == options[0].title) options[0] else options[1]
-        },
         onOptionClick = { option ->
           onSelect(option.title)
         },
