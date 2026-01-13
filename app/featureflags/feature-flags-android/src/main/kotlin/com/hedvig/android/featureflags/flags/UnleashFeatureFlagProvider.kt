@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.map
 
 internal class UnleashFeatureFlagProvider(
   private val hedvigUnleashClient: HedvigUnleashClient,
-  private val isProduction: Boolean,
 ) : FeatureManager {
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
     return hedvigUnleashClient.featureUpdatedFlow
