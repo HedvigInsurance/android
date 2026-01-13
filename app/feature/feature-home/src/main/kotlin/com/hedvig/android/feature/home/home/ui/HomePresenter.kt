@@ -50,7 +50,7 @@ internal class HomePresenter(
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
     val isExperimentalClaimChatEnabled by remember(featureManager) {
-      featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_CHAT)
+      featureManager.isFeatureEnabled(Feature.ENABLE_NEW_CLAIMS_FLOW)
     }.collectAsState(false)
 
     CollectEvents { homeEvent: HomeEvent ->
