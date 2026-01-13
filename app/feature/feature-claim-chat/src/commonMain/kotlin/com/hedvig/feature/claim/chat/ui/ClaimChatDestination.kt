@@ -291,9 +291,9 @@ private fun ClaimChatScreenContent(
   val isScrolled by remember(lazyListState, uiState.currentStep?.id) {
     derivedStateOf {
       val layoutInfo = lazyListState.layoutInfo
+      val lazyListItemsCount = layoutInfo.totalItemsCount
       val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      val lastItemIndex = uiState.steps.lastIndex
-      lastVisibleItem?.index != lastItemIndex
+      lastVisibleItem?.index != lazyListItemsCount-1
     }
   }
   // Track the size of the last item to scroll when it grows
