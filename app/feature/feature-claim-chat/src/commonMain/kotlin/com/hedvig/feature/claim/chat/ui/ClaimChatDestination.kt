@@ -68,6 +68,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil3.ImageLoader
@@ -341,6 +343,15 @@ private fun ClaimChatScreenContent(
             .padding(contentPadding)
             .onSizeChanged { minHeightForFullScreenItem = with(density) { it.height.toDp() } },
         )
+        var heightOfLastAnsweredQuestion by remember { mutableStateOf(0.dp) }
+        val preferredMinHeightForFullScreenItem by remember {
+          derivedStateOf { minHeightForFullScreenItem - heightOfLastAnsweredQuestion }
+        }
+        LaunchedEffect(uiState.steps.size) {
+          if (uiState.steps.size < 2) {
+            heightOfLastAnsweredQuestion = 0.dp
+          }
+        }
         LazyColumn(
           modifier = Modifier.padding(horizontal = 16.dp),
           state = lazyListState,
@@ -355,9 +366,10 @@ private fun ClaimChatScreenContent(
             val isCurrentStep = item.id == uiState.currentStep?.id
             val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
             val isLastItem = item == uiState.steps.lastOrNull()
+            val isSecondLastItem = uiState.steps.size > 1 && item == uiState.steps.dropLast(1).lastOrNull()
 
             val heightModifier = if (isLastItem) {
-              Modifier.requiredHeightIn(minHeightForFullScreenItem)
+              Modifier.requiredHeightIn(preferredMinHeightForFullScreenItem)
             } else {
               Modifier
             }
@@ -381,6 +393,11 @@ private fun ClaimChatScreenContent(
                 imageLoader = imageLoader,
                 openAppSettings = openAppSettings,
                 showBottomContent = if (isLastItem) !isScrolled else true,
+                onResponseHeightChanged = { size ->
+                  if (isSecondLastItem) {
+                    heightOfLastAnsweredQuestion = with(density) { size.height.toDp() }
+                  }
+                },
               )
             }
           }
@@ -460,6 +477,7 @@ private fun ColumnScope.StepContentSection(
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
   showBottomContent: Boolean,
+  onResponseHeightChanged: (IntSize) -> Unit,
 ) {
   var showContent by rememberSaveable(stepItem.id) {
     mutableStateOf(stepItem.stepContent is StepContent.Task)
@@ -510,6 +528,9 @@ private fun ColumnScope.StepContentSection(
       visible = showBottomContent && showBottomContentAnimated,
       enter = fadeIn(animationSpec = tween(300)),
       exit = ExitTransition.None,
+      modifier = Modifier.onSizeChanged { size ->
+        onResponseHeightChanged(size)
+      }
     ) {
       StepBottomContent(
         stepItem = stepItem,
@@ -1320,9 +1341,9 @@ private fun ContentSelectStep(
       transitionSpec = {
         (fadeIn() + scaleIn()).togetherWith(fadeOut(animationSpec = tween(0)))
       },
-    ) { targetState ->
+    ) { isCurrentStep ->
       Column {
-        if (targetState) {
+        if (isCurrentStep) {
           Spacer(Modifier.height(32.dp))
           ContentSelectChips(
             options = options,
