@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -58,6 +60,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import coil3.ImageLoader
 import com.google.accompanist.permissions.isGranted
@@ -71,7 +74,11 @@ import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
+import com.hedvig.android.design.system.hedvig.Checkbox
+import com.hedvig.android.design.system.hedvig.CheckboxOption
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -83,6 +90,8 @@ import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
+import com.hedvig.android.design.system.hedvig.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
@@ -123,8 +132,13 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.CLAIMS_PLEDGE_SLIDE_LABEL
+import hedvig.resources.HONESTY_PLEDGE_DESCRIPTION
+import hedvig.resources.HONESTY_PLEDGE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TOAST_NEW_OFFER
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
 import hedvig.resources.home_tab_active_in_future_info
 import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.home_tab_get_help
@@ -166,13 +180,19 @@ internal fun HomeDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val notificationPermissionState = rememberNotificationPermissionState()
+  LaunchedEffect(uiState.navigateToClaimChat) {
+    if (uiState.navigateToClaimChat!=null) {
+      navigateToClaimChat()
+      viewModel.emit(HomeEvent.ClearNavigation)
+    }
+  }
   HomeScreen(
     uiState = uiState,
     notificationPermissionState = notificationPermissionState,
     reload = { viewModel.emit(HomeEvent.RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
-    navigateToClaimChat = navigateToClaimChat,
+    navigateToClaimChat = { viewModel.emit(HomeEvent.NavigateToClaimChat) },
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
@@ -230,6 +250,11 @@ private fun HomeScreen(
     onCrossSellClick = openUrl,
     imageLoader = imageLoader,
   )
+  val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  StartClaimBottomSheet(
+    state = startClaimBottomSheetState,
+    onStartClaimClick = navigateToClaimChat, //todo
+  )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
     val transition = updateTransition(targetState = uiState, label = "home ui state")
@@ -282,7 +307,9 @@ private fun HomeScreen(
         if (currentState != null) {
           if (currentState.isExperimentalClaimChatEnabled) {
             ToolbarClaimChatIcon(
-              onClick = navigateToClaimChat,
+              onClick = {
+                startClaimBottomSheetState.show(Unit)
+              },
             )
             ToolbarClaimChatIcon(
               onClick = navigateToClaimChatInDevMode,
@@ -361,6 +388,92 @@ private fun HomeScreen(
       scale = true,
       modifier = Modifier.align(Alignment.TopCenter),
     )
+  }
+}
+
+@Composable
+private fun StartClaimBottomSheet(
+  state: HedvigBottomSheetState<Unit>,
+  onStartClaimClick: () -> Unit,
+) {
+  HedvigBottomSheet(
+    hedvigBottomSheetState = state,
+    content = { _ ->
+      var isChecked by remember { mutableStateOf(false) }
+      Column {
+        Spacer(Modifier.height(16.dp))
+        ImportantInfoCheckBox(
+          isChecked = isChecked,
+          onCheckedChange = {
+            isChecked = !isChecked
+          },
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          text =  stringResource(Res.string.general_continue_button),
+          enabled = isChecked,
+          onClick = dropUnlessResumed {
+            state.dismiss()
+            onStartClaimClick()
+          },
+          modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          text =  stringResource(Res.string.general_cancel_button),
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          onClick = {
+            state.dismiss()
+          },
+          modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      }
+    },
+  )
+}
+
+@Composable
+private fun ImportantInfoCheckBox(
+  isChecked: Boolean,
+  onCheckedChange: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    shape = HedvigTheme.shapes.cornerLarge,
+    modifier = modifier,
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 16.dp),
+    ) {
+      Column(modifier = Modifier.weight(1f)) {
+        HedvigText(
+          text = stringResource(Res.string.HONESTY_PLEDGE_TITLE),
+          style = HedvigTheme.typography.headlineSmall,
+        )
+        HedvigText(
+          text = stringResource(Res.string.HONESTY_PLEDGE_DESCRIPTION),
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigTheme(darkTheme = false) {
+          Checkbox(
+            option = CheckboxOption(
+              text = stringResource(Res.string.CLAIMS_PLEDGE_SLIDE_LABEL),
+            ),
+            selected = isChecked,
+            onCheckboxSelected = onCheckedChange,
+            size = RadioGroupSize.Small,
+            colors = RadioGroupDefaults.colors.copy(containerColor = HedvigTheme.colorScheme.fillNegative),
+          )
+        }
+      }
+    }
   }
 }
 
@@ -788,6 +901,7 @@ private fun PreviewHomeScreen(
             eligibleInsurancesIds = nonEmptyListOf("id"),
           ),
           isExperimentalClaimChatEnabled = true,
+          navigateToClaimChat = null,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -871,6 +985,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           chatAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = true,
+          navigateToClaimChat = null,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
