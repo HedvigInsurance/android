@@ -92,8 +92,11 @@ private class HedvigBottomSheetStateImpl<T>(
   override var data: T? by mutableStateOf(null)
     private set
 
-  override fun dismiss() {
-    scope.launch { materialState.hide() }
+  override fun dismiss(onDismissed: () -> Unit) {
+    scope.launch {
+      materialState.hide()
+      onDismissed()
+    }
   }
 
   override fun show(data: T) {
