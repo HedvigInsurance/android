@@ -182,6 +182,7 @@ internal fun HomeDestination(
   val notificationPermissionState = rememberNotificationPermissionState()
   LaunchedEffect(uiState.navigateToClaimChat) {
     if (uiState.navigateToClaimChat!=null) {
+      delay(10)
       navigateToClaimChat()
       viewModel.emit(HomeEvent.ClearNavigation)
     }
