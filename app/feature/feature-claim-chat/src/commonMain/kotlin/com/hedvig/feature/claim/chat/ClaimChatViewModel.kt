@@ -572,10 +572,12 @@ internal class ClaimChatPresenter(
                     logcat { "Regret error: $it" }
                   },
                   ifRight = { claimIntent ->
+                    if (claimIntent.next is ClaimIntent.Next.Step) {
+                      stepsWithShownAnimations.add(claimIntent.next.claimIntentStep.id)
+                    }
                     val index = steps.indexOf(stepToUpdate)
                     if (index >= 0) {
                       steps.subList(index, steps.size).clear()
-                    //  stepsWithShownAnimations.subList(index, steps.size).clear() //TODO: check!!!
                       if (steps.none { it.stepContent is StepContent.AudioRecording }) freeText = null
                     }
                     currentContinueButtonLoading = false
@@ -712,7 +714,7 @@ internal class ClaimChatPresenter(
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
-        stepsWithShownAnimations = stepsWithShownAnimations.toList()
+        stepsWithShownAnimations = stepsWithShownAnimations
       )
 
       else -> error("")
