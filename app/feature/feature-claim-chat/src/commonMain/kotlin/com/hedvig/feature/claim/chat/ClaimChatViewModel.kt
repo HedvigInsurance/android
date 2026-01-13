@@ -110,6 +110,8 @@ internal sealed interface ClaimChatEvent {
   data object HandledOutcomeNavigation : ClaimChatEvent
 
   data class HandledDeflectNavigation(val stepId: StepId) : ClaimChatEvent
+
+  data class AddToShownAnimations(val stepId: StepId) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -128,6 +130,7 @@ internal sealed interface ClaimChatUiState {
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
+    val stepsWithShownAnimations: List<StepId>
   ) : ClaimChatUiState
 }
 
@@ -203,6 +206,7 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
+    val stepsWithShownAnimations = mutableListOf<StepId>()
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
 
@@ -571,6 +575,7 @@ internal class ClaimChatPresenter(
                     val index = steps.indexOf(stepToUpdate)
                     if (index >= 0) {
                       steps.subList(index, steps.size).clear()
+                    //  stepsWithShownAnimations.subList(index, steps.size).clear() //TODO: check!!!
                       if (steps.none { it.stepContent is StepContent.AudioRecording }) freeText = null
                     }
                     currentContinueButtonLoading = false
@@ -687,6 +692,11 @@ internal class ClaimChatPresenter(
 
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
         is ClaimChatEvent.ShowConfirmEditDialog -> showConfirmEditDialogForStep = event.id
+        is ClaimChatEvent.AddToShownAnimations -> {
+          logcat { "Mariia: step with id: ${event.stepId} added to the list" }
+          stepsWithShownAnimations.add(event.stepId)
+          logcat { "Mariia: list: $stepsWithShownAnimations" }
+        }
       }
     }
 
@@ -704,6 +714,7 @@ internal class ClaimChatPresenter(
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
+        stepsWithShownAnimations = stepsWithShownAnimations
       )
 
       else -> error("")

@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -96,6 +97,7 @@ import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -339,10 +341,12 @@ private fun ClaimChatScreenContent(
         Box(
           Modifier
             .padding(contentPadding)
-            .onSizeChanged { minHeightForFullScreenItem = with(density) {
-              val height = if (uiState.steps.size==1)it.height*1f else it.height*0.85f
-              height.toDp()
-            } },
+            .onSizeChanged {
+              minHeightForFullScreenItem = with(density) {
+                val height = if (uiState.steps.size == 1) it.height * 1f else it.height * 0.85f
+                height.toDp()
+              }
+            },
         )
         LazyColumn(
           modifier = Modifier.padding(horizontal = 16.dp),
@@ -356,7 +360,9 @@ private fun ClaimChatScreenContent(
             contentType = { it.stepContent::class },
           ) { item ->
             val isCurrentStep = item.id == uiState.currentStep?.id
-            val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
+            val showAnimationSequence = isCurrentStep
+              && item.stepContent !is StepContent.Task
+              && !uiState.stepsWithShownAnimations.contains(item.id)
             val isLastItem = item == uiState.steps.lastOrNull()
 
             val heightModifier = if (isLastItem) {
@@ -373,7 +379,7 @@ private fun ClaimChatScreenContent(
                 stepItem = item,
                 freeText = uiState.freeText,
                 isCurrentStep = isCurrentStep,
-                showFakeAiDot = showFakeAiDot,
+                showAnimationSequence = showAnimationSequence,
                 currentContinueButtonLoading = uiState.currentContinueButtonLoading,
                 currentSkipButtonLoading = uiState.currentSkipButtonLoading,
                 onEvent = onEvent,
@@ -383,7 +389,6 @@ private fun ClaimChatScreenContent(
                 appPackageId = appPackageId,
                 imageLoader = imageLoader,
                 openAppSettings = openAppSettings,
-                showBottomContent = if (isLastItem) !isScrolled else true,
               )
             }
           }
@@ -452,7 +457,7 @@ private fun ColumnScope.StepContentSection(
   stepItem: ClaimIntentStep,
   freeText: String?,
   isCurrentStep: Boolean,
-  showFakeAiDot: Boolean,
+  showAnimationSequence: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -462,56 +467,89 @@ private fun ColumnScope.StepContentSection(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  showBottomContent: Boolean,
 ) {
-  var showContent by rememberSaveable(stepItem.id) {
-    mutableStateOf(stepItem.stepContent is StepContent.Task)
+
+  // AnimationSequence has 3 stages one after another:
+  // 1) fake ai dot
+  // 2) top part of content
+  // 3) bottom part of content
+  logcat { "Mariia: step with id: ${stepItem.id} showAnimationSequence: $showAnimationSequence" }
+  var showAiDot by rememberSaveable(stepItem.id) {
+    mutableStateOf(showAnimationSequence)
+  }
+  var showTopContent by rememberSaveable(stepItem.id) {
+    mutableStateOf(!showAnimationSequence)
+  }
+  var showBottomContent by rememberSaveable(stepItem.id) {
+    mutableStateOf(!showAnimationSequence)
   }
 
-  var showBottomContentAnimated by rememberSaveable(stepItem.id) {
-    mutableStateOf(stepItem.stepContent is StepContent.Task)
-  }
+  val bottomContentAnimationDuration = 300
 
-  var hasShownAnimation by rememberSaveable(stepItem.id) {
-    mutableStateOf(stepItem.stepContent is StepContent.Task)
-  }
-
-  // Animation sequence controlled by showFakeAiDot parameter
-  // Only run animation once per step using hasShownAnimation flag
-  LaunchedEffect(stepItem.id, showFakeAiDot) {
-    if (showFakeAiDot && !hasShownAnimation) {
-      showContent = false
-      showBottomContentAnimated = false
+  LaunchedEffect(stepItem.id, showAnimationSequence) {
+    if (showAnimationSequence) {
       delay(1000)
-      showContent = true
-      hasShownAnimation = true
-    } else if (!hasShownAnimation) {
-      // Previous steps or Task steps: add small delay to let state settle
-      // This prevents flash if step briefly appears as non-current before becoming current
-      delay(50)
-      showContent = true
-      showBottomContentAnimated = true
+      showAiDot = false
+      delay(100)
+      showTopContent = true
     }
   }
 
-  if (!showContent && showFakeAiDot) {
+  LaunchedEffect(showBottomContent) {
+    if (showBottomContent) {
+      delay(bottomContentAnimationDuration.toLong())
+      if (showAnimationSequence) {
+        onEvent(ClaimChatEvent.AddToShownAnimations(stepItem.id))
+      }
+    }
+  }
+
+  if (showAiDot) {
     CommonPaddingWrapper {
       BlinkingAiDot()
     }
-  } else if (showContent) {
+  }
+  if (!showAnimationSequence) {
     StepTopContent(
       stepItem = stepItem,
-      isCurrentStep = isCurrentStep,
-      showBottomContentAnimated = {
-        showBottomContentAnimated = true
+      hasAnimation = false,
+      onAnimationFinished = {
+        showBottomContent = true
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
       imageLoader = imageLoader,
     )
+  } else if (showTopContent) {
+    StepTopContent(
+      stepItem = stepItem,
+      hasAnimation = true,
+      onAnimationFinished = {
+        showBottomContent = true
+      },
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      imageLoader = imageLoader,
+    )
+  }
 
+  if(!showAnimationSequence) {
+    StepBottomContent(
+      stepItem = stepItem,
+      freeText = freeText,
+      isCurrentStep = isCurrentStep,
+      currentContinueButtonLoading = currentContinueButtonLoading,
+      currentSkipButtonLoading = currentSkipButtonLoading,
+      onEvent = onEvent,
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      navigateToDeflect = navigateToDeflect,
+      appPackageId = appPackageId,
+      imageLoader = imageLoader,
+      openAppSettings = openAppSettings,
+    )
+  } else {
     AnimatedVisibility(
-      visible = showBottomContent && showBottomContentAnimated,
-      enter = fadeIn(animationSpec = tween(300)),
+      visible = showBottomContent,
+      enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
       exit = ExitTransition.None,
     ) {
       StepBottomContent(
@@ -535,8 +573,8 @@ private fun ColumnScope.StepContentSection(
 @Composable
 private fun StepTopContent(
   stepItem: ClaimIntentStep,
-  isCurrentStep: Boolean,
-  showBottomContentAnimated: () -> Unit,
+  hasAnimation: Boolean,
+  onAnimationFinished: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -552,7 +590,8 @@ private fun StepTopContent(
   }
 
   Column(modifier) {
-    if (isCurrentStep) {
+    if (hasAnimation) {
+      logcat { "Mariia: stepItem with id: ${stepItem.id} has animation: $hasAnimation" }
       if (stepItemText != null) {
         CommonPaddingWrapper {
           AnimatedRevealText(
@@ -560,12 +599,12 @@ private fun StepTopContent(
             visibleState = remember(stepItem.id) {
               MutableTransitionState(false).apply { targetState = true }
             },
-            onAnimationFinished = showBottomContentAnimated,
+            onAnimationFinished = onAnimationFinished,
           )
         }
       } else {
         LaunchedEffect(stepItem.id) {
-          showBottomContentAnimated()
+          onAnimationFinished()
         }
       }
     } else {
@@ -955,13 +994,13 @@ private fun TaskStep(
 }
 
 @Composable
-private fun BlinkingAiDot() {
+private fun BlinkingAiDot(durationMillis: Int = 500) {
   val infiniteTransition = rememberInfiniteTransition(label = "blink")
   val alpha by infiniteTransition.animateFloat(
     initialValue = 1f,
     targetValue = 0f,
     animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis = 500),
+      animation = tween(durationMillis),
       repeatMode = RepeatMode.Reverse,
     ),
     label = "alpha",
