@@ -601,7 +601,9 @@ private fun StepTopContent(
       }
     } else {
       stepItemText?.let {
-        HedvigText(stepItemText)
+        CommonPaddingWrapper {
+          HedvigText(stepItemText)
+        }
       }
     }
 
