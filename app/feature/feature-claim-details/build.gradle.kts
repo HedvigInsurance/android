@@ -41,7 +41,6 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
-  implementation(projects.coreRetrofit)
   implementation(projects.coreUiData)
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataDisplayItems)

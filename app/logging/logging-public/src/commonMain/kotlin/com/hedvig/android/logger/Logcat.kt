@@ -6,16 +6,14 @@ import com.hedvig.android.apollo.ApolloOperationError
  * The main entrypoint to logging in the entire app.
  */
 @Suppress("NOTHING_TO_INLINE")
-inline fun logcat(priority: LogPriority = LogPriority.DEBUG, noinline message: () -> String) {
+inline fun logcat(
+  priority: LogPriority = LogPriority.DEBUG,
+  throwable: Throwable? = null,
+  tag: String? = null,
+  noinline message: () -> String,
+) {
   with(LogcatLogger.logger) {
-    log(priority, null, message)
-  }
-}
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun logcat(priority: LogPriority = LogPriority.DEBUG, throwable: Throwable?, noinline message: () -> String) {
-  with(LogcatLogger.logger) {
-    log(priority, throwable, message)
+    log(priority, throwable, tag, message)
   }
 }
 
@@ -23,6 +21,7 @@ inline fun logcat(priority: LogPriority = LogPriority.DEBUG, throwable: Throwabl
 inline fun logcat(
   priority: LogPriority = LogPriority.DEBUG,
   operationError: ApolloOperationError,
+  tag: String? = null,
   noinline message: () -> String,
 ) {
   val adjustedPriority = if (operationError.containsUnauthenticatedError) {
@@ -30,5 +29,5 @@ inline fun logcat(
   } else {
     priority
   }
-  logcat(adjustedPriority, operationError.throwable, message)
+  logcat(adjustedPriority, operationError.throwable, tag, message)
 }

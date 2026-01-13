@@ -19,14 +19,11 @@ import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.svg.SvgDecoder
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.network.okHttpClient
 import com.hedvig.android.apollo.auth.listeners.di.apolloAuthListenersModule
 import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
-import com.hedvig.android.app.apollo.DeviceIdInterceptor
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
-import com.hedvig.android.app.logginginterceptor.HedvigHttpLoggingInterceptor
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
@@ -39,13 +36,14 @@ import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
 import com.hedvig.android.app.notification.senders.TravelAddonSender
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.di.authModule
-import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
+import com.hedvig.android.core.buildconstants.AppBuildConfig
+import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.buildconstants.di.buildConstantsModule
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.common.di.coreCommonModule
 import com.hedvig.android.core.common.di.databaseFileQualifier
-import com.hedvig.android.core.common.di.datastoreFileQualifier
 import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.di.demoModule
@@ -61,7 +59,6 @@ import com.hedvig.android.data.settings.datastore.di.settingsDatastoreModule
 import com.hedvig.android.data.termination.di.terminationDataModule
 import com.hedvig.android.database.di.databaseAndroidModule
 import com.hedvig.android.database.di.databaseModule
-import com.hedvig.android.datadog.core.addDatadogConfiguration
 import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
@@ -87,113 +84,38 @@ import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.featureflags.di.featureManagerModule
-import com.hedvig.android.language.LanguageService
 import com.hedvig.android.language.di.languageMigrationModule
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.logging.device.model.di.loggingDeviceModelModule
 import com.hedvig.android.memberreminders.di.memberRemindersModule
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.di.deepLinkModule
+import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
 import com.hedvig.android.shared.tier.comparison.di.comparisonModule
-import com.hedvig.android.shareddi.apolloClientBuilderMultiplatformQualifier
 import com.hedvig.android.shareddi.sharedModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
-import com.hedvig.app.R
 import com.hedvig.feature.claim.chat.di.claimChatModule
 import io.ktor.client.HttpClient
 import java.io.File
-import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import timber.log.Timber
 
 private val networkModule = module {
-  single<HttpClient>(baseHttpClientQualifier) {
-    // todo add common headers and logging. Do not add authentication which should only be added to specific versions
-    //  of the http client
-    HttpClient()
-  }
-  factory<OkHttpClient.Builder> {
-    val languageService = get<LanguageService>()
-    val builder: OkHttpClient.Builder = OkHttpClient
-      .Builder()
-      .addDatadogConfiguration(get<HedvigBuildConstants>())
-      .addInterceptor { chain ->
-        chain.proceed(
-          chain
-            .request()
-            .newBuilder()
-            .header("User-Agent", makeUserAgent(languageService.getLanguage().toBcp47Format()))
-            .header("Accept-Language", languageService.getLanguage().toBcp47Format())
-            .header("hedvig-language", languageService.getLanguage().toBcp47Format())
-            .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
-            .header("apollographql-client-version", BuildConfig.VERSION_NAME)
-            .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
-            .header("X-App-Version", BuildConfig.VERSION_NAME)
-            .header("X-System-Version", Build.VERSION.SDK_INT.toString())
-            .header("X-Platform", "ANDROID")
-            .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
-            .header("Hedvig-App-Version", "android;${BuildConfig.VERSION_NAME}")
-            .build(),
-        )
-      }.addInterceptor(DeviceIdInterceptor(get(), get()))
-    if (!get<HedvigBuildConstants>().isProduction) {
-      val logger = HedvigHttpLoggingInterceptor { message ->
-        if (message.contains("Content-Disposition")) {
-          Timber.tag("OkHttp").v("File upload omitted from log")
-        } else {
-          Timber.tag("OkHttp").v(message)
-        }
+  single<ExtraApolloClientConfiguration> {
+    object : ExtraApolloClientConfiguration {
+      override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder {
+        return builder
+          .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>(), get<DemoManager>()))
+          .addInterceptor(LoggingInterceptor())
       }
-      logger.level = HedvigHttpLoggingInterceptor.Level.BODY
-      builder.addInterceptor(logger)
     }
-    builder
   }
-  single<OkHttpClient> {
-    // Add auth interceptor on the OkHttpClient itself which is used by GraphQL
-    // The OkHttpClient.Builder configuration does not need to get this automatic token refreshing behavior because
-    // there are callers which do not need it, or would even stop working if they did, like the coil implementation
-    val okHttpBuilder = get<OkHttpClient.Builder>().addInterceptor(get<AuthTokenRefreshingInterceptor>())
-    okHttpBuilder.build()
-  }
-  single<ApolloClient.Builder> {
-    get<ApolloClient.Builder>(apolloClientBuilderMultiplatformQualifier)
-      .okHttpClient(get<OkHttpClient>())
-      .addInterceptor(LogoutOnUnauthenticatedInterceptor(get<AuthTokenService>(), get<DemoManager>()))
-      .addInterceptor(LoggingInterceptor())
-  }
-  single<ApolloClient> {
-    get<ApolloClient.Builder>()
-      .copy()
-      .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
-      .build()
-  }
-}
-
-fun makeUserAgent(languageBCP47: String): String = buildString {
-  append(BuildConfig.APPLICATION_ID)
-  append(" ")
-  append(BuildConfig.VERSION_NAME)
-  append(" ")
-  append("(Android")
-  append(" ")
-  append(Build.VERSION.RELEASE)
-  append("; ")
-  append(Build.BRAND)
-  append(" ")
-  append(Build.MODEL)
-  append("; ")
-  append(Build.DEVICE)
-  append("; ")
-  append(languageBCP47)
-  append(")")
 }
 
 @SuppressLint("UnsafeOptInUsageError")
@@ -208,36 +130,6 @@ private val videoPlayerModule = module {
       cacheEvictor,
       databaseProvider,
     )
-  }
-}
-
-private val buildConstantsModule = module {
-  single<HedvigBuildConstants> {
-    val context = get<Context>()
-    object : HedvigBuildConstants {
-      override val urlGraphqlOctopus: String = context.getString(R.string.OCTOPUS_GRAPHQL_URL)
-      override val urlBaseWeb: String = context.getString(R.string.WEB_BASE_URL)
-      override val urlOdyssey: String = context.getString(R.string.ODYSSEY_URL)
-      override val urlBotService: String = context.getString(R.string.BOT_SERVICE)
-      override val urlClaimsService: String = context.getString(R.string.CLAIMS_SERVICE)
-      override val deepLinkHosts: List<String> = listOf(
-        context.getString(R.string.DEEP_LINK_DOMAIN_HOST_NEW),
-        context.getString(R.string.DEEP_LINK_DOMAIN_HOST) + context.getString(R.string.DEEP_LINK_DOMAIN_PATH_PREFIX),
-        context.getString(R.string.DEEP_LINK_DOMAIN_HOST_OLD),
-      )
-
-      override val appVersionName: String = BuildConfig.VERSION_NAME
-      override val appVersionCode: String = BuildConfig.VERSION_CODE.toString()
-
-      override val appPackageId: String = BuildConfig.APPLICATION_ID
-
-      override val isDebug: Boolean = BuildConfig.DEBUG
-
-      @Suppress("SimplifyBooleanWithConstants")
-      override val isProduction: Boolean =
-        BuildConfig.BUILD_TYPE == "release" && BuildConfig.APPLICATION_ID == "com.hedvig.app"
-      override val buildApiVersion: Int = Build.VERSION.SDK_INT
-    }
   }
 }
 
@@ -338,13 +230,6 @@ private val sharedPreferencesModule = module {
   }
 }
 
-private val datastoreAndroidModule = module {
-  single<File>(datastoreFileQualifier) {
-    // https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:datastore/datastore/src/main/java/androidx/datastore/DataStoreFile.kt;l=35-36
-    get<Context>().applicationContext.filesDir
-  }
-}
-
 private val databaseChatAndroidModule = module {
   single<File>(databaseFileQualifier) {
     val applicationContext = get<Context>().applicationContext
@@ -359,7 +244,7 @@ private val coilModule = module {
     val applicationContext = get<Context>().applicationContext
     ImageLoader.Builder(get<Context>())
       .components {
-        add(KtorNetworkFetcherFactory(get<HttpClient>()))
+        add(KtorNetworkFetcherFactory(get<HttpClient>(baseHttpClientQualifier)))
         add(SvgDecoder.Factory())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
           add(AnimatedImageDecoder.Factory())
@@ -411,7 +296,6 @@ val applicationModule = module {
       databaseModule,
       datadogDemoTrackingModule,
       datadogModule,
-      datastoreAndroidModule,
       deepLinkModule,
       deleteAccountModule,
       demoModule,
@@ -440,7 +324,7 @@ val applicationModule = module {
       paymentsModule,
       profileModule,
       settingsDatastoreModule,
-      sharedModule,
+      sharedModule(AndroidBuildConfig()),
       sharedPreferencesModule,
       terminateInsuranceModule,
       terminationDataModule,
@@ -449,4 +333,24 @@ val applicationModule = module {
       videoPlayerModule,
     ),
   )
+}
+
+private class AndroidBuildConfig() : AppBuildConfig {
+  override val debug: Boolean = BuildConfig.DEBUG
+  override val applicationId: String = BuildConfig.APPLICATION_ID
+  override val buildType: String = BuildConfig.BUILD_TYPE
+  override val versionCode: Int = BuildConfig.VERSION_CODE
+  override val versionName: String = BuildConfig.VERSION_NAME
+  override val appFlavor: Flavor = when (applicationId) {
+    "com.hedvig.dev.app" if buildType == "debug" -> Flavor.Develop
+    "com.hedvig.app" if buildType == "staging" -> Flavor.Staging
+    "com.hedvig.app" if buildType == "release" -> Flavor.Production
+    else -> error("Wrong mix of applicationId and buildType [$applicationId | $buildType]")
+  }
+  override val osReleaseVersion: String = Build.VERSION.RELEASE
+  override val osSdkVersion: Int = Build.VERSION.SDK_INT
+  override val brand: String = Build.BRAND
+  override val model: String = Build.MODEL
+  override val device: String = Build.DEVICE
+  override val manufacturer: String = Build.MANUFACTURER
 }

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.multiplatform.library.android")
@@ -13,10 +15,14 @@ kotlin {
       implementation(libs.apollo.runtime)
       implementation(libs.koin.core)
       implementation(libs.ktor.client.auth)
+      implementation(libs.ktor.client.logging)
       implementation(projects.authCoreApi)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
+      implementation(projects.coreDatastorePublic)
       implementation(projects.featureClaimChat)
+      implementation(projects.languageCore)
+      implementation(projects.networkClients)
     }
   }
 }

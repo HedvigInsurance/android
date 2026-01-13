@@ -6,7 +6,10 @@ import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.core.common.await
+import io.ktor.client.HttpClient
+import io.ktor.client.request.prepareGet
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.utils.io.readAvailable
 import java.io.File
 import java.time.format.DateTimeFormatter
 import kotlin.coroutines.cancellation.CancellationException
@@ -16,8 +19,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okio.buffer
 import okio.sink
 
@@ -31,15 +32,11 @@ interface DownloadPdfUseCase {
 internal class DownloadPdfUseCaseImpl(
   private val context: Context,
   private val clock: Clock,
-  private val okHttpClient: OkHttpClient,
+  private val httpClient: HttpClient,
 ) : DownloadPdfUseCase {
   override suspend fun invoke(url: String): Either<ErrorMessage, File> = withContext(Dispatchers.IO) {
     either {
       try {
-        val request = Request.Builder()
-          .url(url)
-          .build()
-
         val now = DateTimeFormatter.ISO_DATE_TIME.format(
           clock.now()
             .toLocalDateTime(TimeZone.UTC)
@@ -48,9 +45,16 @@ internal class DownloadPdfUseCaseImpl(
 
         val downloadedFile = File(context.filesDir, FILE_NAME + now + FILE_EXT)
 
-        val response = okHttpClient.newCall(request).await()
-        downloadedFile.sink().buffer().use { fileSink ->
-          fileSink.writeAll(response.body!!.source())
+        httpClient.prepareGet(url).execute { response ->
+          val channel = response.bodyAsChannel()
+          downloadedFile.sink().buffer().use { fileSink ->
+            val buffer = ByteArray(8192)
+            while (true) {
+              val bytesRead = channel.readAvailable(buffer)
+              if (bytesRead == -1) break
+              fileSink.write(buffer, 0, bytesRead)
+            }
+          }
         }
         downloadedFile
       } catch (exception: Exception) {

@@ -1,36 +1,33 @@
 package com.hedvig.android.feature.chat.data
 
-import arrow.core.Either
-import arrow.retrofit.adapter.either.networkhandling.CallError
-import java.io.File
+import android.net.Uri
+import arrow.core.raise.Raise
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.FileUploadService
 import kotlinx.serialization.Serializable
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
+import kotlinx.serialization.json.Json
 
-internal interface BotServiceService {
-  @Multipart
-  @POST("files/upload")
-  suspend fun uploadFile(
-    @Part file: MultipartBody.Part,
-  ): Either<CallError, List<FileUploadResponse>>
-}
+internal class BotServiceService(
+  private val fileUploadService: FileUploadService,
+  private val buildConstants: HedvigBuildConstants,
+) {
+  context(_: Raise<ErrorMessage>)
+  suspend fun uploadFile(uri: Uri): List<FileUploadResponse> {
+    return uploadFiles(uris = listOf(uri))
+  }
 
-internal suspend fun BotServiceService.uploadFile(
-  file: File,
-  contentType: MediaType,
-): Either<CallError, List<FileUploadResponse>> {
-  return uploadFile(
-    MultipartBody.Part.createFormData(
-      // https://github.com/HedvigInsurance/bot-service/blob/0320fa16ecce5dd2e71f97fff3d02793a6ae032f/src/main/kotlin/com/hedvig/botService/web/FileUploadController.kt#L36
-      name = "files",
-      filename = file.name,
-      body = file.asRequestBody(contentType),
-    ),
-  )
+  context(_: Raise<ErrorMessage>)
+  suspend fun uploadFiles(uris: List<Uri>): List<FileUploadResponse> {
+    return fileUploadService.uploadFiles(
+      url = "${buildConstants.urlBotService}/api/files/upload",
+      uris = uris,
+      validateFileSize = true, // Bot service requires file size validation
+      deserializer = { responseBody ->
+        Json.decodeFromString<List<FileUploadResponse>>(responseBody)
+      },
+    )
+  }
 }
 
 @Serializable
