@@ -451,7 +451,7 @@ private fun ClaimChatScrollableContent(
         }
 
         Column(
-          modifier = heightModifier.animateContentSize(animationSpec = tween(durationMillis = 300)),
+          modifier = heightModifier,
           verticalArrangement = Arrangement.SpaceBetween,
         ) {
           StepContentSection(
