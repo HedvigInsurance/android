@@ -359,10 +359,14 @@ private fun ClaimChatScreenContent(
             key = { step -> step.id.value },
             contentType = { it.stepContent::class },
           ) { item ->
-            val isCurrentStep = item.id == uiState.currentStep?.id
+            val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
             val showAnimationSequence = isCurrentStep
               && item.stepContent !is StepContent.Task
               && !uiState.stepsWithShownAnimations.contains(item.id)
+
+            logcat { "Mariia: showAnimationSequence, step ${item.id} - isCurrentStep: $isCurrentStep, isTask: ${item.stepContent is StepContent.Task}, inList: ${uiState.stepsWithShownAnimations.contains(item.id)}" }
+
+
             val isLastItem = item == uiState.steps.lastOrNull()
 
             val heightModifier = if (isLastItem) {
@@ -474,6 +478,11 @@ private fun ColumnScope.StepContentSection(
   // 2) top part of content
   // 3) bottom part of content
   logcat { "Mariia: step with id: ${stepItem.id} showAnimationSequence: $showAnimationSequence" }
+
+  var isAnimationInProcess by rememberSaveable(stepItem.id) {
+    mutableStateOf(showAnimationSequence)
+  }
+
   var showAiDot by rememberSaveable(stepItem.id) {
     mutableStateOf(showAnimationSequence)
   }
@@ -486,8 +495,9 @@ private fun ColumnScope.StepContentSection(
 
   val bottomContentAnimationDuration = 300
 
-  LaunchedEffect(stepItem.id, showAnimationSequence) {
-    if (showAnimationSequence) {
+  // Run animation sequence - doesn't depend on showAnimationSequence to avoid restarting
+  LaunchedEffect(stepItem.id) {
+    if (isAnimationInProcess) {
       delay(1000)
       showAiDot = false
       delay(100)
@@ -495,12 +505,12 @@ private fun ColumnScope.StepContentSection(
     }
   }
 
+  // Mark animation as complete and update global state
   LaunchedEffect(showBottomContent) {
-    if (showBottomContent) {
+    if (showBottomContent && isAnimationInProcess) {
       delay(bottomContentAnimationDuration.toLong())
-      if (showAnimationSequence) {
-        onEvent(ClaimChatEvent.AddToShownAnimations(stepItem.id))
-      }
+      isAnimationInProcess = false
+      onEvent(ClaimChatEvent.AddToShownAnimations(stepItem.id))
     }
   }
 
@@ -509,7 +519,7 @@ private fun ColumnScope.StepContentSection(
       BlinkingAiDot()
     }
   }
-  if (!showAnimationSequence) {
+  if (showTopContent && !isAnimationInProcess) {
     StepTopContent(
       stepItem = stepItem,
       hasAnimation = false,
@@ -519,7 +529,7 @@ private fun ColumnScope.StepContentSection(
       onNavigateToImageViewer = onNavigateToImageViewer,
       imageLoader = imageLoader,
     )
-  } else if (showTopContent) {
+  } else if (showTopContent && isAnimationInProcess) {
     StepTopContent(
       stepItem = stepItem,
       hasAnimation = true,
@@ -531,7 +541,7 @@ private fun ColumnScope.StepContentSection(
     )
   }
 
-  if(!showAnimationSequence) {
+  if(showBottomContent && !isAnimationInProcess) {
     StepBottomContent(
       stepItem = stepItem,
       freeText = freeText,
@@ -546,7 +556,7 @@ private fun ColumnScope.StepContentSection(
       imageLoader = imageLoader,
       openAppSettings = openAppSettings,
     )
-  } else {
+  } else if (isAnimationInProcess) {
     AnimatedVisibility(
       visible = showBottomContent,
       enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),

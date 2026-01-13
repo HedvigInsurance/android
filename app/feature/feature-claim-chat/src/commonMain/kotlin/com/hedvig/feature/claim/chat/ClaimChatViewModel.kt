@@ -206,7 +206,7 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
-    val stepsWithShownAnimations = mutableListOf<StepId>()
+    val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
 
@@ -714,7 +714,7 @@ internal class ClaimChatPresenter(
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
-        stepsWithShownAnimations = stepsWithShownAnimations
+        stepsWithShownAnimations = stepsWithShownAnimations.toList()
       )
 
       else -> error("")
