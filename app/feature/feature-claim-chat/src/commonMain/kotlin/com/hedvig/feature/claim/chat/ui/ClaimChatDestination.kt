@@ -335,87 +335,18 @@ private fun ClaimChatScreenContent(
         },
       )
       HorizontalDivider()
-
-//      ClaimChatScrollableContent(
-//        uiState = uiState,
-//        lazyListState = lazyListState,
-//        onEvent = onEvent,
-//        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-//        onNavigateToImageViewer = onNavigateToImageViewer,
-//        navigateToDeflect = navigateToDeflect,
-//        appPackageId = appPackageId,
-//        imageLoader = imageLoader,
-//        openAppSettings = openAppSettings,
-//        isScrolled = isScrolled,
-//        modifier = Modifier.fillMaxSize(),
-//      )
-
-      Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
-        val density = LocalDensity.current
-        val contentPadding = WindowInsets.safeDrawing
-          .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
-          .asPaddingValues()
-          .plus(PaddingValues(bottom = 16.dp, top = 16.dp))
-        var minHeightForFullScreenItem by remember { mutableStateOf(0.dp) }
-        Box(
-          Modifier
-            .padding(contentPadding)
-            .onSizeChanged {
-              minHeightForFullScreenItem = with(density) {
-                val height = if (uiState.steps.size == 1) it.height * 1f else it.height * 0.85f
-                height.toDp()
-              }
-            },
-        )
-        LazyColumn(
-          modifier = Modifier.padding(horizontal = 16.dp),
-          state = lazyListState,
-          contentPadding = contentPadding,
-          verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-        ) {
-          items(
-            items = uiState.steps,
-            key = { step -> step.id.value },
-            contentType = { it.stepContent::class },
-          ) { item ->
-            val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-            val showAnimationSequence = isCurrentStep
-              && item.stepContent !is StepContent.Task
-              && !uiState.stepsWithShownAnimations.contains(item.id)
-            val isLastItem = item == uiState.steps.lastOrNull()
-
-        val heightModifier = if (isLastItem) {
-          Modifier.requiredHeightIn(preferredMinHeightForFullScreenItem)
-        } else {
-          Modifier
-        }
-
-            Column(
-              modifier = heightModifier,
-              verticalArrangement = Arrangement.SpaceBetween,
-            ) {
-              StepContentSection(
-                stepItem = item,
-                freeText = uiState.freeText,
-                isCurrentStep = isCurrentStep,
-                showAnimationSequence = showAnimationSequence,
-                currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-                currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-                onEvent = onEvent,
-                shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-                onNavigateToImageViewer = onNavigateToImageViewer,
-                navigateToDeflect = navigateToDeflect,
-                appPackageId = appPackageId,
-                imageLoader = imageLoader,
-                openAppSettings = openAppSettings,
-                onResponseHeightChanged = { size ->
-                  heightOfItemBottomContentMap[item.id] = size
-                },
-              )
-            }
-          }
-        }
-      }
+      ClaimChatScrollableContent(
+        uiState = uiState,
+        lazyListState = lazyListState,
+        onEvent = onEvent,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        navigateToDeflect = navigateToDeflect,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader,
+        openAppSettings = openAppSettings,
+        modifier = Modifier.fillMaxSize(),
+      )
     }
     if (isScrolled) {
       ScrollToBottomButton(
@@ -431,7 +362,6 @@ private fun ClaimChatScreenContent(
       )
     }
   }
-
 
   LaunchedEffect(lastItemSize) {
     if (lastItemSize != null && uiState.steps.isNotEmpty()) {
@@ -454,7 +384,6 @@ private fun ClaimChatScrollableContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  isScrolled: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val density = LocalDensity.current
@@ -507,8 +436,10 @@ private fun ClaimChatScrollableContent(
         key = { step -> step.id.value },
         contentType = { it.stepContent::class },
       ) { item ->
-        val isCurrentStep = item.id == uiState.currentStep?.id
-        val showFakeAiDot = isCurrentStep && item.stepContent !is StepContent.Task
+        val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+        val showAnimationSequence = isCurrentStep
+          && item.stepContent !is StepContent.Task
+          && !uiState.stepsWithShownAnimations.contains(item.id)
         val isLastItem = item == uiState.steps.lastOrNull()
 
         val heightModifier = if (isLastItem) {
@@ -672,9 +603,9 @@ private fun ColumnScope.StepContentSection(
       visible = showBottomContent,
       enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
       exit = ExitTransition.None,
-      modifier = Modifier.onSizeChanged { size ->
-        onResponseHeightChanged(size)
-      }
+//      modifier = Modifier.onSizeChanged { size ->
+//        onResponseHeightChanged(size)
+//      }
     ) {
       StepBottomContent(
         stepItem = stepItem,
@@ -859,8 +790,9 @@ private fun StepBottomContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
-  Column {
+  Column(modifier) {
     when (stepItem.stepContent) {
       is StepContent.AudioRecording -> AudioRecordingStep(
         item = stepItem,
