@@ -104,6 +104,10 @@ private fun HttpClientConfig<*>.addAuthPlugin(
         val accessToken = accessTokenFetcher.fetch() ?: return@loadTokens null
         BearerTokens(accessToken, null)
       }
+      refreshTokens {
+        val accessToken = accessTokenFetcher.fetch() ?: return@refreshTokens null
+        BearerTokens(accessToken, null)
+      }
     }
   }
 }
