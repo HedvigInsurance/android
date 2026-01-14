@@ -181,6 +181,8 @@ internal sealed interface StepContent {
 }
 
 sealed interface AudioRecordingStepState {
+
+  data object NonDefined: AudioRecordingStepState
   data class FreeTextDescription(
     val showOverlay: Boolean,
     val errorType: FreeTextErrorType?,

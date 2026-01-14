@@ -2,7 +2,6 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -97,7 +96,6 @@ import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -293,7 +291,7 @@ private fun ClaimChatScreenContent(
       val layoutInfo = lazyListState.layoutInfo
       val lazyListItemsCount = layoutInfo.totalItemsCount
       val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      lastVisibleItem?.index != lazyListItemsCount-1
+      lastVisibleItem?.index != lazyListItemsCount - 1
     }
   }
   // Track the size of the last item to scroll when it grows
@@ -1361,7 +1359,7 @@ private fun ContentSelectStep(
         (fadeIn() + scaleIn()).togetherWith(fadeOut(animationSpec = tween(0)))
       },
     ) { targetState ->
-      Column{
+      Column {
         if (targetState) {
           Spacer(Modifier.height(32.dp))
           ContentSelectChips(

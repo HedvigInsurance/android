@@ -130,7 +130,7 @@ internal sealed interface ClaimChatUiState {
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
-    val stepsWithShownAnimations: List<StepId>
+    val stepsWithShownAnimations: List<StepId>,
   ) : ClaimChatUiState
 }
 
@@ -518,8 +518,6 @@ internal class ClaimChatPresenter(
             val textTooShort = event.text?.length?.let {
               currentContent.freeTextMinLength > it
             } ?: true
-            logcat { "Mariia: is textTooShort: $textTooShort " }
-
             steps.updateStepWithSuccess<StepContent.AudioRecording>(currentStep!!.id) { step, content ->
               val canSubmit = !currentContinueButtonLoading && !event.text.isNullOrEmpty() && !textTooShort
               step.copy(
@@ -690,7 +688,7 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.HandledDeflectNavigation -> {
-    //todo or remove
+          //todo or remove
         }
 
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
@@ -715,7 +713,7 @@ internal class ClaimChatPresenter(
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
-        stepsWithShownAnimations = stepsWithShownAnimations
+        stepsWithShownAnimations = stepsWithShownAnimations,
       )
 
       else -> error("")
