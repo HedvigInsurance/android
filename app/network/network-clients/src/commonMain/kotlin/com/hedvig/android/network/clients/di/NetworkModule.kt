@@ -102,11 +102,17 @@ private fun HttpClientConfig<*>.addAuthPlugin(
   install(Auth) {
     bearer {
       loadTokens {
-        val accessToken = accessTokenFetcher.fetch() ?: return@loadTokens null
+        val fetchedToken = accessTokenFetcher.fetch()
+        logcat { "loadTokens. fetchedToken: $fetchedToken " }
+        val accessToken = fetchedToken ?: return@loadTokens null
+        logcat { "loadTokens. accessToken: $accessToken " }
         BearerTokens(accessToken, null)
       }
       refreshTokens {
-        val accessToken = accessTokenFetcher.fetch() ?: return@refreshTokens null
+        val fetchedToken = accessTokenFetcher.fetch()
+        logcat { "refreshTokens. fetchedToken: $fetchedToken " }
+        val accessToken = fetchedToken ?: return@refreshTokens null
+        logcat { "refreshTokens. accessToken: $accessToken " }
         BearerTokens(accessToken, null)
       }
     }
