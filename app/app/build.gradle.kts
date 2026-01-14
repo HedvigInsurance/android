@@ -231,6 +231,10 @@ dependencies {
   implementation(projects.trackingDatadog)
   implementation(projects.uiForceUpgrade)
 
+  // OkHttp for ProGuard rules only - not available at compile time
+  runtimeOnly(platform(libs.okhttp.bom))
+  runtimeOnly(libs.okhttp.core)
+
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
 
