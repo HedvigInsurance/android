@@ -34,6 +34,8 @@ import com.hedvig.feature.claim.chat.ui.SkippedLabel
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
+import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
+import hedvig.resources.CLAIM_CHAT_USE_AUDIO
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
@@ -70,6 +72,7 @@ internal fun AudioRecorderBubble(
       when (s) {
         is AudioRecordingStepState.AudioRecording -> "audio_recording"
         is AudioRecordingStepState.FreeTextDescription -> "freetext"
+        AudioRecordingStepState.NonDefined -> "non_defined"
       }
     },
   ) { uiStateAnimated ->
@@ -105,6 +108,25 @@ internal fun AudioRecorderBubble(
             canSubmit = uiStateAnimated.canSubmit,
           )
         }
+
+        AudioRecordingStepState.NonDefined -> {
+          Column(Modifier.fillMaxWidth()) {
+            HedvigButton(
+              enabled = true,
+              text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
+              onClick = onShowAudioRecording,
+              modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(8.dp))
+            HedvigButton(
+              enabled = true,
+              buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+              text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
+              onClick = onShowFreeText,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+        }
       }
 
       if (canSkip && isCurrentStep) {
@@ -114,14 +136,13 @@ internal fun AudioRecorderBubble(
           isLoading = skipButtonLoading,
           enabled = !skipButtonLoading,
           modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )
         Spacer(Modifier.width(16.dp))
       }
     }
   }
 }
-
 
 
 @Composable
@@ -165,28 +186,26 @@ private fun FreeTextInputSection(
         text = stringResource(Res.string.SAVE_AND_CONTINUE_BUTTON_LABEL),
       )
       Spacer(Modifier.height(8.dp))
-      HedvigTextButton(
+      HedvigButton(
         text = stringResource(Res.string.CLAIMS_USE_AUDIO_RECORDING),
         onClick = showAudioRecording,
         modifier = Modifier.fillMaxWidth(),
         enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       )
     } else {
       if (freeText != null) {
-        VoiceRecordingLabel(
-          labelType = AudioRecordingLabelType.TEXT
+        Row(
+          Modifier.fillMaxWidth().padding(start = 48.dp),
+          horizontalArrangement = Arrangement.End,
         ) {
-          Row(
-            Modifier.fillMaxWidth().padding(start = 48.dp),
-            horizontalArrangement = Arrangement.End,
+          RoundCornersPill(
+            onClick = null,
           ) {
-            RoundCornersPill(
-              onClick = null,
-            ) {
-              HedvigText(freeText, textAlign = TextAlign.End)
-            }
+            HedvigText(freeText, textAlign = TextAlign.End)
           }
         }
+
       } else {
         SkippedLabel()
       }

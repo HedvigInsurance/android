@@ -95,7 +95,7 @@ internal sealed interface ClaimChatEvent {
 
   data class RemoveFile(val id: StepId, val fileId: String) : ClaimChatEvent
 
-  data class FileSubmit(val id: StepId) : ClaimChatEvent
+  data class SubmitFile(val id: StepId) : ClaimChatEvent
 
   data class OpenFreeTextOverlay(
     val restrictions: FreeTextRestrictions,
@@ -110,6 +110,8 @@ internal sealed interface ClaimChatEvent {
   data object HandledOutcomeNavigation : ClaimChatEvent
 
   data class HandledDeflectNavigation(val stepId: StepId) : ClaimChatEvent
+
+  data class AddToShownAnimations(val stepId: StepId) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -128,6 +130,7 @@ internal sealed interface ClaimChatUiState {
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
+    val stepsWithShownAnimations: List<StepId>,
   ) : ClaimChatUiState
 }
 
@@ -203,6 +206,7 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
+    val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
 
@@ -514,9 +518,8 @@ internal class ClaimChatPresenter(
             val textTooShort = event.text?.length?.let {
               currentContent.freeTextMinLength > it
             } ?: true
-
             steps.updateStepWithSuccess<StepContent.AudioRecording>(currentStep!!.id) { step, content ->
-              val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
+              val canSubmit = !currentContinueButtonLoading && !event.text.isNullOrEmpty() && !textTooShort
               step.copy(
                 stepContent = content.copy(
                   recordingState = recordingState.copy(
@@ -568,6 +571,9 @@ internal class ClaimChatPresenter(
                     logcat { "Regret error: $it" }
                   },
                   ifRight = { claimIntent ->
+                    if (claimIntent.next is ClaimIntent.Next.Step) {
+                      stepsWithShownAnimations.add(claimIntent.next.claimIntentStep.id)
+                    }
                     val index = steps.indexOf(stepToUpdate)
                     if (index >= 0) {
                       steps.subList(index, steps.size).clear()
@@ -632,7 +638,7 @@ internal class ClaimChatPresenter(
         }
 
         ClaimChatEvent.DismissErrorDialog -> errorSubmittingStep = null
-        is ClaimChatEvent.FileSubmit -> {
+        is ClaimChatEvent.SubmitFile -> {
           val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
           val fileUris = stepContent.localFiles
             .filter {
@@ -682,11 +688,14 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.HandledDeflectNavigation -> {
-    //todo or remove
+          //todo or remove
         }
 
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
         is ClaimChatEvent.ShowConfirmEditDialog -> showConfirmEditDialogForStep = event.id
+        is ClaimChatEvent.AddToShownAnimations -> {
+          stepsWithShownAnimations.add(event.stepId)
+        }
       }
     }
 
@@ -704,6 +713,7 @@ internal class ClaimChatPresenter(
         currentContinueButtonLoading = currentContinueButtonLoading,
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
+        stepsWithShownAnimations = stepsWithShownAnimations,
       )
 
       else -> error("")

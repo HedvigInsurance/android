@@ -80,6 +80,7 @@ fun NavGraphBuilder.claimChatGraph(
       },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
+      navigateUp = navController::navigateUp,
     )
   }
   navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination)
