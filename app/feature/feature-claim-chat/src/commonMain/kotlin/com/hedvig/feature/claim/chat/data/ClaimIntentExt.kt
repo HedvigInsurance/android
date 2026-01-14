@@ -18,6 +18,7 @@ import octopus.fragment.FormFragment
 import octopus.fragment.SummaryFragment
 import octopus.fragment.TaskFragment
 import octopus.type.ClaimIntentStepContentFormFieldType
+import octopus.type.ClaimIntentStepContentSelectStyle
 
 context(raise: Raise<ErrorMessage>)
 internal fun ClaimIntentMutationOutputFragment.toClaimIntent(locale: CommonLocale): ClaimIntent {
@@ -40,7 +41,7 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
       createdClaim != null -> ClaimIntent.Next.Outcome(createdClaim!!.toClaimIntentOutcome())
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
-    // todo also render source messages
+    progress = progress?.toFloat()
   )
 }
 
@@ -64,6 +65,11 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       options = options.toOptions(),
       selectedOptionId = null, // todo
       isSkippable = isSkippable,
+      style = when (style) {
+        ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
+        ClaimIntentStepContentSelectStyle.BINARY -> StepContent.ContentSelectStyle.BINARY
+        ClaimIntentStepContentSelectStyle.UNKNOWN__ ->  StepContent.ContentSelectStyle.PILL
+      }
     )
 
     is TaskFragment -> StepContent.Task(

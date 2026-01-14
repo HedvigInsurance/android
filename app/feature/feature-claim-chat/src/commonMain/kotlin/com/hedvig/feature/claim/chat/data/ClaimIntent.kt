@@ -13,6 +13,7 @@ value class ClaimIntentId(val value: String)
 internal data class ClaimIntent(
   val id: ClaimIntentId,
   val next: Next,
+  val progress: Float?
 ) {
   sealed interface Next {
     val step: Step?
@@ -112,13 +113,19 @@ internal sealed interface StepContent {
 
   data class ContentSelect(
     val options: List<Option>,
-    val selectedOptionId: String?, // todo: check
+    val selectedOptionId: String?,
+    val style: ContentSelectStyle,
     override val isSkippable: Boolean,
   ) : StepContent {
     data class Option(
       val id: String,
       val title: String,
     )
+  }
+
+  enum class ContentSelectStyle {
+    PILL,
+    BINARY
   }
 
   data class Summary(

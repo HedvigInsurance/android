@@ -772,7 +772,6 @@ private fun StepBottomContent(
       )
 
       is StepContent.ContentSelect -> ContentSelectStep(
-        item = stepItem,
         isCurrentStep = isCurrentStep,
         options = stepItem.stepContent.options,
         selectedOptionId = stepItem.stepContent.selectedOptionId,
@@ -783,6 +782,9 @@ private fun StepBottomContent(
           onEvent(ClaimChatEvent.Skip(stepItem.id))
         },
         skipButtonLoading = currentSkipButtonLoading,
+        stepContent = stepItem.stepContent,
+        itemId = stepItem.id,
+        isRegrettable = stepItem.isRegrettable,
       )
 
       is StepContent.FileUpload -> UploadFilesStep(
@@ -1339,7 +1341,9 @@ private fun AudioRecordingStep(
 
 @Composable
 private fun ContentSelectStep(
-  item: ClaimIntentStep,
+  stepContent: StepContent.ContentSelect,
+  itemId: StepId,
+  isRegrettable: Boolean,
   isCurrentStep: Boolean,
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
@@ -1357,7 +1361,7 @@ private fun ContentSelectStep(
         (fadeIn() + scaleIn()).togetherWith(fadeOut(animationSpec = tween(0)))
       },
     ) { targetState ->
-      Column {
+      Column{
         if (targetState) {
           Spacer(Modifier.height(32.dp))
           ContentSelectChips(
@@ -1366,12 +1370,14 @@ private fun ContentSelectStep(
               if (!currentContinueButtonLoading) {
                 onEvent(
                   ClaimChatEvent.Select(
-                    item.id,
+                    itemId,
                     option.id,
                   ),
                 )
               }
             },
+            selectedOptionId = stepContent.selectedOptionId,
+            style = stepContent.style,
           )
           if (canSkip) {
             Spacer(Modifier.height(16.dp))
@@ -1405,9 +1411,9 @@ private fun ContentSelectStep(
               SkippedLabel()
             }
             EditButton(
-              item.isRegrettable,
+              isRegrettable,
               onRegret = {
-                onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
+                onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
               },
             )
           }
