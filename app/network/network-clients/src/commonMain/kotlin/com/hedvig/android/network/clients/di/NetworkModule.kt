@@ -9,6 +9,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
