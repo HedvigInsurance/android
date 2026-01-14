@@ -9,6 +9,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
@@ -102,6 +103,10 @@ private fun HttpClientConfig<*>.addAuthPlugin(
     bearer {
       loadTokens {
         val accessToken = accessTokenFetcher.fetch() ?: return@loadTokens null
+        BearerTokens(accessToken, null)
+      }
+      refreshTokens {
+        val accessToken = accessTokenFetcher.fetch() ?: return@refreshTokens null
         BearerTokens(accessToken, null)
       }
     }
