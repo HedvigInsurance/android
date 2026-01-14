@@ -18,6 +18,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpSend
+import io.ktor.client.plugins.HttpSendInterceptor
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -25,6 +26,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
+import io.ktor.client.request.header
 import io.ktor.client.request.headers
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -35,9 +37,11 @@ val networkModule = module {
     buildKtorClient(get<HedvigBuildConstants>(), get<LanguageService>(), get<DeviceIdFetcher>())
   }
   single<HttpClient> {
-    get<HttpClient>(baseHttpClientQualifier).config {
-      addAuthPlugin(get<AccessTokenFetcher>())
-    }
+    get<HttpClient>(baseHttpClientQualifier)
+      .config {}
+      .apply {
+        addAuthPlugin(get<AccessTokenFetcher>())
+      }
   }
   single<NormalizedCacheFactory> {
     MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
@@ -96,26 +100,18 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
   }
 }
 
-private fun HttpClientConfig<*>.addAuthPlugin(
+private fun HttpClient.addAuthPlugin(
   accessTokenFetcher: AccessTokenFetcher,
 ) {
-  install(Auth) {
-    bearer {
-      loadTokens {
-        val fetchedToken = accessTokenFetcher.fetch()
-        logcat { "loadTokens. fetchedToken: $fetchedToken " }
-        val accessToken = fetchedToken ?: return@loadTokens null
-        logcat { "loadTokens. accessToken: $accessToken " }
-        BearerTokens(accessToken, null)
+  plugin(HttpSend).intercept { request ->
+    val accessToken = accessTokenFetcher.fetch()
+    execute(
+      if (accessToken != null) {
+        request.apply { header("Authorization", "Bearer ${accessTokenFetcher.fetch()}") }
+      } else {
+        request
       }
-      refreshTokens {
-        val fetchedToken = accessTokenFetcher.fetch()
-        logcat { "refreshTokens. fetchedToken: $fetchedToken " }
-        val accessToken = fetchedToken ?: return@refreshTokens null
-        logcat { "refreshTokens. accessToken: $accessToken " }
-        BearerTokens(accessToken, null)
-      }
-    }
+    )
   }
 }
 
