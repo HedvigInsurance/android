@@ -644,6 +644,7 @@ private fun StepTopContent(
   }
 }
 
+//to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
 @Composable
 private fun CommonPaddingWrapper(
   content: @Composable () -> Unit,
@@ -658,7 +659,6 @@ private fun CommonPaddingWrapper(
     ) {
       HedvigText("C")
     }
-    //to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
   }
 }
 

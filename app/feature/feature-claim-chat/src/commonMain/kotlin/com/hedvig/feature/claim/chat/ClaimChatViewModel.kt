@@ -518,9 +518,10 @@ internal class ClaimChatPresenter(
             val textTooShort = event.text?.length?.let {
               currentContent.freeTextMinLength > it
             } ?: true
+            logcat { "Mariia: is textTooShort: $textTooShort " }
 
             steps.updateStepWithSuccess<StepContent.AudioRecording>(currentStep!!.id) { step, content ->
-              val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
+              val canSubmit = !currentContinueButtonLoading && !event.text.isNullOrEmpty() && !textTooShort
               step.copy(
                 stepContent = content.copy(
                   recordingState = recordingState.copy(
