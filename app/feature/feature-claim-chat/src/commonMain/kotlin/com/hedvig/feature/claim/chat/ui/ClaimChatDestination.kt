@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -603,9 +604,6 @@ private fun ColumnScope.StepContentSection(
       visible = showBottomContent,
       enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
       exit = ExitTransition.None,
-//      modifier = Modifier.onSizeChanged { size ->
-//        onResponseHeightChanged(size)
-//      }
     ) {
       StepBottomContent(
         stepItem = stepItem,
@@ -678,28 +676,33 @@ private fun StepTopContent(
       )
     }
 
-    if (stepItem.stepContent is StepContent.Summary) {
-      stepItemText?.let {
-        Spacer(Modifier.height(16.dp))
-      }
-      ChatClaimSummaryTopContent(
-        recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
-        displayItems = stepItem.stepContent.items.map { (title, value) -> title to value },
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        imageLoader = imageLoader,
-        fileUploads = stepItem.stepContent.fileUploads.map {
-          UiFile(
-            name = it.fileName,
-            localPath = null,
-            url = it.url,
-            mimeType = it.contentType,
-            id = it.url,
+    AnimatedVisibility(stepItem.stepContent is StepContent.Summary,
+      enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
+      exit = ExitTransition.None) {
+      Column {
+        stepItemText?.let {
+          Spacer(Modifier.height(16.dp))
+        }
+        if (stepItem.stepContent is StepContent.Summary) {
+          ChatClaimSummaryTopContent(
+            recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
+            displayItems = stepItem.stepContent.items.map { (title, value) -> title to value },
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            imageLoader = imageLoader,
+            fileUploads = stepItem.stepContent.fileUploads.map {
+              UiFile(
+                name = it.fileName,
+                localPath = null,
+                url = it.url,
+                mimeType = it.contentType,
+                id = it.url,
+              )
+            },
+            freeTexts = stepItem.stepContent.freeTexts,
           )
-        },
-        freeTexts = stepItem.stepContent.freeTexts,
-      )
+        }
+      }
     }
-
     stepItemText?.let {
       Spacer(Modifier.height(16.dp))
     }
