@@ -2,7 +2,6 @@ package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -97,7 +96,6 @@ import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -293,7 +291,7 @@ private fun ClaimChatScreenContent(
       val layoutInfo = lazyListState.layoutInfo
       val lazyListItemsCount = layoutInfo.totalItemsCount
       val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      lastVisibleItem?.index != lazyListItemsCount-1
+      lastVisibleItem?.index != lazyListItemsCount - 1
     }
   }
   // Track the size of the last item to scroll when it grows
@@ -644,6 +642,7 @@ private fun StepTopContent(
   }
 }
 
+//to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
 @Composable
 private fun CommonPaddingWrapper(
   content: @Composable () -> Unit,
@@ -658,7 +657,6 @@ private fun CommonPaddingWrapper(
     ) {
       HedvigText("C")
     }
-    //to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
   }
 }
 
@@ -772,7 +770,6 @@ private fun StepBottomContent(
       )
 
       is StepContent.ContentSelect -> ContentSelectStep(
-        item = stepItem,
         isCurrentStep = isCurrentStep,
         options = stepItem.stepContent.options,
         selectedOptionId = stepItem.stepContent.selectedOptionId,
@@ -783,6 +780,9 @@ private fun StepBottomContent(
           onEvent(ClaimChatEvent.Skip(stepItem.id))
         },
         skipButtonLoading = currentSkipButtonLoading,
+        stepContent = stepItem.stepContent,
+        itemId = stepItem.id,
+        isRegrettable = stepItem.isRegrettable,
       )
 
       is StepContent.FileUpload -> UploadFilesStep(
@@ -1339,7 +1339,9 @@ private fun AudioRecordingStep(
 
 @Composable
 private fun ContentSelectStep(
-  item: ClaimIntentStep,
+  stepContent: StepContent.ContentSelect,
+  itemId: StepId,
+  isRegrettable: Boolean,
   isCurrentStep: Boolean,
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
@@ -1366,12 +1368,14 @@ private fun ContentSelectStep(
               if (!currentContinueButtonLoading) {
                 onEvent(
                   ClaimChatEvent.Select(
-                    item.id,
+                    itemId,
                     option.id,
                   ),
                 )
               }
             },
+            selectedOptionId = stepContent.selectedOptionId,
+            style = stepContent.style,
           )
           if (canSkip) {
             Spacer(Modifier.height(16.dp))
@@ -1405,9 +1409,9 @@ private fun ContentSelectStep(
               SkippedLabel()
             }
             EditButton(
-              item.isRegrettable,
+              isRegrettable,
               onRegret = {
-                onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
+                onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
               },
             )
           }

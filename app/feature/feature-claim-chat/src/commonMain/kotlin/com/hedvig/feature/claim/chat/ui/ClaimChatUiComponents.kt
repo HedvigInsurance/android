@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.selectableGroup
@@ -83,6 +86,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.ThreeDotsLoading
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.icon.Camera
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.Document
@@ -91,6 +95,7 @@ import com.hedvig.android.design.system.hedvig.icon.Image
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.HedvigChip
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
@@ -117,23 +122,54 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun ContentSelectChips(
   options: List<StepContent.ContentSelect.Option>,
+  selectedOptionId: String?,
   onOptionClick: (StepContent.ContentSelect.Option) -> Unit,
+  style: StepContent.ContentSelectStyle,
   modifier: Modifier = Modifier,
 ) {
-  FlowRow(
-    modifier = modifier.semantics {
-      selectableGroup()
-    },
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    for (item in options) {
-      key(item) {
-        RoundCornersPill(
-          onClick = {
-            onOptionClick(item)
-          }) {
-          HedvigText(item.title)
+  when (style) {
+    StepContent.ContentSelectStyle.PILL -> {
+      FlowRow(
+        modifier = modifier.semantics {
+          selectableGroup()
+        },
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        for (item in options) {
+          key(item) {
+            RoundCornersPill(
+              isSelected = item.id== selectedOptionId,
+              onClick = {
+                onOptionClick(item)
+              }) {contentColor ->
+              HedvigText(item.title,
+                color = contentColor)
+            }
+          }
+        }
+      }
+    }
+    StepContent.ContentSelectStyle.BINARY -> {
+      Row(Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly) {
+        for (item in options) {
+          RoundCornersPill(
+            onClick = {
+              onOptionClick(item)
+            },
+            isSelected = item.id== selectedOptionId,
+            modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+          ) { contentColor ->
+            Row(
+              Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.Center
+            ) {
+              HedvigText(item.title, textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 2.dp, bottom = 2.dp),
+                color = contentColor)
+            }
+          }
         }
       }
     }
@@ -143,9 +179,24 @@ internal fun ContentSelectChips(
 @Composable
 internal fun RoundCornersPill(
   modifier: Modifier = Modifier,
+  isSelected: Boolean = false,
   onClick: (() -> Unit)?,
-  content: @Composable () -> Unit,
+  content: @Composable ( contentColor: Color) -> Unit,
 ) {
+  val surfaceColor by animateColorAsState(
+    if (isSelected) {
+      HedvigTheme.colorScheme.signalGreenFill.compositeOver(HedvigTheme.colorScheme.backgroundPrimary)
+    } else {
+      HedvigTheme.colorScheme.buttonSecondaryResting
+    },
+  )
+  val contentColor by animateColorAsState(
+    if (isSelected) {
+      HedvigTheme.colorScheme.signalGreenText.compositeOver(surfaceColor)
+    } else {
+      HedvigTheme.colorScheme.textPrimary
+    },
+  )
   Surface(
     modifier
       .clip(HedvigTheme.shapes.cornerXXLarge)
@@ -159,7 +210,7 @@ internal fun RoundCornersPill(
         },
       ),
     shape = HedvigTheme.shapes.cornerXXLarge,
-    color = HedvigTheme.colorScheme.buttonSecondaryResting,
+    color = surfaceColor,
   ) {
     Column(
       Modifier.padding(
@@ -169,7 +220,7 @@ internal fun RoundCornersPill(
         bottom = 9.dp,
       ),
     ) {
-      content()
+      content(contentColor)
     }
   }
 }
@@ -250,6 +301,8 @@ internal fun YesNoBubble(
         onOptionClick = { option ->
           onSelect(option.title)
         },
+        style = StepContent.ContentSelectStyle.BINARY,
+        selectedOptionId = options.firstOrNull { it.title==answerSelected }?.id
       )
     }
     AnimatedVisibility(errorText != null) {
@@ -803,6 +856,7 @@ internal fun ChatClaimSummaryTopContent(
             RoundCornersPill(
               modifier = Modifier.fillMaxWidth(),
               onClick = null,
+              isSelected = false
             ) {
               HedvigText(string)
             }
