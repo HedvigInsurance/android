@@ -127,7 +127,6 @@ internal fun ContentSelectChips(
   style: StepContent.ContentSelectStyle,
   modifier: Modifier = Modifier,
 ) {
-  logcat { "Mariia, style: $style" }
   when (style) {
     StepContent.ContentSelectStyle.PILL -> {
       FlowRow(
