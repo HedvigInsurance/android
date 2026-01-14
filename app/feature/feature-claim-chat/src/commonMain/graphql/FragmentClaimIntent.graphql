@@ -1,5 +1,6 @@
 fragment ClaimIntentFragment on ClaimIntent {
   id
+  progress
   currentStep {
     id
     text
@@ -48,6 +49,7 @@ fragment ContentSelectFragment on ClaimIntentStepContentSelect {
     title
   }
   isSkippable
+  style
 }
 
 fragment TaskFragment on ClaimIntentStepContentTask {

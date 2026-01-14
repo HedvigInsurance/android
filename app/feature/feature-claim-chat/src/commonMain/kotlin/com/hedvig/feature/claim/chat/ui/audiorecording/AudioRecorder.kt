@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.core.uidata.DecimalFormatter
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -211,7 +212,9 @@ internal fun AudioRecorder(
               )
             } else {
               if (allowFreeText) {
-                HedvigTextButton(
+                HedvigButton(
+                  enabled = true,
+                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
                   text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
                   onClick = onLaunchFreeText,
                 )

@@ -295,9 +295,9 @@ private fun ClaimChatScreenContent(
   val isScrolled by remember(lazyListState, uiState.currentStep?.id) {
     derivedStateOf {
       val layoutInfo = lazyListState.layoutInfo
+      val lazyListItemsCount = layoutInfo.totalItemsCount
       val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      val lastItemIndex = uiState.steps.lastIndex
-      lastVisibleItem?.index != lastItemIndex
+      lastVisibleItem?.index != lazyListItemsCount - 1
     }
   }
   // Track the size of the last item to scroll when it grows
@@ -335,19 +335,87 @@ private fun ClaimChatScreenContent(
         },
       )
       HorizontalDivider()
-      ClaimChatScrollableContent(
-        uiState = uiState,
-        lazyListState = lazyListState,
-        onEvent = onEvent,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        navigateToDeflect = navigateToDeflect,
-        appPackageId = appPackageId,
-        imageLoader = imageLoader,
-        openAppSettings = openAppSettings,
-        isScrolled = isScrolled,
-        modifier = Modifier.fillMaxSize(),
-      )
+
+//      ClaimChatScrollableContent(
+//        uiState = uiState,
+//        lazyListState = lazyListState,
+//        onEvent = onEvent,
+//        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+//        onNavigateToImageViewer = onNavigateToImageViewer,
+//        navigateToDeflect = navigateToDeflect,
+//        appPackageId = appPackageId,
+//        imageLoader = imageLoader,
+//        openAppSettings = openAppSettings,
+//        isScrolled = isScrolled,
+//        modifier = Modifier.fillMaxSize(),
+//      )
+
+      Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
+        val density = LocalDensity.current
+        val contentPadding = WindowInsets.safeDrawing
+          .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+          .asPaddingValues()
+          .plus(PaddingValues(bottom = 16.dp, top = 16.dp))
+        var minHeightForFullScreenItem by remember { mutableStateOf(0.dp) }
+        Box(
+          Modifier
+            .padding(contentPadding)
+            .onSizeChanged {
+              minHeightForFullScreenItem = with(density) {
+                val height = if (uiState.steps.size == 1) it.height * 1f else it.height * 0.85f
+                height.toDp()
+              }
+            },
+        )
+        LazyColumn(
+          modifier = Modifier.padding(horizontal = 16.dp),
+          state = lazyListState,
+          contentPadding = contentPadding,
+          verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+        ) {
+          items(
+            items = uiState.steps,
+            key = { step -> step.id.value },
+            contentType = { it.stepContent::class },
+          ) { item ->
+            val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
+            val showAnimationSequence = isCurrentStep
+              && item.stepContent !is StepContent.Task
+              && !uiState.stepsWithShownAnimations.contains(item.id)
+            val isLastItem = item == uiState.steps.lastOrNull()
+
+        val heightModifier = if (isLastItem) {
+          Modifier.requiredHeightIn(preferredMinHeightForFullScreenItem)
+        } else {
+          Modifier
+        }
+
+            Column(
+              modifier = heightModifier,
+              verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+              StepContentSection(
+                stepItem = item,
+                freeText = uiState.freeText,
+                isCurrentStep = isCurrentStep,
+                showAnimationSequence = showAnimationSequence,
+                currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+                currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+                onEvent = onEvent,
+                shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+                onNavigateToImageViewer = onNavigateToImageViewer,
+                navigateToDeflect = navigateToDeflect,
+                appPackageId = appPackageId,
+                imageLoader = imageLoader,
+                openAppSettings = openAppSettings,
+                onResponseHeightChanged = { size ->
+                  heightOfItemBottomContentMap[item.id] = size
+                },
+              )
+            }
+          }
+        }
+      }
     }
     if (isScrolled) {
       ScrollToBottomButton(
@@ -457,7 +525,7 @@ private fun ClaimChatScrollableContent(
             stepItem = item,
             freeText = uiState.freeText,
             isCurrentStep = isCurrentStep,
-            showFakeAiDot = showFakeAiDot,
+            showAnimationSequence = showAnimationSequence,
             currentContinueButtonLoading = uiState.currentContinueButtonLoading,
             currentSkipButtonLoading = uiState.currentSkipButtonLoading,
             onEvent = onEvent,
@@ -467,7 +535,6 @@ private fun ClaimChatScrollableContent(
             appPackageId = appPackageId,
             imageLoader = imageLoader,
             openAppSettings = openAppSettings,
-            showBottomContent = if (isLastItem) !isScrolled else true,
             onResponseHeightChanged = { size ->
               heightOfItemBottomContentMap[item.id] = size
             },
@@ -514,7 +581,7 @@ private fun ColumnScope.StepContentSection(
   stepItem: ClaimIntentStep,
   freeText: String?,
   isCurrentStep: Boolean,
-  showFakeAiDot: Boolean,
+  showAnimationSequence: Boolean,
   currentContinueButtonLoading: Boolean,
   currentSkipButtonLoading: Boolean,
   onEvent: (ClaimChatEvent) -> Unit,
@@ -524,57 +591,86 @@ private fun ColumnScope.StepContentSection(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  showBottomContent: Boolean,
   onResponseHeightChanged: (IntSize) -> Unit,
 ) {
-  var showContent by rememberSaveable(stepItem.id) {
-    mutableStateOf(stepItem.stepContent is StepContent.Task)
+
+  // AnimationSequence has 3 stages one after another:
+  // 1) fake ai dot
+  // 2) top part of content
+  // 3) bottom part of content
+
+  var isAnimationInProcess by rememberSaveable(stepItem.id) {
+    mutableStateOf(showAnimationSequence)
   }
 
-  var showBottomContentAnimated by rememberSaveable(stepItem.id) {
-    mutableStateOf(stepItem.stepContent is StepContent.Task)
+  var showAiDot by rememberSaveable(stepItem.id) {
+    mutableStateOf(showAnimationSequence)
+  }
+  var showTopContent by rememberSaveable(stepItem.id) {
+    mutableStateOf(!showAnimationSequence)
+  }
+  var showBottomContent by rememberSaveable(stepItem.id) {
+    mutableStateOf(!showAnimationSequence)
   }
 
-  var hasShownAnimation by rememberSaveable(stepItem.id) {
-    mutableStateOf(stepItem.stepContent is StepContent.Task)
-  }
+  val bottomContentAnimationDuration = 300
 
-  // Animation sequence controlled by showFakeAiDot parameter
-  // Only run animation once per step using hasShownAnimation flag
-  LaunchedEffect(stepItem.id, showFakeAiDot) {
-    if (showFakeAiDot && !hasShownAnimation) {
-      showContent = false
-      showBottomContentAnimated = false
+  LaunchedEffect(stepItem.id) {
+    if (isAnimationInProcess) {
       delay(1000)
-      showContent = true
-      hasShownAnimation = true
-    } else if (!hasShownAnimation) {
-      // Previous steps or Task steps: add small delay to let state settle
-      // This prevents flash if step briefly appears as non-current before becoming current
-      delay(50)
-      showContent = true
-      showBottomContentAnimated = true
+      showAiDot = false
+      delay(100)
+      showTopContent = true
     }
   }
 
-  if (!showContent && showFakeAiDot) {
+  LaunchedEffect(showBottomContent) {
+    if (showBottomContent && isAnimationInProcess) {
+      delay(bottomContentAnimationDuration.toLong())
+      isAnimationInProcess = false
+      onEvent(ClaimChatEvent.AddToShownAnimations(stepItem.id))
+    }
+  }
+
+  if (showAiDot) {
     CommonPaddingWrapper {
       BlinkingAiDot()
     }
-  } else if (showContent) {
+  }
+  if (showTopContent) {
     StepTopContent(
       stepItem = stepItem,
-      isCurrentStep = isCurrentStep,
-      showBottomContentAnimated = {
-        showBottomContentAnimated = true
+      hasAnimation = isAnimationInProcess,
+      onAnimationFinished = {
+        showBottomContent = true
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
       imageLoader = imageLoader,
     )
+  }
 
+  if (showBottomContent && !isAnimationInProcess) {
+    StepBottomContent(
+      stepItem = stepItem,
+      freeText = freeText,
+      isCurrentStep = isCurrentStep,
+      currentContinueButtonLoading = currentContinueButtonLoading,
+      currentSkipButtonLoading = currentSkipButtonLoading,
+      onEvent = onEvent,
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      navigateToDeflect = navigateToDeflect,
+      appPackageId = appPackageId,
+      imageLoader = imageLoader,
+      openAppSettings = openAppSettings,
+      modifier = Modifier.onSizeChanged { size ->
+        onResponseHeightChanged(size)
+      }
+    )
+  } else if (isAnimationInProcess) {
     AnimatedVisibility(
-      visible = showBottomContent && showBottomContentAnimated,
-      enter = fadeIn(animationSpec = tween(300)),
+      visible = showBottomContent,
+      enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
       exit = ExitTransition.None,
       modifier = Modifier.onSizeChanged { size ->
         onResponseHeightChanged(size)
@@ -601,8 +697,8 @@ private fun ColumnScope.StepContentSection(
 @Composable
 private fun StepTopContent(
   stepItem: ClaimIntentStep,
-  isCurrentStep: Boolean,
-  showBottomContentAnimated: () -> Unit,
+  hasAnimation: Boolean,
+  onAnimationFinished: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
@@ -618,7 +714,7 @@ private fun StepTopContent(
   }
 
   Column(modifier) {
-    if (isCurrentStep) {
+    if (hasAnimation) {
       if (stepItemText != null) {
         CommonPaddingWrapper {
           AnimatedRevealText(
@@ -626,17 +722,19 @@ private fun StepTopContent(
             visibleState = remember(stepItem.id) {
               MutableTransitionState(false).apply { targetState = true }
             },
-            onAnimationFinished = showBottomContentAnimated,
+            onAnimationFinished = onAnimationFinished,
           )
         }
       } else {
         LaunchedEffect(stepItem.id) {
-          showBottomContentAnimated()
+          onAnimationFinished()
         }
       }
     } else {
       stepItemText?.let {
-        HedvigText(stepItemText)
+        CommonPaddingWrapper {
+          HedvigText(stepItemText)
+        }
       }
     }
 
@@ -677,6 +775,7 @@ private fun StepTopContent(
   }
 }
 
+//to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
 @Composable
 private fun CommonPaddingWrapper(
   content: @Composable () -> Unit,
@@ -691,7 +790,6 @@ private fun CommonPaddingWrapper(
     ) {
       HedvigText("C")
     }
-    //to align blinking dot, task step and questions to appear in the same place vertically
   }
 }
 
@@ -805,7 +903,6 @@ private fun StepBottomContent(
       )
 
       is StepContent.ContentSelect -> ContentSelectStep(
-        item = stepItem,
         isCurrentStep = isCurrentStep,
         options = stepItem.stepContent.options,
         selectedOptionId = stepItem.stepContent.selectedOptionId,
@@ -816,6 +913,9 @@ private fun StepBottomContent(
           onEvent(ClaimChatEvent.Skip(stepItem.id))
         },
         skipButtonLoading = currentSkipButtonLoading,
+        stepContent = stepItem.stepContent,
+        itemId = stepItem.id,
+        isRegrettable = stepItem.isRegrettable,
       )
 
       is StepContent.FileUpload -> UploadFilesStep(
@@ -1021,13 +1121,13 @@ private fun TaskStep(
 }
 
 @Composable
-private fun BlinkingAiDot() {
+private fun BlinkingAiDot(durationMillis: Int = 500) {
   val infiniteTransition = rememberInfiniteTransition(label = "blink")
   val alpha by infiniteTransition.animateFloat(
     initialValue = 1f,
     targetValue = 0f,
     animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis = 500),
+      animation = tween(durationMillis),
       repeatMode = RepeatMode.Reverse,
     ),
     label = "alpha",
@@ -1372,7 +1472,9 @@ private fun AudioRecordingStep(
 
 @Composable
 private fun ContentSelectStep(
-  item: ClaimIntentStep,
+  stepContent: StepContent.ContentSelect,
+  itemId: StepId,
+  isRegrettable: Boolean,
   isCurrentStep: Boolean,
   options: List<StepContent.ContentSelect.Option>,
   selectedOptionId: String?,
@@ -1389,23 +1491,24 @@ private fun ContentSelectStep(
       transitionSpec = {
         (fadeIn() + scaleIn()).togetherWith(fadeOut(animationSpec = tween(0)))
       },
-    ) { isCurrentStep ->
+    ) { targetState ->
       Column {
-        if (isCurrentStep) {
+        if (targetState) {
           Spacer(Modifier.height(32.dp))
           ContentSelectChips(
             options = options,
-            selectedOption = null,
             onOptionClick = { option ->
               if (!currentContinueButtonLoading) {
                 onEvent(
                   ClaimChatEvent.Select(
-                    item.id,
+                    itemId,
                     option.id,
                   ),
                 )
               }
             },
+            selectedOptionId = stepContent.selectedOptionId,
+            style = stepContent.style,
           )
           if (canSkip) {
             Spacer(Modifier.height(16.dp))
@@ -1439,9 +1542,9 @@ private fun ContentSelectStep(
               SkippedLabel()
             }
             EditButton(
-              item.isRegrettable,
+              isRegrettable,
               onRegret = {
-                onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
+                onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
               },
             )
           }
