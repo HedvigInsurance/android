@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
@@ -39,6 +40,7 @@ internal class HomePresenter(
   private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   private val featureManager: FeatureManager,
   private val applicationScope: CoroutineScope,
+  private val isProduction: Boolean,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -141,6 +143,7 @@ internal class HomePresenter(
           crossSellsAction = successData.crossSellsAction,
           travelAddonBannerInfo = successData.travelAddonBannerInfo,
           isExperimentalClaimChatEnabled = isExperimentalClaimChatEnabled,
+          isProduction = !isProduction,
         )
       }
     }
@@ -178,6 +181,7 @@ internal sealed interface HomeUiState {
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     val travelAddonBannerInfo: TravelAddonBannerInfo?,
     val isExperimentalClaimChatEnabled: Boolean,
+    val isProduction: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
