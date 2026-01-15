@@ -130,6 +130,7 @@ internal fun AudioRecorderBubble(
       }
 
       if (canSkip && isCurrentStep) {
+        Spacer(Modifier.height(8.dp))
         HedvigButton(
           stringResource(Res.string.claims_skip_button),
           onClick = onSkip,
@@ -138,7 +139,7 @@ internal fun AudioRecorderBubble(
           modifier = Modifier.fillMaxWidth(),
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )
-        Spacer(Modifier.width(16.dp))
+        Spacer(Modifier.height(16.dp))
       }
     }
   }
