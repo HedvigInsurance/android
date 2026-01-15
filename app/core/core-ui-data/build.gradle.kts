@@ -13,6 +13,7 @@ kotlin {
     commonMain.dependencies {
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.kotlinx.serialization.core)
+      implementation(libs.ktor.client.core)
       implementation(projects.apolloOctopusPublic)
     }
   }

@@ -13,6 +13,7 @@ kotlin {
       implementation(libs.androidx.annotation)
       implementation(libs.coroutines.core)
       implementation(libs.kotlinx.serialization.core)
+      implementation(libs.ktor.client.core)
       implementation(projects.coreCommonPublic)
 
     }

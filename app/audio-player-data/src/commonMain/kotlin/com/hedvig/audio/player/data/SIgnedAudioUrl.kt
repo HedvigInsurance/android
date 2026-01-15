@@ -1,13 +1,20 @@
 package com.hedvig.audio.player.data
 
+import io.ktor.http.encodeURLParameter
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 /**
  * A class to hold the url coming from the backend, with an overridden equals in order to return true in case we're
  * dealing with the same audio file but with a different query string
  */
 
-@Serializable
+@Serializable(with = SignedAudioUrlSerializer::class)
 class SignedAudioUrl private constructor(
   val rawUrl: String,
 ) {
@@ -33,5 +40,31 @@ class SignedAudioUrl private constructor(
       if (signedAudioUrl == null) return null
       return SignedAudioUrl(signedAudioUrl)
     }
+  }
+}
+
+/**
+ * Custom serializer for SignedAudioUrl that preserves URL encoding through navigation.
+ *
+ * The navigation system URL-decodes all parameters, which breaks AWS signed URLs
+ * that contain encoded characters like %2B, %2F, %3D in their security tokens.
+ *
+ * This serializer URL-encodes the rawUrl during serialization, so after the navigation
+ * system's automatic URL decoding, we end up with the original properly-encoded AWS URL.
+ */
+internal object SignedAudioUrlSerializer : KSerializer<SignedAudioUrl> {
+  override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
+    "SignedAudioUrl",
+    PrimitiveKind.STRING,
+  )
+
+  override fun serialize(encoder: Encoder, value: SignedAudioUrl) {
+    // URL-encode the rawUrl so it survives navigation's URL decoding
+    encoder.encodeString(value.rawUrl.encodeURLParameter())
+  }
+
+  override fun deserialize(decoder: Decoder): SignedAudioUrl {
+    val rawUrl = decoder.decodeString()
+    return SignedAudioUrl.fromSignedAudioUrlString(rawUrl)
   }
 }
