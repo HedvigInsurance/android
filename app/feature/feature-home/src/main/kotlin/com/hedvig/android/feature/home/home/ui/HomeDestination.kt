@@ -252,7 +252,7 @@ private fun HomeScreen(
     navigateToClaimChat = navigateToClaimChat,
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     isExperimentalClaimChatEnabled = (uiState as? Success)?.isExperimentalClaimChatEnabled ?: false,
-    isStagingEnvironment = (uiState as? Success)?.isProduction ?: false,
+    isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp

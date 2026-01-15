@@ -143,7 +143,7 @@ internal class HomePresenter(
           crossSellsAction = successData.crossSellsAction,
           travelAddonBannerInfo = successData.travelAddonBannerInfo,
           isExperimentalClaimChatEnabled = isExperimentalClaimChatEnabled,
-          isProduction = !isProduction,
+          isProduction = isProduction,
         )
       }
     }
