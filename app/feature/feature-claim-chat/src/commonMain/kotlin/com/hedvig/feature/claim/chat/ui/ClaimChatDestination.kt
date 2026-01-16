@@ -125,6 +125,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
+import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_close_button
@@ -269,7 +270,7 @@ private fun ClaimChatScreenContent(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var showCloseFlowDialog by remember { mutableStateOf(false) }
+  var showCloseFlowDialog by rememberSaveable { mutableStateOf(false) }
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
@@ -295,7 +296,7 @@ private fun ClaimChatScreenContent(
   if (showCloseFlowDialog) {
     HedvigAlertDialog(
       title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
-      text = null,
+      text = stringResource(Res.string.claims_alert_body),
       onDismissRequest = {
         showCloseFlowDialog = false
       },
