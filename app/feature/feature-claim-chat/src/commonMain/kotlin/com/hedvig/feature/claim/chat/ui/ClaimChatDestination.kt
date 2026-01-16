@@ -269,6 +269,7 @@ private fun ClaimChatScreenContent(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  var showCloseFlowDialog by remember { mutableStateOf(false) }
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
@@ -289,6 +290,16 @@ private fun ClaimChatScreenContent(
       onConfirmClick = {
         onEvent(ClaimChatEvent.Regret(uiState.showConfirmEditDialogForStep))
       },
+    )
+  }
+  if (showCloseFlowDialog) {
+    HedvigAlertDialog(
+      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+      text = null,
+      onDismissRequest = {
+        showCloseFlowDialog = false
+      },
+      onConfirmClick = navigateUp,
     )
   }
   val lazyListState = rememberLazyListState()
@@ -326,7 +337,9 @@ private fun ClaimChatScreenContent(
         ),
         topAppBarActions = {
           IconButton(
-            onClick = navigateUp,
+            onClick = {
+              showCloseFlowDialog = true
+            },
           ) {
             Icon(
               HedvigIcons.Close,
@@ -583,21 +596,21 @@ private fun ColumnScope.StepContentSection(
 
   if (showBottomContent && !isAnimationInProcess) {
     StepBottomContent(
-      stepItem = stepItem,
-      freeText = freeText,
-      isCurrentStep = isCurrentStep,
-      currentContinueButtonLoading = currentContinueButtonLoading,
-      currentSkipButtonLoading = currentSkipButtonLoading,
-      onEvent = onEvent,
-      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-      onNavigateToImageViewer = onNavigateToImageViewer,
-      navigateToDeflect = navigateToDeflect,
-      appPackageId = appPackageId,
-      imageLoader = imageLoader,
-      openAppSettings = openAppSettings,
-      modifier = Modifier.onSizeChanged { size ->
-        onResponseHeightChanged(size)
-      }
+        stepItem = stepItem,
+        freeText = freeText,
+        isCurrentStep = isCurrentStep,
+        currentContinueButtonLoading = currentContinueButtonLoading,
+        currentSkipButtonLoading = currentSkipButtonLoading,
+        onEvent = onEvent,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        navigateToDeflect = navigateToDeflect,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader,
+        openAppSettings = openAppSettings,
+        modifier = Modifier.onSizeChanged { size ->
+            onResponseHeightChanged(size)
+        },
     )
   } else if (isAnimationInProcess) {
     AnimatedVisibility(
@@ -676,9 +689,11 @@ private fun StepTopContent(
       )
     }
 
-    AnimatedVisibility(stepItem.stepContent is StepContent.Summary,
-      enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
-      exit = ExitTransition.None) {
+    AnimatedVisibility(
+        stepItem.stepContent is StepContent.Summary,
+        enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
+        exit = ExitTransition.None,
+    ) {
       Column {
         stepItemText?.let {
           Spacer(Modifier.height(16.dp))
@@ -793,7 +808,7 @@ private fun StepBottomContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     when (stepItem.stepContent) {
