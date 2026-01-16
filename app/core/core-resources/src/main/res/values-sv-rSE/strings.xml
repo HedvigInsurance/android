@@ -10,6 +10,7 @@
   </plurals>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
+  <string name="A11Y_SCROLL_DOWN">Skrolla längst ner på sidan</string>
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
@@ -184,7 +185,33 @@
   <string name="CLAIMS_USE_AUDIO_RECORDING">Gör röstinspelning</string>
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
+  <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
+  <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Ändra svar</string>
+  <string name="CLAIM_CHAT_EDIT_EXPLANATION">Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.</string>
+  <string name="CLAIM_CHAT_EDIT_TITLE">Tidigare svar kommer att rensas</string>
+  <string name="CLAIM_CHAT_ERROR_MESSAGE">Dubbelkolla att du fyllt i alla obligatoriska fält</string>
+  <string name="CLAIM_CHAT_FILE_TITLE">Uppladdade filer</string>
+  <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Ladda upp filer</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Värdet får vara högst %d</string>
+  <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Värdet måste vara minst %d</string>
+  <string name="CLAIM_CHAT_FORM_REQUIRED_FIELD">Fält är obligatoriskt</string>
+  <string name="CLAIM_CHAT_FORM_TEXT_MAX_CHAR">Värdet får vara högst %d tecken</string>
+  <string name="CLAIM_CHAT_FORM_TEXT_MIN_CHAR">Värdet måste vara minst %d tecken</string>
+  <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Textbeskrivning</string>
+  <string name="CLAIM_CHAT_OTHER_TITLE">Övrig information</string>
+  <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Vänligen ange telefonnummer ifall vi behöver kontakta dig</string>
+  <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig</string>
+  <string name="CLAIM_CHAT_RECORDING_TITLE">Inspelning</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
+  <string name="CLAIM_CHAT_SKIPPED_STEP">Överhoppad</string>
+  <string name="CLAIM_CHAT_SKIP_STEP">Hoppa över</string>
+  <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in ditt skadeärende</string>
+  <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
+  <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Ditt ärende har skickats in</string>
+  <string name="CLAIM_CHAT_TITLE">Skadeanmälan</string>
+  <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
+  <string name="CLAIM_CHAT_USE_AUDIO">Starta röstinspelning</string>
+  <string name="CLAIM_CHAT_USE_TEXT_INPUT">Beskriv med text</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>
@@ -247,7 +274,7 @@
   <string name="DELETE_ACCOUNT.DELETE_ACCOUNT_DESCRIPTION">Som försäkringsbolag är Hedvig skyldig att spara försäkringsavtalet och relaterad information så länge det är möjligt att göra anspråk på försäkringsersättning. Denna period kan variera beroende på vilken typ av försäkring det gäller men är minst 10 år efter försäkringens utgång baserat på preskriptionstider.\n\nOm du vill ta bort den information som vi enligt lag inte måste lagra, gör du det genom knappen nedan.\n\n[Här](https://www.hedvig.com/se/hedvig/personuppgifter) kan du läsa mer om hur dina personuppgifter hanteras hos Hedvig.</string>
   <string name="DELETE_ACCOUNT.DELETE_ACCOUNT_TITLE">Viktig information</string>
   <string name="DELETE_ACCOUNT.PROCESSED_DESCRIPTION">Du kommer få ett bekräftelsemail från oss inom 30 dagar som bekräftar att ditt konto har raderats</string>
-  <string name="DELETE_ACCOUNT.PROCESSED_TITLE">Ditt konto kommer att raderas</string>
+  <string name="DELETE_ACCOUNT.PROCESSED_TITLE">Vi kommer att radera den information som vi enligt lag inte måste lagra</string>
   <string name="DELETE_ACCOUNT.YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION">Eftersom vi använder vår app för vår skadehantering rekommenderar vi att du håller ditt konto aktivt tills din skadeanmälan är klar.</string>
   <string name="DELETE_ACCOUNT.YOU_HAVE_ACTIVE_CLAIM_TITLE">Du har en aktiv skadeanmälan</string>
   <string name="DELETE_ACCOUNT.YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION">Då du har en aktiv försäkring hos oss kan vi inte radera ditt konto. Om du vill avsluta din försäkring kan du göra detta [här](https://link.hedvig.com/terminate-contract).</string>
@@ -555,7 +582,7 @@
   <string name="REFERRAL_ADDCOUPON_INPUTPLACEHOLDER">Rabattkod</string>
   <string name="REFERRAL_PENDING_STATUS_LABEL">Avvaktar...</string>
   <string name="REFERRAL_SMS_MESSAGE">Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$s rabatt på månadskostnaden. Följ länken: %2$s</string>
-  <string name="REFERRAL_TERMINATED_STATUS_LABEL">Avbruten</string>
+  <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inaktiv</string>
   <string name="REMOVE_CONFIRMATION_BUTTON">Ja, radera</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Spara och fortsätt</string>
   <string name="SEARCH_NOTHING_FOUND">Inga träffar på din sökning</string>
@@ -574,6 +601,7 @@
   <string name="SETTINGS_TITLE">Inställningar</string>
   <string name="SINGLE_ITEM_INFO_BRAND">Märke</string>
   <string name="SUBMIT_CLAIM__PURCHASE_PRICE_TITLE">Fyll i ditt inköpspris</string>
+  <string name="SUBMIT_CLAIM_CAR_BUTTON_TITLE">Fortsätt</string>
   <string name="SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON">Anmäl skada</string>
   <string name="SUBMIT_CLAIM_CAR_REPORT_CLAIM_QA_TITLE">Questions and answers</string>
   <string name="SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT">Vi vet att det kan vara jobbigt med en skada och vi ska göra allt vi kan för att processen skall gå så snabbt och smidigt som möjligt för dig. \n\nJu mer uppgifter du har möjlighet att ge desto snabbare kan vi hjälpa till. När vi fått alla uppgifterna kommer vi att kontakta dig via mail. \n\nFör det här ärendet kan du inte kontakta oss i appen.  Efter att skadan är inskickad kommer all kommunikation ske via mail.</string>
@@ -604,6 +632,7 @@
   <string name="SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL">Vi täcker kostnader som uppstår om du blir akut sjuk, skadar dig eller får akuta tandskador i utlandet. Behöver du akut vård utomlands ska du kontakta Hedvig Global Assistance (SOS International).</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE">Vad din försäkring täcker</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_REBOOK_FLIGHT_LABEL"></string>
+  <string name="SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE">Se våra partners</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL">Vi samarbetar med många olika verkstäder över hela landet. Du kan enkelt boka din reparation online hos någon av våra partners online. Om du hellre vill ringa din verkstad och boka en tid behöver du uppge att du har bilförsäkring hos Hedvig och i vissa fall även ange bolagskoden ”02301”.</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL">Du kan enkelt boka en reparation hos Ryds Bilglas eller Carglass online. De finns på många orter runtom i landet.\n\nMen du kan självklart välja en annan verkstad om det passar dig bättre.</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_INFO_BUTTON_TEXT">Vi samarbetar med både Ryds Bilglas och Carglass för att du ska kunna få hjälp med din skada så snabbt som möjligt.</string>
@@ -638,6 +667,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A1">Du kan få hjälp med att bärga bilen om den skadats eller drabbats av ett driftstopp, som till exempel motorstopp eller punktering.</string>
   <string name="SUBMIT_CLAIM_TOWING_A2">Så länge skadan täcks av försäkringsvillkoren så betalar du endast självrisken på 1750 kr direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">Du får såklart använda den bärgningstjänst som passar dig bäst. Men förloppet blir oftast snabbare och enklare om du vänder dig direkt till Assistancekåren.</string>
+  <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Läs mer</string>
   <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till 010–45 99 222. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">Vi samarbetar med Assistancekåren för att du ska kunna få hjälp så snabbt som möjligt.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">Du behöver kontakta Assistancekåren direkt för att få hjälp med din bärgning</string>
@@ -819,7 +849,9 @@
   <string name="TOAST.NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST.READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
+  <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>
