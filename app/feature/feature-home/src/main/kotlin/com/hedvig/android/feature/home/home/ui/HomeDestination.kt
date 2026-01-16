@@ -103,6 +103,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
@@ -169,7 +170,7 @@ internal fun HomeDestination(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onStartClaim: () -> Unit,
+  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
@@ -190,7 +191,7 @@ internal fun HomeDestination(
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    onStartClaim = onStartClaim,
+    navigateToOldClaimFlow = navigateToOldClaimFlow,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
@@ -217,7 +218,7 @@ private fun HomeScreen(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onStartClaim: () -> Unit,
+  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -247,7 +248,11 @@ private fun HomeScreen(
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
-    onStartClaimClick = navigateToClaimChat,
+    navigateToOldClaimFlow = navigateToOldClaimFlow,
+    navigateToClaimChat = navigateToClaimChat,
+    navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
+    isExperimentalClaimChatEnabled = (uiState as? Success)?.isExperimentalClaimChatEnabled ?: false,
+    isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -283,7 +288,7 @@ private fun HomeScreen(
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToHelpCenter = navigateToHelpCenter,
-            onStartClaimClicked = onStartClaim,
+            openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
@@ -299,17 +304,6 @@ private fun HomeScreen(
       TopAppBarLayoutForActions {
         val currentState = uiState as? Success
         if (currentState != null) {
-          if (currentState.isExperimentalClaimChatEnabled) {
-            ToolbarClaimChatIcon(
-              onClick = {
-                startClaimBottomSheetState.show(Unit)
-              },
-            )
-            ToolbarClaimChatIcon(
-              onClick = navigateToClaimChatInDevMode,
-              isDev = true,
-            )
-          }
           val actionsList = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
@@ -329,10 +323,9 @@ private fun HomeScreen(
                       action.crossSells,
                     )
                   },
-                  modifier = Modifier
-                    .notificationCircle(
-                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
-                    ),
+                  modifier = Modifier.notificationCircle(
+                    action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                  ),
                 )
               }
 
@@ -349,11 +342,9 @@ private fun HomeScreen(
       if ((uiState as? Success)?.chatAction != null) {
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
         val shouldShowNewMessageTooltip by produceState(false) {
-          snapshotFlow { updatedHasUnseenChatMessages }
-            .drop(1)
-            .collectLatest {
-              value = it
-            }
+          snapshotFlow { updatedHasUnseenChatMessages }.drop(1).collectLatest {
+            value = it
+          }
         }
         if (shouldShowNewMessageTooltip) {
           HedvigTooltip(
@@ -388,11 +379,15 @@ private fun HomeScreen(
 @Composable
 private fun StartClaimBottomSheet(
   state: HedvigBottomSheetState<Unit>,
-  onStartClaimClick: () -> Unit,
+  navigateToOldClaimFlow: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
+  isExperimentalClaimChatEnabled: Boolean,
+  isStagingEnvironment: Boolean,
 ) {
   HedvigBottomSheet(
     hedvigBottomSheetState = state,
-    content = { _ ->
+    content = {
       var isChecked by remember { mutableStateOf(false) }
       Column {
         Spacer(Modifier.height(16.dp))
@@ -404,24 +399,68 @@ private fun StartClaimBottomSheet(
         )
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          text =  stringResource(Res.string.general_continue_button),
+          text = stringResource(Res.string.general_continue_button),
           enabled = isChecked,
           onClick = dropUnlessResumed {
             state.dismiss {
-              onStartClaimClick()
+              if (isExperimentalClaimChatEnabled) {
+                navigateToClaimChat()
+              } else {
+                navigateToOldClaimFlow()
+              }
             }
           },
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
+        if (isStagingEnvironment) {
+          Spacer(Modifier.height(16.dp))
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            HedvigButton(
+              text = if (isExperimentalClaimChatEnabled) {
+                "Old claim flow"
+              } else {
+                "New claim chat"
+              },
+              enabled = true,
+              buttonStyle = Secondary,
+              buttonSize = ButtonDefaults.ButtonSize.Small,
+              onClick = dropUnlessResumed {
+                state.dismiss {
+                  if (isExperimentalClaimChatEnabled) {
+                    navigateToOldClaimFlow()
+                  } else {
+                    navigateToClaimChat()
+                  }
+                }
+              },
+              modifier = Modifier.weight(1f),
+            )
+            HedvigButton(
+              text = "Claim Chat (Dev)",
+              enabled = true,
+              buttonStyle = Secondary,
+              buttonSize = ButtonDefaults.ButtonSize.Small,
+              onClick = dropUnlessResumed {
+                state.dismiss {
+                  navigateToClaimChatInDevMode()
+                }
+              },
+              modifier = Modifier.weight(1f),
+            )
+          }
+        }
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          text =  stringResource(Res.string.general_cancel_button),
+          text = stringResource(Res.string.general_cancel_button),
           enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          buttonStyle = Secondary,
           onClick = {
             state.dismiss()
           },
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(8.dp))
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -528,7 +567,7 @@ private fun HomeScreenSuccess(
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  onStartClaimClicked: () -> Unit,
+  openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -621,7 +660,7 @@ private fun HomeScreenSuccess(
         startClaimButton = {
           HedvigButton(
             text = stringResource(Res.string.home_tab_claim_button_text),
-            onClick = onStartClaimClicked,
+            onClick = openClaimFlowSheet,
             enabled = true,
             modifier = Modifier
               .fillMaxWidth()
@@ -896,6 +935,7 @@ private fun PreviewHomeScreen(
             eligibleInsurancesIds = nonEmptyListOf("id"),
           ),
           isExperimentalClaimChatEnabled = true,
+          isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -904,7 +944,7 @@ private fun PreviewHomeScreen(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        onStartClaim = {},
+        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
@@ -935,7 +975,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        onStartClaim = {},
+        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
@@ -979,6 +1019,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           chatAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = true,
+          isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -987,7 +1028,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        onStartClaim = {},
+        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},

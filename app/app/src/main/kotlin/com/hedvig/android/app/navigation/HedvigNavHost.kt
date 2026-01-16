@@ -37,7 +37,6 @@ import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddOrRemove
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
@@ -179,7 +178,7 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = { backStackEntry ->
         navigateToNewConversation(backStackEntry)
       },
-      onStartClaim = { backStackEntry ->
+      navigateToOldClaimFlow = { backStackEntry ->
         with(navigator) { backStackEntry.navigate(ClaimsFlowGraphDestination) }
       },
       navigateToClaimDetails = { backStackEntry, claimId ->

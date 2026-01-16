@@ -20,7 +20,7 @@ fun NavGraphBuilder.homeGraph(
   navigator: Navigator,
   onNavigateToInbox: (NavBackStackEntry) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
-  onStartClaim: (NavBackStackEntry) -> Unit,
+  navigateToOldClaimFlow: (NavBackStackEntry) -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: (NavBackStackEntry) -> Unit,
@@ -51,7 +51,7 @@ fun NavGraphBuilder.homeGraph(
           navigateToClaimDetails(backStackEntry, claimId)
         },
         navigateToConnectPayment = navigateToConnectPayment,
-        onStartClaim = { onStartClaim(backStackEntry) },
+        navigateToOldClaimFlow = { navigateToOldClaimFlow(backStackEntry) },
         navigateToMissingInfo = { contractId -> navigateToMissingInfo(backStackEntry, contractId) },
         navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
         openUrl = openUrl,

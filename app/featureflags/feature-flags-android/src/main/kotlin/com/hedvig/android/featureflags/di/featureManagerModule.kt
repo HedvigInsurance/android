@@ -23,7 +23,6 @@ val featureManagerModule = module {
   single<FeatureManager> {
     UnleashFeatureFlagProvider(
       get<HedvigUnleashClient>(),
-      get<HedvigBuildConstants>().isProduction,
     )
   }
 }
