@@ -349,7 +349,10 @@ private fun ClaimChatScreenContent(
           }
         },
       )
-      HorizontalDivider()
+      Box(Modifier.fillMaxWidth()) {
+        HorizontalDivider()
+//todo
+      }
       ClaimChatScrollableContent(
         uiState = uiState,
         lazyListState = lazyListState,
