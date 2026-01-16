@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.home.home.ui
 
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -14,6 +15,7 @@ internal class HomeViewModel(
   crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   applicationScope: CoroutineScope,
   featureManager: FeatureManager,
+  hedvigBuildConstants: HedvigBuildConstants,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(
@@ -22,5 +24,6 @@ internal class HomeViewModel(
       crossSellHomeNotificationServiceProvider,
       featureManager,
       applicationScope,
+      hedvigBuildConstants.isProduction,
     ),
   )

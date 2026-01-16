@@ -57,7 +57,7 @@ internal data class JsonSerializableNavType<T : Any>(
   }
 
   override fun parseValue(value: String): T {
-    return urlDecode(value).decodedFromString()
+    return value.decodedFromString()
   }
 
   private inline fun T.encodedAsString(): String = Json.encodeToString(serializer, this)
@@ -93,7 +93,7 @@ internal data class JsonSerializableNullableNavType<T : Any?>(
 
   override fun parseValue(value: String): T? {
     if (value == "null") return null
-    return urlDecode(value).decodedFromString()
+    return value.decodedFromString()
   }
 
   private inline fun T.encodedAsString(): String = Json.encodeToString(serializer, this)

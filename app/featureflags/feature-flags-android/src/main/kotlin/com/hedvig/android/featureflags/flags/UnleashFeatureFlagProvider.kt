@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.map
 
 internal class UnleashFeatureFlagProvider(
   private val hedvigUnleashClient: HedvigUnleashClient,
-  private val isProduction: Boolean,
 ) : FeatureManager {
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
     return hedvigUnleashClient.featureUpdatedFlow
@@ -28,7 +27,7 @@ internal class UnleashFeatureFlagProvider(
           )
           Feature.DISABLE_REDEEM_CAMPAIGN -> hedvigUnleashClient.client.isEnabled("disable_redeem_campaign", false)
           Feature.ENABLE_CLAIM_HISTORY -> hedvigUnleashClient.client.isEnabled("enable_claim_history", false)
-          Feature.ENABLE_CLAIM_CHAT -> !isProduction
+          Feature.ENABLE_NEW_CLAIMS_FLOW -> hedvigUnleashClient.client.isEnabled("enable_new_claims_flow", false)
         }
       }.distinctUntilChanged()
   }

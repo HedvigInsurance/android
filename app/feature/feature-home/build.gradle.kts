@@ -34,6 +34,7 @@ dependencies {
   implementation(projects.claimStatus)
   implementation(projects.composePagerIndicator)
   implementation(projects.composeUi)
+  implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.coreMarkdown)
