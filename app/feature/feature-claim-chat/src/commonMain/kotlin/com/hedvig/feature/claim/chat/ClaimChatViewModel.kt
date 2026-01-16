@@ -131,6 +131,7 @@ internal sealed interface ClaimChatUiState {
     val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
     val stepsWithShownAnimations: List<StepId>,
+    val progress: Float?,
   ) : ClaimChatUiState
 }
 
@@ -206,6 +207,7 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
+    var progress by remember { mutableStateOf<Float?>(0f) }
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -222,9 +224,12 @@ internal class ClaimChatPresenter(
                 failedToStart = false
                 claimIntentId = claimIntent.id
                 steps.clear()
+                progress = claimIntent.progress
                 when (val next = claimIntent.next) {
                   is ClaimIntent.Next.Outcome -> outcome = next.claimIntentOutcome
-                  is ClaimIntent.Next.Step -> steps.add(next.claimIntentStep)
+                  is ClaimIntent.Next.Step -> {
+                    steps.add(next.claimIntentStep)
+                  }
                 }
               }
             },
@@ -234,7 +239,9 @@ internal class ClaimChatPresenter(
 
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
-      handleNext(steps, setOutcome, claimIntent.next)
+      handleNext(steps, setOutcome, claimIntent.next) {
+        progress = claimIntent.progress
+      }
     }
 
     CollectEvents { event ->
@@ -265,7 +272,9 @@ internal class ClaimChatPresenter(
                     return@launch
                   }
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, claimIntent.next)
+                  handleNext(steps, setOutcome, claimIntent.next) {
+                    progress = claimIntent.progress
+                  }
                 },
               )
           }
@@ -297,7 +306,9 @@ internal class ClaimChatPresenter(
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, claimIntent.next)
+                      handleNext(steps, setOutcome, claimIntent.next) {
+                        progress = claimIntent.progress
+                      }
                     },
                   )
               }
@@ -317,7 +328,9 @@ internal class ClaimChatPresenter(
                     },
                     ifRight = { claimIntent ->
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, claimIntent.next)
+                      handleNext(steps, setOutcome, claimIntent.next) {
+                        progress = claimIntent.progress
+                      }
                     },
                   )
               }
@@ -453,7 +466,9 @@ internal class ClaimChatPresenter(
                   },
                   ifRight = { claimIntent ->
                     currentContinueButtonLoading = false
-                    handleNext(steps, setOutcome, claimIntent.next)
+                    handleNext(steps, setOutcome, claimIntent.next) {
+                      progress = claimIntent.progress
+                    }
                   },
                 )
             }
@@ -503,7 +518,9 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
-                  handleNext(steps, setOutcome, claimIntent.next)
+                  handleNext(steps, setOutcome, claimIntent.next) {
+                    progress = claimIntent.progress
+                  }
                 },
               )
           }
@@ -549,7 +566,9 @@ internal class ClaimChatPresenter(
                 },
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, claimIntent.next)
+                  handleNext(steps, setOutcome, claimIntent.next) {
+                    progress = claimIntent.progress
+                  }
                 },
               )
           }
@@ -581,7 +600,9 @@ internal class ClaimChatPresenter(
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
-                    handleNext(steps, setOutcome, claimIntent.next)
+                    handleNext(steps, setOutcome, claimIntent.next) {
+                      progress = claimIntent.progress
+                    }
                   },
                 )
             }
@@ -665,7 +686,9 @@ internal class ClaimChatPresenter(
                   currentContinueButtonLoading = false
                   handleNext(
                     steps, setOutcome, claimIntent.next,
-                  )
+                  ) {
+                    progress = claimIntent.progress
+                  }
                 },
               )
           }
@@ -714,6 +737,7 @@ internal class ClaimChatPresenter(
         currentSkipButtonLoading = currentSkipButtonLoading,
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
         stepsWithShownAnimations = stepsWithShownAnimations,
+        progress = progress,
       )
 
       else -> error("")
@@ -786,7 +810,9 @@ private fun handleNext(
   steps: SnapshotStateList<ClaimIntentStep>,
   setOutcome: (outcome: ClaimIntentOutcome) -> Unit,
   next: ClaimIntent.Next,
+  setProgress: () -> Unit,
 ) {
+  setProgress()
   when (next) {
     is ClaimIntent.Next.Outcome -> {
       setOutcome(next.claimIntentOutcome)

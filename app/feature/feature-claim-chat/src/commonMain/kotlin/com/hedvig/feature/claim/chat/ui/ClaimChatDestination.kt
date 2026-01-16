@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
@@ -97,7 +96,6 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
@@ -349,9 +347,26 @@ private fun ClaimChatScreenContent(
           }
         },
       )
-      Box(Modifier.fillMaxWidth()) {
+      Box(
+        Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.CenterStart,
+      ) {
         HorizontalDivider()
-//todo
+        uiState.progress?.let {
+          val animatedProgress = animateFloatAsState(
+            targetValue = uiState.progress,
+            animationSpec = tween(durationMillis = 1000),
+          )
+          Box(
+            modifier = Modifier
+              .height(3.dp)
+              .fillMaxWidth(animatedProgress.value)
+              .background(
+                HedvigTheme.colorScheme.fillPrimary,
+                HedvigTheme.shapes.cornerLargeEnd,
+              ),
+          )
+        }
       }
       ClaimChatScrollableContent(
         uiState = uiState,
@@ -600,21 +615,21 @@ private fun ColumnScope.StepContentSection(
 
   if (showBottomContent && !isAnimationInProcess) {
     StepBottomContent(
-        stepItem = stepItem,
-        freeText = freeText,
-        isCurrentStep = isCurrentStep,
-        currentContinueButtonLoading = currentContinueButtonLoading,
-        currentSkipButtonLoading = currentSkipButtonLoading,
-        onEvent = onEvent,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        navigateToDeflect = navigateToDeflect,
-        appPackageId = appPackageId,
-        imageLoader = imageLoader,
-        openAppSettings = openAppSettings,
-        modifier = Modifier.onSizeChanged { size ->
-            onResponseHeightChanged(size)
-        },
+      stepItem = stepItem,
+      freeText = freeText,
+      isCurrentStep = isCurrentStep,
+      currentContinueButtonLoading = currentContinueButtonLoading,
+      currentSkipButtonLoading = currentSkipButtonLoading,
+      onEvent = onEvent,
+      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      navigateToDeflect = navigateToDeflect,
+      appPackageId = appPackageId,
+      imageLoader = imageLoader,
+      openAppSettings = openAppSettings,
+      modifier = Modifier.onSizeChanged { size ->
+        onResponseHeightChanged(size)
+      },
     )
   } else if (isAnimationInProcess) {
     AnimatedVisibility(
@@ -694,9 +709,9 @@ private fun StepTopContent(
     }
 
     AnimatedVisibility(
-        stepItem.stepContent is StepContent.Summary,
-        enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
-        exit = ExitTransition.None,
+      stepItem.stepContent is StepContent.Summary,
+      enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
+      exit = ExitTransition.None,
     ) {
       Column {
         stepItemText?.let {
