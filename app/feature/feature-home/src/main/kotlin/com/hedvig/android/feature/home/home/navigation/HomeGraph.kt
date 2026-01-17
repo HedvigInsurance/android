@@ -2,7 +2,7 @@ package com.hedvig.android.feature.home.home.navigation
 
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
@@ -20,7 +20,7 @@ fun NavGraphBuilder.homeGraph(
   navigator: Navigator,
   onNavigateToInbox: (NavBackStackEntry) -> Unit,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
-  onStartClaim: (NavBackStackEntry) -> Unit,
+  navigateToOldClaimFlow: (NavBackStackEntry) -> Unit,
   navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: (NavBackStackEntry) -> Unit,
@@ -51,7 +51,7 @@ fun NavGraphBuilder.homeGraph(
           navigateToClaimDetails(backStackEntry, claimId)
         },
         navigateToConnectPayment = navigateToConnectPayment,
-        onStartClaim = { onStartClaim(backStackEntry) },
+        navigateToOldClaimFlow = { navigateToOldClaimFlow(backStackEntry) },
         navigateToMissingInfo = { contractId -> navigateToMissingInfo(backStackEntry, contractId) },
         navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
         openUrl = openUrl,

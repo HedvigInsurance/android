@@ -30,8 +30,8 @@ sealed interface HedvigNotificationChannel {
       setupNotificationChannel(
         context,
         channelId,
-        context.resources.getString(hedvig.resources.R.string.PAYMENTS__CAMPAIGNS),
-        context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
+        context.resources.getString(R.string.PAYMENTS__CAMPAIGNS),
+        context.resources.getString(R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
       )
     }
 
@@ -55,8 +55,8 @@ sealed interface HedvigNotificationChannel {
       setupNotificationChannel(
         context,
         channelId,
-        context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
-        context.resources.getString(hedvig.resources.R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION),
+        context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
+        context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION),
       )
     }
 

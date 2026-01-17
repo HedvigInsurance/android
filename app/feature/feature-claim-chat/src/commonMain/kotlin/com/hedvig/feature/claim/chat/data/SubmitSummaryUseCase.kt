@@ -1,27 +1,30 @@
 package com.hedvig.feature.claim.chat.data
 
+import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSubmitSummaryMutation
 
 internal class SubmitSummaryUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
-  suspend fun invoke(stepId: String) = either {
-    val data = apolloClient
-      .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId))
-      .safeExecute()
-      .mapLeft(::ErrorMessage)
-      .bind()
-      .claimIntentSubmitSummary
-
-    when {
-      data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> ClaimIntent(data.intent.id, data.intent.currentStep.toClaimIntentStep())
-      else -> raise(ErrorMessage("No data"))
+  suspend fun invoke(stepId: StepId): Either<ErrorMessage, ClaimIntent> {
+    return either {
+      apolloClient
+        .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId.value))
+        .safeExecute()
+        .mapLeft {
+          logcat { "SubmitSummaryUseCase error: $it" }
+          ErrorMessage()
+        }
+        .bind()
+        .claimIntentSubmitSummary
+        .toClaimIntent(languageService.getLocale())
     }
   }
 }

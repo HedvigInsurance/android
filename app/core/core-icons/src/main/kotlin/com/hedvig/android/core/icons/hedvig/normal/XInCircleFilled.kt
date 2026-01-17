@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.CircleWithXFilled: ImageVector // todo get right filled icon frmo figma when it exists
+val HedvigIcons.CircleWithXFilled: ImageVector // todo get right filled icon frmo figma when it exists
   get() {
     if (_circleWithXFilled != null) {
       return _circleWithXFilled!!

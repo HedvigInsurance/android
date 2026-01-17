@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.ArrowNorthEast: ImageVector
+val HedvigIcons.ArrowNorthEast: ImageVector
   get() {
     if (_arrowNorthEast != null) {
       return _arrowNorthEast!!

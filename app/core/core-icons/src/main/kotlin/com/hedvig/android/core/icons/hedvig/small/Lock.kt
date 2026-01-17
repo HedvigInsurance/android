@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Lock: ImageVector
+val HedvigIcons.Lock: ImageVector
   get() {
     if (_lock != null) {
       return _lock!!

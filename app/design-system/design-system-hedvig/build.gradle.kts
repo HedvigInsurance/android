@@ -1,5 +1,10 @@
+import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
+
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
@@ -7,30 +12,56 @@ hedvig {
   compose()
 }
 
-dependencies {
-  api(libs.androidx.compose.foundation)
-  api(libs.coil.coil)
-  api(libs.compose.richtext)
-  api(libs.compose.richtextCommonmark)
-  api(projects.designSystemApi)
-  api(projects.placeholder)
+kotlin {
+  sourceSets {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    applyDefaultHierarchyTemplate {
+      common {
+        group("jvmAndAndroid") {
+          withAndroidLibraryTarget()
+          withJvm()
+        }
+      }
+    }
+    commonMain.dependencies {
+      api(libs.coil.coil)
+      api(libs.coil.compose)
+      api(libs.coil.network.ktor)
+      api(projects.designSystemApi)
+      api(projects.placeholder)
 
-  implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.compose.materialRipple)
-  implementation(libs.androidx.compose.uiGraphics)
-  implementation(libs.androidx.graphicsShapes)
-  implementation(libs.androidx.other.core)
-  implementation(libs.coil.compose)
-  implementation(libs.modal.sheet)
-  implementation(projects.composeUi)
-  implementation(projects.coreResources)
-  implementation(projects.coreUiData)
-  implementation(projects.designSystemInternals)
-  implementation(projects.navigationCore)
-  implementation(libs.media3.exoplayer)
-  implementation(libs.media3.exoplayer.dash)
-  implementation(libs.media3.ui)
-  implementation(libs.kotlinx.datetime)
+      implementation(libs.jetbrains.compose.foundation)
+      implementation(libs.jetbrains.compose.foundation.layout)
+      implementation(libs.jetbrains.compose.material.ripple)
+      implementation(libs.jetbrains.compose.material3)
+      implementation(libs.jetbrains.compose.material3.windowSizeClass)
+      implementation(libs.jetbrains.compose.runtime)
+      implementation(libs.jetbrains.compose.ui)
+      implementation(libs.jetbrains.compose.ui.backhandler)
+      implementation(libs.jetbrains.compose.ui.graphics)
+      implementation(libs.jetbrains.compose.ui.tooling.preview)
+      implementation(libs.jetbrains.graphics.shapes)
+      implementation(libs.jetbrains.lifecycle.runtime)
+      implementation(libs.jetbrains.lifecycle.runtime.compose)
+      implementation(libs.jetbrains.navigationevent.compose)
+      implementation(libs.kotlinx.datetime)
+      implementation(projects.composeUi)
+      implementation(projects.coreResources)
+      implementation(projects.coreUiData)
+      implementation(projects.designSystemInternals)
+      implementation(projects.navigationCore)
+    }
+    val jvmAndAndroidMain by getting {
+      dependencies {
+        implementation(libs.compose.richtext)
+        implementation(libs.compose.richtextCommonmark)
+      }
+    }
+    androidMain.dependencies {
+      implementation(libs.androidx.other.core)
+      implementation(libs.media3.exoplayer)
+      implementation(libs.media3.exoplayer.dash)
+      implementation(libs.media3.ui)
+    }
+  }
 }

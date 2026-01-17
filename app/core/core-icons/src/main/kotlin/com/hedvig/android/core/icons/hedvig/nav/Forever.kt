@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Forever: ImageVector
+val HedvigIcons.Forever: ImageVector
   get() {
     if (_forever != null) {
       return _forever!!

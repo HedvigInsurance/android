@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -35,7 +34,15 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_FLOW_CANCEL_INFO_TEXT
+import hedvig.resources.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE
+import hedvig.resources.TERMINATION_FLOW_NOT_ELIGIBLE
+import hedvig.resources.TERMINATION_FLOW_NOT_ELIGIBLE_BUTTON
+import hedvig.resources.TERMINATION_FLOW_NOT_ELIGIBLE_TITLE
+import hedvig.resources.general_continue_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChooseInsuranceToTerminateDestination(
@@ -82,9 +89,9 @@ private fun ChooseInsuranceToTerminateScreen(
         HedvigErrorSection(
           onButtonClick = openChat,
           modifier = Modifier.weight(1f),
-          title = stringResource(id = R.string.TERMINATION_FLOW_NOT_ELIGIBLE_TITLE),
-          subTitle = stringResource(id = R.string.TERMINATION_FLOW_NOT_ELIGIBLE),
-          buttonText = stringResource(id = R.string.TERMINATION_FLOW_NOT_ELIGIBLE_BUTTON),
+          title = stringResource(Res.string.TERMINATION_FLOW_NOT_ELIGIBLE_TITLE),
+          subTitle = stringResource(Res.string.TERMINATION_FLOW_NOT_ELIGIBLE),
+          buttonText = stringResource(Res.string.TERMINATION_FLOW_NOT_ELIGIBLE_BUTTON),
         )
       }
     }
@@ -103,11 +110,11 @@ private fun ChooseInsuranceToTerminateScreen(
       TerminationScaffold(
         navigateUp = navigateUp,
         closeTerminationFlow = closeTerminationFlow,
-        textForInfoIcon = stringResource(id = R.string.TERMINATION_FLOW_CANCEL_INFO_TEXT),
+        textForInfoIcon = stringResource(Res.string.TERMINATION_FLOW_CANCEL_INFO_TEXT),
       ) { title ->
         FlowHeading(
           title,
-          stringResource(id = R.string.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE),
+          stringResource(Res.string.TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
@@ -123,7 +130,7 @@ private fun ChooseInsuranceToTerminateScreen(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .wrapContentWidth(),
-              text = stringResource(R.string.something_went_wrong),
+              text = stringResource(Res.string.something_went_wrong),
               iconStyle = ERROR,
               description = null,
             )
@@ -147,7 +154,7 @@ private fun ChooseInsuranceToTerminateScreen(
         Spacer(Modifier.height(16.dp))
 
         HedvigButton(
-          stringResource(id = R.string.general_continue_button),
+          stringResource(Res.string.general_continue_button),
           enabled = uiState.selectedInsurance != null,
           modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
           onClick = {

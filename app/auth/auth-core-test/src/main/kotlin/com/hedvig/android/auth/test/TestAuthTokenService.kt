@@ -23,9 +23,9 @@ class TestAuthTokenService : AuthTokenService {
   override val authStatus: StateFlow<AuthStatus?>
     get() = _authStatus.asStateFlow()
 
-  override suspend fun getTokens(): AuthTokens? = error("Not implemented")
+  override suspend fun getTokens(): AuthTokens = error("Not implemented")
 
-  override suspend fun refreshAndGetAccessToken(): AccessToken? {
+  override suspend fun refreshAndGetAccessToken(): AccessToken {
     error("Not implemented")
   }
 

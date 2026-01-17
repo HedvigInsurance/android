@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
@@ -30,7 +29,13 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.ui.claimflow.ClaimFlowScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON
+import hedvig.resources.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT
+import hedvig.resources.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE
+import hedvig.resources.SUBMIT_CLAIM_CAR_TITLE
+import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectCarOtherDamageDestination(
@@ -66,16 +71,16 @@ private fun DeflectCarOtherDamageScreen(
     windowSizeClass = windowSizeClass,
     navigateUp = navigateUp,
     closeClaimFlow = closeClaimFlow,
-    topAppBarText = stringResource(id = R.string.SUBMIT_CLAIM_CAR_TITLE),
+    topAppBarText = stringResource(Res.string.SUBMIT_CLAIM_CAR_TITLE),
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(id = R.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE),
+      text = stringResource(Res.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(id = R.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT),
+      text = stringResource(Res.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT),
       modifier = Modifier.padding(horizontal = 16.dp),
       color = HedvigTheme.colorScheme.textSecondary,
     )
@@ -86,11 +91,11 @@ private fun DeflectCarOtherDamageScreen(
       enabled = true,
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
     ) {
-      HedvigText(text = stringResource(id = R.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON))
+      HedvigText(text = stringResource(Res.string.SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON))
       Spacer(modifier = Modifier.width(8.dp))
       Icon(
         imageVector = HedvigIcons.ArrowNorthEast,
-        contentDescription = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+        contentDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
         modifier = Modifier.size(16.dp),
       )
     }

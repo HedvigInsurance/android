@@ -1,5 +1,5 @@
-mutation ClaimIntentStart($input: ClaimIntentStartInput) {
-  claimIntentStart(input: $input) {
+mutation ClaimIntentStart($developmentFlow: Boolean) {
+  claimIntentStart(input: {developmentFlow: $developmentFlow}) {
     ...ClaimIntentFragment
   }
 }

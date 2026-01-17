@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.daysUntil
@@ -51,23 +50,42 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
+import com.hedvig.android.design.system.hedvig.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
 import com.hedvig.android.feature.insurances.data.MonthlyCost
-import hedvig.resources.R
+import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
+import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
+import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
+import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_FROM
+import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
+import hedvig.resources.CONTRACT_COINSURED
+import hedvig.resources.CONTRACT_COINSURED_ADD_PERSONAL_INFO
+import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
+import hedvig.resources.CONTRACT_EDIT_INFO_LABEL
+import hedvig.resources.CONTRACT_NO_INFORMATION
+import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
+import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
+import hedvig.resources.DETAILS_TABLE_INSURANCE_PREMIUM
+import hedvig.resources.INSURANCE_DETAILS_DECOMMISSION_INFO
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS
+import hedvig.resources.insurance_details_move_button
+import hedvig.resources.insurances_tab_view_details
+import hedvig.resources.insurances_tab_your_insurance_will_be_updated
+import hedvig.resources.insurances_tab_your_insurance_will_be_updated_with_info
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toJavaLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun YourInfoTab(
@@ -125,7 +143,7 @@ internal fun YourInfoTab(
       displayItems = buildList {
         add(
           upcomingChangesInsuranceAgreement.productVariant.displayName to stringResource(
-            R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
             upcomingChangesInsuranceAgreement.basePremium.toString(),
           ),
         )
@@ -133,7 +151,7 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
                 addon.premium.toString(),
               ),
           )
@@ -148,8 +166,8 @@ internal fun YourInfoTab(
     HedvigBottomSheet(upcomingChangesBottomSheet) {
       UpcomingChangesBottomSheetContent(
         infoText = stringResource(
-          id = R.string.insurances_tab_your_insurance_will_be_updated_with_info,
-          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
+          Res.string.insurances_tab_your_insurance_will_be_updated_with_info,
+          dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom),
         ),
         sections = upcomingChangesInsuranceAgreement.displayItems,
         upcomingPriceInfo = upcomingPriceInfoForBottomSheet,
@@ -181,10 +199,10 @@ internal fun YourInfoTab(
         }
         HedvigNotificationCard(
           modifier = Modifier.padding(horizontal = 16.dp),
-          message = stringResource(R.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
+          message = stringResource(Res.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
           priority = Info,
           style = Button(
-            stringResource(R.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+            stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
             { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
           ),
         )
@@ -192,13 +210,13 @@ internal fun YourInfoTab(
         HedvigNotificationCard(
           modifier = Modifier.padding(horizontal = 16.dp),
           message = stringResource(
-            R.string.insurances_tab_your_insurance_will_be_updated,
-            dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom.toJavaLocalDate()),
+            Res.string.insurances_tab_your_insurance_will_be_updated,
+            dateTimeFormatter.format(upcomingChangesInsuranceAgreement.activeFrom),
           ),
           priority = Info,
           style = if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
             Button(
-              stringResource(id = R.string.insurances_tab_view_details),
+              stringResource(Res.string.insurances_tab_view_details),
               { upcomingChangesBottomSheet.show() },
             )
           } else {
@@ -213,7 +231,7 @@ internal fun YourInfoTab(
     if (isDecommissioned) {
       HedvigNotificationCard(
         modifier = Modifier.padding(horizontal = 16.dp),
-        message = stringResource(R.string.INSURANCE_DETAILS_DECOMMISSION_INFO),
+        message = stringResource(Res.string.INSURANCE_DETAILS_DECOMMISSION_INFO),
         priority = Info,
       )
     }
@@ -239,7 +257,7 @@ internal fun YourInfoTab(
     if (!isTerminated) {
       if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
         HedvigButton(
-          text = stringResource(R.string.CONTRACT_EDIT_INFO_LABEL),
+          text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
           enabled = true,
           onClick = { editYourInfoBottomSheet.show() },
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -251,7 +269,7 @@ internal fun YourInfoTab(
       }
       if (allowChangeAddress) {
         HedvigButton(
-          text = stringResource(R.string.insurance_details_move_button),
+          text = stringResource(Res.string.insurance_details_move_button),
           buttonStyle = Ghost,
           enabled = true,
           onClick = { onChangeAddressClick() },
@@ -288,8 +306,8 @@ internal fun CoverageRows(coverageRowItems: List<DisplayItem>, modifier: Modifie
             val formatter = rememberHedvigDateTimeFormatter()
             HedvigText(
               text = when (val item = displayItem.value) {
-                is Date -> formatter.format(item.date.toJavaLocalDate())
-                is DateTime -> formatter.format(item.localDateTime.toJavaLocalDateTime())
+                is Date -> formatter.format(item.date)
+                is DateTime -> formatter.format(item.localDateTime)
                 is Text -> item.text
               },
               color = HedvigTheme.colorScheme.textSecondary,
@@ -318,7 +336,7 @@ internal fun PriceRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(vertical = 16.dp),
       ) {
-        HedvigText(stringResource(id = R.string.DETAILS_TABLE_INSURANCE_PREMIUM))
+        HedvigText(stringResource(Res.string.DETAILS_TABLE_INSURANCE_PREMIUM))
       }
     },
     endSlot = {
@@ -329,7 +347,7 @@ internal fun PriceRow(
       ) {
         HedvigText(
           text = stringResource(
-            id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+            Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
             priceToShow.toString(),
           ),
           color = HedvigTheme.colorScheme.textSecondary,
@@ -343,7 +361,7 @@ internal fun PriceRow(
           ) {
             Icon(
               HedvigIcons.InfoFilled,
-              stringResource(R.string.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS),
+              stringResource(Res.string.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS),
               tint = HedvigTheme.colorScheme.fillSecondary,
             )
           }
@@ -371,7 +389,7 @@ internal fun CoInsuredSection(
           verticalAlignment = Alignment.CenterVertically,
           modifier = Modifier.padding(vertical = 4.dp),
         ) {
-          HedvigText(stringResource(id = R.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
+          HedvigText(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL))
         }
       },
       endSlot = {
@@ -380,10 +398,10 @@ internal fun CoInsuredSection(
           horizontalArrangement = Arrangement.End,
           modifier = Modifier.padding(vertical = 4.dp),
         ) {
-          val text = if (coInsuredList.size == 0) {
-            stringResource(id = R.string.CHANGE_ADDRESS_ONLY_YOU)
+          val text = if (coInsuredList.isEmpty()) {
+            stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
           } else {
-            stringResource(id = R.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
+            stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, coInsuredList.size)
           }
           HedvigText(
             text = text,
@@ -439,13 +457,13 @@ internal fun CoInsuredSection(
             Column {
               HedvigText(
                 text = coInsured.getDisplayName().ifBlank {
-                  stringResource(id = R.string.CONTRACT_COINSURED)
+                  stringResource(Res.string.CONTRACT_COINSURED)
                 },
               )
 
               HedvigText(
                 text = coInsured.getSsnOrBirthDate(birthDateTimeFormatter)
-                  ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
+                  ?: stringResource(Res.string.CONTRACT_NO_INFORMATION),
                 color = HedvigTheme.colorScheme.textSecondary,
               )
 
@@ -453,8 +471,8 @@ internal fun CoInsuredSection(
                 Spacer(Modifier.height(4.dp))
                 HighlightLabel(
                   labelText = stringResource(
-                    id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
-                    dateTimeFormatter.format(coInsured.activatesOn.toJavaLocalDate()),
+                    Res.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
+                    dateTimeFormatter.format(coInsured.activatesOn),
                   ),
                   size = Small,
                   color = Amber(MEDIUM),
@@ -464,8 +482,8 @@ internal fun CoInsuredSection(
                 Spacer(Modifier.height(4.dp))
                 HighlightLabel(
                   labelText = stringResource(
-                    id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
-                    dateTimeFormatter.format(coInsured.terminatesOn.toJavaLocalDate()),
+                    Res.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
+                    dateTimeFormatter.format(coInsured.terminatesOn),
                   ),
                   size = Small,
                   color = Red(LIGHT),
@@ -497,10 +515,10 @@ internal fun CoInsuredSection(
     if (hasMissingInfoAndIsNotTerminating) {
       Spacer(Modifier.height(8.dp))
       HedvigNotificationCard(
-        message = stringResource(R.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
+        message = stringResource(Res.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
         priority = Attention,
         style = Button(
-          stringResource(R.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+          stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
           onMissingInfoClick,
         ),
       )

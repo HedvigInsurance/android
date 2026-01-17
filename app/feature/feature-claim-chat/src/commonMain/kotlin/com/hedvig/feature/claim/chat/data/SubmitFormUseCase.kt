@@ -1,41 +1,54 @@
 package com.hedvig.feature.claim.chat.data
 
+import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Optional
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.feature.claim.chat.FormField
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSubmitFormMutation
 import octopus.type.ClaimIntentFormSubmitInputField
 import octopus.type.ClaimIntentSubmitFormInput
 
 internal class SubmitFormUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
-  suspend fun invoke(stepId: String, fields: List<FormField>) = either {
-    val data = apolloClient
-      .mutation(
-        ClaimIntentSubmitFormMutation(
-          ClaimIntentSubmitFormInput(
-            stepId = stepId,
-            fields = fields.map {
-              val list = Optional.presentIfNotNull(listOf(it.defaultValue ?: it.options.firstOrNull()?.second ?: ""))
-              ClaimIntentFormSubmitInputField(it.fieldId, list) // todo
-            },
+  suspend fun invoke(formData: FormSubmissionData): Either<ErrorMessage, ClaimIntent> {
+    return either {
+      apolloClient
+        .mutation(
+          ClaimIntentSubmitFormMutation(
+            ClaimIntentSubmitFormInput(
+              stepId = formData.stepId.value,
+              fields = formData.fieldsToSubmit.map { field ->
+                ClaimIntentFormSubmitInputField(
+                  fieldId = field.fieldId.value,
+                  values = field.values.filterNotNull(),
+                )
+              },
+            ),
           ),
-        ),
-      )
-      .safeExecute()
-      .mapLeft(::ErrorMessage)
-      .bind()
-      .claimIntentSubmitForm
-
-    when {
-      data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> ClaimIntent(data.intent.id, data.intent.currentStep.toClaimIntentStep())
-      else -> raise(ErrorMessage("No data"))
+        )
+        .safeExecute()
+        .mapLeft {
+          logcat { "SubmitFormUseCase error: $it" }
+          ErrorMessage()
+        }
+        .bind()
+        .claimIntentSubmitForm
+        .toClaimIntent(languageService.getLocale())
     }
   }
+}
+
+internal data class FormSubmissionData(
+  val stepId: StepId,
+  val fieldsToSubmit: List<FieldToSubmit>,
+) {
+  data class FieldToSubmit(
+    val fieldId: FieldId,
+    val values: List<String?>,
+  )
 }

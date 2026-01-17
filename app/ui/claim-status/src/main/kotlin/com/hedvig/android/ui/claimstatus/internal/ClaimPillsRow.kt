@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -29,7 +28,14 @@ import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.NotCovered
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Closed.Paid
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.PaymentAmount
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType.Unknown
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.claim_decision_not_compensated
+import hedvig.resources.claim_decision_not_covered
+import hedvig.resources.claim_decision_paid
+import hedvig.resources.claim_decision_unresponsive
+import hedvig.resources.claim_status_detail_closed
+import hedvig.resources.home_claim_card_pill_claim
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -50,36 +56,36 @@ private fun ClaimPill(type: ClaimPillType) {
   val text = when (type) {
     is ClaimPillType.Closed -> {
       when (type) {
-        GenericClosed -> stringResource(R.string.claim_status_detail_closed)
-        NotCompensated -> stringResource(R.string.claim_decision_not_compensated)
-        NotCovered -> stringResource(R.string.claim_decision_not_covered)
-        Paid -> stringResource(R.string.claim_decision_paid)
-        ClaimPillType.Closed.Unresponsive -> stringResource(R.string.claim_decision_unresponsive)
+        GenericClosed -> stringResource(Res.string.claim_status_detail_closed)
+        NotCompensated -> stringResource(Res.string.claim_decision_not_compensated)
+        NotCovered -> stringResource(Res.string.claim_decision_not_covered)
+        Paid -> stringResource(Res.string.claim_decision_paid)
+        ClaimPillType.Closed.Unresponsive -> stringResource(Res.string.claim_decision_unresponsive)
       }
     }
 
-    ClaimPillType.Claim -> stringResource(R.string.home_claim_card_pill_claim)
-    is ClaimPillType.PaymentAmount -> type.uiMoney.toString()
-    ClaimPillType.Unknown -> stringResource(R.string.home_claim_card_pill_claim)
+    Claim -> stringResource(Res.string.home_claim_card_pill_claim)
+    is PaymentAmount -> type.uiMoney.toString()
+    Unknown -> stringResource(Res.string.home_claim_card_pill_claim)
   }
   val voiceDescription = when (type) {
-    is ClaimPillType.Closed, ClaimPillType.Claim, ClaimPillType.Unknown -> text
-    is ClaimPillType.PaymentAmount -> type.uiMoney.getDescription()
+    is ClaimPillType.Closed, Claim, Unknown -> text
+    is PaymentAmount -> type.uiMoney.getDescription()
   }
   val color: HighlightLabelDefaults.HighlightColor = when (type) {
-    ClaimPillType.Claim -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
+    Claim -> Grey(MEDIUM, true)
     is ClaimPillType.Closed -> {
       when (type) {
         GenericClosed -> Grey(DARK)
         NotCompensated -> Grey(MEDIUM, true)
         NotCovered -> Grey(MEDIUM, true)
         Paid -> Grey(DARK)
-        ClaimPillType.Closed.Unresponsive -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
+        ClaimPillType.Closed.Unresponsive -> Grey(MEDIUM, true)
       }
     }
 
-    is ClaimPillType.PaymentAmount -> HighlightLabelDefaults.HighlightColor.Blue(MEDIUM)
-    ClaimPillType.Unknown -> HighlightLabelDefaults.HighlightColor.Grey(MEDIUM, true)
+    is PaymentAmount -> HighlightLabelDefaults.HighlightColor.Blue(MEDIUM)
+    Unknown -> Grey(MEDIUM, true)
   }
   HighlightLabel(
     text,

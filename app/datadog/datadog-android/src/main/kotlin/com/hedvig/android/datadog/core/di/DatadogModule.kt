@@ -8,13 +8,13 @@ import com.hedvig.android.datadog.core.attributestracking.DatadogMemberIdProvide
 import com.hedvig.android.datadog.core.attributestracking.DatadogMemberIdProviderImpl
 import com.hedvig.android.datadog.core.attributestracking.DeviceIdProvider
 import com.hedvig.android.initializable.Initializable
-import io.opentracing.Tracer
-import io.opentracing.util.GlobalTracer
+import io.opentelemetry.api.GlobalOpenTelemetry
+import io.opentelemetry.api.trace.Tracer
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val datadogModule = module {
-  single<Tracer> { GlobalTracer.get() }
+  single<Tracer> { GlobalOpenTelemetry.get().getTracer("android") }
 
   single<DatadogMemberIdProvider> {
     DatadogMemberIdProviderImpl(get<MemberIdService>())

@@ -12,7 +12,7 @@ interface LogcatLogger {
   /**
    * Write a log to its destination. Called by [logcat].
    */
-  fun log(priority: LogPriority, throwable: Throwable?, message: () -> String)
+  fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String)
 
   companion object : SynchronizedObject() {
     @Volatile
@@ -35,7 +35,7 @@ interface LogcatLogger {
     fun install(logger: LogcatLogger) {
       synchronized(this) {
         if (isInstalled) {
-          logger.log(LogPriority.ERROR, installedThrowable) {
+          logger.log(LogPriority.ERROR, installedThrowable, null) {
             "Installing $logger even though a logger was previously installed"
           }
         }
@@ -59,7 +59,7 @@ interface LogcatLogger {
    * If this fails a test, consider adding [com.hedvig.android.logger.TestLogcatLoggingRule] test rule to your test.
    */
   private object NoLog : LogcatLogger {
-    override fun log(priority: LogPriority, throwable: Throwable?, message: () -> String) =
+    override fun log(priority: LogPriority, throwable: Throwable?, tag: String?, message: () -> String) =
       error("Should never receive any log")
   }
 }

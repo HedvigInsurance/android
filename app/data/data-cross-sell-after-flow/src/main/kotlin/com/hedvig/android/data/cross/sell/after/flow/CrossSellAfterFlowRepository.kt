@@ -29,7 +29,7 @@ sealed class CrossSellInfoType() {
     val info: ClaimInfo,
   ) : CrossSellInfoType() {
     override val loggableName: String = "claim"
-    override val extraInfo: Map<String, Any?>? = with(info) {
+    override val extraInfo: Map<String, Any?> = with(info) {
       buildMap {
         this.put("id", id)
         this.put("status", status)

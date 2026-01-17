@@ -1,29 +1,28 @@
 fragment ClaimIntentFragment on ClaimIntent {
   id
+  progress
   currentStep {
     id
     text
     content {
       ...ClaimIntentStepContentFragment
     }
+    isRegrettable
   }
-  sourceMessages {
+  createdClaim {
     id
-    text
+    submittedAt
   }
 }
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
-  ...AudioRecordingFragment
   ...FormFragment
+  ...ContentSelectFragment
   ...TaskFragment
+  ...AudioRecordingFragment
+  ...FileUploadFragment
   ...SummaryFragment
-  ...OutcomeFragment
-}
-
-fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
-  hint
-  uploadUri
+  ...DeflectionFragment
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {
@@ -37,15 +36,38 @@ fragment FormFragment on ClaimIntentStepContentForm {
       title
       value
     }
-    defaultValue
+    defaultValues
     minValue
     maxValue
   }
+  isSkippable
+}
+
+fragment ContentSelectFragment on ClaimIntentStepContentSelect {
+  options {
+    id
+    title
+  }
+  isSkippable
+  style
 }
 
 fragment TaskFragment on ClaimIntentStepContentTask {
   description
   isCompleted
+}
+
+fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
+  hint
+  uploadUri
+  isSkippable
+  freeTextMinLength
+  freeTextMaxLength
+}
+
+fragment FileUploadFragment on ClaimIntentStepContentFileUpload {
+  uploadUri
+  isSkippable
 }
 
 fragment SummaryFragment on ClaimIntentStepContentSummary {
@@ -61,9 +83,36 @@ fragment SummaryFragment on ClaimIntentStepContentSummary {
     contentType
     fileName
   }
+  freeTexts
 }
 
-fragment OutcomeFragment on ClaimIntentStepContentOutcome {
-  claimId
+fragment DeflectionFragment on ClaimIntentStepContentDeflection {
+  title
+  infoText
+  warningText
+  partners {
+    id
+    imageUrl
+    phoneNumber
+    title
+    description
+    info
+    url
+    urlButtonTitle
+  }
+  partnersInfo {
+    ...DeflectionInfoBlockFragment
+  }
+  content {
+    ...DeflectionInfoBlockFragment
+  }
+  faq {
+    ...DeflectionInfoBlockFragment
+  }
+  buttonTitle
 }
 
+fragment DeflectionInfoBlockFragment on ClaimIntentStepContentDeflectionInfoBlock {
+  title
+  description
+}

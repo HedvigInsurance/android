@@ -15,7 +15,7 @@ import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.ItemBrand
 import com.hedvig.android.data.claimflow.ItemModel
 import com.hedvig.android.data.claimflow.ItemProblem
-import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.language.LanguageService
 import java.util.Locale
 import kotlin.time.Clock

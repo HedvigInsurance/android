@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -55,13 +54,15 @@ import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Accepted
 import com.hedvig.android.feature.odyssey.step.honestypledge.PledgeAcceptingSliderPosition.Resting
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_ACCEPT
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 private val circleDiameter: Dp = 62.dp
 
@@ -98,7 +99,7 @@ private class PledgeAcceptingSliderStateImpl(
     safeSetXOffset(xOffset + delta)
   }
   override val isInAcceptedPosition: Boolean by derivedStateOf {
-    xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted)
+    xOffset >= anchors.positionOf(Accepted)
   }
 
   override fun updateAnchors(layoutSize: IntSize) {
@@ -152,12 +153,12 @@ private class PledgeAcceptingSliderStateImpl(
 
   private fun onDragStopped(velocity: Float) {
     if (isInAcceptedPosition) return
-    val sliderAlmostAtEnd = xOffset >= anchors.positionOf(PledgeAcceptingSliderPosition.Accepted) - circleDiameterPx
+    val sliderAlmostAtEnd = xOffset >= anchors.positionOf(Accepted) - circleDiameterPx
     val closestAnchor = anchors.positionOf(
       if (sliderAlmostAtEnd) {
-        PledgeAcceptingSliderPosition.Accepted
+        Accepted
       } else {
-        PledgeAcceptingSliderPosition.Resting
+        Resting
       },
     )
     cancelOnDragStoppedJob()
@@ -225,7 +226,7 @@ internal fun PledgeAcceptingSlider(
       .background(HedvigTheme.colorScheme.surfacePrimary, CircleShape)
       .onSizeChanged(state::updateAnchors)
       .then(with(state) { Modifier.containerDraggableModifier() })
-      .then(with(state) { Modifier.sliderSemantics(stringResource(R.string.TALKBACK_ACCEPT)) }),
+      .then(with(state) { Modifier.sliderSemantics(stringResource(Res.string.TALKBACK_ACCEPT)) }),
   ) {
     HedvigText(
       text = text,

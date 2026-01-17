@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.CreditCard: ImageVector
+val HedvigIcons.CreditCard: ImageVector
   get() {
     if (_creditCard != null) {
       return _creditCard!!

@@ -94,7 +94,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        com.hedvig.android.feature.impersonation.ImpersonationReceiverViewModel(
+        ImpersonationReceiverViewModel(
           params.get(),
           get(),
           get(),

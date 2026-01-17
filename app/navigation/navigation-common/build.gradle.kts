@@ -1,8 +1,12 @@
 plugins {
-  id("hedvig.jvm.library")
+  id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
 }
 
-dependencies {
-  implementation(libs.kotlin.reflect)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.kotlin.reflect)
+    }
+  }
 }

@@ -101,8 +101,7 @@ internal class EditCoInsuredTriagePresenter(
         },
       )
     }
-    val currentStateValue = currentState
-    return when (currentStateValue) {
+    return when (val currentStateValue = currentState) {
       Failure -> Failure
       Loading -> Loading
       is Success -> currentStateValue.copy(selected = selected)

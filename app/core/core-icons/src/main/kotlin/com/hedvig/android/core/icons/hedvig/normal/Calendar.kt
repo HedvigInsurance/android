@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Calendar: ImageVector
+val HedvigIcons.Calendar: ImageVector
   get() {
     if (_calendar != null) {
       return _calendar!!

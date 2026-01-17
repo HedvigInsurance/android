@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.12.0" type="baseline" client="gradle" dependencies="false" name="AGP (8.12.0)" variant="all" version="8.12.0">
+
+    <issue
+        id="UnknownIssueId"
+        message="Unknown issue id &quot;androidx.media3.common.util.UnstableApi&quot;">
+        <location
+            file="build.gradle.kts"/>
+    </issue>
+
+    <issue
+        id="UnknownIssueId"
+        message="Unknown issue id &quot;androidx.media3.common.util.UnstableApi&quot;">
+        <location
+            file="build.gradle.kts"/>
+    </issue>
+
+    <issue
+        id="UnknownIssueId"
+        message="Unknown issue id &quot;UnsafeOptInUsageError&quot;"
+        errorLine1="  &lt;issue id=&quot;UnsafeOptInUsageError&quot;>"
+        errorLine2="  ^">
+        <location
+            file="$HOME/StudioProjects/android-graphql-test/hedvig-lint/lint.xml"
+            line="14"
+            column="3"/>
+    </issue>
+
+    <issue
+        id="UnknownIssueId"
+        message="Unknown issue id &quot;UnsafeOptInUsageError&quot;"
+        errorLine1="  &lt;issue id=&quot;UnsafeOptInUsageError&quot;>"
+        errorLine2="  ^">
+        <location
+            file="$HOME/StudioProjects/android-graphql-test/hedvig-lint/lint.xml"
+            line="14"
+            column="3"/>
+    </issue>
+
+</issues>

@@ -42,7 +42,6 @@ internal class RequestAccountDeletionUseCase(
       catch({ deleteAccountRequestStorage.storeTerminationRequest(memberId) }) {
         raise(RequestAccountError.FailedToPersistDeletionRequest)
       }
-      Unit
     }
   }
 }

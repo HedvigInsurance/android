@@ -123,8 +123,8 @@ fun NavGraphBuilder.movingFlowGraph(
         },
       )
     }
-    navdestination<MovingFlowDestinations.EnterNewAddress> {
-      val moveIntentId = it.toRoute<MovingFlowDestinations.EnterNewAddress>().moveIntentId
+    navdestination<EnterNewAddress> {
+      val moveIntentId = it.toRoute<EnterNewAddress>().moveIntentId
       EnterNewAddressDestination(
         viewModel = koinViewModel<EnterNewAddressViewModel>(),
         navigateUp = navController::navigateUp,

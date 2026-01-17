@@ -1,10 +1,5 @@
 mutation ClaimIntentSubmitAudio($input: ClaimIntentSubmitAudioInput!) {
   claimIntentSubmitAudio(input: $input) {
-    userError {
-      message
-    }
-    intent {
-      ...ClaimIntentFragment
-    }
+    ...ClaimIntentMutationOutputFragment
   }
 }

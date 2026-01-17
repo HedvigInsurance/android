@@ -1,0 +1,5 @@
+mutation ClaimIntentRegretStep($stepId: ID!) {
+  claimIntentRegretStep(stepId:  $stepId) {
+    ...ClaimIntentMutationOutputFragment
+  }
+}

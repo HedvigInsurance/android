@@ -9,12 +9,6 @@ hedvig {
   compose()
 }
 
-kotlin {
-  compilerOptions {
-    freeCompilerArgs.add("-Xwhen-guards")
-  }
-}
-
 android {
   testOptions.unitTests.isReturnDefaultValues = true
 }
@@ -22,11 +16,11 @@ android {
 dependencies {
   api(libs.coil.coil)
 
-  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.testingSupport)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
@@ -39,8 +33,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
-  implementation(projects.dataContractAndroid)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
   implementation(projects.dataDisplayItems)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)

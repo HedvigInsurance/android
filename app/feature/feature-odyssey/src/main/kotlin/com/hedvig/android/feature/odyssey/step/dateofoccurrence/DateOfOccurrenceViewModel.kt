@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.feature.odyssey.ui.DatePickerUiState
+import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.language.LanguageService
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -94,12 +94,12 @@ internal val testQuote = TierDeductibleQuote(
   ),
   addons = emptyList(),
   currentTotalCost = TotalCost(
-    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(250.0, SEK),
+    monthlyNet = UiMoney(200.0, SEK),
   ),
   newTotalCost = TotalCost(
-    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(380.0, SEK),
+    monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
     "Home Insurance Max" to "300 kr/mo",
@@ -137,12 +137,12 @@ internal val testQuote2 = TierDeductibleQuote(
   ),
   addons = emptyList(),
   currentTotalCost = TotalCost(
-    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(250.0, SEK),
+    monthlyNet = UiMoney(200.0, SEK),
   ),
   newTotalCost = TotalCost(
-    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(380.0, SEK),
+    monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
     "Home Insurance Max" to "300 kr/mo",
@@ -180,12 +180,12 @@ internal val testQuote3 = TierDeductibleQuote(
   ),
   addons = emptyList(),
   currentTotalCost = TotalCost(
-    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(250.0, SEK),
+    monthlyNet = UiMoney(200.0, SEK),
   ),
   newTotalCost = TotalCost(
-    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(380.0, SEK),
+    monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
     "Home Insurance Max" to "300 kr/mo",
@@ -223,12 +223,12 @@ internal val currentQuote = TierDeductibleQuote(
   ),
   addons = emptyList(),
   currentTotalCost = TotalCost(
-    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(250.0, SEK),
+    monthlyNet = UiMoney(200.0, SEK),
   ),
   newTotalCost = TotalCost(
-    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(380.0, SEK),
+    monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
     "Home Insurance Max" to "300 kr/mo",

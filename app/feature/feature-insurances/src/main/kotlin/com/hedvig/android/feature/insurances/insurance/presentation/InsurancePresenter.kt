@@ -16,7 +16,6 @@ import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.contract.CrossSell
-import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetInsuranceContractsUseCase
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
@@ -44,6 +43,7 @@ internal data class InsuranceUiState(
   val hasError: Boolean,
   val isLoading: Boolean,
   val isRetrying: Boolean,
+  val hasCrossSellDiscounts: Boolean = false, // TODO : wait for backend
 ) {
   companion object {
     val initialState = InsuranceUiState(
@@ -125,6 +125,7 @@ internal class InsurancePresenter(
       isLoading = isLoading,
       isRetrying = isRetrying,
       travelAddonBannerInfo = insuranceData.travelAddonBannerInfo,
+      hasCrossSellDiscounts = insuranceData.hasDiscounts,
     )
   }
 }
@@ -143,19 +144,20 @@ private fun loadInsuranceData(
       val result = contractsResult.bind()
       val contracts = result.filterIsInstance<EstablishedInsuranceContract>()
       val pendingContracts = result.filterIsInstance<PendingInsuranceContract>()
-      val crossSells = crossSellsDataResult.bind()
+      val crossSellResult = crossSellsDataResult.bind()
       val travelAddonBannerInfo = travelAddonBannerInfoResult.bind()
       val insuranceCards = contracts.filterNot(EstablishedInsuranceContract::isTerminated)
 
       InsuranceData(
         contracts = insuranceCards,
         pendingContracts = pendingContracts,
-        crossSells = crossSells,
+        crossSells = crossSellResult.crossSells,
         quantityOfCancelledInsurances = contracts.count(EstablishedInsuranceContract::isTerminated),
         isEligibleToPerformMovingFlow = contracts.any {
           !it.isTerminated && it.upcomingInsuranceAgreement == null && it.supportsAddressChange
         },
         travelAddonBannerInfo = travelAddonBannerInfo,
+        hasDiscounts = crossSellResult.hasDiscounts,
       )
     }.onLeft {
       logcat(LogPriority.INFO, it.throwable) {
@@ -172,6 +174,7 @@ private data class InsuranceData(
   val quantityOfCancelledInsurances: Int,
   val isEligibleToPerformMovingFlow: Boolean,
   val travelAddonBannerInfo: TravelAddonBannerInfo?,
+  val hasDiscounts: Boolean,
 ) {
   companion object {
     fun fromUiState(uiState: InsuranceUiState): InsuranceData {
@@ -182,6 +185,7 @@ private data class InsuranceData(
         isEligibleToPerformMovingFlow = uiState.shouldSuggestMovingFlow,
         travelAddonBannerInfo = uiState.travelAddonBannerInfo,
         pendingContracts = uiState.pendingContracts,
+        hasDiscounts = uiState.hasCrossSellDiscounts,
       )
     }
 
@@ -192,6 +196,7 @@ private data class InsuranceData(
       quantityOfCancelledInsurances = 0,
       isEligibleToPerformMovingFlow = false,
       travelAddonBannerInfo = null,
+      hasDiscounts = false,
     )
   }
 }

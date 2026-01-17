@@ -9,7 +9,7 @@ hedvig {
 
 dependencies {
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.runtime)
-  implementation(libs.androidx.compose.uiCore)
+  implementation(libs.jetbrains.compose.runtime)
+  implementation(libs.jetbrains.compose.ui)
   implementation(projects.designSystemHedvig)
 }

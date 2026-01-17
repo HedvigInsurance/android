@@ -9,19 +9,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.design.system.hedvig.datepicker.hedvigDateTimeFormatter
+import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_LABEL
+import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_TITLE
+import hedvig.resources.Res
+import hedvig.resources.general_done_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () -> Unit, navigateBack: () -> Unit) {
@@ -33,10 +36,12 @@ internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () ->
         .fillMaxWidth(),
     ) {
       EmptyState(
-        text = stringResource(id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
+        text = stringResource(Res.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
         description = stringResource(
-          id = hedvig.resources.R.string.CONTRACT_ADD_COINSURED_UPDATED_LABEL,
-          date?.toJavaLocalDate()?.format(hedvigDateTimeFormatter(getLocale())) ?: "-",
+          Res.string.CONTRACT_ADD_COINSURED_UPDATED_LABEL,
+          date?.let {
+            HedvigDateTimeFormatterDefaults.dateMonthAndYear(getLocale()).format(it)
+          } ?: "-",
         ),
         iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SUCCESS,
         modifier = Modifier.align(Alignment.Center),
@@ -44,7 +49,7 @@ internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () ->
     }
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(id = hedvig.resources.R.string.general_done_button),
+      text = stringResource(Res.string.general_done_button),
       onClick = navigateBack,
       modifier = Modifier
         .padding(start = 16.dp, end = 16.dp)

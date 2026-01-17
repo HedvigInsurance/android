@@ -6,10 +6,13 @@ import com.hedvig.android.data.chat.database.ChatMessageEntity
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.MEDIA
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.PHOTO
 import com.hedvig.android.data.chat.database.ChatMessageEntity.FailedToSendType.TEXT
+import com.hedvig.android.data.chat.database.ChatMessageEntityAction
 import com.hedvig.android.data.chat.database.ChatMessageEntityBanner
 import com.hedvig.android.feature.chat.CbmChatUiState.Loaded.LatestChatMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import java.util.UUID
+import kotlin.time.Clock
 import kotlin.time.Instant
 
 internal sealed interface CbmChatMessage {
@@ -24,6 +27,8 @@ internal sealed interface CbmChatMessage {
     override val sentAt: Instant,
     override val banner: Banner?,
     val text: String,
+    val action: ChatMessageTextAction?,
+    val isAiGenerationIndicator: Boolean = false
   ) : CbmChatMessage
 
   data class ChatMessageGif(
@@ -48,6 +53,23 @@ internal sealed interface CbmChatMessage {
       PDF,
       OTHER,
     }
+  }
+
+  data class ChatMessageTextAction(
+    val title: String,
+    val url: String
+  )
+
+  companion object {
+    fun aiGeneratingIndicator(sentAt: Instant) = ChatMessageText(
+      id = UUID.randomUUID().toString(),
+      sender = Sender.HEDVIG,
+      sentAt = sentAt,
+      banner = null,
+      text = "",
+      action = null,
+      isAiGenerationIndicator = true
+    )
   }
 
   /**
@@ -142,6 +164,8 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = null,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null,
+      isAiGenerationIndicator = false
     )
 
     is CbmChatMessage.ChatMessageGif -> ChatMessageEntity(
@@ -156,6 +180,8 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = null,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null,
+      isAiGenerationIndicator = false
     )
 
     is CbmChatMessage.ChatMessageText -> ChatMessageEntity(
@@ -170,6 +196,13 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = null,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = action?.let {
+        ChatMessageEntityAction(
+          actionTitle = it.title,
+          actionUrl = it.url
+        )
+      },
+      isAiGenerationIndicator =  isAiGenerationIndicator
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageText -> ChatMessageEntity(
@@ -184,6 +217,8 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = TEXT,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null,
+      isAiGenerationIndicator = false
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessagePhoto -> ChatMessageEntity(
@@ -198,6 +233,8 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = PHOTO,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null,
+      isAiGenerationIndicator = false
     )
 
     is CbmChatMessage.FailedToBeSent.ChatMessageMedia -> ChatMessageEntity(
@@ -212,6 +249,8 @@ internal fun CbmChatMessage.toChatMessageEntity(conversationId: Uuid): ChatMessa
       failedToSend = MEDIA,
       isBeingSent = false,
       banner = banner.toBannerEntity(),
+      action = null,
+      isAiGenerationIndicator = false
     )
   }
 }
@@ -242,7 +281,20 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
       }
     }
 
-    text != null -> CbmChatMessage.ChatMessageText(id.toString(), sender, sentAt, banner.toBanner(), text!!.trim())
+    text != null -> CbmChatMessage.ChatMessageText(
+      id = id.toString(),
+      sender = sender,
+      sentAt = sentAt,
+      banner = banner.toBanner(),
+      text = text!!.trim(),
+      action = action?.let { entityAction ->
+        CbmChatMessage.ChatMessageTextAction(
+          title = entityAction.actionTitle,
+          url = entityAction.actionUrl
+        )
+      },
+      isAiGenerationIndicator = isAiGenerationIndicator
+    )
     gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, banner.toBanner(), gifUrl!!)
     url != null && mimeType != null -> {
       val mimeType = CbmChatMessage.ChatMessageFile.MimeType.valueOf(mimeType!!)

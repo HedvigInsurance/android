@@ -20,7 +20,7 @@ internal data class MovingFlowState(
   // If in the flow there was a quote selected once, we persist that selection so that it's pre-selected when going
   //  back to that step again
   val lastSelectedHomeQuoteId: String?,
-  val mapOfPropertyStates: Map<HousingType, MovingFlowState.PropertyState>,
+  val mapOfPropertyStates: Map<HousingType, PropertyState>,
 ) {
   @Serializable
   data class AddressInfo(
@@ -156,9 +156,9 @@ internal fun MovingFlowState.Companion.fromFragments(
       isSublet = false,
     )
   }
-  val apartmentState: (ApartmentType) -> MovingFlowState.PropertyState.ApartmentState = { apartmentType ->
+  val apartmentState: (ApartmentType) -> ApartmentState = { apartmentType ->
     with(moveIntentFragment) {
-      MovingFlowState.PropertyState.ApartmentState(
+      ApartmentState(
         numberCoInsuredState = MovingFlowState.NumberCoInsuredState(
           maxNumberCoInsured = maxApartmentNumberCoInsured,
           suggestedNumberCoInsured = suggestedCoInsured,
@@ -168,16 +168,16 @@ internal fun MovingFlowState.Companion.fromFragments(
         ),
         apartmentType = apartmentType,
         isAvailableForStudentState = if (isApartmentAvailableforStudent == true) {
-          MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.Available(false)
+          ApartmentState.IsAvailableForStudentState.Available(false)
         } else {
-          MovingFlowState.PropertyState.ApartmentState.IsAvailableForStudentState.NotAvailable
+          ApartmentState.IsAvailableForStudentState.NotAvailable
         },
       )
     }
   }
   val mapOfPropertyStates = mapOf(
-    HousingType.ApartmentOwn to apartmentState(ApartmentState.ApartmentType.BRF),
-    HousingType.ApartmentRent to apartmentState(ApartmentState.ApartmentType.RENT),
+    HousingType.ApartmentOwn to apartmentState(ApartmentType.BRF),
+    HousingType.ApartmentRent to apartmentState(ApartmentType.RENT),
     HousingType.Villa to houseState,
   )
   return MovingFlowState(

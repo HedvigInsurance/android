@@ -9,6 +9,8 @@ import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
 import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetDiscountsUseCase
 import com.hedvig.android.feature.payments.data.GetDiscountsUseCaseImpl
+import com.hedvig.android.feature.payments.data.GetMemberPaymentsDetailsUseCase
+import com.hedvig.android.feature.payments.data.GetMemberPaymentsDetailsUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
@@ -20,6 +22,7 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
@@ -85,6 +88,16 @@ val paymentsModule = module {
       get<GetPaymentsHistoryUseCase>(),
     )
   }
+
+  viewModel<MemberPaymentDetailsViewModel> {
+    MemberPaymentDetailsViewModel(getMemberPaymentsDetailsUseCase = get<GetMemberPaymentsDetailsUseCase>())
+  }
+  single<GetMemberPaymentsDetailsUseCase> {
+    GetMemberPaymentsDetailsUseCaseImpl(
+      get<ApolloClient>(),
+    )
+  }
+
   single<GetUpcomingPaymentUseCaseProvider> {
     GetUpcomingPaymentUseCaseProvider(
       demoManager = get<DemoManager>(),

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Play: ImageVector
+val HedvigIcons.Play: ImageVector
   get() {
     if (_play != null) {
       return _play!!
