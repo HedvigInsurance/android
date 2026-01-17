@@ -68,7 +68,7 @@ private class ComparisonPresenter(
                   .coveredItems
                   .filterNot { it.coveredStatus == NotCovered }
                   .map { coveredItem ->
-                    Success.CoverageLevel.ComparisonItem(
+                    CoverageLevel.ComparisonItem(
                       coveredItem.title,
                       coveredItem.description,
                       when (coveredItem.coveredStatus) {

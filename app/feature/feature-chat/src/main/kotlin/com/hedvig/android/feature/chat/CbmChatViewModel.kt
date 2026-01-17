@@ -146,9 +146,9 @@ internal class CbmChatPresenter(
     var conversationInfoStatus by remember {
       mutableStateOf(
         if (lastState is CbmChatUiState.Loaded) {
-          ConversationInfoStatus.Loaded(lastState.backendConversationInfo)
+          Loaded(lastState.backendConversationInfo)
         } else {
-          ConversationInfoStatus.Initializing
+          Initializing
         },
       )
     }
@@ -167,17 +167,17 @@ internal class CbmChatPresenter(
     }.collectAsState(false)
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
-      if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
+      if (conversationInfoStatus is Loaded && conversationIdStatusLoadIteration == 0) {
         return@LaunchedEffect
       }
-      conversationInfoStatus = ConversationInfoStatus.Initializing
+      conversationInfoStatus = Initializing
       chatRepository.provide().getConversationInfo(conversationId).collect { result ->
         result.fold(
           ifLeft = {
-            conversationInfoStatus = ConversationInfoStatus.Failed
+            conversationInfoStatus = Failed
           },
           ifRight = { conversationInfo ->
-            conversationInfoStatus = ConversationInfoStatus.Loaded(conversationInfo)
+            conversationInfoStatus = Loaded(conversationInfo)
           },
         )
       }
@@ -186,8 +186,7 @@ internal class CbmChatPresenter(
     val updatedConversationInfoStatus by rememberUpdatedState(conversationInfoStatus)
     CollectEvents { event ->
       val startConversationIfNecessary = suspend {
-        val conversationInfoStatusValue = updatedConversationInfoStatus
-        val conversationAlreadyStarted = when (conversationInfoStatusValue) {
+        val conversationAlreadyStarted = when (val conversationInfoStatusValue = updatedConversationInfoStatus) {
           Failed -> false
           Initializing -> false
           is Loaded -> {
@@ -199,7 +198,7 @@ internal class CbmChatPresenter(
         }
         if (!conversationAlreadyStarted) {
           chatRepository.provide().createConversation(conversationId).onRight { backendConversationInfo ->
-            conversationInfoStatus = ConversationInfoStatus.Loaded(backendConversationInfo)
+            conversationInfoStatus = Loaded(backendConversationInfo)
           }
         }
       }
@@ -307,7 +306,7 @@ private fun presentLoadedChat(
   }
 
   LaunchedEffect(backendConversationInfo, conversationId, lazyPagingItems) {
-    if (backendConversationInfo is ConversationInfo.NoConversation) return@LaunchedEffect
+    if (backendConversationInfo is NoConversation) return@LaunchedEffect
     snapshotFlow { lazyPagingItems.itemCount }
       .map { it > 0 }
       .distinctUntilChanged()

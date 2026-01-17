@@ -35,7 +35,7 @@ internal class UploadFileUseCase(private val client: HttpClient) {
               "files",
               InputProvider { commonFile.source() },
               Headers.build {
-                append(HttpHeaders.ContentType, "multipart/form-data")
+                append(HttpHeaders.ContentType, commonFile.mimeType)
                 append(HttpHeaders.ContentDisposition, """filename="${commonFile.fileName}"""")
               },
             )

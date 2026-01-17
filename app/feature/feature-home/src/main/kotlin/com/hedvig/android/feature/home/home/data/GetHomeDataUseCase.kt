@@ -323,7 +323,7 @@ internal data class HomeData(
 /**
  * The reason this exists is because the standard combine function only allows up to 5 generic flows.
  */
-public fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
+fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
   flow: Flow<T1>,
   flow2: Flow<T2>,
   flow3: Flow<T3>,

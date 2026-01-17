@@ -1,7 +1,18 @@
 package com.hedvig.android.lokalise.task
 
 import com.hedvig.android.lokalise.config.DownloadConfig
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import java.io.File
+import kotlinx.coroutines.runBlocking
 import java.net.URI
 import javax.inject.Inject
 import kotlinx.serialization.json.Json
@@ -12,11 +23,6 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -72,49 +78,55 @@ abstract class DownloadStringsTask @Inject constructor(
     logger.debug("{} zip file path:{}", tag, tempFileForZipFile.absolutePath)
     dirRes.fillContentsByCopyingFromZipFile(tempFileForZipFile)
     logger.debug("{} dirRes:{}", tag, dirRes.asFileTree.map { it.absolutePath })
-    dirRes.fixPercentageSigns()
+    dirRes.editTranslations { resourcesType ->
+      fixPercentageSigns()
+        .removeDotsFromStringIds()
+        .convertSimpleFormatToNumberedFormat(resourcesType)
+        .removeEscapesFromMultiplatformStrings(resourcesType)
+        .addUntranslatableStrings()
+    }
     tempFileForZipFile.delete()
   }
 
   private fun fetchBucketUrl(): String {
-    val okHttpClient = OkHttpClient()
-    val processId = initiateAsyncDownloadAndReturnProcessId(okHttpClient)
-    val amazonDownloadUrl = pollForDownloadUrl(okHttpClient, processId)
-    logger.debug("{} amazonBucketUrl:{}", tag, amazonDownloadUrl)
-    return amazonDownloadUrl
+    return runBlocking {
+      val httpClient = HttpClient(CIO)
+      httpClient.use { client ->
+        val processId = initiateAsyncDownloadAndReturnProcessId(client)
+        val amazonDownloadUrl = pollForDownloadUrl(client, processId)
+        logger.debug("{} amazonBucketUrl:{}", tag, amazonDownloadUrl)
+        amazonDownloadUrl
+      }
+    }
   }
 
-  private fun initiateAsyncDownloadAndReturnProcessId(okHttpClient: OkHttpClient): String {
-    val asyncDownloadRequest = Request.Builder()
-      .url("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download")
-      .commonLokaliseHeaders()
-      .post(
-        buildJsonObject {
-          put("format", "xml")
-          put("export_sort", downloadConfig.get().stringsOrder.value)
-          put("export_empty_as", downloadConfig.get().emptyTranslationStrategy.value)
-          put("replace_breaks", true)
-          put("escape_percent", true)
-          put(
-            "filter_langs",
-            buildJsonArray {
-              add("en")
-              add("sv_SE")
-            },
-          )
-        }.toRequestBody(),
+  private suspend fun initiateAsyncDownloadAndReturnProcessId(httpClient: HttpClient): String {
+    val requestBody = buildJsonObject {
+      put("format", "xml")
+      put("export_sort", downloadConfig.get().stringsOrder.value)
+      put("export_empty_as", downloadConfig.get().emptyTranslationStrategy.value)
+      put("replace_breaks", true)
+      put("escape_percent", true)
+      put(
+        "filter_langs",
+        buildJsonArray {
+          add("en")
+          add("sv_SE")
+        },
       )
-      .build()
-    logger.debug("{} asyncDownloadRequest:{}", tag, asyncDownloadRequest)
-    val response = okHttpClient.newCall(asyncDownloadRequest).execute().body?.string()
-      ?: error("Lokalise responded with a null body")
+    }
+    logger.debug("{} asyncDownloadRequest body:{}", tag, requestBody)
+    val response = httpClient.post("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download") {
+      commonLokaliseHeaders()
+      setBody(requestBody.toString())
+    }.bodyAsText()
     logger.debug("{} post response:{}", tag, response)
     val processId = Json.parseToJsonElement(response).jsonObject["process_id"]?.jsonPrimitive?.content
       ?: error("Lokalise responded with a null processId")
     return processId
   }
 
-  private fun pollForDownloadUrl(okHttpClient: OkHttpClient, processId: String): String {
+  private suspend fun pollForDownloadUrl(httpClient: HttpClient, processId: String): String {
     var iteration = 0
     while (true) {
       iteration++
@@ -123,14 +135,11 @@ abstract class DownloadStringsTask @Inject constructor(
         error("Lokalise failed after 20 retries")
       }
       Thread.sleep(3000L)
-      val getProcessStatusRequest = Request.Builder()
-        .url("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/processes/$processId")
-        .commonLokaliseHeaders()
-        .get()
-        .build()
-      logger.debug("{} getProcessStatusRequest:{}", tag, getProcessStatusRequest)
-      val response = okHttpClient.newCall(getProcessStatusRequest).execute().body?.string()
-        ?: error("Lokalise responded with a null body")
+      val url = "https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/processes/$processId"
+      logger.debug("{} getProcessStatusRequest url:{}", tag, url)
+      val response = httpClient.get(url) {
+        commonLokaliseHeaders()
+      }.bodyAsText()
       logger.debug("{} get response:{}", tag, response)
       val process = Json
         .parseToJsonElement(response)
@@ -159,20 +168,14 @@ abstract class DownloadStringsTask @Inject constructor(
     }
   }
 
-  private fun Request.Builder.commonLokaliseHeaders(): Request.Builder {
-    return header("x-api-token", lokaliseToken.get())
-      .header("content-type", "application/json")
+  private fun HttpRequestBuilder.commonLokaliseHeaders() {
+    header("x-api-token", lokaliseToken.get())
+    contentType(ContentType.Application.Json)
   }
 
-  private fun JsonObject.toRequestBody(): RequestBody {
-    return this.toString().toRequestBody("application/json; charset=utf-8".toMediaType())
-  }
-
-  /**
-   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
-   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
-   */
-  private fun ConfigurableFileCollection.fixPercentageSigns() {
+  private fun ConfigurableFileCollection.editTranslations(
+    block: String.(ResourcesType) -> String,
+  ) {
     val allTranslationXmlFilePaths: List<okio.Path> = asFileTree
       .map { it.path.toPath() }
       .filter { it.name == """strings.xml""" }
@@ -180,16 +183,98 @@ abstract class DownloadStringsTask @Inject constructor(
 
     val fileSystem = FileSystem.SYSTEM
     for (currentLanguageTranslationXmlFilePath in allTranslationXmlFilePaths) {
+      val resourcesType = when {
+        currentLanguageTranslationXmlFilePath.segments.any { it == "commonMain" } -> ResourcesType.KMP
+        else -> ResourcesType.Android
+      }
       val content = fileSystem.read(currentLanguageTranslationXmlFilePath) { readUtf8() }
-      val updatedContent = content
-        .replace(
-          oldValue = """%%""",
-          newValue = """\u0025""",
-        )
+      val updatedContent = content.block(resourcesType)
       fileSystem.write(currentLanguageTranslationXmlFilePath) {
         writeUtf8(updatedContent)
       }
     }
+  }
+
+  /**
+   * We fetch all raw percentage signs as `%%` from lokalise due to to `put("escape_percent", true)`.
+   * For this to work in all scenarios, we simply replace all those cases with \u0025 which is unicode for `%`.
+   */
+  private fun String.fixPercentageSigns(): String {
+    return replace(
+      oldValue = """%%""",
+      newValue = """\u0025""",
+    )
+  }
+
+  /**
+   * Replace all `.` from string keys with `_`. They get translated to `_` anyway in order to be able to access them
+   * from Kotlin code so this has no change on the call sites.
+   * Keeping the `.` also breaks the code generation for CMP resources, this fixes it.
+   */
+  private fun String.removeDotsFromStringIds(): String {
+    return this.replace(
+      // Regex("""name="([^"]*)")""" - Matches the pattern name="..." where:
+      //    - name=" - literal text
+      //    - ([^"]*) - captures any characters that are not quotes (this is group 1)
+      //    - " - closing quote
+      Regex(
+        """
+        name="([^"]*)"
+        """.trimIndent(),
+      ),
+    ) { matchResult ->
+      val nameValue = matchResult.groupValues[1]
+      val nameWithoutDots = nameValue.replace(".", "_")
+      """name="$nameWithoutDots""""
+    }
+  }
+
+  /**
+   * Compose Multiplatform resources only support numbered format arguments like %1$s, %2$d
+   * but NOT simple %s, %d. Convert simple placeholders to numbered ones for KMP resources.
+   * We process each <string> and <item> tag separately to reset the counter for each resource.
+   * Reference: StringResourcesUtils uses regex pattern that matches %1$s, %2$d, etc.
+   * Source: https://youtrack.jetbrains.com/projects/CMP/issues/CMP-8385/Resources-Support-for-d-and-s-in-StringResourcesUtils-for-single-argument-string-resource
+   */
+  private fun String.convertSimpleFormatToNumberedFormat(resourcesType: ResourcesType): String {
+    return when (resourcesType) {
+      ResourcesType.Android -> this
+      ResourcesType.KMP -> {
+        val resourceTagRegex = Regex("""<(string|item)[^>]*>([^<]*)</(string|item)>""")
+        val simpleFormatRegex = Regex("""%(?!\d+\$)([sidf])""")
+
+        resourceTagRegex.replace(this) { tagMatch ->
+          val tagContent = tagMatch.groupValues[2]
+          var counter = 0
+          val updatedContent = simpleFormatRegex.replace(tagContent) { formatMatch ->
+            counter++
+            val formatType = formatMatch.groupValues[1]
+            "%$counter\$$formatType"
+          }
+          tagMatch.value.replace(tagContent, updatedContent)
+        }
+      }
+    }
+  }
+
+  private fun String.removeEscapesFromMultiplatformStrings(resourcesType: ResourcesType): String {
+    return when (resourcesType) {
+      ResourcesType.Android -> this
+      ResourcesType.KMP -> {
+        replace("""\'""", """'""")
+          .replace("""\"""", """"""")
+      }
+    }
+  }
+  private fun String.addUntranslatableStrings(): String {
+    return this.replace(
+      """<resources>""",
+      """
+      |<resources>
+      |  <string name="swedish">Svenska</string>
+      |  <string name="english_swedish">English</string>
+      """.trimMargin("|")
+    )
   }
 
   private fun File.fillContentsByDownloadingFromUrl(bucketUrl: String) {
@@ -201,9 +286,11 @@ abstract class DownloadStringsTask @Inject constructor(
   }
 
   private fun ConfigurableFileCollection.fillContentsByCopyingFromZipFile(zipFile: File) {
-    fileSystemOperations.copy {
-      it.from(archiveOperations.zipTree(zipFile))
-      it.into(this.asPath)
+    files.forEach { file ->
+      fileSystemOperations.copy {
+        it.from(archiveOperations.zipTree(zipFile))
+        it.into(file.path)
+      }
     }
   }
 }
@@ -219,10 +306,15 @@ private sealed interface ProcessStatus {
 }
 
 private fun String.toProcessStatus(): ProcessStatus {
-  when (this) {
-    "queued" -> return ProcessStatus.Queued
-    "running" -> return ProcessStatus.Running
-    "finished" -> return ProcessStatus.Finished
-    else -> return ProcessStatus.Other(this)
+  return when (this) {
+    "queued" -> ProcessStatus.Queued
+    "running" -> ProcessStatus.Running
+    "finished" -> ProcessStatus.Finished
+    else -> ProcessStatus.Other(this)
   }
+}
+
+private enum class ResourcesType {
+  KMP,
+  Android,
 }

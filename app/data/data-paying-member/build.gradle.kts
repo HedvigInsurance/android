@@ -14,5 +14,5 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.dataContractPublic)
+  implementation(projects.dataContract)
 }

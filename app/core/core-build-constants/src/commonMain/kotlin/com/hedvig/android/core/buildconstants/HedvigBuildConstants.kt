@@ -67,4 +67,20 @@ interface HedvigBuildConstants {
    * The Android SDK version we are currently running on
    */
   val buildApiVersion: Int
+
+  /**
+   * The name of the platform. Always "ANDROID" for the android app
+   */
+  val platformName: String
+
+  /**
+   * The model of the device currently running the app.
+   * e.g: Google Pixel 7 Pro
+   */
+  val model: String
+
+  /**
+   * The agent name for the "User-Agent" header of all HTTP requests
+   */
+  val userAgent: String
 }

@@ -16,13 +16,11 @@ import com.datadog.android.rum.RumConfiguration
 import com.datadog.android.rum.model.ErrorEvent
 import com.datadog.android.rum.model.ErrorEvent.Category.EXCEPTION
 import com.datadog.android.rum.tracking.ActivityViewTrackingStrategy
-import com.datadog.android.trace.AndroidTracer
-import com.datadog.android.trace.Trace
-import com.datadog.android.trace.TraceConfiguration
+import com.datadog.android.trace.opentelemetry.DatadogOpenTelemetry
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import io.opentracing.util.GlobalTracer
+import io.opentelemetry.api.GlobalOpenTelemetry
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import timber.log.Timber
@@ -64,15 +62,8 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
     Rum.enable(rumConfig, sdkCore)
     logcat(LogPriority.VERBOSE) { "Datadog RUM registering succeeded: true" }
 
-    val traceConfiguration = TraceConfiguration.Builder().build()
-    Trace.enable(traceConfiguration, sdkCore)
-    logcat(LogPriority.VERBOSE) { "Datadog Tracer registering succeeded: true" }
-    val androidTracer = AndroidTracer.Builder()
-      .setService("android")
-      .setBundleWithRumEnabled(true)
-      .build()
-    val didRegisterGlobalTracer = GlobalTracer.registerIfAbsent { androidTracer }
-    logcat(LogPriority.VERBOSE) { "Datadog Android Global Tracer registering succeeded: $didRegisterGlobalTracer" }
+    GlobalOpenTelemetry.set(DatadogOpenTelemetry(serviceName = "android"))
+    logcat(LogPriority.VERBOSE) { "Datadog Android Global Open Telemetry registering succeeded: true" }
 
     val logsConfig = LogsConfiguration.Builder().build()
     Logs.enable(logsConfig, sdkCore)

@@ -6,9 +6,9 @@ import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.data.file.CommonFile
 import octopus.ClaimIntentSubmitAudioMutation
@@ -17,6 +17,7 @@ import octopus.type.ClaimIntentSubmitAudioInput
 internal class SubmitAudioRecordingUseCase(
   private val apolloClient: ApolloClient,
   private val uploadFileUseCase: UploadFileUseCase,
+  private val languageService: LanguageService,
 ) {
   suspend fun invoke(stepId: StepId, freeText: String): Either<ErrorMessage, ClaimIntent> {
     return either { invoke(stepId, null, freeText) }
@@ -43,9 +44,12 @@ internal class SubmitAudioRecordingUseCase(
         ),
       )
       .safeExecute()
-      .mapLeft(::ErrorMessage)
+      .mapLeft {
+        logcat { "SubmitAudioRecordingUseCase error: $it" }
+        ErrorMessage()
+      }
       .bind()
       .claimIntentSubmitAudio
-      .toClaimIntent()
+      .toClaimIntent(languageService.getLocale())
   }
 }

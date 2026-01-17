@@ -106,8 +106,7 @@ internal class ForeverPresenter(
         },
       )
     }
-    val state = currentState
-    return when (state) {
+    return when (val state = currentState) {
       ForeverUiState.Error, ForeverUiState.Loading -> state
       is ForeverUiState.Success -> state.copy(showReferralCodeSuccessfullyChangedMessage = showSuccessSnackbar)
     }

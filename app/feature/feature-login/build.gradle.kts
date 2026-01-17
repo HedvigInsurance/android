@@ -15,10 +15,10 @@ android {
 
 dependencies {
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.lifecycle.compose)
-  implementation(libs.androidx.lifecycle.runtime)
-  implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.compose)
+  implementation(libs.jetbrains.lifecycle.runtime)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
+  implementation(libs.jetbrains.lifecycle.viewmodel)
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
@@ -33,7 +33,6 @@ dependencies {
   implementation(projects.coreDemoMode)
   implementation(projects.coreResources)
   implementation(projects.designSystemHedvig)
-  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)

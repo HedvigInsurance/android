@@ -8,7 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.withStateAtLeast
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Content

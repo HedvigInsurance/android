@@ -21,14 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.halilibo.richtext.commonmark.Markdown
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -61,7 +59,16 @@ import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.R
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
+import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_HINT
+import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT
+import hedvig.resources.TERMINATION_SURVEY_SUBTITLE
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationSurveyDestination(
@@ -150,8 +157,8 @@ private fun TerminationSurveyScreen(
   FreeTextOverlay(
     freeTextMaxLength = 2000,
     freeTextValue = uiState.feedbackText,
-    freeTextHint = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT),
-    freeTextTitle = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
+    freeTextHint = stringResource(Res.string.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT),
+    freeTextTitle = stringResource(Res.string.TERMINATION_SURVEY_FEEDBACK_HINT),
     freeTextOnCancelClick = {
       onCloseFullScreenEditText()
     },
@@ -171,7 +178,7 @@ private fun TerminationSurveyScreen(
           ) {
             EmptyQuotesDialogContent(
               title = when (uiState.showEmptyQuotesDialog) {
-                DeflectType.EmptyQuotes -> stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
+                DeflectType.EmptyQuotes -> stringResource(Res.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE)
                 is DeflectType.Deflect -> uiState.showEmptyQuotesDialog.title
               },
               description = when (uiState.showEmptyQuotesDialog) {
@@ -184,7 +191,7 @@ private fun TerminationSurveyScreen(
         }
         FlowHeading(
           title,
-          stringResource(id = R.string.TERMINATION_SURVEY_SUBTITLE),
+          stringResource(Res.string.TERMINATION_SURVEY_SUBTITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
@@ -203,9 +210,9 @@ private fun TerminationSurveyScreen(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .wrapContentWidth(),
-              text = stringResource(R.string.something_went_wrong),
+              text = stringResource(Res.string.something_went_wrong),
               iconStyle = ERROR,
-              description = stringResource(R.string.GENERAL_ERROR_BODY),
+              description = stringResource(Res.string.GENERAL_ERROR_BODY),
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -247,7 +254,7 @@ private fun TerminationSurveyScreen(
           modifier = Modifier.fillMaxWidth(),
         ) {
           HedvigButton(
-            stringResource(id = R.string.general_continue_button),
+            stringResource(Res.string.general_continue_button),
             enabled = uiState.continueAllowed,
             modifier = Modifier
               .fillMaxWidth()
@@ -263,7 +270,7 @@ private fun TerminationSurveyScreen(
 }
 
 @Composable
-private fun ColumnScope.SelectedSurveyInfoBox(
+private fun SelectedSurveyInfoBox(
   selectedOption: TerminationSurveyOption?,
   actionButtonLoading: Boolean,
   navigateToMovingFlow: () -> Unit,
@@ -356,7 +363,7 @@ private fun ColumnScope.SelectedSurveyTextDisplay(
           modifier = Modifier.padding(horizontal = 16.dp),
           onClick = { onLaunchFullScreenEditText() },
           freeTextValue = feedbackText,
-          freeTextPlaceholder = stringResource(id = R.string.TERMINATION_SURVEY_FEEDBACK_HINT),
+          freeTextPlaceholder = stringResource(Res.string.TERMINATION_SURVEY_FEEDBACK_HINT),
         )
       }
     } else {
@@ -376,7 +383,7 @@ private fun EmptyQuotesDialogContent(title: String, description: String?, closeE
       description = description,
     )
     HedvigTextButton(
-      stringResource(R.string.general_close_button),
+      stringResource(Res.string.general_close_button),
       onClick = closeEmptyQuotesDialog,
       buttonSize = Large,
       modifier = Modifier
@@ -516,7 +523,7 @@ private val previewReason3 = TerminationSurveyOption(
       listIndex = 1,
     ),
   ),
-  suggestion = SurveyOptionSuggestion.Known.Action.Redirect(
+  suggestion = Redirect(
     "http://www.google.com",
     "Do this action instead",
     "Click here to do it",

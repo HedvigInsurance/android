@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Checkmark: ImageVector
+val HedvigIcons.Checkmark: ImageVector
   get() {
     if (_tick != null) {
       return _tick!!

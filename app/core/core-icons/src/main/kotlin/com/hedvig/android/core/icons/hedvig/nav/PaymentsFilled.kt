@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.PaymentsFilled: ImageVector
+val HedvigIcons.PaymentsFilled: ImageVector
   get() {
     if (_paymentsFilled != null) {
       return _paymentsFilled!!

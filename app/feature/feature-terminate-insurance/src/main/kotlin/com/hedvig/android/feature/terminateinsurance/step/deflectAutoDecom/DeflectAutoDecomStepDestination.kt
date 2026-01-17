@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -27,7 +26,10 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_BUTTON
+import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectAutoDecomStepDestination(
@@ -134,7 +136,7 @@ private fun DeflectAutoDecomStepSuccessScreen(
       Spacer(Modifier.height(16.dp))
     }
     HedvigButton(
-      stringResource(id = R.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+      stringResource(Res.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
       enabled = !isNextStepLoading,
       modifier = Modifier
         .fillMaxWidth()
@@ -143,7 +145,7 @@ private fun DeflectAutoDecomStepSuccessScreen(
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.TERMINATION_BUTTON),
+      text = stringResource(Res.string.TERMINATION_BUTTON),
       isLoading = isNextStepLoading,
       modifier = Modifier
         .fillMaxWidth()

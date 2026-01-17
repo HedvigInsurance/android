@@ -110,8 +110,7 @@ internal class CustomizeTravelAddonPresenter(
       )
     }
 
-    val state = currentState
-    return when (state) {
+    return when (val state = currentState) {
       is CustomizeTravelAddonState.Failure, is CustomizeTravelAddonState.Loading -> state
       is CustomizeTravelAddonState.Success -> state.copy(
         currentlyChosenOptionInDialog = selectedOptionInDialog,

@@ -27,9 +27,8 @@ private const val POLL_DELAY_MILLIS = 1000L
 public class NetworkAuthRepository(
   environment: AuthEnvironment,
   additionalHttpHeadersProvider: () -> Map<String, String>,
-  httpClientEngine: HttpClientEngine? = null,
 ) : AuthRepository {
-  private val ktorClient: HttpClient = buildKtorClient(httpClientEngine, additionalHttpHeadersProvider)
+  private val ktorClient: HttpClient = buildKtorClient(additionalHttpHeadersProvider)
 
   private val authService = AuthService(environment, ktorClient)
 

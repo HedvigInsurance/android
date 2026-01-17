@@ -8,7 +8,7 @@ hedvig {
 }
 
 dependencies {
-  api(projects.dataContractPublic)
+  api(projects.dataContract)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloOctopusPublic)
 }

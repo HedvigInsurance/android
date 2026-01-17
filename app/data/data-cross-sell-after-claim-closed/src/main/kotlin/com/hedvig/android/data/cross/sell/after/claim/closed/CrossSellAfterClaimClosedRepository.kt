@@ -45,7 +45,6 @@ class CrossSellAfterClaimClosedRepositoryImpl(
               ),
             ),
           )
-          Unit
         }
       }
   }

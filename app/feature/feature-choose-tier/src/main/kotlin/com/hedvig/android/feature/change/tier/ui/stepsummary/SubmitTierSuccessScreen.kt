@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -22,8 +21,12 @@ import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButt
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION
+import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_TITLE
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackStack: () -> Unit) {
@@ -41,9 +44,9 @@ internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackStack: ()
     Spacer(Modifier.weight(1f))
     EmptyState(
       modifier = Modifier.fillMaxWidth(),
-      text = stringResource(R.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
+      text = stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_TITLE),
       description = stringResource(
-        R.string.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION,
+        Res.string.TIER_FLOW_COMMIT_PROCESSING_DESCRIPTION,
         activationDate,
       ),
       iconStyle = SUCCESS,
@@ -51,7 +54,7 @@ internal fun SubmitTierSuccessScreen(activationDate: LocalDate, popBackStack: ()
     )
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
-      stringResource(R.string.general_close_button),
+      stringResource(Res.string.general_close_button),
       onClick = dropUnlessResumed { popBackStack() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),

@@ -26,11 +26,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,6 +34,7 @@ import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
@@ -58,7 +54,6 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerImmutableState
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.NoopValidator
@@ -77,14 +72,34 @@ import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressV
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressValidationError.InvalidSquareMeters
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import hedvig.resources.R
+import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
+import hedvig.resources.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE
+import hedvig.resources.CHANGE_ADDRESS_MOVING_DATE_ERROR
+import hedvig.resources.CHANGE_ADDRESS_MOVING_DATE_LABEL
+import hedvig.resources.CHANGE_ADDRESS_NEW_ADDRESS_LABEL
+import hedvig.resources.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL
+import hedvig.resources.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL
+import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
+import hedvig.resources.CHANGE_ADDRESS_POSTAL_CODE_ERROR
+import hedvig.resources.CHANGE_ADDRESS_SIZE_SUFFIX
+import hedvig.resources.CHANGE_ADDRESS_STREET_ERROR
+import hedvig.resources.CHANGE_ADDRESS_STUDENT_LABEL
+import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
+import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.GENERAL_INVALID_INPUT
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.Res
+import hedvig.resources.app_info_submit_bug_go_back
+import hedvig.resources.general_continue_button
+import hedvig.resources.insurance_details_change_address_button
+import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EnterNewAddressDestination(
@@ -142,7 +157,7 @@ private fun EnterNewAddressScreen(
           MissingOngoingMovingFlow -> HedvigErrorSection(
             onButtonClick = popBackStack,
             subTitle = null,
-            buttonText = stringResource(R.string.app_info_submit_bug_go_back),
+            buttonText = stringResource(Res.string.app_info_submit_bug_go_back),
           )
 
           is Content -> EnterNewAddressScreen(
@@ -158,19 +173,19 @@ private fun EnterNewAddressScreen(
 
 @Composable
 private fun EnterNewAddressScreen(
-  uiState: EnterNewAddressUiState.Content,
+  uiState: Content,
   submitInput: () -> Unit,
   dismissSubmissionError: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   if (uiState.submittingInfoFailure != null) {
     ErrorDialog(
-      title = stringResource(R.string.something_went_wrong),
+      title = stringResource(Res.string.something_went_wrong),
       message = when (uiState.submittingInfoFailure) {
-        NetworkFailure -> stringResource(R.string.GENERAL_ERROR_BODY)
+        NetworkFailure -> stringResource(Res.string.GENERAL_ERROR_BODY)
         is UserError -> uiState.submittingInfoFailure.message
       },
-      buttonText = stringResource(R.string.GENERAL_RETRY),
+      buttonText = stringResource(Res.string.GENERAL_RETRY),
       onButtonClick = dismissSubmissionError,
       onDismiss = dismissSubmissionError,
     )
@@ -181,8 +196,8 @@ private fun EnterNewAddressScreen(
       .padding(horizontal = 16.dp),
   ) {
     FlowHeading(
-      stringResource(R.string.insurance_details_change_address_button),
-      stringResource(R.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
+      stringResource(Res.string.insurance_details_change_address_button),
+      stringResource(Res.string.CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE),
     )
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))
@@ -194,7 +209,7 @@ private fun EnterNewAddressScreen(
           onValueChange = {
             uiState.address.updateValue(it)
           },
-          labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL),
+          labelText = stringResource(Res.string.CHANGE_ADDRESS_NEW_ADDRESS_LABEL),
           keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
             imeAction = ImeAction.Next,
@@ -220,7 +235,7 @@ private fun EnterNewAddressScreen(
               }
             }
           },
-          labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),
+          labelText = stringResource(Res.string.CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL),
           keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Next,
@@ -244,7 +259,7 @@ private fun EnterNewAddressScreen(
               }
             }
           },
-          labelText = stringResource(R.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL),
+          labelText = stringResource(Res.string.CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL),
           keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Next,
@@ -256,7 +271,7 @@ private fun EnterNewAddressScreen(
           },
           suffix = {
             HedvigText(
-              text = stringResource(R.string.CHANGE_ADDRESS_SIZE_SUFFIX),
+              text = stringResource(Res.string.CHANGE_ADDRESS_SIZE_SUFFIX),
               color = HedvigTheme.colorScheme.textSecondary,
             )
           },
@@ -264,11 +279,11 @@ private fun EnterNewAddressScreen(
         )
         HedvigStepper(
           text = when (val numberCoInsured = uiState.numberCoInsured.value) {
-            0 -> stringResource(R.string.CHANGE_ADDRESS_ONLY_YOU)
-            else -> stringResource(R.string.CHANGE_ADDRESS_YOU_PLUS, numberCoInsured)
+            0 -> stringResource(Res.string.CHANGE_ADDRESS_ONLY_YOU)
+            else -> stringResource(Res.string.CHANGE_ADDRESS_YOU_PLUS, numberCoInsured)
           },
           stepperSize = Medium,
-          stepperStyle = Labeled(stringResource(R.string.CHANGE_ADDRESS_CO_INSURED_LABEL)),
+          stepperStyle = Labeled(stringResource(Res.string.CHANGE_ADDRESS_CO_INSURED_LABEL)),
           onMinusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value - 1) },
           onPlusClick = { uiState.numberCoInsured.updateValue(uiState.numberCoInsured.value + 1) },
           isPlusEnabled = !uiState.isLoadingNextStep && uiState.numberCoInsured.canIncrement,
@@ -277,7 +292,7 @@ private fun EnterNewAddressScreen(
         DatePickerField(uiState.movingDate, uiState.allowedMovingDateRange, uiState.shouldDisableInput)
         if (uiState.propertyType is WithStudentOption) {
           HedvigToggle(
-            labelText = stringResource(R.string.CHANGE_ADDRESS_STUDENT_LABEL),
+            labelText = stringResource(Res.string.CHANGE_ADDRESS_STUDENT_LABEL),
             turnedOn = uiState.propertyType.isStudentSelected,
             onClick = { uiState.propertyType.selectedIsStudent.updateValue(it) },
             enabled = !uiState.shouldDisableInput,
@@ -288,7 +303,7 @@ private fun EnterNewAddressScreen(
       Spacer(Modifier.height(16.dp))
       HedvigButton(
         onClick = submitInput,
-        text = stringResource(R.string.general_continue_button),
+        text = stringResource(Res.string.general_continue_button),
         enabled = !uiState.shouldDisableInput,
         isLoading = uiState.isLoadingNextStep,
         modifier = Modifier.fillMaxWidth(),
@@ -336,7 +351,7 @@ private fun DatePickerField(
     HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale)
   }
   val text = input.value?.let { localDate ->
-    rememberHedvigDateTimeFormatter.format(localDate.toJavaLocalDate())
+    rememberHedvigDateTimeFormatter.format(localDate)
   }
   // Workaround to get the layout of the hedvigTextField, without the functionality of it. Perhaps room for another
   //  component here
@@ -346,7 +361,7 @@ private fun DatePickerField(
       onValueChange = {},
       readOnly = true,
       enabled = !shouldDisableInput,
-      labelText = stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_LABEL),
+      labelText = stringResource(Res.string.CHANGE_ADDRESS_MOVING_DATE_LABEL),
       textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
       trailingContent = {},
       errorState = if (input.validationError != null) {
@@ -371,7 +386,7 @@ private fun DatePickerField(
 @Composable
 private fun EnterNewAddressValidationError.string(): String {
   return when (this) {
-    EmptyAddress -> stringResource(R.string.CHANGE_ADDRESS_STREET_ERROR)
+    EmptyAddress -> stringResource(Res.string.CHANGE_ADDRESS_STREET_ERROR)
     is InvalidMovingDate -> {
       when (this) {
         is InvalidMovingDate.InvalidChoice -> {
@@ -380,28 +395,28 @@ private fun EnterNewAddressValidationError.string(): String {
               "Tried to submit with invalid moving date, allowed range:$allowedMovingDateRange"
             }
           }
-          stringResource(R.string.GENERAL_INVALID_INPUT)
+          stringResource(Res.string.GENERAL_INVALID_INPUT)
         }
 
-        is InvalidMovingDate.MustSelectDate -> stringResource(R.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
+        is InvalidMovingDate.MustSelectDate -> stringResource(Res.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
       }
     }
 
     is InvalidPostalCode -> {
       when (this) {
         InvalidPostalCode.InvalidLength -> {
-          stringResource(R.string.GENERAL_INVALID_INPUT)
+          stringResource(Res.string.GENERAL_INVALID_INPUT)
         }
 
         InvalidPostalCode.MustBeOnlyDigits -> {
-          stringResource(R.string.GENERAL_INVALID_INPUT)
+          stringResource(Res.string.GENERAL_INVALID_INPUT)
         }
 
-        InvalidPostalCode.Missing -> stringResource(R.string.CHANGE_ADDRESS_POSTAL_CODE_ERROR)
+        InvalidPostalCode.Missing -> stringResource(Res.string.CHANGE_ADDRESS_POSTAL_CODE_ERROR)
       }
     }
 
-    is InvalidSquareMeters -> stringResource(R.string.GENERAL_INVALID_INPUT)
+    is InvalidSquareMeters -> stringResource(Res.string.GENERAL_INVALID_INPUT)
   }
 }
 
@@ -409,7 +424,7 @@ private fun EnterNewAddressValidationError.string(): String {
 @Composable
 fun PreviewEnterNewAddressScreen() {
   EnterNewAddressScreen(
-    uiState = EnterNewAddressUiState.Content(
+    uiState = Content(
       moveFromAddressId = "moveFromAddressId",
       movingDate = ValidatedInput(
         Clock.System.now().toLocalDateTime(TimeZone.UTC).date,
@@ -435,7 +450,7 @@ fun PreviewEnterNewAddressScreen() {
 @Composable
 fun PreviewEnterNewAddressScreenFailure() {
   EnterNewAddressScreen(
-    uiState = EnterNewAddressUiState.MissingOngoingMovingFlow,
+    uiState = MissingOngoingMovingFlow,
     {},
     {},
     {},

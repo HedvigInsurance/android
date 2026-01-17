@@ -13,15 +13,15 @@ hedvig {
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.jetbrains.compose.animation)
-      implementation(libs.jetbrains.compose.foundation)
-      implementation(libs.jetbrains.compose.material3)
-      implementation(libs.jetbrains.compose.ui)
-      implementation(libs.androidx.lifecycle.compose)
+      implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.apollo.api)
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
       implementation(libs.arrow.core)
+      implementation(libs.jetbrains.compose.animation)
+      implementation(libs.jetbrains.compose.foundation)
+      implementation(libs.jetbrains.compose.ui)
+      implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
@@ -31,24 +31,28 @@ kotlin {
       implementation(libs.uri.kmp)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
-      implementation(projects.moleculePublic)
-    }
-    androidMain.dependencies {
-      implementation(libs.bundles.kmpPreviewBugWorkaround)
-      implementation(libs.androidx.navigation.compose)
-      implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
-      implementation(projects.designSystemHedvig)
-      implementation(projects.composeUi)
-      implementation(projects.coreResources)
-      implementation(libs.androidx.compose.uiToolingPreview)
-      implementation(projects.coreCommonPublic)
-      implementation(libs.androidx.graphicsShapes)
-      implementation(libs.accompanist.permissions)
       implementation(projects.audioPlayerData)
       implementation(projects.audioPlayerUi)
       implementation(projects.composePhotoCaptureState)
+      implementation(projects.composeResultLauncher)
+      implementation(projects.composeUi)
+      implementation(projects.coreCommonPublic)
+      implementation(projects.coreResources)
       implementation(projects.coreUiData)
+      implementation(projects.designSystemHedvig)
+      implementation(projects.languageCore)
+      implementation(projects.moleculePublic)
+      implementation(projects.uiClaimFlow)
+      implementation(projects.uiForceUpgrade)
+    }
+    androidMain.dependencies {
+      implementation(libs.accompanist.permissions)
+      implementation(libs.androidx.navigation.compose)
+      implementation(libs.bundles.kmpPreviewBugWorkaround)
+      implementation(projects.composeUi)
+      implementation(projects.coreFileUpload)
+      implementation(projects.navigationCommon)
+      implementation(projects.navigationCompose)
     }
   }
 }

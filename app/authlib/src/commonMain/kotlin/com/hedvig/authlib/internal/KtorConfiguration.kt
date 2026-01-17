@@ -14,20 +14,13 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 internal fun buildKtorClient(
-  httpClientEngine: HttpClientEngine?,
   additionalHttpHeadersProvider: () -> Map<String, String>,
 ): HttpClient {
   val httpClientConfig: HttpClientConfig<*>.() -> Unit = {
     commonKtorConfiguration(additionalHttpHeadersProvider).invoke(this)
   }
-  return if (httpClientEngine == null) {
-    HttpClient {
-      httpClientConfig()
-    }
-  } else {
-    HttpClient(httpClientEngine) {
-      httpClientConfig()
-    }
+  return HttpClient {
+    httpClientConfig()
   }
 }
 

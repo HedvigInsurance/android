@@ -10,9 +10,9 @@ hedvig {
 
 dependencies {
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)

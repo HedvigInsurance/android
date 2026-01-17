@@ -6,11 +6,14 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSubmitSelectMutation
 import octopus.type.ClaimIntentSubmitSelectInput
 
 internal class SubmitSelectUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
   suspend fun invoke(id: StepId, selectedId: String): Either<ErrorMessage, ClaimIntent> {
     return either {
@@ -24,14 +27,17 @@ internal class SubmitSelectUseCase(
           ),
         )
         .safeExecute()
-        .mapLeft(::ErrorMessage)
+        .mapLeft {
+          logcat { "SubmitSelectUseCase error: $it" }
+          ErrorMessage()
+        }
         .bind()
         .claimIntentSubmitSelect
 
       when {
         data.userError != null -> raise(ErrorMessage(data.userError.message))
-        data.intent != null -> data.intent.toClaimIntent()
-        else -> raise(ErrorMessage("No data"))
+        data.intent != null -> data.intent.toClaimIntent(languageService.getLocale())
+        else -> raise(ErrorMessage())
       }
     }
   }

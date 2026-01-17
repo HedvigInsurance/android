@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.odyssey.di
 
 import com.hedvig.android.core.fileupload.FileService
-import com.hedvig.android.core.fileupload.UploadFileUseCase
+import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.LocationOption
@@ -75,7 +75,7 @@ val odysseyModule = module {
   }
   viewModel<FileUploadViewModel> { (fileUpload: ClaimFlowDestination.FileUpload) ->
     FileUploadViewModel(
-      uploadFileUseCase = get<UploadFileUseCase>(),
+      claimsServiceUploadFileUseCase = get<ClaimsServiceUploadFileUseCase>(),
       fileService = get<FileService>(),
       targetUploadUrl = fileUpload.targetUploadUrl,
       files = fileUpload.uploads,

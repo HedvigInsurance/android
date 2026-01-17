@@ -13,5 +13,5 @@ interface HedvigBottomSheetState<T> {
 
   fun show(data: T)
 
-  fun dismiss()
+  fun dismiss(onDismissed: () -> Unit = {})
 }

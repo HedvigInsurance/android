@@ -12,16 +12,7 @@ kotlin {
       implementation(libs.kotlinx.datetime)
     }
 
-    val jvmAndAndroidMain by creating {
-      dependsOn(commonMain.get())
-      dependencies {
-        api(libs.okhttp.core)
-      }
-    }
-
-    jvmMain.get().dependsOn(jvmAndAndroidMain)
     androidMain.apply {
-      get().dependsOn(jvmAndAndroidMain)
       dependencies {
         implementation(libs.androidx.other.core)
         implementation(projects.apolloOctopusPublic)
