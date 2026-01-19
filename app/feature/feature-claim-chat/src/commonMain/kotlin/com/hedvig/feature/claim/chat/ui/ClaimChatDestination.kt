@@ -19,6 +19,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,10 +64,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -227,32 +234,43 @@ private fun ClaimChatScreen(
   navigateUp: () -> Unit,
   openAppSettings: () -> Unit,
 ) {
-  FreeTextOverlay(
-    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
-    freeTextValue = uiState.freeText,
-    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-    freeTextOnCancelClick = {
-      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-    },
-    freeTextOnSaveClick = { feedback ->
-      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
-      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-    },
-    shouldShowOverlay = uiState.showFreeTextOverlay != null,
-    overlaidContent = {
-      ClaimChatScreenContent(
-        uiState = uiState,
-        onEvent = onEvent,
-        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-        openAppSettings = openAppSettings,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        navigateToDeflect = navigateToDeflect,
-        appPackageId = appPackageId,
-        imageLoader = imageLoader,
-        navigateUp = navigateUp,
-      )
-    },
+//  FreeTextOverlay(
+//    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
+//    freeTextValue = uiState.freeText,
+//    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+//    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+//    freeTextOnCancelClick = {
+//      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+//    },
+//    freeTextOnSaveClick = { feedback ->
+//      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
+//      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+//    },
+//    shouldShowOverlay = uiState.showFreeTextOverlay != null,
+//    overlaidContent = {
+//      ClaimChatScreenContent(
+//        uiState = uiState,
+//        onEvent = onEvent,
+//        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+//        openAppSettings = openAppSettings,
+//        onNavigateToImageViewer = onNavigateToImageViewer,
+//        navigateToDeflect = navigateToDeflect,
+//        appPackageId = appPackageId,
+//        imageLoader = imageLoader,
+//        navigateUp = navigateUp,
+//      )
+//    },
+//  )
+  ClaimChatScreenContent(
+    uiState = uiState,
+    onEvent = onEvent,
+    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+    openAppSettings = openAppSettings,
+    onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToDeflect = navigateToDeflect,
+    appPackageId = appPackageId,
+    imageLoader = imageLoader,
+    navigateUp = navigateUp,
   )
 }
 
@@ -1148,6 +1166,7 @@ private fun FormContent(
         content.fields.forEach { field ->
           when (field.type) {
             StepContent.Form.FieldType.TEXT -> {
+              val errorText = getErrorText(field)
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -1158,7 +1177,7 @@ private fun FormContent(
                     answer?.let { StepContent.Form.FieldOption(it, it) },
                   )
                 },
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1322,7 +1341,9 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
     ) {
       RoundCornersPill(
         onClick = onRegret,
-        modifier = Modifier.semantics(true) {},
+        modifier = Modifier.semantics(true) {
+          role = Role.Button
+        },
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(

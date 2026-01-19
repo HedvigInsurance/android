@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -101,14 +102,7 @@ fun HedvigTextField(
     colors = colors,
     configuration = configuration,
     size = size,
-    modifier = modifier.then(
-      when (errorState) {
-        ErrorState.NoError -> Modifier
-        else -> Modifier.semantics {
-          liveRegion = LiveRegionMode.Assertive
-        }
-      },
-    ),
+    modifier = modifier,
     enabled = enabled,
     readOnly = readOnly,
     label = { HedvigText(text = labelText) },
@@ -125,7 +119,14 @@ fun HedvigTextField(
       clearText = { onValueChange("") },
     ),
     supportingText = if (errorState is ErrorState.Error.WithMessage) {
-      { HedvigText(text = errorState.message) }
+      {
+        HedvigText(
+          text = errorState.message,
+          modifier = Modifier.semantics {
+            liveRegion = LiveRegionMode.Assertive
+          },
+        )
+      }
     } else {
       null
     },
@@ -238,7 +239,14 @@ fun HedvigTextField(
       clearText = { onValueChange(TextFieldValue("")) },
     ),
     supportingText = if (errorState is ErrorState.Error.WithMessage) {
-      { HedvigText(text = errorState.message) }
+      {
+        HedvigText(
+          text = errorState.message,
+          modifier = Modifier.semantics {
+            liveRegion = LiveRegionMode.Assertive
+          },
+        )
+      }
     } else {
       null
     },
@@ -353,7 +361,14 @@ fun HedvigTextField(
       clearText = { state.clearText() },
     ),
     supportingText = if (errorState is ErrorState.Error.WithMessage) {
-      { HedvigText(text = errorState.message) }
+      {
+        HedvigText(
+          text = errorState.message,
+          modifier = Modifier.semantics {
+            liveRegion = LiveRegionMode.Assertive
+          },
+        )
+      }
     } else {
       null
     },
