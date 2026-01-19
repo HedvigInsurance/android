@@ -506,7 +506,7 @@ private fun SearchResults(
             quickLink.quickAction.titleRes to stringResource(quickLink.quickAction.titleRes)
           }.toMap()
           val hintResMap = activeSearchState.results.filteredQuickLinks.map { quickLink ->
-            quickLink.quickAction.titleRes to stringResource(quickLink.quickAction.hintTextRes)
+            quickLink.quickAction.hintTextRes to stringResource(quickLink.quickAction.hintTextRes)
           }.toMap()
           HelpCenterSectionWithClickableRows(
             title = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE),
