@@ -13,6 +13,10 @@
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="A11Y_SCROLL_DOWN">Scroll to bottom</string>
+  <plurals name="A11Y_SUBMITTED_VALUES">
+    <item quantity="one">Submitted value</item>
+    <item quantity="other">Submitted values</item>
+  </plurals>
   <string name="A11Y_VIEW_DETAILS">View details</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
@@ -189,7 +193,7 @@
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Edit answer</string>
-  <string name="CLAIM_CHAT_EDIT_EXPLANATION">Changing this answer will reset everything you’ve filled in after it. You’ll need to go through those steps again.</string>
+  <string name="CLAIM_CHAT_EDIT_EXPLANATION">Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.</string>
   <string name="CLAIM_CHAT_EDIT_TITLE">Previous answers will be reset</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Make sure you fill in all the required fields</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uploaded files</string>
@@ -200,6 +204,7 @@
   <string name="CLAIM_CHAT_FORM_TEXT_MAX_CHAR">Value must be at most %1$d characters long</string>
   <string name="CLAIM_CHAT_FORM_TEXT_MIN_CHAR">Value must be at least %1$d characters long</string>
   <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Written description</string>
+  <string name="CLAIM_CHAT_GET_NOTIFIED">Get notified</string>
   <string name="CLAIM_CHAT_OTHER_TITLE">Other information</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Please provide phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
@@ -210,8 +215,10 @@
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Go to claim</string>
   <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Your claim was submitted successfully</string>
+  <string name="CLAIM_CHAT_TASK_CONTENT_DESCRIPTION">Processing information, please wait.</string>
+  <string name="CLAIM_CHAT_TITLE">Claim</string>
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
-  <string name="CLAIM_CHAT_USE_AUDIO">Record voice note</string>
+  <string name="CLAIM_CHAT_USE_AUDIO">Start voice recording</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe with text</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
@@ -602,7 +609,7 @@
   <string name="SETTINGS_TITLE">Settings</string>
   <string name="SINGLE_ITEM_INFO_BRAND">Brand</string>
   <string name="SUBMIT_CLAIM__PURCHASE_PRICE_TITLE">Fill in your purchase price</string>
-  <string name="SUBMIT_CLAIM_CAR_BUTTON_TITLE">Car claim</string>
+  <string name="SUBMIT_CLAIM_CAR_BUTTON_TITLE">Continue</string>
   <string name="SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON">Report your claim</string>
   <string name="SUBMIT_CLAIM_CAR_REPORT_CLAIM_QA_TITLE">Questions and answers</string>
   <string name="SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT">We are committed to making the process as swift and seamless as possible for you. The more information you can provide, the quicker we can assist you. Once we have all the necessary details, we will contact you via email.\n\nPlease note that for this matter, you cannot reach us through the app. After reporting the claim, all communication will take place via email.</string>
@@ -633,7 +640,7 @@
   <string name="SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL">We cover costs due to acute illness, injury and acute dental injury abroad. If you are seriously ill and require emergency medical care, contact Hedvig Global Assistance (SOS International) immediately.</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE">What your insurance covers</string>
   <string name="SUBMIT_CLAIM_EMERGENCY_REBOOK_FLIGHT_LABEL"></string>
-  <string name="SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE">Glass damage</string>
+  <string name="SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE">See our partners</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_HOW_BOOK_LABEL">We collaborate with many different workshops across the country. You can easily book your repair online with one of our online partners. If you would rather call your workshop to book an appointment, you need to state that you have car insurance with Hedvig and in some cases you also need the company code "02301".</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL">Get started quickly by contacting a workshop. We have established partnerships with Carglass and Ryds Bilglas.\n\nHowever, you are free to select a different workshop of your preference.</string>
   <string name="SUBMIT_CLAIM_GLASS_DAMAGE_INFO_BUTTON_TEXT">We collaborate with both Ryds Bilglas and Carglass to ensure that you receive assistance with your glass damage as quickly as possible.</string>
@@ -668,7 +675,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A1">You can get help with towing the car if it has been damaged or experienced a breakdown, such as engine failure or a flat tire.</string>
   <string name="SUBMIT_CLAIM_TOWING_A2">As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.</string>
-  <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Towing</string>
+  <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Read more</string>
   <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">You can contact Assistancekåren by phone using the button above or by calling directly at +46 10–45 99 222. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">We collaborate with Assistancekåren to ensure that you receive assistance as quickly as possible.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">You need to contact Assistancekåren directly to receive further assistance</string>
