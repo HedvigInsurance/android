@@ -74,6 +74,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -617,7 +618,7 @@ private fun ColumnScope.StepContentSection(
       openAppSettings = openAppSettings,
       modifier = Modifier.onSizeChanged { size ->
         onResponseHeightChanged(size)
-      }
+      },
     )
   } else if (isAnimationInProcess) {
     AnimatedVisibility(
@@ -672,6 +673,9 @@ private fun StepTopContent(
               MutableTransitionState(false).apply { targetState = true }
             },
             onAnimationFinished = onAnimationFinished,
+            modifier = Modifier.semantics {
+              heading()
+            },
           )
         }
       } else {
@@ -682,7 +686,12 @@ private fun StepTopContent(
     } else {
       stepItemText?.let {
         CommonPaddingWrapper {
-          HedvigText(stepItemText)
+          HedvigText(
+            stepItemText,
+            Modifier.semantics {
+              heading()
+            },
+          )
         }
       }
     }
@@ -696,9 +705,11 @@ private fun StepTopContent(
       )
     }
 
-    AnimatedVisibility(stepItem.stepContent is StepContent.Summary,
+    AnimatedVisibility(
+      stepItem.stepContent is StepContent.Summary,
       enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
-      exit = ExitTransition.None) {
+      exit = ExitTransition.None,
+    ) {
       Column {
         stepItemText?.let {
           Spacer(Modifier.height(16.dp))
@@ -813,7 +824,7 @@ private fun StepBottomContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     when (stepItem.stepContent) {
@@ -1158,14 +1169,14 @@ private fun FormContent(
   onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var errorDescription by rememberSaveable{mutableStateOf<String?>(null)}
-  val firstError = content.fields.firstOrNull {it.hasError!=null}?.let {
+  var errorDescription by rememberSaveable { mutableStateOf<String?>(null) }
+  val firstError = content.fields.firstOrNull { it.hasError != null }?.let {
     getErrorText(it)
   }
-  LaunchedEffect(content.fields.firstOrNull {it.hasError!=null}) {
-    if (firstError!=null) {
-      val fieldTitle = content.fields.firstOrNull {it.hasError!=null}?.title
-      errorDescription = "$firstError: ${fieldTitle?.let{it}}"
+  LaunchedEffect(content.fields.firstOrNull { it.hasError != null }) {
+    if (firstError != null) {
+      val fieldTitle = content.fields.firstOrNull { it.hasError != null }?.title
+      errorDescription = "$firstError: ${fieldTitle?.let { it }}"
     } else {
       errorDescription = null
     }
@@ -1305,7 +1316,7 @@ private fun FormContent(
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth().semantics {
           val error = errorDescription
-          if (error!=null) {
+          if (error != null) {
             contentDescription = error
           }
         },
