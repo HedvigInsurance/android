@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -810,6 +811,9 @@ internal fun ChatClaimSummaryTopContent(
         if (displayItems.isNotEmpty()) {
           HedvigText(
             stringResource(Res.string.claim_status_claim_details_title),
+            modifier = Modifier.semantics{
+              heading()
+            }
           )
           Spacer(Modifier.height(8.dp))
           CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
@@ -826,6 +830,7 @@ internal fun ChatClaimSummaryTopContent(
                       textAlign = TextAlign.End,
                     )
                   },
+                  modifier = Modifier.semantics(true){}
                 )
               }
             }
