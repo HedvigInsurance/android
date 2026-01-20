@@ -65,12 +65,12 @@ Hedvig Android app - A modern Android application built with Jetpack Compose, Ap
 The codebase is organized under `/app` with 80+ modules following a strict modularization pattern:
 
 - **app/** - Main application module
-- **feature/** (29 modules) - Feature modules (feature-home, feature-chat, feature-login, etc.)
-- **data/** (18 modules) - Data layer modules (data-contract, data-chat, data-addons, etc.)
-- **core/** (18 modules) - Core utilities (core-common, core-datastore, core-resources, etc.)
-- **apollo/** (14 modules) - GraphQL client modules (apollo-octopus-public, apollo-core, etc.)
-- **navigation/** (6 modules) - Navigation modules (navigation-compose, navigation-core, etc.)
-- **design-system/** (3 modules) - Design system components
+- **feature/** - Feature modules (feature-home, feature-chat, feature-login, etc.)
+- **data/** - Data layer modules (data-contract, data-chat, data-addons, etc.)
+- **core/** - Core utilities (core-common, core-datastore, core-resources, etc.)
+- **apollo/** - GraphQL client modules (apollo-octopus-public, apollo-core, etc.)
+- **navigation/* - Navigation modules (navigation-compose, navigation-core, etc.)
+- **design-system/* - Design system components
 - **ui/** - Shared UI components
 - **auth/** - Authentication modules
 - **database/** - Room database modules
@@ -85,6 +85,9 @@ The codebase is organized under `/app` with 80+ modules following a strict modul
 - `{name}-android` - Android-specific implementations
 - `{name}-test` - Test utilities
 - No suffix for main implementation modules
+
+However, if a module is KMP compatible, there is no need for the `-public` or `-android` suffix.
+The android-specific code lives inside the `androidMain` directory instead. (see `:language-core`)
 
 ### Build Types
 
@@ -188,23 +191,31 @@ val applicationModule = module {
 ```
 
 **Patterns:**
-- Use `Provider<T>` for lazy initialization
+- Use `Provider<T>` when we need a different implementation for the demo mode of the App, which we very rarely do. We always do that using `ProdOrDemoProvider`
 - Each feature/data module has its own DI module
 - Common dependencies (logging, tracking) auto-injected by build plugin
 
 ### Data Layer
 
-Data modules follow this structure:
+Data modules follow this structure when they are not KMP compatible:
 
 ```
 data-{domain}/
-├── data-{domain}-public/      # Interfaces/models (KMP-ready)
-│   └── src/commonMain/
+├── data-{domain}-public/      # Interfaces/models
+│   └── src/main/
 └── data-{domain}-android/     # Android implementation (optional)
 ```
 
+And they follow this structure when they are KMP compatible:
+
+```
+data-{domain}/
+└── data-{domain}/      # Interfaces/models (KMP)
+    └── src/commonMain/
+```
+
 **Patterns:**
-- Repository pattern with interfaces in `-public` modules
+- Repository pattern with interfaces
 - Apollo GraphQL queries/mutations
 - Use cases for business logic
 - Room database for local persistence
@@ -213,7 +224,7 @@ data-{domain}/
 
 ### UI
 - **Jetpack Compose** - 100% Compose, no XML layouts
-- **Material 3** - Window size classes, theming
+- **Material 3** - Window size classes, theming. Only used internally by our design-system-internals
 - **Coil** - Image loading (SVG, GIF, PDF support)
 - **ExoPlayer** (Media3) - Video playback
 
@@ -222,8 +233,7 @@ data-{domain}/
   - Normalized caching with `MemoryCacheFactory`
   - Response-based code generation
   - Client-side schema modifications
-- **OkHttp** - HTTP client with custom interceptors
-- **Ktor Client** - Alternative HTTP client
+- **Ktor Client** - HTTP client with custom interceptors
 - **Room Database** - Local persistence
 
 ### Async & Reactive
@@ -256,6 +266,7 @@ The project uses custom Gradle convention plugins for consistent configuration:
 - **hedvig.android.library** - Android library configuration
 - **hedvig.jvm.library** - Pure Kotlin (JVM) libraries
 - **hedvig.multiplatform.library** - KMP support
+- **hedvig.multiplatform.library.android** - used in conjuction with hedvig.multiplatform.library to add an android target to that module when it needs to have android-specific code which can not be just jvm code instead
 
 ### HedvigGradlePluginExtension DSL
 
@@ -378,9 +389,7 @@ GitHub Actions workflows (in `.github/workflows/`):
 - **build-logic/convention/** - Gradle convention plugins
 - **settings.gradle.kts** - Module discovery and configuration
 - **gradle.properties** - Project properties
-- **lokalise.properties** - Translation service credentials
 - **.editorconfig** - Code style configuration
-- **renovate.json** - Dependency update configuration
 
 ## Common Tasks
 
