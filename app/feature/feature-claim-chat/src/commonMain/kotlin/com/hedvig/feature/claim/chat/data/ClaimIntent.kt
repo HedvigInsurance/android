@@ -33,6 +33,7 @@ internal data class ClaimIntentStep(
   val text: String?,
   val stepContent: StepContent,
   val isRegrettable: Boolean,
+  val hint: String?
 )
 
 @Serializable
@@ -48,7 +49,6 @@ internal sealed interface StepContent {
   val isSkippable: Boolean
 
   data class AudioRecording(
-    val hint: String?,
     val uploadUri: String,
     override val isSkippable: Boolean,
     val recordingState: AudioRecordingStepState,
