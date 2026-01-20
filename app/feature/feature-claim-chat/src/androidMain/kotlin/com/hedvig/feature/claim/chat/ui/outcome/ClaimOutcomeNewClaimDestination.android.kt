@@ -40,13 +40,15 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 actual fun NotificationPermissionSection(key: Unit) {
   val notificationPermissionState = rememberNotificationPermissionState()
+  val context = LocalContext.current
+  val bottomSheetState = rememberHedvigBottomSheetState<Unit>()
   LaunchedEffect(key ) {
     if (!notificationPermissionState.status.isGranted) {
-      notificationPermissionState.launchPermissionRequest()
+      bottomSheetState.show()
     }
   }
-  val context = LocalContext.current
-  ClaimChatNotificationPermissionDialog(
+  ClaimChatNotificationPermissionBottomSheet(
+    sheetState = bottomSheetState,
     notificationPermissionState = notificationPermissionState,
     openAppSettings = {
       startAndroidNotificationSettingsActivity(context)
@@ -55,19 +57,12 @@ actual fun NotificationPermissionSection(key: Unit) {
 }
 
 @Composable
-fun ClaimChatNotificationPermissionDialog(
+fun ClaimChatNotificationPermissionBottomSheet(
+  sheetState: HedvigBottomSheetState<Unit>,
   notificationPermissionState: NotificationPermissionState,
   openAppSettings: () -> Unit,
 ) {
-  val bottomSheetState = rememberHedvigBottomSheetState<Unit>()
-
-  LaunchedEffect(notificationPermissionState.showDialog) {
-    if (notificationPermissionState.showDialog) {
-      bottomSheetState.show()
-    }
-  }
-
-  HedvigBottomSheet(bottomSheetState) {
+  HedvigBottomSheet(sheetState) {
     HedvigText(
       text = stringResource(Res.string.CLAIM_CHAT_GET_NOTIFIED),
       modifier = Modifier
@@ -84,7 +79,7 @@ fun ClaimChatNotificationPermissionDialog(
     HedvigButton(
       text = stringResource(Res.string.CLAIMS_ACTIVATE_NOTIFICATIONS_CTA),
       onClick = {
-        bottomSheetState.dismiss()
+        sheetState.dismiss()
         notificationPermissionState.dismissDialog()
         if (!notificationPermissionState.status.shouldShowRationale) {
           openAppSettings()
@@ -99,7 +94,7 @@ fun ClaimChatNotificationPermissionDialog(
     HedvigTextButton(
       text = stringResource(Res.string.general_cancel_button),
       onClick = {
-        bottomSheetState.dismiss()
+        sheetState.dismiss()
         notificationPermissionState.dismissDialog()
       },
       modifier = Modifier.fillMaxWidth(),
