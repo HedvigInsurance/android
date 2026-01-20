@@ -67,6 +67,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -123,6 +125,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
+import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
@@ -597,7 +600,7 @@ private fun ColumnScope.StepContentSection(
       openAppSettings = openAppSettings,
       modifier = Modifier.onSizeChanged { size ->
         onResponseHeightChanged(size)
-      }
+      },
     )
   } else if (isAnimationInProcess) {
     AnimatedVisibility(
@@ -676,9 +679,11 @@ private fun StepTopContent(
       )
     }
 
-    AnimatedVisibility(stepItem.stepContent is StepContent.Summary,
+    AnimatedVisibility(
+      stepItem.stepContent is StepContent.Summary,
       enter = if (hasAnimation) fadeIn(animationSpec = tween()) else EnterTransition.None,
-      exit = ExitTransition.None) {
+      exit = ExitTransition.None,
+    ) {
       Column {
         stepItemText?.let {
           Spacer(Modifier.height(16.dp))
@@ -793,7 +798,7 @@ private fun StepBottomContent(
   appPackageId: String,
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     when (stepItem.stepContent) {
@@ -1031,8 +1036,10 @@ private fun TaskStep(
   taskContent: StepContent.Task,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
-
+  val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
+  Column(
+    modifier.clearAndSetSemantics { contentDescription = taskContentDescription },
+  ) {
     if (taskContent.descriptions.isNotEmpty()) {
       Column {
         Row(
