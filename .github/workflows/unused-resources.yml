@@ -33,6 +33,6 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ steps.generate_token.outputs.token }}
-          branch: "maintenance/remove-unused-resources"
+          branch: "chore/remove-unused-resources"
           title: "Maintenance: Remove unused resources"
           body: ""

@@ -3,7 +3,9 @@ package com.hedvig.android.feature.login.swedishlogin
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -55,19 +57,23 @@ private class BankIdStateImpl(
 
   @SuppressLint("QueryPermissionsNeeded")
   private fun Context.canBankIdAppHandleUri(uri: Uri): Boolean {
-    val resolvedActivity = Intent(Intent.ACTION_VIEW, uri).resolveActivity(packageManager)
-    if (resolvedActivity == null) {
-      logcat(LogPriority.WARN) {
-        "Could not resolve BankID app with bankIdUri:$uri + resolvedActivity:$resolvedActivity"
+    return try {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.getPackageInfo(
+          BankIdAppPackageName,
+          PackageManager.PackageInfoFlags.of(0)
+        )
+      } else {
+        @Suppress("DEPRECATION")
+        packageManager.getPackageInfo(BankIdAppPackageName, 0)
       }
-      return false
+      true
+    } catch (e: PackageManager.NameNotFoundException) {
+      logcat(LogPriority.WARN) {
+        "Could not resolve BankID app with bankIdUri:$uri + exception: $e"
+      }
+      false
     }
-    val resolvedActivityPackageName = resolvedActivity.packageName
-    if (resolvedActivityPackageName != BankIdAppPackageName) {
-      logcat(LogPriority.WARN) { "Package $resolvedActivityPackageName tried to open BankID uri:$uri" }
-      return false
-    }
-    return true
   }
 }
 

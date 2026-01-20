@@ -113,11 +113,15 @@ private fun TravelCertificateTravellersInput(
           Spacer(Modifier.height(4.dp))
           CheckboxGroup(
             options = uiState.coInsuredList.map { coInsured ->
-              RadioOption(RadioOptionId(coInsured.id.value), coInsured.name)
+              RadioOption(
+                id = RadioOptionId(id = coInsured.id.value),
+                text = coInsured.name,
+              )
             },
             selectedOptions = uiState.coInsuredList.filter { it.isIncluded }.map { RadioOptionId(it.id.value) },
-            onRadioOptionSelected = {
-              changeCoInsuredChecked(uiState.coInsuredList.first { it.id.value == it.id.value })
+            onRadioOptionSelected = { radioOptionId ->
+              changeCoInsuredChecked(uiState.coInsuredList.first {
+                radioOptionId.id == it.id.value })
             },
             modifier = Modifier
               .fillMaxWidth()
