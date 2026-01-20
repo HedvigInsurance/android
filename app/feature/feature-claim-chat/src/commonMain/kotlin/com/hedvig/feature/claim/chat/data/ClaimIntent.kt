@@ -181,8 +181,6 @@ internal sealed interface StepContent {
 }
 
 sealed interface AudioRecordingStepState {
-
-  data object NonDefined: AudioRecordingStepState
   data class FreeTextDescription(
     val showOverlay: Boolean,
     val errorType: FreeTextErrorType?,
@@ -191,21 +189,27 @@ sealed interface AudioRecordingStepState {
   ) : AudioRecordingStepState
 
   sealed interface AudioRecording : AudioRecordingStepState {
-    data object NotRecording : AudioRecording
 
-    data class Recording(
-      val amplitudes: List<Int>,
-      val startedAt: Instant,
-      val filePath: String,
-    ) : AudioRecording
+    data object NotOpened: AudioRecording
 
-    data class Playback(
-      val filePath: String,
-      val isPlaying: Boolean,
-      val isPrepared: Boolean,
-      val amplitudes: List<Int>,
-      val hasError: Boolean,
-    ) : AudioRecording
+    sealed interface Opened: AudioRecording {
+      data object NotRecording : Opened
+
+      data class Recording(
+        val amplitudes: List<Int>,
+        val startedAt: Instant,
+        val filePath: String,
+      ) : Opened
+
+      data class Playback(
+        val filePath: String,
+        val isPlaying: Boolean,
+        val isPrepared: Boolean,
+        val amplitudes: List<Int>,
+        val hasError: Boolean,
+      ) : Opened
+    }
+
   }
 }
 

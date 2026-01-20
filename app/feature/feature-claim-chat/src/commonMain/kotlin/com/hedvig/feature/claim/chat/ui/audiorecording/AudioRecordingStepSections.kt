@@ -72,28 +72,28 @@ internal fun AudioRecorderBubble(
       when (s) {
         is AudioRecordingStepState.AudioRecording -> "audio_recording"
         is AudioRecordingStepState.FreeTextDescription -> "freetext"
-        AudioRecordingStepState.NonDefined -> "non_defined"
       }
     },
   ) { uiStateAnimated ->
     Column(modifier) {
       when (uiStateAnimated) {
-        is AudioRecordingStepState.AudioRecording -> {
-          AudioRecordingSection(
-            uiState = uiStateAnimated,
-            clock = clock,
-            shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-            startRecording = startRecording,
-            stopRecording = stopRecording,
-            submitAudioFile = submitAudioFile,
-            redo = redoRecording,
-            openAppSettings = openAppSettings,
-            allowFreeText = freeTextAvailable,
-            launchFreeText = onShowFreeText,
-            isCurrentStep = isCurrentStep,
-            continueButtonLoading = continueButtonLoading,
-          )
-        }
+//        is AudioRecordingStepState.AudioRecording -> {
+////          AudioRecordingSection(
+////            uiState = uiStateAnimated,
+////            clock = clock,
+////            shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+////            startRecording = startRecording,
+////            stopRecording = stopRecording,
+////            submitAudioFile = submitAudioFile,
+////            redo = redoRecording,
+////            openAppSettings = openAppSettings,
+////            allowFreeText = freeTextAvailable,
+////            launchFreeText = onShowFreeText,
+////            isCurrentStep = isCurrentStep,
+////            continueButtonLoading = continueButtonLoading,
+////          )
+//
+//        }
 
         is AudioRecordingStepState.FreeTextDescription -> {
           FreeTextInputSection(
@@ -109,8 +109,16 @@ internal fun AudioRecorderBubble(
           )
         }
 
-        AudioRecordingStepState.NonDefined -> {
+        is AudioRecordingStepState.AudioRecording -> {
           Column(Modifier.fillMaxWidth()) {
+            if (uiStateAnimated is AudioRecordingStepState.AudioRecording.Opened) {
+              AudioRecordingBottomSheet(
+                uiStateAnimated,
+                onDismiss = {
+                  // onShowUndefined() //todo
+                }
+              )
+            }
             HedvigButton(
               enabled = true,
               text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
@@ -145,6 +153,13 @@ internal fun AudioRecorderBubble(
   }
 }
 
+@Composable
+private fun AudioRecordingBottomSheet(
+  audioRecordingState: AudioRecordingStepState.AudioRecording,
+  onDismiss: () -> Unit
+) {
+  //todo
+}
 
 @Composable
 private fun FreeTextInputSection(
