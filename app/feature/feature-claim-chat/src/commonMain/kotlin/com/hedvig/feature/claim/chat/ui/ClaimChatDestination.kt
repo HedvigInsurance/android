@@ -100,6 +100,7 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
+import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -116,6 +117,8 @@ import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
+import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
+import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
@@ -226,43 +229,32 @@ private fun ClaimChatScreen(
   navigateUp: () -> Unit,
   openAppSettings: () -> Unit,
 ) {
-//  FreeTextOverlay(
-//    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
-//    freeTextValue = uiState.freeText,
-//    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
-//    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
-//    freeTextOnCancelClick = {
-//      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-//    },
-//    freeTextOnSaveClick = { feedback ->
-//      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
-//      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
-//    },
-//    shouldShowOverlay = uiState.showFreeTextOverlay != null,
-//    overlaidContent = {
-//      ClaimChatScreenContent(
-//        uiState = uiState,
-//        onEvent = onEvent,
-//        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-//        openAppSettings = openAppSettings,
-//        onNavigateToImageViewer = onNavigateToImageViewer,
-//        navigateToDeflect = navigateToDeflect,
-//        appPackageId = appPackageId,
-//        imageLoader = imageLoader,
-//        navigateUp = navigateUp,
-//      )
-//    },
-//  )
-  ClaimChatScreenContent(
-    uiState = uiState,
-    onEvent = onEvent,
-    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-    openAppSettings = openAppSettings,
-    onNavigateToImageViewer = onNavigateToImageViewer,
-    navigateToDeflect = navigateToDeflect,
-    appPackageId = appPackageId,
-    imageLoader = imageLoader,
-    navigateUp = navigateUp,
+  FreeTextOverlay(
+    freeTextMaxLength = uiState.showFreeTextOverlay?.maxLength ?: 2000,
+    freeTextValue = uiState.freeText,
+    freeTextHint = stringResource(Res.string.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER),
+    freeTextTitle = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
+    freeTextOnCancelClick = {
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+    },
+    freeTextOnSaveClick = { feedback ->
+      onEvent(ClaimChatEvent.UpdateFreeText(feedback))
+      onEvent(ClaimChatEvent.CloseFreeChatOverlay)
+    },
+    shouldShowOverlay = uiState.showFreeTextOverlay != null,
+    overlaidContent = {
+      ClaimChatScreenContent(
+        uiState = uiState,
+        onEvent = onEvent,
+        shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+        openAppSettings = openAppSettings,
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        navigateToDeflect = navigateToDeflect,
+        appPackageId = appPackageId,
+        imageLoader = imageLoader,
+        navigateUp = navigateUp,
+      )
+    },
   )
 }
 
