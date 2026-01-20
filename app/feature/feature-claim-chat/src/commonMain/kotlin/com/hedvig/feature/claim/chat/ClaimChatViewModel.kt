@@ -239,9 +239,9 @@ internal class ClaimChatPresenter(
 
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
-      handleNext(steps, setOutcome, claimIntent.next) {
-        progress = claimIntent.progress
-      }
+      handleNext(
+        steps, setOutcome, claimIntent,
+      ) { progress = it }
     }
 
     CollectEvents { event ->
@@ -272,9 +272,9 @@ internal class ClaimChatPresenter(
                     return@launch
                   }
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, claimIntent.next) {
-                    progress = claimIntent.progress
-                  }
+                  handleNext(
+                    steps, setOutcome, claimIntent,
+                  ) { progress = it }
                 },
               )
           }
@@ -306,9 +306,9 @@ internal class ClaimChatPresenter(
                     ifRight = { claimIntent ->
                       audioRecordingManager.cleanup()
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, claimIntent.next) {
-                        progress = claimIntent.progress
-                      }
+                      handleNext(
+                        steps, setOutcome, claimIntent,
+                      ) { progress = it }
                     },
                   )
               }
@@ -328,9 +328,9 @@ internal class ClaimChatPresenter(
                     },
                     ifRight = { claimIntent ->
                       currentContinueButtonLoading = false
-                      handleNext(steps, setOutcome, claimIntent.next) {
-                        progress = claimIntent.progress
-                      }
+                      handleNext(
+                        steps, setOutcome, claimIntent,
+                      ) { progress = it }
                     },
                   )
               }
@@ -466,9 +466,9 @@ internal class ClaimChatPresenter(
                   },
                   ifRight = { claimIntent ->
                     currentContinueButtonLoading = false
-                    handleNext(steps, setOutcome, claimIntent.next) {
-                      progress = claimIntent.progress
-                    }
+                    handleNext(
+                      steps, setOutcome, claimIntent,
+                    ) { progress = it }
                   },
                 )
             }
@@ -518,9 +518,9 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
-                  handleNext(steps, setOutcome, claimIntent.next) {
-                    progress = claimIntent.progress
-                  }
+                  handleNext(
+                    steps, setOutcome, claimIntent,
+                  ) { progress = it }
                 },
               )
           }
@@ -566,9 +566,9 @@ internal class ClaimChatPresenter(
                 },
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
-                  handleNext(steps, setOutcome, claimIntent.next) {
-                    progress = claimIntent.progress
-                  }
+                  handleNext(
+                    steps, setOutcome, claimIntent,
+                  ) { progress = it }
                 },
               )
           }
@@ -600,9 +600,9 @@ internal class ClaimChatPresenter(
                     }
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
-                    handleNext(steps, setOutcome, claimIntent.next) {
-                      progress = claimIntent.progress
-                    }
+                    handleNext(
+                      steps, setOutcome, claimIntent,
+                    ) { progress = it }
                   },
                 )
             }
@@ -685,10 +685,8 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent.next,
-                  ) {
-                    progress = claimIntent.progress
-                  }
+                    steps, setOutcome, claimIntent,
+                  ) { progress = it }
                 },
               )
           }
@@ -809,10 +807,11 @@ private fun SubmitCompleteTaskEffect(
 private fun handleNext(
   steps: SnapshotStateList<ClaimIntentStep>,
   setOutcome: (outcome: ClaimIntentOutcome) -> Unit,
-  next: ClaimIntent.Next,
-  setProgress: () -> Unit,
+  intent: ClaimIntent,
+  setProgress: (Float?) -> Unit,
 ) {
-  setProgress()
+  val next = intent.next
+  setProgress(intent.progress)
   when (next) {
     is ClaimIntent.Next.Outcome -> {
       setOutcome(next.claimIntentOutcome)
