@@ -40,6 +40,7 @@ data class Shapes internal constructor(
   val cornerXXLarge: Shape = FigmaShape(24.dp),
   val cornerXLarge: Shape = FigmaShape(16.dp),
   val cornerLarge: Shape = FigmaShape(12.dp),
+  val cornerLargeEnd: Shape = FigmaShape(12.dp, figmaShapeDirection = FigmaShapeDirection.EndOnly),
   val cornerMedium: Shape = FigmaShape(10.dp),
   val cornerSmall: Shape = FigmaShape(8.dp),
   val cornerXSmall: Shape = FigmaShape(6.dp),
@@ -123,6 +124,13 @@ private fun RoundedPolygon.Companion.squircle(
         CornerRounding(cornerRadius, smoothing),
         CornerRounding(cornerRadius, smoothing),
       )
+
+      FigmaShapeDirection.EndOnly -> listOf(
+        CornerRounding.Unrounded,
+        CornerRounding(cornerRadius, smoothing),
+        CornerRounding(cornerRadius, smoothing),
+        CornerRounding.Unrounded,
+      )
     },
   ).toPath(startAngle = 0)
 }
@@ -131,6 +139,7 @@ enum class FigmaShapeDirection {
   All,
   TopOnly,
   BottomOnly,
+  EndOnly
 }
 
 private fun RoundedPolygon.toPath(

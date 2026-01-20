@@ -26,7 +26,7 @@ data class ChatMessageEntity(
   @Embedded
   val action: ChatMessageEntityAction?,
   @ColumnInfo(defaultValue = "0")
-  val isAiGenerationIndicator: Boolean
+  val isAiGenerationIndicator: Boolean,
 ) {
   enum class Sender {
     HEDVIG,
@@ -43,7 +43,7 @@ data class ChatMessageEntity(
 
 data class ChatMessageEntityAction(
   val actionTitle: String,
-  val actionUrl: String
+  val actionUrl: String,
 )
 
 data class ChatMessageEntityBanner(
