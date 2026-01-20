@@ -13,6 +13,10 @@
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
   <string name="A11Y_SCROLL_DOWN">Skrolla längst ner på sidan</string>
+  <plurals name="A11Y_SUBMITTED_VALUES">
+    <item quantity="one">Inskickat värde</item>
+    <item quantity="other">Inskickade värden</item>
+  </plurals>
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
@@ -193,6 +197,7 @@
   <string name="CLAIM_CHAT_EDIT_TITLE">Tidigare svar kommer att rensas</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Dubbelkolla att du fyllt i alla obligatoriska fält</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uppladdade filer</string>
+  <string name="CLAIM_CHAT_FILE_UPLOAD_HINT">n/a</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Ladda upp filer</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Värdet får vara högst %d</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Värdet måste vara minst %d</string>
@@ -211,6 +216,7 @@
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in ditt skadeärende</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
   <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Ditt ärende har skickats in</string>
+  <string name="CLAIM_CHAT_TASK_CONTENT_DESCRIPTION">Bearbetar information, vänligen vänta.</string>
   <string name="CLAIM_CHAT_TITLE">Skadeanmälan</string>
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Starta röstinspelning</string>

@@ -79,7 +79,8 @@ private fun textChatMessageEntity(
   failedToSend = null,
   isBeingSent = isBeingSent,
   banner = null,
-  action = null
+  action = null,
+  isAiGenerationIndicator = false,
 )
 
 @Database(

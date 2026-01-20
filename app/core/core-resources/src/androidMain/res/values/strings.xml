@@ -13,6 +13,10 @@
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="A11Y_SCROLL_DOWN">Scroll to bottom</string>
+  <plurals name="A11Y_SUBMITTED_VALUES">
+    <item quantity="one">Submitted value</item>
+    <item quantity="other">Submitted values</item>
+  </plurals>
   <string name="A11Y_VIEW_DETAILS">View details</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
@@ -193,6 +197,7 @@
   <string name="CLAIM_CHAT_EDIT_TITLE">Previous answers will be reset</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Make sure you fill in all the required fields</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uploaded files</string>
+  <string name="CLAIM_CHAT_FILE_UPLOAD_HINT">n/a</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Send files</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Value must be at most %d</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Value must be at least %d</string>
@@ -211,6 +216,7 @@
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Go to claim</string>
   <string name="CLAIM_CHAT_SUCCESS_MESSAGE">Your claim was submitted successfully</string>
+  <string name="CLAIM_CHAT_TASK_CONTENT_DESCRIPTION">Processing information, please wait.</string>
   <string name="CLAIM_CHAT_TITLE">Claim</string>
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Start voice recording</string>
