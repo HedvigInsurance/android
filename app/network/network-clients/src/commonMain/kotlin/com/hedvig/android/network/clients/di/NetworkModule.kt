@@ -100,9 +100,7 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
   }
 }
 
-private fun HttpClient.addAuthPlugin(
-  accessTokenFetcher: AccessTokenFetcher,
-) {
+private fun HttpClient.addAuthPlugin(accessTokenFetcher: AccessTokenFetcher) {
   plugin(HttpSend).intercept { request ->
     val accessToken = accessTokenFetcher.fetch()
     execute(
@@ -110,7 +108,7 @@ private fun HttpClient.addAuthPlugin(
         request.apply { header("Authorization", "Bearer ${accessTokenFetcher.fetch()}") }
       } else {
         request
-      }
+      },
     )
   }
 }
