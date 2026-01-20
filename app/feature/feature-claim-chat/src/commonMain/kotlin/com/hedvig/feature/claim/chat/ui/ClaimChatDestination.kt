@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
@@ -99,7 +98,6 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
@@ -128,6 +126,7 @@ import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
 import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
+import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_close_button
@@ -272,6 +271,7 @@ private fun ClaimChatScreenContent(
   navigateUp: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  var showCloseFlowDialog by rememberSaveable { mutableStateOf(false) }
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
@@ -292,6 +292,16 @@ private fun ClaimChatScreenContent(
       onConfirmClick = {
         onEvent(ClaimChatEvent.Regret(uiState.showConfirmEditDialogForStep))
       },
+    )
+  }
+  if (showCloseFlowDialog) {
+    HedvigAlertDialog(
+      title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+      text = stringResource(Res.string.claims_alert_body),
+      onDismissRequest = {
+        showCloseFlowDialog = false
+      },
+      onConfirmClick = navigateUp,
     )
   }
   val lazyListState = rememberLazyListState()
@@ -329,7 +339,9 @@ private fun ClaimChatScreenContent(
         ),
         topAppBarActions = {
           IconButton(
-            onClick = navigateUp,
+            onClick = {
+              showCloseFlowDialog = true
+            },
           ) {
             Icon(
               HedvigIcons.Close,
@@ -338,7 +350,27 @@ private fun ClaimChatScreenContent(
           }
         },
       )
-      HorizontalDivider()
+      Box(
+        Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.CenterStart,
+      ) {
+        HorizontalDivider()
+        uiState.progress?.let {
+          val animatedProgress = animateFloatAsState(
+            targetValue = uiState.progress,
+            animationSpec = tween(durationMillis = 1000),
+          )
+          Box(
+            modifier = Modifier
+              .height(3.dp)
+              .fillMaxWidth(animatedProgress.value)
+              .background(
+                HedvigTheme.colorScheme.fillPrimary,
+                HedvigTheme.shapes.cornerLargeEnd,
+              ),
+          )
+        }
+      }
       ClaimChatScrollableContent(
         uiState = uiState,
         lazyListState = lazyListState,
@@ -635,7 +667,7 @@ private fun StepTopContent(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  val hint = (stepItem.stepContent as? StepContent.AudioRecording)?.hint?.let {
+  val hint = stepItem.hint?.let {
     "\n\n$it"
   }
   val stepItemText = when {

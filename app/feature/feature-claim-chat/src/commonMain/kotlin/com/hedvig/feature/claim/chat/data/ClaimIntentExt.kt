@@ -51,6 +51,7 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLoca
     text = text,
     stepContent = this.content.toStepContent(locale),
     isRegrettable = this.isRegrettable,
+    hint = hint,
   )
 }
 
@@ -63,7 +64,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
 
     is ContentSelectFragment -> StepContent.ContentSelect(
       options = options.toOptions(),
-      selectedOptionId = null, // todo
+      selectedOptionId = null,
       isSkippable = isSkippable,
       style = when (style) {
         ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
@@ -78,7 +79,6 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     )
 
     is AudioRecordingFragment -> StepContent.AudioRecording(
-      hint = hint,
       uploadUri = uploadUri,
       isSkippable = isSkippable,
       recordingState = AudioRecordingStepState.NonDefined,
