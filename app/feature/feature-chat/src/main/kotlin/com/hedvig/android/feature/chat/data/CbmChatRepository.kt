@@ -354,9 +354,12 @@ internal class CbmChatRepositoryImpl(
         "Empty message page for conversation $conversationId"
       }
       val messages = messagePage.messages.mapNotNull { it.toChatMessage() }
-      val messagesWithIndicator = if (isBeingGenerated) messages +
-        CbmChatMessage.aiGeneratingIndicator(Clock.System.now())
-      else messages
+      val messagesWithIndicator = if (isBeingGenerated) {
+        messages +
+          CbmChatMessage.aiGeneratingIndicator(Clock.System.now())
+      } else {
+        messages
+      }
       ChatMessagePageResponse(
         messages = messagesWithIndicator,
         newerToken = messagePage.newerToken,
@@ -534,9 +537,9 @@ private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
         action = actions?.let { action ->
           CbmChatMessage.ChatMessageTextAction(
             title = action.title,
-            url = action.url
+            url = action.url,
           )
-        }
+        },
       )
     }
   }
@@ -584,7 +587,7 @@ private fun ConversationInput.toChatMessageEntity(
         isBeingSent = true,
         banner = null,
         action = null,
-        isAiGenerationIndicator = false
+        isAiGenerationIndicator = false,
       )
     }
 
@@ -602,7 +605,7 @@ private fun ConversationInput.toChatMessageEntity(
         isBeingSent = true,
         banner = null,
         action = null,
-        isAiGenerationIndicator = false
+        isAiGenerationIndicator = false,
       )
     }
   }

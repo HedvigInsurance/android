@@ -599,10 +599,8 @@ private fun HomeScreenSuccess(
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
     if (fullScreenSizeValue != null) {
-      val horizontalInsets = WindowInsets.safeDrawing
-        .only(WindowInsetsSides.Horizontal)
-        .exclude(consumedWindowInsets)
-        .asPaddingValues()
+      val horizontalInsets =
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).exclude(consumedWindowInsets).asPaddingValues()
       HomeLayout(
         fullScreenSize = fullScreenSizeValue,
         welcomeMessage = {
@@ -777,8 +775,8 @@ private fun VeryImportantMessageCard(
       style = if (veryImportantMessage.linkInfo != null) {
         NotificationDefaults.InfoCardStyle.Buttons(
           leftButtonText = stringResource(Res.string.important_message_hide),
-          rightButtonText =
-            veryImportantMessage.linkInfo.buttonText ?: stringResource(Res.string.important_message_read_more),
+          rightButtonText = veryImportantMessage.linkInfo.buttonText
+            ?: stringResource(Res.string.important_message_read_more),
           onLeftButtonClick = { hideImportantMessage(veryImportantMessage.id) },
           onRightButtonClick = { openUrl(veryImportantMessage.linkInfo.link) },
         )
@@ -835,13 +833,11 @@ private fun CrossSellBottomSheet(
   imageLoader: ImageLoader,
 ) {
   LaunchedEffect(state) {
-    snapshotFlow { state.isVisible }
-      .distinctUntilChanged()
-      .collect { isVisible ->
-        if (isVisible) {
-          markCrossSellsNotificationAsSeen()
-        }
+    snapshotFlow { state.isVisible }.distinctUntilChanged().collect { isVisible ->
+      if (isVisible) {
+        markCrossSellsNotificationAsSeen()
       }
+    }
   }
   CrossSellBottomSheet(
     state = state,
