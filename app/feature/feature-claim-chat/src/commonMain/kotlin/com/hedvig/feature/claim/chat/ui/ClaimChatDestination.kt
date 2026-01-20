@@ -72,6 +72,8 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -1156,6 +1158,18 @@ private fun FormContent(
   onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  var errorDescription by rememberSaveable{mutableStateOf<String?>(null)}
+  val firstError = content.fields.firstOrNull {it.hasError!=null}?.let {
+    getErrorText(it)
+  }
+  LaunchedEffect(content.fields.firstOrNull {it.hasError!=null}) {
+    if (firstError!=null) {
+      val fieldTitle = content.fields.firstOrNull {it.hasError!=null}?.title
+      errorDescription = "$firstError: ${fieldTitle?.let{it}}"
+    } else {
+      errorDescription = null
+    }
+  }
   Column(
     modifier,
   ) {
@@ -1164,9 +1178,10 @@ private fun FormContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         content.fields.forEach { field ->
+          val errorText = getErrorText(field)
           when (field.type) {
             StepContent.Form.FieldType.TEXT -> {
-              val errorText = getErrorText(field)
+
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -1186,7 +1201,7 @@ private fun FormContent(
                 questionLabel = field.title,
                 datePickerState = field.datePickerUiState!!, // todo - check "!!"
                 modifier = Modifier.fillMaxWidth(),
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1202,7 +1217,7 @@ private fun FormContent(
                   )
                 },
                 keyboardType = KeyboardType.Number,
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1231,7 +1246,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1258,7 +1273,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1271,7 +1286,7 @@ private fun FormContent(
                 )
               },
               questionText = field.title,
-              errorText = getErrorText(field),
+              errorText = errorText,
             )
 
             null -> {
@@ -1288,7 +1303,12 @@ private fun FormContent(
         enabled = !continueButtonLoading,
         isLoading = continueButtonLoading,
         onClick = onSubmit,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().semantics {
+          val error = errorDescription
+          if (error!=null) {
+            contentDescription = error
+          }
+        },
       )
       if (canSkip) {
         Spacer(Modifier.height(8.dp))

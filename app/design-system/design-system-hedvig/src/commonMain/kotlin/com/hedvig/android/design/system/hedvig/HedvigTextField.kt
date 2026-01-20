@@ -121,15 +121,8 @@ fun HedvigTextField(
     supportingText = if (errorState is ErrorState.Error.WithMessage) {
       {
         val errorMessage = errorState.message
-        LaunchedEffect(errorMessage) {
-          // Announcement is triggered by the LiveRegion when the error message changes
-          delay(50) // Small delay to ensure the UI is updated before announcement
-        }
         HedvigText(
           text = errorMessage,
-          modifier = Modifier.semantics {
-            liveRegion = LiveRegionMode.Assertive
-          },
         )
       }
     } else {
@@ -246,15 +239,8 @@ fun HedvigTextField(
     supportingText = if (errorState is ErrorState.Error.WithMessage) {
       {
         val errorMessage = errorState.message
-        LaunchedEffect(errorMessage) {
-          // Announcement is triggered by the LiveRegion when the error message changes
-          delay(50) // Small delay to ensure the UI is updated before announcement
-        }
         HedvigText(
           text = errorMessage,
-          modifier = Modifier.semantics {
-            liveRegion = LiveRegionMode.Assertive
-          },
         )
       }
     } else {
@@ -373,15 +359,8 @@ fun HedvigTextField(
     supportingText = if (errorState is ErrorState.Error.WithMessage) {
       {
         val errorMessage = errorState.message
-        LaunchedEffect(errorMessage) {
-          // Announcement is triggered by the LiveRegion when the error message changes
-          delay(50) // Small delay to ensure the UI is updated before announcement
-        }
         HedvigText(
           text = errorMessage,
-          modifier = Modifier.semantics {
-            liveRegion = LiveRegionMode.Assertive
-          },
         )
       }
     } else {
