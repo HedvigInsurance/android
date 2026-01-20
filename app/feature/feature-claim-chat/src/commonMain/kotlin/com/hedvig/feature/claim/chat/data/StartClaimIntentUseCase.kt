@@ -4,15 +4,20 @@ import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
+import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentStartMutation
 
 internal class StartClaimIntentUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
-  suspend fun invoke(sourceMessageId: String?, developmentFlow: Boolean): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(developmentFlow: Boolean): Either<ErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(
@@ -20,11 +25,15 @@ internal class StartClaimIntentUseCase(
             developmentFlow = Optional.present(developmentFlow),
           ),
         )
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
-        .mapLeft(::ErrorMessage)
+        .mapLeft {
+          logcat { "StartClaimIntentUseCase error: $it" }
+          ErrorMessage()
+        }
         .bind()
         .claimIntentStart
-        .toClaimIntent()
+        .toClaimIntent(languageService.getLocale())
     }
   }
 }

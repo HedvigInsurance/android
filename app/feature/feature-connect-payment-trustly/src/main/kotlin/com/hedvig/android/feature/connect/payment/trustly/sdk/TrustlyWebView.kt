@@ -33,7 +33,7 @@ class TrustlyWebView(
   @Throws(WebSettingsException::class)
   private fun configWebSettings() {
     try {
-      val webSettings = getSettings()
+      val webSettings = settings
       webSettings.javaScriptEnabled = true
       webSettings.domStorageEnabled = true
       webSettings.javaScriptCanOpenWindowsAutomatically = true

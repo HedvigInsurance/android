@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -34,7 +33,9 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.insurances.data.Addon
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DocumentsTab(
@@ -88,7 +89,7 @@ internal fun DocumentsTab(
 private fun DocumentCard(onClick: () -> Unit, title: String, subtitle: String?, modifier: Modifier = Modifier) {
   HedvigCard(
     onClick = onClick,
-    onClickLabel = stringResource(R.string.TALKBACK_OPEN_EXTERNAL_LINK),
+    onClickLabel = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
     modifier = modifier
       .padding(horizontal = 16.dp)
       .heightIn(min = 56.dp),

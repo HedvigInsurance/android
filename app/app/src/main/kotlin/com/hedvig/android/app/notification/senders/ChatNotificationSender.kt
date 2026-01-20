@@ -32,7 +32,6 @@ import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import hedvig.resources.R
-import hedvig.resources.R.drawable.ic_hedvig_h
 
 /**
  * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
@@ -92,7 +91,7 @@ class ChatNotificationSender(
     val messagingStyle = createMessagingStyle(remoteMessage)
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
-      .setSmallIcon(ic_hedvig_h)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
       .setStyle(messagingStyle)
       .setPriority(PRIORITY_MAX)
       .setAutoCancel(true)

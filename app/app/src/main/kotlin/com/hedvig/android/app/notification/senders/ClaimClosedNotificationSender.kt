@@ -17,7 +17,7 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import hedvig.resources.R.drawable.ic_hedvig_h
+import hedvig.resources.R
 
 class ClaimClosedNotificationSender(
   private val context: Context,
@@ -45,7 +45,7 @@ class ClaimClosedNotificationSender(
     val body = remoteMessage.bodyFromCustomerIoData()
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
-      .setSmallIcon(ic_hedvig_h)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
       .setContentTitle(title)
       .setContentText(body)
       .setPriority(PRIORITY_MAX)

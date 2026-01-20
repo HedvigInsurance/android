@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.RestartTwoArrows: ImageVector
+val HedvigIcons.RestartTwoArrows: ImageVector
   get() {
     if (_restartTwoArrows != null) {
       return _restartTwoArrows!!

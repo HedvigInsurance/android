@@ -4,7 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.data.claimflow.ClaimFlowDestination
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
@@ -67,6 +67,7 @@ fun NavGraphBuilder.claimFlowGraph(
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
   imageLoader: ImageLoader,
   nestedGraphs: NavGraphBuilder.() -> Unit,
 ) {
@@ -319,6 +320,7 @@ fun NavGraphBuilder.claimFlowGraph(
         deflectEmergency = this,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
+        tryToDialPhone = tryToDialPhone,
       )
     }
     navdestination<ClaimFlowDestination.DeflectPests>(

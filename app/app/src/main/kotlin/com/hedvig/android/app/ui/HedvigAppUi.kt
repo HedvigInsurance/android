@@ -28,12 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.media3.datasource.cache.SimpleCache
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -48,8 +47,10 @@ import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import hedvig.resources.R
+import hedvig.resources.EXIT_DEMO_MODE_BUTTON
+import hedvig.resources.Res
 import kotlinx.coroutines.flow.first
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HedvigAppUi(
@@ -98,7 +99,7 @@ internal fun HedvigAppUi(
     }
     if (isDemoMode) {
       DemoModeLabel(
-        stringResource(R.string.EXIT_DEMO_MODE_BUTTON),
+        stringResource(Res.string.EXIT_DEMO_MODE_BUTTON),
         onButtonClick = { logoutUseCase.invoke() },
         modifier = Modifier
           .padding(start = 16.dp, end = 32.dp, bottom = 86.dp)

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.CircleWithCheckmark: ImageVector
+val HedvigIcons.CircleWithCheckmark: ImageVector
   get() {
     if (_circleWithCheckmark != null) {
       return _circleWithCheckmark!!

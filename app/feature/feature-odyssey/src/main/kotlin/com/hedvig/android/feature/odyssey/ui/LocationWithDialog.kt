@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.data.claimflow.LocationOption
@@ -17,7 +16,10 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.claims_incident_screen_location
+import hedvig.resources.claims_location_screen_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun LocationWithDialog(
@@ -30,7 +32,7 @@ internal fun LocationWithDialog(
   var showLocationPickerDialog by rememberSaveable { mutableStateOf(false) }
   if (showLocationPickerDialog) {
     SingleSelectDialog(
-      title = stringResource(R.string.claims_incident_screen_location),
+      title = stringResource(Res.string.claims_incident_screen_location),
       options = locationOptions.map { locationOption ->
         RadioOption(
           id = RadioOptionId(locationOption.displayName),
@@ -47,7 +49,7 @@ internal fun LocationWithDialog(
 
   HedvigBigCard(
     onClick = { showLocationPickerDialog = true },
-    labelText = stringResource(R.string.claims_location_screen_title),
+    labelText = stringResource(Res.string.claims_location_screen_title),
     inputText = selectedLocation?.displayName,
     enabled = enabled,
     modifier = modifier,

@@ -623,12 +623,21 @@ type ClaimIntent {
   id: ID!
   currentStep: ClaimIntentStep
   """
+  A value between 0.0 and 1.0 that indicates roughly how far along the submission
+  flow the user has progressed.
+  """
+  progress: Float
+  """
   The created claim of this intent.
   Once this value is returned, the intent is effectively over, and no steps
   can be produced or interacted with.
   """
   createdClaim: Claim
 }
+"""
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+"""
+scalar Float
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
   """
@@ -656,6 +665,7 @@ shapes (see the `ClaimIntentStepContent` union).
 type ClaimIntentStep {
   id: ID!
   text: String
+  hint: String
   content: ClaimIntentStepContent!
   isRegrettable: Boolean!
 }
@@ -668,7 +678,6 @@ An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
 """
 type ClaimIntentStepContentAudioRecording {
-  hint: String!
   """
   The relative URI towards where one should upload the audio recording.
   """
@@ -792,6 +801,7 @@ Submitted using `Mutation.claimIntentSubmitSelect`.
 """
 type ClaimIntentStepContentSelect {
   options: [ClaimIntentStepContentSelectOption!]!
+  style: ClaimIntentStepContentSelectStyle!
   defaultSelectedId: ID
   isSkippable: Boolean!
 }
@@ -807,6 +817,14 @@ type ClaimIntentStepContentSelectOption {
   Rendered title of the choice
   """
   title: String!
+}
+"""
+Decides the rendering style of the select step.
+If this is `BINARY` - then clients can assume that `ClaimIntentStepContentSelect.options` have two values.
+"""
+enum ClaimIntentStepContentSelectStyle {
+  PILL
+  BINARY
 }
 """
 A read-only step where the entire claim intent information is displayed before submitting.
@@ -1366,10 +1384,6 @@ type FlowClaimAutomaticAutogiroPayout implements FlowClaimCheckoutMethod {
 input FlowClaimAutomaticAutogiroPayoutInput {
   amount: Float!
 }
-"""
-The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
-"""
-scalar Float
 interface FlowClaimCheckoutMethod {
   id: ID!
 }
@@ -3782,6 +3796,7 @@ input ShopSessionAttributionInput {
   A/B testing experiments
   """
   experiments: [ShopSessionExperimentInput!]
+  trackingData: JSON
 }
 input ShopSessionCartCampaignRedeemInput {
   shopSessionId: UUID!

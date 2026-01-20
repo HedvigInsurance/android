@@ -18,6 +18,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
@@ -32,6 +33,14 @@ import androidx.compose.ui.unit.LayoutDirection
  * screen's size and must be provided by the app's main activity
  */
 val LocalSharedTransitionScope: ProvidableCompositionLocal<SharedTransitionScope?> = staticCompositionLocalOf {
+  null
+}
+
+/**
+ * A local which contains the AnimatedVisibilityScope tied to the current navigation's destination.
+ * See [NavGraphBuilder.navdestination] for how it's provided.
+ */
+val LocalNavAnimatedVisibilityScope: ProvidableCompositionLocal<AnimatedVisibilityScope?> = compositionLocalOf {
   null
 }
 

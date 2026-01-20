@@ -15,9 +15,3 @@ internal class NativeFile(
     TODO("Not yet implemented")
   }
 }
-
-internal class NativeFileService : FileService {
-  override fun convertToCommonFile(uri: Uri): CommonFile {
-    return NativeFile("todo", "todo")
-  }
-}

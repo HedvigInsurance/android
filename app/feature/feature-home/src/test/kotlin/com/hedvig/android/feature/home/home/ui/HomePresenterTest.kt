@@ -63,6 +63,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -90,6 +91,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -115,6 +117,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -174,6 +177,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = false,
+          isProduction = false,
         ),
       )
     }
@@ -188,6 +192,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -225,6 +230,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = false,
+          isProduction = false,
         ),
       )
     }
@@ -239,6 +245,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -263,6 +270,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -300,6 +308,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -333,6 +342,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = false,
+          isProduction = false,
         ),
       )
     }
@@ -347,6 +357,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -387,6 +398,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = false,
+          isProduction = false,
         ),
       )
     }
@@ -401,6 +413,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
     val crossSell = CrossSell(
       id = "id",
@@ -444,6 +457,7 @@ internal class HomePresenterTest {
           ),
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = false,
+          isProduction = false,
         ),
       )
     }
@@ -458,6 +472,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -490,6 +505,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = false,
+          isProduction = false,
         ),
       )
     }
@@ -504,6 +520,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       FakeFeatureManager(false),
       backgroundScope,
+      false,
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -536,6 +553,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           travelAddonBannerInfo = null,
           isExperimentalClaimChatEnabled = false,
+          isProduction = false,
         ),
       )
     }

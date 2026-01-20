@@ -49,7 +49,7 @@ internal data class PayoutUiState(
   val amount: UiMoney,
   val status: Status,
 ) {
-  val canRequestPayout: Boolean = status is PayoutUiState.Status.NotStarted || status is PayoutUiState.Status.Error
+  val canRequestPayout: Boolean = status is Status.NotStarted || status is Status.Error
 
   sealed interface Status {
     object NotStarted : Status // Before the member has started the payout process in the first place

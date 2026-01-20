@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.ArrowForward: ImageVector
+val HedvigIcons.ArrowForward: ImageVector
   get() {
     if (_arrowForward != null) {
       return _arrowForward!!

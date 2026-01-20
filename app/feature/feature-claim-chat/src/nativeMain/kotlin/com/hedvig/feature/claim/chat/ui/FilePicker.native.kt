@@ -7,6 +7,8 @@ import com.eygraber.uri.Uri
 internal actual fun rememberFilePicker(onResult: (Uri?) -> Unit): FilePicker {
   return object : FilePicker {
     override fun launch() {
+      // TODO: Implement iOS file picker using UIDocumentPickerViewController
+      onResult(null)
     }
   }
 }

@@ -6,6 +6,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.DateFormatter
 import java.time.format.DateTimeFormatter
 import kotlin.String
 import kotlinx.datetime.LocalDate
@@ -120,11 +121,10 @@ data class InsuranceAgreement(
   ) {
     fun getDisplayName() = formatName(firstName, lastName)
 
-    fun getSsnOrBirthDate(dateTimeFormatter: DateTimeFormatter) = if (ssn != null) {
+    fun getSsnOrBirthDate(dateTimeFormatter: DateFormatter) = if (ssn != null) {
       formatSsn(ssn)
     } else {
       birthDate
-        ?.toJavaLocalDate()
         ?.let { dateTimeFormatter.format(it) }
     }
   }

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.StopSign: ImageVector
+val HedvigIcons.StopSign: ImageVector
   get() {
     if (_stopSign != null) {
       return _stopSign!!

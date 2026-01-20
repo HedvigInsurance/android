@@ -144,56 +144,56 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
 
   @Test
   fun `if get null bannerData from BE return null`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithNullBannerData, featureManager)
-    val result = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first()
-    assertk.assertThat(result)
+    val result = sut.invoke(TRAVEL_CERTIFICATES).first()
+    assertThat(result)
       .isEqualTo(null.right())
   }
 
   @Test
   fun `the source is mapped to the correct flow for the query`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithTwoFlows, featureManager)
-    val resultFromTravelCertificates = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first().getOrNull()
-    assertk.assertThat(resultFromTravelCertificates).isNotNull()
-    val resultFromInsurances = sut.invoke(TravelAddonBannerSource.INSURANCES_TAB).first().getOrNull()
-    assertk.assertThat(resultFromInsurances).isNull()
+    val resultFromTravelCertificates = sut.invoke(TRAVEL_CERTIFICATES).first().getOrNull()
+    assertThat(resultFromTravelCertificates).isNotNull()
+    val resultFromInsurances = sut.invoke(INSURANCES_TAB).first().getOrNull()
+    assertThat(resultFromInsurances).isNull()
   }
 
   @Test
   fun `if get bannerData from BE is not null but contractIds are empty return null`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithEmptyContracts, featureManager)
-    val result = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first()
-    assertk.assertThat(result)
+    val result = sut.invoke(TRAVEL_CERTIFICATES).first()
+    assertThat(result)
       .isEqualTo(null.right())
   }
 
   @Test
   fun `if get error from BE return ErrorMessage`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithError, featureManager)
-    val resultFromTravels = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first().isLeft()
-    assertk.assertThat(resultFromTravels)
+    val resultFromTravels = sut.invoke(TRAVEL_CERTIFICATES).first().isLeft()
+    assertThat(resultFromTravels)
       .isTrue()
   }
 
   @Test
   fun `if get full banner data from BE return TravelAddonBannerInfo`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithFullBannerData, featureManager)
-    val resultFromTravel = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first().getOrNull()
-    assertk.assertThat(resultFromTravel)
+    val resultFromTravel = sut.invoke(TRAVEL_CERTIFICATES).first().getOrNull()
+    assertThat(resultFromTravel)
       .isNotNull()
   }
 
   @Test
   fun `the received data is passed correctly and in full`() = runTest {
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
     val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithFullBannerData, featureManager)
-    val resultFromTravel = sut.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES).first().getOrNull()
-    assertk.assertThat(resultFromTravel)
+    val resultFromTravel = sut.invoke(TRAVEL_CERTIFICATES).first().getOrNull()
+    assertThat(resultFromTravel)
       .isEqualTo(
         TravelAddonBannerInfo(
           title = "Title",

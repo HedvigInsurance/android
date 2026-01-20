@@ -24,70 +24,71 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
 
-@Composable
-internal actual fun BlurredGradientBackground(modifier: Modifier, radius: Int) {
-  Box(
-    modifier = modifier.graphicsLayer {
-      compositingStrategy = CompositingStrategy.Offscreen
-      val radiusPx = radius.dp.toPx()
-      renderEffect = BlurEffect(
-        radiusX = radiusPx,
-        radiusY = radiusPx,
-        edgeTreatment = TileMode.Decal,
-      )
-    },
-  ) {
-    // 1. Setup Continuous Animation for Movement
-    val infiniteTransition = rememberInfiniteTransition(label = "GradientMovement")
-
-    // Animate a phase shift from 0f to 2 * PI (one full cycle) over 10 seconds (10000ms)
-    val phase by infiniteTransition.animateFloat(
-      initialValue = 0f,
-      targetValue = (2 * kotlin.math.PI).toFloat(),
-      animationSpec = infiniteRepeatable(
-        animation = tween(durationMillis = 10000, easing = LinearEasing),
-        repeatMode = RepeatMode.Reverse,
-      ),
-      label = "phaseShift",
-    )
-
-    Box(modifier = modifier.fillMaxSize()) {
-      // 2. The Blur and Canvas Layer (Combined for Skia/Android)
-      Canvas(
-        modifier = Modifier.fillMaxSize(),
-      ) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-
-        // Set radius extremely large so only the blurred, soft edges are visible
-        val radius = size.minDimension * 2.0f
-
-        // --- Shape 1: Purple/Pink (Top Left Corner) ---
-        val offset1 = Offset(
-          // Base position + oscillating movement
-          x = canvasWidth * 0.1f + sin(phase) * (canvasWidth * 0.15f),
-          y = canvasHeight * 0.1f + cos(phase * 0.5f) * (canvasHeight * 0.1f),
-        )
-        drawCircle(
-          color = Color(0xFFC9A7ED).copy(alpha = 0.6f), // Light purple color
-          radius = radius,
-          center = offset1,
-          // BlendMode.Screen helps the colors brighten when they overlap, matching the video's look
-          blendMode = BlendMode.Screen,
-        )
-
-        // --- Shape 2: Yellow/Green (Bottom Right Corner) ---
-        val offset2 = Offset(
-          x = canvasWidth * 0.9f + cos(phase * 1.5f) * (canvasWidth * 0.1f),
-          y = canvasHeight * 0.9f + sin(phase * 0.7f) * (canvasHeight * 0.15f),
-        )
-        drawCircle(
-          color = Color(0xFFF9E899).copy(alpha = 0.5f), // Light yellow/cream color
-          radius = radius * 0.8f,
-          center = offset2,
-          blendMode = BlendMode.Screen,
-        )
-      }
-    }
-  }
-}
+//todo: leaving it here since we want to have gradient in the future
+//@Composable
+//internal actual fun BlurredGradientBackground(modifier: Modifier, radius: Int) {
+//  Box(
+//    modifier = modifier.graphicsLayer {
+//      compositingStrategy = CompositingStrategy.Offscreen
+//      val radiusPx = radius.dp.toPx()
+//      renderEffect = BlurEffect(
+//        radiusX = radiusPx,
+//        radiusY = radiusPx,
+//        edgeTreatment = TileMode.Decal,
+//      )
+//    },
+//  ) {
+//    // 1. Setup Continuous Animation for Movement
+//    val infiniteTransition = rememberInfiniteTransition(label = "GradientMovement")
+//
+//    // Animate a phase shift from 0f to 2 * PI (one full cycle) over 10 seconds (10000ms)
+//    val phase by infiniteTransition.animateFloat(
+//      initialValue = 0f,
+//      targetValue = (2 * kotlin.math.PI).toFloat(),
+//      animationSpec = infiniteRepeatable(
+//        animation = tween(durationMillis = 10000, easing = LinearEasing),
+//        repeatMode = RepeatMode.Reverse,
+//      ),
+//      label = "phaseShift",
+//    )
+//
+//    Box(modifier = modifier.fillMaxSize()) {
+//      // 2. The Blur and Canvas Layer (Combined for Skia/Android)
+//      Canvas(
+//        modifier = Modifier.fillMaxSize(),
+//      ) {
+//        val canvasWidth = size.width
+//        val canvasHeight = size.height
+//
+//        // Set radius extremely large so only the blurred, soft edges are visible
+//        val radius = size.minDimension * 2.0f
+//
+//        // --- Shape 1: Purple/Pink (Top Left Corner) ---
+//        val offset1 = Offset(
+//          // Base position + oscillating movement
+//          x = canvasWidth * 0.1f + sin(phase) * (canvasWidth * 0.15f),
+//          y = canvasHeight * 0.1f + cos(phase * 0.5f) * (canvasHeight * 0.1f),
+//        )
+//        drawCircle(
+//          color = Color(0xFFC9A7ED).copy(alpha = 0.6f), // Light purple color
+//          radius = radius,
+//          center = offset1,
+//          // BlendMode.Screen helps the colors brighten when they overlap, matching the video's look
+//          blendMode = BlendMode.Screen,
+//        )
+//
+//        // --- Shape 2: Yellow/Green (Bottom Right Corner) ---
+//        val offset2 = Offset(
+//          x = canvasWidth * 0.9f + cos(phase * 1.5f) * (canvasWidth * 0.1f),
+//          y = canvasHeight * 0.9f + sin(phase * 0.7f) * (canvasHeight * 0.15f),
+//        )
+//        drawCircle(
+//          color = Color(0xFFF9E899).copy(alpha = 0.5f), // Light yellow/cream color
+//          radius = radius * 0.8f,
+//          center = offset2,
+//          blendMode = BlendMode.Screen,
+//        )
+//      }
+//    }
+//  }
+//}

@@ -64,7 +64,6 @@ import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -88,11 +87,11 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.request.ImageRequest
-import coil.request.NullRequestDataException
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.NullRequestDataException
 import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorSnackbar
@@ -164,7 +163,22 @@ import com.hedvig.android.feature.chat.ui.formattedDateTime
 import com.hedvig.android.feature.chat.ui.messageHorizontalAlignment
 import com.hedvig.android.feature.chat.ui.onBackgroundColor
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.R
+import hedvig.resources.AUTOMATED_MESSAGE_INFO_CARD_BUTTON
+import hedvig.resources.CHAT_CONVERSATION_CLOSED_INFO
+import hedvig.resources.CHAT_DELIVERED_MESSAGE
+import hedvig.resources.CHAT_FAILED_TO_SEND
+import hedvig.resources.CHAT_FILE_DOWNLOAD
+import hedvig.resources.CHAT_SENDER_AUTOMATION
+import hedvig.resources.CHAT_SENDER_HEDVIG
+import hedvig.resources.CHAT_SENDER_MEMBER
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CHAT_FAILED_MEDIA
+import hedvig.resources.TALKBACK_CHAT_FAILED_PHOTO
+import hedvig.resources.TALKBACK_CHAT_FAILED_TEXT
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_FILE
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_GIF
+import hedvig.resources.TALKBACK_CHAT_MESSAGE_TEXT
+import hedvig.resources.general_close_button
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
@@ -177,6 +191,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withTimeout
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CbmChatLoadedScreen(
@@ -275,7 +290,7 @@ private fun ChatLoadedScreen(
       ) {
         ChatBanner(
           text = when (uiState.bannerText) {
-            ClosedConversation -> stringResource(R.string.CHAT_CONVERSATION_CLOSED_INFO)
+            ClosedConversation -> stringResource(Res.string.CHAT_CONVERSATION_CLOSED_INFO)
             is BannerText.Text -> uiState.bannerText.text
             null -> ""
           },
@@ -349,7 +364,7 @@ private fun ScrollToBottomEffect(
             .first { it == idToScrollTo.toString() }
         }
         ensureActive()
-        val senderIsMember = chatMessage.sender == Sender.MEMBER
+        val senderIsMember = chatMessage.sender == MEMBER
         val isAlreadyCloseToTheBottom = lazyListState.firstVisibleItemIndex <= 2
         if (senderIsMember || isAlreadyCloseToTheBottom) {
           lazyListState.scrollToItem(0)
@@ -402,7 +417,7 @@ private fun ChatLazyColumn(
         when (uiChatMessage.chatMessage) {
           is ChatMessageFile -> {
             when (uiChatMessage.chatMessage.mimeType) {
-              ChatMessageFile.MimeType.IMAGE -> "ChatMessage.ChatMessageFileImage"
+              IMAGE -> "ChatMessage.ChatMessageFileImage"
               ChatMessageFile.MimeType.MP4 -> "ChatMessage.ChatMessageFileMP4"
               ChatMessageFile.MimeType.PDF -> "ChatMessage.ChatMessageFilePDF"
               ChatMessageFile.MimeType.OTHER -> "ChatMessage.ChatMessageFileOther"
@@ -584,7 +599,7 @@ private fun ChatBubble(
 
         is ChatMessageFile -> {
           when (chatMessage.mimeType) {
-            ChatMessageFile.MimeType.IMAGE -> {
+            IMAGE -> {
               ChatAsyncImage(
                 model = chatMessage.url,
                 imageLoader = imageLoader,
@@ -767,7 +782,7 @@ private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Mo
       Spacer(Modifier.height(16.dp))
       HedvigTextButton(
         onClick = { sheetState.dismiss() },
-        text = stringResource(R.string.general_close_button),
+        text = stringResource(Res.string.general_close_button),
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(16.dp))
@@ -799,7 +814,7 @@ private fun MessageBanner(banner: CbmChatMessage.Banner, modifier: Modifier = Mo
     modifier = modifier,
     style = if (sheetInformation != null) {
       InfoCardStyle.Button(
-        stringResource(R.string.AUTOMATED_MESSAGE_INFO_CARD_BUTTON),
+        stringResource(Res.string.AUTOMATED_MESSAGE_INFO_CARD_BUTTON),
         { sheetState.show(sheetInformation) },
       )
     } else {
@@ -814,24 +829,24 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
     val context = LocalContext.current
     val sender = stringResource(
       when (it.sender) {
-        HEDVIG -> R.string.CHAT_SENDER_HEDVIG
-        AUTOMATION -> R.string.CHAT_SENDER_AUTOMATION
-        MEMBER -> R.string.CHAT_SENDER_MEMBER
+        HEDVIG -> Res.string.CHAT_SENDER_HEDVIG
+        AUTOMATION -> Res.string.CHAT_SENDER_AUTOMATION
+        MEMBER -> Res.string.CHAT_SENDER_MEMBER
       },
     )
     val time = formatInstantForTalkBack(context, it.sentAt)
     when (it) {
-      is ChatMessageFile -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
+      is ChatMessageFile -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
       // At [%s:formattedInstant], [%s:sender] sent a file with type: [%s:mimeType], double tap to open.
-      is ChatMessageGif -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_GIF, time, sender)
+      is ChatMessageGif -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_GIF, time, sender)
       // At [%s:formattedInstant], [%s:sender] sent a GIF picture.
-      is CbmChatMessage.ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
+      is CbmChatMessage.ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
       // "at $instant, $sender said: $it.text."
-      is ChatMessageMedia -> stringResource(R.string.TALKBACK_CHAT_FAILED_MEDIA, time)
+      is ChatMessageMedia -> stringResource(Res.string.TALKBACK_CHAT_FAILED_MEDIA, time)
       // "at $instant, you tried to send a media file, but it failed. Double tap to try sending again."
-      is ChatMessagePhoto -> stringResource(R.string.TALKBACK_CHAT_FAILED_PHOTO, time)
+      is ChatMessagePhoto -> stringResource(Res.string.TALKBACK_CHAT_FAILED_PHOTO, time)
       // "at $instant, you tried to send a photo, but it failed. Double tap to try sending again."
-      is ChatMessageText -> stringResource(R.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
+      is ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
       // "at $instant, you tried to send a text message, but it failed. Double tap to try sending again. The message said: $it.text"
     }
   } ?: ""
@@ -911,7 +926,7 @@ private fun AttachedFileMessage(
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
       Icon(imageVector = HedvigIcons.MultipleDocuments, contentDescription = null, modifier = Modifier.size(24.dp))
-      HedvigText(text = stringResource(R.string.CHAT_FILE_DOWNLOAD))
+      HedvigText(text = stringResource(Res.string.CHAT_FILE_DOWNLOAD))
     }
   }
 }
@@ -1080,8 +1095,8 @@ private fun ChatAsyncImage(
         AsyncImagePainter.State.Empty -> state
         is AsyncImagePainter.State.Success -> {
           loadedImageIntrinsicSize.value = IntSize(
-            state.result.drawable.intrinsicWidth,
-            state.result.drawable.intrinsicHeight,
+            state.result.image.width,
+            state.result.image.height,
           )
           state
         }
@@ -1150,28 +1165,28 @@ internal fun ChatMessageWithTimeAndDeliveryStatus(
             append("HHHH.HH.HH")
           } else {
             if (failedToBeSent) {
-              append(stringResource(R.string.CHAT_FAILED_TO_SEND))
+              append(stringResource(Res.string.CHAT_FAILED_TO_SEND))
               append(" • ")
             }
             if (enableMessageSenderLabeling) {
               when (uiChatMessage.chatMessage.sender) {
                 AUTOMATION -> {
-                  append(stringResource(R.string.CHAT_SENDER_AUTOMATION))
+                  append(stringResource(Res.string.CHAT_SENDER_AUTOMATION))
                   append(" • ")
                 }
 
-                Sender.HEDVIG -> {
-                  append(stringResource(R.string.CHAT_SENDER_HEDVIG))
+                HEDVIG -> {
+                  append(stringResource(Res.string.CHAT_SENDER_HEDVIG))
                   append(" • ")
                 }
 
-                Sender.MEMBER -> {}
+                MEMBER -> {}
               }
             }
             append(chatMessage.formattedDateTime(getLocale()))
             if (uiChatMessage.isLastDeliveredMessage) {
               append(" • ")
-              append(stringResource(R.string.CHAT_DELIVERED_MESSAGE))
+              append(stringResource(Res.string.CHAT_DELIVERED_MESSAGE))
             }
           }
         },

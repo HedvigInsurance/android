@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -36,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.DateFormatter
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -46,18 +46,28 @@ import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getDescription
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.feature.payments.chargeBreakdownPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberCharge.ChargeBreakdown.Period.Description.BetweenDays
 import com.hedvig.android.feature.payments.data.MemberCharge.ChargeBreakdown.Period.Description.FullPeriod
-import hedvig.resources.R
-import java.time.format.DateTimeFormatter
+import hedvig.resources.PAYMENTS_AMOUNT_TO_PAY
+import hedvig.resources.PAYMENTS_OUTSTANDING_PAYMENT
+import hedvig.resources.PAYMENTS_PERIOD_DAYS
+import hedvig.resources.PAYMENTS_PERIOD_FULL
+import hedvig.resources.PAYMENTS_PERIOD_TITLE
+import hedvig.resources.PAYMENTS_SUBTOTAL
+import hedvig.resources.Res
+import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE
+import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND
+import hedvig.resources.TALKBACK_EXPANDABLE_STATE_COLLAPSED
+import hedvig.resources.TALKBACK_EXPANDABLE_STATE_EXPANDED
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PaymentDetailExpandableCard(
@@ -71,10 +81,10 @@ internal fun PaymentDetailExpandableCard(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val collapsedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
-  val expandedStateDescription = stringResource(R.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
-  val collapseClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
-  val expandClickLabel = stringResource(R.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
+  val collapsedStateDescription = stringResource(Res.string.TALKBACK_EXPANDABLE_STATE_COLLAPSED)
+  val expandedStateDescription = stringResource(Res.string.TALKBACK_EXPANDABLE_STATE_EXPANDED)
+  val collapseClickLabel = stringResource(Res.string.TALKBACK_EXPANDABLE_CLICK_LABEL_COLLAPSE)
+  val expandClickLabel = stringResource(Res.string.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND)
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   HedvigCard(
     modifier = modifier,
@@ -193,7 +203,7 @@ internal fun PaymentDetailExpandableCard(
             HorizontalItemsWithMaximumSpaceTaken(
               startSlot = {
                 HedvigText(
-                  stringResource(R.string.PAYMENTS_SUBTOTAL),
+                  stringResource(Res.string.PAYMENTS_SUBTOTAL),
                   style = HedvigTheme.typography.label,
                   color = HedvigTheme.colorScheme.textSecondaryTranslucent,
                 )
@@ -217,7 +227,7 @@ internal fun PaymentDetailExpandableCard(
           }
           Spacer(Modifier.height(16.dp))
           HedvigText(
-            text = stringResource(R.string.PAYMENTS_PERIOD_TITLE),
+            text = stringResource(Res.string.PAYMENTS_PERIOD_TITLE),
             modifier = Modifier.semantics(true) {},
           )
           Spacer(Modifier.height(6.dp))
@@ -233,7 +243,7 @@ internal fun PaymentDetailExpandableCard(
             HorizontalItemsWithMaximumSpaceTaken(
               spaceBetween = 8.dp,
               startSlot = {
-                HedvigText(stringResource(id = R.string.PAYMENTS_AMOUNT_TO_PAY))
+                HedvigText(stringResource(Res.string.PAYMENTS_AMOUNT_TO_PAY))
               },
               endSlot = {
                 Row(
@@ -274,7 +284,7 @@ internal fun PaymentDetailExpandableCard(
 @Composable
 private fun PeriodItem(
   period: MemberCharge.ChargeBreakdown.Period,
-  dateTimeFormatter: DateTimeFormatter,
+  dateTimeFormatter: DateFormatter,
   modifier: Modifier,
 ) {
   Column(
@@ -311,18 +321,18 @@ private fun PeriodItem(
     if (period.isPreviouslyFailedCharge || period.description != null) {
       HedvigText(
         text = if (period.isPreviouslyFailedCharge) {
-          stringResource(id = R.string.PAYMENTS_OUTSTANDING_PAYMENT)
+          stringResource(Res.string.PAYMENTS_OUTSTANDING_PAYMENT)
         } else {
           when (
             period.description!!
           ) {
             is BetweenDays -> stringResource(
-              R.string.PAYMENTS_PERIOD_DAYS,
+              Res.string.PAYMENTS_PERIOD_DAYS,
               period.description.daysBetween,
             )
 
             FullPeriod -> stringResource(
-              R.string.PAYMENTS_PERIOD_FULL,
+              Res.string.PAYMENTS_PERIOD_FULL,
             )
           }
         },
@@ -333,12 +343,8 @@ private fun PeriodItem(
   }
 }
 
-private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: DateTimeFormatter): String {
-  return "${
-    dateTimeFormatter.format(
-      fromDate.toJavaLocalDate(),
-    )
-  } - ${dateTimeFormatter.format(toDate.toJavaLocalDate())}"
+private fun MemberCharge.ChargeBreakdown.Period.toString(dateTimeFormatter: DateFormatter): String {
+  return "${dateTimeFormatter.format(fromDate)} - ${dateTimeFormatter.format(toDate)}"
 }
 
 @Composable

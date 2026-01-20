@@ -7,9 +7,9 @@ import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.currentCoroutineContext
@@ -21,6 +21,7 @@ import octopus.ClaimIntentQuery
 
 internal class GetClaimIntentUseCase(
   private val apolloClient: ApolloClient,
+  private val languageService: LanguageService,
 ) {
   fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ErrorMessage, TaskStepContent>> {
     return flow {
@@ -31,10 +32,13 @@ internal class GetClaimIntentUseCase(
             .query(ClaimIntentQuery(claimIntentId.value))
             .fetchPolicy(FetchPolicy.NetworkOnly)
             .safeExecute()
-            .mapLeft(::ErrorMessage)
+            .mapLeft {
+              logcat { "GetClaimIntentUseCase error: $it" }
+              ErrorMessage()
+            }
             .bind()
             .claimIntent
-            .toClaimIntent()
+            .toClaimIntent(languageService.getLocale())
         }
 
         when (claimIntentResult) {
