@@ -404,7 +404,7 @@ private fun StartClaimBottomSheet(
           enabled = isChecked,
           onClick = dropUnlessResumed {
             state.dismiss {
-              if (isExperimentalClaimChatEnabled) {
+                if (isExperimentalClaimChatEnabled) {
                 navigateToClaimChat()
               } else {
                 navigateToOldClaimFlow()
