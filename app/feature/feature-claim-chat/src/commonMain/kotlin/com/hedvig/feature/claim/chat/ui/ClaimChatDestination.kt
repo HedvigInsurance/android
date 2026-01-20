@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.RepeatMode
@@ -19,7 +18,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -64,18 +62,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
@@ -107,8 +100,6 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
-import com.hedvig.android.design.system.hedvig.debugBorder
-import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -125,8 +116,6 @@ import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
-import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
-import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
@@ -907,6 +896,7 @@ private fun StepBottomContent(
         canBeChanged = stepItem.isRegrettable,
         continueButtonLoading = currentContinueButtonLoading,
         skipButtonLoading = currentSkipButtonLoading,
+        firstFieldWithError = stepItem.stepContent.fields.firstOrNull{ it.hasError!=null }
       )
 
       is StepContent.Summary -> ChatClaimSummaryBottomContent(
@@ -1119,6 +1109,7 @@ private fun FormStep(
   canBeChanged: Boolean,
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
+  firstFieldWithError: StepContent.Form.Field?,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -1141,6 +1132,7 @@ private fun FormStep(
       },
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
+      firstFieldWithError = firstFieldWithError
     )
   }
 }
@@ -1167,20 +1159,10 @@ private fun FormContent(
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
   onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
+  firstFieldWithError: StepContent.Form.Field?,
   modifier: Modifier = Modifier,
 ) {
-  var errorDescription by rememberSaveable { mutableStateOf<String?>(null) }
-  val firstError = content.fields.firstOrNull { it.hasError != null }?.let {
-    getErrorText(it)
-  }
-  LaunchedEffect(content.fields.firstOrNull { it.hasError != null }) {
-    if (firstError != null) {
-      val fieldTitle = content.fields.firstOrNull { it.hasError != null }?.title
-      errorDescription = "$firstError: ${fieldTitle?.let { it }}"
-    } else {
-      errorDescription = null
-    }
-  }
+  val errorDescription = firstFieldWithError?.let {"${getErrorText(it)}: ${it.title?.let {title -> title }}"}
   Column(
     modifier,
   ) {
@@ -1208,6 +1190,13 @@ private fun FormContent(
             }
 
             StepContent.Form.FieldType.DATE -> {
+              LaunchedEffect(field.datePickerUiState?.datePickerState?.selectedDateMillis) {
+                onSelectFieldAnswer(
+                  field.id,
+                  field.datePickerUiState?.datePickerState?.selectedDateMillis?.let {
+                    StepContent.Form.FieldOption(it.toString(), it.toString()) }
+                )
+              }
               DateSelectBubble(
                 questionLabel = field.title,
                 datePickerState = field.datePickerUiState!!, // todo - check "!!"
@@ -1315,9 +1304,8 @@ private fun FormContent(
         isLoading = continueButtonLoading,
         onClick = onSubmit,
         modifier = Modifier.fillMaxWidth().semantics {
-          val error = errorDescription
-          if (error != null) {
-            contentDescription = error
+          if (errorDescription != null) {
+            contentDescription = errorDescription
           }
         },
       )
