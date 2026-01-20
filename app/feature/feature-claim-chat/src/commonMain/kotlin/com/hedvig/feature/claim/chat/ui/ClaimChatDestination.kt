@@ -650,7 +650,7 @@ private fun StepTopContent(
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
-  val hint = (stepItem.stepContent as? StepContent.AudioRecording)?.hint?.let {
+  val hint = stepItem.hint?.let {
     "\n\n$it"
   }
   val stepItemText = when {

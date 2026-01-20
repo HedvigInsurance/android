@@ -665,6 +665,7 @@ shapes (see the `ClaimIntentStepContent` union).
 type ClaimIntentStep {
   id: ID!
   text: String
+  hint: String
   content: ClaimIntentStepContent!
   isRegrettable: Boolean!
 }
@@ -677,7 +678,6 @@ An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
 """
 type ClaimIntentStepContentAudioRecording {
-  hint: String!
   """
   The relative URI towards where one should upload the audio recording.
   """

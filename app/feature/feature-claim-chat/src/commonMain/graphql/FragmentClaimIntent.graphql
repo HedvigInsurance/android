@@ -4,6 +4,7 @@ fragment ClaimIntentFragment on ClaimIntent {
   currentStep {
     id
     text
+    hint
     content {
       ...ClaimIntentStepContentFragment
     }
@@ -58,7 +59,6 @@ fragment TaskFragment on ClaimIntentStepContentTask {
 }
 
 fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
-  hint
   uploadUri
   isSkippable
   freeTextMinLength
