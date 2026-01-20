@@ -197,6 +197,7 @@
   <string name="CLAIM_CHAT_EDIT_TITLE">Previous answers will be reset</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Make sure you fill in all the required fields</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uploaded files</string>
+  <string name="CLAIM_CHAT_FILE_UPLOAD_HINT">n/a</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Send files</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Value must be at most %1$d</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Value must be at least %1$d</string>
