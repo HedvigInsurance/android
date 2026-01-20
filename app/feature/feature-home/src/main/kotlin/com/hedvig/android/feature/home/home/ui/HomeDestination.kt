@@ -288,6 +288,7 @@ private fun HomeScreen(
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToHelpCenter = navigateToHelpCenter,
+            navigateToOldClaimFlow = navigateToOldClaimFlow,
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
@@ -403,7 +404,7 @@ private fun StartClaimBottomSheet(
           enabled = isChecked,
           onClick = dropUnlessResumed {
             state.dismiss {
-              if (isExperimentalClaimChatEnabled) {
+                if (isExperimentalClaimChatEnabled) {
                 navigateToClaimChat()
               } else {
                 navigateToOldClaimFlow()
@@ -567,6 +568,7 @@ private fun HomeScreenSuccess(
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
+  navigateToOldClaimFlow: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -660,7 +662,13 @@ private fun HomeScreenSuccess(
         startClaimButton = {
           HedvigButton(
             text = stringResource(Res.string.home_tab_claim_button_text),
-            onClick = openClaimFlowSheet,
+            onClick = {
+              if (!uiState.isExperimentalClaimChatEnabled && uiState.isProduction) {
+                navigateToOldClaimFlow()
+              } else {
+                openClaimFlowSheet()
+              }
+            },
             enabled = true,
             modifier = Modifier
               .fillMaxWidth()
