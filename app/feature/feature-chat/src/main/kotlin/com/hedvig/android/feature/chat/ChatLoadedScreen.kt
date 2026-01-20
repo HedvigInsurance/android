@@ -437,8 +437,8 @@ private fun ChatLazyColumn(
       val defaultWidth = 0.8f
       var dynamicBubbleWidthFraction by remember { mutableFloatStateOf(defaultWidth) }
       val isLastMessage = index == 0
-      val isThisIndicator = uiChatMessage?.chatMessage is CbmChatMessage.ChatMessageText
-        && uiChatMessage.chatMessage.isAiGenerationIndicator
+      val isThisIndicator = uiChatMessage?.chatMessage is CbmChatMessage.ChatMessageText &&
+        uiChatMessage.chatMessage.isAiGenerationIndicator
       if (isThisIndicator && isLastMessage) {
         AiResponseBeingGeneratedIndicator(uiChatMessage.chatMessage)
       } else {
@@ -564,7 +564,6 @@ private fun ChatBubble(
         }
 
         is CbmChatMessage.ChatMessageText -> {
-
           Surface(
             shape = HedvigTheme.shapes.cornerLarge,
             color = chatMessage.backgroundColor(),
@@ -660,7 +659,7 @@ private fun ChatBubble(
             }
 
             ChatMessageFile.MimeType.OTHER,
-              -> {
+            -> {
               AttachedFileMessage(
                 onClick = { openUrl(chatMessage.url) },
                 modifier = Modifier.semantics {
@@ -750,9 +749,7 @@ private fun ChatBubble(
 }
 
 @Composable
-private fun AiResponseBeingGeneratedIndicator(
-  chatMessage: CbmChatMessage,
-) {
+private fun AiResponseBeingGeneratedIndicator(chatMessage: CbmChatMessage) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     color = chatMessage.backgroundColor(),
@@ -1255,7 +1252,11 @@ private fun PreviewChatLoadedScreen() {
         ChatMessagePhoto("5", Instant.parse("2024-05-01T00:01:00Z"), Uri.EMPTY),
         ChatMessageText("6", Instant.parse("2024-05-01T00:02:00Z"), "Failed message"),
         CbmChatMessage.ChatMessageText(
-          "7", HEDVIG, Instant.parse("2024-05-01T00:03:00Z"), null, "Last message",
+          "7",
+          HEDVIG,
+          Instant.parse("2024-05-01T00:03:00Z"),
+          null,
+          "Last message",
           action = CbmChatMessage.ChatMessageTextAction("go somewhere", ""),
         ),
       )

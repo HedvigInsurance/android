@@ -120,8 +120,11 @@ private fun TravelCertificateTravellersInput(
             },
             selectedOptions = uiState.coInsuredList.filter { it.isIncluded }.map { RadioOptionId(it.id.value) },
             onRadioOptionSelected = { radioOptionId ->
-              changeCoInsuredChecked(uiState.coInsuredList.first {
-                radioOptionId.id == it.id.value })
+              changeCoInsuredChecked(
+                uiState.coInsuredList.first {
+                  radioOptionId.id == it.id.value
+                },
+              )
             },
             modifier = Modifier
               .fillMaxWidth()
