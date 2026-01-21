@@ -42,6 +42,7 @@ kotlin {
       implementation(projects.designSystemHedvig)
       implementation(projects.languageCore)
       implementation(projects.moleculePublic)
+      implementation(projects.networkClients)
       implementation(projects.uiClaimFlow)
       implementation(projects.uiForceUpgrade)
     }

@@ -5,13 +5,14 @@ import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.network.clients.NetworkError
+import com.hedvig.android.network.clients.safePost
 import com.hedvig.feature.claim.chat.data.file.CommonFile
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.onUpload
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
@@ -26,26 +27,40 @@ internal class UploadFileUseCase(private val client: HttpClient) {
   context(_: Raise<ErrorMessage>)
   suspend fun invoke(commonFile: CommonFile, uploadUrl: String): FileUploadResponse {
     // todo URL for prod/staging
-    val response = client.post("https://gateway.test.hedvig.com$uploadUrl") {
-      setBody(
-        MultiPartFormDataContent(
-          formData {
-            append("description", commonFile.description)
-            append(
-              "files",
-              InputProvider { commonFile.source() },
-              Headers.build {
-                append(HttpHeaders.ContentType, commonFile.mimeType)
-                append(HttpHeaders.ContentDisposition, """filename="${commonFile.fileName}"""")
-              },
-            )
-          },
-        ),
-      )
-      onUpload { bytesSentTotal, contentLength ->
-        logcat(LogPriority.VERBOSE) { "UploadFileUseCase bytesSentTotal:$bytesSentTotal contentLength:$contentLength" }
+    val response = client
+      .safePost("https://gateway.test.hedvig.com$uploadUrl") {
+        setBody(
+          MultiPartFormDataContent(
+            formData {
+              append("description", commonFile.description)
+              append(
+                "files",
+                InputProvider { commonFile.source() },
+                Headers.build {
+                  append(HttpHeaders.ContentType, commonFile.mimeType)
+                  append(HttpHeaders.ContentDisposition, """filename="${commonFile.fileName}"""")
+                },
+              )
+            },
+          ),
+        )
+        onUpload { bytesSentTotal, contentLength ->
+          logcat(LogPriority.VERBOSE) {
+            "UploadFileUseCase bytesSentTotal:$bytesSentTotal contentLength:$contentLength"
+          }
+        }
       }
-    }
+      .fold(
+        ifLeft = { error ->
+          raise(
+            when (error) {
+              is NetworkError.IOError -> ErrorMessage("Network error: ${error.message}", error.throwable)
+              is NetworkError.UnknownError -> ErrorMessage(error.message, error.throwable)
+            },
+          )
+        },
+        ifRight = { it },
+      )
 
     return if (response.status.isSuccess()) {
       val jsonResponse = Json.parseToJsonElement(response.bodyAsText())
