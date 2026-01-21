@@ -248,7 +248,7 @@ private fun AudioRecordingBottomSheet(
       openAppSettings = openAppSettings,
     )
   }
-  HedvigBottomSheet(bottomSheetState) {
+  HedvigBottomSheet(bottomSheetState, modifier) {
     Column {
       HedvigText(
         stringResource(Res.string.CLAIM_TRIAGING_TITLE),
@@ -288,7 +288,8 @@ private fun AudioRecordingBottomSheet(
           modifier = Modifier.weight(1f),
           type = AudioButtonType.StartOver(
             onStartOver = redo,
-            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback,
+            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback
+              && !continueButtonLoading,
           ),
         )
         Spacer(Modifier.width(4.dp))
@@ -298,6 +299,7 @@ private fun AudioRecordingBottomSheet(
             onStartRecording = startRecording,
             onStopRecording = stopRecording,
             audioRecordingState = audioRecordingState,
+            isEnabled = !continueButtonLoading
           ),
         )
         Spacer(Modifier.width(4.dp))
@@ -476,9 +478,8 @@ private sealed interface AudioButtonType {
     val onStartRecording: () -> Unit,
     val onStopRecording: () -> Unit,
     val audioRecordingState: AudioRecordingStepState.AudioRecording,
+    override val isEnabled: Boolean,
   ) : AudioButtonType {
-    override val isEnabled: Boolean
-      get() = true
   }
 
   class Send(
