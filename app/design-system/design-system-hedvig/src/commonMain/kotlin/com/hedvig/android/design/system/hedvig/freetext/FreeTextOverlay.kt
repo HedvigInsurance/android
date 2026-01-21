@@ -1,6 +1,7 @@
 package com.hedvig.android.design.system.hedvig.freetext
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -122,7 +124,7 @@ private fun FreeTextOverlayAnimated(
     transitionSpec = {
       fadeIn() togetherWith fadeOut()
     },
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().hideBehindZAxisWhenNotShowing(showFullScreenEditTextTransition),
   ) { showFullScreenEditText: Boolean ->
     Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
       if (showFullScreenEditText) {
@@ -298,7 +300,8 @@ private fun TextFieldValue.ofMaxLength(maxLength: Int): TextFieldValue {
 }
 
 internal object FreeTextDefaults {
-  val maxLength: Int = FreeTextTokens.TextDefaultMaxLength
+  @Suppress("ConstPropertyName")
+  const val maxLength: Int = FreeTextTokens.TextDefaultMaxLength
   val fieldPadding: PaddingValues = PaddingValues(
     top = FreeTextTokens.FieldTopPadding,
     bottom = FreeTextTokens.FieldPadding,
@@ -407,6 +410,21 @@ private fun HedvigFreeTextDecorationBox(
         }
       }
     },
+  )
+}
+
+/**
+ * When the content is laid out on *top* of all the other content behind it, it interferes with a11y services, not
+ * allowing the user to hover over items and move the focus around. This modifier "hides" the content behind on the Z
+ * axis when the content is not showing, transitioning into showing, or transitioning out of showing.
+ */
+private fun Modifier.hideBehindZAxisWhenNotShowing(transition: Transition<Boolean>): Modifier {
+  return zIndex(
+    if (transition.isRunning || transition.currentState) {
+      1f
+    } else {
+      -1f
+    }
   )
 }
 

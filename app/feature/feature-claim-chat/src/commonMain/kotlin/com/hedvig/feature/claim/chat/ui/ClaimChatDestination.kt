@@ -66,6 +66,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -121,6 +127,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
+import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
@@ -684,6 +691,9 @@ private fun StepTopContent(
               MutableTransitionState(false).apply { targetState = true }
             },
             onAnimationFinished = onAnimationFinished,
+            modifier = Modifier.semantics {
+              heading()
+            },
           )
         }
       } else {
@@ -694,7 +704,12 @@ private fun StepTopContent(
     } else {
       stepItemText?.let {
         CommonPaddingWrapper {
-          HedvigText(stepItemText)
+          HedvigText(
+            stepItemText,
+            Modifier.semantics {
+              heading()
+            },
+          )
         }
       }
     }
@@ -910,6 +925,7 @@ private fun StepBottomContent(
         canBeChanged = stepItem.isRegrettable,
         continueButtonLoading = currentContinueButtonLoading,
         skipButtonLoading = currentSkipButtonLoading,
+        firstFieldWithError = stepItem.stepContent.fields.firstOrNull{ it.hasError!=null }
       )
 
       is StepContent.Summary -> ChatClaimSummaryBottomContent(
@@ -1065,8 +1081,10 @@ private fun TaskStep(
   taskContent: StepContent.Task,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
-
+  val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
+  Column(
+    modifier.clearAndSetSemantics { contentDescription = taskContentDescription },
+  ) {
     if (taskContent.descriptions.isNotEmpty()) {
       Column {
         Row(
@@ -1122,6 +1140,7 @@ private fun FormStep(
   canBeChanged: Boolean,
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
+  firstFieldWithError: StepContent.Form.Field?,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -1144,6 +1163,7 @@ private fun FormStep(
       },
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
+      firstFieldWithError = firstFieldWithError
     )
   }
 }
@@ -1170,8 +1190,10 @@ private fun FormContent(
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
   onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
+  firstFieldWithError: StepContent.Form.Field?,
   modifier: Modifier = Modifier,
 ) {
+  val errorDescription = firstFieldWithError?.let {"${getErrorText(it)}: ${it.title?.let {title -> title }}"}
   Column(
     modifier,
   ) {
@@ -1180,8 +1202,10 @@ private fun FormContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         content.fields.forEach { field ->
+          val errorText = getErrorText(field)
           when (field.type) {
             StepContent.Form.FieldType.TEXT -> {
+
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -1192,16 +1216,23 @@ private fun FormContent(
                     answer?.let { StepContent.Form.FieldOption(it, it) },
                   )
                 },
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
             StepContent.Form.FieldType.DATE -> {
+              LaunchedEffect(field.datePickerUiState?.datePickerState?.selectedDateMillis) {
+                onSelectFieldAnswer(
+                  field.id,
+                  field.datePickerUiState?.datePickerState?.selectedDateMillis?.let {
+                    StepContent.Form.FieldOption(it.toString(), it.toString()) }
+                )
+              }
               DateSelectBubble(
                 questionLabel = field.title,
                 datePickerState = field.datePickerUiState!!, // todo - check "!!"
                 modifier = Modifier.fillMaxWidth(),
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1217,7 +1248,7 @@ private fun FormContent(
                   )
                 },
                 keyboardType = KeyboardType.Number,
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1246,7 +1277,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1273,7 +1304,7 @@ private fun FormContent(
                   )
                 },
                 modifier = Modifier.fillMaxWidth(),
-                errorText = getErrorText(field),
+                errorText = errorText,
               )
             }
 
@@ -1286,7 +1317,7 @@ private fun FormContent(
                 )
               },
               questionText = field.title,
-              errorText = getErrorText(field),
+              errorText = errorText,
             )
 
             null -> {
@@ -1303,7 +1334,11 @@ private fun FormContent(
         enabled = !continueButtonLoading,
         isLoading = continueButtonLoading,
         onClick = onSubmit,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().semantics {
+          if (errorDescription != null) {
+            contentDescription = errorDescription
+          }
+        },
       )
       if (canSkip) {
         Spacer(Modifier.height(8.dp))
@@ -1356,7 +1391,9 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
     ) {
       RoundCornersPill(
         onClick = onRegret,
-        modifier = Modifier.semantics(true) {},
+        modifier = Modifier.semantics(true) {
+          role = Role.Button
+        },
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(

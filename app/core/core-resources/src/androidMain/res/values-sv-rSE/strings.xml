@@ -197,6 +197,7 @@
   <string name="CLAIM_CHAT_EDIT_TITLE">Tidigare svar kommer att rensas</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Dubbelkolla att du fyllt i alla obligatoriska fält</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uppladdade filer</string>
+  <string name="CLAIM_CHAT_FILE_UPLOAD_HINT">Du kan ladda upp bilder, PDF:er eller andra filer. Ladda bara upp filer som är relevanta för din skadeanmälan.</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Ladda upp filer</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Värdet får vara högst %d</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Värdet måste vara minst %d</string>
