@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -317,7 +318,8 @@ private fun AudioButton(
     rememberAudioPlayer(
       PlayableAudioSource.LocalFilePath( it.filePath))
   }
-  val audioPlayerState = audioPlayer?.audioPlayerState?.value
+  val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
+    ?: remember { mutableStateOf<AudioPlayerState?>(null) }
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier
@@ -339,7 +341,7 @@ private fun AudioButton(
               is AudioRecordingStepState.AudioRecording.Playback ->{
                 val ready = audioPlayerState as? AudioPlayerState.Ready
                 if (ready?.readyState is AudioPlayerState.Ready.ReadyState.Playing) {
-                  audioPlayer.pausePlayer()
+                  audioPlayer?.pausePlayer()
                 } else {
                   audioPlayer?.startPlayer()
                 }
