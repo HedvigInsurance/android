@@ -338,6 +338,7 @@ internal class ClaimChatPresenter(
 
             is ClaimChatEvent.AudioRecording.StartRecording -> {
               audioRecordingManager.startRecording { recordingState ->
+                logcat { "Mariia:  audioRecordingManager.startRecording started" }
                 steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
                   step.copy(stepContent = content.copy(recordingState = recordingState))
                 }
@@ -346,6 +347,7 @@ internal class ClaimChatPresenter(
 
             is ClaimChatEvent.AudioRecording.StopRecording -> {
               audioRecordingManager.stopRecording { playbackState ->
+                logcat { "Mariia:  audioRecordingManager.StopRecording stopped" }
                 steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
                   step.copy(stepContent = content.copy(recordingState = playbackState))
                 }

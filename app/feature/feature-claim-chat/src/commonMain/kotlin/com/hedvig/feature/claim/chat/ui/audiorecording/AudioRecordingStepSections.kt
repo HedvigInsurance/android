@@ -59,6 +59,8 @@ import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.android.design.system.hedvig.icon.Refresh
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.logger.logcat
+import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
@@ -134,40 +136,50 @@ internal fun AudioRecorderBubble(
         is AudioRecordingStepState.AudioRecording -> {
           Column(Modifier.fillMaxWidth()) {
             val state = rememberHedvigBottomSheetState<Unit>()
-            AudioRecordingBottomSheet(
-              audioRecordingState = uiStateAnimated,
-              onDismiss = {
-                state.dismiss()
-              },
-              clock = clock,
-              shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
-              startRecording = startRecording,
-              stopRecording = stopRecording,
-              submitAudioFile = submitAudioFile,
-              redo = redoRecording,
-              openAppSettings = openAppSettings,
-              allowFreeText = freeTextAvailable,
-              launchFreeText = onSwitchToFreeText,
-              isCurrentStep = isCurrentStep,
-              continueButtonLoading = continueButtonLoading,
-              bottomSheetState = state,
-            )
-            HedvigButton(
-              enabled = true,
-              text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
-              onClick = {
-                state.show(Unit)
-              },
-              modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(8.dp))
-            HedvigButton(
-              enabled = true,
-              buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-              text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
-              onClick = onSwitchToFreeText,
-              modifier = Modifier.fillMaxWidth(),
-            )
+            if (isCurrentStep) {
+              AudioRecordingBottomSheet(
+                audioRecordingState = uiStateAnimated,
+                clock = clock,
+                shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+                startRecording = startRecording,
+                stopRecording = stopRecording,
+                submitAudioFile = submitAudioFile,
+                redo = redoRecording,
+                openAppSettings = openAppSettings,
+                continueButtonLoading = continueButtonLoading,
+                bottomSheetState = state,
+              )
+              HedvigButton(
+                enabled = true,
+                text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
+                onClick = {
+                  state.show(Unit)
+                },
+                modifier = Modifier.fillMaxWidth(),
+              )
+              Spacer(Modifier.height(8.dp))
+              HedvigButton(
+                enabled = true,
+                buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
+                onClick = onSwitchToFreeText,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            } else {
+              if (uiStateAnimated is AudioRecordingStepState.AudioRecording.Playback) {
+                val audioPlayer = rememberAudioPlayer(
+                  PlayableAudioSource.LocalFilePath(uiStateAnimated.filePath),
+                )
+                HedvigAudioPlayer(
+                  audioPlayer = audioPlayer,
+                  Modifier.padding(
+                    start = 45.dp
+                  ),
+                )
+              } else {
+                SkippedLabel()
+              }
+            }
           }
         }
       }
@@ -199,12 +211,8 @@ private fun AudioRecordingBottomSheet(
   submitAudioFile: () -> Unit,
   redo: () -> Unit,
   openAppSettings: () -> Unit,
-  launchFreeText: () -> Unit,
-  allowFreeText: Boolean,
-  isCurrentStep: Boolean,
   continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
-  onDismiss: () -> Unit,
 ) {
   var showPermissionDialog by remember { mutableStateOf(false) }
   val recordAudioPermissionState = if (LocalInspectionMode.current) {
@@ -246,12 +254,12 @@ private fun AudioRecordingBottomSheet(
         if (!audioRecordingState.isPrepared) {
           HedvigCircularProgressIndicator()
         } else {
-          val audioPlayer = rememberAudioPlayer(PlayableAudioSource.LocalFilePath(audioRecordingState.filePath))
-          HedvigAudioPlayer(
-            audioPlayer = audioPlayer,
+
+          //          todo: fake waves
+          RestingAudioPlayer(
             Modifier.padding(
               horizontal = 45.dp,
-              vertical = 64.dp,
+              vertical = 78.dp,
             ),
           )
         }
@@ -270,9 +278,7 @@ private fun AudioRecordingBottomSheet(
         AudioButton(
           modifier = Modifier.weight(1f),
           type = AudioButtonType.StartOver(
-            onStartOver = {
-              //todo
-            },
+            onStartOver = redo,
             isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback,
           ),
         )
@@ -280,18 +286,8 @@ private fun AudioRecordingBottomSheet(
         AudioButton(
           modifier = Modifier.weight(1f),
           type = AudioButtonType.Control(
-            onStartRecording = {
-              //todo
-            },
-            onStopRecording = {
-              //todo
-            },
-            onListen = {
-              //todo
-            },
-            onPause = {
-              //todo
-            },
+            onStartRecording = startRecording,
+            onStopRecording = stopRecording,
             audioRecordingState = audioRecordingState,
           ),
         )
@@ -299,10 +295,9 @@ private fun AudioRecordingBottomSheet(
         AudioButton(
           modifier = Modifier.weight(1f),
           type = AudioButtonType.Send(
-            onSend = {
-              //todo
-            },
-            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback,
+            onSend = submitAudioFile,
+            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback
+              && !continueButtonLoading,
           ),
         )
       }
@@ -317,6 +312,12 @@ private fun AudioButton(
   type: AudioButtonType,
   modifier: Modifier = Modifier,
 ) {
+  val audioPlayer = ((type as? AudioButtonType.Control)?.audioRecordingState as?
+    AudioRecordingStepState.AudioRecording.Playback)?.let {
+    rememberAudioPlayer(
+      PlayableAudioSource.LocalFilePath( it.filePath))
+  }
+  val audioPlayerState = audioPlayer?.audioPlayerState?.value
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier
@@ -327,19 +328,27 @@ private fun AudioButton(
       .clickable(
         enabled = type.isEnabled,
         onClick = {
+          logcat { "Mariia: surface clicked, type: $type" }
           when (type) {
             is AudioButtonType.Control -> when (type.audioRecordingState) {
-              AudioRecordingStepState.AudioRecording.NotRecording -> type.onStartRecording
-              is AudioRecordingStepState.AudioRecording.Playback -> if (type.audioRecordingState.isPrepared) {
-                type.onListen
-              } else if (type.audioRecordingState.isPlaying) {
-                type.onPause
-              } //todo: else??
-              is AudioRecordingStepState.AudioRecording.Recording -> type.onStopRecording
+              AudioRecordingStepState.AudioRecording.NotRecording -> {
+                logcat { "Mariia:  type.onStartRecording clicked" }
+                type.onStartRecording()
+              }
+
+              is AudioRecordingStepState.AudioRecording.Playback ->{
+                val ready = audioPlayerState as? AudioPlayerState.Ready
+                if (ready?.readyState is AudioPlayerState.Ready.ReadyState.Playing) {
+                  audioPlayer.pausePlayer()
+                } else {
+                  audioPlayer?.startPlayer()
+                }
+              }
+              is AudioRecordingStepState.AudioRecording.Recording -> type.onStopRecording()
             }
 
-            is AudioButtonType.Send -> type.onSend
-            is AudioButtonType.StartOver -> type.onStartOver
+            is AudioButtonType.Send -> type.onSend()
+            is AudioButtonType.StartOver -> type.onStartOver()
           }
         },
       ),
@@ -348,33 +357,38 @@ private fun AudioButton(
       modifier = Modifier.padding(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+
+
       Box(
         modifier = Modifier
           .clip(HedvigTheme.shapes.cornerXXLarge)
           .background(
-          color = if (!type.isEnabled) HedvigTheme.colorScheme.surfaceSecondaryTransparent else when (type) {
-            is AudioButtonType.Control -> when (type.audioRecordingState) {
-              AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
-              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
-              is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
-            }
+            color = if (!type.isEnabled) HedvigTheme.colorScheme.surfaceSecondaryTransparent else when (type) {
+              is AudioButtonType.Control -> when (type.audioRecordingState) {
+                AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
+                is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
+                is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
+              }
 
-            is AudioButtonType.Send -> HedvigTheme.colorScheme.signalBlueElement
-            is AudioButtonType.StartOver -> HedvigTheme.colorScheme.fillPrimary
-          },
-        )
+              is AudioButtonType.Send -> HedvigTheme.colorScheme.signalBlueElement
+              is AudioButtonType.StartOver -> HedvigTheme.colorScheme.surfaceSecondaryTransparent
+            },
+          ),
       ) {
         Icon(
           modifier = Modifier.padding(4.dp).size(24.dp),
           imageVector = when (type) {
             is AudioButtonType.Control -> when (type.audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording -> HedvigIcons.Mic
-              is AudioRecordingStepState.AudioRecording.Playback ->
-                if (type.audioRecordingState.isPrepared) {
-                  HedvigIcons.Play
-                } else if (type.audioRecordingState.isPlaying) {
+              is AudioRecordingStepState.AudioRecording.Playback -> {
+                val ready = audioPlayerState as? AudioPlayerState.Ready
+                if (ready?.readyState is AudioPlayerState.Ready.ReadyState.Playing) {
                   HedvigIcons.Pause
-                } else HedvigIcons.Play //todo: check here
+                } else {
+                  HedvigIcons.Play
+                }
+              }
+
               is AudioRecordingStepState.AudioRecording.Recording -> HedvigIcons.Pause
             }
 
@@ -382,10 +396,13 @@ private fun AudioButton(
             is AudioButtonType.StartOver -> HedvigIcons.Reload
           },
           contentDescription = EmptyContentDescription,
-          tint = if (!type.isEnabled) HedvigTheme.colorScheme.fillTertiary else HedvigTheme.colorScheme.fillNegative,
+          tint = if (!type.isEnabled) HedvigTheme.colorScheme.fillTertiary else {
+            if (type is AudioButtonType.StartOver) HedvigTheme.colorScheme.fillPrimary else
+              HedvigTheme.colorScheme.fillNegative
+          },
         )
       }
-      Spacer(Modifier.height(8.dp))
+      Spacer(Modifier.height(4.dp))
       HedvigText(
         text = when (type) {
           is AudioButtonType.Control -> when (type.audioRecordingState) {
@@ -397,6 +414,7 @@ private fun AudioButton(
           is AudioButtonType.Send -> stringResource(Res.string.AUDIO_RECORDER_SEND)
           is AudioButtonType.StartOver -> stringResource(Res.string.AUDIO_RECORDER_START_OVER)
         },
+        fontSize = HedvigTheme.typography.label.fontSize,
         fontStyle = HedvigTheme.typography.label.fontStyle,
         color = if (type.isEnabled) HedvigTheme.colorScheme.textPrimary else HedvigTheme.colorScheme.textTertiary,
       )
@@ -415,8 +433,6 @@ private sealed interface AudioButtonType {
   class Control(
     val onStartRecording: () -> Unit,
     val onStopRecording: () -> Unit,
-    val onListen: () -> Unit,
-    val onPause: () -> Unit,
     val audioRecordingState: AudioRecordingStepState.AudioRecording,
   ) : AudioButtonType {
     override val isEnabled: Boolean
