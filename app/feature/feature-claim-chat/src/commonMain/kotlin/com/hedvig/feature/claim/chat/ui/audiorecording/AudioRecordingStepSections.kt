@@ -28,6 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -37,6 +39,7 @@ import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.RestingAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.core.uidata.DecimalFormatter
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -81,8 +84,10 @@ import hedvig.resources.CLAIM_TRIAGING_TITLE
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
+import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.claims_skip_button
 import kotlin.time.Clock
+import kotlin.time.Instant
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -158,14 +163,16 @@ internal fun AudioRecorderBubble(
                 },
                 modifier = Modifier.fillMaxWidth(),
               )
-              Spacer(Modifier.height(8.dp))
-              HedvigButton(
-                enabled = true,
-                buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
-                onClick = onSwitchToFreeText,
-                modifier = Modifier.fillMaxWidth(),
-              )
+              if (freeTextAvailable) {
+                Spacer(Modifier.height(8.dp))
+                HedvigButton(
+                  enabled = true,
+                  buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+                  text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
+                  onClick = onSwitchToFreeText,
+                  modifier = Modifier.fillMaxWidth(),
+                )
+              }
             } else {
               if (uiStateAnimated is AudioRecordingStepState.AudioRecording.Playback) {
                 val audioPlayer = rememberAudioPlayer(
@@ -250,6 +257,7 @@ private fun AudioRecordingBottomSheet(
         },
         textAlign = TextAlign.Center,
       )
+      DynamicClock(audioRecordingState, clock)
       Spacer(Modifier.height(24.dp))
       if (audioRecordingState is AudioRecordingStepState.AudioRecording.Playback) {
         if (!audioRecordingState.isPrepared) {
@@ -306,6 +314,38 @@ private fun AudioRecordingBottomSheet(
       Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
   }
+}
+
+@Composable
+private fun DynamicClock(
+  audioRecordingState: AudioRecordingStepState.AudioRecording,
+  clock: Clock
+) {
+  val startedRecordingAt by remember {
+    mutableStateOf<Instant?>(null)
+  }.apply {
+    if (audioRecordingState is AudioRecordingStepState.AudioRecording.Recording) {
+      value = audioRecordingState.startedAt
+    }
+  }
+
+  val twoDigitsFormat = remember { DecimalFormatter("00") }
+  val label =  if (audioRecordingState is AudioRecordingStepState.AudioRecording.Recording) {
+    val diff = clock.now() - (startedRecordingAt ?: clock.now())
+    "${twoDigitsFormat.format(
+      diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
+  } else null
+  val durationDescription =label?.let { stringResource(Res.string.TALKBACK_RECORDING_DURATION,
+    it)}
+  HedvigText(
+    text = label ?: "",
+    textAlign = TextAlign.Center,
+    modifier = Modifier.fillMaxWidth().clearAndSetSemantics {
+      if (durationDescription!=null) {
+        contentDescription = durationDescription
+      }
+    },
+    color = HedvigTheme.colorScheme.textSecondary)
 }
 
 @Composable
