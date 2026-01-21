@@ -150,23 +150,23 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
-  ClaimChatUiState.Initializing,
-  ClaimChatPresenter(
-    developmentFlow,
-    startClaimIntentUseCase,
-    getClaimIntentUseCase,
-    submitTaskUseCase,
-    submitAudioRecordingUseCase,
-    submitFileUploadUseCase,
-    submitFormUseCase,
-    submitSelectUseCase,
-    submitSummaryUseCase,
-    skipStepUseCase,
-    audioRecordingManager,
-    fileService,
-    regretStepUseCase,
-  ),
-)
+    ClaimChatUiState.Initializing,
+    ClaimChatPresenter(
+      developmentFlow,
+      startClaimIntentUseCase,
+      getClaimIntentUseCase,
+      submitTaskUseCase,
+      submitAudioRecordingUseCase,
+      submitFileUploadUseCase,
+      submitFormUseCase,
+      submitSelectUseCase,
+      submitSummaryUseCase,
+      skipStepUseCase,
+      audioRecordingManager,
+      fileService,
+      regretStepUseCase,
+    ),
+  )
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
@@ -240,7 +240,9 @@ internal class ClaimChatPresenter(
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
       handleNext(
-        steps, setOutcome, claimIntent,
+        steps,
+        setOutcome,
+        claimIntent,
       ) { progress = it }
     }
 
@@ -273,7 +275,9 @@ internal class ClaimChatPresenter(
                   }
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
@@ -307,7 +311,9 @@ internal class ClaimChatPresenter(
                       audioRecordingManager.cleanup()
                       currentContinueButtonLoading = false
                       handleNext(
-                        steps, setOutcome, claimIntent,
+                        steps,
+                        setOutcome,
+                        claimIntent,
                       ) { progress = it }
                     },
                   )
@@ -329,7 +335,9 @@ internal class ClaimChatPresenter(
                     ifRight = { claimIntent ->
                       currentContinueButtonLoading = false
                       handleNext(
-                        steps, setOutcome, claimIntent,
+                        steps,
+                        setOutcome,
+                        claimIntent,
                       ) { progress = it }
                     },
                   )
@@ -467,7 +475,9 @@ internal class ClaimChatPresenter(
                   ifRight = { claimIntent ->
                     currentContinueButtonLoading = false
                     handleNext(
-                      steps, setOutcome, claimIntent,
+                      steps,
+                      setOutcome,
+                      claimIntent,
                     ) { progress = it }
                   },
                 )
@@ -519,7 +529,9 @@ internal class ClaimChatPresenter(
                   if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
@@ -541,9 +553,13 @@ internal class ClaimChatPresenter(
                 stepContent = content.copy(
                   recordingState = recordingState.copy(
                     hasError = textTooShort,
-                    errorType = if (textTooShort) TooShort(
-                      currentContent.freeTextMinLength,
-                    ) else null,
+                    errorType = if (textTooShort) {
+                      TooShort(
+                        currentContent.freeTextMinLength,
+                      )
+                    } else {
+                      null
+                    },
                     canSubmit = canSubmit,
                   ),
                 ),
@@ -567,7 +583,9 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
@@ -601,7 +619,9 @@ internal class ClaimChatPresenter(
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
                     handleNext(
-                      steps, setOutcome, claimIntent,
+                      steps,
+                      setOutcome,
+                      claimIntent,
                     ) { progress = it }
                   },
                 )
@@ -619,7 +639,7 @@ internal class ClaimChatPresenter(
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
                   null,
-                    -> field.copy(
+                  -> field.copy(
                     selectedOptions = event.answer?.let {
                       listOf(it)
                     } ?: emptyList(),
@@ -685,7 +705,9 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
@@ -709,7 +731,7 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.HandledDeflectNavigation -> {
-          //todo or remove
+          // todo or remove
         }
 
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
@@ -886,7 +908,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Task,
   is StepContent.Deflect,
   StepContent.Unknown,
-    -> this
+  -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
@@ -897,7 +919,6 @@ private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
 }
 
 private fun validateField(field: Field): Field {
-
   if (field.isRequired) {
     val isMissing = when (field.type) {
       FieldType.DATE -> field.datePickerUiState?.datePickerState?.selectedDateMillis == null

@@ -165,7 +165,8 @@ internal fun ContentSelectChips(
               horizontalArrangement = Arrangement.Center,
             ) {
               HedvigText(
-                item.title, textAlign = TextAlign.Center,
+                item.title,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 2.dp, bottom = 2.dp),
                 color = contentColor,
               )
@@ -321,7 +322,6 @@ internal fun YesNoBubble(
               color = HedvigTheme.colorScheme.textSecondaryTranslucent,
             )
           }
-
         }
       }
     }
@@ -421,7 +421,6 @@ internal fun MultiSelectBubbleWithDialog(
       }
     }
   }
-
 }
 
 @Composable
@@ -706,9 +705,9 @@ internal fun DateSelectBubble(
       modifier = modifier,
     )
     AnimatedVisibility(
-      errorText != null
-        && datePickerState.datePickerState.selectedDateMillis == null,
-      //adding this since datePickerState handles update internally
+      errorText != null &&
+        datePickerState.datePickerState.selectedDateMillis == null,
+      // adding this since datePickerState handles update internally
       // and it's hard to clear the error state as with other fields
     ) {
       Column {
@@ -724,7 +723,6 @@ internal fun DateSelectBubble(
       }
     }
   }
-
 }
 
 @Composable
@@ -754,8 +752,11 @@ internal fun TextInputBubble(
     labelText = questionLabel,
     modifier = modifier,
     enabled = true,
-    errorState = if (errorText != null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
-    else HedvigTextFieldDefaults.ErrorState.NoError,
+    errorState = if (errorText != null) {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
+    } else {
+      HedvigTextFieldDefaults.ErrorState.NoError
+    },
     suffix = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (suffix != null) {
@@ -811,9 +812,9 @@ internal fun ChatClaimSummaryTopContent(
         if (displayItems.isNotEmpty()) {
           HedvigText(
             stringResource(Res.string.claim_status_claim_details_title),
-            modifier = Modifier.semantics{
+            modifier = Modifier.semantics {
               heading()
-            }
+            },
           )
           Spacer(Modifier.height(8.dp))
           CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
@@ -830,7 +831,7 @@ internal fun ChatClaimSummaryTopContent(
                       textAlign = TextAlign.End,
                     )
                   },
-                  modifier = Modifier.semantics(true){}
+                  modifier = Modifier.semantics(true) {},
                 )
               }
             }

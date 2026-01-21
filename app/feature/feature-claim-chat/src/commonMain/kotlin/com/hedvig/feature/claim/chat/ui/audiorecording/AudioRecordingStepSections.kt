@@ -145,7 +145,6 @@ internal fun AudioRecorderBubble(
   }
 }
 
-
 @Composable
 private fun FreeTextInputSection(
   freeText: String?,
@@ -206,7 +205,6 @@ private fun FreeTextInputSection(
             HedvigText(freeText, textAlign = TextAlign.End)
           }
         }
-
       } else {
         SkippedLabel()
       }

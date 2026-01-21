@@ -42,7 +42,7 @@ actual fun NotificationPermissionSection(key: Unit) {
   val notificationPermissionState = rememberNotificationPermissionState()
   val context = LocalContext.current
   val bottomSheetState = rememberHedvigBottomSheetState<Unit>()
-  LaunchedEffect(key ) {
+  LaunchedEffect(key) {
     if (!notificationPermissionState.status.isGranted) {
       bottomSheetState.show()
     }
