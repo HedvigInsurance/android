@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateMap
@@ -24,20 +25,7 @@ internal fun rememberLastItemHeightAdjustingState(
   steps: List<ClaimIntentStep>,
 ): LastItemHeightAdjustingState {
   val heightOfItemBottomContentMap: SnapshotStateMap<StepId, IntSize> = remember { mutableStateMapOf() }
-  var minHeightForFullScreenItem by remember { mutableStateOf(0.dp) }
-
-  val preferredMinHeightForFullScreenItem by remember(density, steps) {
-    derivedStateOf {
-      minHeightForFullScreenItem - spaceBetweenItems - if (steps.size < 2) {
-        0.dp
-      } else {
-        val stepId = steps.dropLast(1).last().id
-        with(density) {
-          heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
-        }
-      }
-    }
-  }
+  val stepsState by rememberUpdatedState(steps)
 
   LaunchedEffect(steps) {
     Snapshot.withMutableSnapshot {
@@ -49,12 +37,12 @@ internal fun rememberLastItemHeightAdjustingState(
     }
   }
 
-  return remember(density) {
+  return remember(density, spaceBetweenItems) {
     LastItemHeightAdjustingState(
       heightOfItemBottomContentMap = heightOfItemBottomContentMap,
       density = density,
-      onMinHeightForFullScreenItemChanged = { minHeightForFullScreenItem = it },
-      preferredMinHeightForFullScreenItemProvider = { preferredMinHeightForFullScreenItem },
+      spaceBetweenItems = spaceBetweenItems,
+      steps = { stepsState },
     )
   }
 }
@@ -62,14 +50,24 @@ internal fun rememberLastItemHeightAdjustingState(
 internal class LastItemHeightAdjustingState(
   private val heightOfItemBottomContentMap: SnapshotStateMap<StepId, IntSize>,
   private val density: Density,
-  private val onMinHeightForFullScreenItemChanged: (Dp) -> Unit,
-  private val preferredMinHeightForFullScreenItemProvider: () -> Dp,
+  private val spaceBetweenItems: Dp,
+  private val steps: () -> List<ClaimIntentStep>,
 ) {
-  val preferredMinHeightForFullScreenItem: Dp
-    get() = preferredMinHeightForFullScreenItemProvider()
+  private var minHeightForFullScreenItem by mutableStateOf(0.dp)
+
+  val preferredMinHeightForFullScreenItem: Dp by derivedStateOf {
+    minHeightForFullScreenItem - spaceBetweenItems - if (steps().size < 2) {
+      0.dp
+    } else {
+      val stepId = steps().dropLast(1).last().id
+      with(density) {
+        heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
+      }
+    }
+  }
 
   fun onContainerSizeChanged(size: IntSize) {
-    with(density) { onMinHeightForFullScreenItemChanged(size.height.toDp()) }
+    minHeightForFullScreenItem = with(density) { size.height.toDp() }
   }
 
   fun onItemHeightChanged(stepId: StepId, size: IntSize) {
