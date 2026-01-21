@@ -81,7 +81,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is AudioRecordingFragment -> StepContent.AudioRecording(
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      recordingState = AudioRecordingStepState.AudioRecording.NotOpened,
+      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
       freeTextMinLength = freeTextMinLength,
       freeTextMaxLength = freeTextMaxLength,
     )

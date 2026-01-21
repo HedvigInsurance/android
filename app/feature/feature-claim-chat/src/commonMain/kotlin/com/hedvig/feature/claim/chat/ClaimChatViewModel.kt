@@ -64,9 +64,9 @@ internal sealed interface ClaimChatEvent {
 
     data class RedoRecording(override val id: StepId) : AudioRecording
 
-    data class ShowFreeText(override val id: StepId) : AudioRecording
+    data class SwitchToFreeText(override val id: StepId) : AudioRecording
 
-    data class ShowAudioRecording(override val id: StepId) : AudioRecording
+    data class SwitchToAudioRecording(override val id: StepId) : AudioRecording
   }
 
   data class UpdateFreeText(val text: String?) : ClaimChatEvent
@@ -359,7 +359,7 @@ internal class ClaimChatPresenter(
               }
             }
 
-            is ClaimChatEvent.AudioRecording.ShowFreeText -> {
+            is ClaimChatEvent.AudioRecording.SwitchToFreeText -> {
               val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
                 ?: return@CollectEvents
               val textTooShort = freeText?.length?.let {
@@ -379,7 +379,7 @@ internal class ClaimChatPresenter(
               }
             }
 
-            is ClaimChatEvent.AudioRecording.ShowAudioRecording -> {
+            is ClaimChatEvent.AudioRecording.SwitchToAudioRecording -> {
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
                 step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
               }

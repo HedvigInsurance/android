@@ -189,17 +189,13 @@ sealed interface AudioRecordingStepState {
   ) : AudioRecordingStepState
 
   sealed interface AudioRecording : AudioRecordingStepState {
-
-    data object NotOpened: AudioRecording
-
-    sealed interface Opened: AudioRecording {
-      data object NotRecording : Opened
+      data object NotRecording : AudioRecording
 
       data class Recording(
         val amplitudes: List<Int>,
         val startedAt: Instant,
         val filePath: String,
-      ) : Opened
+      ) : AudioRecording
 
       data class Playback(
         val filePath: String,
@@ -207,9 +203,7 @@ sealed interface AudioRecordingStepState {
         val isPrepared: Boolean,
         val amplitudes: List<Int>,
         val hasError: Boolean,
-      ) : Opened
-    }
-
+      ) : AudioRecording
   }
 }
 

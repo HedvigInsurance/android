@@ -50,6 +50,11 @@
   <string name="ADDON_REMOVE_DESCRIPTION">By canceling this extended coverage, your home insurance will no longer include this extra protection.</string>
   <string name="ADDON_REMOVE_TITLE">Cancel %1$s</string>
   <string name="ALERT_OK">OK</string>
+  <string name="AUDIO_RECORDER_LISTEN">Listen</string>
+  <string name="AUDIO_RECORDER_SEND">Send</string>
+  <string name="AUDIO_RECORDER_START">Start</string>
+  <string name="AUDIO_RECORDER_START_OVER">Start over</string>
+  <string name="AUDIO_RECORDER_STOP">Stop</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Open the BankID app on your phone or scan the QR-code to login</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Login with BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Open BankID</string>
@@ -197,7 +202,7 @@
   <string name="CLAIM_CHAT_EDIT_TITLE">Previous answers will be reset</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Make sure you fill in all the required fields</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uploaded files</string>
-  <string name="CLAIM_CHAT_FILE_UPLOAD_HINT">n/a</string>
+  <string name="CLAIM_CHAT_FILE_UPLOAD_HINT">You can upload images, PDFs or other files. Only include files that are relevant to your claim.</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Send files</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MAX_CHAR">Value must be at most %d</string>
   <string name="CLAIM_CHAT_FORM_NUMBER_MIN_CHAR">Value must be at least %d</string>
@@ -210,6 +215,7 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Please provide phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Recording</string>
+  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don\'t remember the purchase date, you don\'t need to fill anything.</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
@@ -221,6 +227,7 @@
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Start voice recording</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe with text</string>
+  <string name="CLAIM_DATE_AND_LOCATION_HINT">If you don\'t know the exact date, enter an approximate date.</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>

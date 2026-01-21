@@ -37,7 +37,7 @@ import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-private const val waveWidthPercentOfSpaceAvailable = 0.5f
+internal const val waveWidthPercentOfSpaceAvailable = 0.5f
 
 @Composable
 internal fun FakeAudioWaves(
