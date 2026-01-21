@@ -66,9 +66,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
@@ -78,6 +77,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -433,38 +434,20 @@ private fun ClaimChatScrollableContent(
     .asPaddingValues()
     .plus(PaddingValues(bottom = 16.dp, top = 16.dp))
 
-  val heightOfItemBottomContentMap: SnapshotStateMap<StepId, IntSize> = remember {
-    mutableStateMapOf()
-  }
-  var minHeightForFullScreenItem by remember { mutableStateOf(0.dp) }
+  val lastItemHeightAdjustingState = rememberLastItemHeightAdjustingState(
+    density = density,
+    spaceBetweenItems = spaceBetweenItems,
+    steps = uiState.steps,
+  )
 
   Box(modifier, propagateMinConstraints = true) {
     Box(
       Modifier
         .padding(contentPadding)
-        .onSizeChanged { minHeightForFullScreenItem = with(density) { it.height.toDp() } },
+        .onSizeChanged { size ->
+          lastItemHeightAdjustingState.onContainerSizeChanged(size)
+        },
     )
-    val preferredMinHeightForFullScreenItem by remember(density, uiState.steps) {
-      derivedStateOf {
-        minHeightForFullScreenItem - spaceBetweenItems - if (uiState.steps.size < 2) {
-          0.dp
-        } else {
-          val stepId = uiState.steps.dropLast(1).last().id
-          with(density) {
-            heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
-          }
-        }
-      }
-    }
-    LaunchedEffect(uiState.steps) {
-      Snapshot.withMutableSnapshot {
-        val prunedFromDeletedStepsMap = heightOfItemBottomContentMap.filter { (stepId, _) ->
-          stepId in uiState.steps.map { it.id }
-        }
-        heightOfItemBottomContentMap.clear()
-        heightOfItemBottomContentMap.putAll(prunedFromDeletedStepsMap)
-      }
-    }
     LazyColumn(
       modifier = Modifier.padding(horizontal = 16.dp),
       state = lazyListState,
@@ -483,7 +466,7 @@ private fun ClaimChatScrollableContent(
         val isLastItem = item == uiState.steps.lastOrNull()
 
         val heightModifier = if (isLastItem) {
-          Modifier.requiredHeightIn(preferredMinHeightForFullScreenItem)
+          Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
         } else {
           Modifier
         }
@@ -507,7 +490,7 @@ private fun ClaimChatScrollableContent(
             imageLoader = imageLoader,
             openAppSettings = openAppSettings,
             onResponseHeightChanged = { size ->
-              heightOfItemBottomContentMap[item.id] = size
+              lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
             },
           )
         }
@@ -517,10 +500,7 @@ private fun ClaimChatScrollableContent(
 }
 
 @Composable
-private fun ScrollToBottomButton(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
   IconButton(
     onClick = onClick,
     modifier = modifier.size(50.dp),
@@ -564,7 +544,6 @@ private fun ColumnScope.StepContentSection(
   openAppSettings: () -> Unit,
   onResponseHeightChanged: (IntSize) -> Unit,
 ) {
-
   // AnimationSequence has 3 stages one after another:
   // 1) fake ai dot
   // 2) top part of content
@@ -758,11 +737,9 @@ private fun StepTopContent(
   }
 }
 
-//to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
+// to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
 @Composable
-private fun CommonPaddingWrapper(
-  content: @Composable () -> Unit,
-) {
+private fun CommonPaddingWrapper(content: @Composable () -> Unit) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -925,7 +902,7 @@ private fun StepBottomContent(
         canBeChanged = stepItem.isRegrettable,
         continueButtonLoading = currentContinueButtonLoading,
         skipButtonLoading = currentSkipButtonLoading,
-        firstFieldWithError = stepItem.stepContent.fields.firstOrNull{ it.hasError!=null }
+        firstFieldWithError = stepItem.stepContent.fields.firstOrNull { it.hasError != null },
       )
 
       is StepContent.Summary -> ChatClaimSummaryBottomContent(
@@ -1077,10 +1054,7 @@ private fun DeflectStep(
 }
 
 @Composable
-private fun TaskStep(
-  taskContent: StepContent.Task,
-  modifier: Modifier = Modifier,
-) {
+private fun TaskStep(taskContent: StepContent.Task, modifier: Modifier = Modifier) {
   val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
   Column(
     modifier.clearAndSetSemantics { contentDescription = taskContentDescription },
@@ -1163,7 +1137,7 @@ private fun FormStep(
       },
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
-      firstFieldWithError = firstFieldWithError
+      firstFieldWithError = firstFieldWithError,
     )
   }
 }
@@ -1193,7 +1167,7 @@ private fun FormContent(
   firstFieldWithError: StepContent.Form.Field?,
   modifier: Modifier = Modifier,
 ) {
-  val errorDescription = firstFieldWithError?.let {"${getErrorText(it)}: ${it.title?.let {title -> title }}"}
+  val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title?.let { title -> title }}" }
   Column(
     modifier,
   ) {
@@ -1205,7 +1179,6 @@ private fun FormContent(
           val errorText = getErrorText(field)
           when (field.type) {
             StepContent.Form.FieldType.TEXT -> {
-
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -1225,7 +1198,8 @@ private fun FormContent(
                 onSelectFieldAnswer(
                   field.id,
                   field.datePickerUiState?.datePickerState?.selectedDateMillis?.let {
-                    StepContent.Form.FieldOption(it.toString(), it.toString()) }
+                    StepContent.Form.FieldOption(it.toString(), it.toString())
+                  },
                 )
               }
               DateSelectBubble(
@@ -1402,7 +1376,8 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
           )
           Spacer(Modifier.width(6.dp))
           Icon(
-            HedvigIcons.ChevronDown, null,
+            HedvigIcons.ChevronDown,
+            null,
             tint = HedvigTheme.colorScheme.fillTertiaryTransparent,
           )
         }
