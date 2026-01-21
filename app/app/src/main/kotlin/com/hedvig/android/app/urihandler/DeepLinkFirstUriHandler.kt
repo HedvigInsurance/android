@@ -25,7 +25,7 @@ internal class DeepLinkFirstUriHandler(
         delegate.openUri(uri)
       }
     } catch (e: IllegalArgumentException) {
-      logcat(LogPriority.ERROR) { "Tried to open uri: $uri but got IllegalArgumentException" }
+      logcat(LogPriority.ERROR, e) { "Tried to open uri: $uri but got IllegalArgumentException" }
     }
   }
 }
