@@ -42,27 +42,3 @@ fun HedvigAudioPlayer(audioPlayer: AudioPlayer, modifier: Modifier = Modifier, o
     modifier = modifier,
   )
 }
-
-@Composable
-fun RestingAudioPlayer(modifier: Modifier = Modifier) {
-  BoxWithConstraints(modifier) {
-    val numberOfWaves = remember(maxWidth) {
-      (maxWidth / 5f).value.roundToInt()
-    }
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .fillMaxWidth(),
-    ) {
-      repeat(numberOfWaves) { _ ->
-        Box(
-          modifier = Modifier
-            .size(2.dp)
-            .clip(CircleShape)
-            .background(HedvigTheme.colorScheme.fillPrimary),
-        )
-      }
-    }
-  }
-}
