@@ -286,9 +286,9 @@ private fun AudioRecordingBottomSheet(
       AnimatedContent(
         targetState = audioRecordingState,
         transitionSpec = {
-      (fadeIn(animationSpec = tween(220, delayMillis = 90))
-        .togetherWith(fadeOut(animationSpec = tween(90))))
-    },
+          fadeIn(animationSpec = tween(300))
+            .togetherWith(fadeOut(animationSpec = tween(300)))
+        },
         contentKey = { state ->
           when (state) {
             is AudioRecordingStepState.AudioRecording.Playback -> {
