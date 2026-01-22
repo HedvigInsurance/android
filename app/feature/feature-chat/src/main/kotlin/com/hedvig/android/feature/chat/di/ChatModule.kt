@@ -26,6 +26,7 @@ val chatModule = module {
   single<BotServiceService> {
     BotServiceService(
       fileUploadService = get<FileUploadService>(),
+      fileService = get(),
       buildConstants = get<HedvigBuildConstants>(),
     )
   }

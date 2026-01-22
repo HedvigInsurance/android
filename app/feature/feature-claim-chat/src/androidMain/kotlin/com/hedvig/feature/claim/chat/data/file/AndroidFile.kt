@@ -46,7 +46,7 @@ internal class AndroidFileService(
   override fun convertToCommonFile(uri: Uri): CommonFile {
     val androidUri = uri.toAndroidUri()
 
-    val fileName = coreFileService.getFileName(androidUri) ?: "media"
+    val fileName = coreFileService.getFileName(uri) ?: "media"
     val mimeType = getMimeType(uri.toString())
 
     return AndroidFile(

@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.odyssey.step.fileupload
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.eygraber.uri.Uri
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.hedvig.android.core.fileupload.FileService
@@ -37,7 +37,7 @@ internal class FileUploadViewModel(
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       either {
-        val uris = uiState.value.localFiles.map { Uri.parse(it.localPath) }
+        val uris = uiState.value.localFiles.mapNotNull { it.localPath?.let { path -> Uri.parse(path) } }
         val uploadedFileIds = uiState.value.uploadedFiles.map { it.id }
         val allIds = if (uris.isNotEmpty()) {
           val result = claimsServiceUploadFileUseCase.invoke(url = targetUploadUrl, uris = uris).bind()
