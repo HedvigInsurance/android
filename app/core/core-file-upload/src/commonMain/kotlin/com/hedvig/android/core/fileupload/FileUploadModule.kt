@@ -11,7 +11,6 @@ val fileUploadModule = module {
   single<FileUploadService> {
     FileUploadService(
       client = get<HttpClient>(),
-      fileService = get<FileService>(),
     )
   }
 

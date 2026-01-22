@@ -21,7 +21,6 @@ import io.ktor.http.isSuccess
 
 class FileUploadService(
   private val client: HttpClient,
-  private val fileService: FileService,
 ) {
   /**
    * Uploads files to a backend service with optional file size validation.
