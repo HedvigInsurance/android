@@ -17,6 +17,12 @@ interface HedvigBuildConstants {
   val urlOdyssey: String
 
   /**
+   * The URL targeting the core hedvig gateway URL. To be used with APIs that return which sub-path they want the next
+   * request to go to
+   */
+  val urlHedvigGateway: String
+
+  /**
    * The URL targeting bot service backend
    */
   val urlBotService: String

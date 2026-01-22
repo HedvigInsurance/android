@@ -20,7 +20,7 @@ internal class UploadFileUseCase(
 ) {
   context(_: Raise<ErrorMessage>)
   suspend fun invoke(commonFile: CommonFile, uploadUrl: String): FileUploadResponse {
-    val fullUrl = "${buildConstants.urlBaseWeb}$uploadUrl"
+    val fullUrl = "${buildConstants.urlHedvigGateway}$uploadUrl"
     val responseBody = fileUploadService.uploadWithCustomFormData(
       url = fullUrl,
       formDataBuilder = {
