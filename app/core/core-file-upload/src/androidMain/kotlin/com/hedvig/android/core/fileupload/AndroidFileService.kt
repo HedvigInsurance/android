@@ -13,7 +13,6 @@ import kotlin.math.max
 class AndroidFileService(
   private val contentResolver: ContentResolver,
 ) : FileService {
-
   override fun convertToCommonFile(uri: Uri): CommonFile {
     val androidUri = uri.toAndroidUri()
 

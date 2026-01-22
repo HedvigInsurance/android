@@ -56,48 +56,22 @@ class FileUploadService(
       }
     }
 
-    val response: HttpResponse = client
-      .safePost(url) {
-        setBody(
-          MultiPartFormDataContent(
-            formData {
-              files.forEach { file ->
-                append(
-                  "files",
-                  InputProvider { file.source() },
-                  Headers.build {
-                    append(HttpHeaders.ContentType, file.mimeType)
-                    append(HttpHeaders.ContentDisposition, """filename="${file.fileName}"""")
-                  },
-                )
-              }
-            },
-          ),
-        )
-      }
-      .fold(
-        ifLeft = { error ->
-          raise(
-            when (error) {
-              is NetworkError.IOError -> ErrorMessage("Network error: ${error.message}", error.throwable)
-              is NetworkError.UnknownError -> ErrorMessage(error.message, error.throwable)
+    return uploadWithCustomFormData(
+      url = url,
+      formDataBuilder = {
+        files.forEach { file ->
+          append(
+            "files",
+            InputProvider { file.source() },
+            Headers.build {
+              append(HttpHeaders.ContentType, file.mimeType)
+              append(HttpHeaders.ContentDisposition, """filename="${file.fileName}"""")
             },
           )
-        },
-        ifRight = { it },
-      )
-
-    return if (response.status.isSuccess()) {
-      val responseBody = response.bodyAsText()
-      logcat { "FileUploadService: Upload successful, response: $responseBody" }
-      deserializer(responseBody)
-    } else {
-      val errorBody = response.bodyAsText()
-      logcat(LogPriority.ERROR) {
-        "FileUploadService failed with status ${response.status}: $errorBody"
-      }
-      raise(ErrorMessage("File upload failed with status ${response.status}: $errorBody"))
-    }
+        }
+      },
+      deserializer = deserializer,
+    )
   }
 
   /**
