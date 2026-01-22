@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat.di
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.fileupload.FileUploadService
 import com.hedvig.android.language.LanguageService
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -19,7 +20,6 @@ import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
 import com.hedvig.feature.claim.chat.data.UploadFileUseCase
-import com.hedvig.feature.claim.chat.data.file.FileService
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module

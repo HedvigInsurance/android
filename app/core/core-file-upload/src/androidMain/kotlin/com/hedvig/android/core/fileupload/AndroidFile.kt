@@ -3,6 +3,7 @@ package com.hedvig.android.core.fileupload
 import android.content.ContentResolver
 import android.net.Uri as AndroidUri
 import android.provider.OpenableColumns
+import java.io.File
 import kotlin.math.max
 import kotlinx.io.IOException
 import kotlinx.io.Source
@@ -12,6 +13,7 @@ import kotlinx.io.buffered
 class AndroidFile(
   override val fileName: String,
   override val mimeType: String,
+  override val description: String? = null,
   private val contentResolver: ContentResolver,
   private val androidUri: AndroidUri,
 ) : CommonFile {
@@ -38,5 +40,26 @@ class AndroidFile(
     } ?: -1
 
     return max(statSize, sizeFromCursor)
+  }
+
+  companion object {
+    /**
+     * Creates an AndroidFile from a java.io.File
+     */
+    fun fromFile(file: File, description: String? = null, mimeType: String = ""): CommonFile {
+      return object : CommonFile {
+        override val fileName: String = file.name
+        override val description: String? = description
+        override val mimeType: String = mimeType
+
+        override fun source(): Source {
+          return file.inputStream().asSource().buffered()
+        }
+
+        override fun getSize(): Long {
+          return file.length()
+        }
+      }
+    }
   }
 }

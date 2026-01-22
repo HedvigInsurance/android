@@ -4,11 +4,11 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.CommonFile
 import com.hedvig.android.core.fileupload.FileUploadService
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
-import com.hedvig.feature.claim.chat.data.file.CommonFile
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -24,7 +24,9 @@ internal class UploadFileUseCase(
     val responseBody = fileUploadService.uploadWithCustomFormData(
       url = fullUrl,
       formDataBuilder = {
-        append("description", commonFile.description)
+        commonFile.description?.let { description ->
+          append("description", description)
+        }
         append(
           "files",
           InputProvider { commonFile.source() },

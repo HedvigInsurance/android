@@ -9,6 +9,8 @@ import kotlinx.io.Source
 interface CommonFile {
   val fileName: String
   val mimeType: String
+  val description: String?
+    get() = null
 
   /**
    * Returns a Source for streaming the file contents.
