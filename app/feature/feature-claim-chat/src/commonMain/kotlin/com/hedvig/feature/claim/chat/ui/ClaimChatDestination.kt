@@ -134,6 +134,7 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -754,17 +755,22 @@ private fun AnimatedRevealText(
   visibleState: MutableTransitionState<Boolean>,
   modifier: Modifier = Modifier,
   style: TextStyle = LocalTextStyle.current,
-  delayPerChar: Int = 30,
-  charAnimDuration: Int = 150,
   onAnimationFinished: () -> Unit = {},
 ) {
+  val charAnimDuration: Int = 150
   var visibleChars by remember { mutableStateOf(0) }
 
   LaunchedEffect(visibleState.targetState, text) {
     if (visibleState.targetState) {
       visibleChars = 0
-      repeat(text.length) { index ->
-        delay(delayPerChar.toLong())
+      text.toCharArray().forEachIndexed { index, char ->
+        delay(
+          if (char in listOf('.', '?', '!', '\n', '\t')) {
+            200.milliseconds
+          } else {
+            20.milliseconds
+          },
+        )
         visibleChars = index + 1
       }
       delay(charAnimDuration.toLong())

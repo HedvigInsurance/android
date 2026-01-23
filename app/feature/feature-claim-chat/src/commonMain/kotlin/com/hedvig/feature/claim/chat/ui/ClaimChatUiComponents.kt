@@ -697,12 +697,11 @@ internal fun DateSelectBubble(
   modifier: Modifier = Modifier,
   errorText: String? = null,
 ) {
-  Column {
+  Column(modifier) {
     DatePickerWithDialog(
       datePickerState,
       canInteract = true,
       startText = questionLabel ?: "",
-      modifier = modifier,
     )
     AnimatedVisibility(
       errorText != null &&
