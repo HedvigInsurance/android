@@ -824,8 +824,13 @@ private fun calculateCharDelay(text: String): Duration = remember(text) {
   val slowestMultiplier = 1.0
   val fastestMultiplier = 0.2
 
+  // Extreme fallback for extreme cases
+  val superLongThreshold = 800
+  val superFastestMultiplier = 0.05
+
   val speedMultiplier = when {
     textLength <= shortTextThreshold -> slowestMultiplier
+    textLength >= superLongThreshold -> superFastestMultiplier
     textLength >= longTextThreshold -> fastestMultiplier
     else -> {
       val characterRange = longTextThreshold - shortTextThreshold
@@ -835,7 +840,6 @@ private fun calculateCharDelay(text: String): Duration = remember(text) {
     }
   }.coerceIn(fastestMultiplier, slowestMultiplier)
 
-  // Apply speed multiplier but ensure delays don't go below 20% of base (to remain readable)
   val minimumDelayRatio = 0.2
   (baseRegularDelayMillis * speedMultiplier)
     .coerceAtLeast((baseRegularDelayMillis * minimumDelayRatio))
