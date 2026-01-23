@@ -790,6 +790,7 @@ private fun AnimatedRevealText(
     if (visibleState.targetState) {
       visibleChars = 0
       text.toCharArray().forEachIndexed { index, char ->
+        visibleChars = index + 1
         delay(
           if (char in listOf('.', '?', '!', '\n', '\t')) {
             specialCharDelay.milliseconds
@@ -797,7 +798,6 @@ private fun AnimatedRevealText(
             regularCharDelay.milliseconds
           },
         )
-        visibleChars = index + 1
       }
       delay(charAnimDuration.toLong())
       onAnimationFinished()
