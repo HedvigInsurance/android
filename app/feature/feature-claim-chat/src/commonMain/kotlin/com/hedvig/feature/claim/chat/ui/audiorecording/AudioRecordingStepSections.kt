@@ -414,9 +414,14 @@ private fun DynamicClock(
       "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
     }
     is AudioRecordingStepState.AudioRecording.Playback -> {
-      val durationMillis = (audioPlayerState as? AudioPlayerState.Ready)?.durationMillis ?: 0
-      val durationSeconds = durationMillis / 1000
-      "${twoDigitsFormat.format(durationSeconds / 60)}:${twoDigitsFormat.format(durationSeconds % 60)}"
+
+      val ready = audioPlayerState as? AudioPlayerState.Ready
+      if (ready != null) {
+        val durationSeconds = ready.durationMillis / 1000
+        "${twoDigitsFormat.format(durationSeconds / 60)}:${twoDigitsFormat.format(durationSeconds % 60)}"
+      } else {
+        null
+      }
     }
     else -> null
   }
