@@ -134,6 +134,7 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -760,44 +761,19 @@ private fun AnimatedRevealText(
   val charAnimDuration: Int = 150
   var visibleChars by remember { mutableStateOf(0) }
 
-  val (regularCharDelay, specialCharDelay) = remember(text) {
-    val textLength = text.length
-    val baseRegularDelayMillis = 20
-    val baseSpecialDelayMillis = 200
-
-    // Calculate speed multiplier based on text length
-    val range = 0..400
-    val minSpeedAt = 50
-    val minSpeedMultiplier = 0.2
-    val maxSpeedMultiplier = 1.0
-    val speedMultiplier = when {
-      textLength <= minSpeedAt -> maxSpeedMultiplier
-      textLength >= minSpeedAt + range.last -> minSpeedMultiplier
-      else -> {
-        // Gradually speed up between 50 and 450 characters with a linear interpolation from 1.0 to 0.2
-        val numberOfCharactersInRange = textLength - minSpeedAt
-        maxSpeedMultiplier - (numberOfCharactersInRange / range.last) * (maxSpeedMultiplier - minSpeedMultiplier)
-      }
-    }.coerceIn(minSpeedMultiplier, maxSpeedMultiplier)
-
-    val regularDelay = (baseRegularDelayMillis * speedMultiplier).toInt().coerceAtLeast(baseRegularDelayMillis / 5)
-    val specialDelay = (baseSpecialDelayMillis * speedMultiplier).toInt().coerceAtLeast(baseSpecialDelayMillis / 5)
-
-    regularDelay to specialDelay
-  }
+  val charDelay = calculateCharDelay(text)
 
   LaunchedEffect(visibleState.targetState, text) {
     if (visibleState.targetState) {
       visibleChars = 0
       text.toCharArray().forEachIndexed { index, char ->
         visibleChars = index + 1
-        delay(
-          if (char in listOf('.', '?', '!', '\n', '\t')) {
-            specialCharDelay.milliseconds
-          } else {
-            regularCharDelay.milliseconds
-          },
-        )
+        val specialCharDelayMultiplier = when (char) {
+          ',' -> 5
+          in listOf('.', '?', '!', '\n', '\t') -> 10
+          else -> 1
+        }
+        delay(charDelay * specialCharDelayMultiplier)
       }
       delay(charAnimDuration.toLong())
       onAnimationFinished()
@@ -830,6 +806,40 @@ private fun AnimatedRevealText(
     style = style,
     modifier = modifier,
   )
+}
+
+/**
+ * Speed multiplier decreases for longer text to avoid tedious animations
+ * Short text (≤50 chars): full speed (1.0x multiplier)
+ * Medium text (50-450 chars): linear interpolation
+ * Long text (≥450 chars): 5x faster (0.2x multiplier)
+ */
+@Composable
+private fun calculateCharDelay(text: String): Duration = remember(text) {
+  val textLength = text.length
+  val baseRegularDelayMillis = 20
+
+  val shortTextThreshold = 50
+  val longTextThreshold = 350
+  val slowestMultiplier = 1.0
+  val fastestMultiplier = 0.2
+
+  val speedMultiplier = when {
+    textLength <= shortTextThreshold -> slowestMultiplier
+    textLength >= longTextThreshold -> fastestMultiplier
+    else -> {
+      val characterRange = longTextThreshold - shortTextThreshold
+      val charactersAboveThreshold = textLength - shortTextThreshold
+      val interpolationProgress = charactersAboveThreshold.toDouble() / characterRange
+      slowestMultiplier - interpolationProgress * (slowestMultiplier - fastestMultiplier)
+    }
+  }.coerceIn(fastestMultiplier, slowestMultiplier)
+
+  // Apply speed multiplier but ensure delays don't go below 20% of base (to remain readable)
+  val minimumDelayRatio = 0.2
+  (baseRegularDelayMillis * speedMultiplier)
+    .coerceAtLeast((baseRegularDelayMillis * minimumDelayRatio))
+    .milliseconds
 }
 
 @Composable
