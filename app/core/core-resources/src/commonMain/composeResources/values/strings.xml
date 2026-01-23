@@ -50,6 +50,12 @@
   <string name="ADDON_REMOVE_DESCRIPTION">By canceling this extended coverage, your home insurance will no longer include this extra protection.</string>
   <string name="ADDON_REMOVE_TITLE">Cancel %1$s</string>
   <string name="ALERT_OK">OK</string>
+  <string name="AUDIO_RECORDER_LISTEN">Listen</string>
+  <string name="AUDIO_RECORDER_SEND">Send</string>
+  <string name="AUDIO_RECORDER_SEND_ERROR_TITLE">Could not send recording</string>
+  <string name="AUDIO_RECORDER_START">Start</string>
+  <string name="AUDIO_RECORDER_START_OVER">Start over</string>
+  <string name="AUDIO_RECORDER_STOP">Stop</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Open the BankID app on your phone or scan the QR-code to login</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Login with BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Open BankID</string>
@@ -210,6 +216,7 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Please provide phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Recording</string>
+  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don't remember the purchase date, you don't need to fill in anything.</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
@@ -221,6 +228,7 @@
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Start voice recording</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe with text</string>
+  <string name="CLAIM_DATE_AND_LOCATION_HINT">If you don't know the exact date, enter an approximate date.</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
@@ -692,6 +700,7 @@
   <string name="SUMMARY_SCREEN_LEARN_MORE_BUTTON">Learn more</string>
   <string name="SUMMARY_SELECTED_PROBLEM_DESCRIPTION">Damage %1$s</string>
   <string name="SUMMARY_TOTAL_PRICE_SUBTITLE">Changes activate %1$s</string>
+  <string name="SURVEY_SOLD_VACATION_HOME">I have sold the vacation home</string>
   <string name="TAB_HOME_TITLE">Home</string>
   <string name="TAB_INSURANCES_TITLE">Insurances</string>
   <string name="TAB_PAYMENTS_TITLE">Payments</string>
