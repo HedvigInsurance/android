@@ -25,6 +25,9 @@ private class AndroidMediaPlayer(
   override val isPlaying: Boolean
     get() = mediaPlayer.isPlaying
 
+  override val duration: Int
+    get() = mediaPlayer.duration
+
   override fun pause() {
     mediaPlayer.pause()
   }

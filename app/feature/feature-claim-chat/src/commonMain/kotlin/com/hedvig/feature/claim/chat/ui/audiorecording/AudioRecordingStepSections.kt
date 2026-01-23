@@ -403,6 +403,9 @@ private fun DynamicClock(
     }
   }
 
+  val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
+    ?: remember { mutableStateOf<AudioPlayerState?>(null) }
+
   val twoDigitsFormat = remember { DecimalFormatter("00") }
 
   val label = when (audioRecordingState) {
@@ -411,8 +414,9 @@ private fun DynamicClock(
       "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
     }
     is AudioRecordingStepState.AudioRecording.Playback -> {
-      // TODO: Get actual audio duration from file or state
-      "00:00"
+      val durationMillis = (audioPlayerState as? AudioPlayerState.Ready)?.durationMillis ?: 0
+      val durationSeconds = durationMillis / 1000
+      "${twoDigitsFormat.format(durationSeconds / 60)}:${twoDigitsFormat.format(durationSeconds % 60)}"
     }
     else -> null
   }
