@@ -96,6 +96,7 @@ import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.A11Y_AUDIO_RECORDING
+import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_REMOVE
@@ -840,7 +841,7 @@ internal fun ChatClaimSummaryTopContent(
         if (recordingUrls.isNotEmpty()) {
           Spacer(Modifier.height(24.dp))
           HedvigText(
-            stringResource(Res.string.A11Y_AUDIO_RECORDING),
+            stringResource(Res.string.CLAIM_CHAT_RECORDING_TITLE),
           )
           Spacer(Modifier.height(8.dp))
           recordingUrls.forEachIndexed { index, string ->

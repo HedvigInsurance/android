@@ -36,6 +36,7 @@ import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.CLAIM_CHAT_USE_AUDIO
+import hedvig.resources.CLAIM_CHAT_USE_TEXT_INPUT
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
@@ -121,7 +122,7 @@ internal fun AudioRecorderBubble(
             HedvigButton(
               enabled = true,
               buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-              text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
+              text = stringResource(Res.string.CLAIM_CHAT_USE_TEXT_INPUT),
               onClick = onShowFreeText,
               modifier = Modifier.fillMaxWidth(),
             )
