@@ -149,7 +149,7 @@ internal fun ContentSelectChips(
 
     StepContent.ContentSelectStyle.BINARY -> {
       Row(
-        Modifier.fillMaxWidth(),
+        modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
       ) {
         for (item in options) {
@@ -287,9 +287,9 @@ internal fun YesNoBubble(
       stringResource(Res.string.GENERAL_NO),
     ),
   )
-  Column {
+  Column(modifier) {
     Row(
-      modifier = modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.End,
     ) {
@@ -312,7 +312,7 @@ internal fun YesNoBubble(
         if (errorText != null) {
           Spacer(Modifier.height(4.dp))
           Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.End,
           ) {
@@ -349,14 +349,14 @@ internal fun SingleSelectBubbleWithDialog(
       },
     )
   }
-  Column {
+  Column(modifier) {
     HedvigBigCard(
       onClick = { showDialog = true },
       labelText = questionLabel,
       inputText = options.firstOrNull {
         it.id == selectedOptionId
       }?.text,
-      modifier = modifier,
+      modifier = Modifier.fillMaxWidth(),
       enabled = true,
     )
     AnimatedVisibility(errorText != null) {
@@ -395,7 +395,7 @@ internal fun MultiSelectBubbleWithDialog(
       buttonText = stringResource(Res.string.general_save_button),
     )
   }
-  Column {
+  Column(modifier) {
     HedvigBigCard(
       onClick = { showDialog = true },
       labelText = questionLabel,
@@ -404,7 +404,7 @@ internal fun MultiSelectBubbleWithDialog(
         else -> options.filter { it.id in selectedOptionIds }
           .joinToString(transform = RadioOption::text)
       },
-      modifier = modifier,
+      modifier = Modifier.fillMaxWidth(),
       enabled = true,
     )
     AnimatedVisibility(errorText != null) {
@@ -702,6 +702,7 @@ internal fun DateSelectBubble(
       datePickerState,
       canInteract = true,
       startText = questionLabel ?: "",
+      Modifier.fillMaxWidth()
     )
     AnimatedVisibility(
       errorText != null &&
@@ -817,7 +818,7 @@ internal fun ChatClaimSummaryTopContent(
           )
           Spacer(Modifier.height(8.dp))
           CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
-            Column(modifier) {
+            Column(Modifier) {
               for (displayItem in displayItems) {
                 HorizontalItemsWithMaximumSpaceTaken(
                   spaceBetween = 8.dp,
