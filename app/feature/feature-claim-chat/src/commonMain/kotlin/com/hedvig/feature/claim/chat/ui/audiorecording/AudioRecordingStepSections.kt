@@ -710,25 +710,30 @@ private fun AudioWaves(
       modifier = Modifier.fillMaxWidth().height(maxHeight),
     ) {
       repeat(numberOfWaves) { waveIndex ->
-        val baseHeight = remember(waveIndex, numberOfWaves) {
-          val wavePosition = waveIndex + 1
-          val centerPoint = numberOfWaves / 2
-          val distanceFromCenterPoint = abs(centerPoint - wavePosition)
-          val percentageToCenterPoint =
-            ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
-          val minWaveHeightFraction = 0.05f
-          val maxWaveHeightFractionForSideWaves =  0.05f
-          val maxWaveHeightFraction = 0.5f
-          val maxHeightFraction = lerp(
-            maxWaveHeightFractionForSideWaves,
-            maxWaveHeightFraction,
-            percentageToCenterPoint,
-          )
-          if (maxHeightFraction <= minWaveHeightFraction) {
-            maxHeightFraction
+        val baseHeight = remember(waveIndex, numberOfWaves, progressPercentage) {
+          // When progressPercentage is null (recording state), start all waves at 2dp height
+          if (progressPercentage == null) {
+            0.02f // 2dp out of 100dp container (after padding)
           } else {
-            Random.nextDouble(minWaveHeightFraction.toDouble(), maxHeightFraction.toDouble())
-              .toFloat()
+            val wavePosition = waveIndex + 1
+            val centerPoint = numberOfWaves / 2
+            val distanceFromCenterPoint = abs(centerPoint - wavePosition)
+            val percentageToCenterPoint =
+              ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
+            val minWaveHeightFraction = 0.05f
+            val maxWaveHeightFractionForSideWaves = 0.05f
+            val maxWaveHeightFraction = 0.5f
+            val maxHeightFraction = lerp(
+              maxWaveHeightFractionForSideWaves,
+              maxWaveHeightFraction,
+              percentageToCenterPoint,
+            )
+            if (maxHeightFraction <= minWaveHeightFraction) {
+              maxHeightFraction
+            } else {
+              Random.nextDouble(minWaveHeightFraction.toDouble(), maxHeightFraction.toDouble())
+                .toFloat()
+            }
           }
         }
 
@@ -738,8 +743,13 @@ private fun AudioWaves(
           LaunchedEffect(waveIndex) {
             while (true) {
               delay((50..150).random().toLong())
-              val variation = Random.nextFloat() * 0.2f - 0.1f
-              animatedHeight = (baseHeight + variation).coerceIn(0.1f, 0.4f)
+              // For recording state (baseHeight = 0.02), generate random heights within animation range
+              animatedHeight = if (progressPercentage == null) {
+                Random.nextFloat() * 0.3f + 0.1f // Range: 0.1f to 0.4f
+              } else {
+                val variation = Random.nextFloat() * 0.2f - 0.1f
+                (baseHeight + variation).coerceIn(0.1f, 0.4f)
+              }
             }
           }
 
