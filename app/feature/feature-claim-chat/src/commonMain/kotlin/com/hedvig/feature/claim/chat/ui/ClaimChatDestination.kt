@@ -117,6 +117,7 @@ import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
+import hedvig.resources.CLAIM_CHAT_EDIT_ANSWER_BUTTON
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
@@ -129,6 +130,7 @@ import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
+import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
@@ -286,6 +288,8 @@ private fun ClaimChatScreenContent(
     HedvigAlertDialog(
       title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
       text = stringResource(Res.string.CLAIM_CHAT_EDIT_EXPLANATION),
+      confirmButtonLabel =  stringResource(Res.string.CLAIM_CHAT_EDIT_ANSWER_BUTTON),
+      dismissButtonLabel = stringResource(Res.string.general_cancel_button),
       onDismissRequest = {
         onEvent(ClaimChatEvent.DismissConfirmEditDialog)
       },
