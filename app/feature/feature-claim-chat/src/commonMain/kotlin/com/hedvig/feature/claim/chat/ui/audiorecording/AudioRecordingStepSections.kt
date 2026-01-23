@@ -405,14 +405,11 @@ private fun DynamicClock(
 
   val twoDigitsFormat = remember { DecimalFormatter("00") }
 
-  // Compute label based on state
   val label = when (audioRecordingState) {
-    // Recording state: show elapsed recording time
     is AudioRecordingStepState.AudioRecording.Recording -> {
       val diff = clock.now() - (startedRecordingAt ?: clock.now())
       "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
     }
-    // Playback state: show duration placeholder (actual duration not available from current data structures)
     is AudioRecordingStepState.AudioRecording.Playback -> {
       // TODO: Get actual audio duration from file or state
       "00:00"
@@ -720,9 +717,10 @@ private fun AudioWaves(
       modifier = Modifier.fillMaxWidth().height(maxHeight),
     ) {
       repeat(numberOfWaves) { waveIndex ->
-        val baseHeight = remember(waveIndex, numberOfWaves, progressPercentage) {
+        val isRecording = progressPercentage == null
+        val baseHeight = remember(waveIndex, numberOfWaves, isRecording) {
           // When progressPercentage is null (recording state), start all waves at 2dp height
-          if (progressPercentage == null) {
+          if (isRecording) {
             0.02f // 2dp out of 100dp container (after padding)
           } else {
             val wavePosition = waveIndex + 1
