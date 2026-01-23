@@ -280,7 +280,7 @@ private fun AudioRecordingBottomSheet(
         },
         textAlign = TextAlign.Center,
       )
-      DynamicClock(audioRecordingState, clock)
+      DynamicClock(audioRecordingState, clock, audioPlayer)
       Spacer(Modifier.height(24.dp))
 
       AnimatedContent(
@@ -393,6 +393,7 @@ private fun AudioRecordingBottomSheet(
 private fun DynamicClock(
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   clock: Clock,
+  audioPlayer: AudioPlayer?,
 ) {
   val startedRecordingAt by remember {
     mutableStateOf<Instant?>(null)
@@ -403,20 +404,29 @@ private fun DynamicClock(
   }
 
   val twoDigitsFormat = remember { DecimalFormatter("00") }
-  val label = if (audioRecordingState is AudioRecordingStepState.AudioRecording.Recording) {
-    val diff = clock.now() - (startedRecordingAt ?: clock.now())
-    "${
-      twoDigitsFormat.format(
-        diff.inWholeMinutes,
-      )
-    }:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
-  } else null
+
+  // Compute label based on state
+  val label = when (audioRecordingState) {
+    // Recording state: show elapsed recording time
+    is AudioRecordingStepState.AudioRecording.Recording -> {
+      val diff = clock.now() - (startedRecordingAt ?: clock.now())
+      "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
+    }
+    // Playback state: show duration placeholder (actual duration not available from current data structures)
+    is AudioRecordingStepState.AudioRecording.Playback -> {
+      // TODO: Get actual audio duration from file or state
+      "00:00"
+    }
+    else -> null
+  }
+
   val durationDescription = label?.let {
     stringResource(
       Res.string.TALKBACK_RECORDING_DURATION,
       it,
     )
   }
+
   HedvigText(
     text = label ?: "",
     textAlign = TextAlign.Center,
