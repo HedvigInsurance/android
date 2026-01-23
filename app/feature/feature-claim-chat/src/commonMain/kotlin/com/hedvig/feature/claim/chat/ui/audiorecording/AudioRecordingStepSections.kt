@@ -756,9 +756,9 @@ private fun AudioWaves(
                 // Side waves (first and last ~5%) have smaller max height
                 val isSideWave = waveIndex < numberOfWaves * 0.05 || waveIndex > numberOfWaves * 0.95
                 if (isSideWave) {
-                  Random.nextFloat() * 0.05f + 0.1f // Range: 0.1f to 0.15f for side waves
+                  Random.nextFloat() * 0.05f + 0.01f // Range: 0.1f to 0.15f for side waves
                 } else {
-                  Random.nextFloat() * 0.3f + 0.1f // Range: 0.1f to 0.4f for center waves
+                  Random.nextFloat() * 0.3f + 0.01f // Range: 0.1f to 0.4f for center waves
                 }
               } else {
                 val variation = Random.nextFloat() * 0.2f - 0.1f
