@@ -80,9 +80,8 @@ class FileService(
 }
 
 class BackendFileLimitException(message: String) : IOException(message) {
-  constructor(
-    uri: Uri,
-  ) : this("Failed to upload with uri:$uri. Content size above backend limit:$backendContentSizeLimit")
+  constructor(uri: Uri) :
+    this("Failed to upload with uri:$uri. Content size above backend limit:$backendContentSizeLimit")
 }
 
 private const val backendContentSizeLimit = 512 * 1024 * 1024 // 512 Mb

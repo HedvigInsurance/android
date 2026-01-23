@@ -29,17 +29,15 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
@@ -148,6 +146,7 @@ internal fun ContentSelectChips(
         }
       }
     }
+
     StepContent.ContentSelectStyle.BINARY -> {
       Row(
         Modifier.fillMaxWidth(),
@@ -736,7 +735,6 @@ internal fun TextInputBubble(
   keyboardType: KeyboardType = KeyboardType.Unspecified,
   errorText: String? = null,
 ) {
-  val focusRequester = remember { FocusRequester() }
   var textValue by rememberSaveable {
     mutableStateOf(
       text ?: "",
@@ -752,7 +750,7 @@ internal fun TextInputBubble(
     },
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     labelText = questionLabel,
-    modifier = modifier.focusRequester(focusRequester),
+    modifier = modifier,
     enabled = true,
     errorState = if (errorText != null) {
       HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
@@ -814,6 +812,9 @@ internal fun ChatClaimSummaryTopContent(
         if (displayItems.isNotEmpty()) {
           HedvigText(
             stringResource(Res.string.claim_status_claim_details_title),
+            modifier = Modifier.semantics {
+              heading()
+            },
           )
           Spacer(Modifier.height(8.dp))
           CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
@@ -830,6 +831,7 @@ internal fun ChatClaimSummaryTopContent(
                       textAlign = TextAlign.End,
                     )
                   },
+                  modifier = Modifier.semantics(true) {},
                 )
               }
             }

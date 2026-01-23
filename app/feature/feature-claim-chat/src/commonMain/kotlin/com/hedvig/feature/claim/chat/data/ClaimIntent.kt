@@ -1,5 +1,6 @@
 package com.hedvig.feature.claim.chat.data
 
+import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import kotlin.jvm.JvmInline

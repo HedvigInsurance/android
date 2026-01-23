@@ -25,6 +25,7 @@ kotlin {
       implementation(libs.apollo.engine.ktor)
       implementation(libs.apollo.normalizedCache)
       implementation(libs.apollo.runtime)
+      implementation(libs.arrow.core)
       implementation(libs.koin.core)
       implementation(libs.ktor.client.auth)
       implementation(libs.ktor.client.logging)
