@@ -1,6 +1,5 @@
 package com.hedvig.feature.claim.chat.data
 
-import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import kotlin.jvm.JvmInline
@@ -13,7 +12,7 @@ value class ClaimIntentId(val value: String)
 internal data class ClaimIntent(
   val id: ClaimIntentId,
   val next: Next,
-  val progress: Float?
+  val progress: Float?,
 ) {
   sealed interface Next {
     val step: Step?
@@ -33,7 +32,7 @@ internal data class ClaimIntentStep(
   val text: String?,
   val stepContent: StepContent,
   val isRegrettable: Boolean,
-  val hint: String?
+  val hint: String?,
 )
 
 @Serializable
@@ -53,7 +52,7 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean,
     val recordingState: AudioRecordingStepState,
     val freeTextMinLength: Int,
-    val freeTextMaxLength: Int
+    val freeTextMaxLength: Int,
   ) : StepContent
 
   data class FileUpload(
@@ -73,7 +72,6 @@ internal sealed interface StepContent {
     val fields: List<Field>,
     override val isSkippable: Boolean,
   ) : StepContent {
-
     data class Field(
       val id: FieldId,
       val isRequired: Boolean,
@@ -86,12 +84,14 @@ internal sealed interface StepContent {
       val options: List<FieldOption>,
       val selectedOptions: List<FieldOption>,
       val datePickerUiState: DatePickerUiState?,
-      val hasError: FieldError? = null
+      val hasError: FieldError? = null,
     )
 
     sealed interface FieldError {
       data object BiggerThanMaxValue : FieldError
+
       data object LessThanMinValue : FieldError
+
       data object Missing : FieldError
     }
 
@@ -108,7 +108,6 @@ internal sealed interface StepContent {
       MULTI_SELECT,
       BINARY,
     }
-
   }
 
   data class ContentSelect(
@@ -125,7 +124,7 @@ internal sealed interface StepContent {
 
   enum class ContentSelectStyle {
     PILL,
-    BINARY
+    BINARY,
   }
 
   data class Summary(
@@ -152,7 +151,7 @@ internal sealed interface StepContent {
     val partnersInfo: InfoBlock?,
     val content: InfoBlock,
     val faq: List<InfoBlock>,
-    val buttonText: String
+    val buttonText: String,
   ) : StepContent {
     override val isSkippable: Boolean = false
 
@@ -189,21 +188,21 @@ sealed interface AudioRecordingStepState {
   ) : AudioRecordingStepState
 
   sealed interface AudioRecording : AudioRecordingStepState {
-      data object NotRecording : AudioRecording
+    data object NotRecording : AudioRecording
 
-      data class Recording(
-        val amplitudes: List<Int>,
-        val startedAt: Instant,
-        val filePath: String,
-      ) : AudioRecording
+    data class Recording(
+      val amplitudes: List<Int>,
+      val startedAt: Instant,
+      val filePath: String,
+    ) : AudioRecording
 
-      data class Playback(
-        val filePath: String,
-        val isPlaying: Boolean,
-        val isPrepared: Boolean,
-        val amplitudes: List<Int>,
-        val hasError: Boolean,
-      ) : AudioRecording
+    data class Playback(
+      val filePath: String,
+      val isPlaying: Boolean,
+      val isPrepared: Boolean,
+      val amplitudes: List<Int>,
+      val hasError: Boolean,
+    ) : AudioRecording
   }
 }
 

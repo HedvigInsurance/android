@@ -134,35 +134,43 @@ internal fun ContentSelectChips(
         for (item in options) {
           key(item) {
             RoundCornersPill(
-              isSelected = item.id== selectedOptionId,
+              isSelected = item.id == selectedOptionId,
               onClick = {
                 onOptionClick(item)
-              }) {contentColor ->
-              HedvigText(item.title,
-                color = contentColor)
+              },
+            ) { contentColor ->
+              HedvigText(
+                item.title,
+                color = contentColor,
+              )
             }
           }
         }
       }
     }
     StepContent.ContentSelectStyle.BINARY -> {
-      Row(Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly) {
+      Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+      ) {
         for (item in options) {
           RoundCornersPill(
             onClick = {
               onOptionClick(item)
             },
-            isSelected = item.id== selectedOptionId,
-            modifier = Modifier.weight(1f).padding(horizontal = 4.dp)
+            isSelected = item.id == selectedOptionId,
+            modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
           ) { contentColor ->
             Row(
               Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.Center
+              horizontalArrangement = Arrangement.Center,
             ) {
-              HedvigText(item.title, textAlign = TextAlign.Center,
+              HedvigText(
+                item.title,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 2.dp, bottom = 2.dp),
-                color = contentColor)
+                color = contentColor,
+              )
             }
           }
         }
@@ -176,7 +184,7 @@ internal fun RoundCornersPill(
   modifier: Modifier = Modifier,
   isSelected: Boolean = false,
   onClick: (() -> Unit)?,
-  content: @Composable ( contentColor: Color) -> Unit,
+  content: @Composable (contentColor: Color) -> Unit,
 ) {
   val surfaceColor by animateColorAsState(
     if (isSelected) {
@@ -268,7 +276,7 @@ internal fun YesNoBubble(
   answerSelected: String?,
   onSelect: (String) -> Unit,
   modifier: Modifier = Modifier,
-  errorText: String? = null
+  errorText: String? = null,
 ) {
   val options = listOf(
     StepContent.ContentSelect.Option(
@@ -297,7 +305,7 @@ internal fun YesNoBubble(
           onSelect(option.title)
         },
         style = StepContent.ContentSelectStyle.BINARY,
-        selectedOptionId = options.firstOrNull { it.title==answerSelected }?.id
+        selectedOptionId = options.firstOrNull { it.title == answerSelected }?.id,
       )
     }
     AnimatedVisibility(errorText != null) {
@@ -315,7 +323,6 @@ internal fun YesNoBubble(
               color = HedvigTheme.colorScheme.textSecondaryTranslucent,
             )
           }
-
         }
       }
     }
@@ -361,7 +368,7 @@ internal fun SingleSelectBubbleWithDialog(
             errorText,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp),
           )
         }
       }
@@ -409,13 +416,12 @@ internal fun MultiSelectBubbleWithDialog(
             errorText,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp),
           )
         }
       }
     }
   }
-
 }
 
 @Composable
@@ -700,9 +706,9 @@ internal fun DateSelectBubble(
       modifier = modifier,
     )
     AnimatedVisibility(
-      errorText != null
-        && datePickerState.datePickerState.selectedDateMillis == null,
-      //adding this since datePickerState handles update internally
+      errorText != null &&
+        datePickerState.datePickerState.selectedDateMillis == null,
+      // adding this since datePickerState handles update internally
       // and it's hard to clear the error state as with other fields
     ) {
       Column {
@@ -712,13 +718,12 @@ internal fun DateSelectBubble(
             errorText,
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-            modifier = Modifier.padding(start = 16.dp)
+            modifier = Modifier.padding(start = 16.dp),
           )
         }
       }
     }
   }
-
 }
 
 @Composable
@@ -749,8 +754,11 @@ internal fun TextInputBubble(
     labelText = questionLabel,
     modifier = modifier.focusRequester(focusRequester),
     enabled = true,
-    errorState = if (errorText != null) HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
-    else HedvigTextFieldDefaults.ErrorState.NoError,
+    errorState = if (errorText != null) {
+      HedvigTextFieldDefaults.ErrorState.Error.WithMessage(errorText)
+    } else {
+      HedvigTextFieldDefaults.ErrorState.NoError
+    },
     suffix = {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (suffix != null) {
@@ -851,7 +859,7 @@ internal fun ChatClaimSummaryTopContent(
             RoundCornersPill(
               modifier = Modifier.fillMaxWidth(),
               onClick = null,
-              isSelected = false
+              isSelected = false,
             ) {
               HedvigText(string)
             }

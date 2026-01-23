@@ -30,10 +30,7 @@ internal class OdysseyService(
     get() = "${hedvigBuildConstants.urlOdyssey}/api/flows/"
 
   context(_: Raise<ErrorMessage>)
-  suspend fun uploadAudioRecordingFile(
-    flowId: String,
-    file: File,
-  ): UploadAudioRecordingResult {
+  suspend fun uploadAudioRecordingFile(flowId: String, file: File): UploadAudioRecordingResult {
     logcat { "OdysseyService: Uploading audio file ${file.name} for flowId: $flowId" }
 
     val response = httpClient.post("$baseUrl$flowId/audio-recording") {

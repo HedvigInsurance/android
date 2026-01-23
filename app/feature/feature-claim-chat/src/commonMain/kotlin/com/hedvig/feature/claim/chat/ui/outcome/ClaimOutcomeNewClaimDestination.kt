@@ -32,9 +32,7 @@ import hedvig.resources.general_done_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ClaimOutcomeNewClaimDestination(
-  closeSuccessScreen: () -> Unit,
-) {
+internal fun ClaimOutcomeNewClaimDestination(closeSuccessScreen: () -> Unit) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),

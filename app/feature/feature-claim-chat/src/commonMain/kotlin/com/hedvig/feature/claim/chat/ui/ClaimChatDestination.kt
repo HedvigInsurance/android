@@ -473,9 +473,9 @@ private fun ClaimChatScrollableContent(
         contentType = { it.stepContent::class },
       ) { item ->
         val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-        val showAnimationSequence = isCurrentStep
-          && item.stepContent !is StepContent.Task
-          && !uiState.stepsWithShownAnimations.contains(item.id)
+        val showAnimationSequence = isCurrentStep &&
+          item.stepContent !is StepContent.Task &&
+          !uiState.stepsWithShownAnimations.contains(item.id)
         val isLastItem = item == uiState.steps.lastOrNull()
 
         val heightModifier = if (isLastItem) {
@@ -513,10 +513,7 @@ private fun ClaimChatScrollableContent(
 }
 
 @Composable
-private fun ScrollToBottomButton(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
   IconButton(
     onClick = onClick,
     modifier = modifier.size(50.dp),
@@ -560,7 +557,6 @@ private fun ColumnScope.StepContentSection(
   openAppSettings: () -> Unit,
   onResponseHeightChanged: (IntSize) -> Unit,
 ) {
-
   // AnimationSequence has 3 stages one after another:
   // 1) fake ai dot
   // 2) top part of content
@@ -746,11 +742,9 @@ private fun StepTopContent(
   }
 }
 
-//to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
+// to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
 @Composable
-private fun CommonPaddingWrapper(
-  content: @Composable () -> Unit,
-) {
+private fun CommonPaddingWrapper(content: @Composable () -> Unit) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -1064,10 +1058,7 @@ private fun DeflectStep(
 }
 
 @Composable
-private fun TaskStep(
-  taskContent: StepContent.Task,
-  modifier: Modifier = Modifier,
-) {
+private fun TaskStep(taskContent: StepContent.Task, modifier: Modifier = Modifier) {
   val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
   Column(
     modifier.clearAndSetSemantics { contentDescription = taskContentDescription },
@@ -1370,7 +1361,8 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
           )
           Spacer(Modifier.width(6.dp))
           Icon(
-            HedvigIcons.ChevronDown, null,
+            HedvigIcons.ChevronDown,
+            null,
             tint = HedvigTheme.colorScheme.fillTertiaryTransparent,
           )
         }

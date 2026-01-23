@@ -404,7 +404,7 @@ private fun StartClaimBottomSheet(
           enabled = isChecked,
           onClick = dropUnlessResumed {
             state.dismiss {
-                if (isExperimentalClaimChatEnabled) {
+              if (isExperimentalClaimChatEnabled) {
                 navigateToClaimChat()
               } else {
                 navigateToOldClaimFlow()
@@ -471,11 +471,7 @@ private fun StartClaimBottomSheet(
 }
 
 @Composable
-private fun ImportantInfoCheckBox(
-  isChecked: Boolean,
-  onCheckedChange: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Unit, modifier: Modifier = Modifier) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier,

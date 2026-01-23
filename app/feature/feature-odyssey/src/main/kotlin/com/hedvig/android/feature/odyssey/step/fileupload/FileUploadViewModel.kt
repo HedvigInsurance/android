@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
-import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.claimflow.ClaimFlowRepository
 import com.hedvig.android.data.claimflow.ClaimFlowStep
