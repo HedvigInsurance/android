@@ -20,6 +20,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.doNotStore
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.benasher44.uuid.Uuid
+import com.eygraber.uri.toKmpUri
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
@@ -371,7 +372,7 @@ internal class CbmChatRepositoryImpl(
   private suspend fun Raise<MessageSendError>.uploadPhotoToBotService(uri: Uri): String {
     val file = uri.toFile()
     val uploadToken = either {
-      botServiceService.uploadFile(uri)
+      botServiceService.uploadFile(uri.toKmpUri())
     }.mapLeft {
       logcat(LogPriority.ERROR) { "Failed to upload file with path:${file.absolutePath}. Error:$it" }
       it.toMessageSendError()
@@ -383,7 +384,7 @@ internal class CbmChatRepositoryImpl(
 
   private suspend fun Raise<MessageSendError>.uploadMediaToBotService(uri: Uri): String {
     val uploadToken = either {
-      botServiceService.uploadFile(uri)
+      botServiceService.uploadFile(uri.toKmpUri())
     }.mapLeft {
       logcat(LogPriority.ERROR) { "Failed to upload media with uri:$uri. Error:$it" }
       it.toMessageSendError()

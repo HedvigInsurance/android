@@ -1,6 +1,6 @@
 package com.hedvig.feature.claim.chat.data
 
-import com.hedvig.feature.claim.chat.data.file.CommonFile
+import com.hedvig.android.core.fileupload.CommonFile
 import kotlin.time.Clock
 
 internal class NativeAudioRecordingManager(

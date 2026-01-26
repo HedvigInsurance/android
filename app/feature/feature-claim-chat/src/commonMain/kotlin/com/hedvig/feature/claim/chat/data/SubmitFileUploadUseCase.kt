@@ -8,9 +8,9 @@ import com.apollographql.apollo.ApolloClient
 import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
-import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.jvm.JvmInline
 import octopus.ClaimIntentSubmitFileUploadMutation
 import octopus.type.ClaimIntentSubmitFileUploadInput

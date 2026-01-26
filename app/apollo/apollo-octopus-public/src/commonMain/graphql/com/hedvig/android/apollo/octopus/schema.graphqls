@@ -700,6 +700,7 @@ type ClaimIntentStepContentDeflection {
   content: ClaimIntentStepContentDeflectionInfoBlock!
   faq: [ClaimIntentStepContentDeflectionInfoBlock!]!
   buttonTitle: String!
+  simplePartners: [ClaimIntentStepContentDeflectionSimplePartner!]!
 }
 type ClaimIntentStepContentDeflectionInfoBlock {
   title: String!
@@ -714,6 +715,10 @@ type ClaimIntentStepContentDeflectionPartner {
   info: String
   url: Url
   urlButtonTitle: String
+}
+type ClaimIntentStepContentDeflectionSimplePartner {
+  url: Url!
+  urlButtonTitle: String!
 }
 """
 A file upload can be used to prompt the user to upload several files.

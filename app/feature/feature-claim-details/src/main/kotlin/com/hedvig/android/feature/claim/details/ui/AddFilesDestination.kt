@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
-import com.eygraber.uri.toAndroidUri
+import com.eygraber.uri.toKmpUri
 import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiFile
@@ -73,20 +73,20 @@ internal fun AddFilesDestination(
   val addLocalFile = viewModel::addLocalFile
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     logcat { "ChatFileState sending uri:$uri" }
-    addLocalFile(uri.toAndroidUri())
+    addLocalFile(uri)
   }
   val photoPicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.PickMultipleVisualMedia(),
   ) { resultingUriList: List<Uri> ->
     for (resultingUri in resultingUriList) {
-      addLocalFile(resultingUri)
+      addLocalFile(resultingUri.toKmpUri())
     }
   }
   val filePicker = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.GetMultipleContents(),
   ) { resultingUriList: List<Uri> ->
     for (resultingUri in resultingUriList) {
-      addLocalFile(resultingUri)
+      addLocalFile(resultingUri.toKmpUri())
     }
   }
 

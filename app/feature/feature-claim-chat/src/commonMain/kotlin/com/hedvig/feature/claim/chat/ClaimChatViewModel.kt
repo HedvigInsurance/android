@@ -12,6 +12,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -44,7 +45,6 @@ import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
-import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -487,8 +487,9 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.AddFile -> {
           try {
-            val mimeType = fileService.getMimeType(event.uri)
-            val name = fileService.getFileName(event.uri) ?: event.uri
+            val uri = Uri.parse(event.uri)
+            val mimeType = fileService.getMimeType(uri)
+            val name = fileService.getFileName(uri) ?: event.uri
             val localFile = UiFile(
               name = name,
               localPath = event.uri,

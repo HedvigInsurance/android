@@ -2,8 +2,8 @@ package com.hedvig.feature.claim.chat.data
 
 import android.media.MediaPlayer
 import android.media.MediaRecorder
-import com.hedvig.feature.claim.chat.data.file.AndroidFile
-import com.hedvig.feature.claim.chat.data.file.CommonFile
+import com.hedvig.android.core.fileupload.AndroidFile
+import com.hedvig.android.core.fileupload.CommonFile
 import java.io.File
 import java.util.Timer
 import java.util.TimerTask

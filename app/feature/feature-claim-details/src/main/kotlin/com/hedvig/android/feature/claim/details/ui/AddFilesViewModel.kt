@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.claim.details.ui
 
-import android.net.Uri
+import com.eygraber.uri.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
@@ -38,7 +38,7 @@ internal class AddFilesViewModel(
     viewModelScope.launch {
       _uiState.update { it.copy(isLoading = true) }
       either {
-        val uris = uiState.value.localFiles.map { Uri.parse(it.localPath) }
+        val uris = uiState.value.localFiles.mapNotNull { it.localPath?.let { path -> Uri.parse(path) } }
         if (uris.isNotEmpty()) {
           val result = claimsServiceUploadFileUseCase.invoke(url = targetUploadUrl, uris = uris).bind()
           result.fileIds
