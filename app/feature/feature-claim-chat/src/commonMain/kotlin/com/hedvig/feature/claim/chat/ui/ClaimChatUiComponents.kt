@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -105,6 +106,8 @@ import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
+import hedvig.resources.TALKBACK_OPTION_NOT_SELECTED
+import hedvig.resources.TALKBACK_OPTION_SELECTED
 import hedvig.resources.claim_status_claim_details_title
 import hedvig.resources.claim_status_detail_add_files
 import hedvig.resources.claim_status_detail_add_more_files
@@ -135,8 +138,17 @@ internal fun ContentSelectChips(
       ) {
         for (item in options) {
           key(item) {
+            val selectedDescription = stringResource(Res.string.TALKBACK_OPTION_SELECTED)
+            val notSelectedDescription =  stringResource(Res.string.TALKBACK_OPTION_NOT_SELECTED)
             RoundCornersPill(
               isSelected = item.id == selectedOptionId,
+              modifier = Modifier.semantics {
+                stateDescription = if (item.id == selectedOptionId) {
+                   selectedDescription
+                } else {
+                  notSelectedDescription
+                }
+              },
               onClick = {
                 onOptionClick(item)
               },
