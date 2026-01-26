@@ -3,6 +3,7 @@ package com.hedvig.feature.claim.chat.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -815,6 +816,8 @@ internal fun ChatClaimSummaryTopContent(
   Column(modifier) {
     HedvigCard(
       color = HedvigTheme.colorScheme.fillNegative,
+      modifier = Modifier.border(1.dp, HedvigTheme.colorScheme.borderPrimary,
+        shape = HedvigTheme.shapes.cornerXLarge)
     ) {
       Column(Modifier.padding(16.dp)) {
         if (displayItems.isNotEmpty()) {
