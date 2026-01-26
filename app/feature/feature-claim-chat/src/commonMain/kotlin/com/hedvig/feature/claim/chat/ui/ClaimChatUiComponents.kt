@@ -96,6 +96,7 @@ import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.A11Y_AUDIO_RECORDING
+import hedvig.resources.CLAIM_CHAT_FILE_TITLE
 import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.GENERAL_NO
@@ -529,7 +530,6 @@ internal fun FilesRow(
       .fillMaxWidth()
       .height(120.dp),
     horizontalArrangement = Arrangement.spacedBy(8.dp, alignment),
-    contentPadding = PaddingValues(top = 8.dp),
   ) {
     items(
       items = uiFiles,
@@ -872,6 +872,11 @@ internal fun ChatClaimSummaryTopContent(
           }
         }
         if (fileUploads.isNotEmpty()) {
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(Res.string.CLAIM_CHAT_FILE_TITLE),
+          )
+          Spacer(Modifier.height(8.dp))
           FilesRow(
             uiFiles = fileUploads,
             imageLoader = imageLoader,
