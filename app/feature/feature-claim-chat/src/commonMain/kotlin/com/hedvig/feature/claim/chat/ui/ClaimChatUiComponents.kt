@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -224,7 +225,13 @@ internal fun RoundCornersPill(
         bottom = 9.dp,
       ),
     ) {
-      content(contentColor)
+      if (onClick!=null){
+        content(contentColor)
+      } else {
+        SelectionContainer {
+          content(contentColor)
+        }
+      }
     }
   }
 }
