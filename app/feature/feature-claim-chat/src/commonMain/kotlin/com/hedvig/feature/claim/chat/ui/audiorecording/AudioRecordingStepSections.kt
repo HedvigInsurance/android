@@ -63,6 +63,7 @@ import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.android.design.system.hedvig.icon.Refresh
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.logger.logcat
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
@@ -158,9 +159,7 @@ internal fun AudioRecorderBubble(
               HedvigButton(
                 enabled = true,
                 text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
-                onClick = {
-                  state.show(Unit)
-                },
+                onClick = state::show,
                 modifier = Modifier.fillMaxWidth(),
               )
               if (freeTextAvailable) {
