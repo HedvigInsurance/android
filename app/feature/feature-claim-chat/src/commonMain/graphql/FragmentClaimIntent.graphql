@@ -100,6 +100,10 @@ fragment DeflectionFragment on ClaimIntentStepContentDeflection {
     url
     urlButtonTitle
   }
+  simplePartners {
+    url
+    urlButtonTitle
+  }
   partnersInfo {
     ...DeflectionInfoBlockFragment
   }

@@ -1,6 +1,5 @@
 package com.hedvig.feature.claim.chat.data
 
-import androidx.compose.runtime.Immutable
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import kotlin.jvm.JvmInline
@@ -148,7 +147,7 @@ internal sealed interface StepContent {
     val title: String?,
     val infoText: String?,
     val warningText: String?,
-    val partners: List<Partner>,
+    val partnersContainer: DeflectPartnerContainer?,
     val partnersInfo: InfoBlock?,
     val content: InfoBlock,
     val faq: List<InfoBlock>,
@@ -157,16 +156,36 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean = false
 
     @Serializable
-    data class Partner(
-      val id: String,
-      val imageUrl: String?,
-      val phoneNumber: String?,
-      val title: String?,
-      val description: String?,
-      val info: String?,
-      val url: String?,
-      val urlButtonTitle: String?,
-    )
+    sealed interface DeflectPartnerContainer {
+
+      @Serializable
+      data class ExtendedPartnerContainer(
+        val partners: List<ExtendedPartner>
+      ): DeflectPartnerContainer
+
+      @Serializable
+      data class SimplePartnerContainer(
+        val partners: List<SimplePartner>
+      ): DeflectPartnerContainer
+
+      @Serializable
+      data class ExtendedPartner(
+        val id: String,
+        val imageUrl: String?,
+        val phoneNumber: String?,
+        val title: String?,
+        val description: String?,
+        val info: String?,
+        val url: String?,
+        val urlButtonTitle: String?,
+      )
+
+      @Serializable
+      data class SimplePartner(
+        val url: String?,
+        val urlButtonTitle: String?,
+      )
+    }
 
     @Serializable
     data class InfoBlock(
