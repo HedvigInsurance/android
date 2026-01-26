@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.claim.details.ui
 
-import android.net.Uri
+import com.eygraber.uri.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,8 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
-import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
+import com.hedvig.android.core.fileupload.DownloadPdfUseCase
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
@@ -86,11 +87,11 @@ private class ClaimDetailPresenter(
             content = content?.copy(downloadError = true, isLoadingPdf = null)
             downloadingUrl = null
           },
-          ifRight = { uri ->
+          ifRight = { downloadedFile ->
             logcat(
               LogPriority.INFO,
-            ) { "Downloading terms and conditions succeeded. Result uri:${uri.absolutePath}" }
-            content = content?.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = null)
+            ) { "Downloading terms and conditions succeeded. Result path:${downloadedFile.path}" }
+            content = content?.copy(downloadError = null, savedFileUri = downloadedFile, isLoadingPdf = null)
             downloadingUrl = null
           },
         )
@@ -171,7 +172,7 @@ internal sealed interface ClaimDetailUiState {
     val submittedAt: LocalDateTime,
     val insuranceDisplayName: String?,
     val termsConditionsUrl: String?,
-    val savedFileUri: File?,
+    val savedFileUri: DownloadedFile?,
     val downloadError: Boolean?,
     val isLoadingPdf: String?,
     val appealInstructionsUrl: String?,

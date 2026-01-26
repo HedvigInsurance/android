@@ -89,7 +89,7 @@ internal fun TravelCertificateOverview(
     is Success -> {
       LaunchedEffect(uiState.travelCertificateUri) {
         uiState.travelCertificateUri?.let {
-          onShareTravelCertificate(it)
+          onShareTravelCertificate(File(it.path))
         }
       }
       HedvigScaffold(
@@ -121,7 +121,7 @@ internal fun TravelCertificateOverview(
           },
           onClick = {
             if (uiState.travelCertificateUri != null) {
-              onShareTravelCertificate(uiState.travelCertificateUri)
+              onShareTravelCertificate(File(uiState.travelCertificateUri.path))
             } else {
               onDownloadCertificate(travelCertificateUrl)
             }

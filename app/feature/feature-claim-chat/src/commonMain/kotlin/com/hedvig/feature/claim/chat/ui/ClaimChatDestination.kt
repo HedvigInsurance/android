@@ -136,6 +136,8 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
 import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -459,9 +461,9 @@ private fun ClaimChatScrollableContent(
         contentType = { it.stepContent::class },
       ) { item ->
         val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-        val showAnimationSequence = isCurrentStep
-          && item.stepContent !is StepContent.Task
-          && !uiState.stepsWithShownAnimations.contains(item.id)
+        val showAnimationSequence = isCurrentStep &&
+          item.stepContent !is StepContent.Task &&
+          !uiState.stepsWithShownAnimations.contains(item.id)
         val isLastItem = item == uiState.steps.lastOrNull()
 
         val heightModifier = if (isLastItem) {
@@ -758,18 +760,24 @@ private fun AnimatedRevealText(
   visibleState: MutableTransitionState<Boolean>,
   modifier: Modifier = Modifier,
   style: TextStyle = LocalTextStyle.current,
-  delayPerChar: Int = 30,
-  charAnimDuration: Int = 150,
   onAnimationFinished: () -> Unit = {},
 ) {
+  val charAnimDuration: Int = 150
   var visibleChars by remember { mutableStateOf(0) }
+
+  val charDelay = calculateCharDelay(text)
 
   LaunchedEffect(visibleState.targetState, text) {
     if (visibleState.targetState) {
       visibleChars = 0
-      repeat(text.length) { index ->
-        delay(delayPerChar.toLong())
+      text.toCharArray().forEachIndexed { index, char ->
         visibleChars = index + 1
+        val specialCharDelayMultiplier = when (char) {
+          ',' -> 5
+          in listOf('.', '?', '!', '\n', '\t') -> 10
+          else -> 1
+        }
+        delay(charDelay * specialCharDelayMultiplier)
       }
       delay(charAnimDuration.toLong())
       onAnimationFinished()
@@ -804,6 +812,44 @@ private fun AnimatedRevealText(
   )
 }
 
+/**
+ * Speed multiplier decreases for longer text to avoid tedious animations
+ * Short text (≤50 chars): full speed (1.0x multiplier)
+ * Medium text (50-450 chars): linear interpolation
+ * Long text (≥450 chars): 5x faster (0.2x multiplier)
+ */
+@Composable
+private fun calculateCharDelay(text: String): Duration = remember(text) {
+  val textLength = text.length
+  val baseRegularDelayMillis = 20
+
+  val shortTextThreshold = 50
+  val longTextThreshold = 350
+  val slowestMultiplier = 1.0
+  val fastestMultiplier = 0.2
+
+  // Extreme fallback for extreme cases
+  val superLongThreshold = 800
+  val superFastestMultiplier = 0.05
+
+  val speedMultiplier = when {
+    textLength <= shortTextThreshold -> slowestMultiplier
+    textLength >= superLongThreshold -> superFastestMultiplier
+    textLength >= longTextThreshold -> fastestMultiplier
+    else -> {
+      val characterRange = longTextThreshold - shortTextThreshold
+      val charactersAboveThreshold = textLength - shortTextThreshold
+      val interpolationProgress = charactersAboveThreshold.toDouble() / characterRange
+      slowestMultiplier - interpolationProgress * (slowestMultiplier - fastestMultiplier)
+    }
+  }.coerceIn(fastestMultiplier, slowestMultiplier)
+
+  val minimumDelayRatio = 0.2
+  (baseRegularDelayMillis * speedMultiplier)
+    .coerceAtLeast((baseRegularDelayMillis * minimumDelayRatio))
+    .milliseconds
+}
+
 @Composable
 private fun StepBottomContent(
   stepItem: ClaimIntentStep,
@@ -826,10 +872,10 @@ private fun StepBottomContent(
         item = stepItem,
         stepContent = stepItem.stepContent,
         onShowFreeText = {
-          onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(stepItem.id))
+          onEvent(ClaimChatEvent.AudioRecording.SwitchToFreeText(stepItem.id))
         },
-        onShowAudioRecording = {
-          onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(stepItem.id))
+        onSwitchToAudioRecording = {
+          onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(stepItem.id))
         },
         onLaunchFullScreenEditText = { restrictions ->
           onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
@@ -1391,7 +1437,7 @@ private fun AudioRecordingStep(
   freeText: String?,
   stepContent: StepContent.AudioRecording,
   onShowFreeText: () -> Unit,
-  onShowAudioRecording: () -> Unit,
+  onSwitchToAudioRecording: () -> Unit,
   onLaunchFullScreenEditText: (restrictions: FreeTextRestrictions) -> Unit,
   submitFreeText: () -> Unit,
   submitAudioFile: () -> Unit,
@@ -1422,8 +1468,8 @@ private fun AudioRecordingStep(
       openAppSettings = openAppSettings,
       freeTextAvailable = true,
       submitFreeText = submitFreeText,
-      onShowFreeText = onShowFreeText,
-      onShowAudioRecording = onShowAudioRecording,
+      onSwitchToFreeText = onShowFreeText,
+      onSwitchToAudioRecording = onSwitchToAudioRecording,
       onLaunchFullScreenEditText = {
         onLaunchFullScreenEditText(
           FreeTextRestrictions(

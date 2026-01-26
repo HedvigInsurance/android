@@ -1,24 +1,32 @@
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
 hedvig {
   serialization()
-  compose()
 }
 
-dependencies {
-  api(libs.androidx.compose.foundation)
-  implementation(libs.arrow.core)
-  implementation(libs.koin.core)
-  implementation(libs.kotlinx.serialization.core)
-  implementation(libs.kotlinx.serialization.json)
-  implementation(libs.ktor.client.core)
-  implementation(projects.apolloOctopusPublic)
-  implementation(projects.coreBuildConstants)
-  implementation(projects.coreCommonPublic)
-  implementation(projects.coreResources)
-  implementation(projects.designSystemHedvig)
-  implementation(projects.networkClients)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.arrow.core)
+      implementation(libs.koin.core)
+      implementation(libs.kotlinx.serialization.core)
+      implementation(libs.kotlinx.serialization.json)
+      implementation(libs.ktor.client.core)
+      implementation(libs.uri.kmp)
+      api(projects.coreBuildConstants)
+      api(projects.coreCommonPublic)
+      implementation(projects.networkClients)
+    }
+
+    androidMain.dependencies {
+      api(libs.androidx.compose.foundation)
+      implementation(projects.apolloOctopusPublic)
+      implementation(projects.coreResources)
+      implementation(projects.designSystemHedvig)
+    }
+  }
 }

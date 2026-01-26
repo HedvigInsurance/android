@@ -257,7 +257,7 @@ private fun ClaimDetailContentScreen(
 ) {
   if (uiState.savedFileUri != null) {
     LaunchedEffect(uiState.savedFileUri) {
-      sharePdf(uiState.savedFileUri)
+      sharePdf(File(uiState.savedFileUri.path))
     }
   }
   val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()

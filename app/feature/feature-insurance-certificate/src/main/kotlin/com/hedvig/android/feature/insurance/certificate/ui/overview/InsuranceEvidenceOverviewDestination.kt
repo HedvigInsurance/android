@@ -81,7 +81,7 @@ internal fun InsuranceEvidenceOverview(
     is Success -> {
       LaunchedEffect(uiState.insuranceEvidenceUri) {
         uiState.insuranceEvidenceUri?.let {
-          onShareInsuranceEvidence(it)
+          onShareInsuranceEvidence(File(it.path))
         }
       }
       HedvigScaffold(
@@ -101,7 +101,7 @@ internal fun InsuranceEvidenceOverview(
           text = stringResource(Res.string.CERTIFICATES_DOWNLOAD),
           onClick = {
             if (uiState.insuranceEvidenceUri != null) {
-              onShareInsuranceEvidence(uiState.insuranceEvidenceUri)
+              onShareInsuranceEvidence(File(uiState.insuranceEvidenceUri.path))
             } else {
               onDownloadCertificate(insuranceEvidenceUrl)
             }

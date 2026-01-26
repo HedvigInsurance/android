@@ -4,6 +4,7 @@ import com.hedvig.audio.player.data.ProgressPercentage
 
 interface CommonMediaPlayer {
   val isPlaying: Boolean
+  val duration: Int
 
   fun pause()
 

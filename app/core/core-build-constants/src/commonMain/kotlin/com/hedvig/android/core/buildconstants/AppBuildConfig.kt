@@ -18,5 +18,5 @@ interface AppBuildConfig {
 enum class Flavor {
   Production,
   Staging,
-  Develop
+  Develop,
 }

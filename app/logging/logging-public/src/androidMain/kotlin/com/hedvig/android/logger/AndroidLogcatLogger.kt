@@ -35,7 +35,9 @@ class AndroidLogcatLogger : LogcatLogger {
 }
 
 private fun v(throwable: Throwable?, tag: String?, message: () -> String) {
-  if (tag != null) { Timber.tag(tag) }
+  if (tag != null) {
+    Timber.tag(tag)
+  }
   if (throwable != null) {
     v(throwable, message)
   } else {
@@ -44,7 +46,9 @@ private fun v(throwable: Throwable?, tag: String?, message: () -> String) {
 }
 
 private fun d(throwable: Throwable?, tag: String?, message: () -> String) {
-  if (tag != null) { Timber.tag(tag) }
+  if (tag != null) {
+    Timber.tag(tag)
+  }
   if (throwable != null) {
     d(throwable, message)
   } else {
@@ -53,7 +57,9 @@ private fun d(throwable: Throwable?, tag: String?, message: () -> String) {
 }
 
 private fun i(throwable: Throwable?, tag: String?, message: () -> String) {
-  if (tag != null) { Timber.tag(tag) }
+  if (tag != null) {
+    Timber.tag(tag)
+  }
   if (throwable != null) {
     i(throwable, message)
   } else {
@@ -62,7 +68,9 @@ private fun i(throwable: Throwable?, tag: String?, message: () -> String) {
 }
 
 private fun w(throwable: Throwable?, tag: String?, message: () -> String) {
-  if (tag != null) { Timber.tag(tag) }
+  if (tag != null) {
+    Timber.tag(tag)
+  }
   if (throwable != null) {
     w(throwable, message)
   } else {
@@ -71,7 +79,9 @@ private fun w(throwable: Throwable?, tag: String?, message: () -> String) {
 }
 
 private fun e(throwable: Throwable?, tag: String?, message: () -> String) {
-  if (tag != null) { Timber.tag(tag) }
+  if (tag != null) {
+    Timber.tag(tag)
+  }
   if (throwable != null) {
     e(throwable, message)
   } else {
@@ -80,7 +90,9 @@ private fun e(throwable: Throwable?, tag: String?, message: () -> String) {
 }
 
 private fun wtf(throwable: Throwable?, tag: String?, message: () -> String) {
-  if (tag != null) { Timber.tag(tag) }
+  if (tag != null) {
+    Timber.tag(tag)
+  }
   if (throwable != null) {
     wtf(throwable, message)
   } else {

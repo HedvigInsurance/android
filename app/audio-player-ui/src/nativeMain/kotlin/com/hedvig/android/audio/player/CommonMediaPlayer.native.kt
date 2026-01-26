@@ -8,6 +8,9 @@ actual fun CommonMediaPlayer(dataSourceUrl: String): CommonMediaPlayer {
     override val isPlaying: Boolean
       get() = false
 
+    override val duration: Int
+      get() = 0
+
     override fun pause() {
     }
 

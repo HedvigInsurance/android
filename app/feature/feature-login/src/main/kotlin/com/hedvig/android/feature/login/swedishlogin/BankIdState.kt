@@ -61,7 +61,7 @@ private class BankIdStateImpl(
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         packageManager.getPackageInfo(
           BankIdAppPackageName,
-          PackageManager.PackageInfoFlags.of(0)
+          PackageManager.PackageInfoFlags.of(0),
         )
       } else {
         @Suppress("DEPRECATION")

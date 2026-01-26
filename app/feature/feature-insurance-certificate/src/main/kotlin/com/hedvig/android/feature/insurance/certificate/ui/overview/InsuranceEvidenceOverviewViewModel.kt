@@ -8,13 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewState.Loading
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import java.io.File
 
 internal class InsuranceEvidenceOverviewViewModel(
   downloadPdfUseCase: DownloadPdfUseCase,
@@ -66,11 +66,11 @@ internal class InsuranceEvidenceOverviewPresenter(
               logcat(LogPriority.ERROR) { "Downloading insurance evidence failed:$errorMessage" }
               currentState = InsuranceEvidenceOverviewState.Failure
             },
-            ifRight = { uri ->
+            ifRight = { downloadedFile ->
               logcat(
                 LogPriority.INFO,
-              ) { "Downloading insurance evidence succeeded. Result uri:${uri.absolutePath}" }
-              currentState = InsuranceEvidenceOverviewState.Success(uri)
+              ) { "Downloading insurance evidence succeeded. Result path:${downloadedFile.path}" }
+              currentState = InsuranceEvidenceOverviewState.Success(downloadedFile)
             },
           )
       } else {
@@ -87,7 +87,7 @@ internal sealed interface InsuranceEvidenceOverviewState {
   data object Failure : InsuranceEvidenceOverviewState
 
   data class Success(
-    val insuranceEvidenceUri: File?,
+    val insuranceEvidenceUri: DownloadedFile?,
     val isButtonLoading: Boolean = false,
   ) : InsuranceEvidenceOverviewState
 }
