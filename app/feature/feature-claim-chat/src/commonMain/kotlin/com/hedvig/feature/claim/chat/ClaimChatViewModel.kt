@@ -209,7 +209,8 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
-    var progress by remember { mutableStateOf<Float?>(0f) }
+    var progress by remember { mutableStateOf<Float?>((lastState as? ClaimChatUiState.ClaimChat)?.progress
+      ?: 0f) }
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
