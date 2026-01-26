@@ -54,6 +54,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDefaults.counterPadding
 import com.hedvig.android.design.system.hedvig.fromToken
@@ -219,7 +220,13 @@ private fun FreeTextOverlayContent(
               )
             },
             title = titleText?.let {
-              { HedvigText(titleText) }
+              {
+                Column {
+                  HedvigText(titleText)
+                  Spacer(Modifier.height(10.dp))
+                  HorizontalDivider()
+                }
+              }
             },
             modifier = Modifier
               .weight(1f)
