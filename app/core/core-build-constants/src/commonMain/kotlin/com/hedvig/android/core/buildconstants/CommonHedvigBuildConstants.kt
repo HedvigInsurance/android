@@ -133,6 +133,7 @@ private class AppConfigUrlHolder(private val appBuildConfig: AppBuildConfig) : U
   }
 
   private fun deepLinkDomainPathPrefix(): String = "/deeplink"
+
   private fun deepLinkDomainHostOld(flavor: Flavor): String = when (flavor) {
     Production -> "hedvig.page.link"
     Staging -> "hedvigtest.page.link"

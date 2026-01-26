@@ -125,8 +125,24 @@ private class AudioPlayerImpl(
         _audioPlayerState.update { AudioPlayerState.Failed }
         true
       }
-      setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready.notStarted() } }
-      setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready.done() } }
+      setOnPreparedListener {
+        _audioPlayerState.update {
+          AudioPlayerState.Ready(
+            readyState = AudioPlayerState.Ready.ReadyState.NotStarted,
+            progressPercentage = ProgressPercentage(0f),
+            durationMillis = duration,
+          )
+        }
+      }
+      setOnCompletionListener {
+        _audioPlayerState.update {
+          AudioPlayerState.Ready(
+            readyState = AudioPlayerState.Ready.ReadyState.Done,
+            progressPercentage = ProgressPercentage(1f),
+            durationMillis = duration,
+          )
+        }
+      }
       prepareAsync()
     }
   }

@@ -868,10 +868,10 @@ private fun StepBottomContent(
         item = stepItem,
         stepContent = stepItem.stepContent,
         onShowFreeText = {
-          onEvent(ClaimChatEvent.AudioRecording.ShowFreeText(stepItem.id))
+          onEvent(ClaimChatEvent.AudioRecording.SwitchToFreeText(stepItem.id))
         },
-        onShowAudioRecording = {
-          onEvent(ClaimChatEvent.AudioRecording.ShowAudioRecording(stepItem.id))
+        onSwitchToAudioRecording = {
+          onEvent(ClaimChatEvent.AudioRecording.SwitchToAudioRecording(stepItem.id))
         },
         onLaunchFullScreenEditText = { restrictions ->
           onEvent(ClaimChatEvent.OpenFreeTextOverlay(restrictions))
@@ -1433,7 +1433,7 @@ private fun AudioRecordingStep(
   freeText: String?,
   stepContent: StepContent.AudioRecording,
   onShowFreeText: () -> Unit,
-  onShowAudioRecording: () -> Unit,
+  onSwitchToAudioRecording: () -> Unit,
   onLaunchFullScreenEditText: (restrictions: FreeTextRestrictions) -> Unit,
   submitFreeText: () -> Unit,
   submitAudioFile: () -> Unit,
@@ -1464,8 +1464,8 @@ private fun AudioRecordingStep(
       openAppSettings = openAppSettings,
       freeTextAvailable = true,
       submitFreeText = submitFreeText,
-      onShowFreeText = onShowFreeText,
-      onShowAudioRecording = onShowAudioRecording,
+      onSwitchToFreeText = onShowFreeText,
+      onSwitchToAudioRecording = onSwitchToAudioRecording,
       onLaunchFullScreenEditText = {
         onLaunchFullScreenEditText(
           FreeTextRestrictions(

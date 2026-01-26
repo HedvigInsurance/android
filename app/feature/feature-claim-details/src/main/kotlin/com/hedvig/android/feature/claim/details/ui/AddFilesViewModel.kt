@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
