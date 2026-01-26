@@ -64,7 +64,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
 
     is ContentSelectFragment -> StepContent.ContentSelect(
       options = options.toOptions(),
-      selectedOptionId = null,
+      selectedOptionId = defaultSelectedId,
       isSkippable = isSkippable,
       style = when (style) {
         ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL

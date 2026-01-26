@@ -126,6 +126,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
 import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
 import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_edit_button
@@ -1536,8 +1537,24 @@ private fun ContentSelectStep(
             selectedOptionId = stepContent.selectedOptionId,
             style = stepContent.style,
           )
+          Spacer(Modifier.height(16.dp))
+          HedvigButton(
+            text = stringResource(Res.string.GENERAL_CONFIRM),
+            onClick = {
+              if (selectedOptionId!=null) {
+                onEvent(
+                  ClaimChatEvent.SubmitSelect(
+                    itemId,
+                  ),
+                )
+              }
+            },
+            isLoading = currentContinueButtonLoading,
+            enabled = !currentContinueButtonLoading && selectedOptionId!=null,
+            modifier = Modifier.fillMaxWidth(),
+          )
           if (canSkip) {
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(8.dp))
             HedvigButton(
               stringResource(Res.string.claims_skip_button),
               onClick = onSkip,
