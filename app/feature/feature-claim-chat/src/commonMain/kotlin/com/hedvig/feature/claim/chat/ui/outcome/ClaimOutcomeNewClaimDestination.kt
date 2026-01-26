@@ -32,9 +32,10 @@ import hedvig.resources.general_done_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ClaimOutcomeNewClaimDestination(
-  closeSuccessScreen: () -> Unit,
-) {
+expect fun NotificationPermissionSection(key: Unit)
+
+@Composable
+internal fun ClaimOutcomeNewClaimDestination(closeSuccessScreen: () -> Unit) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
@@ -45,6 +46,7 @@ internal fun ClaimOutcomeNewClaimDestination(
         .verticalScroll(rememberScrollState())
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
+      NotificationPermissionSection(Unit)
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
       EmptyState(

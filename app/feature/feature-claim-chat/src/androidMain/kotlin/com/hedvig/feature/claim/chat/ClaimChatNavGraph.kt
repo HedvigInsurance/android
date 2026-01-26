@@ -83,8 +83,7 @@ fun NavGraphBuilder.claimChatGraph(
       navigateUp = navController::navigateUp,
     )
   }
-  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination)
-  { backStackEntry ->
+  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) { backStackEntry ->
     ClaimOutcomeDeflectDestination(
       deflect = deflect,
       imageLoader = imageLoader,

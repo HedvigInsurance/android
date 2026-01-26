@@ -52,6 +52,7 @@
   <string name="ALERT_OK">OK</string>
   <string name="AUDIO_RECORDER_LISTEN">Listen</string>
   <string name="AUDIO_RECORDER_SEND">Send</string>
+  <string name="AUDIO_RECORDER_SEND_ERROR_TITLE">Could not send recording</string>
   <string name="AUDIO_RECORDER_START">Start</string>
   <string name="AUDIO_RECORDER_START_OVER">Start over</string>
   <string name="AUDIO_RECORDER_STOP">Stop</string>
@@ -215,7 +216,7 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Please provide phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Recording</string>
-  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don't remember the purchase date, you don't need to fill anything.</string>
+  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don't remember the purchase date, you don't need to fill in anything.</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>

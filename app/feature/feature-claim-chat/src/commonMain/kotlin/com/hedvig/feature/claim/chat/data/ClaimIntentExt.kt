@@ -41,7 +41,7 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
       createdClaim != null -> ClaimIntent.Next.Outcome(createdClaim!!.toClaimIntentOutcome())
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
-    progress = progress?.toFloat()
+    progress = progress?.toFloat(),
   )
 }
 
@@ -69,8 +69,8 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       style = when (style) {
         ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
         ClaimIntentStepContentSelectStyle.BINARY -> StepContent.ContentSelectStyle.BINARY
-        ClaimIntentStepContentSelectStyle.UNKNOWN__ ->  StepContent.ContentSelectStyle.PILL
-      }
+        ClaimIntentStepContentSelectStyle.UNKNOWN__ -> StepContent.ContentSelectStyle.PILL
+      },
     )
 
     is TaskFragment -> StepContent.Task(
@@ -128,7 +128,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
         partnersInfo = partnersInfo?.toInfoBlock(),
         content = content.toInfoBlock(),
         faq = faq.map { it.toInfoBlock() },
-        buttonText = buttonTitle
+        buttonText = buttonTitle,
       )
     }
 

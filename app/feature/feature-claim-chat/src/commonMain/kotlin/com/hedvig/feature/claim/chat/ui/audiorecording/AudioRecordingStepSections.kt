@@ -1,14 +1,22 @@
 package com.hedvig.feature.claim.chat.ui.audiorecording
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,16 +24,18 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -35,8 +45,9 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
-import com.hedvig.android.audio.player.RestingAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.core.uidata.DecimalFormatter
@@ -47,26 +58,24 @@ import com.hedvig.android.design.system.hedvig.HedvigCircularProgressIndicator
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.PermissionDialog
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.icon.ArrowUp
-import com.hedvig.android.design.system.hedvig.icon.Document
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Mic
 import com.hedvig.android.design.system.hedvig.icon.Pause
 import com.hedvig.android.design.system.hedvig.icon.Play
-import com.hedvig.android.design.system.hedvig.icon.Refresh
 import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.logger.logcat
+import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
+import com.hedvig.audio.player.data.ProgressPercentage
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
 import com.hedvig.feature.claim.chat.ui.RoundCornersPill
@@ -87,8 +96,12 @@ import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.claims_skip_button
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Instant
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -125,7 +138,6 @@ internal fun AudioRecorderBubble(
   ) { uiStateAnimated ->
     Column(modifier) {
       when (uiStateAnimated) {
-
         is AudioRecordingStepState.FreeTextDescription -> {
           FreeTextInputSection(
             submitFreeText = submitFreeText,
@@ -180,7 +192,7 @@ internal fun AudioRecorderBubble(
                 HedvigAudioPlayer(
                   audioPlayer = audioPlayer,
                   Modifier.padding(
-                    start = 45.dp
+                    start = 45.dp,
                   ),
                 )
               } else {
@@ -247,6 +259,16 @@ private fun AudioRecordingBottomSheet(
       openAppSettings = openAppSettings,
     )
   }
+
+  val audioPlayer = (
+    audioRecordingState as?
+      AudioRecordingStepState.AudioRecording.Playback
+  )?.let {
+    rememberAudioPlayer(
+      PlayableAudioSource.LocalFilePath(it.filePath),
+    )
+  }
+
   HedvigBottomSheet(bottomSheetState, modifier) {
     Column {
       HedvigText(
@@ -256,28 +278,74 @@ private fun AudioRecordingBottomSheet(
         },
         textAlign = TextAlign.Center,
       )
-      DynamicClock(audioRecordingState, clock)
+      DynamicClock(audioRecordingState, clock, audioPlayer)
       Spacer(Modifier.height(24.dp))
-      if (audioRecordingState is AudioRecordingStepState.AudioRecording.Playback) {
-        if (!audioRecordingState.isPrepared) {
-          HedvigCircularProgressIndicator()
-        } else {
 
-          //          todo: fake waves
-          RestingAudioPlayer(
-            Modifier.padding(
-              horizontal = 45.dp,
-              vertical = 78.dp,
-            ),
-          )
+      AnimatedContent(
+        targetState = audioRecordingState,
+        transitionSpec = {
+          fadeIn(animationSpec = tween(300))
+            .togetherWith(fadeOut(animationSpec = tween(300)))
+        },
+        contentKey = { state ->
+          when (state) {
+            is AudioRecordingStepState.AudioRecording.Playback -> {
+              if (state.isPrepared) "playback" else "loading"
+            }
+
+            is AudioRecordingStepState.AudioRecording.Recording -> "recording"
+            else -> "resting"
+          }
+        },
+      ) { target ->
+        Box(
+          modifier = Modifier.height(158.dp),
+          contentAlignment = Alignment.Center,
+        ) {
+          when (target) {
+            is AudioRecordingStepState.AudioRecording.Playback if !target.isPrepared -> {
+              HedvigCircularProgressIndicator()
+            }
+
+            is AudioRecordingStepState.AudioRecording.Playback -> {
+              val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
+                ?: remember { mutableStateOf(null) }
+              if (audioPlayerState is AudioPlayerState.Ready) {
+                AudioWaves(
+                  animated = false,
+                  progressPercentage = (audioPlayerState as AudioPlayerState.Ready).progressPercentage,
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                      horizontal = 45.dp,
+                      vertical = 29.dp,
+                    ),
+                )
+              }
+            }
+
+            is AudioRecordingStepState.AudioRecording.Recording -> {
+              AudioWaves(
+                animated = true,
+                progressPercentage = null,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(
+                    horizontal = 45.dp,
+                    vertical = 29.dp,
+                  ),
+              )
+            }
+
+            else -> {
+              RestingAudioPlayer(
+                Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 45.dp),
+              )
+            }
+          }
         }
-      } else {
-        RestingAudioPlayer(
-          Modifier.padding(
-            horizontal = 45.dp,
-            vertical = 78.dp,
-          ),
-        )
       }
       Row(
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
@@ -287,18 +355,20 @@ private fun AudioRecordingBottomSheet(
           modifier = Modifier.weight(1f),
           type = AudioButtonType.StartOver(
             onStartOver = redo,
-            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback
-              && !continueButtonLoading,
+            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback &&
+              !continueButtonLoading,
           ),
+          audioPlayer = null,
         )
         Spacer(Modifier.width(4.dp))
         AudioButton(
           modifier = Modifier.weight(1f),
+          audioPlayer = audioPlayer,
           type = AudioButtonType.Control(
             onStartRecording = startRecording,
             onStopRecording = stopRecording,
             audioRecordingState = audioRecordingState,
-            isEnabled = !continueButtonLoading
+            isEnabled = !continueButtonLoading,
           ),
         )
         Spacer(Modifier.width(4.dp))
@@ -306,9 +376,10 @@ private fun AudioRecordingBottomSheet(
           modifier = Modifier.weight(1f),
           type = AudioButtonType.Send(
             onSend = submitAudioFile,
-            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback
-              && !continueButtonLoading,
+            isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback &&
+              !continueButtonLoading,
           ),
+          audioPlayer = null,
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -320,7 +391,8 @@ private fun AudioRecordingBottomSheet(
 @Composable
 private fun DynamicClock(
   audioRecordingState: AudioRecordingStepState.AudioRecording,
-  clock: Clock
+  clock: Clock,
+  audioPlayer: AudioPlayer?,
 ) {
   val startedRecordingAt by remember {
     mutableStateOf<Instant?>(null)
@@ -330,35 +402,51 @@ private fun DynamicClock(
     }
   }
 
+  val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
+    ?: remember { mutableStateOf<AudioPlayerState?>(null) }
+
   val twoDigitsFormat = remember { DecimalFormatter("00") }
-  val label =  if (audioRecordingState is AudioRecordingStepState.AudioRecording.Recording) {
-    val diff = clock.now() - (startedRecordingAt ?: clock.now())
-    "${twoDigitsFormat.format(
-      diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
-  } else null
-  val durationDescription =label?.let { stringResource(Res.string.TALKBACK_RECORDING_DURATION,
-    it)}
+
+  val label = when (audioRecordingState) {
+    is AudioRecordingStepState.AudioRecording.Recording -> {
+      val diff = clock.now() - (startedRecordingAt ?: clock.now())
+      "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
+    }
+
+    is AudioRecordingStepState.AudioRecording.Playback -> {
+      val ready = audioPlayerState as? AudioPlayerState.Ready
+      if (ready != null) {
+        val durationSeconds = ready.durationMillis / 1000
+        "${twoDigitsFormat.format(durationSeconds / 60)}:${twoDigitsFormat.format(durationSeconds % 60)}"
+      } else {
+        null
+      }
+    }
+
+    else -> null
+  }
+
+  val durationDescription = label?.let {
+    stringResource(
+      Res.string.TALKBACK_RECORDING_DURATION,
+      it,
+    )
+  }
+
   HedvigText(
     text = label ?: "",
     textAlign = TextAlign.Center,
     modifier = Modifier.fillMaxWidth().clearAndSetSemantics {
-      if (durationDescription!=null) {
+      if (durationDescription != null) {
         contentDescription = durationDescription
       }
     },
-    color = HedvigTheme.colorScheme.textSecondary)
+    color = HedvigTheme.colorScheme.textSecondary,
+  )
 }
 
 @Composable
-private fun AudioButton(
-  type: AudioButtonType,
-  modifier: Modifier = Modifier,
-) {
-  val audioPlayer = ((type as? AudioButtonType.Control)?.audioRecordingState as?
-    AudioRecordingStepState.AudioRecording.Playback)?.let {
-    rememberAudioPlayer(
-      PlayableAudioSource.LocalFilePath( it.filePath))
-  }
+private fun AudioButton(type: AudioButtonType, audioPlayer: AudioPlayer?, modifier: Modifier = Modifier) {
   val audioPlayerState by audioPlayer?.audioPlayerState?.collectAsStateWithLifecycle()
     ?: remember { mutableStateOf<AudioPlayerState?>(null) }
   Surface(
@@ -371,15 +459,13 @@ private fun AudioButton(
       .clickable(
         enabled = type.isEnabled,
         onClick = {
-          logcat { "Mariia: surface clicked, type: $type" }
           when (type) {
             is AudioButtonType.Control -> when (type.audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording -> {
-                logcat { "Mariia:  type.onStartRecording clicked" }
                 type.onStartRecording()
               }
 
-              is AudioRecordingStepState.AudioRecording.Playback ->{
+              is AudioRecordingStepState.AudioRecording.Playback -> {
                 val ready = audioPlayerState as? AudioPlayerState.Ready
                 if (ready?.readyState is AudioPlayerState.Ready.ReadyState.Playing) {
                   audioPlayer?.pausePlayer()
@@ -387,6 +473,7 @@ private fun AudioButton(
                   audioPlayer?.startPlayer()
                 }
               }
+
               is AudioRecordingStepState.AudioRecording.Recording -> type.onStopRecording()
             }
 
@@ -400,21 +487,23 @@ private fun AudioButton(
       modifier = Modifier.padding(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
-
       Box(
         modifier = Modifier
           .clip(HedvigTheme.shapes.cornerXXLarge)
           .background(
-            color = if (!type.isEnabled) HedvigTheme.colorScheme.surfaceSecondaryTransparent else when (type) {
-              is AudioButtonType.Control -> when (type.audioRecordingState) {
-                AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
-                is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
-                is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
-              }
+            color = if (!type.isEnabled) {
+              HedvigTheme.colorScheme.surfaceSecondaryTransparent
+            } else {
+              when (type) {
+                is AudioButtonType.Control -> when (type.audioRecordingState) {
+                  AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
+                  is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
+                  is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
+                }
 
-              is AudioButtonType.Send -> HedvigTheme.colorScheme.signalBlueElement
-              is AudioButtonType.StartOver -> HedvigTheme.colorScheme.surfaceSecondaryTransparent
+                is AudioButtonType.Send -> HedvigTheme.colorScheme.signalBlueElement
+                is AudioButtonType.StartOver -> HedvigTheme.colorScheme.surfaceSecondaryTransparent
+              }
             },
           ),
       ) {
@@ -439,9 +528,14 @@ private fun AudioButton(
             is AudioButtonType.StartOver -> HedvigIcons.Reload
           },
           contentDescription = EmptyContentDescription,
-          tint = if (!type.isEnabled) HedvigTheme.colorScheme.fillTertiary else {
-            if (type is AudioButtonType.StartOver) HedvigTheme.colorScheme.fillPrimary else
+          tint = if (!type.isEnabled) {
+            HedvigTheme.colorScheme.fillTertiary
+          } else {
+            if (type is AudioButtonType.StartOver) {
+              HedvigTheme.colorScheme.fillPrimary
+            } else {
               HedvigTheme.colorScheme.fillNegative
+            }
           },
         )
       }
@@ -478,8 +572,7 @@ private sealed interface AudioButtonType {
     val onStopRecording: () -> Unit,
     val audioRecordingState: AudioRecordingStepState.AudioRecording,
     override val isEnabled: Boolean,
-  ) : AudioButtonType {
-  }
+  ) : AudioButtonType
 
   class Send(
     val onSend: () -> Unit,
@@ -547,7 +640,6 @@ private fun FreeTextInputSection(
             HedvigText(freeText, textAlign = TextAlign.End)
           }
         }
-
       } else {
         SkippedLabel()
       }
@@ -556,61 +648,135 @@ private fun FreeTextInputSection(
 }
 
 @Composable
-private fun AudioRecordingSection(
-  uiState: AudioRecordingStepState.AudioRecording,
-  clock: Clock,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
-  startRecording: () -> Unit,
-  stopRecording: () -> Unit,
-  submitAudioFile: () -> Unit,
-  redo: () -> Unit,
-  openAppSettings: () -> Unit,
-  launchFreeText: () -> Unit,
-  allowFreeText: Boolean,
-  isCurrentStep: Boolean,
-  continueButtonLoading: Boolean,
-  modifier: Modifier = Modifier,
-) {
-  var showPermissionDialog by remember { mutableStateOf(false) }
-  val recordAudioPermissionState = if (LocalInspectionMode.current) {
-    object : PermissionState {
-      override val permission: String = ""
-      override val status: PermissionStatus = PermissionStatus.Granted
+private fun AudioWaves(animated: Boolean, progressPercentage: ProgressPercentage?, modifier: Modifier = Modifier) {
+  val playedColor = LocalContentColor.current
+  val notPlayedColor = LocalContentColor.current.copy(0.38f)
+    .compositeOver(HedvigTheme.colorScheme.surfacePrimary)
+  val fixedColor = HedvigTheme.colorScheme.fillPrimary.copy(alpha = 0.6f)
 
-      override fun launchPermissionRequest() {}
+  BoxWithConstraints(modifier) {
+    val numberOfWaves = remember(maxWidth) {
+      (maxWidth / 5f).value.roundToInt()
     }
-  } else {
-    rememberPermissionState(RECORD_AUDIO_PERMISSION) { isGranted ->
-      if (isGranted) {
-        startRecording()
-      } else {
-        showPermissionDialog = true
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.fillMaxWidth().height(maxHeight),
+    ) {
+      repeat(numberOfWaves) { waveIndex ->
+        val isRecording = progressPercentage == null
+        val baseHeight = remember(waveIndex, numberOfWaves, isRecording) {
+          // When progressPercentage is null (recording state), start all waves at 2dp height
+          if (isRecording) {
+            0.02f // 2dp out of 100dp container (after padding)
+          } else {
+            val wavePosition = waveIndex + 1
+            val centerPoint = numberOfWaves / 2
+            val distanceFromCenterPoint = abs(centerPoint - wavePosition)
+            val percentageToCenterPoint =
+              ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
+            val minWaveHeightFraction = 0.05f
+            val maxWaveHeightFractionForSideWaves = 0.05f
+            val maxWaveHeightFraction = 0.5f
+            val maxHeightFraction = lerp(
+              maxWaveHeightFractionForSideWaves,
+              maxWaveHeightFraction,
+              percentageToCenterPoint,
+            )
+            if (maxHeightFraction <= minWaveHeightFraction) {
+              maxHeightFraction
+            } else {
+              Random.nextDouble(minWaveHeightFraction.toDouble(), maxHeightFraction.toDouble())
+                .toFloat()
+            }
+          }
+        }
+
+        val height = if (animated) {
+          var animatedHeight by remember { mutableStateOf(baseHeight) }
+
+          LaunchedEffect(waveIndex) {
+            while (true) {
+              delay((50..150).random().toLong())
+              // For recording state (baseHeight = 0.02), generate random heights within animation range
+              animatedHeight = if (progressPercentage == null) {
+                // Side waves (first and last ~5%) have smaller max height
+                val isSideWave = waveIndex < numberOfWaves * 0.05 || waveIndex > numberOfWaves * 0.95
+                if (isSideWave) {
+                  Random.nextFloat() * 0.05f + 0.01f // Range: 0.1f to 0.15f for side waves
+                } else {
+                  Random.nextFloat() * 0.3f + 0.01f // Range: 0.1f to 0.4f for center waves
+                }
+              } else {
+                val variation = Random.nextFloat() * 0.2f - 0.1f
+                (baseHeight + variation).coerceIn(0.1f, 0.4f)
+              }
+            }
+          }
+
+          val smoothHeight by animateFloatAsState(
+            targetValue = animatedHeight,
+            animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+          )
+          smoothHeight
+        } else {
+          baseHeight
+        }
+
+        val backgroundColor = if (progressPercentage != null) {
+          val hasPlayedThisWave = remember(progressPercentage, numberOfWaves, waveIndex) {
+            progressPercentage.value * numberOfWaves > waveIndex
+          }
+          if (hasPlayedThisWave) playedColor else notPlayedColor
+        } else {
+          fixedColor
+        }
+
+        WavePill(
+          heightFraction = height,
+          backgroundColor = backgroundColor,
+        )
       }
     }
   }
-  if (showPermissionDialog) {
-    PermissionDialog(
-      permissionDescription = stringResource(Res.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE),
-      isPermanentlyDeclined = !shouldShowRequestPermissionRationale(RECORD_AUDIO_PERMISSION),
-      onDismiss = { showPermissionDialog = false },
-      okClick = recordAudioPermissionState::launchPermissionRequest,
-      openAppSettings = openAppSettings,
-    )
-  }
-  AudioRecorder(
-    uiState = uiState,
-    startRecording = recordAudioPermissionState::launchPermissionRequest,
-    clock = clock,
-    stopRecording = stopRecording,
-    submitAudioFile = submitAudioFile,
-    redo = redo,
-    modifier = modifier,
-    allowFreeText = allowFreeText,
-    onLaunchFreeText = launchFreeText,
-    isCurrentStep = isCurrentStep,
-    continueButtonLoading = continueButtonLoading,
+}
+
+@Composable
+private fun WavePill(heightFraction: Float, backgroundColor: Color) {
+  Box(
+    modifier = Modifier
+      .width(WAVE_WIDTH)
+      .fillMaxHeight(fraction = heightFraction)
+      .clip(CircleShape)
+      .background(backgroundColor),
   )
 }
+
+@Composable
+fun RestingAudioPlayer(modifier: Modifier = Modifier) {
+  BoxWithConstraints(modifier) {
+    val numberOfWaves = remember(maxWidth) {
+      (maxWidth / 5f).value.roundToInt()
+    }
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+        .fillMaxWidth(),
+    ) {
+      repeat(numberOfWaves) { _ ->
+        Box(
+          modifier = Modifier
+            .size(WAVE_WIDTH)
+            .clip(CircleShape)
+            .background(HedvigTheme.colorScheme.fillPrimary),
+        )
+      }
+    }
+  }
+}
+
+private val WAVE_WIDTH = 2.dp
 
 @HedvigPreview
 @Composable

@@ -7,12 +7,14 @@ import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.network.clients.NetworkError
+import com.hedvig.android.network.clients.safePost
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
-import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -55,30 +57,40 @@ class FileUploadService(
       }
     }
 
-    val response = client.post(url) {
-      setBody(
-        MultiPartFormDataContent(
-          formData {
-            uris.forEach { uri ->
-              val fileName = fileService.getFileName(uri) ?: "media"
-              val mimeType = fileService.getMimeType(uri)
-              append(
-                "files",
-                InputProvider {
-                  val inputStream = contentResolver.openInputStream(uri)
-                    ?: throw Exception("Could not open input stream for uri:$uri")
-                  inputStream.asInput()
-                },
-                Headers.build {
-                  append(HttpHeaders.ContentType, mimeType)
-                  append(HttpHeaders.ContentDisposition, """filename="$fileName"""")
-                },
-              )
-            }
-          },
-        ),
+    val response: HttpResponse = client
+      .safePost(url) {
+        setBody(
+          MultiPartFormDataContent(
+            formData {
+              uris.forEach { uri ->
+                val fileName = fileService.getFileName(uri) ?: "media"
+                val mimeType = fileService.getMimeType(uri)
+                append(
+                  "files",
+                  InputProvider {
+                    val inputStream = contentResolver.openInputStream(uri)
+                      ?: throw Exception("Could not open input stream for uri:$uri")
+                    inputStream.asInput()
+                  },
+                  Headers.build {
+                    append(HttpHeaders.ContentType, mimeType)
+                    append(HttpHeaders.ContentDisposition, """filename="$fileName"""")
+                  },
+                )
+              }
+            },
+          ),
+        )
+      }
+      .fold(
+        ifLeft = { error -> raise(
+          when (error) {
+            is NetworkError.IOError -> ErrorMessage("Network error: ${error.message}", error.throwable)
+            is NetworkError.UnknownError -> ErrorMessage(error.message, error.throwable)
+          }
+        ) },
+        ifRight = { it },
       )
-    }
 
     return if (response.status.isSuccess()) {
       val responseBody = response.bodyAsText()

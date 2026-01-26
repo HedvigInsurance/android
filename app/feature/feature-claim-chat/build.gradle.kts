@@ -53,6 +53,7 @@ kotlin {
       implementation(projects.coreFileUpload)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
+      implementation(projects.notificationPermission)
     }
   }
 }

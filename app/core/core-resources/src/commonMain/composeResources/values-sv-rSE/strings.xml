@@ -52,7 +52,8 @@
   <string name="ALERT_OK">OK</string>
   <string name="AUDIO_RECORDER_LISTEN">Lyssna</string>
   <string name="AUDIO_RECORDER_SEND">Skicka</string>
-  <string name="AUDIO_RECORDER_START">Börja</string>
+  <string name="AUDIO_RECORDER_SEND_ERROR_TITLE">Kunde inte skicka inspelning</string>
+  <string name="AUDIO_RECORDER_START">Starta</string>
   <string name="AUDIO_RECORDER_START_OVER">Börja om</string>
   <string name="AUDIO_RECORDER_STOP">Stoppa</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in</string>
@@ -215,7 +216,7 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Vänligen ange telefonnummer ifall vi behöver kontakta dig</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Inspelning</string>
-  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don't remember the purchase date, you don't need to fill anything.</string>
+  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">Om du inte minns inköpsdatum behöver du inte fylla i något.</string>
   <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Överhoppad</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Hoppa över</string>
@@ -227,7 +228,7 @@
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Starta röstinspelning</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Beskriv med text</string>
-  <string name="CLAIM_DATE_AND_LOCATION_HINT">If you don't know the exact date, enter an approximate date.</string>
+  <string name="CLAIM_DATE_AND_LOCATION_HINT">Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>

@@ -257,7 +257,6 @@ private fun Playback(
             Modifier.padding(start = 48.dp),
           ),
         )
-
       } else {
         HedvigAudioPlayer(
           audioPlayer = audioPlayer,

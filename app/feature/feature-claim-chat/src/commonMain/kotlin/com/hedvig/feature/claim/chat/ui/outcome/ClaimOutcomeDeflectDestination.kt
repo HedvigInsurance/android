@@ -247,7 +247,7 @@ internal fun ClaimOutcomeDeflectDestination(
             HedvigButton(
               text = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
               onClick = dropUnlessResumed { onNavigateToNewConversation() },
-              buttonSize =  ButtonDefaults.ButtonSize.Medium,
+              buttonSize = ButtonDefaults.ButtonSize.Medium,
               enabled = true,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -264,10 +264,7 @@ internal fun ClaimOutcomeDeflectDestination(
 }
 
 @Composable
-private fun QuestionsAndAnswers(
-  faqList: List<StepContent.Deflect.InfoBlock>,
-  modifier: Modifier = Modifier,
-) {
+private fun QuestionsAndAnswers(faqList: List<StepContent.Deflect.InfoBlock>, modifier: Modifier = Modifier) {
   Column(modifier) {
     AccordionList(
       faqList.map { faq ->
