@@ -53,6 +53,7 @@ import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepContent.Deflect.InfoBlock
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.Res
+import hedvig.resources.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL
 import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_LABEL
 import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_TITLE
 import hedvig.resources.general_back_button
@@ -108,6 +109,8 @@ internal fun ClaimOutcomeDeflectDestination(
             contentDescription = deflect.content.description,
             openUrl = openUrl,
             partner = deflect.partnersContainer.partners.first(),
+            infoText = deflect.infoText,
+            warningText = deflect.warningText,
           )
 
           null -> HedvigErrorSection(
@@ -219,12 +222,13 @@ private fun ColumnScope.ExtendedPartnersScreen(
                   val style = if (partner.url != null) {
                     ButtonDefaults.ButtonStyle.Ghost
                   } else {
-                    ButtonDefaults.ButtonStyle.SecondaryAlt
+                    ButtonDefaults.ButtonStyle.Primary
                   }
                   HedvigButton(
                     buttonStyle = style,
                     buttonSize = ButtonDefaults.ButtonSize.Medium,
-                    text = partner.phoneNumber,
+                    text = stringResource(Res.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
+                      partner.phoneNumber),
                     enabled = true,
                     onClick = {
                       tryToDialPhone(partner.phoneNumber)
@@ -265,7 +269,6 @@ private fun ColumnScope.ExtendedPartnersScreen(
       color = HedvigTheme.colorScheme.textSecondary,
     )
 
-    // FAQ section
     if (faq.isNotEmpty()) {
       Spacer(Modifier.height(24.dp))
       HorizontalDivider(Modifier.padding(horizontal = 16.dp))
@@ -316,11 +319,32 @@ private fun ColumnScope.ExtendedPartnersScreen(
 
 @Composable
 private fun ColumnScope.SimplePartnersScreen(
+  infoText: String?,
+  warningText: String?,
   contentTitle: String,
   contentDescription: String,
   openUrl: (String) -> Unit,
   partner: StepContent.Deflect.DeflectPartnerContainer.SimplePartner,
 ) {
+  if (infoText != null) {
+    Spacer(Modifier.height(8.dp))
+    HedvigNotificationCard(
+      message = infoText,
+      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      style = NotificationDefaults.InfoCardStyle.Default,
+      priority = NotificationDefaults.NotificationPriority.Attention,
+    )
+    Spacer(Modifier.height(8.dp))
+  }
+  if (warningText != null) {
+    HedvigNotificationCard(
+      message = warningText,
+      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      style = NotificationDefaults.InfoCardStyle.Default,
+      priority = NotificationDefaults.NotificationPriority.Attention,
+    )
+    Spacer(Modifier.height(8.dp))
+  }
   HedvigText(
     text = contentTitle,
     modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
