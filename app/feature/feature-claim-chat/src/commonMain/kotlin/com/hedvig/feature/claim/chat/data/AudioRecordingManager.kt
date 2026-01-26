@@ -1,7 +1,6 @@
 package com.hedvig.feature.claim.chat.data
 
-import com.hedvig.feature.claim.chat.data.file.CommonFile
-import kotlin.time.Clock
+import com.hedvig.android.core.fileupload.CommonFile
 
 interface AudioRecordingManager {
   fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Recording) -> Unit)
@@ -13,8 +12,4 @@ interface AudioRecordingManager {
   fun cleanup()
 
   fun reset()
-
-  companion object {
-    const val MIN_TEXT_LENGTH = 50
-  }
 }

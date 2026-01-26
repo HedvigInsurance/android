@@ -153,7 +153,7 @@ private fun TravelCertificateHistoryScreen(
     is SuccessDownloadingHistory -> {
       if (uiState.travelCertificateUri != null) {
         LaunchedEffect(uiState.travelCertificateUri) {
-          onShareTravelCertificate(uiState.travelCertificateUri)
+          onShareTravelCertificate(File(uiState.travelCertificateUri.path))
         }
       }
       if (uiState.idsToNavigateToAddonPurchase != null) {

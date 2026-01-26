@@ -457,9 +457,9 @@ private fun ClaimChatScrollableContent(
         contentType = { it.stepContent::class },
       ) { item ->
         val isCurrentStep = item.id == uiState.steps.lastOrNull()?.id
-        val showAnimationSequence = isCurrentStep
-          && item.stepContent !is StepContent.Task
-          && !uiState.stepsWithShownAnimations.contains(item.id)
+        val showAnimationSequence = isCurrentStep &&
+          item.stepContent !is StepContent.Task &&
+          !uiState.stepsWithShownAnimations.contains(item.id)
         val isLastItem = item == uiState.steps.lastOrNull()
 
         val heightModifier = if (isLastItem) {

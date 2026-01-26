@@ -8,9 +8,9 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.CommonFile
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
-import com.hedvig.feature.claim.chat.data.file.CommonFile
 import octopus.ClaimIntentSubmitAudioMutation
 import octopus.type.ClaimIntentSubmitAudioInput
 
