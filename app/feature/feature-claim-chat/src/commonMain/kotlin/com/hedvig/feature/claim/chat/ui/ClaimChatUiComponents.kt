@@ -702,7 +702,7 @@ internal fun DateSelectBubble(
       datePickerState,
       canInteract = true,
       startText = questionLabel ?: "",
-      Modifier.fillMaxWidth()
+      Modifier.fillMaxWidth(),
     )
     AnimatedVisibility(
       errorText != null &&

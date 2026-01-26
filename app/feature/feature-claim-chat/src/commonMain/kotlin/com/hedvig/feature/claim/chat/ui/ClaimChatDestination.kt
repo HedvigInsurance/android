@@ -77,6 +77,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationEventHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.withoutPlacement
@@ -274,6 +277,14 @@ private fun ClaimChatScreenContent(
   modifier: Modifier = Modifier,
 ) {
   var showCloseFlowDialog by rememberSaveable { mutableStateOf(false) }
+
+  NavigationEventHandler(
+    state = rememberNavigationEventState(NavigationEventInfo.None),
+    isBackEnabled = uiState.steps.size > 1,
+  ) {
+    showCloseFlowDialog = true
+  }
+
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
