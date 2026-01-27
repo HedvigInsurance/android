@@ -41,7 +41,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -263,11 +262,11 @@ private fun AudioRecordingBottomSheet(
   val audioPlayer = (
     audioRecordingState as?
       AudioRecordingStepState.AudioRecording.Playback
-  )?.let {
-    rememberAudioPlayer(
-      PlayableAudioSource.LocalFilePath(it.filePath),
-    )
-  }
+    )?.let {
+      rememberAudioPlayer(
+        PlayableAudioSource.LocalFilePath(it.filePath),
+      )
+    }
 
   HedvigBottomSheet(bottomSheetState, modifier) {
     Column {
@@ -453,11 +452,9 @@ private fun AudioButton(type: AudioButtonType, audioPlayer: AudioPlayer?, modifi
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier
       .clip(HedvigTheme.shapes.cornerLarge)
-      .semantics(true) {
-        role = Role.Button
-      }
       .clickable(
         enabled = type.isEnabled,
+        role = Role.Button,
         onClick = {
           when (type) {
             is AudioButtonType.Control -> when (type.audioRecordingState) {
