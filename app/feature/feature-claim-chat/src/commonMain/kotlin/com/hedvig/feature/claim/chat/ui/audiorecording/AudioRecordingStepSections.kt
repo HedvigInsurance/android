@@ -19,11 +19,14 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalDensity
@@ -48,7 +52,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
@@ -380,6 +383,15 @@ private fun DynamicClock(
   clock: Clock,
   audioPlayer: AudioPlayer?,
 ) {
+  data class TimerState(
+    val minutes: String,
+    val seconds: String,
+  ) {
+    override fun toString(): String {
+      return "$minutes:$seconds"
+    }
+  }
+
   val startedRecordingAt by remember {
     mutableStateOf<Instant?>(null)
   }.apply {
@@ -393,17 +405,23 @@ private fun DynamicClock(
 
   val twoDigitsFormat = remember { DecimalFormatter("00") }
 
-  val label = when (audioRecordingState) {
+  val timerState = when (audioRecordingState) {
     is AudioRecordingStepState.AudioRecording.Recording -> {
       val diff = clock.now() - (startedRecordingAt ?: clock.now())
-      "${twoDigitsFormat.format(diff.inWholeMinutes)}:${twoDigitsFormat.format(diff.inWholeSeconds % 60)}"
+      TimerState(
+        twoDigitsFormat.format(diff.inWholeMinutes),
+        twoDigitsFormat.format(diff.inWholeSeconds % 60),
+      )
     }
 
     is AudioRecordingStepState.AudioRecording.Playback -> {
       val ready = audioPlayerState as? AudioPlayerState.Ready
       if (ready != null) {
         val durationSeconds = ready.durationMillis / 1000
-        "${twoDigitsFormat.format(durationSeconds / 60)}:${twoDigitsFormat.format(durationSeconds % 60)}"
+        TimerState(
+          twoDigitsFormat.format(durationSeconds / 60),
+          twoDigitsFormat.format(durationSeconds % 60),
+        )
       } else {
         null
       }
@@ -412,23 +430,43 @@ private fun DynamicClock(
     else -> null
   }
 
-  val durationDescription = label?.let {
-    stringResource(
-      Res.string.TALKBACK_RECORDING_DURATION,
-      it,
-    )
+  val durationDescription = timerState?.let {
+    stringResource(Res.string.TALKBACK_RECORDING_DURATION, it)
   }
 
-  HedvigText(
-    text = label ?: "",
-    textAlign = TextAlign.Center,
-    modifier = Modifier.fillMaxWidth().clearAndSetSemantics {
-      if (durationDescription != null) {
-        contentDescription = durationDescription
-      }
-    },
-    color = HedvigTheme.colorScheme.textSecondary,
-  )
+  if (timerState != null) {
+    Box(
+      Modifier
+        .fillMaxWidth()
+        .clearAndSetSemantics {
+          if (durationDescription != null) {
+            contentDescription = durationDescription
+          }
+        }
+        .wrapContentWidth(),
+    ) {
+      HedvigText(
+        text = ":",
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+      HedvigText(
+        text = timerState.minutes,
+        modifier = Modifier
+          .requiredWidth(0.dp)
+          .align(Alignment.CenterStart)
+          .wrapContentWidth(Alignment.End, true),
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+      HedvigText(
+        text = timerState.seconds,
+        modifier = Modifier
+          .requiredWidth(0.dp)
+          .align(Alignment.CenterEnd)
+          .wrapContentWidth(Alignment.Start, true),
+        color = HedvigTheme.colorScheme.textSecondary,
+      )
+    }
+  }
 }
 
 @Composable
@@ -574,15 +612,15 @@ private fun ControlButton(
               }
             },
           ),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
       ) {
 
         Icon(
           modifier = Modifier
             .padding(4.dp)
             .size(24.dp)
-            .then (
-              if (isIconVisible) Modifier else Modifier.withoutPlacement()
+            .then(
+              if (isIconVisible) Modifier else Modifier.withoutPlacement(),
             ),
           imageVector = when (audioRecordingState) {
             AudioRecordingStepState.AudioRecording.NotRecording -> HedvigIcons.Mic
@@ -603,17 +641,24 @@ private fun ControlButton(
           } else {
             when (audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording,
-              is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.fillWhite
+              is AudioRecordingStepState.AudioRecording.Recording,
+                -> HedvigTheme.colorScheme.fillWhite
+
               is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
             }
           },
         )
         if (!isIconVisible) {
-          HedvigText(text = countDownText, color = when (audioRecordingState) {
-            AudioRecordingStepState.AudioRecording.NotRecording,
-            is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.fillWhite
-            is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
-          })
+          HedvigText(
+            text = countDownText,
+            color = when (audioRecordingState) {
+              AudioRecordingStepState.AudioRecording.NotRecording,
+              is AudioRecordingStepState.AudioRecording.Recording,
+                -> HedvigTheme.colorScheme.fillWhite
+
+              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
+            },
+          )
         }
       }
       Spacer(Modifier.height(4.dp))
