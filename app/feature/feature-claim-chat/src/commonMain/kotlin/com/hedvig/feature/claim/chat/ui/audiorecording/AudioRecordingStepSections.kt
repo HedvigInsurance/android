@@ -611,11 +611,19 @@ private fun ControlButton(
           tint = if (!isEnabled) {
             HedvigTheme.colorScheme.fillTertiary
           } else {
-            HedvigTheme.colorScheme.fillNegative
+            when (audioRecordingState) {
+              AudioRecordingStepState.AudioRecording.NotRecording,
+              is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.fillWhite
+              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
+            }
           },
         )
         if (!isIconVisible) {
-          HedvigText(text = countDownText, color = HedvigTheme.colorScheme.fillNegative)
+          HedvigText(text = countDownText, color = when (audioRecordingState) {
+            AudioRecordingStepState.AudioRecording.NotRecording,
+            is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.fillWhite
+            is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
+          })
         }
       }
       Spacer(Modifier.height(4.dp))
