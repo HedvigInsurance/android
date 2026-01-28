@@ -11,9 +11,9 @@ import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
-import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonLogInfo.AddonEventType
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
@@ -80,18 +80,18 @@ internal class AddonSummaryPresenter(
 }
 
 internal fun getInitialState(summaryParameters: SummaryParameters): Content {
-  val total = if (summaryParameters.currentTravelAddon == null) {
+  val total = if (summaryParameters.currentlyActiveAddon == null) {
     summaryParameters.quote.itemCost.monthlyNet
   } else {
     val amountDiff =
-      summaryParameters.quote.itemCost.monthlyNet.amount - summaryParameters.currentTravelAddon.netPremium.amount
+      summaryParameters.quote.itemCost.monthlyNet.amount - summaryParameters.currentlyActiveAddon.netPremium.amount
     UiMoney(amountDiff, summaryParameters.quote.itemCost.monthlyNet.currencyCode)
   }
   return Content(
     offerDisplayName = summaryParameters.offerDisplayName,
     quote = summaryParameters.quote,
     activationDate = summaryParameters.activationDate,
-    currentTravelAddon = summaryParameters.currentTravelAddon,
+    currentlyActiveAddon = summaryParameters.currentlyActiveAddon,
     totalPriceChange = total,
   )
 }
@@ -101,9 +101,9 @@ internal sealed interface AddonSummaryState {
 
   data class Content(
     val offerDisplayName: String,
-    val quote: TravelAddonQuote,
+    val quote: AddonQuote,
     val activationDate: LocalDate,
-    val currentTravelAddon: CurrentTravelAddon?,
+    val currentlyActiveAddon: CurrentlyActiveAddon?,
     val totalPriceChange: UiMoney,
     val activationDateForSuccessfullyPurchasedAddon: LocalDate? = null,
     val navigateToFailure: Boolean = false,
@@ -124,7 +124,7 @@ private fun logSuccessfulAddonPurchaseAction(
     flow = addonPurchaseSource,
     subType = summaryParameters.quote.addonSubtype,
   )
-  val eventType = if (summaryParameters.currentTravelAddon == null) {
+  val eventType = if (summaryParameters.currentlyActiveAddon == null) {
     AddonEventType.ADDON_PURCHASED
   } else {
     AddonEventType.ADDON_UPGRADED

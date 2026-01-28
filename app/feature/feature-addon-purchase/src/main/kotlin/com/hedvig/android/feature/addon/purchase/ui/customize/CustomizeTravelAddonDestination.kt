@@ -77,9 +77,9 @@ import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDropdown
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
-import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
-import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
+import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseOptionInDialog
@@ -88,9 +88,9 @@ import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAdd
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.Reload
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SetOptionBackToPreviouslyChosen
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SubmitSelected
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Failure
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Loading
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonState.Success
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Failure
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Loading
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.SuccessSelectable
 import hedvig.resources.ADDON_FLOW_COVER_BUTTON
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL
 import hedvig.resources.ADDON_FLOW_SELECT_BUTTON
@@ -119,7 +119,7 @@ internal fun CustomizeTravelAddonDestination(
   onNavigateToNewConversation: () -> Unit,
   onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
 ) {
-  val uiState: CustomizeTravelAddonState by viewModel.uiState.collectAsStateWithLifecycle()
+  val uiState: CustomizeAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
@@ -151,12 +151,12 @@ internal fun CustomizeTravelAddonDestination(
 
 @Composable
 private fun CustomizeTravelAddonScreen(
-  uiState: CustomizeTravelAddonState,
+  uiState: CustomizeAddonState,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
   submitToSummary: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
-  onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
+  onChooseOptionInDialog: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
@@ -179,13 +179,13 @@ private fun CustomizeTravelAddonScreen(
         HedvigFullScreenCenterAlignedProgress()
       }
 
-      is Success -> {
+      is SuccessSelectable -> {
         LaunchedEffect(state.summaryParamsToNavigateFurther) {
           if (state.summaryParamsToNavigateFurther != null) {
             navigateToSummary(state.summaryParamsToNavigateFurther)
           }
         }
-        CustomizeTravelAddonScreenContent(
+        CustomizeSelectableAddonScreenContent(
           uiState = state,
           navigateUp = navigateUp,
           submitToSummary = submitToSummary,
@@ -195,6 +195,10 @@ private fun CustomizeTravelAddonScreen(
           onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
           popAddonFlow = popAddonFlow,
         )
+      }
+
+      is CustomizeAddonState.SuccessToggleable -> {
+        CustomizeToggleableAddonScreenContent() //todo
       }
     }
   }
@@ -244,11 +248,16 @@ private fun FailureScreen(
 }
 
 @Composable
-private fun CustomizeTravelAddonScreenContent(
-  uiState: Success,
+private fun CustomizeToggleableAddonScreenContent() {
+  TODO()
+}
+
+@Composable
+private fun CustomizeSelectableAddonScreenContent(
+  uiState: SuccessSelectable,
   navigateUp: () -> Unit,
   popAddonFlow: () -> Unit,
-  onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
+  onChooseOptionInDialog: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
@@ -311,8 +320,8 @@ private fun CustomizeTravelAddonScreenContent(
 
 @Composable
 private fun CustomizeTravelAddonCard(
-  uiState: Success,
-  onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
+  uiState: SuccessSelectable,
+  onChooseOptionInDialog: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   onNavigateToTravelInsurancePlusExplanation: (List<PerilData>) -> Unit,
@@ -332,16 +341,16 @@ private fun CustomizeTravelAddonCard(
     Column(Modifier.padding(16.dp)) {
       HeaderInfoWithCurrentPrice(
         chosenOptionPremiumExtra = uiState.chosenOptionPremiumExtra,
-        exposureName = uiState.travelAddonOffer.title,
-        description = uiState.travelAddonOffer.description,
+        exposureName = uiState.travelAddonSelectableOffer.title,
+        description = uiState.travelAddonSelectableOffer.description,
       )
       Spacer(Modifier.height(16.dp))
       val addonSimpleItems = buildList {
-        for (option in uiState.travelAddonOffer.addonOptions) {
-          add(SimpleDropdownItem(option.displayName))
+        for (option in uiState.travelAddonSelectableOffer.addonOptions) {
+          add(SimpleDropdownItem(option.displayTitle))
         }
       }
-      val isDropdownEnabled = uiState.travelAddonOffer.addonOptions.size > 1
+      val isDropdownEnabled = uiState.travelAddonSelectableOffer.addonOptions.size > 1
       DropdownWithDialog(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         // Locked option if there is nothing else to chose from
@@ -354,12 +363,12 @@ private fun CustomizeTravelAddonCard(
         containerColor = HedvigTheme.colorScheme.surfacePrimary,
         // there is always one option chosen, should never be shown anyway
         hintText = stringResource(Res.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
-        chosenItemIndex = uiState.travelAddonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
+        chosenItemIndex = uiState.travelAddonSelectableOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
           .takeIf { it >= 0 },
         onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
         modifier = Modifier.accessibilityForDropdown(
           labelText = stringResource(Res.string.ADDON_FLOW_SELECT_DAYS_PLACEHOLDER),
-          selectedValue = uiState.currentlyChosenOption.displayName,
+          selectedValue = uiState.currentlyChosenOption.displayTitle,
           isEnabled = isDropdownEnabled,
         ),
       ) { onDismissRequest ->
@@ -373,7 +382,7 @@ private fun CustomizeTravelAddonCard(
           },
           title = stringResource(Res.string.ADDON_FLOW_SELECT_SUBOPTION_TITLE),
           subTitle = stringResource(Res.string.ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE),
-          addonOptions = uiState.travelAddonOffer.addonOptions,
+          addonOptions = uiState.travelAddonSelectableOffer.addonOptions,
           currentlyChosenOptionInDialog = uiState.currentlyChosenOptionInDialog,
           onChooseOptionInDialog = { option -> onChooseOptionInDialog(option) },
         )
@@ -447,9 +456,9 @@ private fun DropdownContent(
   subTitle: String,
   onContinueButtonClick: () -> Unit,
   onCancelButtonClick: () -> Unit,
-  addonOptions: NonEmptyList<TravelAddonQuote>,
-  currentlyChosenOptionInDialog: TravelAddonQuote?,
-  onChooseOptionInDialog: (TravelAddonQuote) -> Unit,
+  addonOptions: NonEmptyList<AddonQuote>,
+  currentlyChosenOptionInDialog: AddonQuote?,
+  onChooseOptionInDialog: (AddonQuote) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -474,7 +483,7 @@ private fun DropdownContent(
       options = addonOptions.map { addonQuote ->
         RadioOption(
           id = RadioOptionId(addonQuote.addonId),
-          text = addonQuote.displayName,
+          text = addonQuote.displayTitle,
         )
       },
       selectedOption = currentlyChosenOptionInDialog?.addonId?.let { RadioOptionId(it) },
@@ -551,7 +560,7 @@ private fun PreviewDropdownContent() {
 @HedvigMultiScreenPreview
 @Composable
 private fun SelectTierScreenPreview(
-  @PreviewParameter(CustomizeTravelAddonPreviewProvider::class) uiState: CustomizeTravelAddonState,
+  @PreviewParameter(CustomizeTravelAddonPreviewProvider::class) uiState: CustomizeAddonState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -574,15 +583,15 @@ private fun SelectTierScreenPreview(
 }
 
 internal class CustomizeTravelAddonPreviewProvider :
-  CollectionPreviewParameterProvider<CustomizeTravelAddonState>(
+  CollectionPreviewParameterProvider<CustomizeAddonState>(
     listOf(
       Loading,
-      Success(
-        travelAddonOffer = fakeTravelAddon,
-        currentlyChosenOption = fakeTravelAddonQuote1,
-        currentlyChosenOptionInDialog = fakeTravelAddonQuote1,
+      SuccessSelectable(
+        travelAddonSelectableOffer = fakeTravelAddon,
+        currentlyChosenOption = fakeAddonQuote1,
+        currentlyChosenOptionInDialog = fakeAddonQuote1,
         summaryParamsToNavigateFurther = null,
-        currentTravelAddon = CurrentTravelAddon(
+        currentlyActiveAddon = CurrentlyActiveAddon(
           listOf(),
           "CurrentAddon",
           netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
@@ -593,10 +602,10 @@ internal class CustomizeTravelAddonPreviewProvider :
     ),
   )
 
-private val fakeTravelAddonQuote1 = TravelAddonQuote(
+private val fakeAddonQuote1 = AddonQuote(
   quoteId = "id",
   addonId = "addonId1",
-  displayName = "45 days",
+  displayTitle = "45 days",
   displayDetails = listOf(),
   addonVariant = AddonVariant(
     termsVersion = "terms",
@@ -612,7 +621,7 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
       "url",
     ),
   ),
-  displayNameLong = "Travel Plus 45 days",
+  displayDescription = "Travel Plus 45 days",
   itemCost = ItemCost(
     UiMoney(59.0, UiCurrencyCode.SEK),
     UiMoney(69.0, UiCurrencyCode.SEK),
@@ -626,8 +635,8 @@ private val fakeTravelAddonQuote1 = TravelAddonQuote(
     ),
   ),
 )
-private val fakeTravelAddonQuote2 = TravelAddonQuote(
-  displayName = "60 days",
+private val fakeAddonQuote2 = AddonQuote(
+  displayTitle = "60 days",
   addonId = "addonId1",
   quoteId = "id",
   displayDetails = listOf(),
@@ -645,7 +654,7 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
       "url",
     ),
   ),
-  displayNameLong = "Travel Plus 60 days",
+  displayDescription = "Travel Plus 60 days",
   itemCost = ItemCost(
     UiMoney(79.0, UiCurrencyCode.SEK),
     UiMoney(89.0, UiCurrencyCode.SEK),
@@ -659,10 +668,10 @@ private val fakeTravelAddonQuote2 = TravelAddonQuote(
     ),
   ),
 )
-private val fakeTravelAddon = TravelAddonOffer(
+private val fakeTravelAddon = Selectable(
   addonOptions = nonEmptyListOf(
-    fakeTravelAddonQuote1,
-    fakeTravelAddonQuote2,
+    fakeAddonQuote1,
+    fakeAddonQuote2,
   ),
   title = "Travel Plus",
   description = "For those who travel often: luggage protection and 24/7 assistance worldwide",

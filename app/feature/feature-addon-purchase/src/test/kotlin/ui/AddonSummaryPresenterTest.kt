@@ -17,9 +17,9 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
-import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
-import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryEvent
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryPresenter
@@ -104,8 +104,8 @@ private class FakeSubmitAddonPurchaseUseCase() : SubmitAddonPurchaseUseCase {
   }
 }
 
-private val newQuote = TravelAddonQuote(
-  displayName = "45 days",
+private val newQuote = AddonQuote(
+  displayTitle = "45 days",
   addonId = "addonId1",
   quoteId = "id",
   displayDetails = listOf(
@@ -127,7 +127,7 @@ private val newQuote = TravelAddonQuote(
   ),
   addonSubtype = "45_DAYS",
   documents = listOf(),
-  displayNameLong = "Mock quote 60 days",
+  displayDescription = "Mock quote 60 days",
   itemCost = ItemCost(
     monthlyGross = UiMoney(59.0, UiCurrencyCode.SEK),
     monthlyNet = UiMoney(59.0, UiCurrencyCode.SEK),
@@ -135,8 +135,8 @@ private val newQuote = TravelAddonQuote(
   ),
 )
 
-private val newQuote2 = TravelAddonQuote(
-  displayName = "60 days",
+private val newQuote2 = AddonQuote(
+  displayTitle = "60 days",
   addonId = "addonId2",
   quoteId = "id",
   displayDetails = listOf(
@@ -158,7 +158,7 @@ private val newQuote2 = TravelAddonQuote(
   ),
   addonSubtype = "60_DAYS",
   documents = listOf(),
-  displayNameLong = "Mock quote 60 days",
+  displayDescription = "Mock quote 60 days",
   itemCost = ItemCost(
     monthlyGross = UiMoney(59.0, UiCurrencyCode.SEK),
     monthlyNet = UiMoney(59.0, UiCurrencyCode.SEK),
@@ -166,15 +166,15 @@ private val newQuote2 = TravelAddonQuote(
   ),
 )
 
-private val currentAddon = CurrentTravelAddon(
+private val currentAddon = CurrentlyActiveAddon(
   listOf("Coverage" to "45 days", "Insured people" to "You+1"),
-  displayNameLong = "Current Travel Addon",
+  displayTitle = "Current Travel Addon",
   netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
 )
 
-private val moreExpensiveCurrentAddon = CurrentTravelAddon(
+private val moreExpensiveCurrentAddon = CurrentlyActiveAddon(
   listOf("Coverage" to "45 days", "Insured people" to "You+1"),
-  displayNameLong = "Current Travel Addon",
+  displayTitle = "Current Travel Addon",
   netPremium = UiMoney(79.0, UiCurrencyCode.SEK),
 )
 
@@ -182,19 +182,19 @@ private val testSummaryParametersWithCurrentAddon = SummaryParameters(
   offerDisplayName = "fakeTravelOfferOnlyOneOption.title",
   quote = newQuote,
   activationDate = LocalDate(2024, 12, 30),
-  currentTravelAddon = currentAddon,
+  currentlyActiveAddon = currentAddon,
 )
 
 private val testSummaryParametersWithMoreExpensiveCurrentAddon = SummaryParameters(
   offerDisplayName = "fakeTravelOfferOnlyOneOption.title",
   quote = newQuote2,
   activationDate = LocalDate(2024, 12, 30),
-  currentTravelAddon = moreExpensiveCurrentAddon,
+  currentlyActiveAddon = moreExpensiveCurrentAddon,
 )
 
 private val testSummaryParametersNoCurrentAddon = SummaryParameters(
   offerDisplayName = "fakeTravelOfferOnlyOneOption.title",
   quote = newQuote,
   activationDate = LocalDate(2024, 12, 30),
-  currentTravelAddon = null,
+  currentlyActiveAddon = null,
 )

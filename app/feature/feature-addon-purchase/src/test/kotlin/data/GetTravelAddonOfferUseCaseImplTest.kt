@@ -19,10 +19,10 @@ import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
-import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
-import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
+import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCaseImpl
-import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.featureflags.test.FakeFeatureManager
@@ -129,7 +129,7 @@ class GetTravelAddonOfferUseCaseImplTest {
                   buildUpsellTravelAddonQuote {
                     addonSubtype = "45_DAYS"
                     addonId = mockWithoutUpgrade.addonOptions[0].addonId
-                    displayName = mockWithoutUpgrade.addonOptions[0].displayName
+                    displayName = mockWithoutUpgrade.addonOptions[0].displayTitle
                     quoteId = mockWithoutUpgrade.addonOptions[0].quoteId
                     displayItems = buildList {
                       add(
@@ -169,7 +169,7 @@ class GetTravelAddonOfferUseCaseImplTest {
                       perils = listOf()
                       insurableLimits = listOf()
                     }
-                    displayNameLong = mockWithoutUpgrade.addonOptions[0].displayNameLong
+                    displayNameLong = mockWithoutUpgrade.addonOptions[0].displayDescription
                     documents = buildList {
                       add(
                         buildUpsellTravelAddonQuoteInsuranceDocument {
@@ -185,7 +185,7 @@ class GetTravelAddonOfferUseCaseImplTest {
                   buildUpsellTravelAddonQuote {
                     addonId = mockWithoutUpgrade.addonOptions[1].addonId
                     addonSubtype = "60_DAYS"
-                    displayName = mockWithoutUpgrade.addonOptions[1].displayName
+                    displayName = mockWithoutUpgrade.addonOptions[1].displayTitle
                     quoteId = mockWithoutUpgrade.addonOptions[1].quoteId
                     displayItems = buildList {
                       add(
@@ -233,7 +233,7 @@ class GetTravelAddonOfferUseCaseImplTest {
                         }
                       }
                     }
-                    displayNameLong = mockWithoutUpgrade.addonOptions[1].displayNameLong
+                    displayNameLong = mockWithoutUpgrade.addonOptions[1].displayDescription
                   },
                 )
               }
@@ -275,7 +275,7 @@ class GetTravelAddonOfferUseCaseImplTest {
                   buildUpsellTravelAddonQuote {
                     addonSubtype = "60_DAYS"
                     addonId = mockWithUpgrade.addonOptions[0].addonId
-                    displayName = mockWithUpgrade.addonOptions[0].displayName
+                    displayName = mockWithUpgrade.addonOptions[0].displayTitle
                     quoteId = mockWithUpgrade.addonOptions[0].quoteId
                     displayItems = buildList {
                       add(
@@ -307,7 +307,7 @@ class GetTravelAddonOfferUseCaseImplTest {
                         }
                       }
                     }
-                    displayNameLong = mockWithUpgrade.addonOptions[0].displayNameLong
+                    displayNameLong = mockWithUpgrade.addonOptions[0].displayDescription
                     addonVariant = buildAddonVariant {
                       termsVersion = ""
                       documents = listOf()
@@ -394,12 +394,12 @@ class GetTravelAddonOfferUseCaseImplTest {
   }
 }
 
-private val mockWithoutUpgrade = TravelAddonOffer(
+private val mockWithoutUpgrade = Selectable(
   addonOptions = nonEmptyListOf(
-    TravelAddonQuote(
+    AddonQuote(
       quoteId = "id",
       addonId = "addonId1",
-      displayName = "45 days",
+      displayTitle = "45 days",
       displayDetails = listOf("Coverage" to "45 days"),
       addonVariant = AddonVariant(
         termsVersion = "",
@@ -412,15 +412,15 @@ private val mockWithoutUpgrade = TravelAddonOffer(
       documents = listOf(
         TravelAddonQuoteInsuranceDocument("Terms and conditions", "Url"),
       ),
-      displayNameLong = "Mock quote 45 days",
+      displayDescription = "Mock quote 45 days",
       itemCost = ItemCost(
         monthlyGross = UiMoney(49.0, UiCurrencyCode.SEK),
         monthlyNet = UiMoney(49.0, UiCurrencyCode.SEK),
         discounts = emptyList(),
       ),
     ),
-    TravelAddonQuote(
-      displayName = "60 days",
+    AddonQuote(
+      displayTitle = "60 days",
       addonId = "addonId1",
       quoteId = "id",
       displayDetails = listOf("Coverage" to "60 days"),
@@ -435,7 +435,7 @@ private val mockWithoutUpgrade = TravelAddonOffer(
       documents = listOf(
         TravelAddonQuoteInsuranceDocument("Terms and conditions", "Url"),
       ),
-      displayNameLong = "Mock quote 60 days",
+      displayDescription = "Mock quote 60 days",
       itemCost = ItemCost(
         monthlyGross = UiMoney(59.0, UiCurrencyCode.SEK),
         monthlyNet = UiMoney(59.0, UiCurrencyCode.SEK),
@@ -449,10 +449,10 @@ private val mockWithoutUpgrade = TravelAddonOffer(
   currentTravelAddon = null,
 )
 
-private val mockWithUpgrade = TravelAddonOffer(
+private val mockWithUpgrade = Selectable(
   addonOptions = nonEmptyListOf(
-    TravelAddonQuote(
-      displayName = "60 days",
+    AddonQuote(
+      displayTitle = "60 days",
       addonId = "addonId1",
       quoteId = "id",
       displayDetails = listOf("Coverage" to "60 days"),
@@ -467,7 +467,7 @@ private val mockWithUpgrade = TravelAddonOffer(
       documents = listOf(
         TravelAddonQuoteInsuranceDocument("Terms and conditions", "Url"),
       ),
-      displayNameLong = "Mock quote 60 days",
+      displayDescription = "Mock quote 60 days",
       itemCost = ItemCost(
         monthlyGross = UiMoney(59.0, UiCurrencyCode.SEK),
         monthlyNet = UiMoney(59.0, UiCurrencyCode.SEK),
@@ -478,9 +478,9 @@ private val mockWithUpgrade = TravelAddonOffer(
   title = "Travel plus",
   description = "For those who travel often: luggage protection and 24/7 assistance worldwide",
   activationDate = LocalDate(2025, 1, 1),
-  currentTravelAddon = CurrentTravelAddon(
+  currentTravelAddon = CurrentlyActiveAddon(
     displayDetails = listOf("Coverage" to "45 days"),
-    displayNameLong = "Current Travel Addon",
+    displayTitle = "Current Travel Addon",
     netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
   ),
 )

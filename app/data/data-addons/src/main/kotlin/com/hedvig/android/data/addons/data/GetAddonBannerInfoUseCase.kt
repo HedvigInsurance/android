@@ -92,7 +92,7 @@ data class AddonBannerInfo(
   val description: String,
   val labels: List<String>,
   val eligibleInsurancesIds: NonEmptyList<String>,
-  //todo: add val flowType: FlowType
+  //todo: add val flowType: FlowType maybe
 )
 
 //todo:

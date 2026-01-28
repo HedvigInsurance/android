@@ -8,9 +8,13 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.toAddonVariant
-import com.hedvig.android.feature.addon.purchase.data.Addon.TravelAddonOffer
+import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -19,14 +23,14 @@ import kotlinx.coroutines.flow.first
 import octopus.UpsellAddonOfferMutation
 
 internal interface GetTravelAddonOfferUseCase {
-  suspend fun invoke(id: String): Either<ErrorMessage, TravelAddonOffer>
+  suspend fun invoke(id: String): Either<ErrorMessage, GenerateAddonOfferResult>
 }
 
 internal class GetTravelAddonOfferUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetTravelAddonOfferUseCase {
-  override suspend fun invoke(id: String): Either<ErrorMessage, TravelAddonOffer> {
+  override suspend fun invoke(id: String): Either<ErrorMessage, GenerateAddonOfferResult> {
     return either {
       val isAddonFlagOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
       if (!isAddonFlagOn) {
@@ -55,12 +59,28 @@ internal class GetTravelAddonOfferUseCaseImpl(
             raise(ErrorMessage())
           }
 
-          TravelAddonOffer(
+          val addonOffer = Selectable(
             addonOptions = nonEmptyQuotes.toTravelAddonQuotes(),
-            title = data.titleDisplayName,
-            description = data.descriptionDisplayName,
-            activationDate = data.activationDate,
-            currentTravelAddon = data.currentAddon.toCurrentAddon(),
+            selectionTitle = "Title TESTING", //todo add when data allows
+            selectionDescription = "Description TESTING",  //todo add when data allows
+            fieldTitle = "Maximum travel limit TESTING",  //todo add when data allows
+          )
+          GenerateAddonOfferResult(
+            pageTitle = "Page title TESTING", //todo add when data allows
+            pageDescription = "Page description TESTING", //todo add when data allows
+            umbrellaAddonQuote = UmbrellaAddonQuote(
+              quoteId = data.quotes.firstOrNull()?.quoteId ?: "", //todo when backend allows!
+              displayTitle = data.titleDisplayName,
+              displayDescription = data.descriptionDisplayName,
+              activationDate = data.activationDate,
+              addonOffer = addonOffer,
+              activeAddons =
+                data.currentAddon.toCurrentAddon()?.let {
+                  listOf(it)
+                } ?: emptyList(), //todo: add list of addons when data allows
+              baseInsuranceCost = fakeBaseInsuranceCost, //todo: REMOVE FAKE when data allows
+              productVariant = fakeProductVariant  //todo: REMOVE FAKE when data allows
+            )
           )
         },
       )
@@ -68,39 +88,49 @@ internal class GetTravelAddonOfferUseCaseImpl(
   }
 }
 
+val fakeProductVariant = ProductVariant(
+  displayName = "productVariant.displayName",
+  contractGroup = ContractGroup.CAR,
+  contractType = ContractType.SE_CAR_FULL,
+  partner = null,
+  perils = emptyList(),
+  insurableLimits = emptyList(),
+  documents = emptyList(),
+  displayTierName = "productVariant.displayTierName",
+  tierDescription = "productVariant.tierDescription",
+  termsVersion = "productVariant.termsVersion"
+)
+val fakeBaseInsuranceCost = ItemCost(
+  monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+  monthlyGross = UiMoney(200.0, UiCurrencyCode.SEK),
+  discounts = emptyList()
+)
+
 private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.Quote>.toTravelAddonQuotes():
-  NonEmptyList<TravelAddonQuote> {
+  NonEmptyList<AddonQuote> {
   return this.map {
-    TravelAddonQuote(
-      addonSubtype = it.addonSubtype,
-      quoteId = it.quoteId,
+    AddonQuote(
       addonId = it.addonId,
-      displayName = it.displayName,
+      displayTitle = it.displayName,
       displayDetails = it.displayItems.map { item ->
         item.displayTitle to item.displayValue
       },
       addonVariant = it.addonVariant.toAddonVariant(),
-      documents = it.documents.map { doc ->
-        TravelAddonQuoteInsuranceDocument(
-          doc.displayName,
-          doc.url,
-        )
-      },
-      displayNameLong = it.displayNameLong,
+      displayDescription = it.displayNameLong,
       itemCost = ItemCost.fromItemCostFragment(it.itemCost),
     )
   }
 }
 
 private fun UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.CurrentAddon?.toCurrentAddon():
-  CurrentTravelAddon? {
+  CurrentlyActiveAddon? {
   return this?.let {
-    CurrentTravelAddon(
-      displayDetails = displayItems.map {
-        it.displayTitle to it.displayValue
-      },
-      displayNameLong = displayNameLong,
-      netPremium = UiMoney.fromMoneyFragment(netPremium),
+    CurrentlyActiveAddon(
+      displayTitle = displayNameLong,
+      displayDescription = "CURRENT ADDON displayDescription", //todo: REMOVE FAKE!
+      cost = ItemCost(UiMoney.fromMoneyFragment(netPremium),
+        UiMoney.fromMoneyFragment(netPremium),
+        emptyList()), //todo: REMOVE FAKE!
     )
   }
 }

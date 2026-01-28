@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
-import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
+import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -73,7 +73,7 @@ internal sealed interface AddonPurchaseDestination {
 @Serializable
 internal data class SummaryParameters(
   val offerDisplayName: String,
-  val quote: TravelAddonQuote,
+  val quote: AddonQuote,
   val activationDate: LocalDate,
-  val currentTravelAddon: CurrentTravelAddon?,
+  val currentlyActiveAddon: CurrentlyActiveAddon?,
 )
