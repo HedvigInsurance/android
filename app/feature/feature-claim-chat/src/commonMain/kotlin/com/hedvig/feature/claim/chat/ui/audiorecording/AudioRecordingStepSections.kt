@@ -75,6 +75,7 @@ import com.hedvig.android.design.system.hedvig.icon.Mic
 import com.hedvig.android.design.system.hedvig.icon.Pause
 import com.hedvig.android.design.system.hedvig.icon.Play
 import com.hedvig.android.design.system.hedvig.icon.Reload
+import com.hedvig.android.design.system.hedvig.icon.Stop
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.audio.player.data.AudioPlayer
@@ -595,7 +596,7 @@ private fun ControlButton(
               }
             }
 
-            is AudioRecordingStepState.AudioRecording.Recording -> HedvigIcons.Pause
+            is AudioRecordingStepState.AudioRecording.Recording -> HedvigIcons.Stop
           },
           contentDescription = EmptyContentDescription,
           tint = if (!isEnabled) {
