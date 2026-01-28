@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -71,7 +71,6 @@ import hedvig.resources.travel_certificate_get_travel_certificate_button
 import java.io.File
 import kotlin.String
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -175,7 +174,7 @@ private fun TravelCertificateHistoryScreen(
           showGenerationButton = uiState.showGenerateButton,
           onGoToChooseContract = onGoToChooseContract,
           hasChooseOption = uiState.hasChooseOption,
-          travelAddonBannerInfo = uiState.travelAddonBannerInfo,
+          addonBannerInfo = uiState.addonBannerInfo,
           launchAddonPurchaseFlow = launchAddonPurchaseFlow,
         )
       }
@@ -195,7 +194,7 @@ private fun TravelCertificateSuccessScreen(
   onDismissDownloadCertificateError: () -> Unit,
   showGenerationButton: Boolean,
   hasChooseOption: Boolean,
-  travelAddonBannerInfo: TravelAddonBannerInfo?,
+  addonBannerInfo: AddonBannerInfo?,
   launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
 ) {
   HedvigScaffold(
@@ -233,9 +232,9 @@ private fun TravelCertificateSuccessScreen(
           )
         }
         Spacer(modifier = Modifier.weight(1f))
-        if (travelAddonBannerInfo != null) {
+        if (addonBannerInfo != null) {
           TravelAddonBanner(
-            travelAddonBannerInfo = travelAddonBannerInfo,
+            addonBannerInfo = addonBannerInfo,
             launchAddonPurchaseFlow = launchAddonPurchaseFlow,
             modifier = Modifier
               .fillMaxWidth()
@@ -278,18 +277,18 @@ private fun TravelCertificateSuccessScreen(
 
 @Composable
 private fun TravelAddonBanner(
-  travelAddonBannerInfo: TravelAddonBannerInfo,
+  addonBannerInfo: AddonBannerInfo,
   launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   FeatureAddonBanner(
     modifier = modifier,
-    title = travelAddonBannerInfo.title,
-    description = travelAddonBannerInfo.description,
+    title = addonBannerInfo.title,
+    description = addonBannerInfo.description,
     buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
-    labels = travelAddonBannerInfo.labels,
+    labels = addonBannerInfo.labels,
     onButtonClick = {
-      launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
+      launchAddonPurchaseFlow(addonBannerInfo.eligibleInsurancesIds)
     },
   )
 }
@@ -405,7 +404,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = TravelAddonBannerInfo(
+        addonBannerInfo = AddonBannerInfo(
           title = "Travel Plus",
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
@@ -448,7 +447,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       SuccessDownloadingHistory(
         listOf(
@@ -486,7 +485,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       SuccessDownloadingHistory(
         listOf(
@@ -514,7 +513,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       SuccessDownloadingHistory(
         listOf(
@@ -542,7 +541,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       Loading,
       FailureDownloadingHistory,
@@ -582,7 +581,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         true,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
     ),
   )

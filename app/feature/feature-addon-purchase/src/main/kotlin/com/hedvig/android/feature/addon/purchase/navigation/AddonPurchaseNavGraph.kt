@@ -5,7 +5,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.ChooseInsuranceToAddAddonDestination
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.CustomizeAddon
@@ -57,7 +57,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         navigator.navigateUnsafe(
           AddonPurchaseGraphDestination(
             insuranceIds,
-            TravelAddonBannerSource.DEEPLINK,
+            AddonBannerSource.DEEPLINK,
           ),
         ) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })

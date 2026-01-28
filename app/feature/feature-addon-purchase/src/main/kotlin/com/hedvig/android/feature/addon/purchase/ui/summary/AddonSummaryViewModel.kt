@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
@@ -24,9 +24,9 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.datetime.LocalDate
 
 internal class AddonSummaryViewModel(
-  summaryParameters: SummaryParameters,
-  addonPurchaseSource: TravelAddonBannerSource,
-  submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
+    summaryParameters: SummaryParameters,
+    addonPurchaseSource: AddonBannerSource,
+    submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
     initialState = getInitialState(summaryParameters),
     presenter = AddonSummaryPresenter(
@@ -37,9 +37,9 @@ internal class AddonSummaryViewModel(
   )
 
 internal class AddonSummaryPresenter(
-  private val summaryParameters: SummaryParameters,
-  private val submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
-  private val addonPurchaseSource: TravelAddonBannerSource,
+    private val summaryParameters: SummaryParameters,
+    private val submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
+    private val addonPurchaseSource: AddonBannerSource,
 ) : MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
   @Composable
   override fun MoleculePresenterScope<AddonSummaryEvent>.present(lastState: AddonSummaryState): AddonSummaryState {
@@ -117,8 +117,8 @@ internal sealed interface AddonSummaryEvent {
 }
 
 private fun logSuccessfulAddonPurchaseAction(
-  summaryParameters: SummaryParameters,
-  addonPurchaseSource: TravelAddonBannerSource,
+    summaryParameters: SummaryParameters,
+    addonPurchaseSource: AddonBannerSource,
 ) {
   val logInfo = AddonLogInfo(
     flow = addonPurchaseSource,
@@ -133,8 +133,8 @@ private fun logSuccessfulAddonPurchaseAction(
 }
 
 private data class AddonLogInfo(
-  val flow: TravelAddonBannerSource,
-  val subType: String,
+    val flow: AddonBannerSource,
+    val subType: String,
 ) {
   val type = "travelAddon"
 

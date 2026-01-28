@@ -9,9 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.feature.travelcertificate.data.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificatesHistoryUseCase
@@ -31,7 +31,7 @@ internal class CertificateHistoryViewModel(
   checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
-  getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
+  getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
 ) : MoleculeViewModel<CertificateHistoryEvent, CertificateHistoryUiState>(
     initialState = CertificateHistoryUiState.Loading,
     presenter = CertificateHistoryPresenter(
@@ -39,7 +39,7 @@ internal class CertificateHistoryViewModel(
       downloadPdfUseCase,
       getEligibleContractsWithAddressUseCase,
       checkTravelCertificateAvailabilityForCurrentContractsUseCase,
-      getTravelAddonBannerInfoUseCase,
+      getAddonBannerInfoUseCase,
     ),
   )
 
@@ -49,7 +49,7 @@ internal class CertificateHistoryPresenter(
   private val getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
   private val checkTravelCertificateAvailabilityForCurrentContractsUseCase:
     CheckTravelCertificateAvailabilityForCurrentContractsUseCase,
-  private val getTravelAddonBannerInfoUseCase: GetTravelAddonBannerInfoUseCase,
+  private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
 ) :
   MoleculePresenter<CertificateHistoryEvent, CertificateHistoryUiState> {
   @Composable
@@ -132,7 +132,7 @@ internal class CertificateHistoryPresenter(
         flow { emit(getTravelCertificatesHistoryUseCase.invoke()) },
         flow { emit(checkTravelCertificateAvailabilityForCurrentContractsUseCase.invoke()) },
         flow { emit(getEligibleContractsWithAddressUseCase.invoke()) },
-        getTravelAddonBannerInfoUseCase.invoke(TravelAddonBannerSource.TRAVEL_CERTIFICATES),
+        getAddonBannerInfoUseCase.invoke(AddonBannerSource.TRAVEL_CERTIFICATES),
       ) { travelCertificateHistoryResult, eligibilityResult, eligibleContractsResult, travelAddonBannerResult ->
         val history = travelCertificateHistoryResult.getOrNull()
         val eligibility = eligibilityResult.getOrNull()
@@ -145,7 +145,7 @@ internal class CertificateHistoryPresenter(
             certificateHistoryList = history,
             eligibleToCreateCertificate = eligibility,
             mustChooseContractBeforeGeneratingTravelCertificate = hasChooseOption,
-            travelAddonBannerInfo = travelAddonBanner,
+            addonBannerInfo = travelAddonBanner?.firstOrNull(),
           )
         } else {
           logcat { "Could not fetch travel certificates history and eligibility" }
@@ -166,7 +166,7 @@ internal class CertificateHistoryPresenter(
         travelCertificateUri = savedFileUri,
         isLoadingCertificate = isLoadingCertificate,
         hasChooseOption = screenContentStateValue.mustChooseContractBeforeGeneratingTravelCertificate,
-        travelAddonBannerInfo = screenContentStateValue.travelAddonBannerInfo,
+        addonBannerInfo = screenContentStateValue.addonBannerInfo,
         idsToNavigateToAddonPurchase = idsToNavigateToAddons,
       )
     }
@@ -182,7 +182,7 @@ private sealed interface ScreenContentState {
     val certificateHistoryList: List<TravelCertificate>,
     val eligibleToCreateCertificate: Boolean,
     val mustChooseContractBeforeGeneratingTravelCertificate: Boolean,
-    val travelAddonBannerInfo: TravelAddonBannerInfo?,
+    val addonBannerInfo: AddonBannerInfo?,
   ) :
     ScreenContentState
 }
@@ -209,7 +209,7 @@ internal sealed interface CertificateHistoryUiState {
     val travelCertificateUri: DownloadedFile?,
     val isLoadingCertificate: Boolean,
     val hasChooseOption: Boolean,
-    val travelAddonBannerInfo: TravelAddonBannerInfo?,
+    val addonBannerInfo: AddonBannerInfo?,
     val idsToNavigateToAddonPurchase: List<String>? = null,
   ) : CertificateHistoryUiState
 

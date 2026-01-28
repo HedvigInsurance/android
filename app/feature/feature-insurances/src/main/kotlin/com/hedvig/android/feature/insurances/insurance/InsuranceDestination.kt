@@ -46,7 +46,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
@@ -253,7 +253,7 @@ private fun InsuranceScreenContent(
               hasCrossSellDiscounts = uiState.hasCrossSellDiscounts,
             )
           }
-          if (uiState.travelAddonBannerInfo != null) {
+          if (uiState.addonBannerInfoList.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             Row(
               modifier = modifier
@@ -265,15 +265,20 @@ private fun InsuranceScreenContent(
               HedvigText(text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING))
             }
             Spacer(Modifier.height(16.dp))
-            TravelAddonBanner(
-              travelAddonBannerInfo = uiState.travelAddonBannerInfo,
-              launchAddonPurchaseFlow = {
-                onNavigateToAddonPurchaseFlow(uiState.travelAddonBannerInfo.eligibleInsurancesIds)
-              },
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            )
+            uiState.addonBannerInfoList.forEachIndexed { index, bannerInfo ->
+              TravelAddonBanner(
+                addonBannerInfo = bannerInfo,
+                launchAddonPurchaseFlow = {
+                  onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds)
+                },
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
+              )
+              if (index != uiState.addonBannerInfoList.lastIndex) {
+                Spacer(Modifier.height(16.dp))
+              }
+            }
           }
           if (uiState.shouldSuggestMovingFlow) {
             Spacer(Modifier.height(8.dp))
@@ -385,17 +390,17 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
 
 @Composable
 private fun TravelAddonBanner(
-  travelAddonBannerInfo: TravelAddonBannerInfo,
+  addonBannerInfo: AddonBannerInfo,
   launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   FeatureAddonBanner(
     modifier = modifier,
-    title = travelAddonBannerInfo.title,
-    description = travelAddonBannerInfo.description,
+    title = addonBannerInfo.title,
+    description = addonBannerInfo.description,
     buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
-    labels = travelAddonBannerInfo.labels,
-    onButtonClick = dropUnlessResumed { launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds) },
+    labels = addonBannerInfo.labels,
+    onButtonClick = dropUnlessResumed { launchAddonPurchaseFlow(addonBannerInfo.eligibleInsurancesIds) },
   )
 }
 
@@ -427,11 +432,13 @@ private fun PreviewInsuranceScreen(
           hasError = false,
           isLoading = false,
           isRetrying = false,
-          travelAddonBannerInfo = TravelAddonBannerInfo(
-            "Title",
-            "description",
-            eligibleInsurancesIds = nonEmptyListOf(""),
-            labels = listOf("Great"),
+          addonBannerInfoList = listOf(
+            AddonBannerInfo(
+              "Title",
+              "description",
+              eligibleInsurancesIds = nonEmptyListOf(""),
+              labels = listOf("Great"),
+            ),
           ),
           pendingContracts = listOf(previewPendingContract),
           hasCrossSellDiscounts = true,
@@ -483,7 +490,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null,
+      addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
       hasCrossSellDiscounts = true,
     ),
@@ -495,7 +502,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null,
+      addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
@@ -515,11 +522,13 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isLoading = false,
       isRetrying = false,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = TravelAddonBannerInfo(
-        title = "Travel Plus",
-        description = "Extended travel insurance with extra coverage for your travels",
-        labels = listOf("Popular"),
-        eligibleInsurancesIds = nonEmptyListOf("id"),
+      addonBannerInfoList = listOf(
+        AddonBannerInfo(
+          title = "Travel Plus",
+          description = "Extended travel insurance with extra coverage for your travels",
+          labels = listOf("Popular"),
+          eligibleInsurancesIds = nonEmptyListOf("id"),
+        ),
       ),
       pendingContracts = listOf(),
     ),
@@ -531,7 +540,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null,
+      addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
@@ -557,7 +566,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null,
+      addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
@@ -568,7 +577,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null,
+      addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
     InsuranceUiState(
@@ -579,7 +588,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
       isRetrying = false,
       quantityOfCancelledInsurances = 0,
       shouldSuggestMovingFlow = true,
-      travelAddonBannerInfo = null,
+      addonBannerInfoList = emptyList(),
       pendingContracts = listOf(previewPendingContract),
     ),
   ),

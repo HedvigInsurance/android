@@ -6,8 +6,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class DemoGetTravelAddonBannerInfoUseCase : GetTravelAddonBannerInfoUseCase {
-  override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
-    return flowOf(null.right())
+class DemoGetAddonBannerInfoUseCase : GetAddonBannerInfoUseCase {
+  override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
+    return flowOf(emptyList<AddonBannerInfo>().right())
   }
 }

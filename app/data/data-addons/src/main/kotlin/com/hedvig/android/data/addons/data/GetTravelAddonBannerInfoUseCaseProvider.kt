@@ -4,7 +4,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 
 class GetTravelAddonBannerInfoUseCaseProvider(
-  override val demoManager: DemoManager,
-  override val demoImpl: GetTravelAddonBannerInfoUseCase,
-  override val prodImpl: GetTravelAddonBannerInfoUseCase,
-) : ProdOrDemoProvider<GetTravelAddonBannerInfoUseCase>
+    override val demoManager: DemoManager,
+    override val demoImpl: GetAddonBannerInfoUseCase,
+    override val prodImpl: GetAddonBannerInfoUseCase,
+) : ProdOrDemoProvider<GetAddonBannerInfoUseCase>

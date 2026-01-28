@@ -16,9 +16,9 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
@@ -240,7 +240,7 @@ internal class InsurancePresenterTest {
   fun `on launch loading state is true, followed by the loaded state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -274,7 +274,7 @@ internal class InsurancePresenterTest {
   fun `when cross sells fail to load, we get an error state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -299,7 +299,7 @@ internal class InsurancePresenterTest {
   fun `partial backend responses keep the state as loading until everything is done`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -324,7 +324,7 @@ internal class InsurancePresenterTest {
   fun `after a fail, retrying and getting good data back results in proper state`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -368,7 +368,7 @@ internal class InsurancePresenterTest {
   fun `getting some terminated contracts should not be part of the cards, but show the quantity of them`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -400,7 +400,7 @@ internal class InsurancePresenterTest {
   ) = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -421,7 +421,7 @@ internal class InsurancePresenterTest {
   fun `if GetTravelAddonBannerInfoUseCase returns null, don't show addon banner`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -432,7 +432,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       getTravelAddonBannerInfoUseCase.turbine.add(either { null })
-      assertThat(awaitItem().travelAddonBannerInfo).isEqualTo(null)
+      assertThat(awaitItem().addonBannerInfoList).isEqualTo(null)
     }
   }
 
@@ -440,7 +440,7 @@ internal class InsurancePresenterTest {
   fun `if GetTravelAddonBannerInfoUseCase returns not null, show addon banner`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -451,7 +451,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
-      assertThat(awaitItem().travelAddonBannerInfo).isEqualTo(fakeTravelAddon)
+      assertThat(awaitItem().addonBannerInfoList).isEqualTo(fakeTravelAddon)
     }
   }
 
@@ -459,7 +459,7 @@ internal class InsurancePresenterTest {
   fun `when starting presentation with an already loaded initial state, don't briefly show loading`() = runTest {
     val getInsuranceContractsUseCase = FakeGetInsuranceContractsUseCase()
     val getCrossSellsUseCase = FakeGetCrossSellsUseCase()
-    val getTravelAddonBannerInfoUseCase = FakeGetTravelAddonBannerInfoUseCase()
+    val getTravelAddonBannerInfoUseCase = FakeGetAddonBannerInfoUseCase()
     val presenter = InsurancePresenter(
       { getInsuranceContractsUseCase },
       { getCrossSellsUseCase },
@@ -473,7 +473,7 @@ internal class InsurancePresenterTest {
       hasError = false,
       isLoading = false,
       isRetrying = false,
-      travelAddonBannerInfo = null,
+      addonBannerInfoList = null,
       pendingContracts = listOf(),
     )
     presenter.test(initialState) {
@@ -519,15 +519,15 @@ internal class InsurancePresenterTest {
     }
   }
 
-  private class FakeGetTravelAddonBannerInfoUseCase : GetTravelAddonBannerInfoUseCase {
-    val turbine = Turbine<Either<ErrorMessage, TravelAddonBannerInfo?>>()
+  private class FakeGetAddonBannerInfoUseCase : GetAddonBannerInfoUseCase {
+    val turbine = Turbine<Either<ErrorMessage, AddonBannerInfo?>>()
 
-    override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
+    override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, AddonBannerInfo?>> {
       return turbine.asChannel().receiveAsFlow()
     }
   }
 
-  private val fakeTravelAddon = TravelAddonBannerInfo(
+  private val fakeTravelAddon = AddonBannerInfo(
     "Travel",
     "desc",
     listOf(),

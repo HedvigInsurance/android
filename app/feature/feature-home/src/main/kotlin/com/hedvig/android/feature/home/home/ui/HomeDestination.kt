@@ -68,7 +68,7 @@ import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -783,7 +783,7 @@ private fun PreviewHomeScreen(
             ),
           ),
           chatAction = ChatAction,
-          travelAddonBannerInfo = TravelAddonBannerInfo(
+          addonBannerInfo = AddonBannerInfo(
             title = "Title",
             description = "description",
             labels = listOf("Label"),
@@ -872,7 +872,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           crossSellsAction = null,
           firstVetAction = null,
           chatAction = null,
-          travelAddonBannerInfo = null,
+          addonBannerInfo = null,
           isExperimentalClaimChatEnabled = true,
           isProduction = true,
         ),

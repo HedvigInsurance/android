@@ -1,9 +1,8 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -13,11 +12,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AddonPurchaseGraphDestination(
-  val insuranceIds: List<String>,
-  val source: TravelAddonBannerSource,
+    val insuranceIds: List<String>,
+    val source: AddonBannerSource,
 ) : Destination {
   companion object : DestinationNavTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<TravelAddonBannerSource>())
+    override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
   }
 }
 

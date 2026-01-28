@@ -13,7 +13,6 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import kotlin.String
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -21,26 +20,31 @@ import kotlinx.serialization.Serializable
 import octopus.TravelAddonBannerQuery
 import octopus.type.UpsellTravelAddonFlow
 
-interface GetTravelAddonBannerInfoUseCase {
-  fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>>
+interface GetAddonBannerInfoUseCase {
+  fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>>
 }
 
-internal class GetTravelAddonBannerInfoUseCaseImpl(
+internal class GetAddonBannerInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
-) : GetTravelAddonBannerInfoUseCase {
-  override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
+) : GetAddonBannerInfoUseCase {
+  override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>>{
     val mappedSource = when (source) {
-      TravelAddonBannerSource.TRAVEL_CERTIFICATES,
-      TravelAddonBannerSource.DEEPLINK,
-      -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
+      AddonBannerSource.TRAVEL_CERTIFICATES,
+      AddonBannerSource.DEEPLINK,
+        -> UpsellTravelAddonFlow.APP_UPSELL_UPGRADE
 
-      TravelAddonBannerSource.INSURANCES_TAB,
-      TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
-      -> UpsellTravelAddonFlow.APP_ONLY_UPSALE
+      AddonBannerSource.INSURANCES_TAB,
+
+        //todo: add -> listOf(UpsellTravelAddonFlow.APP_CAR_PLUS,
+        // UpsellTravelAddonFlow.APP_TRAVEL_PLUS_SELL_ONLY),
+
+      AddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
+        -> UpsellTravelAddonFlow.APP_ONLY_UPSALE
     }
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON),
+      //todo: add featureManager.isFeatureEnabled(Feature.CAR_ADDON)
       apolloClient
         .query(TravelAddonBannerQuery(mappedSource))
         .fetchPolicy(CacheAndNetwork)
@@ -57,12 +61,12 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
           logcat(LogPriority.INFO) {
             "Tried to get TravelAddonBannerInfo but addon feature flag is off"
           }
-          return@either null
+          return@either emptyList()
         }
         val bannerData = travelAddonBannerQueryResult.bind().currentMember.upsellTravelAddonBanner
         if (bannerData == null) {
           logcat(LogPriority.DEBUG) { "Got null response from TravelAddonBannerQuery" }
-          return@either null
+          return@either emptyList()
         }
         val nonEmptyContracts = bannerData.contractIds.toNonEmptyListOrNull()
         if (nonEmptyContracts == null) {
@@ -70,29 +74,37 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
             "Got non null response from TravelAddonBannerQuery from source: " +
               "$mappedSource, but contractIds are empty"
           }
-          return@either null
+          return@either emptyList()
         }
-        TravelAddonBannerInfo(
+        listOf(AddonBannerInfo(
           title = bannerData.titleDisplayName,
           description = bannerData.descriptionDisplayName,
           labels = bannerData.badges,
           eligibleInsurancesIds = nonEmptyContracts,
-        )
+        ))
       }
     }
   }
 }
 
-data class TravelAddonBannerInfo(
+data class AddonBannerInfo(
   val title: String,
   val description: String,
   val labels: List<String>,
   val eligibleInsurancesIds: NonEmptyList<String>,
+  //todo: add val flowType: FlowType
 )
+
+//todo:
+//enum class FlowType {
+//  APP_TRAVEL_PLUS_SELL_ONLY,
+//  APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
+//  APP_CAR_PLUS
+//}
 
 @Serializable
 @androidx.annotation.Keep
-enum class TravelAddonBannerSource {
+enum class AddonBannerSource {
   TRAVEL_CERTIFICATES,
   INSURANCES_TAB,
   AFTER_FINISHING_SUCCESSFUL_FLOW,

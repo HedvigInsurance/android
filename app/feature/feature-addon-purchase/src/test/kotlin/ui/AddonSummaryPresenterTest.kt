@@ -14,7 +14,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
@@ -42,7 +42,7 @@ class AddonSummaryPresenterTest {
     val presenter = AddonSummaryPresenter(
       submitAddonPurchaseUseCase = useCase,
       summaryParameters = testSummaryParametersWithCurrentAddon,
-      addonPurchaseSource = TravelAddonBannerSource.INSURANCES_TAB,
+      addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
     )
     presenter.test(getInitialState(testSummaryParametersWithCurrentAddon)) {
       skipItems(1)
@@ -60,7 +60,7 @@ class AddonSummaryPresenterTest {
     val presenter = AddonSummaryPresenter(
       submitAddonPurchaseUseCase = useCase,
       summaryParameters = testSummaryParametersWithCurrentAddon,
-      addonPurchaseSource = TravelAddonBannerSource.INSURANCES_TAB,
+      addonPurchaseSource = AddonBannerSource.INSURANCES_TAB,
     )
     presenter.test(getInitialState(testSummaryParametersWithCurrentAddon)) {
       skipItems(1)
