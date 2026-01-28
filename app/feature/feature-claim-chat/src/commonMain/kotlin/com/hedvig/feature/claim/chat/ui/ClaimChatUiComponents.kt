@@ -3,6 +3,7 @@ package com.hedvig.feature.claim.chat.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -40,6 +42,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.selectableGroup
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -96,11 +99,15 @@ import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.audiorecording.AudioRecorderBubble
 import hedvig.resources.A11Y_AUDIO_RECORDING
+import hedvig.resources.CLAIM_CHAT_FILE_TITLE
+import hedvig.resources.CLAIM_CHAT_RECORDING_TITLE
 import hedvig.resources.EMBARK_SUBMIT_CLAIM
 import hedvig.resources.GENERAL_NO
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
+import hedvig.resources.TALKBACK_OPTION_NOT_SELECTED
+import hedvig.resources.TALKBACK_OPTION_SELECTED
 import hedvig.resources.claim_status_claim_details_title
 import hedvig.resources.claim_status_detail_add_files
 import hedvig.resources.claim_status_detail_add_more_files
@@ -131,8 +138,17 @@ internal fun ContentSelectChips(
       ) {
         for (item in options) {
           key(item) {
+            val selectedDescription = stringResource(Res.string.TALKBACK_OPTION_SELECTED)
+            val notSelectedDescription =  stringResource(Res.string.TALKBACK_OPTION_NOT_SELECTED)
             RoundCornersPill(
               isSelected = item.id == selectedOptionId,
+              modifier = Modifier.semantics {
+                stateDescription = if (item.id == selectedOptionId) {
+                   selectedDescription
+                } else {
+                  notSelectedDescription
+                }
+              },
               onClick = {
                 onOptionClick(item)
               },
@@ -222,7 +238,13 @@ internal fun RoundCornersPill(
         bottom = 9.dp,
       ),
     ) {
-      content(contentColor)
+      if (onClick!=null){
+        content(contentColor)
+      } else {
+        SelectionContainer {
+          content(contentColor)
+        }
+      }
     }
   }
 }
@@ -528,7 +550,6 @@ internal fun FilesRow(
       .fillMaxWidth()
       .height(120.dp),
     horizontalArrangement = Arrangement.spacedBy(8.dp, alignment),
-    contentPadding = PaddingValues(top = 8.dp),
   ) {
     items(
       items = uiFiles,
@@ -807,6 +828,8 @@ internal fun ChatClaimSummaryTopContent(
   Column(modifier) {
     HedvigCard(
       color = HedvigTheme.colorScheme.fillNegative,
+      modifier = Modifier.border(1.dp, HedvigTheme.colorScheme.borderPrimary,
+        shape = HedvigTheme.shapes.cornerXLarge)
     ) {
       Column(Modifier.padding(16.dp)) {
         if (displayItems.isNotEmpty()) {
@@ -840,7 +863,7 @@ internal fun ChatClaimSummaryTopContent(
         if (recordingUrls.isNotEmpty()) {
           Spacer(Modifier.height(24.dp))
           HedvigText(
-            stringResource(Res.string.A11Y_AUDIO_RECORDING),
+            stringResource(Res.string.CLAIM_CHAT_RECORDING_TITLE),
           )
           Spacer(Modifier.height(8.dp))
           recordingUrls.forEachIndexed { index, string ->
@@ -871,6 +894,11 @@ internal fun ChatClaimSummaryTopContent(
           }
         }
         if (fileUploads.isNotEmpty()) {
+          Spacer(Modifier.height(24.dp))
+          HedvigText(
+            stringResource(Res.string.CLAIM_CHAT_FILE_TITLE),
+          )
+          Spacer(Modifier.height(8.dp))
           FilesRow(
             uiFiles = fileUploads,
             imageLoader = imageLoader,

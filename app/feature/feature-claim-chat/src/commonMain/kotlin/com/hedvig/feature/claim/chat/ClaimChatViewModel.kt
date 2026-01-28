@@ -73,6 +73,8 @@ internal sealed interface ClaimChatEvent {
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
 
+  data class SubmitSelect(val id: StepId) : ClaimChatEvent
+
   data class UpdateFieldAnswer(
     val stepId: StepId,
     val fieldId: FieldId,
@@ -207,7 +209,8 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
-    var progress by remember { mutableStateOf<Float?>(0f) }
+    var progress by remember { mutableStateOf<Float?>((lastState as? ClaimChatUiState.ClaimChat)?.progress
+      ?: 0f) }
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -249,30 +252,35 @@ internal class ClaimChatPresenter(
     CollectEvents { event ->
       when (event) {
         is ClaimChatEvent.Select -> {
+          if (!steps.updateStepWithSuccess<StepContent.ContentSelect>(event.id) { step, content ->
+              step.copy(
+                stepContent = content.copy(
+                  selectedOptionId = event.selectedId,
+                ),
+              )
+            }
+          ) {
+            return@CollectEvents
+          }
+        }
+
+        is ClaimChatEvent.SubmitSelect -> {
+          val selectedId = (steps.find { it.id == event.id }?.stepContent as? StepContent.ContentSelect)?.selectedOptionId
+          if (selectedId==null) return@CollectEvents
           currentContinueButtonLoading = true
           launch {
             submitSelectUseCase
               .invoke(
                 id = event.id,
-                selectedId = event.selectedId,
+                selectedId = selectedId,
               )
               .fold(
                 ifLeft = {
                   errorSubmittingStep = it
                   currentContinueButtonLoading = false
-                  logcat { "ClaimChatEvent.Select error: $it" }
+                  logcat { "ClaimChatEvent.SubmitSelect error: $it" }
                 },
                 ifRight = { claimIntent ->
-                  if (!steps.updateStepWithSuccess<StepContent.ContentSelect>(event.id) { step, content ->
-                      step.copy(
-                        stepContent = content.copy(
-                          selectedOptionId = event.selectedId,
-                        ),
-                      )
-                    }
-                  ) {
-                    return@launch
-                  }
                   currentContinueButtonLoading = false
                   handleNext(
                     steps,

@@ -1,22 +1,21 @@
 package com.hedvig.feature.claim.chat.ui.audiorecording
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,7 +23,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,8 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -47,6 +48,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
@@ -93,6 +95,7 @@ import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.CLAIM_CHAT_USE_AUDIO
+import hedvig.resources.CLAIM_CHAT_USE_TEXT_INPUT
 import hedvig.resources.CLAIM_TRIAGING_TITLE
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
@@ -101,11 +104,12 @@ import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
 import hedvig.resources.claims_skip_button
 import kotlin.math.abs
-import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Instant
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -183,7 +187,7 @@ internal fun AudioRecorderBubble(
                 HedvigButton(
                   enabled = true,
                   buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-                  text = stringResource(Res.string.CLAIMS_USE_TEXT_INSTEAD),
+                  text = stringResource(Res.string.CLAIM_CHAT_USE_TEXT_INPUT),
                   onClick = onSwitchToFreeText,
                   modifier = Modifier.fillMaxWidth(),
                 )
@@ -303,12 +307,13 @@ private fun AudioRecordingBottomSheet(
         },
       ) { target ->
         Box(
-          modifier = Modifier.height(158.dp),
+          modifier = Modifier.height(158.dp).fillMaxWidth().padding(horizontal = 45.dp),
           contentAlignment = Alignment.Center,
+          propagateMinConstraints = true,
         ) {
           when (target) {
             is AudioRecordingStepState.AudioRecording.Playback if !target.isPrepared -> {
-              HedvigCircularProgressIndicator()
+              HedvigCircularProgressIndicator(Modifier.wrapContentSize())
             }
 
             is AudioRecordingStepState.AudioRecording.Playback -> {
@@ -316,37 +321,21 @@ private fun AudioRecordingBottomSheet(
                 ?: remember { mutableStateOf(null) }
               if (audioPlayerState is AudioPlayerState.Ready) {
                 AudioWaves(
-                  animated = false,
+                  isRecording = false,
                   progressPercentage = (audioPlayerState as AudioPlayerState.Ready).progressPercentage,
-                  modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                      horizontal = 45.dp,
-                      vertical = 29.dp,
-                    ),
                 )
               }
             }
 
             is AudioRecordingStepState.AudioRecording.Recording -> {
               AudioWaves(
-                animated = true,
+                isRecording = true,
                 progressPercentage = null,
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(
-                    horizontal = 45.dp,
-                    vertical = 29.dp,
-                  ),
               )
             }
 
             else -> {
-              RestingAudioPlayer(
-                Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 45.dp),
-              )
+              RestingAudioPlayer()
             }
           }
         }
@@ -759,136 +748,117 @@ private fun FreeTextInputSection(
   }
 }
 
+private data class WaveState(
+  val minFraction: Float,
+  val maxFraction: Float,
+) {
+  val animatable = Animatable(random())
+
+  fun random(): Float = lerp(minFraction, maxFraction, Random.nextFloat())
+}
+
 @Composable
-private fun AudioWaves(animated: Boolean, progressPercentage: ProgressPercentage?, modifier: Modifier = Modifier) {
+private fun AudioWaves(isRecording: Boolean, progressPercentage: ProgressPercentage?, modifier: Modifier = Modifier) {
   val playedColor = LocalContentColor.current
   val notPlayedColor = LocalContentColor.current.copy(0.38f)
     .compositeOver(HedvigTheme.colorScheme.surfacePrimary)
   val fixedColor = HedvigTheme.colorScheme.fillPrimary.copy(alpha = 0.6f)
+  val density = LocalDensity.current
+  val strokeWidthPx = with(density) { WAVE_WIDTH.toPx() }
 
-  BoxWithConstraints(modifier) {
-    val numberOfWaves = remember(maxWidth) {
-      (maxWidth / 5f).value.roundToInt()
+  var numberOfWaves by remember { mutableStateOf(0) }
+
+  val waveStates = remember(numberOfWaves) {
+    List(numberOfWaves) { waveIndex ->
+      val wavePosition = waveIndex + 1
+      val centerPoint = numberOfWaves / 2
+      val distanceFromCenterPoint = abs(centerPoint - wavePosition)
+      val percentageToCenterPoint =
+        ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
+      val minWaveHeightFraction = 0f
+      val maxWaveHeightFraction = 1f
+      WaveState(minWaveHeightFraction * percentageToCenterPoint, maxWaveHeightFraction * percentageToCenterPoint)
     }
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.fillMaxWidth().height(maxHeight),
-    ) {
-      repeat(numberOfWaves) { waveIndex ->
-        val isRecording = progressPercentage == null
-        val baseHeight = remember(waveIndex, numberOfWaves, isRecording) {
-          // When progressPercentage is null (recording state), start all waves at 2dp height
-          if (isRecording) {
-            0.02f // 2dp out of 100dp container (after padding)
-          } else {
-            val wavePosition = waveIndex + 1
-            val centerPoint = numberOfWaves / 2
-            val distanceFromCenterPoint = abs(centerPoint - wavePosition)
-            val percentageToCenterPoint =
-              ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
-            val minWaveHeightFraction = 0.05f
-            val maxWaveHeightFractionForSideWaves = 0.05f
-            val maxWaveHeightFraction = 0.5f
-            val maxHeightFraction = lerp(
-              maxWaveHeightFractionForSideWaves,
-              maxWaveHeightFraction,
-              percentageToCenterPoint,
+  }
+
+  if (isRecording && waveStates.isNotEmpty()) {
+    LaunchedEffect(waveStates) {
+      while (isActive) {
+        waveStates.map { waveState ->
+          async {
+            waveState.animatable.animateTo(
+              targetValue = waveState.random(),
+              animationSpec = tween(durationMillis = 200, easing = LinearEasing),
             )
-            if (maxHeightFraction <= minWaveHeightFraction) {
-              maxHeightFraction
-            } else {
-              Random.nextDouble(minWaveHeightFraction.toDouble(), maxHeightFraction.toDouble())
-                .toFloat()
-            }
           }
-        }
-
-        val height = if (animated) {
-          var animatedHeight by remember { mutableStateOf(baseHeight) }
-
-          LaunchedEffect(waveIndex) {
-            while (true) {
-              delay((50..150).random().toLong())
-              // For recording state (baseHeight = 0.02), generate random heights within animation range
-              animatedHeight = if (progressPercentage == null) {
-                // Side waves (first and last ~5%) have smaller max height
-                val isSideWave = waveIndex < numberOfWaves * 0.05 || waveIndex > numberOfWaves * 0.95
-                if (isSideWave) {
-                  Random.nextFloat() * 0.05f + 0.01f // Range: 0.1f to 0.15f for side waves
-                } else {
-                  Random.nextFloat() * 0.3f + 0.01f // Range: 0.1f to 0.4f for center waves
-                }
-              } else {
-                val variation = Random.nextFloat() * 0.2f - 0.1f
-                (baseHeight + variation).coerceIn(0.1f, 0.4f)
-              }
-            }
-          }
-
-          val smoothHeight by animateFloatAsState(
-            targetValue = animatedHeight,
-            animationSpec = tween(durationMillis = 200, easing = LinearEasing),
-          )
-          smoothHeight
-        } else {
-          baseHeight
-        }
-
-        val backgroundColor = if (progressPercentage != null) {
-          val hasPlayedThisWave = remember(progressPercentage, numberOfWaves, waveIndex) {
-            progressPercentage.value * numberOfWaves > waveIndex
-          }
-          if (hasPlayedThisWave) playedColor else notPlayedColor
-        } else {
-          fixedColor
-        }
-
-        WavePill(
-          heightFraction = height,
-          backgroundColor = backgroundColor,
-        )
+        }.awaitAll()
       }
+    }
+  }
+
+  Canvas(modifier) {
+    val calculatedNumberOfWaves = (size.width / with(density) { (WAVE_WIDTH + WAVE_SPACING).toPx() }).toInt()
+    if (numberOfWaves != calculatedNumberOfWaves) {
+      numberOfWaves = calculatedNumberOfWaves
+      return@Canvas
+    }
+
+    val centerY = size.height / 2f
+
+    waveStates.forEachIndexed { waveIndex, waveState ->
+      val heightPercentage = waveState.animatable.value
+
+      val color = if (progressPercentage != null) {
+        val hasPlayedThisWave = progressPercentage.value * numberOfWaves > waveIndex
+        if (hasPlayedThisWave) playedColor else notPlayedColor
+      } else {
+        fixedColor
+      }
+
+      val lineHeight = WAVE_MAX_HEIGHT.toPx() * heightPercentage
+      val x = waveIndex * (WAVE_WIDTH + WAVE_SPACING).toPx()
+      val startY = centerY - lineHeight / 2f
+      val endY = centerY + lineHeight / 2f
+
+      drawLine(
+        color = color,
+        start = Offset(x, startY),
+        end = Offset(x, endY),
+        strokeWidth = strokeWidthPx,
+        cap = StrokeCap.Round,
+      )
     }
   }
 }
 
 @Composable
-private fun WavePill(heightFraction: Float, backgroundColor: Color) {
-  Box(
-    modifier = Modifier
-      .width(WAVE_WIDTH)
-      .fillMaxHeight(fraction = heightFraction)
-      .clip(CircleShape)
-      .background(backgroundColor),
-  )
-}
-
-@Composable
 fun RestingAudioPlayer(modifier: Modifier = Modifier) {
-  BoxWithConstraints(modifier) {
-    val numberOfWaves = remember(maxWidth) {
-      (maxWidth / 5f).value.roundToInt()
-    }
-    Row(
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
-        .fillMaxWidth(),
-    ) {
-      repeat(numberOfWaves) { _ ->
-        Box(
-          modifier = Modifier
-            .size(WAVE_WIDTH)
-            .clip(CircleShape)
-            .background(HedvigTheme.colorScheme.fillPrimary),
-        )
-      }
+  val color = HedvigTheme.colorScheme.fillPrimary
+  val density = LocalDensity.current
+  val strokeWidthPx = with(density) { WAVE_WIDTH.toPx() }
+
+  Canvas(modifier) {
+    val numberOfWaves = (size.width / with(density) { (WAVE_WIDTH + WAVE_SPACING).toPx() }).toInt()
+    val spacing = size.width / (numberOfWaves - 1)
+    val centerY = size.height / 2f
+
+    repeat(numberOfWaves) { waveIndex ->
+      val x = waveIndex * spacing
+      drawLine(
+        color = color,
+        start = Offset(x, centerY),
+        end = Offset(x, centerY),
+        strokeWidth = strokeWidthPx,
+        cap = StrokeCap.Round,
+      )
     }
   }
 }
 
 private val WAVE_WIDTH = 2.dp
+private val WAVE_SPACING = 3.dp
+private val WAVE_MIN_HEIGHT = 2.dp
+private val WAVE_MAX_HEIGHT = 30.dp
 
 @HedvigPreview
 @Composable
