@@ -1,10 +1,8 @@
-package com.hedvig.feature.claim.chat.ui
+package com.hedvig.feature.claim.chat.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +34,7 @@ internal fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: M
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
       ) {
         HedvigText(
           text = stringResource(Res.string.claims_edit_button),

@@ -5,6 +5,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus as AccompanistPermissionStatus
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState as accompanistRememberPermissionState
+import com.hedvig.feature.claim.chat.ui.step.audiorecording.PermissionState
+import com.hedvig.feature.claim.chat.ui.step.audiorecording.PermissionStatus
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable

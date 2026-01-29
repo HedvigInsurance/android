@@ -227,8 +227,10 @@ private fun ColumnScope.ExtendedPartnersScreen(
                   HedvigButton(
                     buttonStyle = style,
                     buttonSize = ButtonDefaults.ButtonSize.Medium,
-                    text = stringResource(Res.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
-                      partner.phoneNumber),
+                    text = stringResource(
+                      Res.string.SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL,
+                      partner.phoneNumber,
+                    ),
                     enabled = true,
                     onClick = {
                       tryToDialPhone(partner.phoneNumber)
@@ -363,7 +365,7 @@ private fun ColumnScope.SimplePartnersScreen(
       enabled = true,
       modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       onClick = dropUnlessResumed {
-         openUrl(partner.url)
+        openUrl(partner.url)
       },
     ) {
       partner.urlButtonTitle?.let {

@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat.ui.audiorecording
+package com.hedvig.feature.claim.chat.ui.step.audiorecording
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
@@ -42,13 +42,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.times
 import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
@@ -81,10 +79,15 @@ import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.ProgressPercentage
+import com.hedvig.feature.claim.chat.ClaimChatEvent
+import com.hedvig.feature.claim.chat.FreeTextRestrictions
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
+import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType
-import com.hedvig.feature.claim.chat.ui.RoundCornersPill
-import com.hedvig.feature.claim.chat.ui.SkippedLabel
+import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.ui.common.EditButton
+import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.AUDIO_RECORDER_LISTEN
 import hedvig.resources.AUDIO_RECORDER_SEND
 import hedvig.resources.AUDIO_RECORDER_START
@@ -93,7 +96,6 @@ import hedvig.resources.AUDIO_RECORDER_STOP
 import hedvig.resources.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
 import hedvig.resources.CLAIMS_USE_AUDIO_RECORDING
-import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.CLAIM_CHAT_USE_AUDIO
 import hedvig.resources.CLAIM_CHAT_USE_TEXT_INPUT
 import hedvig.resources.CLAIM_TRIAGING_TITLE
@@ -112,6 +114,71 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun AudioRecordingStep(
+  item: ClaimIntentStep,
+  freeText: String?,
+  stepContent: StepContent.AudioRecording,
+  onShowFreeText: () -> Unit,
+  onSwitchToAudioRecording: () -> Unit,
+  onLaunchFullScreenEditText: (restrictions: FreeTextRestrictions) -> Unit,
+  submitFreeText: () -> Unit,
+  submitAudioFile: () -> Unit,
+  stopRecording: () -> Unit,
+  redoRecording: () -> Unit,
+  onSkip: () -> Unit,
+  isCurrentStep: Boolean,
+  continueButtonLoading: Boolean,
+  skipButtonLoading: Boolean,
+  clock: Clock,
+  onShouldShowRequestPermissionRationale: (String) -> Boolean,
+  openAppSettings: () -> Unit,
+  startRecording: () -> Unit,
+  onEvent: (ClaimChatEvent) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    AudioRecorderBubble(
+      recordingState = stepContent.recordingState,
+      clock = clock,
+      onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
+      startRecording = startRecording,
+      stopRecording = stopRecording,
+      submitAudioFile = {
+        submitAudioFile()
+      },
+      redoRecording = redoRecording,
+      openAppSettings = openAppSettings,
+      freeTextAvailable = true,
+      submitFreeText = submitFreeText,
+      onSwitchToFreeText = onShowFreeText,
+      onSwitchToAudioRecording = onSwitchToAudioRecording,
+      onLaunchFullScreenEditText = {
+        onLaunchFullScreenEditText(
+          FreeTextRestrictions(
+            stepContent.freeTextMinLength,
+            stepContent.freeTextMaxLength,
+          ),
+        )
+      },
+      canSkip = stepContent.isSkippable,
+      onSkip = onSkip,
+      isCurrentStep = isCurrentStep,
+      freeText = freeText,
+      continueButtonLoading = continueButtonLoading,
+      skipButtonLoading = skipButtonLoading,
+    )
+    if (item.isRegrettable && !isCurrentStep) {
+      EditButton(
+        item.isRegrettable,
+        onRegret = {
+          onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
+        },
+      )
+    }
+  }
+}
 
 @Composable
 internal fun AudioRecorderBubble(
@@ -270,11 +337,11 @@ private fun AudioRecordingBottomSheet(
   val audioPlayer = (
     audioRecordingState as?
       AudioRecordingStepState.AudioRecording.Playback
-    )?.let {
-      rememberAudioPlayer(
-        PlayableAudioSource.LocalFilePath(it.filePath),
-      )
-    }
+  )?.let {
+    rememberAudioPlayer(
+      PlayableAudioSource.LocalFilePath(it.filePath),
+    )
+  }
 
   HedvigBottomSheet(bottomSheetState, modifier) {
     Column {
@@ -300,8 +367,13 @@ private fun AudioRecordingBottomSheet(
               if (state.isPrepared) "playback" else "loading"
             }
 
-            is AudioRecordingStepState.AudioRecording.Recording -> "recording"
-            else -> "resting"
+            is AudioRecordingStepState.AudioRecording.Recording -> {
+              "recording"
+            }
+
+            else -> {
+              "resting"
+            }
           }
         },
       ) { target ->
@@ -407,7 +479,9 @@ private fun DynamicClock(
       }
     }
 
-    else -> null
+    else -> {
+      null
+    }
   }
 
   val durationDescription = label?.let {
@@ -430,11 +504,7 @@ private fun DynamicClock(
 }
 
 @Composable
-private fun StartOverButton(
-  onStartOver: () -> Unit,
-  isEnabled: Boolean,
-  modifier: Modifier = Modifier,
-) {
+private fun StartOverButton(onStartOver: () -> Unit, isEnabled: Boolean, modifier: Modifier = Modifier) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier
@@ -549,7 +619,9 @@ private fun ControlButton(
               }
             }
 
-            is AudioRecordingStepState.AudioRecording.Recording -> onStopRecording()
+            is AudioRecordingStepState.AudioRecording.Recording -> {
+              onStopRecording()
+            }
           }
         },
       ),
@@ -572,18 +644,20 @@ private fun ControlButton(
               }
             },
           ),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
       ) {
-
         Icon(
           modifier = Modifier
             .padding(4.dp)
             .size(24.dp)
-            .then (
-              if (isIconVisible) Modifier else Modifier.withoutPlacement()
+            .then(
+              if (isIconVisible) Modifier else Modifier.withoutPlacement(),
             ),
           imageVector = when (audioRecordingState) {
-            AudioRecordingStepState.AudioRecording.NotRecording -> HedvigIcons.Mic
+            AudioRecordingStepState.AudioRecording.NotRecording -> {
+              HedvigIcons.Mic
+            }
+
             is AudioRecordingStepState.AudioRecording.Playback -> {
               val ready = audioPlayerState as? AudioPlayerState.Ready
               if (ready?.readyState is AudioPlayerState.Ready.ReadyState.Playing) {
@@ -593,7 +667,9 @@ private fun ControlButton(
               }
             }
 
-            is AudioRecordingStepState.AudioRecording.Recording -> HedvigIcons.Pause
+            is AudioRecordingStepState.AudioRecording.Recording -> {
+              HedvigIcons.Pause
+            }
           },
           contentDescription = EmptyContentDescription,
           tint = if (!isEnabled) {
@@ -601,17 +677,24 @@ private fun ControlButton(
           } else {
             when (audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording,
-              is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.fillWhite
+              is AudioRecordingStepState.AudioRecording.Recording,
+              -> HedvigTheme.colorScheme.fillWhite
+
               is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
             }
           },
         )
         if (!isIconVisible) {
-          HedvigText(text = countDownText, color = when (audioRecordingState) {
-            AudioRecordingStepState.AudioRecording.NotRecording,
-            is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.fillWhite
-            is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
-          })
+          HedvigText(
+            text = countDownText,
+            color = when (audioRecordingState) {
+              AudioRecordingStepState.AudioRecording.NotRecording,
+              is AudioRecordingStepState.AudioRecording.Recording,
+              -> HedvigTheme.colorScheme.fillWhite
+
+              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
+            },
+          )
         }
       }
       Spacer(Modifier.height(4.dp))
@@ -626,11 +709,7 @@ private fun ControlButton(
 }
 
 @Composable
-private fun SendButton(
-  onSend: () -> Unit,
-  isEnabled: Boolean,
-  modifier: Modifier = Modifier,
-) {
+private fun SendButton(onSend: () -> Unit, isEnabled: Boolean, modifier: Modifier = Modifier) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier
@@ -702,13 +781,16 @@ private fun FreeTextInputSection(
         freeTextValue = freeText,
         freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
         supportingText = when (errorType) {
-          is FreeTextErrorType.TooShort ->
+          is FreeTextErrorType.TooShort -> {
             stringResource(
               Res.string.CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR,
               errorType.minLength,
             )
+          }
 
-          else -> null
+          else -> {
+            null
+          }
         },
         hasError = hasError,
       )
