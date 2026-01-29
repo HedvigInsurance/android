@@ -560,7 +560,6 @@ private fun StepContentSection(
   var isAnimationInProcess by rememberSaveable(stepItem.id) {
     mutableStateOf(showAnimationSequence)
   }
-
   var showAiDot by rememberSaveable(stepItem.id) {
     mutableStateOf(showAnimationSequence)
   }
@@ -1169,29 +1168,28 @@ private fun FormStep(
   firstFieldWithError: StepContent.Form.Field?,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
-    FormContent(
-      content = content,
-      onSkip = {
-        onEvent(ClaimChatEvent.Skip(itemId))
-      },
-      isCurrentStep = isCurrentStep,
-      canSkip = canSkip,
-      canBeChanged = canBeChanged,
-      onRegret = {
-        onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
-      },
-      onSelectFieldAnswer = { fieldId, answer ->
-        onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
-      },
-      onSubmit = {
-        onEvent(ClaimChatEvent.SubmitForm(itemId))
-      },
-      continueButtonLoading = continueButtonLoading,
-      skipButtonLoading = skipButtonLoading,
-      firstFieldWithError = firstFieldWithError,
-    )
-  }
+  FormContent(
+    content = content,
+    onSkip = {
+      onEvent(ClaimChatEvent.Skip(itemId))
+    },
+    isCurrentStep = isCurrentStep,
+    canSkip = canSkip,
+    canBeChanged = canBeChanged,
+    onRegret = {
+      onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
+    },
+    onSelectFieldAnswer = { fieldId, answer ->
+      onEvent(ClaimChatEvent.UpdateFieldAnswer(itemId, fieldId, answer))
+    },
+    onSubmit = {
+      onEvent(ClaimChatEvent.SubmitForm(itemId))
+    },
+    continueButtonLoading = continueButtonLoading,
+    skipButtonLoading = skipButtonLoading,
+    firstFieldWithError = firstFieldWithError,
+    modifier = modifier,
+  )
 }
 
 @Composable
