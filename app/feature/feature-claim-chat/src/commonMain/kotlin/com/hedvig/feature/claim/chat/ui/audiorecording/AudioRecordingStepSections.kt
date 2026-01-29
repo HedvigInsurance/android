@@ -144,8 +144,9 @@ internal fun AudioRecorderBubble(
         is AudioRecordingStepState.FreeTextDescription -> "freetext"
       }
     },
+    modifier = modifier,
   ) { uiStateAnimated ->
-    Column(modifier) {
+    Column {
       when (uiStateAnimated) {
         is AudioRecordingStepState.FreeTextDescription -> {
           FreeTextInputSection(
@@ -200,9 +201,7 @@ internal fun AudioRecorderBubble(
                 )
                 HedvigAudioPlayer(
                   audioPlayer = audioPlayer,
-                  Modifier.padding(
-                    start = 45.dp,
-                  ),
+                  Modifier.padding(start = 45.dp),
                 )
               } else {
                 SkippedLabel()
