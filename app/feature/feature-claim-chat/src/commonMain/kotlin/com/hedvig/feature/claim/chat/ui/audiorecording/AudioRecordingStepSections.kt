@@ -221,7 +221,6 @@ internal fun AudioRecorderBubble(
           modifier = Modifier.fillMaxWidth(),
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         )
-        Spacer(Modifier.height(16.dp))
       }
     }
   }
