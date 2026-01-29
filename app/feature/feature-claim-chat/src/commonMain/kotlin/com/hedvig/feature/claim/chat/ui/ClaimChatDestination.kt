@@ -22,7 +22,6 @@ import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -478,35 +477,30 @@ private fun ClaimChatScrollableContent(
           !uiState.stepsWithShownAnimations.contains(item.id)
         val isLastItem = item == uiState.steps.lastOrNull()
 
-        val heightModifier = if (isLastItem) {
-          Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
-        } else {
-          Modifier
-        }
 
-        Column(
-          modifier = heightModifier,
-          verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-          StepContentSection(
-            stepItem = item,
-            freeText = uiState.freeText,
-            isCurrentStep = isCurrentStep,
-            showAnimationSequence = showAnimationSequence,
-            currentContinueButtonLoading = uiState.currentContinueButtonLoading,
-            currentSkipButtonLoading = uiState.currentSkipButtonLoading,
-            onEvent = onEvent,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            onNavigateToImageViewer = onNavigateToImageViewer,
-            navigateToDeflect = navigateToDeflect,
-            appPackageId = appPackageId,
-            imageLoader = imageLoader,
-            openAppSettings = openAppSettings,
-            onResponseHeightChanged = { size ->
-              lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
-            },
-          )
-        }
+        StepContentSection(
+          stepItem = item,
+          freeText = uiState.freeText,
+          isCurrentStep = isCurrentStep,
+          showAnimationSequence = showAnimationSequence,
+          currentContinueButtonLoading = uiState.currentContinueButtonLoading,
+          currentSkipButtonLoading = uiState.currentSkipButtonLoading,
+          onEvent = onEvent,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          openAppSettings = openAppSettings,
+          onResponseHeightChanged = { size ->
+            lastItemHeightAdjustingState.onItemHeightChanged(item.id, size)
+          },
+          modifier = if (isLastItem) {
+            Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
+          } else {
+            Modifier
+          }
+        )
       }
     }
   }
@@ -541,7 +535,7 @@ private fun ScrollToBottomButton(onClick: () -> Unit, modifier: Modifier = Modif
 }
 
 @Composable
-private fun ColumnScope.StepContentSection(
+private fun StepContentSection(
   stepItem: ClaimIntentStep,
   freeText: String?,
   isCurrentStep: Boolean,
@@ -556,6 +550,7 @@ private fun ColumnScope.StepContentSection(
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
   onResponseHeightChanged: (IntSize) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   // AnimationSequence has 3 stages one after another:
   // 1) fake ai dot
@@ -595,47 +590,28 @@ private fun ColumnScope.StepContentSection(
     }
   }
 
-  if (showAiDot) {
-    CommonPaddingWrapper {
-      BlinkingAiDot()
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.SpaceBetween,
+  ) {
+    if (showAiDot) {
+      CommonPaddingWrapper {
+        BlinkingAiDot()
+      }
+    } else if (showTopContent) {
+      StepTopContent(
+        stepItem = stepItem,
+        hasAnimation = isAnimationInProcess,
+        onAnimationFinished = {
+          showBottomContent = true
+        },
+        onNavigateToImageViewer = onNavigateToImageViewer,
+        imageLoader = imageLoader,
+      )
     }
-  }
-  if (showTopContent) {
-    StepTopContent(
-      stepItem = stepItem,
-      hasAnimation = isAnimationInProcess,
-      onAnimationFinished = {
-        showBottomContent = true
-      },
-      onNavigateToImageViewer = onNavigateToImageViewer,
-      imageLoader = imageLoader,
-    )
-  }
 
-  if (showBottomContent && !isAnimationInProcess) {
-    StepBottomContent(
-      stepItem = stepItem,
-      freeText = freeText,
-      isCurrentStep = isCurrentStep,
-      currentContinueButtonLoading = currentContinueButtonLoading,
-      currentSkipButtonLoading = currentSkipButtonLoading,
-      onEvent = onEvent,
-      shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-      onNavigateToImageViewer = onNavigateToImageViewer,
-      navigateToDeflect = navigateToDeflect,
-      appPackageId = appPackageId,
-      imageLoader = imageLoader,
-      openAppSettings = openAppSettings,
-      modifier = Modifier.onSizeChanged { size ->
-        onResponseHeightChanged(size)
-      },
-    )
-  } else if (isAnimationInProcess) {
-    AnimatedVisibility(
-      visible = showBottomContent,
-      enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
-      exit = ExitTransition.None,
-    ) {
+
+    if (showBottomContent && !isAnimationInProcess) {
       StepBottomContent(
         stepItem = stepItem,
         freeText = freeText,
@@ -649,7 +625,31 @@ private fun ColumnScope.StepContentSection(
         appPackageId = appPackageId,
         imageLoader = imageLoader,
         openAppSettings = openAppSettings,
+        modifier = Modifier.onSizeChanged { size ->
+          onResponseHeightChanged(size)
+        },
       )
+    } else if (isAnimationInProcess) {
+      AnimatedVisibility(
+        visible = showBottomContent,
+        enter = fadeIn(animationSpec = tween(bottomContentAnimationDuration)),
+        exit = ExitTransition.None,
+      ) {
+        StepBottomContent(
+          stepItem = stepItem,
+          freeText = freeText,
+          isCurrentStep = isCurrentStep,
+          currentContinueButtonLoading = currentContinueButtonLoading,
+          currentSkipButtonLoading = currentSkipButtonLoading,
+          onEvent = onEvent,
+          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+          onNavigateToImageViewer = onNavigateToImageViewer,
+          navigateToDeflect = navigateToDeflect,
+          appPackageId = appPackageId,
+          imageLoader = imageLoader,
+          openAppSettings = openAppSettings,
+        )
+      }
     }
   }
 }
