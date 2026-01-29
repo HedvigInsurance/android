@@ -77,7 +77,9 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalContentColor
+import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.MultiSelectDialog
+import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
@@ -139,12 +141,12 @@ internal fun ContentSelectChips(
         for (item in options) {
           key(item) {
             val selectedDescription = stringResource(Res.string.TALKBACK_OPTION_SELECTED)
-            val notSelectedDescription =  stringResource(Res.string.TALKBACK_OPTION_NOT_SELECTED)
+            val notSelectedDescription = stringResource(Res.string.TALKBACK_OPTION_NOT_SELECTED)
             RoundCornersPill(
               isSelected = item.id == selectedOptionId,
               modifier = Modifier.semantics {
                 stateDescription = if (item.id == selectedOptionId) {
-                   selectedDescription
+                  selectedDescription
                 } else {
                   notSelectedDescription
                 }
@@ -152,11 +154,8 @@ internal fun ContentSelectChips(
               onClick = {
                 onOptionClick(item)
               },
-            ) { contentColor ->
-              HedvigText(
-                item.title,
-                color = contentColor,
-              )
+            ) {
+              HedvigText(item.title)
             }
           }
         }
@@ -175,7 +174,7 @@ internal fun ContentSelectChips(
             },
             isSelected = item.id == selectedOptionId,
             modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
-          ) { contentColor ->
+          ) {
             Row(
               Modifier.fillMaxWidth(),
               horizontalArrangement = Arrangement.Center,
@@ -184,7 +183,6 @@ internal fun ContentSelectChips(
                 item.title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 2.dp, bottom = 2.dp),
-                color = contentColor,
               )
             }
           }
@@ -199,7 +197,7 @@ internal fun RoundCornersPill(
   modifier: Modifier = Modifier,
   isSelected: Boolean = false,
   onClick: (() -> Unit)?,
-  content: @Composable (contentColor: Color) -> Unit,
+  content: @Composable () -> Unit,
 ) {
   val surfaceColor by animateColorAsState(
     if (isSelected) {
@@ -238,11 +236,13 @@ internal fun RoundCornersPill(
         bottom = 9.dp,
       ),
     ) {
-      if (onClick!=null){
-        content(contentColor)
-      } else {
-        SelectionContainer {
-          content(contentColor)
+      ProvideTextStyle(LocalTextStyle.current.copy(color = contentColor)) {
+        if (onClick != null) {
+          content()
+        } else {
+          SelectionContainer {
+            content()
+          }
         }
       }
     }
@@ -828,8 +828,11 @@ internal fun ChatClaimSummaryTopContent(
   Column(modifier) {
     HedvigCard(
       color = HedvigTheme.colorScheme.fillNegative,
-      modifier = Modifier.border(1.dp, HedvigTheme.colorScheme.borderPrimary,
-        shape = HedvigTheme.shapes.cornerXLarge)
+      modifier = Modifier.border(
+        width = 1.dp,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        shape = HedvigTheme.shapes.cornerXLarge,
+      ),
     ) {
       Column(Modifier.padding(16.dp)) {
         if (displayItems.isNotEmpty()) {
@@ -919,21 +922,18 @@ internal fun ChatClaimSummaryBottomContent(
   continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
+  Row(
+    modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.Center,
+  ) {
     if (isCurrentStep) {
-      Spacer(Modifier.height(16.dp))
-      Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-      ) {
-        HedvigButton(
-          text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
-          enabled = !continueButtonLoading,
-          isLoading = continueButtonLoading,
-          onClick = onSubmit,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
+      HedvigButton(
+        text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
+        enabled = !continueButtonLoading,
+        isLoading = continueButtonLoading,
+        onClick = onSubmit,
+        modifier = Modifier.fillMaxWidth(),
+      )
     }
   }
 }
