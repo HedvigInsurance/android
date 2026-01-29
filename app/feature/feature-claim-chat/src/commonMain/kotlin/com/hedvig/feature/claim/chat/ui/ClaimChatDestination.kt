@@ -62,11 +62,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -102,7 +100,6 @@ import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
-import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.claim.chat.ClaimChatEvent
@@ -131,7 +128,6 @@ import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
-import hedvig.resources.claims_edit_button
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
@@ -1399,36 +1395,6 @@ private fun FormContent(
           SkippedLabel()
         }
         EditButton(canBeChanged, onRegret)
-      }
-    }
-  }
-}
-
-@Composable
-private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Modifier = Modifier) {
-  if (canBeChanged) {
-    Row(
-      modifier = modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.End,
-    ) {
-      RoundCornersPill(
-        onClick = onRegret,
-        modifier = Modifier.semantics(true) {
-          role = Role.Button
-        },
-      ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          HedvigText(
-            stringResource(Res.string.claims_edit_button),
-            fontStyle = HedvigTheme.typography.label.fontStyle,
-          )
-          Spacer(Modifier.width(6.dp))
-          Icon(
-            HedvigIcons.ChevronDown,
-            null,
-            tint = HedvigTheme.colorScheme.fillTertiaryTransparent,
-          )
-        }
       }
     }
   }
