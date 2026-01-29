@@ -610,6 +610,7 @@ private fun StepContentSection(
       )
     }
 
+    Spacer(Modifier.height(32.dp))
 
     if (showBottomContent && !isAnimationInProcess) {
       StepBottomContent(
@@ -707,9 +708,6 @@ private fun StepTopContent(
     }
 
     if (stepItem.stepContent is StepContent.Task) {
-      stepItemText?.let {
-        Spacer(Modifier.height(16.dp))
-      }
       TaskStep(
         taskContent = stepItem.stepContent,
       )
@@ -743,9 +741,6 @@ private fun StepTopContent(
           )
         }
       }
-    }
-    stepItemText?.let {
-      Spacer(Modifier.height(16.dp))
     }
   }
 }
@@ -1225,9 +1220,7 @@ private fun FormContent(
   modifier: Modifier = Modifier,
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title?.let { title -> title }}" }
-  Column(
-    modifier,
-  ) {
+  Column(modifier) {
     if (isCurrentStep) {
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -1407,8 +1400,8 @@ private fun FormContent(
         } else {
           SkippedLabel()
         }
+        EditButton(canBeChanged, onRegret)
       }
-      EditButton(canBeChanged, onRegret)
     }
   }
 }
@@ -1417,7 +1410,7 @@ private fun FormContent(
 private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Modifier = Modifier) {
   if (canBeChanged) {
     Row(
-      modifier = modifier.fillMaxWidth().padding(top = 4.dp),
+      modifier = modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.End,
     ) {
       RoundCornersPill(
@@ -1532,7 +1525,6 @@ private fun ContentSelectStep(
     ) { targetState ->
       Column {
         if (targetState) {
-          Spacer(Modifier.height(32.dp))
           ContentSelectChips(
             options = options,
             onOptionClick = { option ->
@@ -1574,12 +1566,10 @@ private fun ContentSelectStep(
               modifier = Modifier.fillMaxWidth(),
               buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
             )
-            Spacer(Modifier.height(16.dp))
           }
         } else {
           Column {
             val selected = options.firstOrNull { it.id == selectedOptionId }
-            Spacer(Modifier.height(8.dp))
             if (selected != null) {
               Row(
                 horizontalArrangement = Arrangement.End,
