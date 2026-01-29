@@ -1,9 +1,9 @@
 package com.hedvig.android.feature.odyssey.step.fileupload
 
 import androidx.lifecycle.ViewModel
-import com.eygraber.uri.Uri
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
+import com.eygraber.uri.Uri
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile

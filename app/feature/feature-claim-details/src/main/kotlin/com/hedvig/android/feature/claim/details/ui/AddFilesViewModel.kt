@@ -1,9 +1,9 @@
 package com.hedvig.android.feature.claim.details.ui
 
-import com.eygraber.uri.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
+import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.FileService

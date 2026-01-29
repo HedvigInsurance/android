@@ -157,16 +157,15 @@ internal sealed interface StepContent {
 
     @Serializable
     sealed interface DeflectPartnerContainer {
-
       @Serializable
       data class ExtendedPartnerContainer(
-        val partners: List<ExtendedPartner>
-      ): DeflectPartnerContainer
+        val partners: List<ExtendedPartner>,
+      ) : DeflectPartnerContainer
 
       @Serializable
       data class SimplePartnerContainer(
-        val partners: List<SimplePartner>
-      ): DeflectPartnerContainer
+        val partners: List<SimplePartner>,
+      ) : DeflectPartnerContainer
 
       @Serializable
       data class ExtendedPartner(

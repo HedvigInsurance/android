@@ -209,8 +209,12 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
-    var progress by remember { mutableStateOf<Float?>((lastState as? ClaimChatUiState.ClaimChat)?.progress
-      ?: 0f) }
+    var progress by remember {
+      mutableStateOf<Float?>(
+        (lastState as? ClaimChatUiState.ClaimChat)?.progress
+          ?: 0f,
+      )
+    }
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -265,8 +269,12 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.SubmitSelect -> {
-          val selectedId = (steps.find { it.id == event.id }?.stepContent as? StepContent.ContentSelect)?.selectedOptionId
-          if (selectedId==null) return@CollectEvents
+          val selectedId = (
+            steps.find {
+              it.id == event.id
+            }?.stepContent as? StepContent.ContentSelect
+          )?.selectedOptionId
+          if (selectedId == null) return@CollectEvents
           currentContinueButtonLoading = true
           launch {
             submitSelectUseCase
