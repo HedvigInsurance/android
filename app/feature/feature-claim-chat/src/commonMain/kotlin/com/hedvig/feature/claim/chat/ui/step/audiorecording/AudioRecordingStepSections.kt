@@ -708,7 +708,9 @@ private fun ControlButton(
               }
             }
 
-            is AudioRecordingStepState.AudioRecording.Recording -> HedvigIcons.Stop
+            is AudioRecordingStepState.AudioRecording.Recording -> {
+              HedvigIcons.Stop
+            }
           },
           contentDescription = EmptyContentDescription,
           tint = if (!isEnabled) {
@@ -718,6 +720,7 @@ private fun ControlButton(
               AudioRecordingStepState.AudioRecording.NotRecording,
               is AudioRecordingStepState.AudioRecording.Recording,
               -> HedvigTheme.colorScheme.fillWhite
+
               is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
             }
           },
@@ -850,7 +853,7 @@ private fun FreeTextInputSection(
       if (freeText != null) {
         RoundCornersPill(
           onClick = null,
-          modifier = Modifier.fillMaxWidth().padding(start = 48.dp).wrapContentWidth(Alignment.End)
+          modifier = Modifier.fillMaxWidth().padding(start = 48.dp).wrapContentWidth(Alignment.End),
         ) {
           HedvigText(freeText, textAlign = TextAlign.End)
         }
