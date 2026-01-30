@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -74,11 +75,16 @@ internal fun ChatClaimSummaryTopContent(
   Column(modifier) {
     HedvigCard(
       color = HedvigTheme.colorScheme.fillNegative,
-      modifier = Modifier.border(
-        width = 1.dp,
-        color = HedvigTheme.colorScheme.borderPrimary,
-        shape = HedvigTheme.shapes.cornerXLarge,
-      ),
+      modifier = Modifier
+        .shadow(
+          elevation = 4.dp,
+          shape = HedvigTheme.shapes.cornerXLarge,
+        )
+        .border(
+          width = 1.dp,
+          color = HedvigTheme.colorScheme.borderPrimary,
+          shape = HedvigTheme.shapes.cornerXLarge,
+        ),
     ) {
       Column(Modifier.padding(vertical = 16.dp)) {
         if (displayItems.isNotEmpty()) {
