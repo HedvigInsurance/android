@@ -426,7 +426,12 @@ private fun AudioRecordingBottomSheet(
         ControlButton(
           modifier = Modifier.weight(1f),
           audioPlayer = audioPlayer,
-          onStartRecording = startRecording,
+          onStartRecording = {
+            when (recordAudioPermissionState.status) {
+              PermissionStatus.Granted -> startRecording()
+              is PermissionStatus.Denied -> recordAudioPermissionState.launchPermissionRequest()
+            }
+          },
           onStopRecording = stopRecording,
           audioRecordingState = audioRecordingState,
           isEnabled = !continueButtonLoading,

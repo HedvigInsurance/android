@@ -217,8 +217,7 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Inspelning</string>
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">Om du inte minns inköpsdatum behöver du inte fylla i något.</string>
-  <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
-  <string name="CLAIM_CHAT_SKIPPED_STEP">Överhoppad</string>
+  <string name="CLAIM_CHAT_SKIPPED_STEP">Saknas</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Hoppa över</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in ditt skadeärende</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
@@ -438,12 +437,12 @@
   <string name="HC_TOPIC_NOT_FOUND">Topic not found</string>
   <string name="HC_TOPIC_NO_QUESTIONS">This topic has no questions</string>
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
-  <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på förtroende. Jag lovar dyrt och heligt att beskriva händelsen sanningsenligt och att endast begära den ersättning jag har rätt till.</string>
+  <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.</string>
   <string name="HONESTY_PLEDGE_HEADER">Anmäl skada</string>
   <string name="HONESTY_PLEDGE_NOTE_1">Osäker på vad som täcks? Skicka in din anmälan oavsett</string>
   <string name="HONESTY_PLEDGE_NOTE_2">Ha kvitton eller annan dokumentation redo för snabbare hjälp</string>
   <string name="HONESTY_PLEDGE_NOTE_3">Vi hör av oss om vi behöver mer information eller fler uppgifter</string>
-  <string name="HONESTY_PLEDGE_TITLE">Läs innan du börjar</string>
+  <string name="HONESTY_PLEDGE_TITLE">Innan vi börjar</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Tillägg</string>
