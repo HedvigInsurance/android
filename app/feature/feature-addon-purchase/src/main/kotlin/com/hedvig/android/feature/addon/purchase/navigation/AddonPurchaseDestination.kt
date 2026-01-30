@@ -76,4 +76,5 @@ internal data class SummaryParameters(
   val quote: AddonQuote,
   val activationDate: LocalDate,
   val currentlyActiveAddon: CurrentlyActiveAddon?,
+  val quoteId: String
 )

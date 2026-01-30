@@ -59,7 +59,7 @@ internal class AddonSummaryPresenter(
       if (submitIteration > 0) {
         currentState = Loading
         submitAddonPurchaseUseCase.invoke(
-          quoteId = summaryParameters.quote.quoteId,
+          quoteId = summaryParameters.quoteId,
           addonId = summaryParameters.quote.addonId,
         ).fold(
           ifLeft = {
@@ -84,7 +84,7 @@ internal fun getInitialState(summaryParameters: SummaryParameters): Content {
     summaryParameters.quote.itemCost.monthlyNet
   } else {
     val amountDiff =
-      summaryParameters.quote.itemCost.monthlyNet.amount - summaryParameters.currentlyActiveAddon.netPremium.amount
+      summaryParameters.quote.itemCost.monthlyNet.amount - summaryParameters.currentlyActiveAddon.cost.monthlyNet.amount
     UiMoney(amountDiff, summaryParameters.quote.itemCost.monthlyNet.currencyCode)
   }
   return Content(
@@ -120,16 +120,19 @@ private fun logSuccessfulAddonPurchaseAction(
     summaryParameters: SummaryParameters,
     addonPurchaseSource: AddonBannerSource,
 ) {
-  val logInfo = AddonLogInfo(
-    flow = addonPurchaseSource,
-    subType = summaryParameters.quote.addonSubtype,
-  )
-  val eventType = if (summaryParameters.currentlyActiveAddon == null) {
-    AddonEventType.ADDON_PURCHASED
-  } else {
-    AddonEventType.ADDON_UPGRADED
+  summaryParameters.quote.addonSubtype?.let {
+    //todo: change when backend changes, add "product" and send log event always
+    val logInfo = AddonLogInfo(
+      flow = addonPurchaseSource,
+      subType = summaryParameters.quote.addonSubtype,
+    )
+    val eventType = if (summaryParameters.currentlyActiveAddon == null) {
+      AddonEventType.ADDON_PURCHASED
+    } else {
+      AddonEventType.ADDON_UPGRADED
+    }
+    logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
   }
-  logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
 }
 
 private data class AddonLogInfo(

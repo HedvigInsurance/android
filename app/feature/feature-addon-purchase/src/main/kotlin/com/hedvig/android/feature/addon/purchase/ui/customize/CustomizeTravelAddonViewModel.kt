@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer
@@ -17,6 +18,7 @@ import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlinx.datetime.LocalDate
 
 internal class CustomizeTravelAddonViewModel(
   insuranceId: String,
@@ -63,7 +65,7 @@ internal class CustomizeTravelAddonPresenter(
           )
         }
 
-        CustomizeTravelAddonEvent.SetOptionBackToPreviouslyChosen -> {
+        CustomizeTravelAddonEvent.SetSelectedOptionBackToPreviouslyChosen -> {
           val state = currentState as? CustomizeAddonState.Success.Selectable ?: return@CollectEvents
           selectedOptionInDialog = state.currentlyChosenOption
         }
@@ -76,36 +78,58 @@ internal class CustomizeTravelAddonPresenter(
         CustomizeTravelAddonEvent.SubmitSelected -> {
           val state = currentState as? CustomizeAddonState.Success.Selectable ?: return@CollectEvents
           currentState = state.copy(
-            summaryParamsToNavigateFurther = SummaryParameters(
-              offerDisplayName = state.travelAddonSelectableOffer.title,
+            summaryParamsToNavigateFurther = SummaryParameters( //todo: refactor summary parameters based on new ui
+              offerDisplayName = state.umbrellaDisplayTitle, //todo: remove when we don't need it for Summary
               quote = state.currentlyChosenOption,
-              activationDate = state.travelAddonSelectableOffer.activationDate,
-              currentlyActiveAddon = state.travelAddonSelectableOffer.currentTravelAddon,
+              activationDate = state.activationDate,
+              currentlyActiveAddon = state.currentlyActiveAddon,
+              quoteId = state.quoteId
             ),
           )
         }
+
+        CustomizeTravelAddonEvent.SubmitToggled -> TODO()
+        is CustomizeTravelAddonEvent.ToggleOption -> TODO()
       }
     }
 
     LaunchedEffect(loadIteration) {
-      if (currentState is CustomizeAddonState.Success.Selectable) return@LaunchedEffect //todo
+      if (currentState is CustomizeAddonState.Success) return@LaunchedEffect
       currentState = CustomizeAddonState.Loading
       getTravelAddonOfferUseCase.invoke(insuranceId).fold(
         ifLeft = { error ->
           currentState = CustomizeAddonState.Failure(error.message)
         },
-        ifRight = { offer ->
-          selectedOptionInDialog = offer.addonOptions[0]
-          val extra = updateExtra(offer.currentTravelAddon, selectedOptionInDialog)
-          currentState = CustomizeAddonState.Success.Selectable(
-            travelAddonSelectableOffer = offer,
-            currentlyChosenOption = offer.addonOptions[0],
-            currentlyChosenOptionInDialog = selectedOptionInDialog,
-            summaryParamsToNavigateFurther = null,
-            // .currentlyChosenOption.itemCost.monthlyNet
-            chosenOptionPremiumExtra = extra,
-            currentlyActiveAddon = offer.currentTravelAddon,
-          )
+        ifRight = { offerResult ->
+          when (offerResult.umbrellaAddonQuote.addonOffer) {
+            is AddonOffer.Selectable -> {
+              val chosenDefault = offerResult.umbrellaAddonQuote.addonOffer.addonOptions[0]
+              val currentAddon = offerResult.umbrellaAddonQuote.activeAddons.firstOrNull()
+              selectedOptionInDialog = chosenDefault
+              val extra = updateExtraForSelectable(
+                currentAddon,
+                selectedOptionInDialog)
+              currentState = CustomizeAddonState.Success.Selectable(
+                addonOffer = offerResult.umbrellaAddonQuote.addonOffer,
+                currentlyChosenOption = chosenDefault,
+                currentlyChosenOptionInDialog = selectedOptionInDialog,
+                summaryParamsToNavigateFurther = null,
+                chosenOptionPremiumExtra = extra,
+                currentlyActiveAddon = currentAddon,
+                pageTitle = offerResult.pageTitle,
+                pageDescription = offerResult.pageDescription,
+                currentTotalCost = offerResult.currentTotalCost,
+                umbrellaDisplayTitle = offerResult.umbrellaAddonQuote.displayTitle,
+                umbrellaDisplayDescription = offerResult.umbrellaAddonQuote.displayDescription,
+                quoteId = offerResult.umbrellaAddonQuote.quoteId,
+                activationDate = offerResult.umbrellaAddonQuote.activationDate,
+                baseQuoteCost = offerResult.umbrellaAddonQuote.baseInsuranceCost,
+              )
+            }
+            is AddonOffer.Toggleable -> TODO()
+          }
+
+
         },
       )
     }
@@ -114,7 +138,8 @@ internal class CustomizeTravelAddonPresenter(
       is CustomizeAddonState.Failure, is CustomizeAddonState.Loading -> state
       is CustomizeAddonState.Success.Selectable -> state.copy(
         currentlyChosenOptionInDialog = selectedOptionInDialog,
-        chosenOptionPremiumExtra = updateExtra(state.currentlyActiveAddon, selectedOptionInDialog),
+        chosenOptionPremiumExtra = updateExtraForSelectable(
+          state.currentlyActiveAddon, selectedOptionInDialog),
       )
 
       is CustomizeAddonState.Success.Toggleable -> TODO()
@@ -122,14 +147,14 @@ internal class CustomizeTravelAddonPresenter(
   }
 }
 
-private fun updateExtra(currentlyActiveAddon: CurrentlyActiveAddon?, chosenAddonQuote: AddonQuote?): UiMoney {
+private fun updateExtraForSelectable(currentlyActiveAddon: CurrentlyActiveAddon?, chosenAddonQuote: AddonQuote?): UiMoney {
   return if (chosenAddonQuote == null) {
     // shouldn't happen
     UiMoney(0.0, UiCurrencyCode.SEK)
   } else if (currentlyActiveAddon == null) {
     chosenAddonQuote.itemCost.monthlyNet
   } else {
-    val sum = chosenAddonQuote.itemCost.monthlyNet.amount - currentlyActiveAddon.netPremium.amount
+    val sum = chosenAddonQuote.itemCost.monthlyNet.amount - currentlyActiveAddon.cost.monthlyNet.amount
     UiMoney(sum, chosenAddonQuote.itemCost.monthlyNet.currencyCode)
   }
 }
@@ -139,18 +164,36 @@ internal sealed interface CustomizeAddonState {
 
   sealed interface Success : CustomizeAddonState {
     data class Selectable(
-      val travelAddonSelectableOffer: AddonOffer.Selectable,
+      val pageTitle: String,
+      val pageDescription: String,
+      val currentTotalCost: ItemCost,
+      val umbrellaDisplayTitle: String,
+      val umbrellaDisplayDescription: String,
+      val quoteId: String,
+      val activationDate: LocalDate,
+      val baseQuoteCost: ItemCost,
+      val summaryParamsToNavigateFurther: SummaryParameters?,
+      // Selectable-specific
+      val addonOffer: AddonOffer.Selectable,
       val currentlyChosenOption: AddonQuote,
       val currentlyChosenOptionInDialog: AddonQuote?,
-      val summaryParamsToNavigateFurther: SummaryParameters?,
       val chosenOptionPremiumExtra: UiMoney,
       val currentlyActiveAddon: CurrentlyActiveAddon?,
     ) : Success
 
     data class Toggleable(
-      val travelAddonOffer: AddonOffer.Selectable,
-      val currentlyChosenOptions: List<AddonQuote>,
+      val pageTitle: String,
+      val pageDescription: String,
+      val currentTotalCost: ItemCost,
+      val umbrellaDisplayTitle: String,
+      val umbrellaDisplayDescription: String,
+      val quoteId: String,
+      val activationDate: LocalDate,
+      val baseQuoteCost: ItemCost,
       val summaryParamsToNavigateFurther: SummaryParameters?,
+      // Toggleable-specific
+      val addonOffer: AddonOffer.Selectable,
+      val currentlyChosenOptions: List<AddonQuote>,
       val totalPremiumExtra: UiMoney,
       val currentlyActiveAddons: List<CurrentlyActiveAddon>,
     ) : Success
@@ -166,9 +209,13 @@ internal sealed interface CustomizeTravelAddonEvent {
 
   data object ChooseSelectedOption : CustomizeTravelAddonEvent
 
-  data object SetOptionBackToPreviouslyChosen : CustomizeTravelAddonEvent
+  data object SetSelectedOptionBackToPreviouslyChosen : CustomizeTravelAddonEvent
 
   data object ClearNavigation : CustomizeTravelAddonEvent
 
   data object SubmitSelected : CustomizeTravelAddonEvent
+
+  data class ToggleOption(val option: AddonQuote): CustomizeTravelAddonEvent
+
+  data object SubmitToggled : CustomizeTravelAddonEvent
 }

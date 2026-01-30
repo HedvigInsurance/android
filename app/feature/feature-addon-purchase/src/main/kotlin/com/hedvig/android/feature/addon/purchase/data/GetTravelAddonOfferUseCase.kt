@@ -58,7 +58,6 @@ internal class GetTravelAddonOfferUseCaseImpl(
             logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got empty quotes" }
             raise(ErrorMessage())
           }
-
           val addonOffer = Selectable(
             addonOptions = nonEmptyQuotes.toTravelAddonQuotes(),
             selectionTitle = "Title TESTING", //todo add when data allows
@@ -80,7 +79,8 @@ internal class GetTravelAddonOfferUseCaseImpl(
                 } ?: emptyList(), //todo: add list of addons when data allows
               baseInsuranceCost = fakeBaseInsuranceCost, //todo: REMOVE FAKE when data allows
               productVariant = fakeProductVariant  //todo: REMOVE FAKE when data allows
-            )
+            ),
+            currentTotalCost = fakeBaseInsuranceCost  //todo: REMOVE FAKE when data allows
           )
         },
       )
@@ -118,6 +118,8 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
       addonVariant = it.addonVariant.toAddonVariant(),
       displayDescription = it.displayNameLong,
       itemCost = ItemCost.fromItemCostFragment(it.itemCost),
+      documents = emptyList(), //todo: ADD WHEN BACKEND ALLOWS!
+      addonSubtype = it.addonSubtype //todo: change WHEN BACKEND ALLOWS!
     )
   }
 }

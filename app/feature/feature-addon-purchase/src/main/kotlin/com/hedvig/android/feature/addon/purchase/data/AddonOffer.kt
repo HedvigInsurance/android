@@ -12,6 +12,7 @@ internal data class GenerateAddonOfferResult(
   val pageTitle: String,
   val pageDescription: String,
   val umbrellaAddonQuote: UmbrellaAddonQuote,
+  val currentTotalCost: ItemCost
 )
 
 /** Top-level addon type, like Travel+ or Car+ */
@@ -48,8 +49,9 @@ internal data class AddonQuote(
   val displayDescription: String,
   val addonVariant: AddonVariant,
   val displayDetails: List<Pair<String, String>>,
- // val documents: List<TravelAddonQuoteInsuranceDocument>, //todo: we needed them for some reason, why?
+  val documents: List<TravelAddonQuoteInsuranceDocument>,
   val itemCost: ItemCost,
+  val addonSubtype: String?
 )
 
 @Serializable

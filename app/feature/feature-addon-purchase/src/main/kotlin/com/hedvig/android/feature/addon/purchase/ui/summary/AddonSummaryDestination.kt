@@ -253,7 +253,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     if (uiState.currentlyActiveAddon != null) {
       val currentAddonDisplayItemValue = stringResource(
         Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.currentlyActiveAddon.netPremium,
+        uiState.currentlyActiveAddon.cost.monthlyNet, //todo: check!!
       )
       val newAddonDisplayValueNet = stringResource(
         Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
@@ -319,7 +319,10 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     contractGroup = null,
     insurableLimits = emptyList(),
     documents = uiState.quote.documents.map {
-      DisplayDocument(it.displayName, it.url)
+      DisplayDocument(
+        displayName = it.displayName,
+        url = it.url
+      )
     },
   )
 }
@@ -347,7 +350,7 @@ private fun AddonCostBreakdownComposable(
             HedvigText(
               text = stringResource(
                 Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                currentlyActiveAddon.netPremium,
+                currentlyActiveAddon.cost.monthlyNet, //todo: CHECK!!!
               ),
               textAlign = TextAlign.End,
               style = LocalTextStyle.current.copy(
@@ -427,16 +430,19 @@ private class ChooseInsuranceForAddonUiStateProvider :
       Loading,
       Content(
         currentlyActiveAddon = CurrentlyActiveAddon(
-          listOf("Coverage" to "45 days", "Insured people" to "You+1"),
           displayTitle = "Travel Plus 45 days",
-          netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
+          displayDescription = "description",
+          cost = ItemCost(
+            UiMoney(49.0, UiCurrencyCode.SEK),
+            UiMoney(49.0, UiCurrencyCode.SEK),
+            emptyList()
+          ),
         ),
         offerDisplayName = "TravelPlus",
         activationDate = LocalDate(2025, 1, 1),
         quote = AddonQuote(
           displayTitle = "60 days",
           addonId = "addonId1",
-          quoteId = "id",
           displayDetails = listOf(
             "Amount of insured people" to "You +1",
             "Coverage" to "60 days",
@@ -448,14 +454,11 @@ private class ChooseInsuranceForAddonUiStateProvider :
             displayName = "60 days",
             product = "",
           ),
-          addonSubtype = "60 days",
-          documents = listOf(
-            TravelAddonQuoteInsuranceDocument(
-              "Some terms",
-              "url",
-            ),
-          ),
           displayDescription = "Travel Plus 60 days",
+          documents = listOf(TravelAddonQuoteInsuranceDocument(
+            displayName = "Document display name",
+            url = ""
+          )),
           itemCost = ItemCost(
             UiMoney(79.0, UiCurrencyCode.SEK),
             UiMoney(89.0, UiCurrencyCode.SEK),
@@ -468,7 +471,9 @@ private class ChooseInsuranceForAddonUiStateProvider :
               ),
             ),
           ),
+          addonSubtype = "DAYS_60"
         ),
+
         activationDateForSuccessfullyPurchasedAddon = null,
         navigateToFailure = false,
         totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK),
@@ -480,7 +485,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
         quote = AddonQuote(
           displayTitle = "60 days",
           addonId = "addonId1",
-          quoteId = "id",
           displayDetails = listOf(
             "Amount of insured people" to "You +1",
             "Coverage" to "60 days",
@@ -492,14 +496,11 @@ private class ChooseInsuranceForAddonUiStateProvider :
             displayName = "60 days",
             product = "",
           ),
-          addonSubtype = "60 days",
-          documents = listOf(
-            TravelAddonQuoteInsuranceDocument(
-              "Some terms",
-              "url",
-            ),
-          ),
           displayDescription = "Travel Plus 60 days",
+          documents = listOf(TravelAddonQuoteInsuranceDocument(
+            displayName = "Document display name",
+            url = ""
+          )),
           itemCost = ItemCost(
             UiMoney(40.0, UiCurrencyCode.SEK),
             UiMoney(89.0, UiCurrencyCode.SEK),
@@ -518,6 +519,7 @@ private class ChooseInsuranceForAddonUiStateProvider :
               ),
             ),
           ),
+          addonSubtype = "DAYS_60"
         ),
         activationDateForSuccessfullyPurchasedAddon = null,
         navigateToFailure = false,
