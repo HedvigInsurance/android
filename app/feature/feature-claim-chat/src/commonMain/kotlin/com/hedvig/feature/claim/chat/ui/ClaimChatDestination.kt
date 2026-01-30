@@ -130,6 +130,7 @@ import hedvig.resources.CLAIM_CHAT_SKIPPED_STEP
 import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_CONFIRM
+import hedvig.resources.GENERAL_EDIT
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
 import hedvig.resources.claims_edit_button
@@ -1428,7 +1429,7 @@ private fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: Mo
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           HedvigText(
-            stringResource(Res.string.claims_edit_button),
+            stringResource(Res.string.GENERAL_EDIT),
             fontStyle = HedvigTheme.typography.label.fontStyle,
           )
           Spacer(Modifier.width(6.dp))

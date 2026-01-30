@@ -217,7 +217,6 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Recording</string>
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don\'t remember the purchase date, you don\'t need to fill in anything.</string>
-  <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
@@ -443,7 +442,7 @@
   <string name="HONESTY_PLEDGE_NOTE_1">Not sure about what’s covered? Submit your claim anyway</string>
   <string name="HONESTY_PLEDGE_NOTE_2">Have receipts or other documentation ready to help us help you faster</string>
   <string name="HONESTY_PLEDGE_NOTE_3">We’ll contact you if we need more information</string>
-  <string name="HONESTY_PLEDGE_TITLE">Read before you start</string>
+  <string name="HONESTY_PLEDGE_TITLE">Before we start</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Discounts available</string>
   <string name="INSURANCES_NO_ACTIVE">You don\'t have any active insurances</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Addons</string>
