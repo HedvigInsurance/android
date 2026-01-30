@@ -3,11 +3,13 @@ package com.hedvig.feature.claim.chat.ui
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.takeOrElse
@@ -32,8 +34,8 @@ internal fun AnimatedRevealText(
 ) {
   val charAnimDuration: Int = 150
   var visibleChars by remember { mutableStateOf(0) }
-
-  val charDelay = calculateCharDelay(text)
+  var speedUpAnimation  by remember { mutableStateOf(false) }
+  val charDelay by rememberUpdatedState(calculateCharDelay(text, speedUpAnimation))
 
   LaunchedEffect(visibleState.targetState, text) {
     if (visibleState.targetState) {
@@ -76,7 +78,13 @@ internal fun AnimatedRevealText(
       }
     },
     style = style,
-    modifier = modifier,
+    modifier = modifier.clickable(
+      interactionSource = null,
+      indication = null,
+      enabled = text.toCharArray().size >= visibleChars,
+    ) {
+      speedUpAnimation = true
+    },
   )
 }
 
@@ -87,42 +95,46 @@ internal fun AnimatedRevealText(
  * Long text (≥450 chars): 5x faster (0.2x multiplier)
  */
 @Composable
-private fun calculateCharDelay(text: String): Duration = remember(text) {
-  val textLength = text.length
-  val baseRegularDelayMillis = 20
+private fun calculateCharDelay(text: String, artificiallySpeedUpAnimation: Boolean): Duration {
+  return remember(text, artificiallySpeedUpAnimation) {
+    val textLength = text.length
+    val baseRegularDelayMillis = 20
 
-  val shortTextThreshold = 50
-  val longTextThreshold = 350
-  val slowestMultiplier = 1.0
-  val fastestMultiplier = 0.2
+    val shortTextThreshold = 50
+    val longTextThreshold = 350
+    val slowMultiplier = 1.0
+    val fastMultiplier = 0.2
 
-  // Extreme fallback for extreme cases
-  val superLongThreshold = 800
-  val superFastestMultiplier = 0.05
+    // Extreme fallback for extreme cases
+    val superLongThreshold = 800
+    val fastestMultiplier = 0.001
 
-  val speedMultiplier = when {
-    textLength <= shortTextThreshold -> {
-      slowestMultiplier
-    }
+    val speedMultiplier = when {
+      textLength <= shortTextThreshold -> {
+        slowMultiplier
+      }
 
-    textLength >= superLongThreshold -> {
-      superFastestMultiplier
-    }
+      textLength >= superLongThreshold -> {
+        fastestMultiplier
+      }
 
-    textLength >= longTextThreshold -> {
-      fastestMultiplier
-    }
+      textLength >= longTextThreshold -> {
+        fastMultiplier
+      }
 
-    else -> {
-      val characterRange = longTextThreshold - shortTextThreshold
-      val charactersAboveThreshold = textLength - shortTextThreshold
-      val interpolationProgress = charactersAboveThreshold.toDouble() / characterRange
-      slowestMultiplier - interpolationProgress * (slowestMultiplier - fastestMultiplier)
-    }
-  }.coerceIn(fastestMultiplier, slowestMultiplier)
+      else -> {
+        val characterRange = longTextThreshold - shortTextThreshold
+        val charactersAboveThreshold = textLength - shortTextThreshold
+        val interpolationProgress = charactersAboveThreshold.toDouble() / characterRange
+        slowMultiplier - interpolationProgress * (slowMultiplier - fastMultiplier)
+      }
+    }.coerceIn(
+      minimumValue = fastestMultiplier,
+      maximumValue = if (artificiallySpeedUpAnimation) fastestMultiplier else slowMultiplier,
+    )
 
-  val minimumDelayRatio = 0.2
-  (baseRegularDelayMillis * speedMultiplier)
-    .coerceAtLeast((baseRegularDelayMillis * minimumDelayRatio))
-    .milliseconds
+    (baseRegularDelayMillis * speedMultiplier)
+      .coerceAtLeast((baseRegularDelayMillis * fastestMultiplier))
+      .milliseconds
+  }
 }
