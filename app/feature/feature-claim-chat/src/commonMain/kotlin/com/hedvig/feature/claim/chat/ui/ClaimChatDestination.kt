@@ -419,11 +419,10 @@ private fun ClaimChatScrollableContent(
     steps = uiState.steps,
   )
 
-  Box(modifier.debugBorder(), propagateMinConstraints = true) {
+  Box(modifier, propagateMinConstraints = true) {
     Box(
       Modifier
         .padding(contentPadding)
-        .debugBorder(Color.Blue)
         .onSizeChanged { size ->
           lastItemHeightAdjustingState.onContainerSizeChanged(size)
         },
@@ -556,7 +555,7 @@ private fun StepContentSection(
   }
 
   Column(
-    modifier = modifier.debugBorder(),
+    modifier = modifier,
     verticalArrangement = Arrangement.SpaceBetween,
   ) {
     if (showAiDot) {

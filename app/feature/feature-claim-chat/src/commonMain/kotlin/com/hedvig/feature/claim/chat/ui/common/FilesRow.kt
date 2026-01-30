@@ -22,9 +22,10 @@ internal fun FilesRow(
   onRemoveFile: ((fileId: String) -> Unit)?,
   alignment: Alignment.Horizontal,
   contentPadding: PaddingValues = PaddingValues(0.dp),
+  modifier: Modifier = Modifier,
 ) {
   LazyRow(
-    Modifier
+    modifier
       .fillMaxWidth()
       .height(120.dp),
     contentPadding = contentPadding,
