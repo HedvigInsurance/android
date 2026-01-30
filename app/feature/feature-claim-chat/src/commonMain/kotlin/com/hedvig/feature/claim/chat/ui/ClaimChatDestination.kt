@@ -333,18 +333,6 @@ private fun ClaimChatScreenContent(
           containerColor = Color.Transparent,
           contentColor = HedvigTheme.colorScheme.textPrimary,
         ),
-        topAppBarActions = {
-          IconButton(
-            onClick = {
-              showCloseFlowDialog = true
-            },
-          ) {
-            Icon(
-              HedvigIcons.Close,
-              stringResource(Res.string.general_close_button),
-            )
-          }
-        },
       )
       Box(
         Modifier.fillMaxWidth(),
