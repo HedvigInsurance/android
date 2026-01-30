@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -258,18 +259,22 @@ private fun ColumnScope.ExtendedPartnersScreen(
 
     // TODO: partnersInfo section when design exists
 
-    Spacer(Modifier.height(16.dp))
-    HedvigText(
-      text = contentTitle,
-      modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    HedvigText(
-      text = contentDescription,
-      modifier = Modifier.padding(horizontal = 16.dp),
-      style = HedvigTheme.typography.bodySmall,
-      color = HedvigTheme.colorScheme.textSecondary,
-    )
+    SelectionContainer {
+      Column {
+        Spacer(Modifier.height(16.dp))
+        HedvigText(
+          text = contentTitle,
+          modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+        )
+        Spacer(Modifier.height(8.dp))
+        HedvigText(
+          text = contentDescription,
+          modifier = Modifier.padding(horizontal = 16.dp),
+          style = HedvigTheme.typography.bodySmall,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+    }
 
     if (faq.isNotEmpty()) {
       Spacer(Modifier.height(24.dp))
