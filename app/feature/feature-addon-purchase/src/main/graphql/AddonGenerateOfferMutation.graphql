@@ -4,7 +4,75 @@ mutation AddonGenerateOffer($contractId: ID!) {
       message
     }
     ... on AddonOffer {
-      # Add the fields you need from AddonOffer here
+      pageTitle
+      pageDescription
+      currentTotalCost {
+        ...ItemCostFragment
+      }
+      quote {
+        ...AddonContractQuoteFragment
+      }
     }
+  }
+}
+
+fragment AddonContractQuoteFragment on AddonContractQuote {
+  quoteId
+  displayTitle
+  displayDescription
+  activationDate
+  addonOffer {
+    ...AddonOfferContentFragment
+  }
+  activeAddons {
+    ...ActiveAddonFragment
+  }
+  baseQuoteCost {
+    ...ItemCostFragment
+  }
+  productVariant {
+    ...ProductVariantFragment
+  }
+}
+
+fragment AddonOfferContentFragment on AddonOfferContent {
+  ... on AddonOfferSelectable {
+    fieldTitle
+    selectionTitle
+    selectionDescription
+    quotes {
+      ...AddonOfferQuoteFragment
+    }
+  }
+  ... on AddonOfferToggleable {
+    quotes {
+      ...AddonOfferQuoteFragment
+    }
+  }
+}
+
+fragment ActiveAddonFragment on ActiveAddon {
+  id
+  cost {
+    ...ItemCostFragment
+  }
+  displayDescription
+  displayTitle
+
+}
+
+fragment AddonOfferQuoteFragment on AddonOfferQuote {
+  id
+  displayTitle
+  displayDescription
+  displayItems {
+    displayTitle
+    displayValue
+  }
+  cost {
+    ...ItemCostFragment
+  }
+  addonVariant {
+    ...AddonVariantFragment
   }
 }

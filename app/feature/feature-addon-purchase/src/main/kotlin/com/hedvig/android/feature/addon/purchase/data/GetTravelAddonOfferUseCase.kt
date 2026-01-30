@@ -3,7 +3,6 @@ package com.hedvig.android.feature.addon.purchase.data
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
-import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -20,6 +19,7 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
+import octopus.AddonGenerateOfferMutation
 import octopus.UpsellAddonOfferMutation
 
 internal interface GetTravelAddonOfferUseCase {
@@ -38,53 +38,75 @@ internal class GetTravelAddonOfferUseCaseImpl(
         raise(ErrorMessage())
       }
       apolloClient.mutation(
-        //UpsellAddonOfferMutation(id))
-        AddonGenerateOfferMutation(id)
-        .safeExecute().fold(
+        AddonGenerateOfferMutation(id),
+      ).safeExecute().fold(
         ifLeft = { error ->
-          logcat(LogPriority.ERROR, error) { "Tried to start UpsellAddonOfferMutation but got error: $error" }
+          logcat(LogPriority.ERROR, error) { "Tried to start AddonGenerateOfferMutation but got error: $error" }
           // not passing error message to the member here, as we want to redirect member to chat if there is a message
           raise(ErrorMessage())
         },
-        ifRight = { result ->
-          if (result.upsellTravelAddonOffer.userError != null) {
-            raise(ErrorMessage(result.upsellTravelAddonOffer.userError.message))
-            // the only case where we want to redirect to chat
-          }
-          val data = result.upsellTravelAddonOffer.offer
-          if (data == null) {
-            logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got null offer" }
-            raise(ErrorMessage())
-          }
-          val nonEmptyQuotes = data.quotes.toNonEmptyListOrNull()
-          if (nonEmptyQuotes.isNullOrEmpty()) {
-            logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got empty quotes" }
-            raise(ErrorMessage())
-          }
-          val addonOffer = Selectable(
+        ifRight = { response: AddonGenerateOfferMutation.Data ->
+          //  TODO("Transform response to GenerateAddonOfferResult - implementation pending")
+          val result = response.addonGenerateOffer
+          when (result) {
+            is AddonGenerateOfferMutation.Data.OtherAddonGenerateOffer -> {
+              logcat(LogPriority.ERROR) {
+                "Tried to start AddonGenerateOfferMutation but got addonGenerateOffer.Other"
+              }
+              raise(ErrorMessage())
+            }
+
+            is AddonGenerateOfferMutation.Data.UserErrorAddonGenerateOffer -> {
+              logcat(LogPriority.ERROR) {
+                "Tried to start AddonGenerateOfferMutation but got error: $response.addonGenerateOffer.message"
+              }
+              raise(ErrorMessage(response.addonGenerateOffer.message))
+            }
+
+            is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer -> {
+//              val nonEmptyQuotes = result.quote.addonOffer. quotes.toNonEmptyListOrNull()
+//              if (nonEmptyQuotes.isNullOrEmpty()) {
+//                logcat(LogPriority.ERROR) { "Tried to do UpsellAddonOfferMutation but got empty quotes" }
+//                raise(ErrorMessage())
+//              }
+          val addonOfferResult = result.quote.addonOffer
+          val addonOffer = when (addonOfferResult) {
+              is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferSelectableAddonOffer -> {
+
+              }
+              is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferToggleableAddonOffer -> TODO()
+              is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.OtherAddonOffer -> {
+                logcat(LogPriority.ERROR) { "Unknown AddonOffer" }
+                raise(ErrorMessage())
+              }
+            }
+            Selectable(
             addonOptions = nonEmptyQuotes.toTravelAddonQuotes(),
             selectionTitle = "Title TESTING", //todo add when data allows
             selectionDescription = "Description TESTING",  //todo add when data allows
             fieldTitle = "Maximum travel limit TESTING",  //todo add when data allows
           )
-          GenerateAddonOfferResult(
-            pageTitle = "Page title TESTING", //todo add when data allows
-            pageDescription = "Page description TESTING", //todo add when data allows
-            umbrellaAddonQuote = UmbrellaAddonQuote(
-              quoteId = data.quotes.firstOrNull()?.quoteId ?: "", //todo when backend allows!
-              displayTitle = data.titleDisplayName,
-              displayDescription = data.descriptionDisplayName,
-              activationDate = data.activationDate,
-              addonOffer = addonOffer,
-              activeAddons =
-                data.currentAddon.toCurrentAddon()?.let {
-                  listOf(it)
-                } ?: emptyList(), //todo: add list of addons when data allows
-              baseInsuranceCost = fakeBaseInsuranceCost, //todo: REMOVE FAKE when data allows
-              productVariant = fakeProductVariant  //todo: REMOVE FAKE when data allows
-            ),
-            currentTotalCost = fakeBaseInsuranceCost  //todo: REMOVE FAKE when data allows
-          )
+//          GenerateAddonOfferResult(
+//            pageTitle = "Page title TESTING", //todo add when data allows
+//            pageDescription = "Page description TESTING", //todo add when data allows
+//            umbrellaAddonQuote = UmbrellaAddonQuote(
+//              quoteId = data.quotes.firstOrNull()?.quoteId ?: "", //todo when backend allows!
+//              displayTitle = data.titleDisplayName,
+//              displayDescription = data.descriptionDisplayName,
+//              activationDate = data.activationDate,
+//              addonOffer = addonOffer,
+//              activeAddons =
+//                data.currentAddon.toCurrentAddon()?.let {
+//                  listOf(it)
+//                } ?: emptyList(), //todo: add list of addons when data allows
+//              baseInsuranceCost = fakeBaseInsuranceCost, //todo: REMOVE FAKE when data allows
+//              productVariant = fakeProductVariant  //todo: REMOVE FAKE when data allows
+//            ),
+//            currentTotalCost = fakeBaseInsuranceCost  //todo: REMOVE FAKE when data allows
+//          )
+              GenerateAddonOfferResult()
+            }
+          }
         },
       )
     }
@@ -101,12 +123,12 @@ val fakeProductVariant = ProductVariant(
   documents = emptyList(),
   displayTierName = "productVariant.displayTierName",
   tierDescription = "productVariant.tierDescription",
-  termsVersion = "productVariant.termsVersion"
+  termsVersion = "productVariant.termsVersion",
 )
 val fakeBaseInsuranceCost = ItemCost(
   monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
   monthlyGross = UiMoney(200.0, UiCurrencyCode.SEK),
-  discounts = emptyList()
+  discounts = emptyList(),
 )
 
 private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.Quote>.toTravelAddonQuotes():
@@ -122,7 +144,7 @@ private fun NonEmptyList<UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Of
       displayDescription = it.displayNameLong,
       itemCost = ItemCost.fromItemCostFragment(it.itemCost),
       documents = emptyList(), //todo: ADD WHEN BACKEND ALLOWS!
-      addonSubtype = it.addonSubtype //todo: change WHEN BACKEND ALLOWS!
+      addonSubtype = it.addonSubtype, //todo: change WHEN BACKEND ALLOWS!
     )
   }
 }
@@ -133,9 +155,11 @@ private fun UpsellAddonOfferMutation.Data.UpsellTravelAddonOffer.Offer.CurrentAd
     CurrentlyActiveAddon(
       displayTitle = displayNameLong,
       displayDescription = "CURRENT ADDON displayDescription", //todo: REMOVE FAKE!
-      cost = ItemCost(UiMoney.fromMoneyFragment(netPremium),
+      cost = ItemCost(
         UiMoney.fromMoneyFragment(netPremium),
-        emptyList()), //todo: REMOVE FAKE!
+        UiMoney.fromMoneyFragment(netPremium),
+        emptyList(),
+      ), //todo: REMOVE FAKE!
     )
   }
 }
