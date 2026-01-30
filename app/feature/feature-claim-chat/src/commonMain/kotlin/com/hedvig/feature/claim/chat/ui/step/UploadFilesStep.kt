@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat.ui.step
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -70,76 +71,84 @@ internal fun UploadFilesStep(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
+  Box(modifier) {
     if (isCurrentStep) {
-      UploadFilesBubble(
-        addLocalFile = { uri ->
-          onEvent(
-            ClaimChatEvent.AddFile(
-              itemId,
-              uri.toString(), // todo: check!
-            ),
-          )
-        },
-        onRemoveFile = { fileId ->
-          onEvent(
-            ClaimChatEvent.RemoveFile(
-              itemId,
-              fileId,
-            ),
-          )
-        },
-        appPackageId = appPackageId,
-        localFiles = localFiles,
-        imageLoader = imageLoader,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-      )
-      Spacer(Modifier.height(8.dp))
-      if (stepContent.localFiles.isNotEmpty()) {
-        HedvigButton(
-          text = stringResource(Res.string.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON),
-          enabled = !continueButtonLoading,
-          onClick = {
+      Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        UploadFilesBubble(
+          addLocalFile = { uri ->
             onEvent(
-              ClaimChatEvent.SubmitFile(
+              ClaimChatEvent.AddFile(
                 itemId,
+                uri.toString(), // todo: check!
               ),
             )
           },
-          isLoading = continueButtonLoading,
-          modifier = Modifier.fillMaxWidth(),
-        )
-      }
-      if (stepContent.isSkippable && stepContent.localFiles.isEmpty()) {
-        HedvigButton(
-          text = stringResource(Res.string.claims_skip_button),
-          enabled = !skipButtonLoading,
-          onClick = {
-            onEvent(ClaimChatEvent.Skip(itemId))
+          onRemoveFile = { fileId ->
+            onEvent(
+              ClaimChatEvent.RemoveFile(
+                itemId,
+                fileId,
+              ),
+            )
           },
-          isLoading = skipButtonLoading,
-          modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        )
-      }
-    } else {
-      if (localFiles.isNotEmpty()) {
-        FilesRow(
-          uiFiles = localFiles,
-          onRemoveFile = null,
+          appPackageId = appPackageId,
+          localFiles = localFiles,
           imageLoader = imageLoader,
           onNavigateToImageViewer = onNavigateToImageViewer,
-          alignment = Alignment.End,
         )
-      } else {
-        SkippedLabel()
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          if (stepContent.localFiles.isNotEmpty()) {
+            HedvigButton(
+              text = stringResource(Res.string.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON),
+              enabled = !continueButtonLoading,
+              onClick = {
+                onEvent(
+                  ClaimChatEvent.SubmitFile(
+                    itemId,
+                  ),
+                )
+              },
+              isLoading = continueButtonLoading,
+              modifier = Modifier.fillMaxWidth(),
+            )
+          }
+          if (stepContent.isSkippable && stepContent.localFiles.isEmpty()) {
+            HedvigButton(
+              text = stringResource(Res.string.claims_skip_button),
+              enabled = !skipButtonLoading,
+              onClick = {
+                onEvent(ClaimChatEvent.Skip(itemId))
+              },
+              isLoading = skipButtonLoading,
+              modifier = Modifier.fillMaxWidth(),
+              buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+            )
+          }
+        }
       }
-      EditButton(
-        canEdit,
-        onRegret = {
-          onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
-        },
-      )
+    } else {
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        if (localFiles.isNotEmpty()) {
+          FilesRow(
+            uiFiles = localFiles,
+            onRemoveFile = null,
+            imageLoader = imageLoader,
+            onNavigateToImageViewer = onNavigateToImageViewer,
+            alignment = Alignment.End,
+          )
+          if (canEdit) {
+            Spacer(Modifier.height(8.dp))
+          }
+        } else {
+          SkippedLabel()
+        }
+        EditButton(
+          canEdit,
+          onRegret = {
+            onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
+          },
+        )
+      }
     }
   }
 }

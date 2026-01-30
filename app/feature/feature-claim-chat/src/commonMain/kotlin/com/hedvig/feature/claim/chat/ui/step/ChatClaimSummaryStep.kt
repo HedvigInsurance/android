@@ -2,8 +2,9 @@ package com.hedvig.feature.claim.chat.ui.step
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -47,10 +48,7 @@ internal fun ChatClaimSummaryBottomContent(
   continueButtonLoading: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.Center,
-  ) {
+  Box(modifier) {
     if (isCurrentStep) {
       HedvigButton(
         text = stringResource(Res.string.EMBARK_SUBMIT_CLAIM),
@@ -82,17 +80,17 @@ internal fun ChatClaimSummaryTopContent(
         shape = HedvigTheme.shapes.cornerXLarge,
       ),
     ) {
-      Column(Modifier.padding(16.dp)) {
+      Column(Modifier.padding(vertical = 16.dp)) {
         if (displayItems.isNotEmpty()) {
           HedvigText(
             stringResource(Res.string.claim_status_claim_details_title),
-            modifier = Modifier.semantics {
+            modifier = Modifier.padding(horizontal = 16.dp).semantics {
               heading()
             },
           )
           Spacer(Modifier.height(8.dp))
           CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
-            Column(Modifier) {
+            Column(Modifier.padding(horizontal = 16.dp)) {
               for (displayItem in displayItems) {
                 HorizontalItemsWithMaximumSpaceTaken(
                   spaceBetween = 8.dp,
@@ -115,6 +113,7 @@ internal fun ChatClaimSummaryTopContent(
           Spacer(Modifier.height(24.dp))
           HedvigText(
             stringResource(Res.string.CLAIM_CHAT_RECORDING_TITLE),
+            Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
           recordingUrls.forEachIndexed { index, string ->
@@ -123,24 +122,26 @@ internal fun ChatClaimSummaryTopContent(
                 SignedAudioUrl.fromSignedAudioUrlString(string),
               ),
             )
-            HedvigAudioPlayer(audioPlayer = audioPlayer)
+            HedvigAudioPlayer(audioPlayer = audioPlayer, Modifier.padding(horizontal = 16.dp))
             if (index != recordingUrls.lastIndex) {
               Spacer(Modifier.height(8.dp))
             }
           }
         }
         if (freeTexts.isNotEmpty()) {
-          freeTexts.forEachIndexed { index, string ->
-            Spacer(Modifier.height(24.dp))
-            RoundCornersPill(
-              modifier = Modifier.fillMaxWidth(),
-              onClick = null,
-              isSelected = false,
-            ) {
-              HedvigText(string)
-            }
-            if (index != recordingUrls.lastIndex) {
-              Spacer(Modifier.height(8.dp))
+          Column(
+            Modifier.padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            freeTexts.forEach { string ->
+              Spacer(Modifier.height(24.dp))
+              RoundCornersPill(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = null,
+                isSelected = false,
+              ) {
+                HedvigText(string)
+              }
             }
           }
         }
@@ -148,6 +149,7 @@ internal fun ChatClaimSummaryTopContent(
           Spacer(Modifier.height(24.dp))
           HedvigText(
             stringResource(Res.string.CLAIM_CHAT_FILE_TITLE),
+            Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
           FilesRow(
@@ -156,6 +158,7 @@ internal fun ChatClaimSummaryTopContent(
             onNavigateToImageViewer = onNavigateToImageViewer,
             onRemoveFile = null,
             alignment = Alignment.Start,
+            contentPadding = PaddingValues(horizontal = 16.dp),
           )
         }
       }

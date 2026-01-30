@@ -126,9 +126,7 @@ private fun FormContent(
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
   Column(modifier) {
     if (isCurrentStep) {
-      Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         content.fields.forEach { field ->
           val errorText = getErrorText(field)
           when (field.type) {
@@ -261,32 +259,31 @@ private fun FormContent(
         }
       }
       Spacer(Modifier.height(16.dp))
-      HedvigButton(
-        text = stringResource(Res.string.general_continue_button),
-        enabled = !continueButtonLoading,
-        isLoading = continueButtonLoading,
-        onClick = onSubmit,
-        modifier = Modifier.fillMaxWidth().semantics {
-          if (errorDescription != null) {
-            contentDescription = errorDescription
-          }
-        },
-      )
-      if (canSkip) {
-        Spacer(Modifier.height(8.dp))
+      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         HedvigButton(
-          text = stringResource(Res.string.claims_skip_button),
-          enabled = !skipButtonLoading,
-          onClick = onSkip,
-          isLoading = skipButtonLoading,
-          modifier = Modifier.fillMaxWidth(),
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          text = stringResource(Res.string.general_continue_button),
+          enabled = !continueButtonLoading,
+          isLoading = continueButtonLoading,
+          onClick = onSubmit,
+          modifier = Modifier.fillMaxWidth().semantics {
+            if (errorDescription != null) {
+              contentDescription = errorDescription
+            }
+          },
         )
+        if (canSkip) {
+          HedvigButton(
+            text = stringResource(Res.string.claims_skip_button),
+            enabled = !skipButtonLoading,
+            onClick = onSkip,
+            isLoading = skipButtonLoading,
+            modifier = Modifier.fillMaxWidth(),
+            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          )
+        }
       }
     } else {
-      Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-      ) {
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         if (content.fields.flatMap { it.selectedOptions }.isNotEmpty()) {
           content.fields.forEach { field ->
             val textValue = field.selectedOptions.joinToString { it.text }

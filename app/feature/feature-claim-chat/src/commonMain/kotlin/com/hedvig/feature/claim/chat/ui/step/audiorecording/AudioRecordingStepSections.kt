@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -138,7 +139,7 @@ internal fun AudioRecordingStep(
   onEvent: (ClaimChatEvent) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
+  Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
     AudioRecorderBubble(
       recordingState = stepContent.recordingState,
       clock = clock,
@@ -169,14 +170,12 @@ internal fun AudioRecordingStep(
       continueButtonLoading = continueButtonLoading,
       skipButtonLoading = skipButtonLoading,
     )
-    if (item.isRegrettable && !isCurrentStep) {
-      EditButton(
-        item.isRegrettable,
-        onRegret = {
-          onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
-        },
-      )
-    }
+    EditButton(
+      canBeChanged = item.isRegrettable && !isCurrentStep,
+      onRegret = {
+        onEvent(ClaimChatEvent.ShowConfirmEditDialog(item.id))
+      },
+    )
   }
 }
 
@@ -212,29 +211,29 @@ internal fun AudioRecorderBubble(
       }
     },
     modifier = modifier,
-  ) { uiStateAnimated ->
-    Column {
-      when (uiStateAnimated) {
+  ) { recordingState ->
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      when (recordingState) {
         is AudioRecordingStepState.FreeTextDescription -> {
           FreeTextInputSection(
             submitFreeText = submitFreeText,
             showAudioRecording = onSwitchToAudioRecording,
             onLaunchFullScreenEditText = onLaunchFullScreenEditText,
             freeText = freeText,
-            hasError = uiStateAnimated.hasError,
-            errorType = uiStateAnimated.errorType,
+            hasError = recordingState.hasError,
+            errorType = recordingState.errorType,
             isCurrentStep = isCurrentStep,
             continueButtonLoading = continueButtonLoading,
-            canSubmit = uiStateAnimated.canSubmit,
+            canSubmit = recordingState.canSubmit,
           )
         }
 
         is AudioRecordingStepState.AudioRecording -> {
-          Column(Modifier.fillMaxWidth()) {
+          Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val state = rememberHedvigBottomSheetState<Unit>()
             if (isCurrentStep) {
               AudioRecordingBottomSheet(
-                audioRecordingState = uiStateAnimated,
+                audioRecordingState = recordingState,
                 clock = clock,
                 shouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
                 startRecording = startRecording,
@@ -252,7 +251,6 @@ internal fun AudioRecorderBubble(
                 modifier = Modifier.fillMaxWidth(),
               )
               if (freeTextAvailable) {
-                Spacer(Modifier.height(8.dp))
                 HedvigButton(
                   enabled = true,
                   buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
@@ -262,9 +260,9 @@ internal fun AudioRecorderBubble(
                 )
               }
             } else {
-              if (uiStateAnimated is AudioRecordingStepState.AudioRecording.Playback) {
+              if (recordingState is AudioRecordingStepState.AudioRecording.Playback) {
                 val audioPlayer = rememberAudioPlayer(
-                  PlayableAudioSource.LocalFilePath(uiStateAnimated.filePath),
+                  PlayableAudioSource.LocalFilePath(recordingState.filePath),
                 )
                 HedvigAudioPlayer(
                   audioPlayer = audioPlayer,
@@ -279,7 +277,6 @@ internal fun AudioRecorderBubble(
       }
 
       if (canSkip && isCurrentStep) {
-        Spacer(Modifier.height(8.dp))
         HedvigButton(
           stringResource(Res.string.claims_skip_button),
           onClick = onSkip,
@@ -772,9 +769,7 @@ private fun FreeTextInputSection(
   canSubmit: Boolean,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier,
-  ) {
+  Column(modifier) {
     if (isCurrentStep) {
       FreeTextDisplay(
         onClick = { onLaunchFullScreenEditText() },
@@ -812,15 +807,11 @@ private fun FreeTextInputSection(
       )
     } else {
       if (freeText != null) {
-        Row(
-          Modifier.fillMaxWidth().padding(start = 48.dp),
-          horizontalArrangement = Arrangement.End,
+        RoundCornersPill(
+          onClick = null,
+          modifier = Modifier.fillMaxWidth().padding(start = 48.dp).wrapContentWidth(Alignment.End)
         ) {
-          RoundCornersPill(
-            onClick = null,
-          ) {
-            HedvigText(freeText, textAlign = TextAlign.End)
-          }
+          HedvigText(freeText, textAlign = TextAlign.End)
         }
       } else {
         SkippedLabel()

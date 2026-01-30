@@ -72,6 +72,7 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 import com.hedvig.android.design.system.hedvig.TopAppBarColors
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -418,10 +419,11 @@ private fun ClaimChatScrollableContent(
     steps = uiState.steps,
   )
 
-  Box(modifier, propagateMinConstraints = true) {
+  Box(modifier.debugBorder(), propagateMinConstraints = true) {
     Box(
       Modifier
         .padding(contentPadding)
+        .debugBorder(Color.Blue)
         .onSizeChanged { size ->
           lastItemHeightAdjustingState.onContainerSizeChanged(size)
         },
@@ -554,7 +556,7 @@ private fun StepContentSection(
   }
 
   Column(
-    modifier = modifier,
+    modifier = modifier.debugBorder(),
     verticalArrangement = Arrangement.SpaceBetween,
   ) {
     if (showAiDot) {
