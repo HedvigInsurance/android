@@ -322,7 +322,13 @@ private fun ClaimChatScreenContent(
       TopAppBar(
         title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
         actionType = TopAppBarActionType.BACK,
-        onActionClick = navigateUp,
+        onActionClick = {
+          if (uiState.steps.size > 1) {
+            showCloseFlowDialog = true
+          } else {
+            navigateUp()
+          }
+        },
         customTopAppBarColors = TopAppBarColors(
           containerColor = Color.Transparent,
           contentColor = HedvigTheme.colorScheme.textPrimary,
