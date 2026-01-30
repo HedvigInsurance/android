@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -51,9 +53,9 @@ internal fun ContentSelectStep(
       transitionSpec = {
         (fadeIn() + scaleIn()).togetherWith(fadeOut(animationSpec = tween(0)))
       },
-    ) { targetState ->
-      Column {
-        if (targetState) {
+    ) { isCurrentStep ->
+      if (isCurrentStep) {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
           ContentSelectChips(
             options = options,
             onOptionClick = { option ->
@@ -69,58 +71,53 @@ internal fun ContentSelectStep(
             selectedOptionId = stepContent.selectedOptionId,
             style = stepContent.style,
           )
-          Spacer(Modifier.height(16.dp))
-          HedvigButton(
-            text = stringResource(Res.string.GENERAL_CONFIRM),
-            onClick = {
-              if (selectedOptionId != null) {
-                onEvent(
-                  ClaimChatEvent.SubmitSelect(
-                    itemId,
-                  ),
-                )
-              }
-            },
-            isLoading = currentContinueButtonLoading,
-            enabled = !currentContinueButtonLoading && selectedOptionId != null,
-            modifier = Modifier.fillMaxWidth(),
-          )
-          if (canSkip) {
-            Spacer(Modifier.height(8.dp))
+          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             HedvigButton(
-              stringResource(Res.string.claims_skip_button),
-              onClick = onSkip,
-              isLoading = skipButtonLoading,
-              enabled = !skipButtonLoading,
-              modifier = Modifier.fillMaxWidth(),
-              buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            )
-          }
-        } else {
-          Column {
-            val selected = options.firstOrNull { it.id == selectedOptionId }
-            if (selected != null) {
-              Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier
-                  .fillMaxWidth(),
-              ) {
-                RoundCornersPill(
-                  onClick = null,
-                ) {
-                  HedvigText(selected.title)
+              text = stringResource(Res.string.GENERAL_CONFIRM),
+              onClick = {
+                if (selectedOptionId != null) {
+                  onEvent(
+                    ClaimChatEvent.SubmitSelect(
+                      itemId,
+                    ),
+                  )
                 }
-              }
-            } else {
-              SkippedLabel()
-            }
-            EditButton(
-              isRegrettable,
-              onRegret = {
-                onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
               },
+              isLoading = currentContinueButtonLoading,
+              enabled = !currentContinueButtonLoading && selectedOptionId != null,
+              modifier = Modifier.fillMaxWidth(),
             )
+            if (canSkip) {
+              HedvigButton(
+                stringResource(Res.string.claims_skip_button),
+                onClick = onSkip,
+                isLoading = skipButtonLoading,
+                enabled = !skipButtonLoading,
+                modifier = Modifier.fillMaxWidth(),
+                buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+              )
+            }
           }
+        }
+      } else {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          val selected = options.firstOrNull { it.id == selectedOptionId }
+          if (selected != null) {
+            RoundCornersPill(
+              onClick = null,
+              modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.End),
+            ) {
+              HedvigText(selected.title)
+            }
+          } else {
+            SkippedLabel()
+          }
+          EditButton(
+            isRegrettable,
+            onRegret = {
+              onEvent(ClaimChatEvent.ShowConfirmEditDialog(itemId))
+            },
+          )
         }
       }
     }
