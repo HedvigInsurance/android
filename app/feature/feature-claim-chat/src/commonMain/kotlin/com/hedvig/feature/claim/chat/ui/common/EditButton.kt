@@ -16,6 +16,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import hedvig.resources.GENERAL_EDIT
 import hedvig.resources.Res
 import hedvig.resources.claims_edit_button
 import org.jetbrains.compose.resources.stringResource
@@ -37,7 +38,7 @@ internal fun EditButton(canBeChanged: Boolean, onRegret: () -> Unit, modifier: M
         horizontalArrangement = Arrangement.spacedBy(6.dp),
       ) {
         HedvigText(
-          text = stringResource(Res.string.claims_edit_button),
+          text = stringResource(Res.string.GENERAL_EDIT),
           fontStyle = HedvigTheme.typography.label.fontStyle,
         )
         Icon(
