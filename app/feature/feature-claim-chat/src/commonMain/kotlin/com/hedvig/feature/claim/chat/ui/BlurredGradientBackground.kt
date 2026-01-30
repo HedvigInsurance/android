@@ -16,15 +16,16 @@ import org.jetbrains.compose.resources.painterResource
 internal fun BlurredGradientBackground(modifier: Modifier = Modifier) {
   val isDarkTheme = isSystemInDarkTheme()
   if (isDarkTheme) {
-    Surface(modifier = modifier.fillMaxSize(),
-      color = HedvigTheme.colorScheme.backgroundPrimary){}
+    Surface(
+      modifier = modifier.fillMaxSize(),
+      color = HedvigTheme.colorScheme.backgroundPrimary,
+    ) {}
   } else {
     Image(
       painter = painterResource(Res.drawable.blur_background),
       contentDescription = null,
       contentScale = ContentScale.Crop,
-      modifier = modifier.fillMaxSize()
+      modifier = modifier.fillMaxSize(),
     )
   }
-
 }

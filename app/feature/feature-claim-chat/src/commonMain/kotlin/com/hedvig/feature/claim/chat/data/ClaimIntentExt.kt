@@ -41,7 +41,7 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
       createdClaim != null -> ClaimIntent.Next.Outcome(createdClaim!!.toClaimIntentOutcome())
       else -> error("ClaimIntentFragment contained null currentStep and null outcome")
     },
-    progress = progress?.toFloat()
+    progress = progress?.toFloat(),
   )
 }
 
@@ -64,13 +64,13 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
 
     is ContentSelectFragment -> StepContent.ContentSelect(
       options = options.toOptions(),
-      selectedOptionId = null,
+      selectedOptionId = defaultSelectedId,
       isSkippable = isSkippable,
       style = when (style) {
         ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
         ClaimIntentStepContentSelectStyle.BINARY -> StepContent.ContentSelectStyle.BINARY
-        ClaimIntentStepContentSelectStyle.UNKNOWN__ ->  StepContent.ContentSelectStyle.PILL
-      }
+        ClaimIntentStepContentSelectStyle.UNKNOWN__ -> StepContent.ContentSelectStyle.PILL
+      },
     )
 
     is TaskFragment -> StepContent.Task(
@@ -81,7 +81,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is AudioRecordingFragment -> StepContent.AudioRecording(
       uploadUri = uploadUri,
       isSkippable = isSkippable,
-      recordingState = AudioRecordingStepState.NonDefined,
+      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
       freeTextMinLength = freeTextMinLength,
       freeTextMaxLength = freeTextMaxLength,
     )
@@ -109,26 +109,44 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       fun DeflectionInfoBlockFragment.toInfoBlock(): StepContent.Deflect.InfoBlock {
         return StepContent.Deflect.InfoBlock(title, description)
       }
+      val partners = if (partners.isNotEmpty()) {
+        StepContent.Deflect.DeflectPartnerContainer.ExtendedPartnerContainer(
+          partners = partners.map { partner ->
+            StepContent.Deflect.DeflectPartnerContainer.ExtendedPartner(
+              id = partner.id,
+              imageUrl = partner.imageUrl,
+              phoneNumber = partner.phoneNumber,
+              title = partner.title,
+              description = partner.description,
+              info = partner.info,
+              url = partner.url,
+              urlButtonTitle = partner.urlButtonTitle,
+            )
+          },
+        )
+      } else if (simplePartners.isNotEmpty()) {
+        StepContent.Deflect.DeflectPartnerContainer.SimplePartnerContainer(
+          partners = simplePartners.map { partner ->
+            StepContent.Deflect.DeflectPartnerContainer.SimplePartner(
+              url = partner.url,
+              urlButtonTitle = partner.urlButtonTitle,
+            )
+          },
+        )
+      } else {
+        logcat { "DeflectionFragment: both partners and simplePartners came empty" }
+        null
+      }
+
       StepContent.Deflect(
         title = title,
         infoText = infoText,
         warningText = warningText,
-        partners = partners.map { partner ->
-          StepContent.Deflect.Partner(
-            id = partner.id,
-            imageUrl = partner.imageUrl,
-            phoneNumber = partner.phoneNumber,
-            title = partner.title,
-            description = partner.description,
-            info = partner.info,
-            url = partner.url,
-            urlButtonTitle = partner.urlButtonTitle,
-          )
-        },
+        partnersContainer = partners,
         partnersInfo = partnersInfo?.toInfoBlock(),
         content = content.toInfoBlock(),
         faq = faq.map { it.toInfoBlock() },
-        buttonText = buttonTitle
+        buttonText = buttonTitle,
       )
     }
 

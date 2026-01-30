@@ -13,6 +13,7 @@ internal class CommonHedvigBuildConstants(
   override val urlGraphqlOctopus: String = appConfigUrlHolder.urlGraphqlOctopus(appBuildConfig.appFlavor)
   override val urlBaseWeb: String = appConfigUrlHolder.urlBaseWeb(appBuildConfig.appFlavor)
   override val urlOdyssey: String = appConfigUrlHolder.urlOdyssey(appBuildConfig.appFlavor)
+  override val urlHedvigGateway: String = appConfigUrlHolder.urlHedvigGateway(appBuildConfig.appFlavor)
   override val urlBotService: String = appConfigUrlHolder.urlBotService(appBuildConfig.appFlavor)
   override val urlClaimsService: String = appConfigUrlHolder.urlClaimsService(appBuildConfig.appFlavor)
   override val deepLinkHosts: List<String> = appConfigUrlHolder.deepLinkHosts(appBuildConfig.appFlavor)
@@ -53,10 +54,17 @@ private fun makeUserAgent(languageBCP47: String, appBuildConfig: AppBuildConfig)
 
 private interface UrlHolder {
   fun urlGraphqlOctopus(flavor: Flavor): String
+
   fun urlBaseWeb(flavor: Flavor): String
+
   fun urlOdyssey(flavor: Flavor): String
+
+  fun urlHedvigGateway(flavor: Flavor): String
+
   fun urlBotService(flavor: Flavor): String
+
   fun urlClaimsService(flavor: Flavor): String
+
   fun deepLinkHosts(flavor: Flavor): List<String>
 }
 
@@ -78,6 +86,12 @@ private class AppConfigUrlHolder(private val appBuildConfig: AppBuildConfig) : U
     Production -> "https://odyssey.prod.hedvigit.com"
     Staging -> "https://odyssey.dev.hedvigit.com"
     Develop -> "https://odyssey.dev.hedvigit.com"
+  }
+
+  override fun urlHedvigGateway(flavor: Flavor): String = when (appBuildConfig.appFlavor) {
+    Production -> "https://gateway.hedvig.com"
+    Staging -> "https://gateway.dev.hedvigit.com"
+    Develop -> "https://gateway.dev.hedvigit.com"
   }
 
   override fun urlBotService(flavor: Flavor): String = when (appBuildConfig.appFlavor) {
@@ -125,6 +139,7 @@ private class AppConfigUrlHolder(private val appBuildConfig: AppBuildConfig) : U
   }
 
   private fun deepLinkDomainPathPrefix(): String = "/deeplink"
+
   private fun deepLinkDomainHostOld(flavor: Flavor): String = when (flavor) {
     Production -> "hedvig.page.link"
     Staging -> "hedvigtest.page.link"

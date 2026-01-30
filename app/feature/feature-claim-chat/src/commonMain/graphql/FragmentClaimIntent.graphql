@@ -51,6 +51,7 @@ fragment ContentSelectFragment on ClaimIntentStepContentSelect {
   }
   isSkippable
   style
+  defaultSelectedId
 }
 
 fragment TaskFragment on ClaimIntentStepContentTask {
@@ -97,6 +98,10 @@ fragment DeflectionFragment on ClaimIntentStepContentDeflection {
     title
     description
     info
+    url
+    urlButtonTitle
+  }
+  simplePartners {
     url
     urlButtonTitle
   }

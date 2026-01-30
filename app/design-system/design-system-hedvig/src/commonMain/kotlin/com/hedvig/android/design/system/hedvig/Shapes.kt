@@ -139,7 +139,7 @@ enum class FigmaShapeDirection {
   All,
   TopOnly,
   BottomOnly,
-  EndOnly
+  EndOnly,
 }
 
 private fun RoundedPolygon.toPath(

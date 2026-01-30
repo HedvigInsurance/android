@@ -13,9 +13,7 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-internal fun buildKtorClient(
-  additionalHttpHeadersProvider: () -> Map<String, String>,
-): HttpClient {
+internal fun buildKtorClient(additionalHttpHeadersProvider: () -> Map<String, String>): HttpClient {
   val httpClientConfig: HttpClientConfig<*>.() -> Unit = {
     commonKtorConfiguration(additionalHttpHeadersProvider).invoke(this)
   }

@@ -8,6 +8,7 @@ sealed interface AudioPlayerState {
   data class Ready(
     val readyState: ReadyState,
     val progressPercentage: ProgressPercentage = ProgressPercentage(0f),
+    val durationMillis: Int = 0,
   ) : AudioPlayerState {
     sealed interface ReadyState {
       object NotStarted : ReadyState

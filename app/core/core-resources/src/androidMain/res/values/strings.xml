@@ -50,6 +50,12 @@
   <string name="ADDON_REMOVE_DESCRIPTION">By canceling this extended coverage, your home insurance will no longer include this extra protection.</string>
   <string name="ADDON_REMOVE_TITLE">Cancel %1$s</string>
   <string name="ALERT_OK">OK</string>
+  <string name="AUDIO_RECORDER_LISTEN">Listen</string>
+  <string name="AUDIO_RECORDER_SEND">Send</string>
+  <string name="AUDIO_RECORDER_SEND_ERROR_TITLE">Could not send recording</string>
+  <string name="AUDIO_RECORDER_START">Start</string>
+  <string name="AUDIO_RECORDER_START_OVER">Start over</string>
+  <string name="AUDIO_RECORDER_STOP">Stop</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Open the BankID app on your phone or scan the QR-code to login</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Login with BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Open BankID</string>
@@ -210,7 +216,7 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Please provide phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Recording</string>
-  <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
+  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don\'t remember the purchase date, you don\'t need to fill in anything.</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
@@ -221,6 +227,7 @@
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Start voice recording</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe with text</string>
+  <string name="CLAIM_DATE_AND_LOCATION_HINT">If you don\'t know the exact date, enter an approximate date.</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
@@ -280,6 +287,8 @@
   <string name="DASHBOARD_OPEN_CHAT">Contact us</string>
   <string name="DASHBOARD_RENEWAL_PROMPTER_BODY">In %1$d days your insurance will be renewed. Read your updated insurance certificate here.</string>
   <string name="DASHBOARD_SCREEN_TITLE">Insurances</string>
+  <string name="DATA_TABLE_MULTIPLE_OWNERS"></string>
+  <string name="DATA_TABLE_WATER_CONNECTED"></string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION">As an insurance company, Hedvig is obliged to save the insurance contract and related information as long as it is possible to claim insurance compensation. This period can vary depending on the type of insurance, but is at least 10 years after the insurance has ended.\n\nIf you want us to delete the information we are not required by law to save, you can use the button below.\n\n[Here](https://www.hedvig.com/se-en/hedvig/privacy-policy) you can read about how Hedvig handles your personal data.</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE">Important information</string>
   <string name="DELETE_ACCOUNT_PROCESSED_DESCRIPTION">You will get an email from us within 30 days to confirm that your account has been deleted</string>
@@ -428,7 +437,11 @@
   <string name="HC_TOPIC_NOT_FOUND">Topic not found</string>
   <string name="HC_TOPIC_NO_QUESTIONS">This topic has no questions</string>
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
-  <string name="HONESTY_PLEDGE_DESCRIPTION">I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.</string>
+  <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.</string>
+  <string name="HONESTY_PLEDGE_HEADER">Make a claim</string>
+  <string name="HONESTY_PLEDGE_NOTE_1">Not sure about what’s covered? Submit your claim anyway</string>
+  <string name="HONESTY_PLEDGE_NOTE_2">Have receipts or other documentation ready to help us help you faster</string>
+  <string name="HONESTY_PLEDGE_NOTE_3">We’ll contact you if we need more information</string>
   <string name="HONESTY_PLEDGE_TITLE">Before we start</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Discounts available</string>
   <string name="INSURANCES_NO_ACTIVE">You don\'t have any active insurances</string>

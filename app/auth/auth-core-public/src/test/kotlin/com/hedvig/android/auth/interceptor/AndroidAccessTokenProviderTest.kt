@@ -67,31 +67,32 @@ class AndroidAccessTokenProviderTest {
   }
 
   @Test
-  fun `when the access token is expired, and the refresh token is not expired, refresh and return new token`() = runTest {
-    val clock = TestClock()
-    val authTokenStorage = authTokenStorage(clock)
-    authTokenStorage.updateTokens(
-      AccessToken("", 10.minutes.inWholeSeconds),
-      RefreshToken("", 1.hours.inWholeSeconds),
-    )
-    val authRepository = FakeAuthRepository()
-    val authTokenService = authTokenService(authTokenStorage, authRepository)
-    val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
+  fun `when the access token is expired, and the refresh token is not expired, refresh and return new token`() =
+    runTest {
+      val clock = TestClock()
+      val authTokenStorage = authTokenStorage(clock)
+      authTokenStorage.updateTokens(
+        AccessToken("", 10.minutes.inWholeSeconds),
+        RefreshToken("", 1.hours.inWholeSeconds),
+      )
+      val authRepository = FakeAuthRepository()
+      val authTokenService = authTokenService(authTokenStorage, authRepository)
+      val accessTokenProvider = AndroidAccessTokenProvider(authTokenService, clock)
 
-    clock.advanceTimeBy(30.minutes)
-    authRepository.exchangeResponse.add(
-      AuthTokenResult.Success(
-        AccessToken("refreshedToken", 10.minutes.inWholeSeconds),
-        RefreshToken("refreshedRefreshToken", 0),
-      ),
-    )
-    val token = accessTokenProvider.provide()
+      clock.advanceTimeBy(30.minutes)
+      authRepository.exchangeResponse.add(
+        AuthTokenResult.Success(
+          AccessToken("refreshedToken", 10.minutes.inWholeSeconds),
+          RefreshToken("refreshedRefreshToken", 0),
+        ),
+      )
+      val token = accessTokenProvider.provide()
 
-    val storedAuthTokens = authTokenStorage.getTokens().first()!!
-    assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
-    assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
-    assertThat(token).isEqualTo("refreshedToken")
-  }
+      val storedAuthTokens = authTokenStorage.getTokens().first()!!
+      assertThat(storedAuthTokens.accessToken.token).isEqualTo("refreshedToken")
+      assertThat(storedAuthTokens.refreshToken.token).isEqualTo("refreshedRefreshToken")
+      assertThat(token).isEqualTo("refreshedToken")
+    }
 
   @Test
   fun `when the access token and the refresh token are expired, clear tokens and return null`() = runTest {

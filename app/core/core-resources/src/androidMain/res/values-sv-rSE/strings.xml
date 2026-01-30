@@ -50,6 +50,12 @@
   <string name="ADDON_REMOVE_DESCRIPTION">Om du avslutar detta tillägg ingår inte det extra skyddet längre i din hemförsäkring.</string>
   <string name="ADDON_REMOVE_TITLE">Avsluta %1$s</string>
   <string name="ALERT_OK">OK</string>
+  <string name="AUDIO_RECORDER_LISTEN">Lyssna</string>
+  <string name="AUDIO_RECORDER_SEND">Skicka</string>
+  <string name="AUDIO_RECORDER_SEND_ERROR_TITLE">Kunde inte skicka inspelning</string>
+  <string name="AUDIO_RECORDER_START">Starta</string>
+  <string name="AUDIO_RECORDER_START_OVER">Börja om</string>
+  <string name="AUDIO_RECORDER_STOP">Stoppa</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_LABEL">Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in</string>
   <string name="AUTHENTICATION_BANKID_LOGIN_TITLE">Logga in med BankID</string>
   <string name="AUTHENTICATION_BANKID_OPEN_BUTTON">Öppna BankID</string>
@@ -210,8 +216,8 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Vänligen ange telefonnummer ifall vi behöver kontakta dig</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Inspelning</string>
-  <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
-  <string name="CLAIM_CHAT_SKIPPED_STEP">Överhoppad</string>
+  <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">Om du inte minns inköpsdatum behöver du inte fylla i något.</string>
+  <string name="CLAIM_CHAT_SKIPPED_STEP">Saknas</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Hoppa över</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in ditt skadeärende</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
@@ -221,6 +227,7 @@
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
   <string name="CLAIM_CHAT_USE_AUDIO">Starta röstinspelning</string>
   <string name="CLAIM_CHAT_USE_TEXT_INPUT">Beskriv med text</string>
+  <string name="CLAIM_DATE_AND_LOCATION_HINT">Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Händelsedatum</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Skicka in din skadeanmälan</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">Vilken försäkring gäller det?</string>
@@ -280,6 +287,8 @@
   <string name="DASHBOARD_OPEN_CHAT">Kontakta oss</string>
   <string name="DASHBOARD_RENEWAL_PROMPTER_BODY">Om %1$d dagar kommer din försäkring förnyas. Läs ditt uppdaterade försäkringsbrev här.</string>
   <string name="DASHBOARD_SCREEN_TITLE">Försäkringar</string>
+  <string name="DATA_TABLE_MULTIPLE_OWNERS"></string>
+  <string name="DATA_TABLE_WATER_CONNECTED"></string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION">Som försäkringsbolag är Hedvig skyldig att spara försäkringsavtalet och relaterad information så länge det är möjligt att göra anspråk på försäkringsersättning. Denna period kan variera beroende på vilken typ av försäkring det gäller men är minst 10 år efter försäkringens utgång baserat på preskriptionstider.\n\nOm du vill ta bort den information som vi enligt lag inte måste lagra, gör du det genom knappen nedan.\n\n[Här](https://www.hedvig.com/se/hedvig/personuppgifter) kan du läsa mer om hur dina personuppgifter hanteras hos Hedvig.</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE">Viktig information</string>
   <string name="DELETE_ACCOUNT_PROCESSED_DESCRIPTION">Du kommer få ett bekräftelsemail från oss inom 30 dagar som bekräftar att ditt konto har raderats</string>
@@ -428,7 +437,11 @@
   <string name="HC_TOPIC_NOT_FOUND">Topic not found</string>
   <string name="HC_TOPIC_NO_QUESTIONS">This topic has no questions</string>
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
-  <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Det fungerar genom att alla medlemmar tar ut den ersättning de har rätt till ur den gemensamma skadepoolen, varken mer eller mindre. Vi ber dig därför att berätta om det som inträffat precis som det var, så att vi kan hjälpa dig på bästa sätt.</string>
+  <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.</string>
+  <string name="HONESTY_PLEDGE_HEADER">Anmäl skada</string>
+  <string name="HONESTY_PLEDGE_NOTE_1">Osäker på vad som täcks? Skicka in din anmälan oavsett</string>
+  <string name="HONESTY_PLEDGE_NOTE_2">Ha kvitton eller annan dokumentation redo för snabbare hjälp</string>
+  <string name="HONESTY_PLEDGE_NOTE_3">Vi hör av oss om vi behöver mer information eller fler uppgifter</string>
   <string name="HONESTY_PLEDGE_TITLE">Innan vi börjar</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>

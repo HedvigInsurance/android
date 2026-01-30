@@ -35,9 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 expect fun NotificationPermissionSection(key: Unit)
 
 @Composable
-internal fun ClaimOutcomeNewClaimDestination(
-  closeSuccessScreen: () -> Unit,
-) {
+internal fun ClaimOutcomeNewClaimDestination(closeSuccessScreen: () -> Unit) {
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),

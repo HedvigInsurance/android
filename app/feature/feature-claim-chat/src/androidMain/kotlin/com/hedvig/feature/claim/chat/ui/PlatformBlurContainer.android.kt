@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
 
-//todo: leaving it here since we want to have gradient in the future
-//@Composable
-//internal actual fun BlurredGradientBackground(modifier: Modifier, radius: Int) {
+// todo: leaving it here since we want to have gradient in the future
+// @Composable
+// internal actual fun BlurredGradientBackground(modifier: Modifier, radius: Int) {
 //  Box(
 //    modifier = modifier.graphicsLayer {
 //      compositingStrategy = CompositingStrategy.Offscreen
@@ -91,4 +91,4 @@ import kotlin.math.sin
 //      }
 //    }
 //  }
-//}
+// }

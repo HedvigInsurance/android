@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
 import com.hedvig.android.data.addons.data.TravelAddonBannerSource
@@ -20,7 +21,6 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import java.io.File
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -63,7 +63,7 @@ internal class CertificateHistoryPresenter(
     }
 
     var savedFileUri by remember {
-      mutableStateOf<File?>(null)
+      mutableStateOf<DownloadedFile?>(null)
     }
 
     var idsToNavigateToAddons by remember {
@@ -116,12 +116,12 @@ internal class CertificateHistoryPresenter(
             showErrorDialog = true
             downloadingUrl = null
           },
-          ifRight = { uri ->
+          ifRight = { downloadedFile ->
             isLoadingCertificate = false
             logcat(
               LogPriority.INFO,
-            ) { "Downloading travel certificate succeeded. Result uri:${uri.absolutePath}" }
-            savedFileUri = uri
+            ) { "Downloading travel certificate succeeded. Result path:${downloadedFile.path}" }
+            savedFileUri = downloadedFile
             downloadingUrl = null
           },
         )
@@ -206,7 +206,7 @@ internal sealed interface CertificateHistoryUiState {
     val certificateHistoryList: List<TravelCertificate>,
     val showDownloadCertificateError: Boolean,
     val showGenerateButton: Boolean,
-    val travelCertificateUri: File?,
+    val travelCertificateUri: DownloadedFile?,
     val isLoadingCertificate: Boolean,
     val hasChooseOption: Boolean,
     val travelAddonBannerInfo: TravelAddonBannerInfo?,

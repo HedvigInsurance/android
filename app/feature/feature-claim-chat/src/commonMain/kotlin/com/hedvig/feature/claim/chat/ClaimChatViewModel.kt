@@ -12,6 +12,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -44,7 +45,6 @@ import com.hedvig.feature.claim.chat.data.SubmitFormUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSelectUseCase
 import com.hedvig.feature.claim.chat.data.SubmitSummaryUseCase
 import com.hedvig.feature.claim.chat.data.SubmitTaskUseCase
-import com.hedvig.feature.claim.chat.data.file.FileService
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
@@ -64,14 +64,18 @@ internal sealed interface ClaimChatEvent {
 
     data class RedoRecording(override val id: StepId) : AudioRecording
 
-    data class ShowFreeText(override val id: StepId) : AudioRecording
+    data class SwitchToFreeText(override val id: StepId) : AudioRecording
 
-    data class ShowAudioRecording(override val id: StepId) : AudioRecording
+    data class SwitchToAudioRecording(override val id: StepId) : AudioRecording
   }
+
+  data object RetryInitializing : ClaimChatEvent
 
   data class UpdateFreeText(val text: String?) : ClaimChatEvent
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
+
+  data class SubmitSelect(val id: StepId) : ClaimChatEvent
 
   data class UpdateFieldAnswer(
     val stepId: StepId,
@@ -150,23 +154,23 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
-  ClaimChatUiState.Initializing,
-  ClaimChatPresenter(
-    developmentFlow,
-    startClaimIntentUseCase,
-    getClaimIntentUseCase,
-    submitTaskUseCase,
-    submitAudioRecordingUseCase,
-    submitFileUploadUseCase,
-    submitFormUseCase,
-    submitSelectUseCase,
-    submitSummaryUseCase,
-    skipStepUseCase,
-    audioRecordingManager,
-    fileService,
-    regretStepUseCase,
-  ),
-)
+    ClaimChatUiState.Initializing,
+    ClaimChatPresenter(
+      developmentFlow,
+      startClaimIntentUseCase,
+      getClaimIntentUseCase,
+      submitTaskUseCase,
+      submitAudioRecordingUseCase,
+      submitFileUploadUseCase,
+      submitFormUseCase,
+      submitSelectUseCase,
+      submitSummaryUseCase,
+      skipStepUseCase,
+      audioRecordingManager,
+      fileService,
+      regretStepUseCase,
+    ),
+  )
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
@@ -207,7 +211,12 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
-    var progress by remember { mutableStateOf<Float?>(0f) }
+    var progress by remember {
+      mutableStateOf<Float?>(
+        (lastState as? ClaimChatUiState.ClaimChat)?.progress
+          ?: 0f,
+      )
+    }
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -240,40 +249,53 @@ internal class ClaimChatPresenter(
     ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
     SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
       handleNext(
-        steps, setOutcome, claimIntent,
+        steps,
+        setOutcome,
+        claimIntent,
       ) { progress = it }
     }
 
     CollectEvents { event ->
       when (event) {
         is ClaimChatEvent.Select -> {
+          if (!steps.updateStepWithSuccess<StepContent.ContentSelect>(event.id) { step, content ->
+              step.copy(
+                stepContent = content.copy(
+                  selectedOptionId = event.selectedId,
+                ),
+              )
+            }
+          ) {
+            return@CollectEvents
+          }
+        }
+
+        is ClaimChatEvent.SubmitSelect -> {
+          val selectedId = (
+            steps.find {
+              it.id == event.id
+            }?.stepContent as? StepContent.ContentSelect
+          )?.selectedOptionId
+          if (selectedId == null) return@CollectEvents
           currentContinueButtonLoading = true
           launch {
             submitSelectUseCase
               .invoke(
                 id = event.id,
-                selectedId = event.selectedId,
+                selectedId = selectedId,
               )
               .fold(
                 ifLeft = {
                   errorSubmittingStep = it
                   currentContinueButtonLoading = false
-                  logcat { "ClaimChatEvent.Select error: $it" }
+                  logcat { "ClaimChatEvent.SubmitSelect error: $it" }
                 },
                 ifRight = { claimIntent ->
-                  if (!steps.updateStepWithSuccess<StepContent.ContentSelect>(event.id) { step, content ->
-                      step.copy(
-                        stepContent = content.copy(
-                          selectedOptionId = event.selectedId,
-                        ),
-                      )
-                    }
-                  ) {
-                    return@launch
-                  }
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
@@ -307,7 +329,9 @@ internal class ClaimChatPresenter(
                       audioRecordingManager.cleanup()
                       currentContinueButtonLoading = false
                       handleNext(
-                        steps, setOutcome, claimIntent,
+                        steps,
+                        setOutcome,
+                        claimIntent,
                       ) { progress = it }
                     },
                   )
@@ -329,7 +353,9 @@ internal class ClaimChatPresenter(
                     ifRight = { claimIntent ->
                       currentContinueButtonLoading = false
                       handleNext(
-                        steps, setOutcome, claimIntent,
+                        steps,
+                        setOutcome,
+                        claimIntent,
                       ) { progress = it }
                     },
                   )
@@ -359,7 +385,7 @@ internal class ClaimChatPresenter(
               }
             }
 
-            is ClaimChatEvent.AudioRecording.ShowFreeText -> {
+            is ClaimChatEvent.AudioRecording.SwitchToFreeText -> {
               val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
                 ?: return@CollectEvents
               val textTooShort = freeText?.length?.let {
@@ -367,10 +393,13 @@ internal class ClaimChatPresenter(
               } ?: true
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
                 val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
+                showFreeTextOverlay = FreeTextRestrictions(
+                  content.freeTextMinLength,
+                  content.freeTextMaxLength,
+                )
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
-                      showOverlay = false,
                       errorType = null,
                       canSubmit = canSubmit,
                     ),
@@ -379,7 +408,7 @@ internal class ClaimChatPresenter(
               }
             }
 
-            is ClaimChatEvent.AudioRecording.ShowAudioRecording -> {
+            is ClaimChatEvent.AudioRecording.SwitchToAudioRecording -> {
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
                 step.copy(stepContent = content.copy(recordingState = AudioRecording.NotRecording))
               }
@@ -467,7 +496,9 @@ internal class ClaimChatPresenter(
                   ifRight = { claimIntent ->
                     currentContinueButtonLoading = false
                     handleNext(
-                      steps, setOutcome, claimIntent,
+                      steps,
+                      setOutcome,
+                      claimIntent,
                     ) { progress = it }
                   },
                 )
@@ -477,8 +508,9 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.AddFile -> {
           try {
-            val mimeType = fileService.getMimeType(event.uri)
-            val name = fileService.getFileName(event.uri) ?: event.uri
+            val uri = Uri.parse(event.uri)
+            val mimeType = fileService.getMimeType(uri)
+            val name = fileService.getFileName(uri) ?: event.uri
             val localFile = UiFile(
               name = name,
               localPath = event.uri,
@@ -519,11 +551,18 @@ internal class ClaimChatPresenter(
                   if (!steps.updateStepWithSuccess(event.id) { step -> step.clearContent() }) return@launch
                   currentSkipButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
           }
+        }
+
+        ClaimChatEvent.RetryInitializing -> {
+          failedToStart = false
+          initializing = true
         }
 
         is ClaimChatEvent.UpdateFreeText -> {
@@ -541,9 +580,13 @@ internal class ClaimChatPresenter(
                 stepContent = content.copy(
                   recordingState = recordingState.copy(
                     hasError = textTooShort,
-                    errorType = if (textTooShort) TooShort(
-                      currentContent.freeTextMinLength,
-                    ) else null,
+                    errorType = if (textTooShort) {
+                      TooShort(
+                        currentContent.freeTextMinLength,
+                      )
+                    } else {
+                      null
+                    },
                     canSubmit = canSubmit,
                   ),
                 ),
@@ -567,7 +610,9 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
@@ -601,7 +646,9 @@ internal class ClaimChatPresenter(
                     currentContinueButtonLoading = false
                     currentSkipButtonLoading = false
                     handleNext(
-                      steps, setOutcome, claimIntent,
+                      steps,
+                      setOutcome,
+                      claimIntent,
                     ) { progress = it }
                   },
                 )
@@ -619,7 +666,7 @@ internal class ClaimChatPresenter(
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
                   null,
-                    -> field.copy(
+                  -> field.copy(
                     selectedOptions = event.answer?.let {
                       listOf(it)
                     } ?: emptyList(),
@@ -685,7 +732,9 @@ internal class ClaimChatPresenter(
                 ifRight = { claimIntent ->
                   currentContinueButtonLoading = false
                   handleNext(
-                    steps, setOutcome, claimIntent,
+                    steps,
+                    setOutcome,
+                    claimIntent,
                   ) { progress = it }
                 },
               )
@@ -709,7 +758,7 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.HandledDeflectNavigation -> {
-          //todo or remove
+          // todo or remove
         }
 
         ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
@@ -886,7 +935,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Task,
   is StepContent.Deflect,
   StepContent.Unknown,
-    -> this
+  -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
@@ -897,7 +946,6 @@ private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
 }
 
 private fun validateField(field: Field): Field {
-
   if (field.isRequired) {
     val isMissing = when (field.type) {
       FieldType.DATE -> field.datePickerUiState?.datePickerState?.selectedDateMillis == null
