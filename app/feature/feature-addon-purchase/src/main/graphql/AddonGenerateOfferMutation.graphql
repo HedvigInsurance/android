@@ -1,0 +1,10 @@
+mutation AddonGenerateOffer($contractId: ID!) {
+  addonGenerateOffer(contractId: $contractId) {
+    ... on UserError {
+      message
+    }
+    ... on AddonOffer {
+      # Add the fields you need from AddonOffer here
+    }
+  }
+}

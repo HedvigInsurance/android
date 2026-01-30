@@ -37,7 +37,10 @@ internal class GetTravelAddonOfferUseCaseImpl(
         logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but addon feature flag is off" }
         raise(ErrorMessage())
       }
-      apolloClient.mutation(UpsellAddonOfferMutation(id)).safeExecute().fold(
+      apolloClient.mutation(
+        //UpsellAddonOfferMutation(id))
+        AddonGenerateOfferMutation(id)
+        .safeExecute().fold(
         ifLeft = { error ->
           logcat(LogPriority.ERROR, error) { "Tried to start UpsellAddonOfferMutation but got error: $error" }
           // not passing error message to the member here, as we want to redirect member to chat if there is a message
