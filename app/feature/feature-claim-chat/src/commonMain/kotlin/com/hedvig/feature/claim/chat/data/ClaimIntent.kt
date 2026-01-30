@@ -200,7 +200,6 @@ internal sealed interface StepContent {
 
 sealed interface AudioRecordingStepState {
   data class FreeTextDescription(
-    val showOverlay: Boolean,
     val errorType: FreeTextErrorType?,
     val canSubmit: Boolean,
     val hasError: Boolean = false,

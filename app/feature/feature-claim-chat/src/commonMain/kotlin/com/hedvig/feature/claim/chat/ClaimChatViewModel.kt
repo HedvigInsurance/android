@@ -396,7 +396,6 @@ internal class ClaimChatPresenter(
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
-                      showOverlay = false,
                       errorType = null,
                       canSubmit = canSubmit,
                     ),

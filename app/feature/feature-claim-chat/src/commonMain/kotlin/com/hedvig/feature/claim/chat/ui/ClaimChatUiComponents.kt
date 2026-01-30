@@ -41,7 +41,6 @@ private fun PreviewClaimChatComponents() {
         AudioRecorderBubble(
           isCurrentStep = true,
           recordingState = AudioRecordingStepState.FreeTextDescription(
-            showOverlay = false,
             errorType = null,
             canSubmit = true,
           ),
