@@ -52,6 +52,10 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LifecycleStartStopEffectScope
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.audio.player.HedvigAudioPlayer
 import com.hedvig.android.audio.player.audioplayer.rememberAudioPlayer
@@ -80,6 +84,7 @@ import com.hedvig.android.design.system.hedvig.icon.Reload
 import com.hedvig.android.design.system.hedvig.icon.Stop
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.logger.logcat
 import com.hedvig.audio.player.data.AudioPlayer
 import com.hedvig.audio.player.data.AudioPlayerState
 import com.hedvig.audio.player.data.PlayableAudioSource
@@ -344,6 +349,14 @@ private fun AudioRecordingBottomSheet(
     )
   }
 
+  LaunchedEffect(bottomSheetState.isVisible) {
+    if (!bottomSheetState.isVisible) {
+      stopRecording()
+    }
+  }
+  LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+    stopRecording()
+  }
   HedvigBottomSheet(bottomSheetState, modifier) {
     Column {
       HedvigText(
@@ -619,19 +632,22 @@ private fun ControlButton(
   }
 
   var countDownText by remember { mutableStateOf("3") }
-  var isIconVisible by remember { mutableStateOf(true) }
+  var startRecordingCountdown by remember { mutableStateOf(false) }
 
-  LaunchedEffect(isIconVisible) {
-    if (!isIconVisible) {
+  val lifecycleOwner = LocalLifecycleOwner.current
+  LaunchedEffect(startRecordingCountdown, lifecycleOwner) {
+    if (startRecordingCountdown) {
       delay(1000)
       countDownText = "2"
       delay(1000)
       countDownText = "1"
       delay(1000)
-      countDownText = "3"
-      onStartRecording()
-      isIconVisible = true
+      if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+        onStartRecording()
+      }
+      startRecordingCountdown = false
     }
+    countDownText = "3"
   }
 
   Surface(
@@ -648,7 +664,7 @@ private fun ControlButton(
         onClick = {
           when (audioRecordingState) {
             AudioRecordingStepState.AudioRecording.NotRecording -> {
-              isIconVisible = false
+              startRecordingCountdown = true
             }
 
             is AudioRecordingStepState.AudioRecording.Playback -> {
@@ -692,7 +708,7 @@ private fun ControlButton(
             .padding(4.dp)
             .size(24.dp)
             .then(
-              if (isIconVisible) Modifier else Modifier.withoutPlacement(),
+              if (startRecordingCountdown) Modifier.withoutPlacement() else Modifier,
             ),
           imageVector = when (audioRecordingState) {
             AudioRecordingStepState.AudioRecording.NotRecording -> {
@@ -725,7 +741,7 @@ private fun ControlButton(
             }
           },
         )
-        if (!isIconVisible) {
+        if (startRecordingCountdown) {
           HedvigText(
             text = countDownText,
             color = when (audioRecordingState) {
