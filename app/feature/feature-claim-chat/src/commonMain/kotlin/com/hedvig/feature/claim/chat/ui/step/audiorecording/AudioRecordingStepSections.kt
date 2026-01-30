@@ -155,9 +155,7 @@ internal fun AudioRecordingStep(
       onShouldShowRequestPermissionRationale = onShouldShowRequestPermissionRationale,
       startRecording = startRecording,
       stopRecording = stopRecording,
-      submitAudioFile = {
-        submitAudioFile()
-      },
+      submitAudioFile = submitAudioFile,
       redoRecording = redoRecording,
       openAppSettings = openAppSettings,
       freeTextAvailable = true,
