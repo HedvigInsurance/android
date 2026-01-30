@@ -69,6 +69,8 @@ internal sealed interface ClaimChatEvent {
     data class SwitchToAudioRecording(override val id: StepId) : AudioRecording
   }
 
+  data object RetryInitializing : ClaimChatEvent
+
   data class UpdateFreeText(val text: String?) : ClaimChatEvent
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
@@ -553,6 +555,11 @@ internal class ClaimChatPresenter(
                 },
               )
           }
+        }
+
+        ClaimChatEvent.RetryInitializing -> {
+          failedToStart = false
+          initializing = true
         }
 
         is ClaimChatEvent.UpdateFreeText -> {

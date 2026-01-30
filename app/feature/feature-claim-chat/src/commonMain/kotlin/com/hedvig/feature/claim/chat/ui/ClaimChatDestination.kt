@@ -63,6 +63,7 @@ import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -167,7 +168,12 @@ internal fun ClaimChatScreenContent(
 
   Box(Modifier.fillMaxSize(), Alignment.Center) {
     when (uiState) {
-      ClaimChatUiState.FailedToStart -> BasicText("FailedToStart") // todo
+      ClaimChatUiState.FailedToStart -> {
+        HedvigErrorSection(
+          { claimChatViewModel.emit(ClaimChatEvent.RetryInitializing) },
+        )
+      }
+
       ClaimChatUiState.Initializing -> HedvigFullScreenCenterAlignedProgress()
       is ClaimChatUiState.ClaimChat -> {
         if (uiState.outcome != null) {
