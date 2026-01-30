@@ -102,6 +102,7 @@ import hedvig.resources.CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_EDIT_ANSWER_BUTTON
 import hedvig.resources.CLAIM_CHAT_EDIT_EXPLANATION
 import hedvig.resources.GENERAL_ARE_YOU_SURE
+import hedvig.resources.NETWORK_ERROR_ALERT_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.claims_alert_body
 import hedvig.resources.general_cancel_button
@@ -263,8 +264,7 @@ private fun ClaimChatScreenContent(
   if (uiState.errorSubmittingStep != null) {
     ErrorDialog(
       title = stringResource(Res.string.general_error),
-      message = uiState.errorSubmittingStep.message
-        ?: stringResource(Res.string.something_went_wrong),
+      message = stringResource(Res.string.NETWORK_ERROR_ALERT_MESSAGE),
       onDismiss = {
         onEvent(ClaimChatEvent.DismissErrorDialog)
       },
