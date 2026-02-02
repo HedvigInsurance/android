@@ -2,11 +2,16 @@ package com.hedvig.android.feature.addon.purchase.ui.customize
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -16,6 +21,7 @@ import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -51,7 +57,11 @@ internal class CustomizeTravelAddonPresenter(
         },
       )
     }
-    var selectedToggleableOptions by remember { mutableStateOf(emptyList<AddonQuote>()) }
+    val selectedToggleableOptions = remember {
+      mutableStateListOf(*((lastState as? CustomizeAddonState.Success.Toggleable)
+        ?.currentlyChosenOptions ?: emptyList()).toTypedArray())
+    }
+
     CollectEvents { event ->
       when (event) {
         CustomizeTravelAddonEvent.Reload -> loadIteration++
@@ -73,12 +83,19 @@ internal class CustomizeTravelAddonPresenter(
         }
 
         CustomizeTravelAddonEvent.ClearNavigation -> {
-          val state = currentState as? CustomizeAddonState.Success.Selectable ?: return@CollectEvents
-          currentState = state.copy(
-            commonParams = state.commonParams.copy(
-              summaryParamsToNavigateFurther = null
+          val state = currentState as? CustomizeAddonState.Success ?: return@CollectEvents
+          currentState = when (state) {
+            is CustomizeAddonState.Success.Selectable -> state.copy(
+              commonParams = state.commonParams.copy(
+                summaryParamsToNavigateFurther = null
+              )
             )
-          )
+            is CustomizeAddonState.Success.Toggleable -> state.copy(
+              commonParams = state.commonParams.copy(
+                summaryParamsToNavigateFurther = null
+              )
+            )
+          }
         }
 
         CustomizeTravelAddonEvent.SubmitSelected -> {
@@ -106,7 +123,7 @@ internal class CustomizeTravelAddonPresenter(
           val state = currentState as? CustomizeAddonState.Success.Toggleable ?: return@CollectEvents
           val summaryParams = SummaryParameters(
             productVariant = state.commonParams.productVariant,
-            chosenQuotes = state.currentlyChosenOptions,
+            chosenQuotes = selectedToggleableOptions,
             activationDate = state.commonParams.activationDate,
             currentlyActiveAddons = state.currentlyActiveAddons,
             quoteId = state.commonParams.quoteId,
@@ -122,10 +139,12 @@ internal class CustomizeTravelAddonPresenter(
         }
 
         is CustomizeTravelAddonEvent.ToggleOption -> {
-          selectedToggleableOptions = if (event.option in selectedToggleableOptions) {
-            selectedToggleableOptions - event.option
-          } else {
-            selectedToggleableOptions + event.option
+          Snapshot.withMutableSnapshot {
+            if (selectedToggleableOptions.contains(event.option)) {
+              selectedToggleableOptions.remove(event.option)
+            } else {
+              selectedToggleableOptions.add(event.option)
+            }
           }
         }
       }
@@ -173,13 +192,15 @@ internal class CustomizeTravelAddonPresenter(
               )
             }
 
-            is AddonOffer.Toggleable -> CustomizeAddonState.Success.Toggleable(
-              commonParams = commonParams,
-              addonOffer = offerResult.umbrellaAddonQuote.addonOffer,
-              currentlyActiveAddons = offerResult.umbrellaAddonQuote.activeAddons,
-              currentlyChosenOptions = emptyList(),
-              totalPremiumExtra = null,
-            )
+            is AddonOffer.Toggleable -> {
+              currentState = CustomizeAddonState.Success.Toggleable(
+                commonParams = commonParams,
+                addonOffer = offerResult.umbrellaAddonQuote.addonOffer,
+                currentlyActiveAddons = offerResult.umbrellaAddonQuote.activeAddons,
+                currentlyChosenOptions = emptyList(),
+                totalPremiumExtra = null,
+              )
+            }
           }
         },
       )
@@ -231,8 +252,9 @@ internal sealed interface CustomizeAddonState {
   data object Loading : CustomizeAddonState
 
   sealed interface Success : CustomizeAddonState {
+    val commonParams: CommonSuccessParameters
     data class Selectable(
-      val commonParams: CommonSuccessParameters,
+      override val commonParams: CommonSuccessParameters,
       val addonOffer: AddonOffer.Selectable,
       val currentlyChosenOption: AddonQuote,
       val currentlyChosenOptionInDialog: AddonQuote?,
@@ -241,7 +263,7 @@ internal sealed interface CustomizeAddonState {
     ) : Success
 
     data class Toggleable(
-      val commonParams: CommonSuccessParameters,
+      override val commonParams: CommonSuccessParameters,
       val addonOffer: AddonOffer.Toggleable,
       val currentlyChosenOptions: List<AddonQuote>,
       val totalPremiumExtra: UiMoney?,

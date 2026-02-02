@@ -51,6 +51,7 @@ import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.tiersandaddons.CostBreakdownEntry
 import com.hedvig.android.tiersandaddons.DisplayDocument
 import com.hedvig.android.tiersandaddons.QuoteCard
@@ -187,6 +188,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         spaceBetween = 8.dp,
         endSlot = {
           val totalExtra = uiState.costBreakdownWithExtras?.totalExtra
+          logcat { "Mariia: totalExtra in UI: $totalExtra" }
           if (totalExtra!=null) {
             val text = if (totalExtra.amount > 0) {
               // with +

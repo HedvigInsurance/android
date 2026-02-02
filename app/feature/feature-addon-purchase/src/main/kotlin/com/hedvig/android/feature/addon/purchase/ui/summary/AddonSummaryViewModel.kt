@@ -22,9 +22,11 @@ import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonLogInfo.AddonEventType
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlin.math.log
 import kotlinx.datetime.LocalDate
 
 internal class AddonSummaryViewModel(
@@ -49,13 +51,16 @@ internal class AddonSummaryPresenter(
   override fun MoleculePresenterScope<AddonSummaryEvent>.present(lastState: AddonSummaryState): AddonSummaryState {
     var submitIteration by remember { mutableIntStateOf(0) }
     var currentState by remember { mutableStateOf(lastState) }
-
-    val initialState = getInitialState(summaryParameters)
+    var activationDateForNavigation  by remember { mutableStateOf<LocalDate?>(null) }
+    var errorForNavigation  by remember { mutableStateOf<ErrorMessage?>(null) }
 
     CollectEvents { event ->
       when (event) {
         AddonSummaryEvent.Submit -> submitIteration++
-        AddonSummaryEvent.ReturnToInitialState -> currentState = initialState
+        AddonSummaryEvent.ReturnToInitialState -> {
+          activationDateForNavigation = null
+          errorForNavigation = null
+        }
       }
     }
 
@@ -69,21 +74,30 @@ internal class AddonSummaryPresenter(
           },
         ).fold(
           ifLeft = {
-            currentState = initialState.copy(navigateToFailure = it)
+            errorForNavigation = it
           },
           ifRight = {
             logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
-            currentState =
-              initialState.copy(activationDateToNavigateToSuccess = summaryParameters.activationDate)
+            errorForNavigation = null
+            activationDateForNavigation = summaryParameters.activationDate
           },
         )
       }
     }
-    return currentState
+    return when(val state = currentState) {
+      is Content -> state.copy (
+        activationDateToNavigateToSuccess = activationDateForNavigation,
+        navigateToFailure = errorForNavigation)
+      Loading -> state
+    }
   }
 }
 
 internal fun getInitialState(summaryParameters: SummaryParameters): Content {
+  logcat {"Mariia: summaryParameters: " +
+    "baseInsuranceCost: ${summaryParameters.baseInsuranceCost}" +
+    "quotes: ${summaryParameters.chosenQuotes}" +
+    "existingAddons: ${summaryParameters.currentlyActiveAddons} "}
   return Content(
     insuranceDisplayName = summaryParameters.productVariant.displayName,
     quotes = summaryParameters.chosenQuotes,
@@ -92,12 +106,12 @@ internal fun getInitialState(summaryParameters: SummaryParameters): Content {
     insuranceExposure = null, //todo
     notificationMessage = summaryParameters.notificationMessage,
     documents = summaryParameters.productVariant.documents,
-//    costBreakdownWithExtras = getCostBreakdownWithExtras(
-//      baseCost = summaryParameters.baseInsuranceCost,
-//      quotes = summaryParameters.chosenQuotes,
-//      insuranceDisplayName = summaryParameters.productVariant.displayName
-//    ),
-    costBreakdownWithExtras = null, //todo
+    costBreakdownWithExtras = getCostBreakdownWithExtras(
+      baseCost = summaryParameters.baseInsuranceCost,
+      quotes = summaryParameters.chosenQuotes,
+      insuranceDisplayName = summaryParameters.productVariant.displayName,
+      existingAddons = summaryParameters.currentlyActiveAddons
+    ),
     displayItems = summaryParameters.chosenQuotes.flatMap {
       it.displayDetails
     },
@@ -107,19 +121,43 @@ internal fun getInitialState(summaryParameters: SummaryParameters): Content {
   )
 }
 
-//internal fun getCostBreakdownWithExtras(
-//  insuranceDisplayName: String,
-//  baseCost: ItemCost,
-//  quotes: List<AddonQuote>
-//): CostBreakdownWithExtras {
-//  val baseInsuranceGross = insuranceDisplayName to baseCost.monthlyGross
-//  val addonsGross = quotes.map {
-//    it.displayTitle to it.itemCost.monthlyGross
-//  }
-//  return CostBreakdownWithExtras(
-//
-//  )
-//}
+internal fun getCostBreakdownWithExtras(
+  insuranceDisplayName: String,
+  baseCost: ItemCost,
+  existingAddons: List<CurrentlyActiveAddon>,
+  quotes: List<AddonQuote>
+): CostBreakdownWithExtras {
+  val baseInsuranceGross = insuranceDisplayName to baseCost.monthlyGross
+  val addonsGross = quotes.map {
+    it.displayTitle to it.itemCost.monthlyGross
+  } //todo: continue here for display items
+  val baseCurrency = baseCost.monthlyNet.currencyCode
+  val extraSum = quotes.sumOf {
+    it.itemCost.monthlyNet.amount
+  }
+
+  val totalExtra = UiMoney(extraSum, baseCurrency)
+  logcat { "Mariia: totalExtra: $totalExtra" }
+  val totalGross = baseCost.monthlyGross.amount + existingAddons.sumOf {
+    it.cost.monthlyGross.amount
+  } + quotes.sumOf { it.itemCost.monthlyGross.amount }
+  val totalNet = baseCost.monthlyNet.amount + existingAddons.sumOf {
+    it.cost.monthlyNet.amount
+  } + quotes.sumOf { it.itemCost.monthlyNet.amount }
+  return CostBreakdownWithExtras(
+    totalCost = ItemCost(
+      monthlyNet = UiMoney(
+        totalNet, baseCurrency
+      ),
+      monthlyGross = UiMoney(
+        totalGross, baseCurrency
+      ),
+      discounts = emptyList() //todo: change when BE allows!!!
+    ),
+    totalExtra = totalExtra,
+    displayItems = emptyList() //todo: change when BE allows!!!
+  )
+}
 
 internal data class CostBreakdownWithExtras(
   val totalCost: ItemCost,
