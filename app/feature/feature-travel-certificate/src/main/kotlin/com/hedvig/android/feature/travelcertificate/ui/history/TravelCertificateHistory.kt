@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -409,6 +410,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
           eligibleInsurancesIds = nonEmptyListOf("id"),
+          flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
         ),
       ),
       SuccessDownloadingHistory(

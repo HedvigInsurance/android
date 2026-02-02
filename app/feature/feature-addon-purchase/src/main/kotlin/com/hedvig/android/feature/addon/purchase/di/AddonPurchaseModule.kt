@@ -6,12 +6,12 @@ import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
-import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
-import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCaseImpl
+import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
+import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonViewModel
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModel
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
@@ -27,10 +27,10 @@ val addonPurchaseModule = module {
     )
   }
 
-  viewModel<CustomizeTravelAddonViewModel> { params ->
-    CustomizeTravelAddonViewModel(
+  viewModel<CustomizeAddonViewModel> { params ->
+    CustomizeAddonViewModel(
       insuranceId = params.get<String>(),
-      getTravelAddonOfferUseCase = get<GetTravelAddonOfferUseCase>(),
+      getAddonOfferUseCase = get<GetAddonOfferUseCase>(),
     )
   }
 
@@ -55,8 +55,8 @@ val addonPurchaseModule = module {
     )
   }
 
-  single<GetTravelAddonOfferUseCase> {
-    GetTravelAddonOfferUseCaseImpl(
+  single<GetAddonOfferUseCase> {
+    GetAddonOfferUseCaseImpl(
       apolloClient = get<ApolloClient>(),
       featureManager = get<FeatureManager>(),
     )

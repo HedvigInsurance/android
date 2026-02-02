@@ -7,9 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
-import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -35,7 +33,7 @@ internal class TravelAddonTriagePresenter(
 
     LaunchedEffect(loadIteration) {
       currentState = TravelAddonTriageState.Loading
-      val result = getAddonBannerInfoUseCase.invoke(AddonBannerSource.DEEPLINK)
+      val result = getAddonBannerInfoUseCase.invoke(AddonBannerSource.TRAVEL_DEEPLINK)
       result.first().fold(
         ifLeft = { _ ->
           currentState = TravelAddonTriageState.Failure(FailureReason.GENERAL)

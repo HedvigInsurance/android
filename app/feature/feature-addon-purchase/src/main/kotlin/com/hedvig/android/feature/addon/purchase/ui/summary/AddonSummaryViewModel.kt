@@ -7,10 +7,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
+import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
@@ -60,17 +64,17 @@ internal class AddonSummaryPresenter(
         currentState = Loading
         submitAddonPurchaseUseCase.invoke(
           quoteId = summaryParameters.quoteId,
-          addonId = summaryParameters.quote.addonId,
+          addonIds = summaryParameters.chosenQuotes.map{
+            it.addonId
+          },
         ).fold(
           ifLeft = {
-            currentState = initialState.copy(navigateToFailure = true)
-            // todo: not really passing UserError message here. Should we? Or should we maybe redirect to chat in
-            // the case of final failure?
+            currentState = initialState.copy(navigateToFailure = it)
           },
           ifRight = {
             logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
             currentState =
-              initialState.copy(activationDateForSuccessfullyPurchasedAddon = summaryParameters.activationDate)
+              initialState.copy(activationDateToNavigateToSuccess = summaryParameters.activationDate)
           },
         )
       }
@@ -80,35 +84,69 @@ internal class AddonSummaryPresenter(
 }
 
 internal fun getInitialState(summaryParameters: SummaryParameters): Content {
-  val total = if (summaryParameters.currentlyActiveAddon == null) {
-    summaryParameters.quote.itemCost.monthlyNet
-  } else {
-    val amountDiff =
-      summaryParameters.quote.itemCost.monthlyNet.amount - summaryParameters.currentlyActiveAddon.cost.monthlyNet.amount
-    UiMoney(amountDiff, summaryParameters.quote.itemCost.monthlyNet.currencyCode)
-  }
   return Content(
-    offerDisplayName = summaryParameters.offerDisplayName,
-    quote = summaryParameters.quote,
+    insuranceDisplayName = summaryParameters.productVariant.displayName,
+    quotes = summaryParameters.chosenQuotes,
     activationDate = summaryParameters.activationDate,
-    currentlyActiveAddon = summaryParameters.currentlyActiveAddon,
-    totalPriceChange = total,
+    currentlyActiveAddons = summaryParameters.currentlyActiveAddons,
+    insuranceExposure = null, //todo
+    notificationMessage = summaryParameters.notificationMessage,
+    documents = summaryParameters.productVariant.documents,
+//    costBreakdownWithExtras = getCostBreakdownWithExtras(
+//      baseCost = summaryParameters.baseInsuranceCost,
+//      quotes = summaryParameters.chosenQuotes,
+//      insuranceDisplayName = summaryParameters.productVariant.displayName
+//    ),
+    costBreakdownWithExtras = null, //todo
+    displayItems = summaryParameters.chosenQuotes.flatMap {
+      it.displayDetails
+    },
+    activationDateToNavigateToSuccess = null,
+    navigateToFailure = null,
+    contractGroup = summaryParameters.productVariant.contractGroup
   )
 }
+
+//internal fun getCostBreakdownWithExtras(
+//  insuranceDisplayName: String,
+//  baseCost: ItemCost,
+//  quotes: List<AddonQuote>
+//): CostBreakdownWithExtras {
+//  val baseInsuranceGross = insuranceDisplayName to baseCost.monthlyGross
+//  val addonsGross = quotes.map {
+//    it.displayTitle to it.itemCost.monthlyGross
+//  }
+//  return CostBreakdownWithExtras(
+//
+//  )
+//}
+
+internal data class CostBreakdownWithExtras(
+  val totalCost: ItemCost,
+  val totalExtra: UiMoney,
+  val displayItems: List<Pair<String, UiMoney>>
+)
 
 internal sealed interface AddonSummaryState {
   data object Loading : AddonSummaryState
 
   data class Content(
-    val offerDisplayName: String,
-    val quote: AddonQuote,
+    val insuranceDisplayName: String,
+    val insuranceExposure: String?, //todo: add separate query
+    val contractGroup: ContractGroup?,
+    val quotes: List<AddonQuote>,
     val activationDate: LocalDate,
-    val currentlyActiveAddon: CurrentlyActiveAddon?,
-    val totalPriceChange: UiMoney,
-    val activationDateForSuccessfullyPurchasedAddon: LocalDate? = null,
-    val navigateToFailure: Boolean = false,
+    val currentlyActiveAddons: List<CurrentlyActiveAddon>,
+    val notificationMessage: String?,
+    val documents: List<InsuranceVariantDocument>,
+    val costBreakdownWithExtras: CostBreakdownWithExtras?,
+    val displayItems: List<Pair<String,String>>, //todo: check how those look
+    val activationDateToNavigateToSuccess: LocalDate? = null,
+    val navigateToFailure: ErrorMessage? = null,
   ) : AddonSummaryState
 }
+
+
 
 internal sealed interface AddonSummaryEvent {
   data object Submit : AddonSummaryEvent
@@ -120,19 +158,22 @@ private fun logSuccessfulAddonPurchaseAction(
     summaryParameters: SummaryParameters,
     addonPurchaseSource: AddonBannerSource,
 ) {
-  summaryParameters.quote.addonSubtype?.let {
-    //todo: change when backend changes, add "product" and send log event always
-    val logInfo = AddonLogInfo(
-      flow = addonPurchaseSource,
-      subType = summaryParameters.quote.addonSubtype,
-    )
-    val eventType = if (summaryParameters.currentlyActiveAddon == null) {
-      AddonEventType.ADDON_PURCHASED
-    } else {
-      AddonEventType.ADDON_UPGRADED
+  summaryParameters.chosenQuotes.forEach { chosenQuote ->
+    chosenQuote.addonSubtype?.let {
+      //todo: change when backend changes, add "product" and send log event always
+      val logInfo = AddonLogInfo(
+        flow = addonPurchaseSource,
+        subType = chosenQuote.addonSubtype,
+      )
+      val eventType = if (summaryParameters.currentlyActiveAddons.isEmpty()) {
+        AddonEventType.ADDON_PURCHASED
+      } else {
+        AddonEventType.ADDON_UPGRADED
+      }
+      logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
     }
-    logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
   }
+
 }
 
 private data class AddonLogInfo(

@@ -110,12 +110,12 @@ private fun AddonSummaryScreen(
     is Content -> {
       LaunchedEffect(uiState.navigateToFailure) {
         val fail = uiState.navigateToFailure
-        if (fail) {
+        if (fail!=null) {
           onFailure()
         }
       }
-      LaunchedEffect(uiState.activationDateForSuccessfullyPurchasedAddon) {
-        val date = uiState.activationDateForSuccessfullyPurchasedAddon
+      LaunchedEffect(uiState.activationDateToNavigateToSuccess) {
+        val date = uiState.activationDateToNavigateToSuccess
         if (date != null) {
           onSuccess(date)
         }
@@ -169,11 +169,13 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       Modifier
         .padding(horizontal = 16.dp),
     ) {
-      HedvigNotificationCard(
-        message = stringResource(Res.string.ADDON_FLOW_SUMMARY_INFO_TEXT),
-        priority = NotificationDefaults.NotificationPriority.Info,
-      )
-      Spacer(Modifier.height(24.dp))
+      uiState.notificationMessage?.let {
+        HedvigNotificationCard(
+          message = uiState.notificationMessage,
+          priority = NotificationDefaults.NotificationPriority.Info,
+        )
+        Spacer(Modifier.height(24.dp))
+      }
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.semantics(true) {},
         startSlot = {
@@ -184,28 +186,32 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val text = if (uiState.totalPriceChange.amount > 0) {
-            // with +
-            stringResource(
-              Res.string.ADDON_FLOW_PRICE_LABEL,
-              uiState.totalPriceChange,
-            )
-          } else {
-            // without + (supposedly with minus)
-            stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.totalPriceChange,
+          val totalExtra = uiState.costBreakdownWithExtras?.totalExtra
+          if (totalExtra!=null) {
+            val text = if (totalExtra.amount > 0) {
+              // with +
+              stringResource(
+                Res.string.ADDON_FLOW_PRICE_LABEL,
+                totalExtra,
+              )
+            } else {
+              // without + (supposedly with minus)
+              stringResource(
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                totalExtra,
+              )
+            }
+            val voiceDescription = totalExtra.getPerMonthDescription()
+            HedvigText(
+              text = text,
+              textAlign = TextAlign.End,
+              style = HedvigTheme.typography.bodySmall,
+              modifier = Modifier.semantics(true) {
+                contentDescription = voiceDescription
+              },
             )
           }
-          val voiceDescription = uiState.totalPriceChange.getPerMonthDescription()
-          HedvigText(
-            text = text,
-            textAlign = TextAlign.End,
-            style = HedvigTheme.typography.bodySmall,
-            modifier = Modifier.semantics(true) {
-              contentDescription = voiceDescription
-            },
-          )
+
         },
       )
       Row(
@@ -243,71 +249,82 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       locale,
     ).format(uiState.activationDate)
   }
-  val premium: UiMoney = uiState.quote.itemCost.monthlyNet
-  val previousPremium: UiMoney? = if (uiState.currentlyActiveAddon != null) {
+  val premium: UiMoney? = uiState.costBreakdownWithExtras?.totalCost?.monthlyNet
+  val previousPremium: UiMoney? = if (premium==uiState.costBreakdownWithExtras?.totalCost?.monthlyGross) {
     null
   } else {
-    uiState.quote.itemCost.monthlyGross
+    uiState.costBreakdownWithExtras?.totalCost?.monthlyGross
   }
-  val costBreakdown: List<CostBreakdownEntry> =
-    if (uiState.currentlyActiveAddon != null) {
-      val currentAddonDisplayItemValue = stringResource(
+  val costBreakdown: List<CostBreakdownEntry> = uiState.costBreakdownWithExtras?.displayItems?.map{
+    CostBreakdownEntry(
+      displayName = it.first,
+      displayValue =  stringResource(
         Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.currentlyActiveAddon.cost.monthlyNet, //todo: check!!
-      )
-      val newAddonDisplayValueNet = stringResource(
-        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.quote.itemCost.monthlyNet,
-      )
-      buildList {
-        add(
-          CostBreakdownEntry(
-            uiState.currentlyActiveAddon.displayTitle,
-            currentAddonDisplayItemValue,
-            true,
-          ),
-        )
-        add(
-          CostBreakdownEntry(
-            uiState.quote.displayDescription,
-            newAddonDisplayValueNet,
-            false,
-          ),
-        )
-      }
-    } else {
-      val newAddonDisplayValueGross = stringResource(
-        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.quote.itemCost.monthlyGross,
-      )
-      buildList {
-        add(
-          CostBreakdownEntry(
-            uiState.quote.displayDescription,
-            newAddonDisplayValueGross,
-            false,
-          ),
-        )
-        uiState.quote.itemCost.discounts.forEach { discount ->
-          add(
-            CostBreakdownEntry(
-              discount.displayName,
-              discount.displayValue,
-              false,
-            ),
-          )
-        }
-      }
-    }
+        it.second, //todo: check!!
+      ),
+      hasStrikethrough = false
+    )
+  } ?: emptyList() //todo: should be not-null, wait for BE
+//  val costBreakdown: List<CostBreakdownEntry> =
+//    if (uiState.currentlyActiveAddon != null) {
+//      val currentAddonDisplayItemValue = stringResource(
+//        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+//        uiState.currentlyActiveAddon.cost.monthlyNet, //todo: check!!
+//      )
+//      val newAddonDisplayValueNet = stringResource(
+//        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+//        uiState.quote.itemCost.monthlyNet,
+//      )
+//      buildList {
+//        add(
+//          CostBreakdownEntry(
+//            uiState.currentlyActiveAddon.displayTitle,
+//            currentAddonDisplayItemValue,
+//            true,
+//          ),
+//        )
+//        add(
+//          CostBreakdownEntry(
+//            uiState.quote.displayDescription,
+//            newAddonDisplayValueNet,
+//            false,
+//          ),
+//        )
+//      }
+//    } else {
+//      val newAddonDisplayValueGross = stringResource(
+//        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+//        uiState.quote.itemCost.monthlyGross,
+//      )
+//      buildList {
+//        add(
+//          CostBreakdownEntry(
+//            uiState.quote.displayDescription,
+//            newAddonDisplayValueGross,
+//            false,
+//          ),
+//        )
+//        uiState.quote.itemCost.discounts.forEach { discount ->
+//          add(
+//            CostBreakdownEntry(
+//              discount.displayName,
+//              discount.displayValue,
+//              false,
+//            ),
+//          )
+//        }
+//      }
+//    }
   QuoteCard(
     subtitle = stringResource(
       Res.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
       formattedDate,
     ),
-    premium = premium,
+    contractGroup = uiState.contractGroup,
+    premium = premium ?: UiMoney(0.0, UiCurrencyCode.SEK), //todo: should be notnull, wait for BE
     costBreakdown = costBreakdown,
     previousPremium = previousPremium,
-    displayItems = uiState.quote.displayDetails.map {
+    displayItems = uiState.displayItems.map {
       QuoteDisplayItem(
         title = it.first,
         subtitle = null,
@@ -315,10 +332,9 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       )
     },
     modifier = modifier,
-    displayName = uiState.offerDisplayName,
-    contractGroup = null,
+    displayName = uiState.insuranceDisplayName,
     insurableLimits = emptyList(),
-    documents = uiState.quote.documents.map {
+    documents = uiState.documents.map {
       DisplayDocument(
         displayName = it.displayName,
         url = it.url
@@ -429,101 +445,132 @@ private class ChooseInsuranceForAddonUiStateProvider :
     listOf(
       Loading,
       Content(
-        currentlyActiveAddon = CurrentlyActiveAddon(
-          displayTitle = "Travel Plus 45 days",
-          displayDescription = "description",
-          cost = ItemCost(
-            UiMoney(49.0, UiCurrencyCode.SEK),
-            UiMoney(49.0, UiCurrencyCode.SEK),
-            emptyList()
-          ),
+        currentlyActiveAddons = listOf(
+          CurrentlyActiveAddon(
+            displayTitle = "Travel Plus 45 days",
+            displayDescription = "description",
+            cost = ItemCost(
+              UiMoney(49.0, UiCurrencyCode.SEK),
+              UiMoney(49.0, UiCurrencyCode.SEK),
+              emptyList()
+            ),
+          )
         ),
-        offerDisplayName = "TravelPlus",
+        insuranceDisplayName = "TravelPlus",
         activationDate = LocalDate(2025, 1, 1),
-        quote = AddonQuote(
-          displayTitle = "60 days",
-          addonId = "addonId1",
-          displayDetails = listOf(
-            "Amount of insured people" to "You +1",
-            "Coverage" to "60 days",
-          ),
-          addonVariant = AddonVariant(
-            termsVersion = "terms",
-            documents = listOf(),
-            perils = listOf(),
-            displayName = "60 days",
-            product = "",
-          ),
-          displayDescription = "Travel Plus 60 days",
-          documents = listOf(TravelAddonQuoteInsuranceDocument(
-            displayName = "Document display name",
-            url = ""
-          )),
-          itemCost = ItemCost(
-            UiMoney(79.0, UiCurrencyCode.SEK),
-            UiMoney(89.0, UiCurrencyCode.SEK),
-            discounts = listOf(
-              ItemCostDiscount(
-                campaignCode = "Bundle",
-                displayName = "15% bundle discount",
-                displayValue = "-19kr/mo",
-                explanation = "some explanation",
+        quotes = listOf(
+          AddonQuote(
+            displayTitle = "60 days",
+            addonId = "addonId1",
+            displayDetails = listOf(
+              "Amount of insured people" to "You +1",
+              "Coverage" to "60 days",
+            ),
+            addonVariant = AddonVariant(
+              termsVersion = "terms",
+              documents = listOf(),
+              perils = listOf(),
+              displayName = "60 days",
+              product = "",
+            ),
+            displayDescription = "Travel Plus 60 days",
+            documents = listOf(
+              TravelAddonQuoteInsuranceDocument(
+                displayName = "Document display name",
+                url = ""
+              )
+            ),
+            itemCost = ItemCost(
+              UiMoney(79.0, UiCurrencyCode.SEK),
+              UiMoney(89.0, UiCurrencyCode.SEK),
+              discounts = listOf(
+                ItemCostDiscount(
+                  campaignCode = "Bundle",
+                  displayName = "15% bundle discount",
+                  displayValue = "-19kr/mo",
+                  explanation = "some explanation",
+                ),
               ),
             ),
-          ),
-          addonSubtype = "DAYS_60"
+            addonSubtype = "DAYS_60"
+          )
         ),
 
-        activationDateForSuccessfullyPurchasedAddon = null,
-        navigateToFailure = false,
-        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK),
+        activationDateToNavigateToSuccess = null,
+        navigateToFailure = null,
+        insuranceExposure = "Exposure",
+        notificationMessage = "Notification message",
+        documents = emptyList(),
+        costBreakdownWithExtras = null,
+        displayItems = emptyList(),
+        contractGroup = null
       ),
       Content(
-        currentlyActiveAddon = null,
-        offerDisplayName = "TravelPlus",
+        currentlyActiveAddons = emptyList(),
+        insuranceDisplayName = "TravelPlus",
         activationDate = LocalDate(2025, 1, 1),
-        quote = AddonQuote(
-          displayTitle = "60 days",
-          addonId = "addonId1",
-          displayDetails = listOf(
-            "Amount of insured people" to "You +1",
-            "Coverage" to "60 days",
-          ),
-          addonVariant = AddonVariant(
-            termsVersion = "terms",
-            documents = listOf(),
-            perils = listOf(),
-            displayName = "60 days",
-            product = "",
-          ),
-          displayDescription = "Travel Plus 60 days",
-          documents = listOf(TravelAddonQuoteInsuranceDocument(
-            displayName = "Document display name",
-            url = ""
-          )),
-          itemCost = ItemCost(
-            UiMoney(40.0, UiCurrencyCode.SEK),
-            UiMoney(89.0, UiCurrencyCode.SEK),
-            discounts = listOf(
-              ItemCostDiscount(
-                campaignCode = "Bundle",
-                displayName = "15% bundle discount",
-                displayValue = "-10 kr/mo",
-                explanation = "some explanation",
-              ),
-              ItemCostDiscount(
-                campaignCode = "TRALALA",
-                displayName = "50% discount for 3 months",
-                displayValue = "-39 kr/mo",
-                explanation = "some explanation",
+        quotes = listOf(
+          AddonQuote(
+            displayTitle = "60 days",
+            addonId = "addonId1",
+            displayDetails = listOf(
+              "Amount of insured people" to "You +1",
+              "Coverage" to "60 days",
+            ),
+            addonVariant = AddonVariant(
+              termsVersion = "terms",
+              documents = listOf(),
+              perils = listOf(),
+              displayName = "60 days",
+              product = "",
+            ),
+            displayDescription = "Travel Plus 60 days",
+            documents = listOf(
+              TravelAddonQuoteInsuranceDocument(
+                displayName = "Document display name",
+                url = ""
+              )
+            ),
+            itemCost = ItemCost(
+              UiMoney(40.0, UiCurrencyCode.SEK),
+              UiMoney(89.0, UiCurrencyCode.SEK),
+              discounts = listOf(
+                ItemCostDiscount(
+                  campaignCode = "Bundle",
+                  displayName = "15% bundle discount",
+                  displayValue = "-10 kr/mo",
+                  explanation = "some explanation",
+                ),
+                ItemCostDiscount(
+                  campaignCode = "TRALALA",
+                  displayName = "50% discount for 3 months",
+                  displayValue = "-39 kr/mo",
+                  explanation = "some explanation",
+                ),
               ),
             ),
-          ),
-          addonSubtype = "DAYS_60"
+            addonSubtype = "DAYS_60"
+          )
         ),
-        activationDateForSuccessfullyPurchasedAddon = null,
-        navigateToFailure = false,
-        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK),
+        activationDateToNavigateToSuccess = null,
+        navigateToFailure = null,
+        insuranceExposure = "Exposure",
+        notificationMessage = "Notification message",
+        documents = emptyList(),
+        costBreakdownWithExtras = CostBreakdownWithExtras(
+          totalCost = ItemCost(
+            monthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
+            monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+            discounts = emptyList()
+          ),
+          totalExtra = UiMoney(50.0, UiCurrencyCode.SEK),
+          displayItems = listOf(
+            "base insurance" to UiMoney(200.0, UiCurrencyCode.SEK),
+            "addon" to UiMoney(50.0, UiCurrencyCode.SEK),
+          )
+        ),
+        displayItems = emptyList(),
+        contractGroup = null
       ),
     ),
   )

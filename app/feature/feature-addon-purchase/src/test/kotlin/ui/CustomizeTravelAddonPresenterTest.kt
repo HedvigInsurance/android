@@ -17,7 +17,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
-import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCase
+import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonPresenter
@@ -37,9 +37,9 @@ class CustomizeTravelAddonPresenterTest {
 
   @Test
   fun `if receive error show error screen`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
+    val useCase = FakeGetAddonOfferUseCase()
     val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
+      getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
     )
     presenter.test(CustomizeAddonState.Loading) {
@@ -52,9 +52,9 @@ class CustomizeTravelAddonPresenterTest {
 
   @Test
   fun `do not trigger reload if returning from success last state`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
+    val useCase = FakeGetAddonOfferUseCase()
     val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
+      getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
     )
     presenter.test(
@@ -75,9 +75,9 @@ class CustomizeTravelAddonPresenterTest {
 
   @Test
   fun `if receive good response return correct data, pre-choose first addon and do not navigate further`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
+    val useCase = FakeGetAddonOfferUseCase()
     val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
+      getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
     )
     presenter.test(
@@ -104,9 +104,9 @@ class CustomizeTravelAddonPresenterTest {
   @Test
   fun `if choose option in dialog show it in the dialog ui but do not change currently chosen until select button is not clicked`() =
     runTest {
-      val useCase = FakeGetTravelAddonOfferUseCase()
+      val useCase = FakeGetAddonOfferUseCase()
       val presenter = CustomizeTravelAddonPresenter(
-        getTravelAddonOfferUseCase = useCase,
+        getAddonOfferUseCase = useCase,
         insuranceId = insuranceId,
       )
       presenter.test(
@@ -131,9 +131,9 @@ class CustomizeTravelAddonPresenterTest {
 
   @Test
   fun `if reload trigger new data load`() = runTest {
-    val useCase = FakeGetTravelAddonOfferUseCase()
+    val useCase = FakeGetAddonOfferUseCase()
     val presenter = CustomizeTravelAddonPresenter(
-      getTravelAddonOfferUseCase = useCase,
+      getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
     )
     presenter.test(
@@ -150,10 +150,10 @@ class CustomizeTravelAddonPresenterTest {
   }
 }
 
-private class FakeGetTravelAddonOfferUseCase() : GetTravelAddonOfferUseCase {
+private class FakeGetAddonOfferUseCase() : GetAddonOfferUseCase {
   val turbine = Turbine<Either<ErrorMessage, Selectable>>()
 
-  override suspend fun invoke(id: String): Either<ErrorMessage, Selectable> {
+  override suspend fun invoke(contractId: String): Either<ErrorMessage, Selectable> {
     return turbine.awaitItem()
   }
 }

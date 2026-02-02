@@ -69,6 +69,7 @@ import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -788,6 +789,7 @@ private fun PreviewHomeScreen(
             description = "description",
             labels = listOf("Label"),
             eligibleInsurancesIds = nonEmptyListOf("id"),
+            flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
           isExperimentalClaimChatEnabled = true,
           isProduction = true,

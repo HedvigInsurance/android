@@ -21,7 +21,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
-import com.hedvig.android.feature.addon.purchase.data.GetTravelAddonOfferUseCaseImpl
+import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.featureflags.flags.Feature
@@ -337,7 +337,7 @@ class GetTravelAddonOfferUseCaseImplTest {
   @Test
   fun `if FF for addons is off return ErrorMessage with null message`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to false))
-    val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
     val result = sut.invoke(testId)
     assertThat(result)
       .isLeft().prop(ErrorMessage::message).isNull()
@@ -346,7 +346,7 @@ class GetTravelAddonOfferUseCaseImplTest {
   @Test
   fun `if quotes list is empty return ErrorMessage with null message`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseEmptyQuotes, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseEmptyQuotes, featureManager)
     val result = sut.invoke(testId)
     assertThat(result)
       .isLeft()
@@ -356,7 +356,7 @@ class GetTravelAddonOfferUseCaseImplTest {
   @Test
   fun `if BE gives error return ErrorMessage with null message`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithError, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithError, featureManager)
     val result = sut.invoke(testId)
     assertThat(result)
       .isLeft().prop(ErrorMessage::message).isEqualTo(null)
@@ -365,7 +365,7 @@ class GetTravelAddonOfferUseCaseImplTest {
   @Test
   fun `if BE gives UserError return ErrorMessage with proper message`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithUserError, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithUserError, featureManager)
     val result = sut.invoke(testId)
     assertThat(result)
       .isLeft().prop(ErrorMessage::message).isEqualTo("You have 2 insurances")
@@ -374,7 +374,7 @@ class GetTravelAddonOfferUseCaseImplTest {
   @Test
   fun `if BE gives data but it's null return ErrorMessage with null message`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut = GetTravelAddonOfferUseCaseImpl(apolloClientWithNullData, featureManager)
+    val sut = GetAddonOfferUseCaseImpl(apolloClientWithNullData, featureManager)
     val result = sut.invoke(testId).leftOrNull().toString()
     assertThat(result)
       .isEqualTo("ErrorMessage(message=null, throwable=null)")
@@ -383,11 +383,11 @@ class GetTravelAddonOfferUseCaseImplTest {
   @Test
   fun `if BE gives full data map it correctly`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
-    val sut1 = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseNoCurrentAddon, featureManager)
+    val sut1 = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseNoCurrentAddon, featureManager)
     val result1 = sut1.invoke(testId)
     assertThat(result1)
       .isEqualTo(either { mockWithoutUpgrade })
-    val sut2 = GetTravelAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
+    val sut2 = GetAddonOfferUseCaseImpl(apolloClientWithFullResponseWithCurrentAddon, featureManager)
     val result2 = sut2.invoke(testId)
     assertThat(result2)
       .isEqualTo(either { mockWithUpgrade })

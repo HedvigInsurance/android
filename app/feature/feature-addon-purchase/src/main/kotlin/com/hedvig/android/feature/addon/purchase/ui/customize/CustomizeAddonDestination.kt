@@ -43,7 +43,10 @@ import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.AddonVariant
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
@@ -104,8 +107,8 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun CustomizeTravelAddonDestination(
-  viewModel: CustomizeTravelAddonViewModel,
+internal fun CustomizeAddonDestination(
+  viewModel: CustomizeAddonViewModel,
   navigateUp: () -> Unit,
   popBackStack: () -> Unit,
   popAddonFlow: () -> Unit,
@@ -174,9 +177,9 @@ private fun CustomizeTravelAddonScreen(
       }
 
       is CustomizeAddonState.Success.Selectable -> {
-        LaunchedEffect(state.summaryParamsToNavigateFurther) {
-          if (state.summaryParamsToNavigateFurther != null) {
-            navigateToSummary(state.summaryParamsToNavigateFurther)
+        LaunchedEffect(state.commonParams.summaryParamsToNavigateFurther) {
+          if (state.commonParams.summaryParamsToNavigateFurther != null) {
+            navigateToSummary(state.commonParams.summaryParamsToNavigateFurther)
           }
         }
         CustomizeSelectableAddonScreenContent(
@@ -275,8 +278,8 @@ private fun CustomizeSelectableAddonScreenContent(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-      uiState.pageTitle,
-      uiState.pageDescription,
+      uiState.commonParams.pageTitle,
+      uiState.commonParams.pageDescription,
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -335,8 +338,8 @@ private fun CustomizeTravelAddonCard(
     Column(Modifier.padding(16.dp)) {
       HeaderInfoWithCurrentPrice(
         chosenOptionPremiumExtra = uiState.chosenOptionPremiumExtra,
-        exposureName = uiState.umbrellaDisplayTitle,
-        description = uiState.umbrellaDisplayDescription,
+        exposureName = uiState.commonParams.umbrellaDisplayTitle,
+        description = uiState.commonParams.umbrellaDisplayDescription,
       )
       Spacer(Modifier.height(16.dp))
       val addonSimpleItems = buildList {
@@ -584,7 +587,29 @@ internal class CustomizeTravelAddonPreviewProvider :
         addonOffer = fakeTravelAddon,
         currentlyChosenOption = fakeAddonQuote1,
         currentlyChosenOptionInDialog = fakeAddonQuote1,
-        summaryParamsToNavigateFurther = null,
+        commonParams = CommonSuccessParameters(
+          summaryParamsToNavigateFurther = null,
+          umbrellaDisplayTitle = "Display title",
+          umbrellaDisplayDescription = "Display description",
+          activationDate = LocalDate(2026, 2, 20),
+          baseQuoteCost = ItemCost(
+            UiMoney(100.0, UiCurrencyCode.SEK),
+            UiMoney(100.0, UiCurrencyCode.SEK),
+            emptyList()
+          ),
+          pageTitle = "Page title",
+          pageDescription = "Page description",
+          currentTotalCost = ItemCost(
+            UiMoney(149.0, UiCurrencyCode.SEK),
+            UiMoney(149.0, UiCurrencyCode.SEK),
+            emptyList()
+          ),
+          quoteId = "quoteId",
+          notificationMessage = "notificationMessage",
+          productVariant = fakeProductVariant,
+          contractId = "contractId",
+        ),
+
         currentlyActiveAddon = CurrentlyActiveAddon(
           "CurrentAddon Display Title",
           "CurrentAddon Display Description",
@@ -595,27 +620,24 @@ internal class CustomizeTravelAddonPreviewProvider :
           ),
         ),
         chosenOptionPremiumExtra = UiMoney(10.0, UiCurrencyCode.SEK),
-        umbrellaDisplayTitle = "Display title",
-        umbrellaDisplayDescription = "Display description",
-        activationDate = LocalDate(2026, 2, 20),
-        baseQuoteCost = ItemCost(
-          UiMoney(100.0, UiCurrencyCode.SEK),
-          UiMoney(100.0, UiCurrencyCode.SEK),
-          emptyList()
-        ),
-        pageTitle = "Page title",
-        pageDescription = "Page description",
-        currentTotalCost = ItemCost(
-          UiMoney(149.0, UiCurrencyCode.SEK),
-          UiMoney(149.0, UiCurrencyCode.SEK),
-          emptyList()
-        ),
-        quoteId = "quoteId",
+
       ),
       Failure("Ooops"),
     ),
   )
 
+private val fakeProductVariant = ProductVariant(
+  displayName = "fakeProductVariant.displayName",
+  contractGroup = ContractGroup.CAR,
+  contractType = ContractType.SE_CAR_FULL,
+  partner = null,
+  perils = listOf(),
+  insurableLimits = listOf(),
+  documents = listOf(),
+  displayTierName = "fakeProductVariant.displayTierName",
+  tierDescription =  "fakeProductVariant.tierDescription",
+  termsVersion = "fakeProductVariant.termsVersion",
+)
 private val fakeAddonQuote1 = AddonQuote(
   addonId = "addonId1",
   displayTitle = "45 days",

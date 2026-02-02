@@ -47,6 +47,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
@@ -438,6 +439,7 @@ private fun PreviewInsuranceScreen(
               "description",
               eligibleInsurancesIds = nonEmptyListOf(""),
               labels = listOf("Great"),
+              flowType = FlowType.APP_CAR_PLUS,
             ),
           ),
           pendingContracts = listOf(previewPendingContract),
@@ -528,6 +530,7 @@ private class InsuranceUiStateProvider : CollectionPreviewParameterProvider<Insu
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
           eligibleInsurancesIds = nonEmptyListOf("id"),
+          flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
         ),
       ),
       pendingContracts = listOf(),

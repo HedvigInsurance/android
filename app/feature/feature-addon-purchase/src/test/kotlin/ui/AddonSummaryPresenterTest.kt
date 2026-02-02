@@ -68,7 +68,7 @@ class AddonSummaryPresenterTest {
       useCase.turbine.add(Unit.right())
       skipItems(1)
       assertThat(awaitItem()).isInstanceOf(AddonSummaryState.Content::class)
-        .prop(AddonSummaryState.Content::activationDateForSuccessfullyPurchasedAddon)
+        .prop(AddonSummaryState.Content::activationDateToNavigateToSuccess)
         .isNotNull()
         .isEqualTo(testSummaryParametersWithCurrentAddon.activationDate)
     }
@@ -80,19 +80,19 @@ class AddonSummaryPresenterTest {
     val diff = getInitialState(params).totalPriceChange
     assertThat(
       diff,
-    ).isEqualTo(UiMoney(10.0, testSummaryParametersWithCurrentAddon.quote.itemCost.monthlyNet.currencyCode))
+    ).isEqualTo(UiMoney(10.0, testSummaryParametersWithCurrentAddon.chosenQuotes.itemCost.monthlyNet.currencyCode))
     val params2 = testSummaryParametersWithMoreExpensiveCurrentAddon
     val diff2 = getInitialState(params2).totalPriceChange
     assertThat(
       diff2,
-    ).isEqualTo(UiMoney(-20.0, testSummaryParametersWithCurrentAddon.quote.itemCost.monthlyNet.currencyCode))
+    ).isEqualTo(UiMoney(-20.0, testSummaryParametersWithCurrentAddon.chosenQuotes.itemCost.monthlyNet.currencyCode))
   }
 
   @Test
   fun `if there is no current addon, total price change should show the price of the quote`() = runTest {
     val params = testSummaryParametersNoCurrentAddon
     val diff = getInitialState(params).totalPriceChange
-    assertThat(diff).isEqualTo(testSummaryParametersNoCurrentAddon.quote.itemCost.monthlyNet)
+    assertThat(diff).isEqualTo(testSummaryParametersNoCurrentAddon.chosenQuotes.itemCost.monthlyNet)
   }
 }
 
@@ -179,22 +179,22 @@ private val moreExpensiveCurrentAddon = CurrentlyActiveAddon(
 )
 
 private val testSummaryParametersWithCurrentAddon = SummaryParameters(
-  offerDisplayName = "fakeTravelOfferOnlyOneOption.title",
-  quote = newQuote,
+  insuranceDisplayName = "fakeTravelOfferOnlyOneOption.title",
+  chosenQuotes = newQuote,
   activationDate = LocalDate(2024, 12, 30),
   currentlyActiveAddon = currentAddon,
 )
 
 private val testSummaryParametersWithMoreExpensiveCurrentAddon = SummaryParameters(
-  offerDisplayName = "fakeTravelOfferOnlyOneOption.title",
-  quote = newQuote2,
+  insuranceDisplayName = "fakeTravelOfferOnlyOneOption.title",
+  chosenQuotes = newQuote2,
   activationDate = LocalDate(2024, 12, 30),
   currentlyActiveAddon = moreExpensiveCurrentAddon,
 )
 
 private val testSummaryParametersNoCurrentAddon = SummaryParameters(
-  offerDisplayName = "fakeTravelOfferOnlyOneOption.title",
-  quote = newQuote,
+  insuranceDisplayName = "fakeTravelOfferOnlyOneOption.title",
+  chosenQuotes = newQuote,
   activationDate = LocalDate(2024, 12, 30),
   currentlyActiveAddon = null,
 )

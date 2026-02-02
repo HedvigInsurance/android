@@ -15,8 +15,8 @@ import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestina
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelAddonTriage
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonDestination
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonViewModel
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonDestination
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonDestination
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonFailureScreen
@@ -57,7 +57,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         navigator.navigateUnsafe(
           AddonPurchaseGraphDestination(
             insuranceIds,
-            AddonBannerSource.DEEPLINK,
+            AddonBannerSource.TRAVEL_DEEPLINK,
           ),
         ) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })
@@ -102,10 +102,10 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
      * Choose addon option (e.g. 45/60 days)
      */
     navdestination<CustomizeAddon> { backStackEntry ->
-      val viewModel: CustomizeTravelAddonViewModel = koinViewModel {
+      val viewModel: CustomizeAddonViewModel = koinViewModel {
         parametersOf(this.insuranceId)
       }
-      CustomizeTravelAddonDestination(
+      CustomizeAddonDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         popBackStack = navigator::popBackStack,
