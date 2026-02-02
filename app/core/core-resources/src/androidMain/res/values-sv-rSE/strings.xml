@@ -934,7 +934,7 @@
   <string name="claim_status_detail_email">Ta kontakt med skadeteamet</string>
   <string name="claims_alert_body">Om du avslutar går du tillbaka till startsidan och dina inmatade uppgifter kommer att gå förlorade.</string>
   <string name="claims_continue_button">Fortsätt</string>
-  <string name="claims_edit_button">Edit</string>
+  <string name="claims_edit_button">Ändra</string>
   <string name="claims_history_overview">Översikt</string>
   <string name="claims_history_overview_total_claims">Totalt antal skadeanmälningar</string>
   <string name="claims_history_overview_total_compensation">Total ersättning</string>
