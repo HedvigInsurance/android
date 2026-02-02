@@ -154,23 +154,23 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
-    ClaimChatUiState.Initializing,
-    ClaimChatPresenter(
-      developmentFlow,
-      startClaimIntentUseCase,
-      getClaimIntentUseCase,
-      submitTaskUseCase,
-      submitAudioRecordingUseCase,
-      submitFileUploadUseCase,
-      submitFormUseCase,
-      submitSelectUseCase,
-      submitSummaryUseCase,
-      skipStepUseCase,
-      audioRecordingManager,
-      fileService,
-      regretStepUseCase,
-    ),
-  )
+  ClaimChatUiState.Initializing,
+  ClaimChatPresenter(
+    developmentFlow,
+    startClaimIntentUseCase,
+    getClaimIntentUseCase,
+    submitTaskUseCase,
+    submitAudioRecordingUseCase,
+    submitFileUploadUseCase,
+    submitFormUseCase,
+    submitSelectUseCase,
+    submitSummaryUseCase,
+    skipStepUseCase,
+    audioRecordingManager,
+    fileService,
+    regretStepUseCase,
+  ),
+)
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
@@ -226,7 +226,10 @@ internal class ClaimChatPresenter(
         startClaimIntentUseCase
           .invoke(developmentFlow)
           .fold(
-            ifLeft = { failedToStart = true },
+            ifLeft = {
+              initializing = false
+              failedToStart = true
+            },
             ifRight = { claimIntent ->
               Snapshot.withMutableSnapshot {
                 initializing = false
@@ -275,7 +278,7 @@ internal class ClaimChatPresenter(
             steps.find {
               it.id == event.id
             }?.stepContent as? StepContent.ContentSelect
-          )?.selectedOptionId
+            )?.selectedOptionId
           if (selectedId == null) return@CollectEvents
           currentContinueButtonLoading = true
           launch {
@@ -666,7 +669,7 @@ internal class ClaimChatPresenter(
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
                   null,
-                  -> field.copy(
+                    -> field.copy(
                     selectedOptions = event.answer?.let {
                       listOf(it)
                     } ?: emptyList(),
@@ -935,7 +938,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Task,
   is StepContent.Deflect,
   StepContent.Unknown,
-  -> this
+    -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
