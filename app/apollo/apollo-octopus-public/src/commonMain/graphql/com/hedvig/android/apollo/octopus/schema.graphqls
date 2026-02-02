@@ -1,3 +1,28 @@
+type ActiveAddon {
+  id: ID!
+  """
+  Cost of the existing addon.
+  """
+  cost: ItemCost!
+  """
+  Used for displaying current coverage.
+  eg Travel Insurance Plus (45 days)
+  """
+  displayTitle: String!
+  """
+  Used for displaying current coverage.
+  eg Risk description
+  """
+  displayDescription: String
+}
+"""
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+"""
+scalar ID
+"""
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+"""
+scalar String
 """
 An addon is an additional insurance that can be added to a contract. It is usually a separate insurance.
 """
@@ -11,6 +36,42 @@ type Addon {
   Premium of the addon.
   """
   premium: Money!
+}
+"""
+Output type for AddonActivate mutation.
+"""
+type AddonActivationOutput {
+  """
+  If any error occurred.
+  """
+  userError: UserError
+}
+"""
+Output type for AddonBanner query.
+Returns info to show in the banner.
+"""
+type AddonBanner {
+  """
+  List of member contracts that is eligible.
+  One of these ids are required later when calling AddonOffer to get addon prices.
+  """
+  contractIds: [ID!]!
+  """
+  Title to show in banner page.
+  """
+  displayTitleName: String!
+  """
+  Description to show in banner page.
+  """
+  descriptionDisplayName: String!
+  """
+  Texts to show as badges in banner page. Empty if no banner to show.
+  """
+  badges: [String!]!
+  """
+  Flow type
+  """
+  flow: AddonFlow!
 }
 """
 Root of coverage comparison result
@@ -39,10 +100,6 @@ type AddonComparisonCell {
 The `Boolean` scalar type represents `true` or `false`.
 """
 scalar Boolean
-"""
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
-"""
-scalar String
 type AddonComparisonRow {
   """
   Peril title
@@ -56,6 +113,140 @@ type AddonComparisonRow {
   Coverage per tier
   """
   cells: [AddonComparisonCell!]!
+}
+"""
+Returns price for an Addon offer.
+"""
+type AddonContractQuote {
+  """
+  Id of the quote.
+  """
+  quoteId: ID!
+  """
+  Display title of the addon group. eg Travel plus or Car Plus
+  """
+  displayTitle: String!
+  """
+  Display description of the addon group.
+  eg For those who travel often: luggage protection and 24/7 assistance worldwide
+  """
+  displayDescription: String!
+  """
+  The date the addon will be activated.
+  """
+  activationDate: Date!
+  """
+  Addon Content
+  """
+  addonOffer: AddonOfferContent!
+  """
+  List of member current addons
+  """
+  activeAddons: [ActiveAddon!]!
+  """
+  Base insurance cost
+  """
+  baseQuoteCost: ItemCost!
+  """
+  Product variant
+  """
+  productVariant: ProductVariant!
+}
+type AddonDisplayItem {
+  displayTitle: String!
+  displayValue: String!
+}
+"""
+Type of flow.
+"""
+enum AddonFlow {
+  APP_TRAVEL_PLUS_SELL_ONLY
+  APP_TRAVEL_PLUS_SELL_OR_UPGRADE
+  APP_CAR_PLUS
+}
+type AddonOffer {
+  """
+  Title to show in offer page.
+  eg "Extend your coverage"
+  """
+  pageTitle: String!
+  """
+  Description to show in offer page.
+  eg "Get extra coverage when you travel abroad"
+  """
+  pageDescription: String!
+  """
+  New quote
+  """
+  quote: AddonContractQuote!
+  """
+  Agreement total cost
+  """
+  currentTotalCost: ItemCost!
+}
+"""
+AddonOfferSelectable is used when we have multiple variants for the same quote
+AddonOfferToggleable is used when we have only one variant
+"""
+union AddonOfferContent = AddonOfferSelectable|AddonOfferToggleable
+"""
+Output type for AddonOffer mutation.
+Returns offer with quote and addons with prices etc to show in the offer page.
+"""
+union AddonOfferOutput = UserError|AddonOffer
+type AddonOfferQuote {
+  """
+  Id of the addon.
+  """
+  id: ID!
+  """
+  Display value of the addon. Will be shown in the select days dropdown. eg 45 days 60 days
+  """
+  displayTitle: String!
+  """
+  Display description we want to show that explains addon
+  """
+  displayDescription: String!
+  """
+  Display items of the addon.
+  eg 'Coverage' with a value of '45 days'
+  """
+  displayItems: [AddonDisplayItem!]!
+  """
+  Cost of the addon
+  """
+  cost: ItemCost!
+  """
+  Addon variant
+  """
+  addonVariant: AddonVariant!
+}
+type AddonOfferSelectable {
+  """
+  Display title for variants
+  eg "Maximum travel limit"
+  """
+  fieldTitle: String!
+  """
+  Info title when selecting from variants
+  eg "Choose your maximum travel limit"
+  """
+  selectionTitle: String!
+  """
+  Info description when selecting from variants
+  eg "Days covered when travelling"
+  """
+  selectionDescription: String!
+  """
+  Quotes for addons
+  """
+  quotes: [AddonOfferQuote!]!
+}
+type AddonOfferToggleable {
+  """
+  Quotes for addon
+  """
+  quotes: [AddonOfferQuote!]!
 }
 type AddonPeril {
   """
@@ -88,10 +279,6 @@ type AddonVariant {
   documents: [InsuranceDocument!]!
   displayName: String!
 }
-"""
-The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
-"""
-scalar ID
 """
 The agreement is the actual, immutable reincarnation of an insurance that is active on a certain date date.
 It carries the actual relevant information about the insurance, such as the form/do dates, premium, insurance
@@ -2111,6 +2298,11 @@ type Member {
   isEligibleToMakeClaim: Boolean!
   memberActions: MemberActions
   """
+  Call this to get the info to show banner.
+  If empty list is returned then member is not eligible for the addon.
+  """
+  addonBanners(flows: [AddonFlow!]!): [AddonBanner!]!
+  """
   Call this to get the info to show in the Travel Addon Upsell or Upgrade banner.
   If null is returned then member is not eligable for the travel addon.
   """
@@ -3106,6 +3298,15 @@ type Mutation {
   Commits the midterm change and creates a new agreement for it, takes id of the intent
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
+  """
+  Call this to get addon quotes with price etc to show in the offer page.
+  Call this when starting the add/upgrade addon flow.
+  """
+  addonGenerateOffer(contractId: ID!): AddonOfferOutput!
+  """
+  Call this to accept an addon offer and activate selected addon(s).
+  """
+  addonActivateOffer(quoteId: ID!, addonIds: [ID!]!): AddonActivationOutput!
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when member clicks on the "See price" button in the Travel Addon Upsell banner.
