@@ -115,17 +115,19 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         navigateToSummary = { summaryParameters: SummaryParameters ->
           navController.navigate(Summary(summaryParameters))
         },
-        onNavigateToTravelInsurancePlusExplanation = { perilDataList: List<PerilData> ->
+        onNavigateToTravelInsurancePlusExplanation = { perilData ->
           navigator.navigateUnsafe(
             TravelInsurancePlusExplanation(
-              perilDataList.map { perilData ->
-                TravelPerilData(
-                  title = perilData.title,
-                  description = perilData.description,
-                  covered = perilData.covered,
-                  colorCode = perilData.colorCode,
-                  isEnabled = perilData.isEnabled,
-                )
+              perilData.map { item ->
+                item.first to item.second.map { peril ->
+                  TravelPerilData(
+                    title = peril.title,
+                    description = peril.description,
+                    covered = peril.covered,
+                    colorCode = peril.colorCode,
+                    isEnabled = peril.isEnabled,
+                  )
+                }
               },
             ),
           )

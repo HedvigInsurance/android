@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Medium
@@ -28,29 +29,38 @@ import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun TravelInsurancePlusExplanationDestination(travelPerilData: List<TravelPerilData>, navigateUp: () -> Unit) {
+internal fun TravelInsurancePlusExplanationDestination(
+  travelPerilData: List<Pair<String, List<TravelPerilData>>>,
+  navigateUp: () -> Unit,
+) {
   TravelInsurancePlusExplanationScreen(
-    perilData = remember(travelPerilData) {
-      travelPerilData.map {
-        PerilData(
-          title = it.title,
-          description = it.description,
-          covered = it.covered,
-          colorCode = it.colorCode,
-        )
-      }
-    },
+    travelPerilData = travelPerilData,
     navigateUp = navigateUp,
   )
 }
 
 @Composable
-private fun TravelInsurancePlusExplanationScreen(perilData: List<PerilData>, navigateUp: () -> Unit) {
+private fun TravelInsurancePlusExplanationScreen(
+  travelPerilData: List<Pair<String, List<TravelPerilData>>>,
+  navigateUp: () -> Unit,
+) {
+//  perilData = remember(travelPerilData) {
+//    travelPerilData.map {
+//      PerilData(
+//        title = it.title,
+//        description = it.description,
+//        covered = it.covered,
+//        colorCode = it.colorCode,
+//      )
+//    }
+//  },
   HedvigScaffold(navigateUp) {
     FlowHeading(
       stringResource(Res.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
       stringResource(Res.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
-      Modifier.fillMaxWidth().padding(horizontal = 18.dp),
+      Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 18.dp),
     )
     Spacer(Modifier.height(32.dp))
     HighlightLabel(
@@ -60,7 +70,29 @@ private fun TravelInsurancePlusExplanationScreen(perilData: List<PerilData>, nav
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
-    PerilList(perilData, Small, Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+    travelPerilData.forEachIndexed { index, item ->
+      val perilData = remember(travelPerilData) {
+        item.second.map {
+          PerilData(
+            title = it.title,
+            description = it.description,
+            covered = it.covered,
+            colorCode = it.colorCode,
+          )
+        }
+      }
+      HedvigText(item.first)
+      Spacer(Modifier.height(8.dp))
+      PerilList(
+        perilData, Small,
+        Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      if (index!=travelPerilData.lastIndex) {
+        Spacer(Modifier.height(16.dp))
+      }
+    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -71,13 +103,15 @@ private fun PreviewTravelInsurancePlusExplanationScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelInsurancePlusExplanationScreen(
-        perilData = List(4) { index ->
-          PerilData(
-            title = "Title$index",
-            description = "Description$index",
-            covered = listOf("Covered#$index", "Also covered#$index"),
-            colorCode = "#FFD0ECFB",
-          )
+        travelPerilData = List(4) { index ->
+          "Addon 1" to List(4) {
+            TravelPerilData(
+              title = "Title$index",
+              description = "Description$index",
+              covered = listOf("Covered#$index", "Also covered#$index"),
+              colorCode = "#FFD0ECFB",
+            )
+          }
         },
         navigateUp = {},
       )

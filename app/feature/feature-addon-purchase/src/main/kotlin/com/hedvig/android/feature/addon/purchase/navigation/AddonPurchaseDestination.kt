@@ -5,6 +5,7 @@ import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.navigation.common.Destination
@@ -33,7 +34,7 @@ internal sealed interface AddonPurchaseDestination {
 
   @Serializable
   data class TravelInsurancePlusExplanation(
-    val perilData: List<TravelPerilData>,
+    val perilData: List<Pair<String, List<TravelPerilData>>>
   ) : AddonPurchaseDestination, Destination {
     @Serializable
     data class TravelPerilData(
@@ -45,7 +46,8 @@ internal sealed interface AddonPurchaseDestination {
     )
 
     companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<List<TravelPerilData>>())
+      override val typeList: List<KType> = listOf(typeOf<
+        List<Pair<String, List<TravelPerilData>>>>())
     }
   }
 

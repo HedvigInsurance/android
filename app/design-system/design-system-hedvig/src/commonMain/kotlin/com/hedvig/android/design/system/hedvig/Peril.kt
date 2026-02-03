@@ -32,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.tokens.PerilLargeTokens
 import com.hedvig.android.design.system.hedvig.tokens.PerilSmallTokens
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import kotlinx.serialization.Serializable
 
 @Composable
 fun PerilList(perilItems: List<PerilData>, size: PerilSize, modifier: Modifier = Modifier) {
@@ -135,6 +136,7 @@ private fun ExpandablePerilCard(
   )
 }
 
+@Serializable
 data class PerilData(
   val title: String,
   val description: String?,
