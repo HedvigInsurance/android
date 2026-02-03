@@ -188,7 +188,6 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         spaceBetween = 8.dp,
         endSlot = {
           val totalExtra = uiState.costBreakdownWithExtras?.totalExtra
-          logcat { "Mariia: totalExtra in UI: $totalExtra" }
           if (totalExtra!=null) {
             val text = if (totalExtra.amount > 0) {
               // with +

@@ -116,7 +116,7 @@ internal fun CustomizeAddonDestination(
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
 ) {
   val uiState: CustomizeAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
@@ -166,7 +166,7 @@ private fun CustomizeTravelAddonScreen(
   onToggleOption: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
   reload: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToChat: () -> Unit,
@@ -261,7 +261,7 @@ private fun CustomizeSelectableAddonScreenContent(
   onChooseOptionInDialog: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
   onToggleOption: (AddonQuote) -> Unit,
   submitSelected: () -> Unit,
   submitToggled: () -> Unit,
@@ -343,7 +343,7 @@ private fun CustomizeAddonCard(
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   onToggleOption: (AddonQuote) -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -437,10 +437,9 @@ private fun CustomizeAddonCard(
         modifier = Modifier.fillMaxWidth(),
         text = stringResource(Res.string.ADDON_FLOW_COVER_BUTTON),
         onClick = dropUnlessResumed {
-          //todo: change to list here
           val data = when (uiState) {
             is CustomizeAddonState.Success.Selectable -> listOf(
-              uiState.currentlyChosenOption.displayTitle to
+              null to
                 uiState.currentlyChosenOption.addonVariant.perils.map{
                   PerilData(
                     title = it.title,
@@ -449,7 +448,7 @@ private fun CustomizeAddonCard(
                     colorCode = it.colorCode,
                   )
                 })
-            is CustomizeAddonState.Success.Toggleable -> uiState.currentlyChosenOptions.map {
+            is CustomizeAddonState.Success.Toggleable -> uiState.addonOffer.addonOptions.map {
               it.displayTitle to it.addonVariant.perils.map { peril ->
                 PerilData(
                   title = peril.title,

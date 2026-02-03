@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelInsurancePlusExplanationDestination(
-  travelPerilData: List<Pair<String, List<TravelPerilData>>>,
+  travelPerilData: List<Pair<String?, List<TravelPerilData>>>,
   navigateUp: () -> Unit,
 ) {
   TravelInsurancePlusExplanationScreen(
@@ -41,19 +41,9 @@ internal fun TravelInsurancePlusExplanationDestination(
 
 @Composable
 private fun TravelInsurancePlusExplanationScreen(
-  travelPerilData: List<Pair<String, List<TravelPerilData>>>,
+  travelPerilData: List<Pair<String?, List<TravelPerilData>>>,
   navigateUp: () -> Unit,
 ) {
-//  perilData = remember(travelPerilData) {
-//    travelPerilData.map {
-//      PerilData(
-//        title = it.title,
-//        description = it.description,
-//        covered = it.covered,
-//        colorCode = it.colorCode,
-//      )
-//    }
-//  },
   HedvigScaffold(navigateUp) {
     FlowHeading(
       stringResource(Res.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
@@ -61,7 +51,7 @@ private fun TravelInsurancePlusExplanationScreen(
       Modifier
         .fillMaxWidth()
         .padding(horizontal = 18.dp),
-    )
+    ) //todo: change when BE allows
     Spacer(Modifier.height(32.dp))
     HighlightLabel(
       labelText = stringResource(Res.string.ADDON_LEARN_MORE_LABEL),
@@ -81,8 +71,12 @@ private fun TravelInsurancePlusExplanationScreen(
           )
         }
       }
-      HedvigText(item.first)
-      Spacer(Modifier.height(8.dp))
+      item.first?.let {
+        Spacer(Modifier.height(8.dp))
+        HedvigText(it,
+        modifier = Modifier.padding(horizontal = 16.dp))
+        Spacer(Modifier.height(8.dp))
+      }
       PerilList(
         perilData, Small,
         Modifier
