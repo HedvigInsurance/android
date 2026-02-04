@@ -34,108 +34,110 @@ internal class GetAddonOfferUseCaseImpl(
         logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but travel addon feature flag is off" }
         raise(ErrorMessage())
       }
-      apolloClient.mutation(
-        AddonGenerateOfferMutation(contractId),
-      ).safeExecute().fold(
-        ifLeft = { error ->
-          logcat(LogPriority.ERROR, error) { "Tried to start AddonGenerateOfferMutation but got error: $error" }
-          // not passing error message to the member here, as we want to redirect member to chat if there is a message
-          raise(ErrorMessage())
-        },
-        ifRight = { response: AddonGenerateOfferMutation.Data ->
-          when (val result = response.addonGenerateOffer) {
-            is AddonGenerateOfferMutation.Data.OtherAddonGenerateOffer -> {
-              logcat(LogPriority.ERROR) {
-                "Tried to start AddonGenerateOfferMutation but got addonGenerateOffer.Other"
+      apolloClient
+        .mutation(
+          AddonGenerateOfferMutation(contractId),
+        )
+        .safeExecute().fold(
+          ifLeft = { error ->
+            logcat(LogPriority.ERROR, error) { "Tried to start AddonGenerateOfferMutation but got error: $error" }
+            // not passing error message to the member here, as we want to redirect member to chat if there is a message
+            raise(ErrorMessage())
+          },
+          ifRight = { response: AddonGenerateOfferMutation.Data ->
+            when (val result = response.addonGenerateOffer) {
+              is AddonGenerateOfferMutation.Data.OtherAddonGenerateOffer -> {
+                logcat(LogPriority.ERROR) {
+                  "Tried to start AddonGenerateOfferMutation but got addonGenerateOffer.Other"
+                }
+                raise(ErrorMessage())
               }
-              raise(ErrorMessage())
-            }
 
-            is AddonGenerateOfferMutation.Data.UserErrorAddonGenerateOffer -> {
-              logcat(LogPriority.ERROR) {
-                "Tried to start AddonGenerateOfferMutation but got error: $response.addonGenerateOffer.message"
+              is AddonGenerateOfferMutation.Data.UserErrorAddonGenerateOffer -> {
+                logcat(LogPriority.ERROR) {
+                  "Tried to start AddonGenerateOfferMutation but got error: $response.addonGenerateOffer.message"
+                }
+                raise(ErrorMessage(response.addonGenerateOffer.message))
               }
-              raise(ErrorMessage(response.addonGenerateOffer.message))
-            }
 
-            is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer -> {
-              val addonOffer = when (val addonOfferResult = result.quote.addonOffer) {
-                is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferSelectableAddonOffer -> {
-                  val nonEmptyQuotes = result.quote.addonOffer.quotes.toNonEmptyListOrNull()
-                  if (nonEmptyQuotes.isNullOrEmpty()) {
-                    logcat(LogPriority.ERROR) { "Tried to do AddonGenerateOfferMutation but got empty quotes" }
+              is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer -> {
+                val addonOffer = when (val addonOfferResult = result.quote.addonOffer) {
+                  is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferSelectableAddonOffer -> {
+                    val nonEmptyQuotes = result.quote.addonOffer.quotes.toNonEmptyListOrNull()
+                    if (nonEmptyQuotes.isNullOrEmpty()) {
+                      logcat(LogPriority.ERROR) { "Tried to do AddonGenerateOfferMutation but got empty quotes" }
+                      raise(ErrorMessage())
+                    } else {
+                      Selectable(
+                        addonOptions = nonEmptyQuotes.toAddonQuotes(
+                          result.quote.productVariant.documents.map {
+                            TravelAddonQuoteInsuranceDocument(
+                              displayName = it.displayName,
+                              url = it.url,
+                            )
+                          },
+                        ),
+                        selectionTitle = addonOfferResult.selectionTitle,
+                        selectionDescription = addonOfferResult.selectionDescription,
+                        fieldTitle = addonOfferResult.fieldTitle,
+                      )
+                    }
+                  }
+
+                  is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferToggleableAddonOffer,
+                    -> {
+                    val nonEmptyQuotes = result.quote.addonOffer.quotes.toNonEmptyListOrNull()
+                    if (nonEmptyQuotes.isNullOrEmpty()) {
+                      logcat(LogPriority.ERROR) { "Tried to do AddonGenerateOfferMutation but got empty quotes" }
+                      raise(ErrorMessage())
+                    } else {
+                      AddonOffer.Toggleable(
+                        addonOptions = nonEmptyQuotes.toAddonQuotes(
+                          result.quote.productVariant.documents.map {
+                            TravelAddonQuoteInsuranceDocument(
+                              displayName = it.displayName,
+                              url = it.url,
+                            )
+                          },
+                        ),
+                      )
+                    }
+                  }
+
+                  is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.OtherAddonOffer -> {
+                    logcat(LogPriority.ERROR) { "Unknown AddonOffer" }
                     raise(ErrorMessage())
-                  } else {
-                    Selectable(
-                      addonOptions = nonEmptyQuotes.toTravelAddonQuotes(
-                        result.quote.productVariant.documents.map {
-                          TravelAddonQuoteInsuranceDocument(
-                            displayName = it.displayName,
-                            url = it.url,
-                          )
-                        },
-                      ),
-                      selectionTitle = addonOfferResult.selectionTitle,
-                      selectionDescription = addonOfferResult.selectionDescription,
-                      fieldTitle = addonOfferResult.fieldTitle,
-                    )
                   }
                 }
 
-                is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferToggleableAddonOffer,
-                  -> {
-                  val nonEmptyQuotes = result.quote.addonOffer.quotes.toNonEmptyListOrNull()
-                  if (nonEmptyQuotes.isNullOrEmpty()) {
-                    logcat(LogPriority.ERROR) { "Tried to do AddonGenerateOfferMutation but got empty quotes" }
-                    raise(ErrorMessage())
-                  } else {
-                    AddonOffer.Toggleable(
-                      addonOptions = nonEmptyQuotes.toTravelAddonQuotes(
-                        result.quote.productVariant.documents.map {
-                          TravelAddonQuoteInsuranceDocument(
-                            displayName = it.displayName,
-                            url = it.url,
-                          )
-                        },
-                      ),
-                    )
-                  }
-                }
-
-                is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.OtherAddonOffer -> {
-                  logcat(LogPriority.ERROR) { "Unknown AddonOffer" }
-                  raise(ErrorMessage())
-                }
+                GenerateAddonOfferResult(
+                  contractId = contractId,
+                  pageTitle = result.pageTitle,
+                  pageDescription = result.pageDescription,
+                  umbrellaAddonQuote = UmbrellaAddonQuote(
+                    quoteId = result.quote.quoteId,
+                    displayTitle = result.quote.displayTitle,
+                    displayDescription = result.quote.displayDescription,
+                    activationDate = result.quote.activationDate,
+                    addonOffer = addonOffer,
+                    activeAddons = result.quote.activeAddons.toActiveAddons(),
+                    baseInsuranceCost = ItemCost.fromItemCostFragment(result.quote.baseQuoteCost),
+                    productVariant = result.quote.productVariant.toProductVariant(),
+                  ),
+                  currentTotalCost = ItemCost.fromItemCostFragment(result.currentTotalCost),
+                  notificationMessage = null, //TODO: change when backend allows!
+                )
               }
-
-              GenerateAddonOfferResult(
-                contractId = contractId,
-                pageTitle = result.pageTitle,
-                pageDescription = result.pageDescription,
-                umbrellaAddonQuote = UmbrellaAddonQuote(
-                  quoteId = result.quote.quoteId,
-                  displayTitle = result.quote.displayTitle,
-                  displayDescription = result.quote.displayDescription,
-                  activationDate = result.quote.activationDate,
-                  addonOffer = addonOffer,
-                  activeAddons = result.quote.activeAddons.toActiveAddons(),
-                  baseInsuranceCost = ItemCost.fromItemCostFragment(result.quote.baseQuoteCost),
-                  productVariant = result.quote.productVariant.toProductVariant(),
-                ),
-                currentTotalCost = ItemCost.fromItemCostFragment(result.currentTotalCost),
-                notificationMessage = null //TODO: change when backend allows!
-              )
             }
-          }
-        },
-      )
+          },
+        )
     }
   }
 }
 
 private fun NonEmptyList<
   AddonOfferQuoteFragment,
-  >.toTravelAddonQuotes(documents: List<TravelAddonQuoteInsuranceDocument>):
+  >.toAddonQuotes(documents: List<TravelAddonQuoteInsuranceDocument>):
   NonEmptyList<AddonQuote> {
   return this.map { addonQuote ->
     AddonQuote(

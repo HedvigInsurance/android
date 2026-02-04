@@ -42,10 +42,12 @@ fun FeatureAddonBanner(
         horizontal = 12.dp,
       ),
     ) {
-      Row {
+      Row() {
         HedvigText(title)
-        Spacer(Modifier.width(8.dp))
-        LabelRow(labels)
+        if (labels.isNotEmpty()) {
+          Spacer(Modifier.width(8.dp))
+          LabelRow(labels)
+        }
       }
       Spacer(Modifier.height(8.dp))
       HedvigText(
