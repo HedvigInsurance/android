@@ -447,7 +447,7 @@ private fun PreviewChooseInsuranceToTerminateScreen(
 private class ChooseInsuranceForAddonUiStateProvider :
   CollectionPreviewParameterProvider<AddonSummaryState>(
     listOf(
-      Loading,
+      Loading(      activationDateToNavigateToSuccess = null),
       Content(
         currentlyActiveAddons = listOf(
           CurrentlyActiveAddon(
@@ -500,7 +500,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
           )
         ),
 
-        activationDateToNavigateToSuccess = null,
         navigateToFailure = null,
         insuranceExposure = "Exposure",
         notificationMessage = "Notification message",
@@ -556,7 +555,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
             addonSubtype = "DAYS_60"
           )
         ),
-        activationDateToNavigateToSuccess = null,
         navigateToFailure = null,
         insuranceExposure = "Exposure",
         notificationMessage = "Notification message",
