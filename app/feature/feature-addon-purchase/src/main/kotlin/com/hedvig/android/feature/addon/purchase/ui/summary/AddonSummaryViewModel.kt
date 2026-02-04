@@ -65,8 +65,9 @@ internal class AddonSummaryPresenter(
     }
 
     LaunchedEffect(submitIteration) {
+      val state = currentState as? Content ?: return@LaunchedEffect
       if (submitIteration > 0) {
-        currentState = Loading
+        currentState = Loading()
         submitAddonPurchaseUseCase.invoke(
           quoteId = summaryParameters.quoteId,
           addonIds = summaryParameters.chosenQuotes.map{
@@ -75,6 +76,7 @@ internal class AddonSummaryPresenter(
         ).fold(
           ifLeft = {
             errorForNavigation = it
+            currentState = state
           },
           ifRight = {
             logSuccessfulAddonPurchaseAction(summaryParameters, addonPurchaseSource)
@@ -86,18 +88,15 @@ internal class AddonSummaryPresenter(
     }
     return when(val state = currentState) {
       is Content -> state.copy (
-        activationDateToNavigateToSuccess = activationDateForNavigation,
         navigateToFailure = errorForNavigation)
-      Loading -> state
+      is Loading -> state.copy(
+        activationDateToNavigateToSuccess = activationDateForNavigation
+      )
     }
   }
 }
 
 internal fun getInitialState(summaryParameters: SummaryParameters): Content {
-  logcat {"Mariia: summaryParameters: " +
-    "baseInsuranceCost: ${summaryParameters.baseInsuranceCost}" +
-    "quotes: ${summaryParameters.chosenQuotes}" +
-    "existingAddons: ${summaryParameters.currentlyActiveAddons} "}
   return Content(
     insuranceDisplayName = summaryParameters.productVariant.displayName,
     quotes = summaryParameters.chosenQuotes,
@@ -115,7 +114,6 @@ internal fun getInitialState(summaryParameters: SummaryParameters): Content {
     displayItems = summaryParameters.chosenQuotes.flatMap {
       it.displayDetails
     },
-    activationDateToNavigateToSuccess = null,
     navigateToFailure = null,
     contractGroup = summaryParameters.productVariant.contractGroup
   )
@@ -166,7 +164,9 @@ internal data class CostBreakdownWithExtras(
 )
 
 internal sealed interface AddonSummaryState {
-  data object Loading : AddonSummaryState
+  data class Loading(
+    val activationDateToNavigateToSuccess: LocalDate? = null
+  ) : AddonSummaryState
 
   data class Content(
     val insuranceDisplayName: String,
@@ -179,7 +179,6 @@ internal sealed interface AddonSummaryState {
     val documents: List<InsuranceVariantDocument>,
     val costBreakdownWithExtras: CostBreakdownWithExtras?,
     val displayItems: List<Pair<String,String>>, //todo: check how those look
-    val activationDateToNavigateToSuccess: LocalDate? = null,
     val navigateToFailure: ErrorMessage? = null,
   ) : AddonSummaryState
 }

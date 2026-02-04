@@ -106,19 +106,22 @@ private fun AddonSummaryScreen(
   onSubmitQuoteClick: () -> Unit,
 ) {
   when (uiState) {
-    Loading -> HedvigFullScreenCenterAlignedProgress()
+    is Loading -> {
+      LaunchedEffect(uiState.activationDateToNavigateToSuccess) {
+        val date = uiState.activationDateToNavigateToSuccess
+        if (date != null) {
+          onSuccess(date)
+        }
+      }
+
+      HedvigFullScreenCenterAlignedProgress()
+    }
 
     is Content -> {
       LaunchedEffect(uiState.navigateToFailure) {
         val fail = uiState.navigateToFailure
         if (fail!=null) {
           onFailure()
-        }
-      }
-      LaunchedEffect(uiState.activationDateToNavigateToSuccess) {
-        val date = uiState.activationDateToNavigateToSuccess
-        if (date != null) {
-          onSuccess(date)
         }
       }
 
