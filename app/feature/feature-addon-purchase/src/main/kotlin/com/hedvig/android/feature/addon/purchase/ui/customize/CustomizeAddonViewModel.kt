@@ -20,6 +20,7 @@ import com.hedvig.android.feature.addon.purchase.data.AddonOffer
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
+import com.hedvig.android.feature.addon.purchase.navigation.AddonType
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -111,6 +112,7 @@ internal class CustomizeTravelAddonPresenter(
             notificationMessage = state.commonParams.notificationMessage,
             contractId = state.commonParams.contractId,
             productVariant = state.commonParams.productVariant,
+            addonType = AddonType.SELECTABLE
           )
           currentState = state.copy(
             commonParams = state.commonParams.copy(
@@ -130,6 +132,7 @@ internal class CustomizeTravelAddonPresenter(
             baseInsuranceCost = state.commonParams.baseQuoteCost,
             notificationMessage = state.commonParams.notificationMessage,
             contractId = state.commonParams.contractId,
+            addonType = AddonType.TOGGLEABLE,
           )
           currentState = state.copy(
             commonParams = state.commonParams.copy(

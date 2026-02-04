@@ -18,6 +18,7 @@ import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
+import com.hedvig.android.feature.addon.purchase.navigation.AddonType
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonLogInfo.AddonEventType
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
@@ -109,7 +110,8 @@ internal fun getInitialState(summaryParameters: SummaryParameters): Content {
       baseCost = summaryParameters.baseInsuranceCost,
       quotes = summaryParameters.chosenQuotes,
       insuranceDisplayName = summaryParameters.productVariant.displayName,
-      existingAddons = summaryParameters.currentlyActiveAddons
+      existingAddons = summaryParameters.currentlyActiveAddons,
+      addonType = summaryParameters.addonType
     ),
     displayItems = summaryParameters.chosenQuotes.flatMap {
       it.displayDetails
@@ -123,7 +125,8 @@ internal fun getCostBreakdownWithExtras(
   insuranceDisplayName: String,
   baseCost: ItemCost,
   existingAddons: List<CurrentlyActiveAddon>,
-  quotes: List<AddonQuote>
+  quotes: List<AddonQuote>,
+  addonType: AddonType
 ): CostBreakdownWithExtras {
   val baseInsuranceGross = insuranceDisplayName to baseCost.monthlyGross
   val addonsGross = quotes.map {
@@ -132,6 +135,13 @@ internal fun getCostBreakdownWithExtras(
   val baseCurrency = baseCost.monthlyNet.currencyCode
   val extraSum = quotes.sumOf {
     it.itemCost.monthlyNet.amount
+  }.let {
+    when (addonType) {
+      AddonType.SELECTABLE -> it - existingAddons.sumOf { existing ->
+        existing.cost.monthlyNet.amount
+      }
+      AddonType.TOGGLEABLE -> it
+    }
   }
 
   val totalExtra = UiMoney(extraSum, baseCurrency)

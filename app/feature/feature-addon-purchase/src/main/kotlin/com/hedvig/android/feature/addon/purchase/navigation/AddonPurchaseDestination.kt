@@ -86,4 +86,11 @@ internal data class SummaryParameters(
   val currentlyActiveAddons: List<CurrentlyActiveAddon>,
   val quoteId: String,
   val notificationMessage: String?,
+  val addonType: AddonType
 )
+
+@Serializable
+internal enum class AddonType {
+  SELECTABLE,
+  TOGGLEABLE
+}
