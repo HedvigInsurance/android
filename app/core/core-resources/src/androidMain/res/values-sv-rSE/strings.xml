@@ -20,6 +20,7 @@
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
+  <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Ja, uppgradera mitt skydd</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
@@ -217,8 +218,7 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Inspelning</string>
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">Om du inte minns inköpsdatum behöver du inte fylla i något.</string>
-  <string name="CLAIM_CHAT_SKIPPED_LABEL">Överhoppad</string>
-  <string name="CLAIM_CHAT_SKIPPED_STEP">Överhoppad</string>
+  <string name="CLAIM_CHAT_SKIPPED_STEP">Saknas</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Hoppa över</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Skicka in ditt skadeärende</string>
   <string name="CLAIM_CHAT_SUCCESS_GO_TO_CLAIM">Gå till ärende</string>
@@ -288,6 +288,8 @@
   <string name="DASHBOARD_OPEN_CHAT">Kontakta oss</string>
   <string name="DASHBOARD_RENEWAL_PROMPTER_BODY">Om %1$d dagar kommer din försäkring förnyas. Läs ditt uppdaterade försäkringsbrev här.</string>
   <string name="DASHBOARD_SCREEN_TITLE">Försäkringar</string>
+  <string name="DATA_TABLE_MULTIPLE_OWNERS"></string>
+  <string name="DATA_TABLE_WATER_CONNECTED"></string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION">Som försäkringsbolag är Hedvig skyldig att spara försäkringsavtalet och relaterad information så länge det är möjligt att göra anspråk på försäkringsersättning. Denna period kan variera beroende på vilken typ av försäkring det gäller men är minst 10 år efter försäkringens utgång baserat på preskriptionstider.\n\nOm du vill ta bort den information som vi enligt lag inte måste lagra, gör du det genom knappen nedan.\n\n[Här](https://www.hedvig.com/se/hedvig/personuppgifter) kan du läsa mer om hur dina personuppgifter hanteras hos Hedvig.</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE">Viktig information</string>
   <string name="DELETE_ACCOUNT_PROCESSED_DESCRIPTION">Du kommer få ett bekräftelsemail från oss inom 30 dagar som bekräftar att ditt konto har raderats</string>
@@ -436,12 +438,12 @@
   <string name="HC_TOPIC_NOT_FOUND">Topic not found</string>
   <string name="HC_TOPIC_NO_QUESTIONS">This topic has no questions</string>
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
-  <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på förtroende. Jag lovar dyrt och heligt att beskriva händelsen sanningsenligt och att endast begära den ersättning jag har rätt till.</string>
+  <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.</string>
   <string name="HONESTY_PLEDGE_HEADER">Anmäl skada</string>
-  <string name="HONESTY_PLEDGE_NOTE_1"></string>
-  <string name="HONESTY_PLEDGE_NOTE_2"></string>
-  <string name="HONESTY_PLEDGE_NOTE_3"></string>
-  <string name="HONESTY_PLEDGE_TITLE">Läs innan du fortsätter</string>
+  <string name="HONESTY_PLEDGE_NOTE_1">Osäker på vad som täcks? Skicka in din anmälan oavsett</string>
+  <string name="HONESTY_PLEDGE_NOTE_2">Ha kvitton eller annan dokumentation redo för snabbare hjälp</string>
+  <string name="HONESTY_PLEDGE_NOTE_3">Vi hör av oss om vi behöver mer information eller fler uppgifter</string>
+  <string name="HONESTY_PLEDGE_TITLE">Innan vi börjar</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Tillägg</string>
@@ -689,7 +691,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A2">Så länge skadan täcks av försäkringsvillkoren så betalar du endast självrisken på 1750 kr direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">Du får såklart använda den bärgningstjänst som passar dig bäst. Men förloppet blir oftast snabbare och enklare om du vänder dig direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Läs mer</string>
-  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till 010–45 99 222. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
+  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till +46 020 912 912. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">Vi samarbetar med Assistancekåren för att du ska kunna få hjälp så snabbt som möjligt.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">Du behöver kontakta Assistancekåren direkt för att få hjälp med din bärgning</string>
   <string name="SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON">Ring nu</string>
@@ -870,6 +872,9 @@
   <string name="TOAST_NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST_READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE">Antal resdagar</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Välj antalet resdagar som täcks</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Välj antal resdagar</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
   <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
@@ -933,7 +938,7 @@
   <string name="claim_status_detail_email">Ta kontakt med skadeteamet</string>
   <string name="claims_alert_body">Om du avslutar går du tillbaka till startsidan och dina inmatade uppgifter kommer att gå förlorade.</string>
   <string name="claims_continue_button">Fortsätt</string>
-  <string name="claims_edit_button">Edit</string>
+  <string name="claims_edit_button">Ändra</string>
   <string name="claims_history_overview">Översikt</string>
   <string name="claims_history_overview_total_claims">Totalt antal skadeanmälningar</string>
   <string name="claims_history_overview_total_compensation">Total ersättning</string>

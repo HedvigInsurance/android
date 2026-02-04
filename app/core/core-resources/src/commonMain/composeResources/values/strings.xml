@@ -20,6 +20,7 @@
   <string name="A11Y_VIEW_DETAILS">View details</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
+  <string name="ADDON_BADGE_ACTIVE">Active</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">This upgrade will take effect from %1$s and can only be removed when your insurance is renewed or cancelled.</string>
@@ -217,7 +218,6 @@
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Make sure we have right phone number in the case we need to contact you</string>
   <string name="CLAIM_CHAT_RECORDING_TITLE">Recording</string>
   <string name="CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT">If you don't remember the purchase date, you don't need to fill in anything.</string>
-  <string name="CLAIM_CHAT_SKIPPED_LABEL">Skipped</string>
   <string name="CLAIM_CHAT_SKIPPED_STEP">Skipped</string>
   <string name="CLAIM_CHAT_SKIP_STEP">Skip</string>
   <string name="CLAIM_CHAT_SUBMIT_CLAIM">Submit your claim</string>
@@ -288,6 +288,8 @@
   <string name="DASHBOARD_OPEN_CHAT">Contact us</string>
   <string name="DASHBOARD_RENEWAL_PROMPTER_BODY">In %1$d days your insurance will be renewed. Read your updated insurance certificate here.</string>
   <string name="DASHBOARD_SCREEN_TITLE">Insurances</string>
+  <string name="DATA_TABLE_MULTIPLE_OWNERS"></string>
+  <string name="DATA_TABLE_WATER_CONNECTED"></string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION">As an insurance company, Hedvig is obliged to save the insurance contract and related information as long as it is possible to claim insurance compensation. This period can vary depending on the type of insurance, but is at least 10 years after the insurance has ended.\n\nIf you want us to delete the information we are not required by law to save, you can use the button below.\n\n[Here](https://www.hedvig.com/se-en/hedvig/privacy-policy) you can read about how Hedvig handles your personal data.</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE">Important information</string>
   <string name="DELETE_ACCOUNT_PROCESSED_DESCRIPTION">You will get an email from us within 30 days to confirm that your account has been deleted</string>
@@ -438,10 +440,10 @@
   <string name="HEDVIG_NAME_TEXT">Hedvig</string>
   <string name="HONESTY_PLEDGE_DESCRIPTION">Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.</string>
   <string name="HONESTY_PLEDGE_HEADER">Make a claim</string>
-  <string name="HONESTY_PLEDGE_NOTE_1">Not sure what’s covered? Claim anyway and we’ll get back to you</string>
-  <string name="HONESTY_PLEDGE_NOTE_2">Have reciepts and other documents ready for faster help</string>
-  <string name="HONESTY_PLEDGE_NOTE_3">If we need more information we’ll get back to you</string>
-  <string name="HONESTY_PLEDGE_TITLE">Read before you continue</string>
+  <string name="HONESTY_PLEDGE_NOTE_1">Not sure about what’s covered? Submit your claim anyway</string>
+  <string name="HONESTY_PLEDGE_NOTE_2">Have receipts or other documentation ready to help us help you faster</string>
+  <string name="HONESTY_PLEDGE_NOTE_3">We’ll contact you if we need more information</string>
+  <string name="HONESTY_PLEDGE_TITLE">Before we start</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Discounts available</string>
   <string name="INSURANCES_NO_ACTIVE">You don't have any active insurances</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Addons</string>
@@ -689,7 +691,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A2">As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.</string>
   <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Read more</string>
-  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">You can contact Assistancekåren by phone using the button above or by calling directly at +46 10–45 99 222. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.</string>
+  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">You can contact Assistancekåren by phone using the button above or by calling directly at +46 020 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">We collaborate with Assistancekåren to ensure that you receive assistance as quickly as possible.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">You need to contact Assistancekåren directly to receive further assistance</string>
   <string name="SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON">Call now</string>
@@ -870,6 +872,9 @@
   <string name="TOAST_NEW_OFFER">New offer</string>
   <string name="TOAST_READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE">Maximum travel limit</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Days covered when travelling</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Choose your maximum travel limit</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %1$s</string>
   <string name="VOICEOVER_CHANGE_VALUE">change value</string>

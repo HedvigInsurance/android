@@ -91,6 +91,7 @@ fun Checkbox(
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
   colors: RadioGroupColors = RadioGroupDefaults.colors,
   enabled: Boolean = true,
+  textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   val id = RadioOptionId("1")
   CheckboxGroup(
@@ -102,6 +103,7 @@ fun Checkbox(
     style = style,
     colors = colors,
     enabled = enabled,
+    textEndContent = textEndContent
   )
 }
 
@@ -116,6 +118,7 @@ fun CheckboxGroup(
   colors: RadioGroupColors = RadioGroupDefaults.colors,
   disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
+  textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
@@ -127,6 +130,7 @@ fun CheckboxGroup(
     disabledOptions = disabledOptions,
     enabled = enabled,
     role = Role.Checkbox,
+    textEndContent = textEndContent,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       CheckboxSelectIndicator(
         selected = selected,

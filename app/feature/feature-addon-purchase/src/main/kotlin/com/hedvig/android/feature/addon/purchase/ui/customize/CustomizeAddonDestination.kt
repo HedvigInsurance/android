@@ -65,6 +65,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
@@ -95,11 +96,13 @@ import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAdd
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.Reload
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SetSelectedOptionBackToPreviouslyChosen
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SubmitSelected
+import hedvig.resources.ADDON_BADGE_ACTIVE
 import hedvig.resources.ADDON_FLOW_COVER_BUTTON
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL
 import hedvig.resources.ADDON_FLOW_SELECT_BUTTON
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
@@ -495,35 +498,90 @@ private fun ToggleableAddons(
 ) {
   Column(modifier) {
     currentlyActiveAddons.forEach { activeAddon ->
-      Checkbox(
-        option = CheckboxOption(
-          text = activeAddon.displayTitle,
-          label = activeAddon.displayDescription,
+      AddonCheckbox(
+        option = AddonCheckboxOption(
+          title = activeAddon.displayTitle,
+          description = activeAddon.displayDescription,
+          type = AddonCheckBoxOptionType.Active,
         ),
         selected = true,
         enabled = false,
         onCheckboxSelected = {},
-        style = RadioGroupStyle.LeftAligned,
       )
       Spacer(Modifier.height(4.dp))
     }
     addonOptions.forEachIndexed { index, addonQuote ->
-      Checkbox(
-        option = CheckboxOption(
-          text = addonQuote.displayTitle,
-          label = addonQuote.displayDescription,
+      AddonCheckbox(
+        option = AddonCheckboxOption(
+          title = addonQuote.displayTitle,
+          description = addonQuote.displayDescription,
+          type = AddonCheckBoxOptionType.NotActive(addonQuote.itemCost.monthlyNet),
         ),
         selected = currentlyChosenOptions.contains(addonQuote),
         onCheckboxSelected = {
           onToggleOption(addonQuote)
         },
-        style = RadioGroupStyle.LeftAligned,
+        enabled = true
       )
       if (index != addonOptions.lastIndex) {
         Spacer(Modifier.height(4.dp))
       }
     }
   }
+}
+
+@Composable
+private fun AddonCheckbox(
+  option: AddonCheckboxOption,
+  selected: Boolean,
+  enabled: Boolean,
+  onCheckboxSelected: () -> Unit,
+) {
+  Checkbox(
+    option = CheckboxOption(
+      text = option.title,
+      label = option.description
+    ),
+    selected = selected,
+    style = RadioGroupStyle.LeftAligned,
+    onCheckboxSelected = onCheckboxSelected,
+    enabled = enabled,
+    textEndContent = {
+      when (option.type) {
+        AddonCheckBoxOptionType.Active -> HighlightLabel(
+          stringResource(Res.string.ADDON_BADGE_ACTIVE),
+          size = HighLightSize.Small,
+          color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.MEDIUM),
+        )
+
+        is AddonCheckBoxOptionType.NotActive -> {
+          val pricePerMonth = option.type.monthlyNet.getPerMonthDescription()
+          HighlightLabel(
+            labelText = stringResource(Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              option.type.monthlyNet),
+            size = HighLightSize.Small,
+            color = Grey(MEDIUM),
+            modifier = Modifier
+              .wrapContentSize(Alignment.TopEnd)
+              .clearAndSetSemantics {
+                contentDescription = pricePerMonth
+              },
+          )
+        }
+      }
+    },
+  )
+}
+
+private data class AddonCheckboxOption(
+  val type: AddonCheckBoxOptionType,
+  val title: String,
+  val description: String?,
+)
+
+private sealed interface AddonCheckBoxOptionType {
+  data object Active : AddonCheckBoxOptionType
+  data class NotActive(val monthlyNet: UiMoney) : AddonCheckBoxOptionType
 }
 
 @Composable
