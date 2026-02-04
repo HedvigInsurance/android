@@ -340,11 +340,11 @@ private fun AudioRecordingBottomSheet(
   val audioPlayer = (
     audioRecordingState as?
       AudioRecordingStepState.AudioRecording.Playback
-  )?.let {
-    rememberAudioPlayer(
-      PlayableAudioSource.LocalFilePath(it.filePath),
-    )
-  }
+    )?.let {
+      rememberAudioPlayer(
+        PlayableAudioSource.LocalFilePath(it.filePath),
+      )
+    }
 
   LaunchedEffect(bottomSheetState.isVisible) {
     if (!bottomSheetState.isVisible) {
@@ -733,7 +733,7 @@ private fun ControlButton(
             when (audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording,
               is AudioRecordingStepState.AudioRecording.Recording,
-              -> HedvigTheme.colorScheme.fillWhite
+                -> HedvigTheme.colorScheme.fillWhite
 
               is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
             }
@@ -745,7 +745,7 @@ private fun ControlButton(
             color = when (audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording,
               is AudioRecordingStepState.AudioRecording.Recording,
-              -> HedvigTheme.colorScheme.fillWhite
+                -> HedvigTheme.colorScheme.fillWhite
 
               is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
             },
@@ -982,11 +982,18 @@ private fun AudioWaves(
 
 private fun getCurrentAmplitudePercentage(amplitudes: List<Int>): Float {
   if (amplitudes.size < 5) return 0f
-  val currentAmplitude = amplitudes.last().coerceIn(80, 1000)
-  val min = amplitudes.min().coerceAtLeast(80)
-  val max = amplitudes.max().coerceAtMost(1000)
-  if (max == min) return 0f
-  if (max == currentAmplitude) return 0f
+  val lowerCap = 80
+  val higherCap = 1000
+  val currentAmplitude = amplitudes.last().coerceIn(lowerCap, higherCap)
+  val min = amplitudes.min().coerceAtLeast(lowerCap)
+  val max = amplitudes.max().coerceAtMost(higherCap)
+  if (max == min && max == currentAmplitude) {
+    return when (currentAmplitude) {
+      lowerCap -> 0f
+      higherCap -> 1f
+      else -> 0.5f
+    }
+  }
   return ((currentAmplitude - min) / (max.toFloat() - min)).coerceIn(0f..1f)
 }
 
