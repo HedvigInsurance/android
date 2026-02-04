@@ -303,10 +303,11 @@ private fun CustomizeSelectableAddonScreenContent(
     HedvigButton(
       buttonSize = Large,
       text = stringResource(Res.string.general_continue_button),
-      enabled =  when (uiState) {
+      enabled = when (uiState) {
         is CustomizeAddonState.Success.Selectable -> {
           true
         }
+
         is CustomizeAddonState.Success.Toggleable -> {
           uiState.currentlyChosenOptions.isNotEmpty()
         }
@@ -316,6 +317,7 @@ private fun CustomizeSelectableAddonScreenContent(
           is CustomizeAddonState.Success.Selectable -> {
             submitSelected()
           }
+
           is CustomizeAddonState.Success.Toggleable -> {
             submitToggled()
           }
@@ -369,67 +371,26 @@ private fun CustomizeAddonCard(
       Spacer(Modifier.height(16.dp))
       when (uiState) {
         is CustomizeAddonState.Success.Selectable -> {
-          val addonSimpleItems = buildList {
-            for (option in uiState.addonOffer.addonOptions) {
-              add(SimpleDropdownItem(option.displayTitle))
-            }
-          }
-          val isDropdownEnabled = uiState.addonOffer.addonOptions.size > 1
-          DropdownWithDialog(
-            dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
-            // Locked option if there is nothing else to chose from
-            isEnabled = isDropdownEnabled,
-            style = Label(
-              label = uiState.addonOffer.fieldTitle,
-              items = addonSimpleItems,
-            ),
-            size = Small,
-            containerColor = HedvigTheme.colorScheme.surfacePrimary,
-            // there is always one option chosen, should never be shown anyway
-            hintText = uiState.addonOffer.fieldTitle,
-            chosenItemIndex = uiState.addonOffer.addonOptions.indexOf(uiState.currentlyChosenOption)
-              .takeIf { it >= 0 },
-            onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
-            modifier = Modifier.accessibilityForDropdown(
-              labelText = uiState.addonOffer.fieldTitle,
-              selectedValue = uiState.currentlyChosenOption.displayTitle,
-              isEnabled = isDropdownEnabled,
-            ),
-          ) { onDismissRequest ->
-            DropdownContent(
-              onContinueButtonClick = {
-                onChooseSelectedOption()
-                onDismissRequest()
-              },
-              onCancelButtonClick = {
-                onDismissRequest()
-              },
-              title = uiState.addonOffer.selectionTitle,
-              subTitle = uiState.addonOffer.selectionDescription,
-              addonOptions = uiState.addonOffer.addonOptions,
-              currentlyChosenOptionInDialog = uiState.currentlyChosenOptionInDialog,
-              onChooseOptionInDialog = { option -> onChooseOptionInDialog(option) },
-            )
-          }
+          SelectableAddons(
+            addonOptions = uiState.addonOffer.addonOptions,
+            fieldTitle = uiState.addonOffer.fieldTitle,
+            selectionTitle = uiState.addonOffer.selectionTitle,
+            selectionDescription = uiState.addonOffer.selectionDescription,
+            currentlyChosenOption = uiState.currentlyChosenOption,
+            onChooseOptionInDialog = onChooseOptionInDialog,
+            onChooseSelectedOption = onChooseSelectedOption,
+            onSetOptionBackToPreviouslyChosen = onSetOptionBackToPreviouslyChosen,
+            currentlyChosenOptionInDialog = uiState.currentlyChosenOptionInDialog,
+          )
         }
 
         is CustomizeAddonState.Success.Toggleable -> {
-          uiState.addonOffer.addonOptions.forEachIndexed { index, addonQuote ->
-            Checkbox(
-              option = CheckboxOption(
-                text = addonQuote.displayTitle,
-                  label = addonQuote.displayDescription,
-              ),
-              selected = uiState.currentlyChosenOptions.contains(addonQuote),
-              onCheckboxSelected = {
-                onToggleOption(addonQuote)
-              },
-              style = RadioGroupStyle.LeftAligned
-            )
-            if (index!= uiState.addonOffer.addonOptions.lastIndex) {
-              Spacer(Modifier.height(4.dp))
-            }
-          }
+          ToggleableAddons(
+            currentlyActiveAddons = uiState.currentlyActiveAddons,
+            addonOptions = uiState.addonOffer.addonOptions,
+            currentlyChosenOptions = uiState.currentlyChosenOptions,
+            onToggleOption = onToggleOption,
+          )
         }
       }
       Spacer(Modifier.height(16.dp))
@@ -440,14 +401,16 @@ private fun CustomizeAddonCard(
           val data = when (uiState) {
             is CustomizeAddonState.Success.Selectable -> listOf(
               null to
-                uiState.currentlyChosenOption.addonVariant.perils.map{
+                uiState.currentlyChosenOption.addonVariant.perils.map {
                   PerilData(
                     title = it.title,
                     description = it.description,
                     covered = it.covered,
                     colorCode = it.colorCode,
                   )
-                })
+                },
+            )
+
             is CustomizeAddonState.Success.Toggleable -> uiState.addonOffer.addonOptions.map {
               it.displayTitle to it.addonVariant.perils.map { peril ->
                 PerilData(
@@ -462,6 +425,103 @@ private fun CustomizeAddonCard(
           onNavigateToTravelInsurancePlusExplanation(data)
         },
       )
+    }
+  }
+}
+
+@Composable
+private fun SelectableAddons(
+  addonOptions: NonEmptyList<AddonQuote>,
+  fieldTitle: String,
+  selectionTitle: String,
+  selectionDescription: String,
+  currentlyChosenOption: AddonQuote,
+  currentlyChosenOptionInDialog: AddonQuote?,
+  onChooseOptionInDialog: (AddonQuote) -> Unit,
+  onChooseSelectedOption: () -> Unit,
+  onSetOptionBackToPreviouslyChosen: () -> Unit,
+) {
+  val addonSimpleItems = buildList {
+    for (option in addonOptions) {
+      add(SimpleDropdownItem(option.displayTitle))
+    }
+  }
+  val isDropdownEnabled = addonOptions.size > 1
+  DropdownWithDialog(
+    dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
+    // Locked option if there is nothing else to chose from
+    isEnabled = isDropdownEnabled,
+    style = Label(
+      label = fieldTitle,
+      items = addonSimpleItems,
+    ),
+    size = Small,
+    containerColor = HedvigTheme.colorScheme.surfacePrimary,
+    // there is always one option chosen, should never be shown anyway
+    hintText = fieldTitle,
+    chosenItemIndex = addonOptions.indexOf(currentlyChosenOption)
+      .takeIf { it >= 0 },
+    onDoAlongWithDismissRequest = onSetOptionBackToPreviouslyChosen,
+    modifier = Modifier.accessibilityForDropdown(
+      labelText = fieldTitle,
+      selectedValue = currentlyChosenOption.displayTitle,
+      isEnabled = isDropdownEnabled,
+    ),
+  ) { onDismissRequest ->
+    DropdownContent(
+      onContinueButtonClick = {
+        onChooseSelectedOption()
+        onDismissRequest()
+      },
+      onCancelButtonClick = {
+        onDismissRequest()
+      },
+      title = selectionTitle,
+      subTitle = selectionDescription,
+      addonOptions = addonOptions,
+      currentlyChosenOptionInDialog = currentlyChosenOptionInDialog,
+      onChooseOptionInDialog = { option -> onChooseOptionInDialog(option) },
+    )
+  }
+}
+
+@Composable
+private fun ToggleableAddons(
+  currentlyActiveAddons: List<CurrentlyActiveAddon>,
+  addonOptions: NonEmptyList<AddonQuote>,
+  currentlyChosenOptions: List<AddonQuote>,
+  onToggleOption: (AddonQuote) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    currentlyActiveAddons.forEach { activeAddon ->
+      Checkbox(
+        option = CheckboxOption(
+          text = activeAddon.displayTitle,
+          label = activeAddon.displayDescription,
+        ),
+        selected = true,
+        enabled = false,
+        onCheckboxSelected = {},
+        style = RadioGroupStyle.LeftAligned,
+      )
+      Spacer(Modifier.height(4.dp))
+    }
+    addonOptions.forEachIndexed { index, addonQuote ->
+      Checkbox(
+        option = CheckboxOption(
+          text = addonQuote.displayTitle,
+          label = addonQuote.displayDescription,
+        ),
+        selected = currentlyChosenOptions.contains(addonQuote),
+        onCheckboxSelected = {
+          onToggleOption(addonQuote)
+        },
+        style = RadioGroupStyle.LeftAligned,
+      )
+      if (index != addonOptions.lastIndex) {
+        Spacer(Modifier.height(4.dp))
+      }
     }
   }
 }
