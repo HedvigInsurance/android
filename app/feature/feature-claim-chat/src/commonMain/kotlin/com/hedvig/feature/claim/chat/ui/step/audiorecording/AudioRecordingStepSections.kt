@@ -2,7 +2,7 @@ package com.hedvig.feature.claim.chat.ui.step.audiorecording
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -48,6 +48,8 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -879,10 +881,18 @@ private fun FreeTextInputSection(
 private data class WaveState(
   val minFraction: Float,
   val maxFraction: Float,
+  private val initialValue: Float,
 ) {
-  val animatable = Animatable(random())
+  val animatable = Animatable(initialValue)
 
-  fun random(): Float = lerp(minFraction, maxFraction, Random.nextFloat())
+  fun randomAroundFraction(fraction: Float): Float {
+    val smallAdjustment = Random.nextDouble(-0.15, 0.15).toFloat()
+    return lerp(
+      minFraction,
+      maxFraction,
+      (fraction + (smallAdjustment * fraction)).coerceIn(0f, 1f),
+    )
+  }
 }
 
 @Composable
@@ -911,7 +921,11 @@ private fun AudioWaves(
         ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
       val minWaveHeightFraction = 0f
       val maxWaveHeightFraction = 1f
-      WaveState(minWaveHeightFraction * percentageToCenterPoint, maxWaveHeightFraction * percentageToCenterPoint)
+      WaveState(
+        minWaveHeightFraction * percentageToCenterPoint,
+        maxWaveHeightFraction * percentageToCenterPoint,
+        if (amplitudes.isEmpty()) Random.nextFloat() * percentageToCenterPoint else 0f,
+      )
     }
   }
 
@@ -922,8 +936,8 @@ private fun AudioWaves(
           async {
             val maxWaveHeightFraction = getCurrentAmplitudePercentage(updatedAmplitudes)
             waveState.animatable.animateTo(
-              targetValue = waveState.random() * maxWaveHeightFraction,
-              animationSpec = tween(durationMillis = 200, easing = LinearEasing),
+              targetValue = waveState.randomAroundFraction(maxWaveHeightFraction),
+              animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
             )
           }
         }.awaitAll()
@@ -967,11 +981,13 @@ private fun AudioWaves(
 }
 
 private fun getCurrentAmplitudePercentage(amplitudes: List<Int>): Float {
-  if (amplitudes.size < 5) return 0.2f
-  val currentAmplitude = amplitudes.last()
-  val min = amplitudes.min()
-  val max = amplitudes.max().coerceAtMost(1500).toFloat()
-  return (currentAmplitude - min) / (max - min).coerceAtLeast(0f)
+  if (amplitudes.size < 5) return 0f
+  val currentAmplitude = amplitudes.last().coerceIn(80, 1000)
+  val min = amplitudes.min().coerceAtLeast(80)
+  val max = amplitudes.max().coerceAtMost(1000)
+  if (max == min) return 0f
+  if (max == currentAmplitude) return 0f
+  return ((currentAmplitude - min) / (max.toFloat() - min)).coerceIn(0f..1f)
 }
 
 @Composable

@@ -39,7 +39,7 @@ internal class AndroidAudioRecordingManager(
 
       val startTime = clock.now()
       var amplitudes = emptyList<Int>()
-      val samplesPerSecond = 60
+      val samplesPerSecond = 20
 
       onStateUpdate(
         AudioRecordingStepState.AudioRecording.Recording(
@@ -54,7 +54,7 @@ internal class AndroidAudioRecordingManager(
         timerTask {
           recorder?.maxAmplitude?.let { amplitude ->
             if (amplitude == 0) return@let
-            amplitudes = amplitudes.plus(amplitude).takeLast(60 * samplesPerSecond)
+            amplitudes = amplitudes.plus(amplitude).takeLast((1.5 * samplesPerSecond).toInt())
             onStateUpdate(
               AudioRecordingStepState.AudioRecording.Recording(
                 amplitudes = amplitudes.toList(),
