@@ -278,7 +278,7 @@ private fun RadioGroup(
           HedvigText(
             text = style.style.label,
             style = style.textStyleLabel,
-            color = colors.labelTextColor,
+            color = if (enabled) colors.labelTextColor else colors.disabledLabelTextColor,
             modifier = Modifier
               .padding(horizontal = style.labelHorizontalPadding)
               .padding(top = style.labelTopPadding),
@@ -471,7 +471,8 @@ private fun RadioOption(
       }
       Column {
         val textComposable: @Composable () -> Unit = {
-          HedvigText(option.text, style = style.textStyle, color = colors.textColor)
+          HedvigText(option.text, style = style.textStyle, color =
+            if (enabled) colors.textColor else colors.disabledTextColor)
         }
         if (textEndContent != null) {
           HorizontalItemsWithMaximumSpaceTaken(
@@ -484,7 +485,8 @@ private fun RadioOption(
         }
         if (option.label != null) {
           Spacer(Modifier.height(style.textToLabelSpacing))
-          HedvigText(option.label, style = style.textStyleLabel, color = colors.labelTextColor)
+          HedvigText(option.label, style = style.textStyleLabel, color =
+           if (enabled) colors.labelTextColor else colors.disabledLabelTextColor)
         }
       }
     }
