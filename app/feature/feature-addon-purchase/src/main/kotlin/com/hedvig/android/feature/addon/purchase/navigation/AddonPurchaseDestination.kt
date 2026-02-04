@@ -2,12 +2,9 @@ package com.hedvig.android.feature.addon.purchase.navigation
 
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.design.system.hedvig.PerilData
-import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -17,8 +14,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AddonPurchaseGraphDestination(
-    val insuranceIds: List<String>,
-    val source: AddonBannerSource,
+  val insuranceIds: List<String>,
+  val source: AddonBannerSource,
 ) : Destination {
   companion object : DestinationNavTypeAware {
     override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
@@ -34,7 +31,7 @@ internal sealed interface AddonPurchaseDestination {
 
   @Serializable
   data class TravelInsurancePlusExplanation(
-    val perilData: List<Pair<String?, List<TravelPerilData>>>
+    val perilData: List<Pair<String?, List<TravelPerilData>>>,
   ) : AddonPurchaseDestination, Destination {
     @Serializable
     data class TravelPerilData(
@@ -46,8 +43,11 @@ internal sealed interface AddonPurchaseDestination {
     )
 
     companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<
-        List<Pair<String?, List<TravelPerilData>>>>())
+      override val typeList: List<KType> = listOf(
+        typeOf<
+          List<Pair<String?, List<TravelPerilData>>>,
+          >(),
+      )
     }
   }
 
@@ -86,7 +86,7 @@ internal data class SummaryParameters(
   val currentlyActiveAddons: List<CurrentlyActiveAddon>,
   val quoteId: String,
   val notificationMessage: String?,
-  val addonType: AddonType
+  val addonType: AddonType,
 )
 
 @Serializable

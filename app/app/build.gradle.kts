@@ -204,6 +204,7 @@ dependencies {
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
   implementation(projects.featureOdyssey)
+  implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
