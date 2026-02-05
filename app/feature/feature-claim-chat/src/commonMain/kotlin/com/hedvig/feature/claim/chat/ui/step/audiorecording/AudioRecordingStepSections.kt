@@ -896,9 +896,9 @@ private fun AudioWaves(
       val minWaveHeightFraction = 0f
       val maxWaveHeightFraction = 1f
       WaveState(
-        minWaveHeightFraction,
-        maxWaveHeightFraction * percentageToCenterBreakpoint,
-        if (amplitudes.isEmpty()) true else false,
+        minFraction = minWaveHeightFraction,
+        maxFraction = maxWaveHeightFraction * percentageToCenterBreakpoint,
+        withRandomInitialValue = amplitudes.isEmpty(),
       )
     }
   }
