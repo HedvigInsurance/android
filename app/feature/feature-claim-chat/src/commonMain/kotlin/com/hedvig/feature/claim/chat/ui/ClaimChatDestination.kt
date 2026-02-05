@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import arrow.core.compareTo
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.withoutPlacement
@@ -368,7 +369,7 @@ private fun ClaimChatScreenContent(
         modifier = Modifier.fillMaxSize(),
       )
     }
-    if (isScrolled) {
+    if (isScrolled && uiState.steps.isNotEmpty()) {
       ScrollToBottomButton(
         onClick = {
           coroutineScope.launch {
