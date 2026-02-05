@@ -218,7 +218,6 @@ sealed interface AudioRecordingStepState {
       val filePath: String,
       val isPlaying: Boolean,
       val isPrepared: Boolean,
-      val amplitudes: List<Int>,
       val hasError: Boolean,
     ) : AudioRecording
   }
