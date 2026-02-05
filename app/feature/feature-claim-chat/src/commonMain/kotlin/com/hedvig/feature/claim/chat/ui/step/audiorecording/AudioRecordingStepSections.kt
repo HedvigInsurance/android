@@ -846,9 +846,11 @@ private fun FreeTextInputSection(
 private data class WaveState(
   val minFraction: Float,
   val maxFraction: Float,
-  private val initialValue: Float,
+  private val withRandomInitialValue: Boolean,
 ) {
-  val animatable = Animatable(initialValue)
+  val animatable = Animatable(
+    if (withRandomInitialValue) randomAroundFraction(1f) else 0f
+  )
 
   fun randomAroundFraction(fraction: Float): Float {
     val smallAdjustment = Random.nextDouble(-0.15, 0.15).toFloat()
@@ -888,7 +890,7 @@ private fun AudioWaves(
       WaveState(
         minWaveHeightFraction * percentageToCenterPoint,
         maxWaveHeightFraction * percentageToCenterPoint,
-        if (amplitudes.isEmpty()) Random.nextFloat() * percentageToCenterPoint else 0f,
+        if (amplitudes.isEmpty()) true else false,
       )
     }
   }
