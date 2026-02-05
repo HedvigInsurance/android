@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -75,6 +76,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBarColors
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
@@ -291,12 +293,12 @@ private fun ClaimChatScreenContent(
   }
   val lazyListState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
-  val isScrolled by remember(lazyListState, uiState.currentStep?.id) {
+  val showScrollArrow by remember(lazyListState, uiState.currentStep?.id) {
     derivedStateOf {
       val layoutInfo = lazyListState.layoutInfo
       val lazyListItemsCount = layoutInfo.totalItemsCount
       val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-      lastVisibleItem?.index != lazyListItemsCount - 1
+      (lastVisibleItem?.index != lazyListItemsCount - 1 && lazyListItemsCount > 0)
     }
   }
   // Track the size of the last item to scroll when it grows
@@ -363,7 +365,7 @@ private fun ClaimChatScreenContent(
         modifier = Modifier.fillMaxSize(),
       )
     }
-    if (isScrolled && uiState.steps.isNotEmpty()) {
+    if (showScrollArrow) {
       ScrollToBottomButton(
         onClick = {
           coroutineScope.launch {
