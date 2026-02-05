@@ -849,7 +849,7 @@ private data class WaveState(
   private val withRandomInitialValue: Boolean,
 ) {
   val animatable = Animatable(
-    if (withRandomInitialValue) randomAroundFraction(1f) else 0f
+    if (withRandomInitialValue) randomAroundFraction(1f) else 0f,
   )
 
   fun randomAroundFraction(fraction: Float): Float {
@@ -867,7 +867,7 @@ private fun AudioWaves(
   isRecording: Boolean,
   progressPercentage: ProgressPercentage?,
   modifier: Modifier = Modifier,
-  amplitudes: List<Int> = emptyList(),
+  amplitudes: List<Int>? = null,
 ) {
   val playedColor = LocalContentColor.current
   val notPlayedColor = LocalContentColor.current.copy(0.38f).compositeOver(HedvigTheme.colorScheme.surfacePrimary)
@@ -896,7 +896,7 @@ private fun AudioWaves(
       WaveState(
         minFraction = minWaveHeightFraction,
         maxFraction = maxWaveHeightFraction * fadeMultiplier,
-        withRandomInitialValue = amplitudes.isEmpty(),
+        withRandomInitialValue = updatedAmplitudes == null,
       )
     }
   }
@@ -906,7 +906,7 @@ private fun AudioWaves(
       while (isActive) {
         waveStates.map { waveState ->
           async {
-            val maxWaveHeightFraction = getCurrentAmplitudePercentage(updatedAmplitudes)
+            val maxWaveHeightFraction = getCurrentAmplitudePercentage(updatedAmplitudes.orEmpty())
             waveState.animatable.animateTo(
               targetValue = waveState.randomAroundFraction(maxWaveHeightFraction),
               animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing),
@@ -953,12 +953,13 @@ private fun AudioWaves(
 }
 
 private fun getCurrentAmplitudePercentage(amplitudes: List<Int>): Float {
-  if (amplitudes.size < 5) return 0f
+  if (amplitudes.size <= 10) return 0f
   val lowerCap = 80
   val higherCap = 1000
   val currentAmplitude = amplitudes.last().coerceIn(lowerCap, higherCap)
   val min = amplitudes.min().coerceAtLeast(lowerCap)
   val max = amplitudes.max().coerceAtMost(higherCap)
+
   if (max == min && max == currentAmplitude) {
     return when (currentAmplitude) {
       lowerCap -> 0f
@@ -966,7 +967,20 @@ private fun getCurrentAmplitudePercentage(amplitudes: List<Int>): Float {
       else -> 0.5f
     }
   }
-  return ((currentAmplitude - min) / (max.toFloat() - min)).coerceIn(0f..1f)
+  val minimumAmplitudeThreshold = 200
+  val minimumDynamicRange = 50
+
+  val tooSmallDynamicRange = max - min < minimumDynamicRange
+  val isVeryQuiet = max < minimumAmplitudeThreshold
+  fun calculateRange(current: Int, lowerCap: Int, maxCap: Int): Float {
+    return ((current.toFloat() - lowerCap.toFloat()) / (maxCap.toFloat() - lowerCap.toFloat()))
+  }
+  return when {
+    tooSmallDynamicRange && isVeryQuiet -> 0f
+    // If the maximum amplitude is too low (quiet environment), use absolute scaling
+    isVeryQuiet -> calculateRange(currentAmplitude, lowerCap, minimumAmplitudeThreshold).coerceIn(0f, 0.3f)
+    else -> calculateRange(currentAmplitude, min, max).coerceIn(0f, 1f)
+  }
 }
 
 @Composable
