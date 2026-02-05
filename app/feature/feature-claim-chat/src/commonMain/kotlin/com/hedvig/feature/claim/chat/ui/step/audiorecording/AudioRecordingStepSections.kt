@@ -881,10 +881,18 @@ private fun AudioWaves(
   val waveStates = remember(numberOfWaves) {
     List(numberOfWaves) { waveIndex ->
       val wavePosition = waveIndex + 1
-      val centerPoint = numberOfWaves / 2
-      val distanceFromCenterPoint = abs(centerPoint - wavePosition)
-      val percentageToCenterPoint =
-        ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
+      val leftEdgeBreakpoint = numberOfWaves * 0.2f
+      val rightEdgeBreakpoint = numberOfWaves * 0.8f
+      val isOnLeftEdge = wavePosition <= leftEdgeBreakpoint
+      val isOnRightEdge = wavePosition >= rightEdgeBreakpoint
+      val distanceFromCenterPoint = if (isOnLeftEdge) {
+        abs(leftEdgeBreakpoint - wavePosition)
+      } else if (isOnRightEdge) {
+        abs(rightEdgeBreakpoint - wavePosition)
+      } else {
+        0f
+      }
+      val percentageToCenterBreakpoint = abs(leftEdgeBreakpoint - distanceFromCenterPoint) / leftEdgeBreakpoint
       val minWaveHeightFraction = 0f
       val maxWaveHeightFraction = 1f
       WaveState(
