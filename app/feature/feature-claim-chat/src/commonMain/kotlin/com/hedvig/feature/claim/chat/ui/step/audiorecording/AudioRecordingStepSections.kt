@@ -853,7 +853,7 @@ private data class WaveState(
   )
 
   fun randomAroundFraction(fraction: Float): Float {
-    val smallAdjustment = Random.nextDouble(-0.15, 0.15).toFloat()
+    val smallAdjustment = Random.nextDouble(-0.6, 0.0).toFloat()
     return lerp(
       minFraction,
       maxFraction,
@@ -888,8 +888,8 @@ private fun AudioWaves(
       val minWaveHeightFraction = 0f
       val maxWaveHeightFraction = 1f
       WaveState(
-        minWaveHeightFraction * percentageToCenterPoint,
-        maxWaveHeightFraction * percentageToCenterPoint,
+        minWaveHeightFraction,
+        maxWaveHeightFraction * percentageToCenterBreakpoint,
         if (amplitudes.isEmpty()) true else false,
       )
     }
