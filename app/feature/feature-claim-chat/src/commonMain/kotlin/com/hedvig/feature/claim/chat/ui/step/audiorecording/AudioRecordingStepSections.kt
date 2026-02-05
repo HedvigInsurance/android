@@ -901,7 +901,7 @@ private fun AudioWaves(
             val maxWaveHeightFraction = getCurrentAmplitudePercentage(updatedAmplitudes)
             waveState.animatable.animateTo(
               targetValue = waveState.randomAroundFraction(maxWaveHeightFraction),
-              animationSpec = tween(durationMillis = 150, easing = FastOutSlowInEasing),
+              animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing),
             )
           }
         }.awaitAll()
