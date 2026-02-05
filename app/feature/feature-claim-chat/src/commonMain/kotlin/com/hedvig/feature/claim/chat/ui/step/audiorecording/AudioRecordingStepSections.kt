@@ -2,7 +2,7 @@ package com.hedvig.feature.claim.chat.ui.step.audiorecording
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -48,8 +48,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -337,14 +335,11 @@ private fun AudioRecordingBottomSheet(
     )
   }
 
-  val audioPlayer = (
-    audioRecordingState as?
-      AudioRecordingStepState.AudioRecording.Playback
-    )?.let {
-      rememberAudioPlayer(
-        PlayableAudioSource.LocalFilePath(it.filePath),
-      )
-    }
+  val audioPlayer = (audioRecordingState as? AudioRecordingStepState.AudioRecording.Playback)?.let {
+    rememberAudioPlayer(
+      PlayableAudioSource.LocalFilePath(it.filePath),
+    )
+  }
 
   LaunchedEffect(bottomSheetState.isVisible) {
     if (!bottomSheetState.isVisible) {
@@ -369,8 +364,7 @@ private fun AudioRecordingBottomSheet(
       AnimatedContent(
         targetState = audioRecordingState,
         transitionSpec = {
-          fadeIn(animationSpec = tween(300))
-            .togetherWith(fadeOut(animationSpec = tween(300)))
+          fadeIn(animationSpec = tween(300)).togetherWith(fadeOut(animationSpec = tween(300)))
         },
         contentKey = { state ->
           when (state) {
@@ -430,8 +424,7 @@ private fun AudioRecordingBottomSheet(
         StartOverButton(
           modifier = Modifier.weight(1f),
           onStartOver = redo,
-          isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback &&
-            !continueButtonLoading,
+          isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !continueButtonLoading,
         )
         Spacer(Modifier.width(4.dp))
         ControlButton(
@@ -451,8 +444,7 @@ private fun AudioRecordingBottomSheet(
         SendButton(
           modifier = Modifier.weight(1f),
           onSend = submitAudioFile,
-          isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback &&
-            !continueButtonLoading,
+          isEnabled = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback && !continueButtonLoading,
         )
       }
       Spacer(Modifier.height(16.dp))
@@ -522,14 +514,11 @@ private fun DynamicClock(
 
   if (timerState != null) {
     Box(
-      Modifier
-        .fillMaxWidth()
-        .clearAndSetSemantics {
-          if (durationDescription != null) {
-            contentDescription = durationDescription
-          }
+      Modifier.fillMaxWidth().clearAndSetSemantics {
+        if (durationDescription != null) {
+          contentDescription = durationDescription
         }
-        .wrapContentWidth(),
+      }.wrapContentWidth(),
     ) {
       HedvigText(
         text = ":",
@@ -537,18 +526,12 @@ private fun DynamicClock(
       )
       HedvigText(
         text = timerState.minutes,
-        modifier = Modifier
-          .requiredWidth(0.dp)
-          .align(Alignment.CenterStart)
-          .wrapContentWidth(Alignment.End, true),
+        modifier = Modifier.requiredWidth(0.dp).align(Alignment.CenterStart).wrapContentWidth(Alignment.End, true),
         color = HedvigTheme.colorScheme.textSecondary,
       )
       HedvigText(
         text = timerState.seconds,
-        modifier = Modifier
-          .requiredWidth(0.dp)
-          .align(Alignment.CenterEnd)
-          .wrapContentWidth(Alignment.Start, true),
+        modifier = Modifier.requiredWidth(0.dp).align(Alignment.CenterEnd).wrapContentWidth(Alignment.Start, true),
         color = HedvigTheme.colorScheme.textSecondary,
       )
     }
@@ -559,30 +542,25 @@ private fun DynamicClock(
 private fun StartOverButton(onStartOver: () -> Unit, isEnabled: Boolean, modifier: Modifier = Modifier) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
-    modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .semantics(true) {
-        role = Role.Button
-      }
-      .clickable(
-        enabled = isEnabled,
-        onClick = onStartOver,
-      ),
+    modifier = modifier.clip(HedvigTheme.shapes.cornerLarge).semantics(true) {
+      role = Role.Button
+    }.clickable(
+      enabled = isEnabled,
+      onClick = onStartOver,
+    ),
   ) {
     Column(
       modifier = Modifier.padding(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Box(
-        modifier = Modifier
-          .clip(HedvigTheme.shapes.cornerXXLarge)
-          .background(
-            color = if (!isEnabled) {
-              HedvigTheme.colorScheme.surfaceSecondaryTransparent
-            } else {
-              HedvigTheme.colorScheme.surfaceSecondaryTransparent
-            },
-          ),
+        modifier = Modifier.clip(HedvigTheme.shapes.cornerXXLarge).background(
+          color = if (!isEnabled) {
+            HedvigTheme.colorScheme.surfaceSecondaryTransparent
+          } else {
+            HedvigTheme.colorScheme.surfaceSecondaryTransparent
+          },
+        ),
       ) {
         Icon(
           modifier = Modifier.padding(4.dp).size(24.dp),
@@ -650,64 +628,56 @@ private fun ControlButton(
 
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
-    modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .semantics {
-        stateDescription = recordingStateDescription
-      }
-      .clickable(
-        enabled = isEnabled,
-        onClickLabel = onClickLabel,
-        role = Role.Button,
-        onClick = {
-          when (audioRecordingState) {
-            AudioRecordingStepState.AudioRecording.NotRecording -> {
-              startRecordingCountdown = true
-            }
+    modifier = modifier.clip(HedvigTheme.shapes.cornerLarge).semantics {
+      stateDescription = recordingStateDescription
+    }.clickable(
+      enabled = isEnabled,
+      onClickLabel = onClickLabel,
+      role = Role.Button,
+      onClick = {
+        when (audioRecordingState) {
+          AudioRecordingStepState.AudioRecording.NotRecording -> {
+            startRecordingCountdown = true
+          }
 
-            is AudioRecordingStepState.AudioRecording.Playback -> {
-              val ready = audioPlayerState as? AudioPlayerState.Ready
-              if (ready?.readyState is AudioPlayerState.Ready.ReadyState.Playing) {
-                audioPlayer?.pausePlayer()
-              } else {
-                audioPlayer?.startPlayer()
-              }
-            }
-
-            is AudioRecordingStepState.AudioRecording.Recording -> {
-              onStopRecording()
+          is AudioRecordingStepState.AudioRecording.Playback -> {
+            val ready = audioPlayerState as? AudioPlayerState.Ready
+            if (ready?.readyState is AudioPlayerState.Ready.ReadyState.Playing) {
+              audioPlayer?.pausePlayer()
+            } else {
+              audioPlayer?.startPlayer()
             }
           }
-        },
-      ),
+
+          is AudioRecordingStepState.AudioRecording.Recording -> {
+            onStopRecording()
+          }
+        }
+      },
+    ),
   ) {
     Column(
       modifier = Modifier.padding(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Box(
-        modifier = Modifier
-          .clip(HedvigTheme.shapes.cornerXXLarge)
-          .background(
-            color = if (!isEnabled) {
-              HedvigTheme.colorScheme.surfaceSecondaryTransparent
-            } else {
-              when (audioRecordingState) {
-                AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
-                is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
-                is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
-              }
-            },
-          ),
+        modifier = Modifier.clip(HedvigTheme.shapes.cornerXXLarge).background(
+          color = if (!isEnabled) {
+            HedvigTheme.colorScheme.surfaceSecondaryTransparent
+          } else {
+            when (audioRecordingState) {
+              AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
+              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
+              is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
+            }
+          },
+        ),
         contentAlignment = Alignment.Center,
       ) {
         Icon(
-          modifier = Modifier
-            .padding(4.dp)
-            .size(24.dp)
-            .then(
-              if (startRecordingCountdown) Modifier.withoutPlacement() else Modifier,
-            ),
+          modifier = Modifier.padding(4.dp).size(24.dp).then(
+            if (startRecordingCountdown) Modifier.withoutPlacement() else Modifier,
+          ),
           imageVector = when (audioRecordingState) {
             AudioRecordingStepState.AudioRecording.NotRecording -> {
               HedvigIcons.Mic
@@ -767,30 +737,25 @@ private fun ControlButton(
 private fun SendButton(onSend: () -> Unit, isEnabled: Boolean, modifier: Modifier = Modifier) {
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
-    modifier = modifier
-      .clip(HedvigTheme.shapes.cornerLarge)
-      .semantics(true) {
-        role = Role.Button
-      }
-      .clickable(
-        enabled = isEnabled,
-        onClick = onSend,
-      ),
+    modifier = modifier.clip(HedvigTheme.shapes.cornerLarge).semantics(true) {
+      role = Role.Button
+    }.clickable(
+      enabled = isEnabled,
+      onClick = onSend,
+    ),
   ) {
     Column(
       modifier = Modifier.padding(8.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Box(
-        modifier = Modifier
-          .clip(HedvigTheme.shapes.cornerXXLarge)
-          .background(
-            color = if (!isEnabled) {
-              HedvigTheme.colorScheme.surfaceSecondaryTransparent
-            } else {
-              HedvigTheme.colorScheme.signalBlueElement
-            },
-          ),
+        modifier = Modifier.clip(HedvigTheme.shapes.cornerXXLarge).background(
+          color = if (!isEnabled) {
+            HedvigTheme.colorScheme.surfaceSecondaryTransparent
+          } else {
+            HedvigTheme.colorScheme.signalBlueElement
+          },
+        ),
       ) {
         Icon(
           modifier = Modifier.padding(4.dp).size(24.dp),
@@ -903,8 +868,7 @@ private fun AudioWaves(
   amplitudes: List<Int> = emptyList(),
 ) {
   val playedColor = LocalContentColor.current
-  val notPlayedColor = LocalContentColor.current.copy(0.38f)
-    .compositeOver(HedvigTheme.colorScheme.surfacePrimary)
+  val notPlayedColor = LocalContentColor.current.copy(0.38f).compositeOver(HedvigTheme.colorScheme.surfacePrimary)
   val fixedColor = HedvigTheme.colorScheme.fillPrimary.copy(alpha = 0.6f)
   val density = LocalDensity.current
   val strokeWidthPx = with(density) { WAVE_WIDTH.toPx() }
