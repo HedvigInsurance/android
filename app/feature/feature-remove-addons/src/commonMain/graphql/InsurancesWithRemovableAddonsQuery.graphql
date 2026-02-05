@@ -1,0 +1,22 @@
+query InsurancesWithRemovableAddons {
+  currentMember {
+    activeContracts {
+      id
+      exposureDisplayName
+      currentAgreement {
+        productVariant {
+          displayName
+          typeOfContract
+        }
+        addons {
+          addonVariant {
+            displayName
+          }
+          premium {
+            ...MoneyFragment
+          }
+        }
+      }
+    }
+  }
+}

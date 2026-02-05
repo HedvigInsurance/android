@@ -30,6 +30,7 @@ kotlin {
       implementation(projects.composeUi)
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
+      implementation(projects.dataContract)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
     }
