@@ -101,6 +101,7 @@ import com.hedvig.android.shareddi.sharedModule
 import com.hedvig.android.tracking.datadog.di.trackingDatadogModule
 import com.hedvig.app.BuildConfig
 import com.hedvig.feature.claim.chat.di.claimChatModule
+import com.hedvig.feature.remove.addons.di.addonRemovalModule
 import io.ktor.client.HttpClient
 import java.io.File
 import org.koin.dsl.bind
@@ -267,6 +268,7 @@ val applicationModule = module {
   includes(
     listOf(
       addonPurchaseModule,
+      addonRemovalModule,
       apolloAuthListenersModule,
       appModule,
       authModule,

@@ -16,6 +16,10 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryDestination
+import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryViewModel
+import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveDestination
+import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveViewModel
 import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonDestination
 import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonViewModel
 
@@ -117,11 +121,13 @@ fun NavGraphBuilder.removeAddonsNavGraph(
     }
 
     navdestination<AddonRemoveDestination.ChooseAddonDestination> { backStackEntry ->
-      //TODO
+      val viewModel: SelectAddonToRemoveViewModel = koinViewModel() //TODO
+      SelectAddonToRemoveDestination(viewModel)
     }
 
     navdestination<AddonRemoveDestination.Summary> { backStackEntry ->
-      //TODO
+      val viewModel: RemoveAddonSummaryViewModel = koinViewModel() //TODO
+      RemoveAddonSummaryDestination(viewModel)
     }
 
     navdestination<AddonRemoveDestination.SubmitFailure> { backStackEntry ->
