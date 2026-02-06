@@ -266,6 +266,40 @@ type AddonPeril {
   """
   colorCode: String
 }
+type AddonRemoveOffer {
+  """
+  Title to show in removal page.
+  """
+  pageTitle: String!
+  """
+  Description to show in removal page.
+  """
+  pageDescription: String!
+  """
+  Current agreement total cost.
+  """
+  currentTotalCost: ItemCost!
+  """
+  Base insurance cost after removal of removable addons.
+  """
+  baseCost: ItemCost!
+  """
+  Product variant.
+  """
+  productVariant: ProductVariant!
+  """
+  The date the removal will take effect.
+  """
+  activationDate: Date!
+  """
+  Addons available for removal.
+  """
+  removableAddons: [ActiveAddon!]!
+}
+"""
+Output type for addonRemoveStart mutation.
+"""
+union AddonRemoveOutput = UserError|AddonRemoveOffer
 type AddonVariant {
   """
   A `AddonVariant` is identified by its terms version, which is the more technical
@@ -3298,6 +3332,14 @@ type Mutation {
   Commits the midterm change and creates a new agreement for it, takes id of the intent
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
+  """
+  Call this to get removable addon quotes to show in the removal flow.
+  """
+  addonRemoveStart(contractId: ID!): AddonRemoveOutput!
+  """
+  Call this to confirm removal of selected addon(s).
+  """
+  addonRemoveConfirm(contractId: ID!, addonIds: [ID!]!): UserError
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when starting the add/upgrade addon flow.
