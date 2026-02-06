@@ -20,6 +20,7 @@
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
+  <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Ja, uppgradera mitt skydd</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
@@ -690,7 +691,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A2">Så länge skadan täcks av försäkringsvillkoren så betalar du endast självrisken på 1750 kr direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">Du får såklart använda den bärgningstjänst som passar dig bäst. Men förloppet blir oftast snabbare och enklare om du vänder dig direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Läs mer</string>
-  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till 010–45 99 222. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
+  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till +46 020 912 912. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">Vi samarbetar med Assistancekåren för att du ska kunna få hjälp så snabbt som möjligt.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">Du behöver kontakta Assistancekåren direkt för att få hjälp med din bärgning</string>
   <string name="SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON">Ring nu</string>
@@ -871,6 +872,9 @@
   <string name="TOAST_NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST_READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE">Antal resdagar</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Välj antalet resdagar som täcks</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Välj antal resdagar</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
   <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
