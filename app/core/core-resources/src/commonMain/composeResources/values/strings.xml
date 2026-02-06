@@ -20,6 +20,7 @@
   <string name="A11Y_VIEW_DETAILS">View details</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
+  <string name="ADDON_BADGE_ACTIVE">Active</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">This upgrade will take effect from %1$s and can only be removed when your insurance is renewed or cancelled.</string>
@@ -690,7 +691,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A2">As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.</string>
   <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Read more</string>
-  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">You can contact Assistancekåren by phone using the button above or by calling directly at +46 10–45 99 222. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.</string>
+  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">You can contact Assistancekåren by phone using the button above or by calling directly at +46 020 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">We collaborate with Assistancekåren to ensure that you receive assistance as quickly as possible.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">You need to contact Assistancekåren directly to receive further assistance</string>
   <string name="SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON">Call now</string>
@@ -871,6 +872,9 @@
   <string name="TOAST_NEW_OFFER">New offer</string>
   <string name="TOAST_READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE">Maximum travel limit</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Days covered when travelling</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Choose your maximum travel limit</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %1$s</string>
   <string name="VOICEOVER_CHANGE_VALUE">change value</string>
