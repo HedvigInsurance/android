@@ -13,6 +13,8 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
+import com.hedvig.feature.remove.addons.ui.RemoveAddonFailureScreen
+import com.hedvig.feature.remove.addons.ui.RemoveAddonSuccessScreen
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryDestination
 import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveDestination
 import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonDestination
@@ -133,15 +135,27 @@ fun NavGraphBuilder.removeAddonsNavGraph(
     }
 
     navdestination<AddonRemoveDestination.Summary>(AddonRemoveDestination.Summary) { backStackEntry ->
-      RemoveAddonSummaryDestination()
+      RemoveAddonSummaryDestination(
+        navigateToSuccess = {
+          navigator.navigateUnsafe(AddonRemoveDestination.SubmitSuccess(this.params.activationDate)) {
+            typedPopUpTo<AddonRemoveGraphDestination> {
+              inclusive = true
+            }
+          }
+        }
+      )
     }
 
     navdestination<AddonRemoveDestination.SubmitFailure> { backStackEntry ->
-      //TODO
+      RemoveAddonFailureScreen(
+        popBackStack = navigator::popBackStack,
+      )
     }
-
-    navdestination<AddonRemoveDestination.SubmitSuccess>(AddonRemoveDestination.SubmitSuccess) { backStackEntry ->
-      //TODO
-    }
+  }
+  navdestination<AddonRemoveDestination.SubmitSuccess>(AddonRemoveDestination.SubmitSuccess) { backStackEntry ->
+    RemoveAddonSuccessScreen(
+      this.activationDate,
+      popBackStack = navigator::popBackStack,
+    )
   }
 }

@@ -606,6 +606,8 @@
   <string name="REFERRAL_PENDING_STATUS_LABEL">Pending...</string>
   <string name="REFERRAL_SMS_MESSAGE">Hey! Get Hedvig using my link and we both get %1$s per month discount on the monthly cost. Follow the link: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inactive</string>
+  <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">Your changes will be effective from %s.</string>
+  <string name="REMOVE_ADDON_SUCCESS_TITLE">Removed successfully</string>
   <string name="REMOVE_CONFIRMATION_BUTTON">Yes, remove</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Save and continue</string>
   <string name="SEARCH_NOTHING_FOUND">No results for your search</string>
