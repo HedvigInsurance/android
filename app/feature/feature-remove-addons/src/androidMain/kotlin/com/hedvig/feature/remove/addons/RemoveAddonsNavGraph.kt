@@ -4,7 +4,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.apollographql.apollo.api.not
+import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
@@ -13,16 +13,12 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryDestination
-import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryViewModel
 import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveDestination
-import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveViewModel
 import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonDestination
-import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonViewModel
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import org.koin.compose.viewmodel.koinViewModel
 
 
 @Serializable
@@ -30,7 +26,8 @@ data class SummaryParameters(
   val contractId: String,
   val addonIds: List<String>,
   val activationDate: LocalDate,
-  val notificationMessage: String?,
+  val baseCost: ItemCost,
+  val currentTotalCost: ItemCost,
 )
 
 @Serializable
@@ -40,10 +37,9 @@ data class AddonRemoveGraphDestination(
 ) : Destination
 
 
-
 internal sealed interface AddonRemoveDestination {
   @Serializable
-  data object ChooseInsuranceDestination: AddonRemoveDestination, Destination
+  data object ChooseInsuranceDestination : AddonRemoveDestination, Destination
 
   @Serializable
   data class ChooseAddonDestination(
@@ -117,15 +113,19 @@ fun NavGraphBuilder.removeAddonsNavGraph(
     navdestination<AddonRemoveDestination.ChooseAddonDestination> { backStackEntry ->
       SelectAddonToRemoveDestination(
         navigateUp = navigator::navigateUp,
-        navigateToSummary = {  contractId: String, addonIds: List<String>, activationDate: LocalDate, notificationMessage: String? ->
+        navigateToSummary = { contractId: String, addonIds: List<String>, activationDate: LocalDate, baseCost: ItemCost, currentCost: ItemCost ->
           navigator.navigateUnsafe(
             AddonRemoveDestination.Summary(
               params = SummaryParameters(
-                contractId, addonIds,activationDate, notificationMessage
-              )
+                contractId = contractId,
+                addonIds = addonIds,
+                activationDate = activationDate,
+                baseCost = baseCost,
+                currentTotalCost = currentCost,
+              ),
             ),
           )
-        }
+        },
       )
     }
 

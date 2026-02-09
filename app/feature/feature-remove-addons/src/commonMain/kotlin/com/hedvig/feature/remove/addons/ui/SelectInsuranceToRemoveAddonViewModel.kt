@@ -67,7 +67,7 @@ private class SelectInsuranceToRemoveAddonPresenter(
     return when (val state = currentState) {
       SelectInsuranceToRemoveAddonState.Error,
       SelectInsuranceToRemoveAddonState.Loading,
-        -> currentState
+        -> state
 
       is SelectInsuranceToRemoveAddonState.Success -> state.copy(
         insuranceIdToContinue = insuranceIdToContinue,
