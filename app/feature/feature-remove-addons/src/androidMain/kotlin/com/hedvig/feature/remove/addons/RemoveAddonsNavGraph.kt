@@ -142,7 +142,16 @@ fun NavGraphBuilder.removeAddonsNavGraph(
               inclusive = true
             }
           }
-        }
+        },
+        contractId = this.params.contractId,
+        addonsToRemove = this.params.addonsToRemove,
+        activationDate = this.params.activationDate,
+        baseCost = this.params.baseCost,
+        currentTotalCost = this.params.currentTotalCost,
+        onFailure = {
+          navigator.navigateUnsafe(AddonRemoveDestination.SubmitFailure)
+        },
+        navigateUp = navigator::navigateUp
       )
     }
 

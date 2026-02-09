@@ -4,15 +4,20 @@ import androidx.compose.runtime.Composable
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlinx.datetime.LocalDate
 
-internal class RemoveAddonSummaryViewModel() : MoleculeViewModel<
+internal class RemoveAddonSummaryViewModel(
+  params: CommonSummaryParameters
+) : MoleculeViewModel<
   RemoveAddonSummaryEvent, RemoveAddonSummaryState,
   >(
   initialState = RemoveAddonSummaryState.Loading,
-  presenter = RemoveAddonSummaryPresenter(),
+  presenter = RemoveAddonSummaryPresenter(params),
 )
 
-private class RemoveAddonSummaryPresenter : MoleculePresenter<
+private class RemoveAddonSummaryPresenter(
+  private val params: CommonSummaryParameters
+) : MoleculePresenter<
   RemoveAddonSummaryEvent, RemoveAddonSummaryState,
   > {
   @Composable
@@ -24,13 +29,18 @@ private class RemoveAddonSummaryPresenter : MoleculePresenter<
 }
 
 internal sealed interface RemoveAddonSummaryState {
-  data object Success : RemoveAddonSummaryState
+  data class Content(
+    val activationDate: LocalDate,
+    val navigateToFailure: Unit? = null
+  ) : RemoveAddonSummaryState
 
-  data object Error : RemoveAddonSummaryState
-
-  data object Loading : RemoveAddonSummaryState
+  data class Loading(
+    val activationDateToNavigateToSuccess: LocalDate? = null
+  ) : RemoveAddonSummaryState
 }
 
 internal interface RemoveAddonSummaryEvent {
   data object Retry : RemoveAddonSummaryEvent
+  data object ReturnToInitialState : RemoveAddonSummaryEvent
+  data object Submit : RemoveAddonSummaryEvent
 }
