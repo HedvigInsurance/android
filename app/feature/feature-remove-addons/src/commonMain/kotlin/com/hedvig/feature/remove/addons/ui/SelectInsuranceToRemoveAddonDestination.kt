@@ -128,8 +128,10 @@ private fun SelectInsuranceToRemoveAddonContentScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-      stringResource(Res.string.ADDON_FLOW_TITLE),
-      stringResource(Res.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
+    //  stringResource(Res.string.ADDON_FLOW_TITLE),
+      //stringResource(Res.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
+      "Select insurance TODO", //todo!!!
+      "Description TODO", //todo!!
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))

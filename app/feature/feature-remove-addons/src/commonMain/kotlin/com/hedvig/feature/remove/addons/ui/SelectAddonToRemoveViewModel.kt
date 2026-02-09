@@ -31,6 +31,6 @@ internal sealed interface SelectAddonToRemoveState {
   data object Loading : SelectAddonToRemoveState
 }
 
-internal interface SelectAddonToRemoveEvent {
+internal sealed interface SelectAddonToRemoveEvent {
 
 }

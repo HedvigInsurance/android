@@ -24,7 +24,9 @@ val addonRemovalModule = module {
   }
 
   viewModel<SelectInsuranceToRemoveAddonViewModel> {
-    SelectInsuranceToRemoveAddonViewModel()
+    SelectInsuranceToRemoveAddonViewModel(
+      get<GetInsurancesWithRemovableAddonsUseCase>()
+    )
   }
 
   single<GetInsurancesWithRemovableAddonsUseCase> {
