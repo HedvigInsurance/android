@@ -67,6 +67,7 @@ internal fun SelectAddonToRemoveDestination(
       viewModel.emit(SelectAddonToRemoveEvent.Retry)
     },
     navigateToSummary = { params ->
+      viewModel.emit(SelectAddonToRemoveEvent.ClearNavigation)
       navigateToSummary(
         params.contractId,
         params.addonsToRemove,
@@ -157,6 +158,7 @@ private fun SelectAddonToRemoveSuccessScreen(
       allAddonsToRemove = uiState.addonOffer.existingAddonsToRemove,
       currentlyChosenOptions = uiState.addonsChosenForRemoval,
       onToggleOption = onToggleOption,
+      modifier = Modifier.padding(horizontal = 16.dp)
     )
     Spacer(Modifier.height(12.dp))
     HedvigButton(

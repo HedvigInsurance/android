@@ -610,6 +610,8 @@
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Spara och fortsätt</string>
   <string name="SEARCH_NOTHING_FOUND">Inga träffar på din sökning</string>
   <string name="SEARCH_PLACEHOLDER">Sök</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Which insurance do you want to remove addon from</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Språk</string>
   <string name="SETTINGS_LOGIN_ROW">Logga in</string>
   <string name="SETTINGS_NOTIFICATIONS_TITLE">Notiser</string>

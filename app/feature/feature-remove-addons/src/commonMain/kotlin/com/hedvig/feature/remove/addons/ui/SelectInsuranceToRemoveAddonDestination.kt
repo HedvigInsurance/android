@@ -33,6 +33,8 @@ import com.hedvig.feature.remove.addons.data.InsuranceForAddon
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
 import hedvig.resources.ADDON_FLOW_TITLE
 import hedvig.resources.Res
+import hedvig.resources.SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION
+import hedvig.resources.SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
@@ -128,10 +130,8 @@ private fun SelectInsuranceToRemoveAddonContentScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-    //  stringResource(Res.string.ADDON_FLOW_TITLE),
-      //stringResource(Res.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
-      "Select insurance TODO", //todo!!!
-      "Description TODO", //todo!!
+      stringResource(Res.string.SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE),
+      stringResource(Res.string.SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION),
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
