@@ -1,10 +1,11 @@
 package com.hedvig.feature.remove.addons.ui
 
 import androidx.compose.runtime.Composable
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun RemoveAddonSummaryDestination(
-  viewModel: RemoveAddonSummaryViewModel
 ) {
+  val viewModel: RemoveAddonSummaryViewModel = koinViewModel() //TODO
   //TODO
 }

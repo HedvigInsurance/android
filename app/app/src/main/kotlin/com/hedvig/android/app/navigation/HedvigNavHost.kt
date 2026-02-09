@@ -85,6 +85,8 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.feature.claim.chat.ClaimChatDestination
 import com.hedvig.feature.claim.chat.claimChatGraph
+import com.hedvig.feature.remove.addons.AddonRemoveGraphDestination
+import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 
 @Composable
 internal fun HedvigNavHost(
@@ -307,6 +309,13 @@ internal fun HedvigNavHost(
       onNavigateToAddonPurchaseFlow = { ids ->
         navigator.navigateUnsafe(AddonPurchaseGraphDestination(ids, AddonBannerSource.INSURANCES_TAB))
       },
+      onNavigateToRemoveAddon = { insuranceId, addonId ->
+        navigator.navigateUnsafe(
+          AddonRemoveGraphDestination(
+            insuranceId, addonId
+          ),
+        )
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -426,6 +435,13 @@ internal fun HedvigNavHost(
       tryToDialPhone = externalNavigator::tryToDialPhone,
     )
     imageViewerGraph(hedvigAppState.navController, imageLoader)
+    removeAddonsNavGraph(
+      navigator = navigator,
+      navController = hedvigAppState.navController,
+      onNavigateToNewConversation = { backStackEntry ->
+        navigateToNewConversation(backStackEntry)
+      }
+    )
   }
 }
 

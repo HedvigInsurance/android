@@ -110,6 +110,7 @@ internal fun YourInfoTab(
   priceToShow: UiMoney,
   showPriceInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
+  navigateToRemoveAddon: () -> Unit, //TODO
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -255,6 +256,17 @@ internal fun YourInfoTab(
     }
     Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
+      
+      HedvigButton(
+        text = "Remove addon TODO", //TODO!!!
+        onClick = navigateToRemoveAddon,
+        enabled = true,
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth(),
+      )
+      Spacer(Modifier.height(8.dp))
+
       if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
         HedvigButton(
           text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
@@ -627,6 +639,7 @@ private fun PreviewYourInfoTab() {
         showPriceInfoIcon = true,
         onInfoIconClick = {},
         isDecommissioned = true,
+        navigateToRemoveAddon = {},
       )
     }
   }

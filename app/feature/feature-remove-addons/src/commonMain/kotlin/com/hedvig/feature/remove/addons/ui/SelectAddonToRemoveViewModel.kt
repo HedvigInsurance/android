@@ -32,5 +32,5 @@ internal sealed interface SelectAddonToRemoveState {
 }
 
 internal interface SelectAddonToRemoveEvent {
-  data object Retry : SelectAddonToRemoveEvent
+
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.feature.remove.addons.data.InsuranceForAddon
 
 internal class SelectInsuranceToRemoveAddonViewModel() : MoleculeViewModel<
   SelectInsuranceToRemoveAddonEvent, SelectInsuranceToRemoveAddonState>(
@@ -21,7 +22,11 @@ private class SelectInsuranceToRemoveAddonPresenter: MoleculePresenter<
 }
 
 internal sealed interface SelectInsuranceToRemoveAddonState {
-  data object Success : SelectInsuranceToRemoveAddonState
+  data class Success (
+    val listOfInsurances: List<InsuranceForAddon>,
+    val currentlySelected: InsuranceForAddon?,
+    val insuranceIdToContinue: String? = null
+  ) : SelectInsuranceToRemoveAddonState
 
   data object Error : SelectInsuranceToRemoveAddonState
 
@@ -29,5 +34,8 @@ internal sealed interface SelectInsuranceToRemoveAddonState {
 }
 
 internal interface SelectInsuranceToRemoveAddonEvent {
-  data object Retry : SelectInsuranceToRemoveAddonEvent
+  data object Reload : SelectInsuranceToRemoveAddonEvent
+  data object ClearNavigation : SelectInsuranceToRemoveAddonEvent
+  data class SelectInsurance(val contractId: String): SelectInsuranceToRemoveAddonEvent
+  data class SubmitSelected(val contractId: String): SelectInsuranceToRemoveAddonEvent
 }
