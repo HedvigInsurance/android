@@ -15,8 +15,10 @@ import org.koin.dsl.module
 
 val addonRemovalModule = module {
   //includes(addonRemovalPlatformModule)
-  viewModel<SelectAddonToRemoveViewModel> {
-    SelectAddonToRemoveViewModel()
+  viewModel<SelectAddonToRemoveViewModel> { params ->
+    SelectAddonToRemoveViewModel(
+      get<StartAddonRemovalUseCase>(),
+      params.get<Pair<String,String?>>())
   }
 
   viewModel<RemoveAddonSummaryViewModel> {

@@ -12,6 +12,7 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.Navigator
+import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryDestination
 import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveDestination
 import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonDestination
@@ -22,9 +23,9 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
-data class SummaryParameters(
+internal data class SummaryParameters(
   val contractId: String,
-  val addonIds: List<String>,
+  val addonsToRemove: List<CurrentlyActiveAddon>,
   val activationDate: LocalDate,
   val baseCost: ItemCost,
   val currentTotalCost: ItemCost,
@@ -43,7 +44,7 @@ internal sealed interface AddonRemoveDestination {
 
   @Serializable
   data class ChooseAddonDestination(
-    val insuranceId: String?,
+    val insuranceId: String,
     val addonId: String?,
   ) : AddonRemoveDestination, Destination
 
@@ -112,13 +113,15 @@ fun NavGraphBuilder.removeAddonsNavGraph(
 
     navdestination<AddonRemoveDestination.ChooseAddonDestination> { backStackEntry ->
       SelectAddonToRemoveDestination(
+        contractId = this.insuranceId,
+        preselectedAddonId = this.addonId,
         navigateUp = navigator::navigateUp,
-        navigateToSummary = { contractId: String, addonIds: List<String>, activationDate: LocalDate, baseCost: ItemCost, currentCost: ItemCost ->
+        navigateToSummary = { contractId: String, addons: List<CurrentlyActiveAddon>, activationDate: LocalDate, baseCost: ItemCost, currentCost: ItemCost ->
           navigator.navigateUnsafe(
             AddonRemoveDestination.Summary(
               params = SummaryParameters(
                 contractId = contractId,
-                addonIds = addonIds,
+                addonsToRemove = addons,
                 activationDate = activationDate,
                 baseCost = baseCost,
                 currentTotalCost = currentCost,

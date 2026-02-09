@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -19,17 +20,17 @@ import kotlinx.datetime.LocalDate
 
 internal class SelectAddonToRemoveViewModel(
   startAddonRemovalUseCase: StartAddonRemovalUseCase,
-  contractId: String,
+  contractAndAddonId: Pair<String, String?>,
 ) : MoleculeViewModel<
   SelectAddonToRemoveEvent, SelectAddonToRemoveState,
   >(
   initialState = SelectAddonToRemoveState.Loading,
-  presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractId),
+  presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractAndAddonId),
 )
 
 private class SelectAddonToRemovePresenter(
   private val startAddonRemovalUseCase: StartAddonRemovalUseCase,
-  private val contractId: String,
+  private val contractAndAddonId: Pair<String, String?>,
 ) : MoleculePresenter<
   SelectAddonToRemoveEvent, SelectAddonToRemoveState,
   > {
@@ -46,14 +47,19 @@ private class SelectAddonToRemovePresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      startAddonRemovalUseCase.invoke(contractId).fold(
+      startAddonRemovalUseCase.invoke(contractAndAddonId.first).fold(
         ifLeft = {
           currentState = SelectAddonToRemoveState.Error(it.message)
         },
-        ifRight = {
+        ifRight = { result ->
           currentState = SelectAddonToRemoveState.Success(
-            addonOffer = it,
-            addonsChosenForRemoval = emptyList(),
+            addonOffer = result,
+            addonsChosenForRemoval = contractAndAddonId.second?.let { preselectedId ->
+              val preselected = result.existingAddonsToRemove.firstOrNull{it.id==preselectedId}
+              preselected?.let {
+                listOf(preselected)
+              }
+            } ?: emptyList(),
           )
         },
       )
@@ -73,12 +79,18 @@ private class SelectAddonToRemovePresenter(
             activationDate = state.addonOffer.activationDate,
             baseCost = state.addonOffer.baseCost,
             currentTotalCost = state.addonOffer.currentTotalCost,
-            contractId = contractId,
+            contractId = contractAndAddonId.first,
           )
           paramsToNavigateToSummary = summaryParams
         }
 
-        is SelectAddonToRemoveEvent.ToggleOption -> TODO()
+        is SelectAddonToRemoveEvent.ToggleOption -> Snapshot.withMutableSnapshot {
+          if (selectedToggleableOptions.contains(event.option)) {
+            selectedToggleableOptions.remove(event.option)
+          } else {
+            selectedToggleableOptions.add(event.option)
+          }
+        }
       }
     }
 
