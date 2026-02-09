@@ -136,9 +136,11 @@ class PullRefreshState internal constructor(
       // We are flinging without having dragged the pull refresh (for example a fling inside
       // a list) - don't consume
       distancePulled == 0f -> 0f
+
       // If the velocity is negative, the fling is upwards, and we don't want to prevent the
       // the list from scrolling
       velocity < 0f -> 0f
+
       // We are showing the indicator, and the fling is downwards - consume everything
       else -> velocity
     }
@@ -180,7 +182,10 @@ class PullRefreshState internal constructor(
 
   private fun calculateIndicatorPosition(): Float = when {
     // If drag hasn't gone past the threshold, the position is the adjustedDistancePulled.
-    adjustedDistancePulled <= threshold -> adjustedDistancePulled
+    adjustedDistancePulled <= threshold -> {
+      adjustedDistancePulled
+    }
+
     else -> {
       // How far beyond the threshold pull has gone, as a percentage of the threshold.
       val overshootPercent = abs(progress) - 1.0f

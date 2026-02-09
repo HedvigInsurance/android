@@ -104,7 +104,9 @@ private fun ChooseInsuranceToTerminateScreen(
       }
     }
 
-    ChooseInsuranceToTerminateStepUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    ChooseInsuranceToTerminateStepUiState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
 
     is ChooseInsuranceToTerminateStepUiState.Success -> {
       TerminationScaffold(

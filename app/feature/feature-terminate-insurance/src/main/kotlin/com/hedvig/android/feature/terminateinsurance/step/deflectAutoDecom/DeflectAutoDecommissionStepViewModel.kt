@@ -47,7 +47,9 @@ private class DeflectAutoDecomStepPresenter(
           currentState = state.copy(nextStep = null, buttonLoading = false)
         }
 
-        DeflectAutoDecommissionEvent.FetchNextStep -> loadIteration++
+        DeflectAutoDecommissionEvent.FetchNextStep -> {
+          loadIteration++
+        }
       }
     }
     LaunchedEffect(loadIteration) {

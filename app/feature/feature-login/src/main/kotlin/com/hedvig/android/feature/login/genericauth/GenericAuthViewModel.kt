@@ -53,14 +53,19 @@ internal class GenericAuthViewModel(
   private suspend fun createStateFromOtpAttempt(createLoginAttempt: suspend () -> AuthAttemptResult) {
     _viewState.update { it.copy(loading = true) }
     val newState = when (val startLoginResult = createLoginAttempt()) {
-      is AuthAttemptResult.BankIdProperties -> _viewState.value.copy(
-        error = GenericAuthViewState.TextFieldError.Other.NetworkError,
-        loading = false,
-      )
+      is AuthAttemptResult.BankIdProperties -> {
+        _viewState.value.copy(
+          error = GenericAuthViewState.TextFieldError.Other.NetworkError,
+          loading = false,
+        )
+      }
 
       is AuthAttemptResult.Error -> {
         val error = when (startLoginResult) {
-          is AuthAttemptResult.Error.Localised -> GenericAuthViewState.TextFieldError.Message(startLoginResult.reason)
+          is AuthAttemptResult.Error.Localised -> {
+            GenericAuthViewState.TextFieldError.Message(startLoginResult.reason)
+          }
+
           is AuthAttemptResult.Error.BackendErrorResponse,
           is AuthAttemptResult.Error.IOError,
           is AuthAttemptResult.Error.UnknownError,
@@ -74,12 +79,14 @@ internal class GenericAuthViewModel(
         )
       }
 
-      is AuthAttemptResult.OtpProperties -> _viewState.value.copy(
-        verifyUrl = startLoginResult.verifyUrl,
-        resendUrl = startLoginResult.resendUrl,
-        error = null,
-        loading = false,
-      )
+      is AuthAttemptResult.OtpProperties -> {
+        _viewState.value.copy(
+          verifyUrl = startLoginResult.verifyUrl,
+          resendUrl = startLoginResult.resendUrl,
+          error = null,
+          loading = false,
+        )
+      }
     }
 
     _viewState.update { newState }

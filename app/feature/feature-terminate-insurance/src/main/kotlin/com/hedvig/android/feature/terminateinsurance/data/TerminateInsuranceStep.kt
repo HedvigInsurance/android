@@ -80,7 +80,10 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
       )
     }
 
-    is TerminationFlowStepFragment.FlowTerminationFailedStepCurrentStep -> TerminateInsuranceStep.Failure()
+    is TerminationFlowStepFragment.FlowTerminationFailedStepCurrentStep -> {
+      TerminateInsuranceStep.Failure()
+    }
+
     is TerminationFlowStepFragment.FlowTerminationDeletionStepCurrentStep -> {
       TerminateInsuranceStep.InsuranceDeletion(extraCoverage.toExtraCoverageItems())
     }
@@ -114,7 +117,9 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
       )
     }
 
-    else -> TerminateInsuranceStep.UnknownStep()
+    else -> {
+      TerminateInsuranceStep.UnknownStep()
+    }
   }
 }
 
@@ -249,7 +254,9 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   commonParams: TerminationGraphParameters,
 ): Destination {
   return when (this) {
-    is TerminateInsuranceStep.Failure -> TerminationFailure(message)
+    is TerminateInsuranceStep.Failure -> {
+      TerminationFailure(message)
+    }
 
     is TerminateInsuranceStep.TerminateInsuranceDate -> {
       TerminationDate(
@@ -260,39 +267,51 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       )
     }
 
-    is TerminateInsuranceStep.InsuranceDeletion -> InsuranceDeletion(
-      commonParams = commonParams,
-      extraCoverageItems = extraCoverageItems,
-    )
+    is TerminateInsuranceStep.InsuranceDeletion -> {
+      InsuranceDeletion(
+        commonParams = commonParams,
+        extraCoverageItems = extraCoverageItems,
+      )
+    }
 
-    is TerminateInsuranceStep.TerminateInsuranceSuccess -> TerminationSuccess(
-      terminationDate = terminationDate,
-    )
+    is TerminateInsuranceStep.TerminateInsuranceSuccess -> {
+      TerminationSuccess(
+        terminationDate = terminationDate,
+      )
+    }
 
-    is TerminateInsuranceStep.UnknownStep -> UnknownScreen
+    is TerminateInsuranceStep.UnknownStep -> {
+      UnknownScreen
+    }
 
-    is TerminateInsuranceStep.Survey -> TerminationSurveyFirstStep(
-      options = options,
-      commonParams = commonParams,
-    )
+    is TerminateInsuranceStep.Survey -> {
+      TerminationSurveyFirstStep(
+        options = options,
+        commonParams = commonParams,
+      )
+    }
 
-    is TerminateInsuranceStep.DeflectAutoCancelStep -> DeflectAutoCancel(
-      AutoCancelDeflectStepParameters(
-        title = title,
-        message = message,
-        extraMessage = extraMessage,
-      ),
-    )
+    is TerminateInsuranceStep.DeflectAutoCancelStep -> {
+      DeflectAutoCancel(
+        AutoCancelDeflectStepParameters(
+          title = title,
+          message = message,
+          extraMessage = extraMessage,
+        ),
+      )
+    }
 
-    is TerminateInsuranceStep.DeflectAutoDecommissionStep -> DeflectAutoDecommission(
-      commonParams = commonParams,
-      deflectParameters = AutoDecommissionDeflectStepParameters(
-        title = title,
-        message = message,
-        info = info,
-        explanations = explanations,
-      ),
-    )
+    is TerminateInsuranceStep.DeflectAutoDecommissionStep -> {
+      DeflectAutoDecommission(
+        commonParams = commonParams,
+        deflectParameters = AutoDecommissionDeflectStepParameters(
+          title = title,
+          message = message,
+          info = info,
+          explanations = explanations,
+        ),
+      )
+    }
   }
 }
 

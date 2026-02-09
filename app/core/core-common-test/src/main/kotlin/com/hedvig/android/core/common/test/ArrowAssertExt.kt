@@ -9,6 +9,7 @@ fun <T : Either<Left, *>, Left> Assert<T>.isLeft(): Assert<Left> = transform { a
   @Suppress("UNCHECKED_CAST")
   when (actual) {
     is Either.Left<*> -> actual.value as Left
+
     is Either.Right<*> -> expected(
       "to be instance of:${show(Either.Left::class)} but was instance of:${show(Either.Right::class)}",
     )
@@ -25,6 +26,7 @@ fun <T : Either<*, Right>, Right> Assert<T>.isRight(): Assert<Right> = transform
     )
 
     is Either.Right<*> -> actual.value as Right
+
     else -> error("Impossible")
   }
 }

@@ -67,7 +67,10 @@ private fun GenericAuthScreen(
 @Composable
 private fun errorMessage(error: GenericAuthViewState.TextFieldError): String {
   return when (error) {
-    is GenericAuthViewState.TextFieldError.Message -> error.message
+    is GenericAuthViewState.TextFieldError.Message -> {
+      error.message
+    }
+
     is GenericAuthViewState.TextFieldError.Other -> {
       when (error) {
         GenericAuthViewState.TextFieldError.Other.Empty -> {

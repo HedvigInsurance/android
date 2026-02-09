@@ -181,12 +181,17 @@ private fun ForeverScreen(
       },
     ) { uiStateAnimated ->
       when (uiStateAnimated) {
-        ForeverUiState.Error -> HedvigErrorSection(
-          onButtonClick = reload,
-          modifier = Modifier.fillMaxSize(),
-        )
+        ForeverUiState.Error -> {
+          HedvigErrorSection(
+            onButtonClick = reload,
+            modifier = Modifier.fillMaxSize(),
+          )
+        }
 
-        Loading -> LoadingForeverContent()
+        Loading -> {
+          LoadingForeverContent()
+        }
+
         is Success -> {
           ForeverContent(
             uiState = uiStateAnimated,

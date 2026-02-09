@@ -154,23 +154,23 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
-  ClaimChatUiState.Initializing,
-  ClaimChatPresenter(
-    developmentFlow,
-    startClaimIntentUseCase,
-    getClaimIntentUseCase,
-    submitTaskUseCase,
-    submitAudioRecordingUseCase,
-    submitFileUploadUseCase,
-    submitFormUseCase,
-    submitSelectUseCase,
-    submitSummaryUseCase,
-    skipStepUseCase,
-    audioRecordingManager,
-    fileService,
-    regretStepUseCase,
-  ),
-)
+    ClaimChatUiState.Initializing,
+    ClaimChatPresenter(
+      developmentFlow,
+      startClaimIntentUseCase,
+      getClaimIntentUseCase,
+      submitTaskUseCase,
+      submitAudioRecordingUseCase,
+      submitFileUploadUseCase,
+      submitFormUseCase,
+      submitSelectUseCase,
+      submitSummaryUseCase,
+      skipStepUseCase,
+      audioRecordingManager,
+      fileService,
+      regretStepUseCase,
+    ),
+  )
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
@@ -238,7 +238,10 @@ internal class ClaimChatPresenter(
                 steps.clear()
                 progress = claimIntent.progress
                 when (val next = claimIntent.next) {
-                  is ClaimIntent.Next.Outcome -> outcome = next.claimIntentOutcome
+                  is ClaimIntent.Next.Outcome -> {
+                    outcome = next.claimIntentOutcome
+                  }
+
                   is ClaimIntent.Next.Step -> {
                     steps.add(next.claimIntentStep)
                   }
@@ -278,7 +281,7 @@ internal class ClaimChatPresenter(
             steps.find {
               it.id == event.id
             }?.stepContent as? StepContent.ContentSelect
-            )?.selectedOptionId
+          )?.selectedOptionId
           if (selectedId == null) return@CollectEvents
           currentContinueButtonLoading = true
           launch {
@@ -472,13 +475,15 @@ internal class ClaimChatPresenter(
                   )
                 }
 
-                else -> FieldToSubmit(
-                  field.id,
-                  field.selectedOptions
-                    .map { selectedOption ->
-                      selectedOption.value.ifEmpty { null }
-                    },
-                )
+                else -> {
+                  FieldToSubmit(
+                    field.id,
+                    field.selectedOptions
+                      .map { selectedOption ->
+                        selectedOption.value.ifEmpty { null }
+                      },
+                  )
+                }
               }
             }
             currentContinueButtonLoading = true
@@ -536,8 +541,14 @@ internal class ClaimChatPresenter(
           }
         }
 
-        ClaimChatEvent.CloseFreeChatOverlay -> showFreeTextOverlay = null
-        is ClaimChatEvent.OpenFreeTextOverlay -> showFreeTextOverlay = event.restrictions
+        ClaimChatEvent.CloseFreeChatOverlay -> {
+          showFreeTextOverlay = null
+        }
+
+        is ClaimChatEvent.OpenFreeTextOverlay -> {
+          showFreeTextOverlay = event.restrictions
+        }
+
         is ClaimChatEvent.Skip -> {
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
@@ -669,14 +680,19 @@ internal class ClaimChatPresenter(
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
                   null,
-                    -> field.copy(
-                    selectedOptions = event.answer?.let {
-                      listOf(it)
-                    } ?: emptyList(),
-                    hasError = null,
-                  )
+                  -> {
+                    field.copy(
+                      selectedOptions = event.answer?.let {
+                        listOf(it)
+                      } ?: emptyList(),
+                      hasError = null,
+                    )
+                  }
 
-                  FieldType.DATE -> field.copy(hasError = null)
+                  FieldType.DATE -> {
+                    field.copy(hasError = null)
+                  }
+
                   // Date gets selected date from DatePickerState, not from Event
 
                   FieldType.MULTI_SELECT -> {
@@ -708,7 +724,10 @@ internal class ClaimChatPresenter(
           }
         }
 
-        ClaimChatEvent.DismissErrorDialog -> errorSubmittingStep = null
+        ClaimChatEvent.DismissErrorDialog -> {
+          errorSubmittingStep = null
+        }
+
         is ClaimChatEvent.SubmitFile -> {
           val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
           val fileUris = stepContent.localFiles
@@ -764,8 +783,14 @@ internal class ClaimChatPresenter(
           // todo or remove
         }
 
-        ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
-        is ClaimChatEvent.ShowConfirmEditDialog -> showConfirmEditDialogForStep = event.id
+        ClaimChatEvent.DismissConfirmEditDialog -> {
+          showConfirmEditDialogForStep = null
+        }
+
+        is ClaimChatEvent.ShowConfirmEditDialog -> {
+          showConfirmEditDialogForStep = event.id
+        }
+
         is ClaimChatEvent.AddToShownAnimations -> {
           stepsWithShownAnimations.add(event.stepId)
         }
@@ -774,7 +799,9 @@ internal class ClaimChatPresenter(
 
     return when {
       initializing -> ClaimChatUiState.Initializing
+
       failedToStart -> ClaimChatUiState.FailedToStart
+
       claimIntentId != null -> ClaimChatUiState.ClaimChat(
         claimIntentId = claimIntentId!!,
         steps = steps,
@@ -938,7 +965,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Task,
   is StepContent.Deflect,
   StepContent.Unknown,
-    -> this
+  -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {

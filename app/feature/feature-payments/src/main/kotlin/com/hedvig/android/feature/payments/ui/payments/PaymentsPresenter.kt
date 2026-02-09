@@ -74,12 +74,16 @@ internal class PaymentsPresenter(
             },
             ongoingCharges = paymentOverview.ongoingCharges,
             connectedPaymentInfo = when (val paymentConnection = paymentOverview.paymentConnection) {
-              is Active -> PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
-                displayName = paymentConnection.displayName,
-                maskedAccountNumber = paymentConnection.displayValue,
-              )
+              is Active -> {
+                PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
+                  displayName = paymentConnection.displayName,
+                  maskedAccountNumber = paymentConnection.displayValue,
+                )
+              }
 
-              Pending -> PaymentsUiState.Content.ConnectedPaymentInfo.Pending
+              Pending -> {
+                PaymentsUiState.Content.ConnectedPaymentInfo.Pending
+              }
 
               is NeedsSetup -> {
                 PaymentsUiState.Content.ConnectedPaymentInfo.NeedsSetup(

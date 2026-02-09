@@ -177,11 +177,13 @@ private fun PaymentsScreen(
           )
         }
         when (uiState) {
-          Error -> HedvigErrorSection(
-            onButtonClick = onRetry,
-            Modifier.weight(1f),
-            windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
-          )
+          Error -> {
+            HedvigErrorSection(
+              onButtonClick = onRetry,
+              Modifier.weight(1f),
+              windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+            )
+          }
 
           else -> {
             PaymentsContent(
@@ -332,6 +334,7 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
   Box(modifier) {
     when (upcomingPaymentInfo) {
       NoInfo -> {}
+
       InProgress -> {
         HedvigNotificationCard(
           message = stringResource(Res.string.PAYMENTS_IN_PROGRESS),

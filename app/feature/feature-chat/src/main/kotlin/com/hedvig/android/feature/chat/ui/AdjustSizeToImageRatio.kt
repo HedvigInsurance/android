@@ -44,7 +44,9 @@ internal fun Modifier.adjustSizeToImageRatio(getImageSize: () -> IntSize?): Modi
             DpSize(width = minPreferredWidth, height = minPreferredWidth / widthToHeightRatio)
           }
 
-          else -> DpSize(ratioAdjustedWidth, preferredHeight)
+          else -> {
+            DpSize(ratioAdjustedWidth, preferredHeight)
+          }
         }
 
         val minHeight = MinimumImageHeight.dp
@@ -58,7 +60,9 @@ internal fun Modifier.adjustSizeToImageRatio(getImageSize: () -> IntSize?): Modi
             widthBoundAdjustedSize.copy(width = maxHeight * widthToHeightRatio, height = maxHeight)
           }
 
-          else -> widthBoundAdjustedSize
+          else -> {
+            widthBoundAdjustedSize
+          }
         }
 
         val placeable = measurable.measure(

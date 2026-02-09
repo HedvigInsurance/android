@@ -75,14 +75,19 @@ private fun DeflectAutoDecomStepScreen(
       }
     }
 
-    DeflectAutoDecommissionUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
-    is DeflectAutoDecommissionUiState.Success -> DeflectAutoDecomStepSuccessScreen(
-      uiState,
-      isNextStepLoading = uiState.buttonLoading,
-      navigateUp = navigateUp,
-      closeTerminationFlow = closeTerminationFlow,
-      fetchTerminationStep = fetchTerminationStep,
-    )
+    DeflectAutoDecommissionUiState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
+    is DeflectAutoDecommissionUiState.Success -> {
+      DeflectAutoDecomStepSuccessScreen(
+        uiState,
+        isNextStepLoading = uiState.buttonLoading,
+        navigateUp = navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+        fetchTerminationStep = fetchTerminationStep,
+      )
+    }
   }
 }
 

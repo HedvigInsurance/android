@@ -84,6 +84,7 @@ internal class MovingFlowRepository(
               ),
               isAvailableForStudentState = when (propertyState.isAvailableForStudentState) {
                 NotAvailable -> NotAvailable
+
                 is Available -> propertyState.isAvailableForStudentState.copy(
                   selectedIsStudent = isStudent,
                 )

@@ -48,6 +48,7 @@ internal fun CbmChatMessage.formattedDateTime(locale: Locale): String {
   val todayAtStartOfDay = nowLocalDateTime.date.atStartOfDayIn(timeZone)
   val formatter = when {
     sentAt > todayAtStartOfDay -> HedvigDateTimeFormatterDefaults.timeOnly(locale)
+
     sentAt > todayAtStartOfDay.minus(3.days) -> HedvigDateTimeFormatterDefaults.dayOfTheWeekAndTime(
       locale,
     )

@@ -703,7 +703,7 @@ private fun ControlButton(
             when (audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording,
               is AudioRecordingStepState.AudioRecording.Recording,
-                -> HedvigTheme.colorScheme.fillWhite
+              -> HedvigTheme.colorScheme.fillWhite
 
               is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
             }
@@ -715,7 +715,7 @@ private fun ControlButton(
             color = when (audioRecordingState) {
               AudioRecordingStepState.AudioRecording.NotRecording,
               is AudioRecordingStepState.AudioRecording.Recording,
-                -> HedvigTheme.colorScheme.fillWhite
+              -> HedvigTheme.colorScheme.fillWhite
 
               is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
             },
@@ -972,13 +972,16 @@ private fun getCurrentAmplitudePercentage(amplitudes: List<Int>): Float {
 
   val tooSmallDynamicRange = max - min < minimumDynamicRange
   val isVeryQuiet = max < minimumAmplitudeThreshold
+
   fun calculateRange(current: Int, lowerCap: Int, maxCap: Int): Float {
     return ((current.toFloat() - lowerCap.toFloat()) / (maxCap.toFloat() - lowerCap.toFloat()))
   }
   return when {
     tooSmallDynamicRange && isVeryQuiet -> 0f
+
     // If the maximum amplitude is too low (quiet environment), use absolute scaling
     isVeryQuiet -> calculateRange(currentAmplitude, lowerCap, minimumAmplitudeThreshold).coerceIn(0f, 0.3f)
+
     else -> calculateRange(currentAmplitude, min, max).coerceIn(0f, 1f)
   }
 }

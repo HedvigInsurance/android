@@ -121,14 +121,26 @@ private class ClaimDetailPresenter(
 
     CollectEvents { event ->
       when (event) {
-        ClaimDetailsEvent.Retry -> loadIteration++
-        ClaimDetailsEvent.DismissUploadError -> content = content?.copy(uploadError = null)
+        ClaimDetailsEvent.Retry -> {
+          loadIteration++
+        }
+
+        ClaimDetailsEvent.DismissUploadError -> {
+          content = content?.copy(uploadError = null)
+        }
+
         is ClaimDetailsEvent.DownloadPdf -> {
           content = content?.copy(isLoadingPdf = event.url)
           downloadingUrl = event.url
         }
-        ClaimDetailsEvent.DismissDownloadError -> content = content?.copy(downloadError = null)
-        ClaimDetailsEvent.HandledSharingPdfFile -> content = content?.copy(downloadError = null, savedFileUri = null)
+
+        ClaimDetailsEvent.DismissDownloadError -> {
+          content = content?.copy(downloadError = null)
+        }
+
+        ClaimDetailsEvent.HandledSharingPdfFile -> {
+          content = content?.copy(downloadError = null, savedFileUri = null)
+        }
       }
     }
 

@@ -64,7 +64,9 @@ internal class SelectContractPresenter(
           submittingAddressId = selectedId.id
         }
 
-        SelectContractEvent.RetryLoadData -> loadIteration++
+        SelectContractEvent.RetryLoadData -> {
+          loadIteration++
+        }
       }
     }
 

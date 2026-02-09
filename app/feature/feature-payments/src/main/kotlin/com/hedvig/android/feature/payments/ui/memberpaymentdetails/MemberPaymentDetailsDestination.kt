@@ -83,19 +83,25 @@ private fun MemberPaymentDetailsScreen(
     navigateUp = navigateUp,
   ) {
     when (uiState) {
-      MemberPaymentDetailsUiState.Failure -> HedvigErrorSection(
-        modifier = Modifier.weight(1f),
-        onButtonClick = retry,
-        buttonText = stringResource(R.string.GENERAL_RETRY),
-      )
+      MemberPaymentDetailsUiState.Failure -> {
+        HedvigErrorSection(
+          modifier = Modifier.weight(1f),
+          onButtonClick = retry,
+          buttonText = stringResource(R.string.GENERAL_RETRY),
+        )
+      }
 
-      MemberPaymentDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
-      is MemberPaymentDetailsUiState.Success ->
+      MemberPaymentDetailsUiState.Loading -> {
+        HedvigFullScreenCenterAlignedProgress(Modifier.weight(1f))
+      }
+
+      is MemberPaymentDetailsUiState.Success -> {
         MemberPaymentDetailsSuccessScreen(
           uiState,
           onChangeBankAccount,
           Modifier.weight(1f),
         )
+      }
     }
   }
 }
@@ -266,6 +272,7 @@ private fun Int.format(): String {
 
     "sv" -> when (day) {
       11, 12 -> ":e"
+
       else -> when (lastDigit) {
         1, 2 -> ":a"
         else -> ":e"

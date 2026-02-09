@@ -55,6 +55,7 @@ fun InternalSnackBar(
       Dismissed -> {
         showedSnackbar()
       }
+
       ActionPerformed -> {
         if (action != null) {
           action()

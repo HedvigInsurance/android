@@ -226,7 +226,9 @@ internal class ContactInfoPresenter(
 
     return when (dataFetchingState) {
       Error -> ContactInfoUiState.Error
+
       Fetching -> Loading
+
       Idle -> Content(
         emailState = email,
         phoneNumberState = phoneNumber,
