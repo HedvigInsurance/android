@@ -818,7 +818,6 @@ internal class ClaimChatPresenter(
               ),
             )
           }
-          (currentStep?.stepContent as? StepContent.Task)
         }
       }
     }
