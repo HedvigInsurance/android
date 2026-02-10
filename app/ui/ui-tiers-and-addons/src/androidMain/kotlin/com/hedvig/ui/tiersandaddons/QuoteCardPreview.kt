@@ -1,5 +1,6 @@
-package com.hedvig.android.tiersandaddons
+package com.hedvig.ui.tiersandaddons
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -11,7 +12,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 
 @HedvigPreview
-@androidx.compose.runtime.Composable
+@Composable
 private fun PreviewQuoteCard(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) samePreviousPremium: Boolean,
 ) {

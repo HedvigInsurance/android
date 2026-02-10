@@ -26,16 +26,16 @@ import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
-import com.hedvig.android.tiersandaddons.DisplayDocument
-import com.hedvig.android.tiersandaddons.QuoteCard
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.DisplayDocument
+import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
-import hedvig.resources.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_BUTTON
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_DESCRIPTION
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_TITLE
 import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
@@ -136,10 +136,10 @@ private fun SummaryContentScreen(
     topAppBarText = stringResource(Res.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     val locale = getLocale()
-    val formattedDate = remember(uiState.activationDate, locale) {
+    val formattedDate = remember(uiState.summaryParams.activationDate, locale) {
       HedvigDateTimeFormatterDefaults.dateMonthAndYear(
         locale,
-      ).format(uiState.activationDate)
+      ).format(uiState.summaryParams.activationDate)
     }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
@@ -170,7 +170,7 @@ private fun SummaryContentScreen(
     ) {
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(Res.string.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON),
+        text = stringResource(Res.string.TIER_FLOW_SUMMARY_CONFIRM_BUTTON),
         modifier = Modifier.fillMaxWidth(),
         buttonStyle = Primary,
         buttonSize = Large,
@@ -191,7 +191,7 @@ private fun SummaryCard(
   modifier: Modifier = Modifier,
 ) {
   val leftAddons = uiState.summaryParams.existingAddons.filter {
-    !uiState.chosenAddons.contains(it)
+    !uiState.summaryParams.addonsToRemove.contains(it)
   }
   val breakdown = buildList { //todo: there will be a separate entry point!!!
     add(
@@ -211,7 +211,7 @@ private fun SummaryCard(
         ),
       )
     }
-    uiState.chosenAddons.forEach {
+    uiState.summaryParams.addonsToRemove.forEach {
       add(
         CostBreakdownEntry(
           it.displayTitle,
@@ -238,7 +238,7 @@ private fun SummaryCard(
     displayItems = emptyList(),
     modifier = modifier,
     displayName = uiState.summaryParams.productVariant.displayName,
-    insurableLimits = emptyList(),
+    insurableLimits = uiState.summaryParams.productVariant.insurableLimits,
     documents = uiState.summaryParams. productVariant.documents.map {
       DisplayDocument(
         displayName = it.displayName,

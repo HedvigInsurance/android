@@ -1,4 +1,4 @@
-package com.hedvig.android.tiersandaddons
+package com.hedvig.ui.tiersandaddons
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.expandVertically
@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
@@ -64,8 +64,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
@@ -256,7 +256,7 @@ private fun QuoteDetailsBottomSheet(
       onClick = quoteDetailsBottomSheetState::dismiss,
     )
     Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing))
   }
 }
 

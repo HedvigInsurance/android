@@ -23,7 +23,8 @@ val addonRemovalModule = module {
   }
 
   viewModel<RemoveAddonSummaryViewModel> {params ->
-    RemoveAddonSummaryViewModel(params.get<CommonSummaryParameters>())
+    RemoveAddonSummaryViewModel(params.get<CommonSummaryParameters>(),
+      get<SubmitAddonRemovalUseCase>())
   }
 
   viewModel<SelectInsuranceToRemoveAddonViewModel> {
