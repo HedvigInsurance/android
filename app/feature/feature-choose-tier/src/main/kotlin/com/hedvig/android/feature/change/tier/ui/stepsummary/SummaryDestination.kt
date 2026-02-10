@@ -134,16 +134,20 @@ private fun SummaryScreen(
   onExitTierFlow: () -> Unit,
 ) {
   when (uiState) {
-    Failure -> HedvigScaffold(navigateUp) {
-      Spacer(Modifier.weight(1f))
-      HedvigErrorSection(
-        modifier = Modifier.weight(1f),
-        onButtonClick = onReload,
-      )
-      Spacer(Modifier.weight(1f))
+    Failure -> {
+      HedvigScaffold(navigateUp) {
+        Spacer(Modifier.weight(1f))
+        HedvigErrorSection(
+          modifier = Modifier.weight(1f),
+          onButtonClick = onReload,
+        )
+        Spacer(Modifier.weight(1f))
+      }
     }
 
-    Loading -> HedvigFullScreenCenterAlignedProgress()
+    Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
 
     is MakingChanges -> {
       LaunchedEffect(uiState.navigateToSuccess) {

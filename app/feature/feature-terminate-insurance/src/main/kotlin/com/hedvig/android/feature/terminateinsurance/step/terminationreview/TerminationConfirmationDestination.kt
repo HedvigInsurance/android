@@ -217,14 +217,16 @@ private fun AreYouSureSheetContent(
       iconStyle = ERROR,
       text = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
       description = when (type) {
-        TerminationType.Deletion ->
+        TerminationType.Deletion -> {
           stringResource(Res.string.TERMINATION_FLOW_CONFIRMATION)
+        }
 
-        is Termination ->
+        is Termination -> {
           stringResource(
             Res.string.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION,
             dateTimeFormatter.format(type.terminationDate),
           )
+        }
       },
       modifier = Modifier.fillMaxWidth(),
     )

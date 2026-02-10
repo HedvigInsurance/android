@@ -4,6 +4,7 @@ import androidx.room.gradle.RoomExtension
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.Lint
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.apollographql.apollo.gradle.api.ApolloExtension
 import com.apollographql.apollo.gradle.api.Service
@@ -270,6 +271,14 @@ private abstract class RoomHandler {
     }
     project.extensions.configure<RoomExtension> {
       schemaDirectory(project.rootDir.resolveSchemaRelativeToRootDir().absolutePath)
+    }
+    // Room's KSP-generated code calls internal Room APIs annotated with @RestrictTo(LIBRARY_GROUP),
+    // which triggers RestrictedApi lint errors. Since this is generated code we don't control,
+    // allow modules to disable specific lint checks when using Room.
+    project.afterEvaluate {
+      project.extensions.findByType<Lint>()?.apply {
+        disable.add("RestrictedApi")
+      }
     }
   }
 }

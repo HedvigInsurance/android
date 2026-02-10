@@ -84,7 +84,10 @@ private fun SelectInsuranceForAddonScreen(
       }
     }
 
-    Loading -> HedvigFullScreenCenterAlignedProgress()
+    Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is Success -> {
       LaunchedEffect(uiState.insuranceIdToContinue) {
         if (uiState.insuranceIdToContinue != null) {

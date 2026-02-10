@@ -86,8 +86,13 @@ internal class GetClaimDetailUiStateUseCase(
           ClaimDetailUiState.Content.SubmittedContent.Audio(SignedAudioUrl.fromSignedAudioUrlString(audioUrl))
         }
 
-        memberFreeText != null -> ClaimDetailUiState.Content.SubmittedContent.FreeText(memberFreeText)
-        else -> null
+        memberFreeText != null -> {
+          ClaimDetailUiState.Content.SubmittedContent.FreeText(memberFreeText)
+        }
+
+        else -> {
+          null
+        }
       },
       files = claim.files.map {
         UiFile(
@@ -101,17 +106,24 @@ internal class GetClaimDetailUiStateUseCase(
       claimStatusCardUiState = ClaimStatusCardUiState.fromClaimStatusCardsQuery(claim),
       claimStatus = when (claim.status) {
         ClaimStatus.CREATED -> ClaimDetailUiState.Content.ClaimStatus.CREATED
+
         ClaimStatus.IN_PROGRESS -> ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS
+
         ClaimStatus.CLOSED -> ClaimDetailUiState.Content.ClaimStatus.CLOSED
+
         ClaimStatus.REOPENED -> ClaimDetailUiState.Content.ClaimStatus.REOPENED
+
         ClaimStatus.UNKNOWN__,
         null,
         -> ClaimDetailUiState.Content.ClaimStatus.UNKNOWN
       },
       claimOutcome = when (claim.outcome) {
         ClaimOutcome.PAID -> ClaimDetailUiState.Content.ClaimOutcome.PAID
+
         ClaimOutcome.NOT_COMPENSATED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED
+
         ClaimOutcome.NOT_COVERED -> ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED
+
         ClaimOutcome.UNKNOWN__,
         null,
         -> ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN

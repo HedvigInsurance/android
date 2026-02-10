@@ -39,10 +39,12 @@ internal class SelectInsuranceForAddonPresenter(
         SelectInsuranceForAddonEvent.Reload -> {
           loadIteration++
         }
+
         is SelectInsuranceForAddonEvent.SelectInsurance -> {
           val state = currentState as? SelectInsuranceForAddonState.Success ?: return@CollectEvents
           currentState = state.copy(currentlySelected = event.selected)
         }
+
         is SelectInsuranceForAddonEvent.SubmitSelected -> {
           val state = currentState as? SelectInsuranceForAddonState.Success ?: return@CollectEvents
           currentState = state.copy(

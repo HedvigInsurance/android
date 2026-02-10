@@ -217,8 +217,11 @@ private fun MonthlyCostFragment.toMonthlyCost(): MonthlyCost {
 
 private fun AgreementCreationCause.toCreationCause() = when (this) {
   AgreementCreationCause.NEW_CONTRACT -> InsuranceAgreement.CreationCause.NEW_CONTRACT
+
   AgreementCreationCause.RENEWAL -> InsuranceAgreement.CreationCause.RENEWAL
+
   AgreementCreationCause.MIDTERM_CHANGE -> InsuranceAgreement.CreationCause.MIDTERM_CHANGE
+
   AgreementCreationCause.UNKNOWN,
   AgreementCreationCause.UNKNOWN__,
   -> InsuranceAgreement.CreationCause.UNKNOWN

@@ -50,7 +50,10 @@ internal class CustomizeTravelAddonPresenter(
     }
     CollectEvents { event ->
       when (event) {
-        CustomizeTravelAddonEvent.Reload -> loadIteration++
+        CustomizeTravelAddonEvent.Reload -> {
+          loadIteration++
+        }
+
         is CustomizeTravelAddonEvent.ChooseOptionInDialog -> {
           selectedOptionInDialog = event.option
         }
@@ -112,6 +115,7 @@ internal class CustomizeTravelAddonPresenter(
 
     return when (val state = currentState) {
       is CustomizeTravelAddonState.Failure, is CustomizeTravelAddonState.Loading -> state
+
       is CustomizeTravelAddonState.Success -> state.copy(
         currentlyChosenOptionInDialog = selectedOptionInDialog,
         chosenOptionPremiumExtra = updateExtra(state.currentTravelAddon, selectedOptionInDialog),

@@ -34,7 +34,7 @@ internal fun AnimatedRevealText(
 ) {
   val charAnimDuration: Int = 150
   var visibleChars by remember { mutableStateOf(0) }
-  var speedUpAnimation  by remember { mutableStateOf(false) }
+  var speedUpAnimation by remember { mutableStateOf(false) }
   val charDelay by rememberUpdatedState(calculateCharDelay(text, speedUpAnimation))
 
   LaunchedEffect(visibleState.targetState, text) {

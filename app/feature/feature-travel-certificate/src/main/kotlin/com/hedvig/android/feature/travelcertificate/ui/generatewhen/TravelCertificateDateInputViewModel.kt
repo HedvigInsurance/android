@@ -67,18 +67,26 @@ internal class TravelCertificateDateInputPresenter(
     var screenContent by remember {
       mutableStateOf(
         when (lastState) {
-          is TravelCertificateDateInputUiState.Success -> DateInputScreenContent.Success(
-            DateInputScreenContent.Success.SpecificationsDetails(
-              contractId = lastState.contractId,
-              email = lastState.email,
-              datePickerState = lastState.datePickerState,
-              daysValid = lastState.daysValid,
-              hasCoInsured = lastState.hasCoInsured,
-            ),
-          )
+          is TravelCertificateDateInputUiState.Success -> {
+            DateInputScreenContent.Success(
+              DateInputScreenContent.Success.SpecificationsDetails(
+                contractId = lastState.contractId,
+                email = lastState.email,
+                datePickerState = lastState.datePickerState,
+                daysValid = lastState.daysValid,
+                hasCoInsured = lastState.hasCoInsured,
+              ),
+            )
+          }
 
-          TravelCertificateDateInputUiState.Failure -> DateInputScreenContent.Failure
-          TravelCertificateDateInputUiState.Loading -> DateInputScreenContent.Loading
+          TravelCertificateDateInputUiState.Failure -> {
+            DateInputScreenContent.Failure
+          }
+
+          TravelCertificateDateInputUiState.Loading -> {
+            DateInputScreenContent.Loading
+          }
+
           is TravelCertificateDateInputUiState.UrlFetched -> {
             logcat(LogPriority.ERROR) { "TravelCertificateDateInputUiState is UrlFetched, should be impossible" }
             DateInputScreenContent.Loading
@@ -214,8 +222,14 @@ internal class TravelCertificateDateInputPresenter(
         )
     }
     return when (val currentContent = screenContent) {
-      DateInputScreenContent.Failure -> TravelCertificateDateInputUiState.Failure
-      DateInputScreenContent.Loading -> TravelCertificateDateInputUiState.Loading
+      DateInputScreenContent.Failure -> {
+        TravelCertificateDateInputUiState.Failure
+      }
+
+      DateInputScreenContent.Loading -> {
+        TravelCertificateDateInputUiState.Loading
+      }
+
       is DateInputScreenContent.Success -> {
         TravelCertificateDateInputUiState.Success(
           email = currentContent.details.email,

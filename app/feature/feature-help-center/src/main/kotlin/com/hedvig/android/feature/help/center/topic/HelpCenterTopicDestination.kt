@@ -116,7 +116,10 @@ private fun HelpCenterTopicScreen(
           )
         }
 
-        Loading -> HedvigFullScreenCenterAlignedProgress()
+        Loading -> {
+          HedvigFullScreenCenterAlignedProgress()
+        }
+
         is Success -> {
           HelpCenterTopicScreen(
             commonQuestions = state.topic.commonFAQ,

@@ -17,10 +17,22 @@ class TrustlyJavascriptInterface(
     val eventType = TrustlyEventType.valueForEventTypeLabel(typeLabel)
     logcat { "Trustly Webview handleTrustlyEvent:$typeLabel | $url" }
     when (eventType) {
-      TrustlyEventType.SUCCESS -> webViewHandler.successHandler?.onTrustlyCheckoutSuccess()
-      TrustlyEventType.ABORT -> webViewHandler.abortHandler?.onTrustlyCheckoutAbort()
-      TrustlyEventType.ERROR -> webViewHandler.errorHandler?.onTrustlyCheckoutError()
-      TrustlyEventType.REDIRECT -> handleRedirect(url)
+      TrustlyEventType.SUCCESS -> {
+        webViewHandler.successHandler?.onTrustlyCheckoutSuccess()
+      }
+
+      TrustlyEventType.ABORT -> {
+        webViewHandler.abortHandler?.onTrustlyCheckoutAbort()
+      }
+
+      TrustlyEventType.ERROR -> {
+        webViewHandler.errorHandler?.onTrustlyCheckoutError()
+      }
+
+      TrustlyEventType.REDIRECT -> {
+        handleRedirect(url)
+      }
+
       else -> {
         val errorMessage = "Unsupported event type: $typeLabel"
         logcat(LogPriority.ERROR) { errorMessage }

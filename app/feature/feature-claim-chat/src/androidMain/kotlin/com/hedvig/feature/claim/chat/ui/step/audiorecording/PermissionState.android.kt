@@ -19,6 +19,7 @@ actual fun rememberPermissionState(permission: String, onPermissionResult: (Bool
     override val status: PermissionStatus
       get() = when {
         accompanistState.status.isGranted -> PermissionStatus.Granted
+
         else -> PermissionStatus.Denied(
           shouldShowRationale = (accompanistState.status as? AccompanistPermissionStatus.Denied)
             ?.shouldShowRationale ?: false,

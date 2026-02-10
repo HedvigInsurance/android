@@ -106,9 +106,18 @@ internal fun EditInsuranceBottomSheetContent(
       enabled = selectedItemId != null,
       onClick = dropUnlessResumed {
         when (selectedItemId) {
-          "0" if allowChangeTier -> onChangeTierClick()
-          "1" if allowEditCoInsured -> onEditCoInsuredClick()
-          "2" if allowTerminatingInsurance -> onCancelInsuranceClick()
+          "0" if allowChangeTier -> {
+            onChangeTierClick()
+          }
+
+          "1" if allowEditCoInsured -> {
+            onEditCoInsuredClick()
+          }
+
+          "2" if allowTerminatingInsurance -> {
+            onCancelInsuranceClick()
+          }
+
           else -> {}
         }
       },

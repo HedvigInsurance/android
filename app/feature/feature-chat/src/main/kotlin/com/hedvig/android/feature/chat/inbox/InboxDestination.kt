@@ -103,6 +103,7 @@ private fun InboxScreen(
       )
       when (uiState) {
         InboxUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+
         InboxUiState.Failure -> HedvigErrorSection(
           onButtonClick = reload,
           modifier = Modifier

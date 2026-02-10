@@ -10,7 +10,7 @@ plugins {
   alias(libs.plugins.crashlytics) apply false
   alias(libs.plugins.datadog) apply false
   alias(libs.plugins.dependencyAnalysis)
-  alias(libs.plugins.doctor)
+   alias(libs.plugins.doctor)
   alias(libs.plugins.googleServices) apply false
   alias(libs.plugins.kmpNativeCoroutines) apply false
   alias(libs.plugins.kotlin) apply false

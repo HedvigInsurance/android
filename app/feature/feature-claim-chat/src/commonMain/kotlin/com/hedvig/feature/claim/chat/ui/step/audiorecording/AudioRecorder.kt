@@ -95,14 +95,16 @@ internal fun AudioRecorder(
   modifier: Modifier = Modifier,
 ) {
   when (uiState) {
-    is AudioRecordingStepState.AudioRecording.Playback -> Playback(
-      uiState = uiState,
-      submit = submitAudioFile,
-      redo = redo,
-      modifier = modifier,
-      isCurrentStep = isCurrentStep,
-      continueButtonLoading = continueButtonLoading,
-    )
+    is AudioRecordingStepState.AudioRecording.Playback -> {
+      Playback(
+        uiState = uiState,
+        submit = submitAudioFile,
+        redo = redo,
+        modifier = modifier,
+        isCurrentStep = isCurrentStep,
+        continueButtonLoading = continueButtonLoading,
+      )
+    }
 
     else -> {
       if (!isCurrentStep) {
@@ -142,6 +144,7 @@ internal fun AudioRecorder(
                 .clickable(
                   onClickLabel = when (isRecording) {
                     true -> stopRecordingText
+
                     // todo: this one is not working somehow,
                     // so added onClickLabel inside val recordingState
                     false -> startRecordingText

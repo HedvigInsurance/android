@@ -169,6 +169,7 @@ private fun AddHouseInformationScreen(
       ) {
         when (uiState) {
           Loading -> HedvigFullScreenCenterAlignedProgress()
+
           MissingOngoingMovingFlow -> HedvigErrorSection(
             onButtonClick = popBackStack,
             subTitle = null,

@@ -179,9 +179,11 @@ private class EnterNewAddressPresenter(
             },
             ifRight = { request ->
               when (val moveIntentQuotesFragment = request.moveIntent) {
-                null -> submittingInfoFailure = when (val errorMessage = request.userError?.message) {
-                  null -> SubmittingInfoFailure.NetworkFailure
-                  else -> SubmittingInfoFailure.UserError(errorMessage)
+                null -> {
+                  submittingInfoFailure = when (val errorMessage = request.userError?.message) {
+                    null -> SubmittingInfoFailure.NetworkFailure
+                    else -> SubmittingInfoFailure.UserError(errorMessage)
+                  }
                 }
 
                 else -> {
@@ -196,10 +198,14 @@ private class EnterNewAddressPresenter(
     }
 
     return when (val contentValue = content) {
-      None -> Loading
+      None -> {
+        Loading
+      }
+
       is Some -> {
         when (val state = contentValue.value) {
           null -> MissingOngoingMovingFlow
+
           else -> state.copy(
             submittingInfoFailure = submittingInfoFailure,
             navigateToChoseCoverage = navigateToChoseCoverage,
@@ -226,7 +232,10 @@ private fun ValidContent.toInputForSubmission(): InputForSubmission {
       squareMeters = squareMeters,
       apartment = Optional.present(
         when (propertyType) {
-          ValidContent.PropertyType.House -> error("Should have navigated to house input instead of submitting here")
+          ValidContent.PropertyType.House -> {
+            error("Should have navigated to house input instead of submitting here")
+          }
+
           is ValidContent.PropertyType.Apartment -> {
             when (propertyType.apartmentType) {
               RENT -> MoveToApartmentInput(
@@ -350,6 +359,7 @@ private fun Content.validate(): ValidContent? {
       numberCoInsured = numberCoInsured.value,
       propertyType = when (propertyType) {
         House -> ValidContent.PropertyType.House
+
         is WithStudentOption -> ValidContent.PropertyType.Apartment(
           isStudent = propertyType.isStudentSelected,
           apartmentType = propertyType.apartmentType,
@@ -425,7 +435,10 @@ private fun MovingFlowState.toContent(): Content {
       validRange = propertyState.numberCoInsuredState.allowedNumberCoInsuredRange,
     ),
     propertyType = when (propertyState) {
-      is HouseState -> House
+      is HouseState -> {
+        House
+      }
+
       is ApartmentState -> {
         when (propertyState.isAvailableForStudentState) {
           NotAvailable -> WithoutStudentOption(

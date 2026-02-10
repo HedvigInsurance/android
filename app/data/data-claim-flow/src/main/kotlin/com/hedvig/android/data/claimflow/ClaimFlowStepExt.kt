@@ -51,7 +51,9 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
       )
     }
 
-    is ClaimFlowStep.ClaimPhoneNumberStep -> ClaimFlowDestination.PhoneNumber(phoneNumber)
+    is ClaimFlowStep.ClaimPhoneNumberStep -> {
+      ClaimFlowDestination.PhoneNumber(phoneNumber)
+    }
 
     is ClaimFlowStep.ClaimSingleItemStep -> {
       ClaimFlowDestination.SingleItem(
@@ -118,51 +120,78 @@ fun ClaimFlowStep.toClaimFlowDestination(): Destination {
       )
     }
 
-    is ClaimFlowStep.ClaimSuccessStep -> ClaimFlowDestination.ClaimSuccess
-    is ClaimFlowStep.ClaimFailedStep -> ClaimFlowDestination.Failure
-    is ClaimFlowStep.UnknownStep -> ClaimFlowDestination.UpdateApp
-    is ClaimFlowStep.ClaimSelectContractStep -> ClaimFlowDestination.SelectContract(
-      options = options.map { it.toLocalOptions() },
-      selectedOptionId = selectedOptionId,
-    )
+    is ClaimFlowStep.ClaimSuccessStep -> {
+      ClaimFlowDestination.ClaimSuccess
+    }
 
-    is ClaimFlowStep.ClaimDeflectGlassDamageStep -> ClaimFlowDestination.DeflectGlassDamage(
-      partners.map { it.toLocalPartner() },
-    )
+    is ClaimFlowStep.ClaimFailedStep -> {
+      ClaimFlowDestination.Failure
+    }
 
-    is ClaimFlowStep.ClaimDeflectTowingStep -> ClaimFlowDestination.DeflectTowing(
-      partners.map { it.toLocalPartner() },
-    )
+    is ClaimFlowStep.UnknownStep -> {
+      ClaimFlowDestination.UpdateApp
+    }
 
-    is ClaimFlowStep.ClaimDeflectEirStep -> ClaimFlowDestination.DeflectCarOtherDamage(
-      partners.map { it.toLocalPartner() },
-    )
+    is ClaimFlowStep.ClaimSelectContractStep -> {
+      ClaimFlowDestination.SelectContract(
+        options = options.map { it.toLocalOptions() },
+        selectedOptionId = selectedOptionId,
+      )
+    }
 
-    is ClaimFlowStep.ClaimConfirmEmergencyStep -> ClaimFlowDestination.ConfirmEmergency(
-      text,
-      confirmEmergency,
-      options.map { it.toLocalOption() },
-    )
+    is ClaimFlowStep.ClaimDeflectGlassDamageStep -> {
+      ClaimFlowDestination.DeflectGlassDamage(
+        partners.map { it.toLocalPartner() },
+      )
+    }
 
-    is ClaimFlowStep.ClaimDeflectEmergencyStep -> ClaimFlowDestination.DeflectEmergency(
-      partners.map { it.toLocalPartner() },
-    )
+    is ClaimFlowStep.ClaimDeflectTowingStep -> {
+      ClaimFlowDestination.DeflectTowing(
+        partners.map { it.toLocalPartner() },
+      )
+    }
 
-    is ClaimFlowStep.ClaimDeflectPestsStep -> ClaimFlowDestination.DeflectPests(
-      partners.map { it.toLocalPartner() },
-    )
+    is ClaimFlowStep.ClaimDeflectEirStep -> {
+      ClaimFlowDestination.DeflectCarOtherDamage(
+        partners.map { it.toLocalPartner() },
+      )
+    }
 
-    is ClaimFlowStep.ClaimFileUploadStep -> ClaimFlowDestination.FileUpload(
-      title,
-      targetUploadUrl,
-      uploads.map { it.toLocalUpload() },
-    )
+    is ClaimFlowStep.ClaimConfirmEmergencyStep -> {
+      ClaimFlowDestination.ConfirmEmergency(
+        text,
+        confirmEmergency,
+        options.map { it.toLocalOption() },
+      )
+    }
 
-    is ClaimFlowStep.ClaimDeflectIdProtectionStep -> ClaimFlowDestination.DeflectIdProtection(
-      title,
-      description,
-      partners.map { it.toLocalIdProtectionPartner() },
-    )
+    is ClaimFlowStep.ClaimDeflectEmergencyStep -> {
+      ClaimFlowDestination.DeflectEmergency(
+        partners.map { it.toLocalPartner() },
+      )
+    }
+
+    is ClaimFlowStep.ClaimDeflectPestsStep -> {
+      ClaimFlowDestination.DeflectPests(
+        partners.map { it.toLocalPartner() },
+      )
+    }
+
+    is ClaimFlowStep.ClaimFileUploadStep -> {
+      ClaimFlowDestination.FileUpload(
+        title,
+        targetUploadUrl,
+        uploads.map { it.toLocalUpload() },
+      )
+    }
+
+    is ClaimFlowStep.ClaimDeflectIdProtectionStep -> {
+      ClaimFlowDestination.DeflectIdProtection(
+        title,
+        description,
+        partners.map { it.toLocalIdProtectionPartner() },
+      )
+    }
   }
 }
 
@@ -196,7 +225,9 @@ private fun CheckoutMethodFragment.toCheckoutMethod(): CheckoutMethod {
       CheckoutMethod.Known.AutomaticAutogiro(id, displayName, UiMoney.fromMoneyFragment(amount))
     }
 
-    else -> CheckoutMethod.Unknown
+    else -> {
+      CheckoutMethod.Unknown
+    }
   }
 }
 
@@ -224,7 +255,9 @@ private fun ClaimFlowStepFragment.FlowClaimSingleItemCheckoutStepCurrentStep.Com
       )
     }
 
-    else -> ClaimFlowDestination.SingleItemCheckout.Compensation.Unknown
+    else -> {
+      ClaimFlowDestination.SingleItemCheckout.Compensation.Unknown
+    }
   }
 }
 

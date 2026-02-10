@@ -43,7 +43,9 @@ class MappedInteractionSource(
         }
       }
 
-      else -> interaction
+      else -> {
+        interaction
+      }
     }
   }
 

@@ -68,7 +68,9 @@ internal class GetChargeDetailsUseCaseImpl(
           MemberPaymentConnectionStatus.PENDING,
           MemberPaymentConnectionStatus.NEEDS_SETUP,
           MemberPaymentConnectionStatus.UNKNOWN__,
-          -> PaymentsInfo.NoPresentableInfo
+          -> {
+            PaymentsInfo.NoPresentableInfo
+          }
         }
       },
     )

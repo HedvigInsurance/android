@@ -98,12 +98,16 @@ private fun SelectContractScreen(
       )
     }
 
-    SelectContractUiState.Error -> HedvigErrorSection(
-      onButtonClick = reload,
-      modifier = Modifier.fillMaxSize(),
-    )
+    SelectContractUiState.Error -> {
+      HedvigErrorSection(
+        onButtonClick = reload,
+        modifier = Modifier.fillMaxSize(),
+      )
+    }
 
-    SelectContractUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    SelectContractUiState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
   }
 }
 

@@ -306,7 +306,9 @@ private fun EditCoInsuredScreen(
         }
       }
 
-      EditCoInsuredState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+      EditCoInsuredState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced()
+      }
     }
   }
 }

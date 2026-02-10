@@ -104,6 +104,7 @@ fun HedvigTextField(
     modifier = modifier.then(
       when (errorState) {
         ErrorState.NoError -> Modifier
+
         else -> Modifier.semantics {
           liveRegion = LiveRegionMode.Assertive
         }

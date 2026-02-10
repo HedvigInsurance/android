@@ -27,8 +27,14 @@ sealed interface ClaimPillType {
   companion object {
     fun fromClaimFragment(claim: ClaimFragment): List<ClaimPillType> {
       return when (claim.status) {
-        ClaimStatus.CREATED -> listOf(Claim)
-        ClaimStatus.IN_PROGRESS -> listOf(Claim)
+        ClaimStatus.CREATED -> {
+          listOf(Claim)
+        }
+
+        ClaimStatus.IN_PROGRESS -> {
+          listOf(Claim)
+        }
+
         ClaimStatus.CLOSED -> {
           when (claim.outcome) {
             ClaimOutcome.PAID -> {
@@ -41,18 +47,36 @@ sealed interface ClaimPillType {
                 }
               }
             }
-            ClaimOutcome.NOT_COMPENSATED -> listOf(Closed.GenericClosed, Closed.NotCompensated)
-            ClaimOutcome.NOT_COVERED -> listOf(Closed.GenericClosed, Closed.NotCovered)
-            ClaimOutcome.UNRESPONSIVE -> listOf(Closed.GenericClosed, Closed.Unresponsive)
+
+            ClaimOutcome.NOT_COMPENSATED -> {
+              listOf(Closed.GenericClosed, Closed.NotCompensated)
+            }
+
+            ClaimOutcome.NOT_COVERED -> {
+              listOf(Closed.GenericClosed, Closed.NotCovered)
+            }
+
+            ClaimOutcome.UNRESPONSIVE -> {
+              listOf(Closed.GenericClosed, Closed.Unresponsive)
+            }
+
             ClaimOutcome.UNKNOWN__,
             null,
-            -> listOf(Closed.GenericClosed)
+            -> {
+              listOf(Closed.GenericClosed)
+            }
           }
         }
-        ClaimStatus.REOPENED -> listOf(Claim)
+
+        ClaimStatus.REOPENED -> {
+          listOf(Claim)
+        }
+
         ClaimStatus.UNKNOWN__,
         null,
-        -> listOf(Claim)
+        -> {
+          listOf(Claim)
+        }
       }
     }
   }
