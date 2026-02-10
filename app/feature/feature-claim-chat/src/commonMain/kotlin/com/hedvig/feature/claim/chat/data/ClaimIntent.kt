@@ -64,6 +64,7 @@ internal sealed interface StepContent {
   data class Task(
     val descriptions: List<String>,
     val isCompleted: Boolean,
+    val failedToSubmit: Boolean,
   ) : StepContent {
     override val isSkippable: Boolean = false
   }

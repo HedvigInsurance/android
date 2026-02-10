@@ -76,6 +76,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     is TaskFragment -> StepContent.Task(
       descriptions = listOf(element = description),
       isCompleted = isCompleted,
+      failedToSubmit = false,
     )
 
     is AudioRecordingFragment -> StepContent.AudioRecording(
