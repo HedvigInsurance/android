@@ -176,6 +176,10 @@ type AddonOffer {
   """
   pageDescription: String!
   """
+  Optional info message to show on the summary page.
+  """
+  infoMessage: String
+  """
   New quote
   """
   quote: AddonContractQuote!
@@ -220,6 +224,10 @@ type AddonOfferQuote {
   Addon variant
   """
   addonVariant: AddonVariant!
+  """
+   Addon subtype 
+  """
+  subtype: String
 }
 type AddonOfferSelectable {
   """
@@ -2357,12 +2365,12 @@ type MemberActions {
   Indicate whether the possibility to create insurance evidence should be displayed.
   """
   isCreatingOfInsuranceEvidenceEnabled: Boolean!
-  isMovingEnabled: Boolean
-  isConnectPaymentEnabled: Boolean
-  isEditCoInsuredEnabled: Boolean
-  isCancelInsuranceEnabled: Boolean
+  isMovingEnabled: Boolean!
+  isConnectPaymentEnabled: Boolean!
+  isEditCoInsuredEnabled: Boolean!
+  isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
-  isChangeTierEnabled: Boolean
+  isChangeTierEnabled: Boolean!
 }
 """
 Bundle discount savings information for a member
@@ -2944,12 +2952,12 @@ type MoveIntent {
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   Quote variants for new home contract that member needs to pick one from.
   """
-  homeQuotes: [MoveHomeQuote!]
+  homeQuotes: [MoveHomeQuote!]!
   """
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   The MTA quotes for member's non-home contracts with new address.
   """
-  mtaQuotes: [MoveMtaQuote!]
+  mtaQuotes: [MoveMtaQuote!]!
 }
 """
 Cost breakdown for selected move intent configuration
