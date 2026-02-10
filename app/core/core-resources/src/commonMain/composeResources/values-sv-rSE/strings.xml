@@ -606,10 +606,17 @@
   <string name="REFERRAL_PENDING_STATUS_LABEL">Avvaktar...</string>
   <string name="REFERRAL_SMS_MESSAGE">Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$s rabatt på månadskostnaden. Följ länken: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inaktiv</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_BUTTON">Ja, ta bort</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s.</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_TITLE">Confirm removing selected addons</string>
+  <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">Aktiveras från och med %1$s.</string>
+  <string name="REMOVE_ADDON_SUCCESS_TITLE">Removed successfully</string>
   <string name="REMOVE_CONFIRMATION_BUTTON">Ja, radera</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Spara och fortsätt</string>
   <string name="SEARCH_NOTHING_FOUND">Inga träffar på din sökning</string>
   <string name="SEARCH_PLACEHOLDER">Sök</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Which insurance do you want to remove addon from</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Språk</string>
   <string name="SETTINGS_LOGIN_ROW">Logga in</string>
   <string name="SETTINGS_NOTIFICATIONS_TITLE">Notiser</string>
