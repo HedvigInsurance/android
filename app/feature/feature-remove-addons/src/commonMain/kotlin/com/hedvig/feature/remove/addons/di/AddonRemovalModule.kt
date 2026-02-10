@@ -7,6 +7,7 @@ import com.hedvig.feature.remove.addons.data.StartAddonRemovalUseCase
 import com.hedvig.feature.remove.addons.data.StartAddonRemovalUseCaseImpl
 import com.hedvig.feature.remove.addons.data.SubmitAddonRemovalUseCase
 import com.hedvig.feature.remove.addons.data.SubmitAddonRemovalUseCaseImpl
+import com.hedvig.feature.remove.addons.ui.CommonSummaryParameters
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryViewModel
 import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveViewModel
 import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonViewModel
@@ -21,8 +22,8 @@ val addonRemovalModule = module {
       params.get<Pair<String,String?>>())
   }
 
-  viewModel<RemoveAddonSummaryViewModel> {
-    RemoveAddonSummaryViewModel()
+  viewModel<RemoveAddonSummaryViewModel> {params ->
+    RemoveAddonSummaryViewModel(params.get<CommonSummaryParameters>())
   }
 
   viewModel<SelectInsuranceToRemoveAddonViewModel> {

@@ -3,12 +3,17 @@ package com.hedvig.feature.remove.addons.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import octopus.InsurancesWithRemovableAddonsQuery
 import octopus.StartAddonRemovalMutation
 
 @Serializable
@@ -28,6 +33,19 @@ internal class StartAddonRemovalUseCaseImpl(
 ) : StartAddonRemovalUseCase {
   override suspend fun invoke(contractId: String): Either<ErrorMessage, StartAddonRemovalResponse> {
     return either {
+      val productVariant = apolloClient
+      .query(InsurancesWithRemovableAddonsQuery())
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .safeExecute()
+        .getOrNull()
+        ?.currentMember
+        ?.activeContracts
+        ?.firstOrNull{ it.id==contractId}
+        ?.currentAgreement?.productVariant?.toProductVariant()
+      if (productVariant==null) {
+        logcat { "StartAddonRemovalMutation returned null productVariant" }
+        raise(ErrorMessage())
+      }
       apolloClient
         .mutation(StartAddonRemovalMutation(contractId))
         .safeExecute()
@@ -54,6 +72,7 @@ internal class StartAddonRemovalUseCaseImpl(
                   currentTotalCost = ItemCost.fromItemCostFragment(addonRemoveStart.currentTotalCost),
                   pageDescription = addonRemoveStart.pageDescription,
                   pageTitle = addonRemoveStart.pageTitle,
+                  productVariant = productVariant
                 )
               }
 
@@ -80,4 +99,5 @@ internal data class StartAddonRemovalResponse(
   val currentTotalCost: ItemCost,
   val pageDescription: String,
   val pageTitle: String,
+  val productVariant: ProductVariant
 )

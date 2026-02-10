@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -80,6 +81,8 @@ private class SelectAddonToRemovePresenter(
             baseCost = state.addonOffer.baseCost,
             currentTotalCost = state.addonOffer.currentTotalCost,
             contractId = contractAndAddonId.first,
+            productVariant = state.addonOffer.productVariant,
+            existingAddons = state.addonOffer.existingAddonsToRemove
           )
           paramsToNavigateToSummary = summaryParams
         }
@@ -135,4 +138,6 @@ internal data class CommonSummaryParameters(
   val activationDate: LocalDate,
   val baseCost: ItemCost,
   val currentTotalCost: ItemCost,
+  val productVariant: ProductVariant,
+  val existingAddons: List<CurrentlyActiveAddon>,
 )

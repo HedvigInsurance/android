@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxOption
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -53,7 +54,7 @@ internal fun SelectAddonToRemoveDestination(
   navigateUp: () -> Unit,
   navigateToSummary: (
     contractId: String, addonsToRemove: List<CurrentlyActiveAddon>, activationDate: LocalDate, baseCost: ItemCost,
-    currentTotalCost: ItemCost,
+    currentTotalCost: ItemCost, productVariant: ProductVariant, allAddons: List<CurrentlyActiveAddon>
   ) -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel = koinViewModel {
@@ -74,6 +75,8 @@ internal fun SelectAddonToRemoveDestination(
         params.activationDate,
         params.baseCost,
         params.currentTotalCost,
+        params.productVariant,
+        params.existingAddons
       )
     },
     onSubmit = {

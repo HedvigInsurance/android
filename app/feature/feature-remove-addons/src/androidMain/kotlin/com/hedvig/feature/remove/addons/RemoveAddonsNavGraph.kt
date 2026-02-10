@@ -22,6 +22,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import com.hedvig.android.data.productvariant.ProductVariant
 
 
 @Serializable
@@ -31,6 +32,8 @@ internal data class SummaryParameters(
   val activationDate: LocalDate,
   val baseCost: ItemCost,
   val currentTotalCost: ItemCost,
+  val productVariant: ProductVariant,
+  val existingAddons: List<CurrentlyActiveAddon>,
 )
 
 @Serializable
@@ -118,7 +121,9 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         contractId = this.insuranceId,
         preselectedAddonId = this.addonId,
         navigateUp = navigator::navigateUp,
-        navigateToSummary = { contractId: String, addons: List<CurrentlyActiveAddon>, activationDate: LocalDate, baseCost: ItemCost, currentCost: ItemCost ->
+        navigateToSummary = { contractId: String, addons: List<CurrentlyActiveAddon>,
+                              activationDate: LocalDate, baseCost: ItemCost, currentCost: ItemCost,
+          productVariant: ProductVariant, allAddons: List<CurrentlyActiveAddon> ->
           navigator.navigateUnsafe(
             AddonRemoveDestination.Summary(
               params = SummaryParameters(
@@ -127,6 +132,8 @@ fun NavGraphBuilder.removeAddonsNavGraph(
                 activationDate = activationDate,
                 baseCost = baseCost,
                 currentTotalCost = currentCost,
+                productVariant = productVariant,
+                allAddons
               ),
             ),
           )
@@ -151,7 +158,9 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         onFailure = {
           navigator.navigateUnsafe(AddonRemoveDestination.SubmitFailure)
         },
-        navigateUp = navigator::navigateUp
+        navigateUp = navigator::navigateUp,
+        existingAddonsToRemove = this.params.existingAddons,
+        productVariant = this.params.productVariant
       )
     }
 

@@ -35,6 +35,8 @@ kotlin {
       implementation(projects.dataContract)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)
+      implementation(projects.uiTiersAndAddons)
+      implementation(projects.dataProductVariantPublic)
     }
     androidMain.dependencies {
       api(libs.androidx.navigation.common)
@@ -45,6 +47,7 @@ kotlin {
       implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
       implementation(projects.navigationComposeTyped)
+      implementation(projects.dataProductVariantPublic)
     }
   }
 }

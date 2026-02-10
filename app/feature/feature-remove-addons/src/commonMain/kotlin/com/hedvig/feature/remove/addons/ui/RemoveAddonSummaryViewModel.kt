@@ -1,9 +1,16 @@
 package com.hedvig.feature.remove.addons.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import kotlinx.datetime.LocalDate
 
 internal class RemoveAddonSummaryViewModel(
@@ -11,7 +18,7 @@ internal class RemoveAddonSummaryViewModel(
 ) : MoleculeViewModel<
   RemoveAddonSummaryEvent, RemoveAddonSummaryState,
   >(
-  initialState = RemoveAddonSummaryState.Loading,
+  initialState = RemoveAddonSummaryState.Loading(),
   presenter = RemoveAddonSummaryPresenter(params),
 )
 
@@ -24,12 +31,18 @@ private class RemoveAddonSummaryPresenter(
   override fun MoleculePresenterScope<RemoveAddonSummaryEvent>.present(
     lastState: RemoveAddonSummaryState,
   ): RemoveAddonSummaryState {
-    TODO("Not yet implemented")
+    var currentState: RemoveAddonSummaryState by remember { mutableStateOf(lastState) }
+    var loadIteration by remember { mutableIntStateOf(0) }
+
+
+    return currentState
   }
 }
 
 internal sealed interface RemoveAddonSummaryState {
   data class Content(
+    val summaryParams: CommonSummaryParameters,
+    val chosenAddons: List<CurrentlyActiveAddon>,
     val activationDate: LocalDate,
     val navigateToFailure: Unit? = null
   ) : RemoveAddonSummaryState

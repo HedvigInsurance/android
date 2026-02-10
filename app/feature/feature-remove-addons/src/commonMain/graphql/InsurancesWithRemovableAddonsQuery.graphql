@@ -5,8 +5,7 @@ query InsurancesWithRemovableAddons {
       exposureDisplayName
       currentAgreement {
         productVariant {
-          displayName
-          typeOfContract
+          ...ProductVariantFragment
         }
         addons {
           addonVariant {
