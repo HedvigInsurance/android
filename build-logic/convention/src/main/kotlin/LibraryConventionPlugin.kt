@@ -1,4 +1,4 @@
-import com.android.build.gradle.LibraryExtension
+import com.android.build.api.dsl.LibraryExtension
 import com.hedvig.android.configureKotlinAndroid
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
@@ -22,8 +22,9 @@ class LibraryConventionPlugin : Plugin<Project> {
 
       extensions.configure<LibraryExtension> {
         configureKotlinAndroid(this)
-        defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
-        buildFeatures {
+        testOptions.targetSdk = libs.versions.targetSdkVersion.get().toInt()
+        lint.targetSdk = libs.versions.targetSdkVersion.get().toInt()
+        buildFeatures.apply {
           resValues = false
           shaders = false
           androidResources = false
