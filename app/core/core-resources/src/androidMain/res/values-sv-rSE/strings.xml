@@ -357,6 +357,7 @@
   <string name="GENERAL_UNSUBSCRIBED">Avregistrerad</string>
   <string name="GENERAL_YES">Ja</string>
   <string name="GENERAL_ADD_NEW">Lägg till ny</string>
+  <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Din försäkring kommer att uppdateras den %1$s.</string>
   <string name="GENERAL_CONFIRM">Bekräfta</string>
   <string name="GENERAL_CONTACT_US_TITLE">Kontakta vårt serviceteam</string>
   <string name="GENERAL_DOWNLOAD">Ladda ner</string>

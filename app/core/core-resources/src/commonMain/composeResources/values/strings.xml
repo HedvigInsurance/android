@@ -357,6 +357,7 @@
   <string name="GENERAL_UNSUBSCRIBED">Unsubscribed</string>
   <string name="GENERAL_YES">Yes</string>
   <string name="GENERAL_ADD_NEW">Add new</string>
+  <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Your insurance will be updated starting from %1$s</string>
   <string name="GENERAL_CONFIRM">Confirm</string>
   <string name="GENERAL_CONTACT_US_TITLE">Contact our service team</string>
   <string name="GENERAL_DOWNLOAD">Download</string>

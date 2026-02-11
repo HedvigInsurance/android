@@ -62,6 +62,7 @@ import hedvig.resources.ADDON_FLOW_PRICE_LABEL
 import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
 import hedvig.resources.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE
+import hedvig.resources.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
@@ -154,7 +155,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         confirmButtonLabel = stringResource(Res.string.ADDON_FLOW_CONFIRMATION_BUTTON),
         dismissButtonLabel = stringResource(Res.string.general_close_button),
         text = stringResource(
-          Res.string.ADDON_FLOW_CONFIRMATION_DESCRIPTION,
+          Res.string.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION,
           formattedDate,
         ),
       )
@@ -173,6 +174,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
     ) {
       uiState.notificationMessage?.let {
         HedvigNotificationCard(
+          modifier = Modifier.fillMaxWidth(),
           message = uiState.notificationMessage,
           priority = NotificationDefaults.NotificationPriority.Info,
         )

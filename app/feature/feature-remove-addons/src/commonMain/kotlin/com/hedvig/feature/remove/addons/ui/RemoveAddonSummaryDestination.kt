@@ -31,6 +31,7 @@ import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
+import hedvig.resources.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_BUTTON
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_DESCRIPTION
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_TITLE
@@ -150,7 +151,7 @@ private fun SummaryContentScreen(
         confirmButtonLabel = stringResource(Res.string.REMOVE_ADDON_CONFIRMATION_BUTTON),
         dismissButtonLabel = stringResource(Res.string.general_close_button),
         text = stringResource(
-          Res.string.REMOVE_ADDON_CONFIRMATION_DESCRIPTION,
+          Res.string.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION,
           formattedDate,
         ),
       )
