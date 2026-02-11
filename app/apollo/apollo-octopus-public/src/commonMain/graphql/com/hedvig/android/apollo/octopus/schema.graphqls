@@ -176,6 +176,10 @@ type AddonOffer {
   """
   pageDescription: String!
   """
+  Optional info message to show on the summary page.
+  """
+  infoMessage: String
+  """
   New quote
   """
   quote: AddonContractQuote!
@@ -183,6 +187,16 @@ type AddonOffer {
   Agreement total cost
   """
   currentTotalCost: ItemCost!
+  """
+  Title to show in what's included page.
+  eg "What is Travel Insurance Plus?"
+  """
+  whatsIncludedPageTitle: String!
+  """
+  Description to show in what's included page.
+  eg "Travel Insurance Plus is extended coverage for those..."
+  """
+  whatsIncludedPageDescription: String!
 }
 """
 AddonOfferSelectable is used when we have multiple variants for the same quote
@@ -220,6 +234,10 @@ type AddonOfferQuote {
   Addon variant
   """
   addonVariant: AddonVariant!
+  """
+   Addon subtype 
+  """
+  subtype: String
 }
 type AddonOfferSelectable {
   """
@@ -266,6 +284,40 @@ type AddonPeril {
   """
   colorCode: String
 }
+type AddonRemoveOffer {
+  """
+  Title to show in removal page.
+  """
+  pageTitle: String!
+  """
+  Description to show in removal page.
+  """
+  pageDescription: String!
+  """
+  Current agreement total cost.
+  """
+  currentTotalCost: ItemCost!
+  """
+  Base insurance cost after removal of removable addons.
+  """
+  baseCost: ItemCost!
+  """
+  Product variant.
+  """
+  productVariant: ProductVariant!
+  """
+  The date the removal will take effect.
+  """
+  activationDate: Date!
+  """
+  Addons available for removal.
+  """
+  removableAddons: [ActiveAddon!]!
+}
+"""
+Output type for addonRemoveStart mutation.
+"""
+union AddonRemoveOutput = UserError|AddonRemoveOffer
 type AddonVariant {
   """
   A `AddonVariant` is identified by its terms version, which is the more technical
@@ -2323,12 +2375,12 @@ type MemberActions {
   Indicate whether the possibility to create insurance evidence should be displayed.
   """
   isCreatingOfInsuranceEvidenceEnabled: Boolean!
-  isMovingEnabled: Boolean
-  isConnectPaymentEnabled: Boolean
-  isEditCoInsuredEnabled: Boolean
-  isCancelInsuranceEnabled: Boolean
+  isMovingEnabled: Boolean!
+  isConnectPaymentEnabled: Boolean!
+  isEditCoInsuredEnabled: Boolean!
+  isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
-  isChangeTierEnabled: Boolean
+  isChangeTierEnabled: Boolean!
 }
 """
 Bundle discount savings information for a member
@@ -2910,12 +2962,12 @@ type MoveIntent {
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   Quote variants for new home contract that member needs to pick one from.
   """
-  homeQuotes: [MoveHomeQuote!]
+  homeQuotes: [MoveHomeQuote!]!
   """
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   The MTA quotes for member's non-home contracts with new address.
   """
-  mtaQuotes: [MoveMtaQuote!]
+  mtaQuotes: [MoveMtaQuote!]!
 }
 """
 Cost breakdown for selected move intent configuration
@@ -3298,6 +3350,14 @@ type Mutation {
   Commits the midterm change and creates a new agreement for it, takes id of the intent
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
+  """
+  Call this to get removable addon quotes to show in the removal flow.
+  """
+  addonRemoveStart(contractId: ID!): AddonRemoveOutput!
+  """
+  Call this to confirm removal of selected addon(s).
+  """
+  addonRemoveConfirm(contractId: ID!, addonIds: [ID!]!): UserError
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when starting the add/upgrade addon flow.
@@ -3867,6 +3927,10 @@ type Query {
   Cost for selected configuration of moveIntent
   """
   moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
+  """
+  Cost for selected configuration of addon offer
+  """
+  addonOfferCost(quoteId: ID!, addonIds: [ID!]!): ItemCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
