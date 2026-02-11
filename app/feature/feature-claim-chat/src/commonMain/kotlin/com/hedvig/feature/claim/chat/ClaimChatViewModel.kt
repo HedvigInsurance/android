@@ -116,6 +116,8 @@ internal sealed interface ClaimChatEvent {
   data class HandledDeflectNavigation(val stepId: StepId) : ClaimChatEvent
 
   data class AddToShownAnimations(val stepId: StepId) : ClaimChatEvent
+
+  data class RetrySubmittingTaskStep(val stepId: StepId) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -252,14 +254,29 @@ internal class ClaimChatPresenter(
       }
     }
 
-    ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
-    SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
-      handleNext(
-        steps,
-        setOutcome,
-        claimIntent,
-      ) { progress = it }
-    }
+    ObserveIncompleteTaskEffect(
+      getClaimIntentUseCase = getClaimIntentUseCase,
+      currentStep = currentStep,
+      claimIntentId = { claimIntentId },
+      onFailure = { failedStepId, errorMessage ->
+        onTaskSubmissionFailed(failedStepId, errorMessage, steps, { errorSubmittingStep = it })
+      },
+      steps = steps,
+    )
+    SubmitCompleteTaskEffect(
+      submitTaskUseCase = submitTaskUseCase,
+      currentStep = currentStep,
+      onFailure = { failedStepId, errorMessage ->
+        onTaskSubmissionFailed(failedStepId, errorMessage, steps, { errorSubmittingStep = it })
+      },
+      onSuccess = { claimIntent ->
+        handleNext(
+          steps,
+          setOutcome,
+          claimIntent,
+        ) { progress = it }
+      },
+    )
 
     CollectEvents { event ->
       when (event) {
@@ -794,6 +811,17 @@ internal class ClaimChatPresenter(
         is ClaimChatEvent.AddToShownAnimations -> {
           stepsWithShownAnimations.add(event.stepId)
         }
+
+        is ClaimChatEvent.RetrySubmittingTaskStep -> {
+          steps.updateStepWithSuccess<StepContent.Task>(event.stepId) { step, content ->
+            step.copy(
+              stepContent = content.copy(
+                isCompleted = false,
+                failedToSubmit = false,
+              ),
+            )
+          }
+        }
       }
     }
 
@@ -832,16 +860,19 @@ private fun ObserveIncompleteTaskEffect(
   getClaimIntentUseCase: GetClaimIntentUseCase,
   currentStep: ClaimIntentStep?,
   claimIntentId: () -> ClaimIntentId?,
+  onFailure: (StepId, ErrorMessage) -> Unit,
   steps: SnapshotStateList<ClaimIntentStep>,
 ) {
-  val isIncompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted?.not() == true
-  LaunchedEffect(isIncompleteTask) {
+  val stepContent = currentStep?.stepContent as? StepContent.Task
+  LaunchedEffect(stepContent) {
+    val isIncompleteTask = stepContent?.isCompleted?.not() == true
     if (!isIncompleteTask) return@LaunchedEffect
+    if (stepContent.failedToSubmit) return@LaunchedEffect
     getClaimIntentUseCase
       .invoke(claimIntentId()!!)
       .collect { result ->
         result.fold(
-          ifLeft = { error("handle getClaimIntent error") },
+          ifLeft = { onFailure(currentStep.id, it) },
           ifRight = { taskStepContent ->
             Snapshot.withMutableSnapshot {
               val previousTask = steps.find { it.id == taskStepContent.step.id }
@@ -867,6 +898,7 @@ private fun ObserveIncompleteTaskEffect(
 private fun SubmitCompleteTaskEffect(
   submitTaskUseCase: SubmitTaskUseCase,
   currentStep: ClaimIntentStep?,
+  onFailure: (StepId, ErrorMessage) -> Unit,
   onSuccess: (ClaimIntent) -> Unit,
 ) {
   val isCompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted == true
@@ -875,7 +907,7 @@ private fun SubmitCompleteTaskEffect(
     submitTaskUseCase
       .invoke(currentStep.id.value)
       .fold(
-        ifLeft = { error("todo left submitTaskUseCase") },
+        ifLeft = { onFailure(currentStep.id, it) },
         ifRight = { claimIntent ->
           onSuccess(claimIntent)
         },
@@ -966,6 +998,18 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Deflect,
   StepContent.Unknown,
   -> this
+}
+
+private fun onTaskSubmissionFailed(
+  failedStepId: StepId,
+  errorMessage: ErrorMessage,
+  steps: SnapshotStateList<ClaimIntentStep>,
+  setErrorMessage: (ErrorMessage) -> Unit,
+) {
+  steps.updateStepWithSuccess<StepContent.Task>(failedStepId) { step, content ->
+    step.copy(stepContent = content.copy(failedToSubmit = true))
+  }
+  setErrorMessage(errorMessage)
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {

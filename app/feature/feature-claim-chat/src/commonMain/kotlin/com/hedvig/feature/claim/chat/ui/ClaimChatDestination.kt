@@ -35,7 +35,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -76,6 +75,7 @@ import com.hedvig.android.design.system.hedvig.TopAppBarColors
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
 import com.hedvig.android.design.system.hedvig.icon.ArrowDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
@@ -91,7 +91,8 @@ import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
 import com.hedvig.feature.claim.chat.ui.step.ContentSelectStep
 import com.hedvig.feature.claim.chat.ui.step.DeflectStep
 import com.hedvig.feature.claim.chat.ui.step.FormStep
-import com.hedvig.feature.claim.chat.ui.step.TaskStep
+import com.hedvig.feature.claim.chat.ui.step.TaskStepBottomContent
+import com.hedvig.feature.claim.chat.ui.step.TaskStepTopContent
 import com.hedvig.feature.claim.chat.ui.step.UploadFilesStep
 import com.hedvig.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
 import hedvig.resources.A11Y_SCROLL_DOWN
@@ -657,7 +658,7 @@ private fun StepTopContent(
     }
 
     if (stepItem.stepContent is StepContent.Task) {
-      TaskStep(
+      TaskStepTopContent(
         taskContent = stepItem.stepContent,
       )
     }
@@ -838,11 +839,21 @@ private fun StepBottomContent(
         )
       }
 
-      is StepContent.Task -> {}
+      is StepContent.Task -> {
+        TaskStepBottomContent(
+          stepItem.stepContent,
+          onRetrySubmittingTask = {
+            onEvent(ClaimChatEvent.RetrySubmittingTaskStep(stepItem.id))
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
 
       StepContent.Unknown -> {
-        HedvigText("Unknown")
-      } // todo
+        LaunchedEffect(Unit) {
+          logcat(LogPriority.ERROR) { "StepContent.Unknown received in StepBottomContent" }
+        }
+      }
     }
   }
 }

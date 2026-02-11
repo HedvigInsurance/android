@@ -81,6 +81,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       StepContent.Task(
         descriptions = listOf(element = description),
         isCompleted = isCompleted,
+        failedToSubmit = false,
       )
     }
 

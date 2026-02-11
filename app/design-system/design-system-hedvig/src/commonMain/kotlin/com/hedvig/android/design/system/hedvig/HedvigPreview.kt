@@ -2,7 +2,10 @@ package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_TYPE_NORMAL
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import coil3.ComponentRegistry
 import coil3.ImageLoader
 import coil3.disk.DiskCache
@@ -19,6 +22,7 @@ import kotlinx.coroutines.Deferred
 )
 @Preview(
   name = "01_nightMode portrait",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
 )
 annotation class HedvigPreview
 
@@ -30,6 +34,7 @@ annotation class HedvigPreview
 @Preview(
   name = "darkMode landscape",
   locale = "en",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
   device = "spec:parent=pixel_5,orientation=landscape",
 )
 private annotation class HedvigLandscapePreview
@@ -47,6 +52,7 @@ private annotation class HedvigOnlyLightLandscapePreview
 )
 @Preview(
   name = "darkMode tablet portrait",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
   device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait",
 )
 private annotation class HedvigTabletPreview
@@ -57,6 +63,7 @@ private annotation class HedvigTabletPreview
 )
 @Preview(
   name = "darkMode tablet landscape",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
   device = "spec:width=1280dp,height=800dp,dpi=240",
 )
 annotation class HedvigTabletLandscapePreview
