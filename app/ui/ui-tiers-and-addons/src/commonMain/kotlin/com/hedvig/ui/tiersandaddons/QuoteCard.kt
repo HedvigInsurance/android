@@ -1,4 +1,4 @@
-package com.hedvig.android.tiersandaddons
+package com.hedvig.ui.tiersandaddons
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.expandVertically
@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
@@ -37,23 +37,18 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.stringWithShiftedLabel
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
-import com.hedvig.android.data.contract.ContractGroup.DOG
 import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.data.productvariant.InsurableLimit
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -62,7 +57,6 @@ import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTa
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
-import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
@@ -70,8 +64,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.ripple
 import com.hedvig.android.design.system.hedvig.show
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry.DisplayValue.Currency
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry.DisplayValue.Text
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
@@ -262,7 +256,7 @@ private fun QuoteDetailsBottomSheet(
       onClick = quoteDetailsBottomSheetState::dismiss,
     )
     Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    Spacer(Modifier.windowInsetsPadding(WindowInsets.safeDrawing))
   }
 }
 
@@ -525,55 +519,4 @@ private fun InfoRow(leftText: String, rightText: String, modifier: Modifier = Mo
     modifier = modifier,
     spaceBetween = 8.dp,
   )
-}
-
-@HedvigPreview
-@Composable
-private fun PreviewQuoteCard(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) samePreviousPremium: Boolean,
-) {
-  HedvigTheme {
-    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      val premium = UiMoney(281.0, UiCurrencyCode.SEK)
-      val higherPremium = UiMoney(381.0, UiCurrencyCode.SEK)
-      QuoteCard(
-        displayName = "displayName",
-        contractGroup = DOG,
-        insurableLimits = List(3) {
-          InsurableLimit(
-            label = "label#$it",
-            limit = "limit#$it",
-            description = "description#$it",
-          )
-        },
-        documents = List(3) {
-          DisplayDocument(
-            displayName = "displayName#$it",
-            url = "url#$it",
-          )
-        },
-        subtitle = "subtitle",
-        premium = premium,
-        previousPremium = if (samePreviousPremium) {
-          premium
-        } else {
-          higherPremium
-        },
-        costBreakdown = List(3) {
-          CostBreakdownEntry(
-            "#$it",
-            "discount#$it",
-            false,
-          )
-        },
-        displayItems = List(5) {
-          QuoteDisplayItem(
-            title = "title$it",
-            value = "value$it",
-            subtitle = "subtitle$it",
-          )
-        },
-      )
-    }
-  }
 }

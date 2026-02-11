@@ -1,0 +1,62 @@
+package com.hedvig.feature.remove.addons.ui
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
+import hedvig.resources.general_close_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun RemoveAddonFailureScreen(popBackStack: () -> Unit) {
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(horizontal = 16.dp)
+      .windowInsetsPadding(
+        WindowInsets.safeDrawing.only(
+          WindowInsetsSides.Horizontal +
+            WindowInsetsSides.Bottom,
+        ),
+      ),
+  ) {
+    Spacer(Modifier.weight(1f))
+    EmptyState(
+      text = stringResource(Res.string.something_went_wrong),
+      description = stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION),
+      iconStyle = ERROR,
+      buttonStyle = Button(
+        buttonText = stringResource(Res.string.GENERAL_RETRY),
+        onButtonClick = dropUnlessResumed { popBackStack() },
+      ),
+    )
+    Spacer(Modifier.weight(1f))
+    HedvigTextButton(
+      stringResource(Res.string.general_close_button),
+      onClick = popBackStack,
+      buttonSize = Large,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+  }
+}

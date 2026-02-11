@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote
@@ -68,10 +67,10 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failur
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
-import com.hedvig.android.tiersandaddons.DisplayDocument
-import com.hedvig.android.tiersandaddons.QuoteCard
-import com.hedvig.android.tiersandaddons.QuoteDisplayItem
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.DisplayDocument
+import com.hedvig.ui.tiersandaddons.QuoteCard
+import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_CONFIRM
@@ -90,7 +89,6 @@ import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

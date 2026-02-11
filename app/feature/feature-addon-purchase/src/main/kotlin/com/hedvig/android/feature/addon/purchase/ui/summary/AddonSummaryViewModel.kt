@@ -145,7 +145,6 @@ internal fun getCostBreakdownWithExtras(
   }
 
   val totalExtra = UiMoney(extraSum, baseCurrency)
-  logcat { "Mariia: totalExtra: $totalExtra" }
   val totalGross = baseCost.monthlyGross.amount + existingAddons.sumOf {
     it.cost.monthlyGross.amount
   } + quotes.sumOf { it.itemCost.monthlyGross.amount }

@@ -32,6 +32,7 @@ fun NavGraphBuilder.insuranceGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  onNavigateToRemoveAddon: (insuranceId: String?, addonId: String?)  -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -83,6 +84,10 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
         onChangeTierClick = { contractId: String ->
           onNavigateToStartChangeTier(backStackEntry, contractId)
+        },
+        navigateToRemoveAddon = { insuranceId ->
+          //todo: pass the right params for addon here!
+          onNavigateToRemoveAddon(insuranceId,null)
         },
       )
     }

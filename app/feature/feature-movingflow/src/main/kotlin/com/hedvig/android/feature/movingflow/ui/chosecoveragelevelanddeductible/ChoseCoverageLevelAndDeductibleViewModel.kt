@@ -14,7 +14,6 @@ import arrow.core.Some
 import arrow.core.some
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.AddonId
-import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote.Deductible
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveMtaQuote
@@ -35,7 +34,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
