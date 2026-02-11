@@ -206,10 +206,10 @@ private fun logSuccessfulAddonPurchaseAction(
 ) {
   summaryParameters.chosenQuotes.forEach { chosenQuote ->
     chosenQuote.addonSubtype?.let {
-      //todo: change when backend changes, add "product" and send log event always
+      //todo: review later when will have new entrypoints. Prob new addonPurchaseSource, "product"?
       val logInfo = AddonLogInfo(
         flow = addonPurchaseSource,
-        subType = chosenQuote.addonSubtype,
+        subType = chosenQuote.addonSubtype
       )
       val eventType = if (summaryParameters.currentlyActiveAddons.isEmpty()) {
         AddonEventType.ADDON_PURCHASED
@@ -224,7 +224,7 @@ private fun logSuccessfulAddonPurchaseAction(
 
 private data class AddonLogInfo(
     val flow: AddonBannerSource,
-    val subType: String,
+    val subType: String
 ) {
   val type = "travelAddon"
 

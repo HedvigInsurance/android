@@ -175,6 +175,8 @@ internal class CustomizeTravelAddonPresenter(
               productVariant = offerResult.umbrellaAddonQuote.productVariant,
               contractId = offerResult.contractId,
               summaryParamsToNavigateFurther = null,
+              whatsIncludedPageTitle = offerResult.whatsIncludedPageTitle,
+              whatsIncludedPageDescription = offerResult.whatsIncludedPageDescription,
             )
           when (offerResult.umbrellaAddonQuote.addonOffer) {
             is AddonOffer.Selectable -> {
@@ -290,6 +292,8 @@ internal data class CommonSuccessParameters(
   val notificationMessage: String?,
   val productVariant: ProductVariant,
   val contractId: String,
+  val whatsIncludedPageTitle: String,
+  val whatsIncludedPageDescription: String,
 )
 
 internal sealed interface CustomizeTravelAddonEvent {

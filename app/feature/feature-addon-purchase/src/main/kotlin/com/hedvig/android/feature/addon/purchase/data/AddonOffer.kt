@@ -14,7 +14,9 @@ internal data class GenerateAddonOfferResult(
   val umbrellaAddonQuote: UmbrellaAddonQuote,
   val currentTotalCost: ItemCost,
   val notificationMessage: String?,
-  val contractId: String
+  val contractId: String,
+  val whatsIncludedPageTitle: String,
+  val whatsIncludedPageDescription: String,
 )
 
 /** Top-level addon type, like Travel+ or Car+ */

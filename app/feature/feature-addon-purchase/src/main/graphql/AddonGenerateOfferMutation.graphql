@@ -12,6 +12,9 @@ mutation AddonGenerateOffer($contractId: ID!) {
       quote {
         ...AddonContractQuoteFragment
       }
+      whatsIncludedPageTitle
+      whatsIncludedPageDescription
+      infoMessage
     }
   }
 }
@@ -75,4 +78,5 @@ fragment AddonOfferQuoteFragment on AddonOfferQuote {
   addonVariant {
     ...AddonVariantFragment
   }
+  subtype
 }
