@@ -15,7 +15,6 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val addonRemovalModule = module {
-  //includes(addonRemovalPlatformModule)
   viewModel<SelectAddonToRemoveViewModel> { params ->
     SelectAddonToRemoveViewModel(
       get<StartAddonRemovalUseCase>(),
@@ -45,5 +44,3 @@ val addonRemovalModule = module {
     SubmitAddonRemovalUseCaseImpl(get<ApolloClient>())
   }
 }
-
-//expect val addonRemovalPlatformModule: Module
