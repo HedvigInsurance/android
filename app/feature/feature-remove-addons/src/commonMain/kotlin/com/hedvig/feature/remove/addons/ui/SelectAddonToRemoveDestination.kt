@@ -36,7 +36,9 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.logger.logcat
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
+import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
@@ -101,8 +103,15 @@ private fun SelectAddonToRemoveScreen(
     is SelectAddonToRemoveState.Error -> HedvigScaffold(
       navigateUp = navigateUp,
     ) {
+      val subtitle = uiState.message?.let {
+        null
+      } ?: stringResource(Res.string.GENERAL_ERROR_BODY)
+      logcat{
+        "Mariia: uiState.message: ${uiState.message} subtitle: $subtitle"
+      }
       HedvigErrorSection(
         title = uiState.message ?: stringResource(Res.string.something_went_wrong),
+        subTitle = subtitle,
         onButtonClick = reload,
         modifier = Modifier.weight(1f),
       )

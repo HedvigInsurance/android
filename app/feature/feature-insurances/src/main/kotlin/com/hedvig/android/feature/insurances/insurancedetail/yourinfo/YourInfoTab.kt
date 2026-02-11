@@ -110,7 +110,7 @@ internal fun YourInfoTab(
   priceToShow: UiMoney,
   showPriceInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
-  navigateToRemoveAddon: () -> Unit, //TODO
+  navigateToRemoveAddon: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()

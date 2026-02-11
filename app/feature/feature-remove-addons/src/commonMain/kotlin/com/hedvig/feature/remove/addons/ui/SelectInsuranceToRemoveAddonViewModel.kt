@@ -42,10 +42,15 @@ private class SelectInsuranceToRemoveAddonPresenter(
           currentState = SelectInsuranceToRemoveAddonState.Error
         },
         ifRight =  {
-          currentState = SelectInsuranceToRemoveAddonState.Success(
-            listOfInsurances = it,
-            currentlySelected = null
-          )
+          if (it.isEmpty()) {
+            currentState = SelectInsuranceToRemoveAddonState.EmptyList
+          } else {
+            currentState = SelectInsuranceToRemoveAddonState.Success(
+              listOfInsurances = it,
+              currentlySelected = null,
+              insuranceIdToContinue = if (it.size==1) it.first().id else null
+            )
+          }
         }
       )
     }
@@ -67,6 +72,7 @@ private class SelectInsuranceToRemoveAddonPresenter(
     return when (val state = currentState) {
       SelectInsuranceToRemoveAddonState.Error,
       SelectInsuranceToRemoveAddonState.Loading,
+      SelectInsuranceToRemoveAddonState.EmptyList
         -> state
 
       is SelectInsuranceToRemoveAddonState.Success -> state.copy(
@@ -87,6 +93,7 @@ internal sealed interface SelectInsuranceToRemoveAddonState {
   data object Error : SelectInsuranceToRemoveAddonState
 
   data object Loading : SelectInsuranceToRemoveAddonState
+  data object EmptyList: SelectInsuranceToRemoveAddonState
 }
 
 internal sealed interface SelectInsuranceToRemoveAddonEvent {

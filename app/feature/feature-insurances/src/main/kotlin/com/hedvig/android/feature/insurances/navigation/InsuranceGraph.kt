@@ -85,9 +85,9 @@ fun NavGraphBuilder.insuranceGraph(
         onChangeTierClick = { contractId: String ->
           onNavigateToStartChangeTier(backStackEntry, contractId)
         },
-        navigateToRemoveAddon = {
-          //todo: pass the right params here!
-          onNavigateToRemoveAddon(null,null)
+        navigateToRemoveAddon = { insuranceId ->
+          //todo: pass the right params for addon here!
+          onNavigateToRemoveAddon(insuranceId,null)
         },
       )
     }

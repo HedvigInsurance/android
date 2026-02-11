@@ -30,8 +30,7 @@ import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.remove.addons.data.InsuranceForAddon
-import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
-import hedvig.resources.ADDON_FLOW_TITLE
+import hedvig.resources.REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES
 import hedvig.resources.Res
 import hedvig.resources.SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION
 import hedvig.resources.SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE
@@ -39,14 +38,13 @@ import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun SelectInsuranceToRemoveAddonDestination(
 
   navigateUp: () -> Unit,
   navigateToChooseAddon: (chosenInsuranceId: String) -> Unit,
-){
+) {
   val viewModel: SelectInsuranceToRemoveAddonViewModel = koinViewModel() //TODO
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceToRemoveAddonScreen(
@@ -76,7 +74,7 @@ private fun SelectInsuranceToRemoveAddonScreen(
   navigateToChooseAddon: (chosenInsuranceId: String) -> Unit,
   selectInsurance: (chosenInsuranceId: String) -> Unit,
   submitSelected: (chosenInsuranceId: String) -> Unit,
-  reload: () -> Unit
+  reload: () -> Unit,
 ) {
   when (uiState) {
     SelectInsuranceToRemoveAddonState.Error -> {
@@ -102,6 +100,18 @@ private fun SelectInsuranceToRemoveAddonScreen(
         submitSelected = submitSelected,
       )
     }
+
+    SelectInsuranceToRemoveAddonState.EmptyList ->
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        HedvigErrorSection(
+          title = stringResource(Res.string.REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES),
+          subTitle = null,
+          onButtonClick = reload,
+          modifier = Modifier.weight(1f),
+        )
+      }
   }
 }
 

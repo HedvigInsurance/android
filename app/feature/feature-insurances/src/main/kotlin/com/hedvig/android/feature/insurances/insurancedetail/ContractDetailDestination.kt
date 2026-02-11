@@ -102,7 +102,7 @@ internal fun ContractDetailDestination(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToRemoveAddon: () -> Unit
+  navigateToRemoveAddon: (contractId: String) -> Unit
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -137,7 +137,7 @@ private fun ContractDetailScreen(
   navigateBack: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToRemoveAddon: () -> Unit
+  navigateToRemoveAddon: (contractId: String) -> Unit
 ) {
   Column(Modifier.fillMaxSize()) {
     val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
@@ -326,8 +326,9 @@ private fun ContractDetailScreen(
                       },
                       isDecommissioned = contract.productVariant.contractType
                         == ContractType.SE_CAR_DECOMMISSIONED,
-                      navigateToRemoveAddon = navigateToRemoveAddon,
-                    )
+                      navigateToRemoveAddon = {
+                        navigateToRemoveAddon(contract.id)
+                      })
                   }
 
                   1 -> {
