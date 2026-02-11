@@ -64,16 +64,27 @@ private fun ClaimPill(type: ClaimPillType) {
       }
     }
 
-    Claim -> stringResource(Res.string.home_claim_card_pill_claim)
-    is PaymentAmount -> type.uiMoney.toString()
-    Unknown -> stringResource(Res.string.home_claim_card_pill_claim)
+    Claim -> {
+      stringResource(Res.string.home_claim_card_pill_claim)
+    }
+
+    is PaymentAmount -> {
+      type.uiMoney.toString()
+    }
+
+    Unknown -> {
+      stringResource(Res.string.home_claim_card_pill_claim)
+    }
   }
   val voiceDescription = when (type) {
     is ClaimPillType.Closed, Claim, Unknown -> text
     is PaymentAmount -> type.uiMoney.getDescription()
   }
   val color: HighlightLabelDefaults.HighlightColor = when (type) {
-    Claim -> Grey(MEDIUM, true)
+    Claim -> {
+      Grey(MEDIUM, true)
+    }
+
     is ClaimPillType.Closed -> {
       when (type) {
         GenericClosed -> Grey(DARK)
@@ -84,8 +95,13 @@ private fun ClaimPill(type: ClaimPillType) {
       }
     }
 
-    is PaymentAmount -> HighlightLabelDefaults.HighlightColor.Blue(MEDIUM)
-    Unknown -> Grey(MEDIUM, true)
+    is PaymentAmount -> {
+      HighlightLabelDefaults.HighlightColor.Blue(MEDIUM)
+    }
+
+    Unknown -> {
+      Grey(MEDIUM, true)
+    }
   }
   HighlightLabel(
     text,

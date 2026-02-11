@@ -33,7 +33,10 @@ internal class ChatRemoteMediator(
   override suspend fun load(loadType: LoadType, state: PagingState<Int, ChatMessageEntity>): MediatorResult {
     logcat(VERBOSE) { "ChatRemoteMediator: called with loadType: $loadType and state: $state" }
     val pagingToken = when (loadType) {
-      LoadType.REFRESH -> null
+      LoadType.REFRESH -> {
+        null
+      }
+
       LoadType.PREPEND -> {
         val newerToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.newerToken
         newerToken ?: return MediatorResult.Success(endOfPaginationReached = true)
@@ -69,7 +72,10 @@ internal class ChatRemoteMediator(
           remoteKeyDao.deleteAllForConversation(conversationId)
         }
         val remoteKeyEntityToSave = when (loadType) {
-          LoadType.REFRESH -> RemoteKeyEntity(conversationId, response.olderToken, response.newerToken)
+          LoadType.REFRESH -> {
+            RemoteKeyEntity(conversationId, response.olderToken, response.newerToken)
+          }
+
           LoadType.PREPEND -> {
             val existingOlderToken = remoteKeyDao.remoteKeyForConversation(conversationId)?.olderToken
             RemoteKeyEntity(

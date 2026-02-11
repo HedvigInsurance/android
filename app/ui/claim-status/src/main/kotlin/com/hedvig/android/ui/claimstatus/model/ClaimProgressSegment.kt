@@ -30,6 +30,7 @@ data class ClaimProgressSegment(
       -> buildSegments(ACTIVE, ACTIVE, INACTIVE)
 
       ClaimStatus.CLOSED -> buildSegments(ACTIVE, ACTIVE, ACTIVE)
+
       ClaimStatus.UNKNOWN__,
       null,
       -> buildSegments(ACTIVE, INACTIVE, INACTIVE)

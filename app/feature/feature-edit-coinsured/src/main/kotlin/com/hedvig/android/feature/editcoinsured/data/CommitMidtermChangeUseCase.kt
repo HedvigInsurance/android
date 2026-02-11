@@ -39,10 +39,13 @@ internal class CommitMidtermChangeUseCaseImpl(
           result.midtermChangeIntentCommit.intent.activationDate,
         )
       }
+
       MidtermChangeIntentState.INITIATED,
       MidtermChangeIntentState.UNKNOWN__,
       null,
-      -> raise(ErrorMessage("Could not commit, state was: ${state?.name}"))
+      -> {
+        raise(ErrorMessage("Could not commit, state was: ${state?.name}"))
+      }
     }
   }
 }

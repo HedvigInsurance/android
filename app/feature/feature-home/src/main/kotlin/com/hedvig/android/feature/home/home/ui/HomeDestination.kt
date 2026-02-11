@@ -298,10 +298,12 @@ private fun HomeScreen(
           }
           actionsList.forEach { action ->
             when (action) {
-              ChatAction -> ToolbarChatIcon(
-                onClick = onNavigateToInbox,
-                modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-              )
+              ChatAction -> {
+                ToolbarChatIcon(
+                  onClick = onNavigateToInbox,
+                  modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+                )
+              }
 
               is CrossSellsAction -> {
                 ToolbarCrossSellsIcon(

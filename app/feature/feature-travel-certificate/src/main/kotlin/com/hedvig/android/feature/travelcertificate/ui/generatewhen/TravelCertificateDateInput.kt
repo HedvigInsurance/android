@@ -93,7 +93,9 @@ private fun TravelCertificateDateInput(
       }
     }
 
-    TravelCertificateDateInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    TravelCertificateDateInputUiState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
 
     is TravelCertificateDateInputUiState.UrlFetched -> {
       LaunchedEffect(Unit) {

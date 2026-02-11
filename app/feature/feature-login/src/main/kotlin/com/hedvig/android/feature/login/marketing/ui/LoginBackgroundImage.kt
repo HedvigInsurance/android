@@ -139,8 +139,14 @@ fun LoginBackgroundVideo(videoResId: Int = R.raw.login_video_compressed) {
     DisposableEffect(lifecycleOwner, listener, exoPlayer) {
       val observer = LifecycleEventObserver { _, event ->
         when (event) {
-          Lifecycle.Event.ON_START -> exoPlayer.play()
-          Lifecycle.Event.ON_STOP -> exoPlayer.pause()
+          Lifecycle.Event.ON_START -> {
+            exoPlayer.play()
+          }
+
+          Lifecycle.Event.ON_STOP -> {
+            exoPlayer.pause()
+          }
+
           else -> {}
         }
       }

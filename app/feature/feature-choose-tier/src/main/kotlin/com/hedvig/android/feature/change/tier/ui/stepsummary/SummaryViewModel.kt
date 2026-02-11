@@ -53,8 +53,14 @@ private class SummaryPresenter(
 
     CollectEvents { event ->
       when (event) {
-        Reload -> loadDataIteration++
-        SubmitQuote -> submitIteration++
+        Reload -> {
+          loadDataIteration++
+        }
+
+        SubmitQuote -> {
+          submitIteration++
+        }
+
         ClearNavigation -> {
           if (currentState is MakingChanges) {
             currentState = (currentState as MakingChanges).copy(

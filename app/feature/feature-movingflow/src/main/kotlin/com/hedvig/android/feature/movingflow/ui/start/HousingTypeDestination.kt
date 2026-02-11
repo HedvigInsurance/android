@@ -113,7 +113,9 @@ private fun HousingTypeScreen(
             StartContentScreen(uiState, onSelectHousingType, onSubmitHousingType)
           }
 
-          HousingTypeUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+          HousingTypeUiState.Loading -> {
+            HedvigFullScreenCenterAlignedProgress()
+          }
         }
       }
     }

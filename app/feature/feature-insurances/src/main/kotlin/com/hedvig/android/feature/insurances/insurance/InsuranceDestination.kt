@@ -336,11 +336,13 @@ private fun InsuranceCard(
   onInsuranceCardClick: (contractId: String) -> Unit,
 ) {
   val topText = when (contract) {
-    is EstablishedInsuranceContract ->
+    is EstablishedInsuranceContract -> {
       contract.currentInsuranceAgreement.productVariant.displayName
+    }
 
-    is InsuranceContract.PendingInsuranceContract ->
+    is InsuranceContract.PendingInsuranceContract -> {
       contract.displayName
+    }
   }
   InsuranceCard(
     backgroundImageUrl = null,

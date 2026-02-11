@@ -424,11 +424,25 @@ private fun ChatLazyColumn(
             }
           }
 
-          is ChatMessageGif -> "ChatMessage.ChatMessageGif"
-          is CbmChatMessage.ChatMessageText -> "ChatMessage.ChatMessageText"
-          is ChatMessageText -> "ChatMessage.FailedToBeSent.ChatMessageText"
-          is ChatMessagePhoto -> "ChatMessage.FailedToBeSent.ChatMessagePhoto"
-          is ChatMessageMedia -> "ChatMessage.FailedToBeSent.ChatMessageMedia"
+          is ChatMessageGif -> {
+            "ChatMessage.ChatMessageGif"
+          }
+
+          is CbmChatMessage.ChatMessageText -> {
+            "ChatMessage.ChatMessageText"
+          }
+
+          is ChatMessageText -> {
+            "ChatMessage.FailedToBeSent.ChatMessageText"
+          }
+
+          is ChatMessagePhoto -> {
+            "ChatMessage.FailedToBeSent.ChatMessagePhoto"
+          }
+
+          is ChatMessageMedia -> {
+            "ChatMessage.FailedToBeSent.ChatMessageMedia"
+          }
         }
       },
     ) { index: Int ->
@@ -837,14 +851,19 @@ private fun getMessageDescription(chatMessage: CbmChatMessage?): String {
     val time = formatInstantForTalkBack(context, it.sentAt)
     when (it) {
       is ChatMessageFile -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_FILE, time, sender, it.mimeType)
+
       // At [%s:formattedInstant], [%s:sender] sent a file with type: [%s:mimeType], double tap to open.
       is ChatMessageGif -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_GIF, time, sender)
+
       // At [%s:formattedInstant], [%s:sender] sent a GIF picture.
       is CbmChatMessage.ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_MESSAGE_TEXT, time, sender, it.text)
+
       // "at $instant, $sender said: $it.text."
       is ChatMessageMedia -> stringResource(Res.string.TALKBACK_CHAT_FAILED_MEDIA, time)
+
       // "at $instant, you tried to send a media file, but it failed. Double tap to try sending again."
       is ChatMessagePhoto -> stringResource(Res.string.TALKBACK_CHAT_FAILED_PHOTO, time)
+
       // "at $instant, you tried to send a photo, but it failed. Double tap to try sending again."
       is ChatMessageText -> stringResource(Res.string.TALKBACK_CHAT_FAILED_TEXT, time, it.text)
       // "at $instant, you tried to send a text message, but it failed. Double tap to try sending again. The message said: $it.text"
@@ -1044,7 +1063,9 @@ private fun ChatAsyncImage(
                   // todo chat: vector is almost centered, not quite though, the top left is centered only
                   //  -12.5f is an approximation for now
                   VectorProperty.TranslateX -> ((viewportWidth / 2) - 12.5f) as T
+
                   VectorProperty.TranslateY -> ((viewportHeight / 2) - 12.5f) as T
+
                   else -> defaultValue
                 }
               }
@@ -1092,7 +1113,10 @@ private fun ChatAsyncImage(
           }
         }
 
-        AsyncImagePainter.State.Empty -> state
+        AsyncImagePainter.State.Empty -> {
+          state
+        }
+
         is AsyncImagePainter.State.Success -> {
           loadedImageIntrinsicSize.value = IntSize(
             state.result.image.width,

@@ -120,17 +120,26 @@ internal fun HedvigAppUi(
 private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: HedvigAppState) = composed {
   val density = LocalDensity.current
   val insetsToConsume = when (hedvigAppState.navigationSuiteType) {
-    NavigationSuiteType.NavigationBar -> WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
-    NavigationSuiteType.None -> PaddingValues(0.dp)
+    NavigationSuiteType.NavigationBar -> {
+      WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
+    }
+
+    NavigationSuiteType.None -> {
+      PaddingValues(0.dp)
+    }
+
     NavigationSuiteType.NavigationRail,
     NavigationSuiteType.NavigationRailXLarge,
-    ->
+    -> {
       WindowInsets.systemBars
         .union(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Left)
         .asPaddingValues(density)
+    }
 
-    else -> PaddingValues(0.dp)
+    else -> {
+      PaddingValues(0.dp)
+    }
   }
 
   val paddingValuesVectorConverter: TwoWayConverter<PaddingValues, AnimationVector4D> = TwoWayConverter(

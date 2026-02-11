@@ -54,13 +54,18 @@ internal class EditCoInsuredTriagePresenter(
               EditCoInsuredDestination.MISSING_INFO -> currentStateValue.copy(
                 idToNavigateToAddMissingInfo = it.id,
               )
+
               EditCoInsuredDestination.ADD_OR_REMOVE -> currentStateValue.copy(
                 idToNavigateToAddOrRemoveCoInsured = it.id,
               )
             }
           }
         }
-        EditCoInsuredTriageEvent.Reload -> loadIteration++
+
+        EditCoInsuredTriageEvent.Reload -> {
+          loadIteration++
+        }
+
         EditCoInsuredTriageEvent.ClearNavigation -> {
           val currentStateValue = currentState as? Success ?: return@CollectEvents
           currentState = currentStateValue.copy(
@@ -68,6 +73,7 @@ internal class EditCoInsuredTriagePresenter(
             idToNavigateToAddOrRemoveCoInsured = null,
           )
         }
+
         is EditCoInsuredTriageEvent.SelectInsurance -> {
           val currentStateValue = currentState as? Success ?: return@CollectEvents
           val selectedInsurance = currentStateValue.list.first { it.id == event.id }

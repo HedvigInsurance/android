@@ -458,19 +458,22 @@ private fun DropdownOption(
           isEnabled = true,
         ).value
         when (style) {
-          is DropdownStyle.Default, is DropdownStyle.Label ->
+          is DropdownStyle.Default, is DropdownStyle.Label -> {
             DefaultStyleStartSlot(
               textColor = textColor,
               text = item.text,
               textStyle = size.textStyle,
             )
+          }
 
-          is DropdownStyle.Icon -> IconStyleStartSlot(
-            textColor = textColor,
-            text = item.text,
-            textStyle = size.textStyle,
-            icon = (item as DropdownItemWithIcon).painter,
-          )
+          is DropdownStyle.Icon -> {
+            IconStyleStartSlot(
+              textColor = textColor,
+              text = item.text,
+              textStyle = size.textStyle,
+              icon = (item as DropdownItemWithIcon).painter,
+            )
+          }
         }
       },
       endSlot = {

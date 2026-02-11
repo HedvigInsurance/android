@@ -67,10 +67,15 @@ internal class DeleteAccountPresenter(
 
     return when (deleteAccountState) {
       null -> DeleteAccountUiState.Loading
+
       DeleteAccountState.NetworkError -> DeleteAccountUiState.FailedToLoadDeleteAccountState
+
       DeleteAccountState.AlreadyRequestedDeletion -> DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion
+
       DeleteAccountState.HasActiveInsurance -> DeleteAccountUiState.CanNotDelete.HasActiveInsurance
+
       DeleteAccountState.HasOngoingClaim -> DeleteAccountUiState.CanNotDelete.HasOngoingClaim
+
       DeleteAccountState.CanDelete -> DeleteAccountUiState.CanDelete(
         isPerformingDeletion = isPerformingDeletion,
         failedToPerformDeletion = failedToPerformAccountDeletion,

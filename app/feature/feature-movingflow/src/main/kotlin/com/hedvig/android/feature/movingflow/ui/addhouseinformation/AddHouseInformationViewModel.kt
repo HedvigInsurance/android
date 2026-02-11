@@ -148,9 +148,11 @@ internal class AddHouseInformationPresenter(
             },
             ifRight = { request ->
               when (val moveIntentQuotesFragment = request.moveIntent) {
-                null -> submittingInfoFailure = when (val errorMessage = request.userError?.message) {
-                  null -> NetworkFailure
-                  else -> SubmittingInfoFailure.UserError(errorMessage)
+                null -> {
+                  submittingInfoFailure = when (val errorMessage = request.userError?.message) {
+                    null -> NetworkFailure
+                    else -> SubmittingInfoFailure.UserError(errorMessage)
+                  }
                 }
 
                 else -> {
@@ -165,10 +167,14 @@ internal class AddHouseInformationPresenter(
     }
 
     return when (val addressInputValue = addressInput) {
-      None -> Loading
+      None -> {
+        Loading
+      }
+
       is Some -> {
         when (val value = addressInputValue.value) {
           null -> MissingOngoingMovingFlow
+
           else -> Content(
             moveFromAddressId = moveIntentId,
             addressInput = value,

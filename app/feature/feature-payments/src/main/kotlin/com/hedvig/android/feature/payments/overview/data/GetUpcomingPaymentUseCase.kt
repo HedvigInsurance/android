@@ -66,7 +66,10 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             }
           }
 
-          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.Pending
+          MemberPaymentConnectionStatus.PENDING -> {
+            PaymentConnection.Pending
+          }
+
           MemberPaymentConnectionStatus.NEEDS_SETUP -> {
             val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
               .currentMember
@@ -78,7 +81,9 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
           }
 
-          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
+          MemberPaymentConnectionStatus.UNKNOWN__ -> {
+            PaymentConnection.Unknown
+          }
         }
       },
     )

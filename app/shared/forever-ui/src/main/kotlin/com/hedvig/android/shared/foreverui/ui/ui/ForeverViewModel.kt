@@ -46,7 +46,9 @@ internal class ForeverPresenter(
           currentState = state.copy(referralCodeErrorMessage = null)
         }
 
-        RetryLoadReferralData -> foreverDataLoadIteration++
+        RetryLoadReferralData -> {
+          foreverDataLoadIteration++
+        }
 
         is SubmitNewReferralCode -> {
           referralCodeToSubmit = event.code.trim()

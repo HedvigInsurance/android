@@ -40,44 +40,47 @@ internal fun InsuranceContract.createChips(): List<ChipUiData> {
           ChipUiData(chipText = text, chipType = GENERAL),
         )
       }
-      is InsuranceContract.EstablishedInsuranceContract -> listOfNotNull(
-        tierName?.let {
-          ChipUiData(chipText = it, chipType = TIER)
-        },
-        terminationDate?.let { terminationDate ->
-          val text = if (terminationDate == today) {
-            if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
-              stringResource(Res.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW)
+
+      is InsuranceContract.EstablishedInsuranceContract -> {
+        listOfNotNull(
+          tierName?.let {
+            ChipUiData(chipText = it, chipType = TIER)
+          },
+          terminationDate?.let { terminationDate ->
+            val text = if (terminationDate == today) {
+              if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
+                stringResource(Res.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW)
+              } else {
+                stringResource(Res.string.CONTRACT_STATUS_TERMINATED_TODAY)
+              }
+            } else if (terminationDate < today) {
+              stringResource(Res.string.CONTRACT_STATUS_TERMINATED)
             } else {
-              stringResource(Res.string.CONTRACT_STATUS_TERMINATED_TODAY)
+              if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
+                stringResource(Res.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE, terminationDate)
+              } else {
+                stringResource(Res.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
+              }
             }
-          } else if (terminationDate < today) {
-            stringResource(Res.string.CONTRACT_STATUS_TERMINATED)
-          } else {
-            if (currentInsuranceAgreement.productVariant.contractType.isTrialContract()) {
-              stringResource(Res.string.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE, terminationDate)
+            ChipUiData(text, GENERAL)
+          },
+          upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
+            val text = stringResource(Res.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
+            ChipUiData(text, GENERAL)
+          },
+          inceptionDate.let { inceptionDate ->
+            if (inceptionDate > today) {
+              val text = stringResource(Res.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
+              ChipUiData(text, GENERAL)
+            } else if (terminationDate == null) {
+              val text = stringResource(Res.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
+              ChipUiData(text, GENERAL)
             } else {
-              stringResource(Res.string.CONTRACT_STATUS_TO_BE_TERMINATED, terminationDate)
+              null
             }
-          }
-          ChipUiData(text, GENERAL)
-        },
-        upcomingInsuranceAgreement?.activeFrom?.let { activeFromDate ->
-          val text = stringResource(Res.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, activeFromDate)
-          ChipUiData(text, GENERAL)
-        },
-        inceptionDate.let { inceptionDate ->
-          if (inceptionDate > today) {
-            val text = stringResource(Res.string.CONTRACT_STATUS_ACTIVE_IN_FUTURE, inceptionDate)
-            ChipUiData(text, GENERAL)
-          } else if (terminationDate == null) {
-            val text = stringResource(Res.string.DASHBOARD_INSURANCE_STATUS_ACTIVE)
-            ChipUiData(text, GENERAL)
-          } else {
-            null
-          }
-        },
-      )
+          },
+        )
+      }
     }
   return listOfChips
 }
@@ -89,11 +92,14 @@ internal fun InsuranceContract.createPainter(): Painter {
     is InsuranceContract.EstablishedInsuranceContract -> currentInsuranceAgreement.productVariant
   }
   return when (this) {
-    is InsuranceContract.EstablishedInsuranceContract if isTerminated ->
+    is InsuranceContract.EstablishedInsuranceContract if isTerminated -> {
       ColorPainter(Color.Black.copy(alpha = 0.7f))
-    else ->
+    }
+
+    else -> {
       productVariant.contractGroup
         .gradientResource()
         .let { drawableRes -> painterResource(drawableRes) }
+    }
   }
 }

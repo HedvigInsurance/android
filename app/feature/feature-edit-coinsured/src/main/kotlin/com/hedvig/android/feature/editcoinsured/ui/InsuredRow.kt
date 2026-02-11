@@ -129,11 +129,13 @@ internal fun InsuredRow(
             HedvigText(stringResource(Res.string.CONTRACT_EDIT_INFO))
           }
 
-          !allowEdit -> Icon(
-            imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(Res.string.GENERAL_REMOVE),
-            modifier = Modifier.size(16.dp),
-          )
+          !allowEdit -> {
+            Icon(
+              imageVector = HedvigIcons.Close,
+              contentDescription = stringResource(Res.string.GENERAL_REMOVE),
+              modifier = Modifier.size(16.dp),
+            )
+          }
 
           else -> {}
         }

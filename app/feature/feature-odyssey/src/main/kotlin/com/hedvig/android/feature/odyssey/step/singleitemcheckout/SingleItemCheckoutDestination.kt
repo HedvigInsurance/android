@@ -171,7 +171,6 @@ private fun SingleItemCheckoutScreen(
         ) {
           val explanationText = when (uiState.compensation) {
             is RepairCompensation -> stringResource(Res.string.CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT)
-
             is ValueCompensation -> stringResource(Res.string.CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT)
           }
           val title = stringResource(Res.string.CLAIMS_CHECKOUT_COUNT_TITLE)
