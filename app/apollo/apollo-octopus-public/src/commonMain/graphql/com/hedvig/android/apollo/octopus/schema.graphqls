@@ -176,6 +176,10 @@ type AddonOffer {
   """
   pageDescription: String!
   """
+  Optional info message to show on the summary page.
+  """
+  infoMessage: String
+  """
   New quote
   """
   quote: AddonContractQuote!
@@ -183,6 +187,16 @@ type AddonOffer {
   Agreement total cost
   """
   currentTotalCost: ItemCost!
+  """
+  Title to show in what's included page.
+  eg "What is Travel Insurance Plus?"
+  """
+  whatsIncludedPageTitle: String!
+  """
+  Description to show in what's included page.
+  eg "Travel Insurance Plus is extended coverage for those..."
+  """
+  whatsIncludedPageDescription: String!
 }
 """
 AddonOfferSelectable is used when we have multiple variants for the same quote
@@ -220,6 +234,10 @@ type AddonOfferQuote {
   Addon variant
   """
   addonVariant: AddonVariant!
+  """
+   Addon subtype 
+  """
+  subtype: String
 }
 type AddonOfferSelectable {
   """
@@ -2357,12 +2375,12 @@ type MemberActions {
   Indicate whether the possibility to create insurance evidence should be displayed.
   """
   isCreatingOfInsuranceEvidenceEnabled: Boolean!
-  isMovingEnabled: Boolean
-  isConnectPaymentEnabled: Boolean
-  isEditCoInsuredEnabled: Boolean
-  isCancelInsuranceEnabled: Boolean
+  isMovingEnabled: Boolean!
+  isConnectPaymentEnabled: Boolean!
+  isEditCoInsuredEnabled: Boolean!
+  isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
-  isChangeTierEnabled: Boolean
+  isChangeTierEnabled: Boolean!
 }
 """
 Bundle discount savings information for a member
@@ -2944,12 +2962,12 @@ type MoveIntent {
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   Quote variants for new home contract that member needs to pick one from.
   """
-  homeQuotes: [MoveHomeQuote!]
+  homeQuotes: [MoveHomeQuote!]!
   """
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   The MTA quotes for member's non-home contracts with new address.
   """
-  mtaQuotes: [MoveMtaQuote!]
+  mtaQuotes: [MoveMtaQuote!]!
 }
 """
 Cost breakdown for selected move intent configuration
@@ -3909,6 +3927,10 @@ type Query {
   Cost for selected configuration of moveIntent
   """
   moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
+  """
+  Cost for selected configuration of addon offer
+  """
+  addonOfferCost(quoteId: ID!, addonIds: [ID!]!): ItemCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
