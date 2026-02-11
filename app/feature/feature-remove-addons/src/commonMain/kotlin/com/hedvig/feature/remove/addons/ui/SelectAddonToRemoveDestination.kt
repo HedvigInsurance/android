@@ -39,8 +39,10 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.logger.logcat
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import hedvig.resources.GENERAL_ERROR_BODY
+import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
+import hedvig.resources.general_back_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong
@@ -103,14 +105,14 @@ private fun SelectAddonToRemoveScreen(
     is SelectAddonToRemoveState.Error -> HedvigScaffold(
       navigateUp = navigateUp,
     ) {
-      val subtitle = uiState.message?.let {
-        null
-      } ?: stringResource(Res.string.GENERAL_ERROR_BODY)
+      val subtitle = if (uiState.message!=null ) null else stringResource(Res.string.GENERAL_ERROR_BODY)
       HedvigErrorSection(
         title = uiState.message ?: stringResource(Res.string.something_went_wrong),
         subTitle = subtitle,
-        onButtonClick = reload,
-        modifier = Modifier.weight(1f),
+        onButtonClick = if (uiState.message!=null ) navigateUp else reload,
+        modifier = Modifier.weight(1f).fillMaxWidth(),
+        buttonText = if (uiState.message!=null )stringResource(Res.string.general_back_button)
+        else stringResource(Res.string.GENERAL_RETRY)
       )
     }
 

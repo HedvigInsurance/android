@@ -47,13 +47,11 @@ private class RemoveAddonSummaryPresenter(
           },
         ).fold(
           ifLeft = {
-            logcat { "Mariia: loadIteration submitAddonRemovalUseCase fail: $it" }
             currentState = RemoveAddonSummaryState.Content(
               params,
               Unit)
           },
           ifRight = {
-            logcat { "Mariia: loadIteration submitAddonRemovalUseCase success: $it" }
             currentState = RemoveAddonSummaryState.Loading(params.activationDate)
           },
         )
