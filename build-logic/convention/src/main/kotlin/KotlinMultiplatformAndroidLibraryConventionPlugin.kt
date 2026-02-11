@@ -1,5 +1,5 @@
 import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
-import com.android.build.api.dsl.androidLibrary
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.hedvig.android.configureAutomaticNamespace
 import com.hedvig.android.configureKotlinCompilerOptions
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -51,19 +51,19 @@ private fun Project.configureKotlinAndroidMultiplatform() {
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
-    androidLibrary {
+    targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java) {
       @Suppress("UnstableApiUsage")
       androidResources.enable = true
-      this.compileSdk = libs.versions.compileSdkVersion.get().toInt()
-      this.minSdk = libs.versions.minSdkVersion.get().toInt()
-      this.enableCoreLibraryDesugaring = true
-      this.compilations.configureEach {
-        this.compileTaskProvider.configure {
-          this.compilerOptions {
-            this.configureKotlinCompilerOptions()
+      compileSdk = libs.versions.compileSdkVersion.get().toInt()
+      minSdk = libs.versions.minSdkVersion.get().toInt()
+      enableCoreLibraryDesugaring = true
+      compilations.configureEach {
+        compileTaskProvider.configure {
+          compilerOptions {
+            configureKotlinCompilerOptions()
           }
         }
-        this.compileTaskProvider.configure {
+        compileTaskProvider.configure {
           compilerOptions {
             if (this is KotlinJvmCompilerOptions) {
               this.jvmTarget.set(JvmTarget.JVM_21)
@@ -72,7 +72,7 @@ private fun Project.configureKotlinAndroidMultiplatform() {
           }
         }
       }
-      configureAutomaticNamespace(path, this.namespace, { this.namespace = it })
+      configureAutomaticNamespace(path, namespace, { namespace = it })
       // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-resources-setup.html#resources-in-the-androidlibrary-target
       experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }

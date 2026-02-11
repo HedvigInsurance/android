@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.0.4"
+    versionName = "14.0.5"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -60,7 +60,7 @@ android {
       isShrinkResources = true
       setProguardFiles(
         listOf(
-          getDefaultProguardFile("proguard-android.txt"),
+          getDefaultProguardFile("proguard-android-optimize.txt"),
           "proguard-rules.pro",
         ),
       )
@@ -73,7 +73,7 @@ android {
       matchingFallbacks += "release"
       setProguardFiles(
         listOf(
-          getDefaultProguardFile("proguard-android.txt"),
+          getDefaultProguardFile("proguard-android-optimize.txt"),
           "proguard-rules.pro",
         ),
       )

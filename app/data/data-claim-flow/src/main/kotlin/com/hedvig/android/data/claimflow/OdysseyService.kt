@@ -83,7 +83,6 @@ internal class OdysseyService(
       raise(ErrorMessage("Audio file upload failed with status ${response.status}: $errorBody"))
     }
   }
-
 }
 
 @Serializable

@@ -10,6 +10,7 @@ import platform.UIKit.UIViewController
 fun ClaimChatViewController(isDevelopmentFlow: Boolean, messageId: String?): UIViewController =
   ComposeUIViewController {
     Box(Modifier.fillMaxSize()) {
-      ClaimChatDestination(isDevelopmentFlow, messageId)
+      // Unused
+//      ClaimChatDestination()
     }
   }

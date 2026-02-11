@@ -1,4 +1,4 @@
-package com.hedvig.feature.claim.chat.ui.audiorecording
+package com.hedvig.feature.claim.chat.ui.step.audiorecording
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColor
@@ -64,7 +64,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState
-import com.hedvig.feature.claim.chat.ui.SkippedLabel
+import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.A11Y_AUDIO_RECORDING
 import hedvig.resources.CLAIMS_USE_TEXT_INSTEAD
 import hedvig.resources.EMBARK_RECORD_AGAIN

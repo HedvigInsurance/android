@@ -125,7 +125,7 @@ private fun StartClaimBottomSheetContent(
         state,
         navigateToOldClaimFlow,
         navigateToClaimChat,
-        navigateToClaimChatInDevMode
+        navigateToClaimChatInDevMode,
       )
     }
     Spacer(Modifier.height(16.dp))

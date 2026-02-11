@@ -122,7 +122,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
               url = partner.url,
               urlButtonTitle = partner.urlButtonTitle,
             )
-          }
+          },
         )
       } else if (simplePartners.isNotEmpty()) {
         StepContent.Deflect.DeflectPartnerContainer.SimplePartnerContainer(
@@ -131,7 +131,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
               url = partner.url,
               urlButtonTitle = partner.urlButtonTitle,
             )
-          }
+          },
         )
       } else {
         logcat { "DeflectionFragment: both partners and simplePartners came empty" }

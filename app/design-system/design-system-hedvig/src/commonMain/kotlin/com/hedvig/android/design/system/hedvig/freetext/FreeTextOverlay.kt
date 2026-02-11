@@ -431,7 +431,7 @@ private fun Modifier.hideBehindZAxisWhenNotShowing(transition: Transition<Boolea
       1f
     } else {
       -1f
-    }
+    },
   )
 }
 
