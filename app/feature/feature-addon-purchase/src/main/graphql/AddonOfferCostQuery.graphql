@@ -1,0 +1,5 @@
+query AddonOfferCost ($addonIds: [ID!]!, $quoteId: ID!) {
+  addonOfferCost(addonIds: $addonIds, quoteId: $quoteId) {
+    ...ItemCostFragment
+  }
+}

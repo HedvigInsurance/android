@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import octopus.InsurancesForTravelAddonQuery
 
-interface GetInsuranceForTravelAddonUseCase {
+internal interface GetInsuranceForTravelAddonUseCase {
   suspend fun invoke(ids: List<String>): Flow<Either<ErrorMessage, List<InsuranceForAddon>>>
 }
 

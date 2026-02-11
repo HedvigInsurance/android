@@ -8,6 +8,8 @@ import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddon
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCaseImpl
+import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCase
+import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -39,12 +41,19 @@ val addonPurchaseModule = module {
       summaryParameters = params.get<SummaryParameters>(),
       addonPurchaseSource = params.get<AddonBannerSource>(),
       submitAddonPurchaseUseCase = get<SubmitAddonPurchaseUseCase>(),
+      getQuoteCostBreakdownUseCase = get<GetQuoteCostBreakdownUseCase>()
     )
   }
 
   viewModel<TravelAddonTriageViewModel> {
     TravelAddonTriageViewModel(
       get<GetAddonBannerInfoUseCase>(),
+    )
+  }
+
+  single<GetQuoteCostBreakdownUseCase> {
+    GetQuoteCostBreakdownUseCaseImpl(
+      apolloClient = get<ApolloClient>(),
     )
   }
 

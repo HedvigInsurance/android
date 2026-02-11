@@ -33,6 +33,7 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -93,6 +94,9 @@ internal fun AddonSummaryDestination(
     onSubmitQuoteClick = {
       viewModel.emit(AddonSummaryEvent.Submit)
     },
+    reload = {
+      viewModel.emit(AddonSummaryEvent.Reload)
+    }
   )
 }
 
@@ -102,6 +106,7 @@ private fun AddonSummaryScreen(
   onSuccess: (LocalDate) -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
+  reload: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
 ) {
   when (uiState) {
@@ -129,6 +134,12 @@ private fun AddonSummaryScreen(
         navigateUp = navigateUp,
         onConfirmClick = onSubmitQuoteClick,
       )
+    }
+
+    AddonSummaryState.Error -> HedvigScaffold(
+      navigateUp = navigateUp,
+    ) {
+      HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
     }
   }
 }
@@ -253,72 +264,14 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       locale,
     ).format(uiState.activationDate)
   }
-  val premium: UiMoney? = uiState.costBreakdownWithExtras?.totalCost?.monthlyNet
-  val previousPremium: UiMoney? = if (premium==uiState.costBreakdownWithExtras?.totalCost?.monthlyGross) {
+  val premium: UiMoney? = uiState.costBreakdownWithExtras?.totalMonthlyNet
+  val previousPremium: UiMoney? = if (premium==uiState.costBreakdownWithExtras?.totalMonthlyGross) {
     null
   } else {
-    uiState.costBreakdownWithExtras?.totalCost?.monthlyGross
+    uiState.costBreakdownWithExtras?.totalMonthlyGross
   }
-  val costBreakdown: List<CostBreakdownEntry> = uiState.costBreakdownWithExtras?.displayItems?.map{
-    CostBreakdownEntry(
-      displayName = it.first,
-      displayValue =  stringResource(
-        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        it.second, //todo: check!!
-      ),
-      hasStrikethrough = false
-    )
-  } ?: emptyList() //todo: should be not-null, wait for BE
-//  val costBreakdown: List<CostBreakdownEntry> =
-//    if (uiState.currentlyActiveAddon != null) {
-//      val currentAddonDisplayItemValue = stringResource(
-//        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-//        uiState.currentlyActiveAddon.cost.monthlyNet, //todo: check!!
-//      )
-//      val newAddonDisplayValueNet = stringResource(
-//        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-//        uiState.quote.itemCost.monthlyNet,
-//      )
-//      buildList {
-//        add(
-//          CostBreakdownEntry(
-//            uiState.currentlyActiveAddon.displayTitle,
-//            currentAddonDisplayItemValue,
-//            true,
-//          ),
-//        )
-//        add(
-//          CostBreakdownEntry(
-//            uiState.quote.displayDescription,
-//            newAddonDisplayValueNet,
-//            false,
-//          ),
-//        )
-//      }
-//    } else {
-//      val newAddonDisplayValueGross = stringResource(
-//        Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-//        uiState.quote.itemCost.monthlyGross,
-//      )
-//      buildList {
-//        add(
-//          CostBreakdownEntry(
-//            uiState.quote.displayDescription,
-//            newAddonDisplayValueGross,
-//            false,
-//          ),
-//        )
-//        uiState.quote.itemCost.discounts.forEach { discount ->
-//          add(
-//            CostBreakdownEntry(
-//              discount.displayName,
-//              discount.displayValue,
-//              false,
-//            ),
-//          )
-//        }
-//      }
-//    }
+  val costBreakdown: List<CostBreakdownEntry> = uiState.costBreakdownWithExtras?.displayItems
+    ?: emptyList()
   QuoteCard(
     subtitle = stringResource(
       Res.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
@@ -439,6 +392,7 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
+        {}
       )
     }
   }
@@ -560,15 +514,20 @@ private class ChooseInsuranceForAddonUiStateProvider :
         notificationMessage = "Notification message",
         documents = emptyList(),
         costBreakdownWithExtras = CostBreakdownWithExtras(
-          totalCost = ItemCost(
-            monthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
-            monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
-            discounts = emptyList()
-          ),
+            totalMonthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
+            totalMonthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
           totalExtra = UiMoney(50.0, UiCurrencyCode.SEK),
           displayItems = listOf(
-            "base insurance" to UiMoney(200.0, UiCurrencyCode.SEK),
-            "addon" to UiMoney(50.0, UiCurrencyCode.SEK),
+            CostBreakdownEntry(
+              displayName =  "base insurance" ,
+              displayValue = "200 kr/mo",
+              hasStrikethrough = false
+            ),
+            CostBreakdownEntry(
+              displayName =  "addon" ,
+              displayValue = "50 kr/mo",
+              hasStrikethrough = false
+            ),
           )
         ),
         displayItems = emptyList(),
