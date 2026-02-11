@@ -192,8 +192,8 @@ private fun ToggleableAddons(
   onToggleOption: (CurrentlyActiveAddon) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier) {
-    allAddonsToRemove.forEachIndexed { index, addon ->
+  Column(modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    allAddonsToRemove.forEach { addon ->
       AddonCheckbox(
         option = AddonCheckboxOption(
           title = addon.displayTitle,
@@ -205,9 +205,6 @@ private fun ToggleableAddons(
           onToggleOption(addon)
         },
       )
-      if (index != allAddonsToRemove.lastIndex) {
-        Spacer(Modifier.height(4.dp))
-      }
     }
   }
 }
