@@ -39,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
+import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -611,6 +612,13 @@ private fun HeaderInfoWithCurrentPrice(
                 },
             )
           }
+        } else {
+          HighlightLabel(
+            labelText = stringResource(Res.string.ADDON_FLOW_PRICE_LABEL, ""),
+            size = HighLightSize.Small,
+            color = Grey(MEDIUM),
+            modifier = Modifier.withoutPlacement()
+          )
         }
       },
       spaceBetween = 8.dp,
