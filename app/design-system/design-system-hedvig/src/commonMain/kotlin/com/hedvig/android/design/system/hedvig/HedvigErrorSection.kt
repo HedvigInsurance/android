@@ -51,7 +51,7 @@ fun HedvigErrorSection(
 
 @HedvigShortMultiScreenPreview
 @Composable
-fun HedvigErrorSectionPreview() {
+private fun HedvigErrorSectionPreview() {
   HedvigTheme {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,

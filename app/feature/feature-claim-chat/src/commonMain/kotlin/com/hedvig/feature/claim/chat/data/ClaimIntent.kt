@@ -157,16 +157,15 @@ internal sealed interface StepContent {
 
     @Serializable
     sealed interface DeflectPartnerContainer {
-
       @Serializable
       data class ExtendedPartnerContainer(
-        val partners: List<ExtendedPartner>
-      ): DeflectPartnerContainer
+        val partners: List<ExtendedPartner>,
+      ) : DeflectPartnerContainer
 
       @Serializable
       data class SimplePartnerContainer(
-        val partners: List<SimplePartner>
-      ): DeflectPartnerContainer
+        val partners: List<SimplePartner>,
+      ) : DeflectPartnerContainer
 
       @Serializable
       data class ExtendedPartner(
@@ -201,7 +200,6 @@ internal sealed interface StepContent {
 
 sealed interface AudioRecordingStepState {
   data class FreeTextDescription(
-    val showOverlay: Boolean,
     val errorType: FreeTextErrorType?,
     val canSubmit: Boolean,
     val hasError: Boolean = false,
@@ -220,7 +218,6 @@ sealed interface AudioRecordingStepState {
       val filePath: String,
       val isPlaying: Boolean,
       val isPrepared: Boolean,
-      val amplitudes: List<Int>,
       val hasError: Boolean,
     ) : AudioRecording
   }

@@ -94,10 +94,12 @@ abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
  */
 private val cancellationFilteringErrorEventMapper = EventMapper<ErrorEvent> { errorEvent ->
   val wasCancellationException = with(errorEvent.error) {
+    val hasCancellationText = stack?.startsWith("java.io.IOException: Canceled") == true
+      || stack?.startsWith("java.util.concurrent.CancellationException") == true
     category == EXCEPTION &&
       isCrash == false &&
       type == "java.io.IOException" &&
-      stack?.startsWith("java.io.IOException: Canceled") == true
+      hasCancellationText
   }
   if (wasCancellationException) {
     null

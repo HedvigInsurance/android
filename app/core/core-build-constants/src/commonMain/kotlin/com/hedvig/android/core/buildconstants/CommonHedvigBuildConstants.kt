@@ -54,11 +54,17 @@ private fun makeUserAgent(languageBCP47: String, appBuildConfig: AppBuildConfig)
 
 private interface UrlHolder {
   fun urlGraphqlOctopus(flavor: Flavor): String
+
   fun urlBaseWeb(flavor: Flavor): String
+
   fun urlOdyssey(flavor: Flavor): String
+
   fun urlHedvigGateway(flavor: Flavor): String
+
   fun urlBotService(flavor: Flavor): String
+
   fun urlClaimsService(flavor: Flavor): String
+
   fun deepLinkHosts(flavor: Flavor): List<String>
 }
 

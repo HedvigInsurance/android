@@ -69,6 +69,8 @@ internal sealed interface ClaimChatEvent {
     data class SwitchToAudioRecording(override val id: StepId) : AudioRecording
   }
 
+  data object RetryInitializing : ClaimChatEvent
+
   data class UpdateFreeText(val text: String?) : ClaimChatEvent
 
   data class Select(val id: StepId, val selectedId: String) : ClaimChatEvent
@@ -152,23 +154,23 @@ internal class ClaimChatViewModel(
   regretStepUseCase: RegretStepUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
-    ClaimChatUiState.Initializing,
-    ClaimChatPresenter(
-      developmentFlow,
-      startClaimIntentUseCase,
-      getClaimIntentUseCase,
-      submitTaskUseCase,
-      submitAudioRecordingUseCase,
-      submitFileUploadUseCase,
-      submitFormUseCase,
-      submitSelectUseCase,
-      submitSummaryUseCase,
-      skipStepUseCase,
-      audioRecordingManager,
-      fileService,
-      regretStepUseCase,
-    ),
-  )
+  ClaimChatUiState.Initializing,
+  ClaimChatPresenter(
+    developmentFlow,
+    startClaimIntentUseCase,
+    getClaimIntentUseCase,
+    submitTaskUseCase,
+    submitAudioRecordingUseCase,
+    submitFileUploadUseCase,
+    submitFormUseCase,
+    submitSelectUseCase,
+    submitSummaryUseCase,
+    skipStepUseCase,
+    audioRecordingManager,
+    fileService,
+    regretStepUseCase,
+  ),
+)
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
@@ -209,8 +211,12 @@ internal class ClaimChatPresenter(
     var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
-    var progress by remember { mutableStateOf<Float?>((lastState as? ClaimChatUiState.ClaimChat)?.progress
-      ?: 0f) }
+    var progress by remember {
+      mutableStateOf<Float?>(
+        (lastState as? ClaimChatUiState.ClaimChat)?.progress
+          ?: 0f,
+      )
+    }
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
@@ -220,7 +226,10 @@ internal class ClaimChatPresenter(
         startClaimIntentUseCase
           .invoke(developmentFlow)
           .fold(
-            ifLeft = { failedToStart = true },
+            ifLeft = {
+              initializing = false
+              failedToStart = true
+            },
             ifRight = { claimIntent ->
               Snapshot.withMutableSnapshot {
                 initializing = false
@@ -265,8 +274,12 @@ internal class ClaimChatPresenter(
         }
 
         is ClaimChatEvent.SubmitSelect -> {
-          val selectedId = (steps.find { it.id == event.id }?.stepContent as? StepContent.ContentSelect)?.selectedOptionId
-          if (selectedId==null) return@CollectEvents
+          val selectedId = (
+            steps.find {
+              it.id == event.id
+            }?.stepContent as? StepContent.ContentSelect
+            )?.selectedOptionId
+          if (selectedId == null) return@CollectEvents
           currentContinueButtonLoading = true
           launch {
             submitSelectUseCase
@@ -383,10 +396,13 @@ internal class ClaimChatPresenter(
               } ?: true
               steps.updateStepWithSuccess<StepContent.AudioRecording>(event.id) { step, content ->
                 val canSubmit = !currentContinueButtonLoading && !freeText.isNullOrEmpty() && !textTooShort
+                showFreeTextOverlay = FreeTextRestrictions(
+                  content.freeTextMinLength,
+                  content.freeTextMaxLength,
+                )
                 step.copy(
                   stepContent = content.copy(
                     recordingState = FreeTextDescription(
-                      showOverlay = false,
                       errorType = null,
                       canSubmit = canSubmit,
                     ),
@@ -547,6 +563,11 @@ internal class ClaimChatPresenter(
           }
         }
 
+        ClaimChatEvent.RetryInitializing -> {
+          failedToStart = false
+          initializing = true
+        }
+
         is ClaimChatEvent.UpdateFreeText -> {
           Snapshot.withMutableSnapshot {
             val currentContent = currentStep?.stepContent as? StepContent.AudioRecording
@@ -648,7 +669,7 @@ internal class ClaimChatPresenter(
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
                   null,
-                  -> field.copy(
+                    -> field.copy(
                     selectedOptions = event.answer?.let {
                       listOf(it)
                     } ?: emptyList(),
@@ -917,7 +938,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Task,
   is StepContent.Deflect,
   StepContent.Unknown,
-  -> this
+    -> this
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {
