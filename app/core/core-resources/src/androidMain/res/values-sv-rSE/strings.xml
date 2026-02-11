@@ -611,6 +611,7 @@
   <string name="REMOVE_ADDON_CONFIRMATION_BUTTON">Ja, ta bort</string>
   <string name="REMOVE_ADDON_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s.</string>
   <string name="REMOVE_ADDON_CONFIRMATION_TITLE">Confirm removing selected addons</string>
+  <string name="REMOVE_ADDON_OFFER_PAGE_TITLE">Ta bort tillägg</string>
   <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">Aktiveras från och med %s.</string>
   <string name="REMOVE_ADDON_SUCCESS_TITLE">Removed successfully</string>
   <string name="REMOVE_CONFIRMATION_BUTTON">Ja, radera</string>

@@ -15,17 +15,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxOption
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Grey
@@ -33,12 +40,13 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.logger.logcat
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
+import com.hedvig.feature.remove.addons.data.StartAddonRemovalResponse
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
@@ -59,7 +67,7 @@ internal fun SelectAddonToRemoveDestination(
   navigateUp: () -> Unit,
   navigateToSummary: (
     contractId: String, addonsToRemove: List<CurrentlyActiveAddon>, activationDate: LocalDate, baseCost: ItemCost,
-    currentTotalCost: ItemCost, productVariant: ProductVariant, allAddons: List<CurrentlyActiveAddon>
+    currentTotalCost: ItemCost, productVariant: ProductVariant, allAddons: List<CurrentlyActiveAddon>,
   ) -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel = koinViewModel {
@@ -81,7 +89,7 @@ internal fun SelectAddonToRemoveDestination(
         params.baseCost,
         params.currentTotalCost,
         params.productVariant,
-        params.existingAddons
+        params.existingAddons,
       )
     },
     onSubmit = {
@@ -106,14 +114,14 @@ private fun SelectAddonToRemoveScreen(
     is SelectAddonToRemoveState.Error -> HedvigScaffold(
       navigateUp = navigateUp,
     ) {
-      val subtitle = if (uiState.message!=null ) null else stringResource(Res.string.GENERAL_ERROR_BODY)
+      val subtitle = if (uiState.message != null) null else stringResource(Res.string.GENERAL_ERROR_BODY)
       HedvigErrorSection(
         title = uiState.message ?: stringResource(Res.string.something_went_wrong),
         subTitle = subtitle,
-        onButtonClick = if (uiState.message!=null ) navigateUp else reload,
+        onButtonClick = if (uiState.message != null) navigateUp else reload,
         modifier = Modifier.weight(1f).fillMaxWidth(),
-        buttonText = if (uiState.message!=null )stringResource(Res.string.general_back_button)
-        else stringResource(Res.string.GENERAL_RETRY)
+        buttonText = if (uiState.message != null) stringResource(Res.string.general_back_button)
+        else stringResource(Res.string.GENERAL_RETRY),
       )
     }
 
@@ -170,7 +178,7 @@ private fun SelectAddonToRemoveSuccessScreen(
       allAddonsToRemove = uiState.addonOffer.existingAddonsToRemove,
       currentlyChosenOptions = uiState.addonsChosenForRemoval,
       onToggleOption = onToggleOption,
-      modifier = Modifier.padding(horizontal = 16.dp)
+      modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(12.dp))
     HedvigButton(
@@ -250,4 +258,77 @@ private data class AddonCheckboxOption(
   val description: String?,
 )
 
+@HedvigPreview
+@Composable
+private fun PreviewChooseInsuranceToRemoveAddonScreen(
+  @PreviewParameter(
+    SelectAddonToRemoveStateProvider::class,
+  ) uiState: SelectAddonToRemoveState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SelectAddonToRemoveScreen(
+        uiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class SelectAddonToRemoveStateProvider :
+  CollectionPreviewParameterProvider<SelectAddonToRemoveState>(
+    listOf(
+      SelectAddonToRemoveState.Loading,
+      SelectAddonToRemoveState.Error(null),
+      SelectAddonToRemoveState.Error("Big error message"),
+      SelectAddonToRemoveState.Success(
+        addonOffer = StartAddonRemovalResponse(
+          existingAddonsToRemove = listOf(CurrentlyActiveAddon(
+            displayTitle = "Addon title 1",
+            displayDescription = "Addon desc 1",
+            cost = ItemCost( UiMoney(25.0, UiCurrencyCode.SEK),
+              UiMoney(25.0, UiCurrencyCode.SEK), listOf()),
+            id = "id1"
+          ), CurrentlyActiveAddon(
+            displayTitle = "Addon title 2",
+            displayDescription = "Addon desc 2",
+            cost = ItemCost( UiMoney(50.0, UiCurrencyCode.SEK),
+              UiMoney(50.0, UiCurrencyCode.SEK), listOf()),
+            id = "id2"
+          )),
+          activationDate = LocalDate(2026,3,3),
+          baseCost = ItemCost( UiMoney(100.0, UiCurrencyCode.SEK),
+            UiMoney(100.0, UiCurrencyCode.SEK), listOf()),
+          currentTotalCost = ItemCost( UiMoney(175.0, UiCurrencyCode.SEK),
+            UiMoney(175.0, UiCurrencyCode.SEK), listOf()),
+          pageDescription = "Page description",
+          pageTitle =  "Page title",
+          productVariant = ProductVariant(
+            displayName = "HomeownerInsurance",
+            contractGroup = ContractGroup.HOUSE,
+            contractType = ContractType.SE_APARTMENT_RENT,
+            partner = null,
+            perils = listOf(),
+            insurableLimits = listOf(),
+            documents = listOf(),
+            displayTierName = "displayTierName",
+            tierDescription = "tierDescription",
+            termsVersion = "termsVersion",
+          )
+        ),
+        addonsChosenForRemoval = listOf(CurrentlyActiveAddon(
+          displayTitle = "Addon title 1",
+          displayDescription = "Addon desc 1",
+          cost = ItemCost( UiMoney(25.0, UiCurrencyCode.SEK),
+            UiMoney(25.0, UiCurrencyCode.SEK), listOf()),
+          id = "id1"
+        )),
+        paramsToNavigateToSummary = null
+      )
+    ),
+  )
 
