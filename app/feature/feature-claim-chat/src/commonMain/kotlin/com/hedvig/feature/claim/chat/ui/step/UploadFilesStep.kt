@@ -297,18 +297,6 @@ private fun FilePickerBottomSheetContent(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       HedvigButton(
-        onClick = onPickPhoto,
-        true,
-        modifier = Modifier.fillMaxWidth(),
-        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-      ) {
-        Row {
-          Icon(HedvigIcons.Image, null)
-          Spacer(Modifier.width(8.dp))
-          HedvigText(stringResource(Res.string.file_upload_photo_library))
-        }
-      }
-      HedvigButton(
         onClick = onTakePhoto,
         true,
         modifier = Modifier.fillMaxWidth(),
@@ -318,6 +306,18 @@ private fun FilePickerBottomSheetContent(
           Icon(HedvigIcons.Camera, null)
           Spacer(Modifier.width(8.dp))
           HedvigText(stringResource(Res.string.file_upload_take_photo))
+        }
+      }
+      HedvigButton(
+        onClick = onPickPhoto,
+        true,
+        modifier = Modifier.fillMaxWidth(),
+        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+      ) {
+        Row {
+          Icon(HedvigIcons.Image, null)
+          Spacer(Modifier.width(8.dp))
+          HedvigText(stringResource(Res.string.file_upload_photo_library))
         }
       }
       HedvigButton(
