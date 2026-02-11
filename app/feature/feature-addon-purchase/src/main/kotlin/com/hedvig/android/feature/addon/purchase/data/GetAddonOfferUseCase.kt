@@ -125,7 +125,9 @@ internal class GetAddonOfferUseCaseImpl(
                     productVariant = result.quote.productVariant.toProductVariant(),
                   ),
                   currentTotalCost = ItemCost.fromItemCostFragment(result.currentTotalCost),
-                  notificationMessage = null, //TODO: change when backend allows!
+                  notificationMessage = result.infoMessage,
+                  whatsIncludedPageTitle = result.whatsIncludedPageTitle,
+                  whatsIncludedPageDescription = result.whatsIncludedPageDescription
                 )
               }
             }
@@ -150,7 +152,7 @@ private fun NonEmptyList<
       addonVariant = addonQuote.addonVariant.toAddonVariant(),
       itemCost = ItemCost.fromItemCostFragment(addonQuote.cost),
       documents = documents,
-      addonSubtype = null, //todo: change WHEN BACKEND ALLOWS!
+      addonSubtype = addonQuote.subtype
     )
   }
 }

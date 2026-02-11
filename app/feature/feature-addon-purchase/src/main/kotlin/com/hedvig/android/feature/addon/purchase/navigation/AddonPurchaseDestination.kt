@@ -34,7 +34,7 @@ internal sealed interface AddonPurchaseDestination {
 
   @Serializable
   data class TravelInsurancePlusExplanation(
-    val perilData: List<Pair<String?, List<TravelPerilData>>>
+    val perilData: PerilComparisonParams
   ) : AddonPurchaseDestination, Destination {
     @Serializable
     data class TravelPerilData(
@@ -46,8 +46,7 @@ internal sealed interface AddonPurchaseDestination {
     )
 
     companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<
-        List<Pair<String?, List<TravelPerilData>>>>())
+      override val typeList: List<KType> = listOf(typeOf<PerilComparisonParams>())
     }
   }
 

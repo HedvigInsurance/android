@@ -22,6 +22,7 @@ import com.hedvig.android.design.system.hedvig.PerilList
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
+import com.hedvig.android.feature.addon.purchase.navigation.PerilComparisonParams
 import hedvig.resources.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION
 import hedvig.resources.ADDON_FLOW_TRAVEL_INFORMATION_TITLE
 import hedvig.resources.ADDON_LEARN_MORE_LABEL
@@ -30,24 +31,24 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelInsurancePlusExplanationDestination(
-  travelPerilData: List<Pair<String?, List<TravelPerilData>>>,
+  params: PerilComparisonParams,
   navigateUp: () -> Unit,
 ) {
   TravelInsurancePlusExplanationScreen(
-    travelPerilData = travelPerilData,
+    travelPerilData = params,
     navigateUp = navigateUp,
   )
 }
 
 @Composable
 private fun TravelInsurancePlusExplanationScreen(
-  travelPerilData: List<Pair<String?, List<TravelPerilData>>>,
+  travelPerilData: PerilComparisonParams,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(navigateUp) {
     FlowHeading(
-      stringResource(Res.string.ADDON_FLOW_TRAVEL_INFORMATION_TITLE),
-      stringResource(Res.string.ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION),
+      travelPerilData.whatsIncludedPageTitle,
+      travelPerilData.whatsIncludedPageDescription,
       Modifier
         .fillMaxWidth()
         .padding(horizontal = 18.dp),
@@ -60,7 +61,7 @@ private fun TravelInsurancePlusExplanationScreen(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(8.dp))
-    travelPerilData.forEachIndexed { index, item ->
+    travelPerilData.perilList.forEachIndexed { index, item ->
       val perilData = remember(travelPerilData) {
         item.second.map {
           PerilData(
@@ -83,7 +84,7 @@ private fun TravelInsurancePlusExplanationScreen(
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       )
-      if (index!=travelPerilData.lastIndex) {
+      if (index!=travelPerilData.perilList.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
     }
@@ -97,16 +98,20 @@ private fun PreviewTravelInsurancePlusExplanationScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       TravelInsurancePlusExplanationScreen(
-        travelPerilData = List(4) { index ->
-          "Addon 1" to List(4) {
-            TravelPerilData(
-              title = "Title$index",
-              description = "Description$index",
-              covered = listOf("Covered#$index", "Also covered#$index"),
-              colorCode = "#FFD0ECFB",
-            )
+        PerilComparisonParams(
+          whatsIncludedPageTitle = "What is this addon about",
+          whatsIncludedPageDescription = "This addon is about that",
+          perilList =  List(4) { index ->
+            "Addon 1" to List(4) {
+              TravelPerilData(
+                title = "Title$index",
+                description = "Description$index",
+                covered = listOf("Covered#$index", "Also covered#$index"),
+                colorCode = "#FFD0ECFB",
+              )
+            }
           }
-        },
+        ),
         navigateUp = {},
       )
     }

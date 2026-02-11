@@ -88,6 +88,8 @@ import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination
+import com.hedvig.android.feature.addon.purchase.navigation.PerilComparisonParams
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Loading
@@ -120,7 +122,7 @@ internal fun CustomizeAddonDestination(
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
 ) {
   val uiState: CustomizeAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
@@ -170,7 +172,7 @@ private fun CustomizeTravelAddonScreen(
   onToggleOption: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
   reload: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToChat: () -> Unit,
@@ -265,7 +267,7 @@ private fun CustomizeSelectableAddonScreenContent(
   onChooseOptionInDialog: (AddonQuote) -> Unit,
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
   onToggleOption: (AddonQuote) -> Unit,
   submitSelected: () -> Unit,
   submitToggled: () -> Unit,
@@ -349,7 +351,7 @@ private fun CustomizeAddonCard(
   onChooseSelectedOption: () -> Unit,
   onSetOptionBackToPreviouslyChosen: () -> Unit,
   onToggleOption: (AddonQuote) -> Unit,
-  onNavigateToTravelInsurancePlusExplanation: (List<Pair<String?, List<PerilData>>>) -> Unit,
+  onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -402,11 +404,11 @@ private fun CustomizeAddonCard(
         modifier = Modifier.fillMaxWidth(),
         text = stringResource(Res.string.ADDON_FLOW_COVER_BUTTON),
         onClick = dropUnlessResumed {
-          val data = when (uiState) {
+          val perilsList = when (uiState) {
             is CustomizeAddonState.Success.Selectable -> listOf(
               null to
                 uiState.currentlyChosenOption.addonVariant.perils.map {
-                  PerilData(
+                  AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData(
                     title = it.title,
                     description = it.description,
                     covered = it.covered,
@@ -417,7 +419,7 @@ private fun CustomizeAddonCard(
 
             is CustomizeAddonState.Success.Toggleable -> uiState.addonOffer.addonOptions.map {
               it.displayTitle to it.addonVariant.perils.map { peril ->
-                PerilData(
+                AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData(
                   title = peril.title,
                   description = peril.description,
                   covered = peril.covered,
@@ -426,7 +428,12 @@ private fun CustomizeAddonCard(
               }
             }
           }
-          onNavigateToTravelInsurancePlusExplanation(data)
+          onNavigateToTravelInsurancePlusExplanation(PerilComparisonParams(
+            perilList = perilsList,
+            whatsIncludedPageTitle = uiState.commonParams.whatsIncludedPageTitle,
+            whatsIncludedPageDescription = uiState.commonParams.whatsIncludedPageDescription
+          )
+          )
         },
       )
     }
@@ -798,6 +805,8 @@ internal class CustomizeTravelAddonPreviewProvider :
           notificationMessage = "notificationMessage",
           productVariant = fakeProductVariant,
           contractId = "contractId",
+          whatsIncludedPageTitle = "whatsIncludedPageTitle",
+          whatsIncludedPageDescription = "whatsIncludedPageDescription",
         ),
 
         currentlyActiveAddon = CurrentlyActiveAddon(

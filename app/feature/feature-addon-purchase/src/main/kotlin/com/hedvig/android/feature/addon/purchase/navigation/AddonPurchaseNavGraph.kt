@@ -6,7 +6,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.ChooseInsuranceToAddAddonDestination
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.CustomizeAddon
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitFailure
@@ -34,8 +33,16 @@ import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+@Serializable
+internal data class PerilComparisonParams(
+  val whatsIncludedPageTitle: String,
+  val whatsIncludedPageDescription: String,
+  val perilList: List<Pair<String?, List<TravelPerilData>>>
+)
 
 fun NavGraphBuilder.addonPurchaseNavGraph(
   navigator: Navigator,
@@ -117,19 +124,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         },
         onNavigateToTravelInsurancePlusExplanation = { perilData ->
           navigator.navigateUnsafe(
-            TravelInsurancePlusExplanation(
-              perilData.map { item ->
-                item.first to item.second.map { peril ->
-                  TravelPerilData(
-                    title = peril.title,
-                    description = peril.description,
-                    covered = peril.covered,
-                    colorCode = peril.colorCode,
-                    isEnabled = peril.isEnabled,
-                  )
-                }
-              },
-            ),
+            TravelInsurancePlusExplanation(perilData),
           )
         },
         onNavigateToNewConversation = {
@@ -142,7 +137,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
     navdestination<TravelInsurancePlusExplanation>(TravelInsurancePlusExplanation) { backStackEntry ->
       val perilData = backStackEntry.toRoute<TravelInsurancePlusExplanation>().perilData
       TravelInsurancePlusExplanationDestination(
-        travelPerilData = perilData,
+        params = perilData,
         navigateUp = navController::navigateUp,
       )
     }
