@@ -106,9 +106,6 @@ private fun SelectAddonToRemoveScreen(
       val subtitle = uiState.message?.let {
         null
       } ?: stringResource(Res.string.GENERAL_ERROR_BODY)
-      logcat{
-        "Mariia: uiState.message: ${uiState.message} subtitle: $subtitle"
-      }
       HedvigErrorSection(
         title = uiState.message ?: stringResource(Res.string.something_went_wrong),
         subTitle = subtitle,

@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -46,11 +47,13 @@ private class RemoveAddonSummaryPresenter(
           },
         ).fold(
           ifLeft = {
+            logcat { "Mariia: loadIteration submitAddonRemovalUseCase fail: $it" }
             currentState = RemoveAddonSummaryState.Content(
               params,
               Unit)
           },
           ifRight = {
+            logcat { "Mariia: loadIteration submitAddonRemovalUseCase success: $it" }
             currentState = RemoveAddonSummaryState.Loading(params.activationDate)
           },
         )

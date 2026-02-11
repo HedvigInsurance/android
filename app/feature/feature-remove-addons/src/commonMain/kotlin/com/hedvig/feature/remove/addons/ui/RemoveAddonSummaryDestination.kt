@@ -105,7 +105,6 @@ private fun RemoveAddonSummaryScreen(
           onSuccess(date)
         }
       }
-
       HedvigFullScreenCenterAlignedProgress()
     }
 
