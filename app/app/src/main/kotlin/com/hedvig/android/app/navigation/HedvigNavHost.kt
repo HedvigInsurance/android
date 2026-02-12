@@ -404,13 +404,33 @@ internal fun HedvigNavHost(
             return@onNavigateToQuickLink
           }
 
-          is QuickLinkCoInsuredAddInfo -> CoInsuredAddInfo(quickLinkDestination.contractId)
-          is QuickLinkCoInsuredAddOrRemove -> CoInsuredAddOrRemove(quickLinkDestination.contractId)
-          QuickLinkConnectPayment -> TrustlyDestination
-          QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
-          QuickLinkTravelCertificate -> TravelCertificateGraphDestination
-          QuickLinkChangeTier -> StartTierFlowChooseInsuranceDestination
-          QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured -> EditCoInsuredTriage()
+          is QuickLinkCoInsuredAddInfo -> {
+            CoInsuredAddInfo(quickLinkDestination.contractId)
+          }
+
+          is QuickLinkCoInsuredAddOrRemove -> {
+            CoInsuredAddOrRemove(quickLinkDestination.contractId)
+          }
+
+          QuickLinkConnectPayment -> {
+            TrustlyDestination
+          }
+
+          QuickLinkTermination -> {
+            TerminateInsuranceGraphDestination(null)
+          }
+
+          QuickLinkTravelCertificate -> {
+            TravelCertificateGraphDestination
+          }
+
+          QuickLinkChangeTier -> {
+            StartTierFlowChooseInsuranceDestination
+          }
+
+          QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured -> {
+            EditCoInsuredTriage()
+          }
         }
         with(navigator) {
           backStackEntry.navigate(destination)

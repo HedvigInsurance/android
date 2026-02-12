@@ -37,6 +37,7 @@ internal class SingleItemPayoutViewModel(
           }
           _uiState.update { it.copy(status = PayoutUiState.Status.Error) }
         }
+
         is Either.Right -> {
           _uiState.update { it.copy(status = PayoutUiState.Status.PaidOut) }
         }

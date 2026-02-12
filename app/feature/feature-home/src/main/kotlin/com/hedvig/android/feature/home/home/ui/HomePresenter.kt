@@ -57,7 +57,10 @@ internal class HomePresenter(
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
-        HomeEvent.RefreshData -> loadIteration++
+        HomeEvent.RefreshData -> {
+          loadIteration++
+        }
+
         is HomeEvent.MarkMessageAsSeen -> {
           seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
         }
@@ -241,13 +244,17 @@ private data class SuccessData(
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
+
           is HomeData.ContractStatus.ActiveInFuture -> HomeText.ActiveInFuture(
             homeData.contractStatus.futureInceptionDate,
           )
 
           HomeData.ContractStatus.Terminated -> HomeText.Terminated
+
           HomeData.ContractStatus.Pending -> HomeText.Pending
+
           HomeData.ContractStatus.Switching -> HomeText.Switching
+
           HomeData.ContractStatus.Unknown -> HomeText.Active
         },
         claimStatusCardsData = homeData.claimStatusCardsData,

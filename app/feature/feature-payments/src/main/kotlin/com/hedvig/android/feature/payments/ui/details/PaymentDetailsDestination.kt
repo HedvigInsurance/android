@@ -116,7 +116,10 @@ private fun MemberChargeDetailsScreen(
       }
     }
 
-    PaymentDetailsUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    PaymentDetailsUiState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is PaymentDetailsUiState.Success -> {
       val foreverInfoBottomSheetState = rememberHedvigBottomSheetState<Unit>()
       ForeverExplanationBottomSheet(foreverInfoBottomSheetState)
@@ -217,7 +220,8 @@ private fun MemberChargeDetailsScreen(
           }
           when (uiState.paymentDetails.memberCharge.status) {
             MemberCharge.MemberChargeStatus.UPCOMING -> {}
-            MemberCharge.MemberChargeStatus.SUCCESS ->
+
+            MemberCharge.MemberChargeStatus.SUCCESS -> {
               HedvigNotificationCard(
                 priority = NotificationDefaults.NotificationPriority.Campaign,
                 // so here we have the same color that was in the old DS - green; but the icon doesn't match (it was checkmark,
@@ -227,14 +231,17 @@ private fun MemberChargeDetailsScreen(
                 message = stringResource(Res.string.PAYMENTS_PAYMENT_SUCCESSFUL),
                 modifier = Modifier.fillMaxWidth(),
               )
+            }
 
-            MemberCharge.MemberChargeStatus.PENDING -> HedvigNotificationCard(
-              message = stringResource(Res.string.PAYMENTS_IN_PROGRESS),
-              style = NotificationDefaults.InfoCardStyle.Default,
-              priority = NotificationDefaults.NotificationPriority.Info,
-              withIcon = true,
-              modifier = Modifier.fillMaxWidth(),
-            )
+            MemberCharge.MemberChargeStatus.PENDING -> {
+              HedvigNotificationCard(
+                message = stringResource(Res.string.PAYMENTS_IN_PROGRESS),
+                style = NotificationDefaults.InfoCardStyle.Default,
+                priority = NotificationDefaults.NotificationPriority.Info,
+                withIcon = true,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            }
 
             MemberCharge.MemberChargeStatus.FAILED -> {
               val nextCharge = uiState.paymentDetails.getNextCharge(uiState.paymentDetails.memberCharge)
@@ -324,6 +331,7 @@ private fun MemberChargeDetailsScreen(
           HorizontalDivider()
           when (val paymentsInfo = uiState.paymentDetails.paymentsInfo) {
             PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
+
             is PaymentDetails.PaymentsInfo.Active -> {
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {

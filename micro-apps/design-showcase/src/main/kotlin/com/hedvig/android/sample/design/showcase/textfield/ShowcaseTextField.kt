@@ -243,6 +243,7 @@ private fun ShowcaseTextField(
       )
 
       ShowcaseTextFieldType.ErrorPulsating -> HedvigTextFieldDefaults.ErrorState.Error.WithoutMessage
+
       else -> HedvigTextFieldDefaults.ErrorState.NoError
     },
     enabled = type == ShowcaseTextFieldType.Disabled,

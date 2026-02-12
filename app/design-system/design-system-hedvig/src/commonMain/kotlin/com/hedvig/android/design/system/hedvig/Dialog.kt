@@ -258,7 +258,9 @@ object DialogDefaults {
         DialogTokens.TitledPadding
       }
 
-      NoButtons -> DialogTokens.NoButtonsPadding
+      NoButtons -> {
+        DialogTokens.NoButtonsPadding
+      }
     }
   }
 
@@ -272,8 +274,13 @@ object DialogDefaults {
         DialogTokens.ContentToTitlePlusButtonPaddingHeight
       }
 
-      is DialogStyle.TitleNoButtons -> 0.dp
-      NoButtons -> 0.dp
+      is DialogStyle.TitleNoButtons -> {
+        0.dp
+      }
+
+      NoButtons -> {
+        0.dp
+      }
     }
   }
 
@@ -347,8 +354,12 @@ private fun HedvigDialogContent(
         }
         Spacer(Modifier.height(DialogDefaults.contentToButtonPaddingHeight(style)))
         when (style) {
-          NoButtons -> error("NoButtons is covered in the outer when statement")
+          NoButtons -> {
+            error("NoButtons is covered in the outer when statement")
+          }
+
           is DialogStyle.TitleNoButtons -> {}
+
           is Buttons -> {
             when (style.buttonSize) {
               BIG -> {

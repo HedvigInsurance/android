@@ -155,9 +155,11 @@ internal fun makeTransparentColors(colors: List<Color>, numTransparentColors: In
         0 -> {
           values[valuesIndex++] = colors[1].copy(alpha = 0f).toArgb()
         }
+
         lastIndex -> {
           values[valuesIndex++] = colors[index - 1].copy(alpha = 0f).toArgb()
         }
+
         else -> {
           val previousColor = colors[index - 1]
           values[valuesIndex++] = previousColor.copy(alpha = 0f).toArgb()

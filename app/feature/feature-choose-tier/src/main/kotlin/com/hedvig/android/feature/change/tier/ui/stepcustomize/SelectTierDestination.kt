@@ -117,14 +117,19 @@ internal fun SelectTierDestination(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      is Failure -> FailureScreen(
-        reload = {
-          viewModel.emit(SelectCoverageEvent.Reload)
-        },
-        popBackStack = popBackStack,
-      )
+      is Failure -> {
+        FailureScreen(
+          reload = {
+            viewModel.emit(SelectCoverageEvent.Reload)
+          },
+          popBackStack = popBackStack,
+        )
+      }
 
-      Loading -> HedvigFullScreenCenterAlignedProgress()
+      Loading -> {
+        HedvigFullScreenCenterAlignedProgress()
+      }
+
       is Success -> {
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
           if (state.uiState.quoteToNavigateFurther != null) {

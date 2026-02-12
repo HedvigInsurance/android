@@ -98,7 +98,9 @@ internal class SelectCoveragePresenter(
           }
         }
 
-        Reload -> currentContractLoadIteration++
+        Reload -> {
+          currentContractLoadIteration++
+        }
 
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
@@ -172,8 +174,14 @@ internal class SelectCoveragePresenter(
     }
 
     return when (val currentPartialStateValue = currentPartialState) {
-      is PartialUiState.Failure -> Failure
-      PartialUiState.Loading -> Loading
+      is PartialUiState.Failure -> {
+        Failure
+      }
+
+      PartialUiState.Loading -> {
+        Loading
+      }
+
       is PartialUiState.Success -> {
         val chosenQuoteIndex =
           currentPartialStateValue.map[chosenTier]?.indexOf(chosenQuote).takeIf { it != -1 }
@@ -260,7 +268,9 @@ internal sealed interface SelectCoverageEvent {
 private fun mapLastStateToPartial(state: SelectCoverageState): PartialUiState {
   return when (state) {
     Loading -> PartialUiState.Loading
+
     is Failure -> PartialUiState.Failure
+
     is Success -> PartialUiState.Success(
       contractData = state.uiState.contractData,
       currentActiveQuote = state.currentActiveQuote,

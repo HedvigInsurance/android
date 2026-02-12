@@ -83,8 +83,14 @@ internal class CertificateHistoryPresenter(
 
     CollectEvents { event ->
       when (event) {
-        CertificateHistoryEvent.RetryLoadData -> dataLoadIteration++
-        is CertificateHistoryEvent.DownloadCertificate -> downloadingUrl = event.signedUrl
+        CertificateHistoryEvent.RetryLoadData -> {
+          dataLoadIteration++
+        }
+
+        is CertificateHistoryEvent.DownloadCertificate -> {
+          downloadingUrl = event.signedUrl
+        }
+
         CertificateHistoryEvent.DismissDownloadCertificateError -> {
           showErrorDialog = false
         }
@@ -158,7 +164,9 @@ internal class CertificateHistoryPresenter(
 
     return when (val screenContentStateValue = screenContentState) {
       ScreenContentState.Failed -> CertificateHistoryUiState.FailureDownloadingHistory
+
       ScreenContentState.Loading -> CertificateHistoryUiState.Loading
+
       is ScreenContentState.Success -> CertificateHistoryUiState.SuccessDownloadingHistory(
         certificateHistoryList = screenContentStateValue.certificateHistoryList,
         showDownloadCertificateError = showErrorDialog,

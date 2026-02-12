@@ -74,7 +74,10 @@ private fun PaymentHistoryScreen(
       }
     }
 
-    PaymentHistoryUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    PaymentHistoryUiState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is PaymentHistoryUiState.Success -> {
       val updatedOnChargeClicked by rememberUpdatedState(onChargeClicked)
       val (paymentHistory: PaymentHistory, onChargeClickedAfterTransform: (String) -> Unit) =
@@ -231,6 +234,7 @@ internal fun PaymentHistoryScreenPreview(
       PaymentHistorySuccessScreen(
         paymentHistory = when (cases) {
           TripleCase.FIRST -> PaymentHistory.NoHistoryData
+
           TripleCase.SECOND -> PaymentHistory.PastCharges(
             listOf(
               PaymentHistory.PastCharges.YearCharges(

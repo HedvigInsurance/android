@@ -115,7 +115,10 @@ private fun InsuranceEvidenceEmailInputScreen(
       }
     }
 
-    InsuranceEvidenceEmailInputState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    InsuranceEvidenceEmailInputState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is InsuranceEvidenceEmailInputState.Success -> {
       LaunchedEffect(uiState.fetchedCertificateUrl) {
         val url = uiState.fetchedCertificateUrl

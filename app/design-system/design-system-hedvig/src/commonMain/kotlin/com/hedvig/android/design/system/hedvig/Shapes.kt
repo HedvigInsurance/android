@@ -111,6 +111,7 @@ private fun RoundedPolygon.Companion.squircle(
     rounding = CornerRounding(cornerRadius, smoothing),
     perVertexRounding = when (figmaShapeDirection) {
       All -> List(4) { CornerRounding(cornerRadius, smoothing) }
+
       TopOnly -> listOf(
         CornerRounding(cornerRadius, smoothing),
         CornerRounding(cornerRadius, smoothing),

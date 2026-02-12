@@ -168,12 +168,14 @@ private fun CustomizeTravelAddonScreen(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      is Failure -> FailureScreen(
-        errorMessage = state.errorMessage,
-        reload = reload,
-        popBackStack = popBackStack,
-        navigateToChat = navigateToChat,
-      )
+      is Failure -> {
+        FailureScreen(
+          errorMessage = state.errorMessage,
+          reload = reload,
+          popBackStack = popBackStack,
+          navigateToChat = navigateToChat,
+        )
+      }
 
       Loading -> {
         HedvigFullScreenCenterAlignedProgress()

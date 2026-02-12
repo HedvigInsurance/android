@@ -97,13 +97,15 @@ class OtpInputViewModel(
 
   private suspend fun submitAuthCode(otpResult: SubmitOtpResult.Success) {
     when (val authCodeResult = authRepository.exchange(otpResult.loginAuthorizationCode)) {
-      is AuthTokenResult.Error -> setErrorState(
-        when (authCodeResult) {
-          is AuthTokenResult.Error.BackendErrorResponse -> "Error:${authCodeResult.message}"
-          is AuthTokenResult.Error.IOError -> "IO Error:${authCodeResult.message}"
-          is AuthTokenResult.Error.UnknownError -> authCodeResult.message
-        },
-      )
+      is AuthTokenResult.Error -> {
+        setErrorState(
+          when (authCodeResult) {
+            is AuthTokenResult.Error.BackendErrorResponse -> "Error:${authCodeResult.message}"
+            is AuthTokenResult.Error.IOError -> "IO Error:${authCodeResult.message}"
+            is AuthTokenResult.Error.UnknownError -> authCodeResult.message
+          },
+        )
+      }
 
       is AuthTokenResult.Success -> {
         authTokenService.loginWithTokens(

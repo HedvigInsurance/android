@@ -208,7 +208,9 @@ private fun ActionOrLoadingIcon(
         }
       }
 
-      is AudioPlayerState.Failed -> error("Impossible")
+      is AudioPlayerState.Failed -> {
+        error("Impossible")
+      }
     }
   }
 }

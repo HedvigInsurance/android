@@ -115,13 +115,17 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
       }
     }
 
-    is Frosted -> when (color.shade) {
-      LIGHT -> highLightColors.frostedLight
-      MEDIUM -> highLightColors.frostedMedium
-      DARK -> highLightColors.frostedDark
+    is Frosted -> {
+      when (color.shade) {
+        LIGHT -> highLightColors.frostedLight
+        MEDIUM -> highLightColors.frostedMedium
+        DARK -> highLightColors.frostedDark
+      }
     }
 
-    is HighlightColor.Outline -> highLightColors.outlineContainer
+    is HighlightColor.Outline -> {
+      highLightColors.outlineContainer
+    }
   }
   val textColor = when (color) {
     is Grey -> {
@@ -136,9 +140,13 @@ fun HighlightLabel(labelText: String, size: HighLightSize, color: HighlightColor
       highLightColors.frostedTextColor
     }
 
-    is HighlightColor.Outline -> highLightColors.outlineText
+    is HighlightColor.Outline -> {
+      highLightColors.outlineText
+    }
 
-    else -> highLightColors.defaultTextColor
+    else -> {
+      highLightColors.defaultTextColor
+    }
   }
   val borderColor = when (color) {
     is HighlightColor.Outline -> highLightColors.outlineBorder

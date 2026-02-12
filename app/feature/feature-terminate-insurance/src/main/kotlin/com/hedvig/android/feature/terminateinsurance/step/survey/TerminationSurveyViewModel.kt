@@ -92,10 +92,22 @@ internal class TerminationSurveyPresenter(
           currentState = currentState.copy(nextNavigationStep = null, intentAndIdToRedirectToChangeTierFlow = null)
         }
 
-        is ShowFullScreenEditText -> showFullScreenTextField = true
-        CloseFullScreenEditText -> showFullScreenTextField = false
-        TryToDowngradePrice -> loadBetterQuotesSource = TERMINATION_BETTER_PRICE
-        TryToUpgradeCoverage -> loadBetterQuotesSource = TERMINATION_BETTER_COVERAGE
+        is ShowFullScreenEditText -> {
+          showFullScreenTextField = true
+        }
+
+        CloseFullScreenEditText -> {
+          showFullScreenTextField = false
+        }
+
+        TryToDowngradePrice -> {
+          loadBetterQuotesSource = TERMINATION_BETTER_PRICE
+        }
+
+        TryToUpgradeCoverage -> {
+          loadBetterQuotesSource = TERMINATION_BETTER_COVERAGE
+        }
+
         ClearEmptyQuotesDialog -> {
           currentState = currentState.copy(showEmptyQuotesDialog = null)
         }

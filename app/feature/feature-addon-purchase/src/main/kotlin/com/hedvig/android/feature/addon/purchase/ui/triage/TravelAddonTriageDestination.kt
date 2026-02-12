@@ -79,7 +79,9 @@ private fun StartChangeTierFlowScreen(
         )
       }
 
-      Loading -> HedvigFullScreenCenterAlignedProgress()
+      Loading -> {
+        HedvigFullScreenCenterAlignedProgress()
+      }
 
       is Success -> {
         LaunchedEffect(uiState.insuranceIds) {

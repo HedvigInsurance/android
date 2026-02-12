@@ -133,10 +133,12 @@ internal sealed interface CbmChatMessage {
         fun fromTitleAndDescription(title: String?, description: String?): DisplayInfo? {
           return when {
             title == null && description == null -> return null
+
             title != null && description != null -> Both(
               title = title,
               subtitle = description,
             )
+
             else -> Title(title = title ?: description!!)
           }
         }
@@ -281,27 +283,35 @@ internal fun ChatMessageEntity.toChatMessage(): CbmChatMessage? {
       }
     }
 
-    text != null -> CbmChatMessage.ChatMessageText(
-      id = id.toString(),
-      sender = sender,
-      sentAt = sentAt,
-      banner = banner.toBanner(),
-      text = text!!.trim(),
-      action = action?.let { entityAction ->
-        CbmChatMessage.ChatMessageTextAction(
-          title = entityAction.actionTitle,
-          url = entityAction.actionUrl,
-        )
-      },
-      isAiGenerationIndicator = isAiGenerationIndicator,
-    )
-    gifUrl != null -> CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, banner.toBanner(), gifUrl!!)
+    text != null -> {
+      CbmChatMessage.ChatMessageText(
+        id = id.toString(),
+        sender = sender,
+        sentAt = sentAt,
+        banner = banner.toBanner(),
+        text = text!!.trim(),
+        action = action?.let { entityAction ->
+          CbmChatMessage.ChatMessageTextAction(
+            title = entityAction.actionTitle,
+            url = entityAction.actionUrl,
+          )
+        },
+        isAiGenerationIndicator = isAiGenerationIndicator,
+      )
+    }
+
+    gifUrl != null -> {
+      CbmChatMessage.ChatMessageGif(id.toString(), sender, sentAt, banner.toBanner(), gifUrl!!)
+    }
+
     url != null && mimeType != null -> {
       val mimeType = CbmChatMessage.ChatMessageFile.MimeType.valueOf(mimeType!!)
       CbmChatMessage.ChatMessageFile(id.toString(), sender, sentAt, banner.toBanner(), url!!, mimeType)
     }
 
-    else -> error("Unknown ChatMessage type. Message entity:$this")
+    else -> {
+      error("Unknown ChatMessage type. Message entity:$this")
+    }
   }
 }
 

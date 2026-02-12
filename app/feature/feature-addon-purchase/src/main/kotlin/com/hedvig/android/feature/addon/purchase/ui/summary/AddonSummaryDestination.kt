@@ -105,7 +105,9 @@ private fun AddonSummaryScreen(
   onSubmitQuoteClick: () -> Unit,
 ) {
   when (uiState) {
-    Loading -> HedvigFullScreenCenterAlignedProgress()
+    Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
 
     is Content -> {
       LaunchedEffect(uiState.navigateToFailure) {

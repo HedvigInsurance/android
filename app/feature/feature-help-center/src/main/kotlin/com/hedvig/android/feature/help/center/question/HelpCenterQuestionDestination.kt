@@ -110,7 +110,10 @@ private fun HelpCenterQuestionScreen(
           )
         }
 
-        Loading -> HedvigFullScreenCenterAlignedProgress()
+        Loading -> {
+          HedvigFullScreenCenterAlignedProgress()
+        }
+
         is Success -> {
           HelpCenterQuestionScreen(
             faqItem = state.faqItem,

@@ -114,17 +114,18 @@ internal class EditCoInsuredPresenter(
           }
         }
 
-        is EditCoInsuredEvent.OnCoInsuredSelected ->
+        is EditCoInsuredEvent.OnCoInsuredSelected -> {
           addBottomSheetContentState = addBottomSheetContentState.copy(
             selectedCoInsured = event.coInsured,
             errorMessage = null,
           )
+        }
 
         is RemoveCoInsured -> {
           editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }
         }
 
-        is EditCoInsuredEvent.OnSsnChanged ->
+        is EditCoInsuredEvent.OnSsnChanged -> {
           if (event.ssn.length <= 12) {
             addBottomSheetContentState = addBottomSheetContentState.copy(
               manualInfo = ManualInfo(),
@@ -136,27 +137,31 @@ internal class EditCoInsuredPresenter(
               errorMessage = null,
             )
           }
+        }
 
-        is EditCoInsuredEvent.OnBirthDateChanged ->
+        is EditCoInsuredEvent.OnBirthDateChanged -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               manualInfo = addBottomSheetContentState.manualInfo.copy(birthDate = event.birthDate),
               errorMessage = null,
             )
+        }
 
-        is EditCoInsuredEvent.OnFirstNameChanged ->
+        is EditCoInsuredEvent.OnFirstNameChanged -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               manualInfo = addBottomSheetContentState.manualInfo.copy(firstName = event.firstName),
               errorMessage = null,
             )
+        }
 
-        is EditCoInsuredEvent.OnLastNameChanged ->
+        is EditCoInsuredEvent.OnLastNameChanged -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               manualInfo = addBottomSheetContentState.manualInfo.copy(lastName = event.lastName),
               errorMessage = null,
             )
+        }
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
           addBottomSheetContentState = addBottomSheetContentState.copy(
@@ -200,13 +205,14 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        EditCoInsuredEvent.OnAddNewCoInsured ->
+        EditCoInsuredEvent.OnAddNewCoInsured -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               selectableCoInsured = null,
               selectedCoInsured = null,
               errorMessage = null,
             )
+        }
 
         ResetAddBottomSheetState -> {
           addBottomSheetContentState = Loaded.AddBottomSheetContentState(
@@ -215,9 +221,17 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        ResetRemoveBottomSheetState -> removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
-        OnDismissError -> errorMessage = null
-        EditCoInsuredEvent.OnCommitChanges -> commit = true
+        ResetRemoveBottomSheetState -> {
+          removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
+        }
+
+        OnDismissError -> {
+          errorMessage = null
+        }
+
+        EditCoInsuredEvent.OnCommitChanges -> {
+          commit = true
+        }
       }
     }
 

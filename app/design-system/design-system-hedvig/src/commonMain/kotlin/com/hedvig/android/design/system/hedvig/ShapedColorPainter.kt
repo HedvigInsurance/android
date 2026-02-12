@@ -29,9 +29,11 @@ class ShapedColorPainter(
           colorFilter = colorFilter,
         )
       }
+
       is Outline.Rectangle -> {
         drawRect(color = color, alpha = alpha, colorFilter = colorFilter)
       }
+
       is Outline.Rounded -> {
         drawCircle(color = color, alpha = alpha, colorFilter = colorFilter)
       }

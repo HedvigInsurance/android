@@ -32,9 +32,13 @@ internal class GetClaimsHistoryUseCase(
                 submittedAt = history.submittedAt,
                 outcome = when (history.outcome) {
                   ClaimOutcome.PAID -> ClaimHistory.ClaimOutcome.PAID
+
                   ClaimOutcome.NOT_COMPENSATED -> ClaimHistory.ClaimOutcome.NOT_COMPENSATED
+
                   ClaimOutcome.NOT_COVERED -> ClaimHistory.ClaimOutcome.NOT_COVERED
+
                   ClaimOutcome.UNRESPONSIVE -> ClaimHistory.ClaimOutcome.UNRESPONSIVE
+
                   ClaimOutcome.UNKNOWN__,
                   null,
                   -> ClaimHistory.ClaimOutcome.UNKNOWN

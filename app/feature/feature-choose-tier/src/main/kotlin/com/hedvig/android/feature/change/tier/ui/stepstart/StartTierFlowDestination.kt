@@ -88,9 +88,11 @@ private fun StartChangeTierFlowScreen(
       )
     }
 
-    Loading -> HedvigFullScreenCenterAlignedLinearProgress(
-      title = stringResource(Res.string.TIER_FLOW_PROCESSING),
-    )
+    Loading -> {
+      HedvigFullScreenCenterAlignedLinearProgress(
+        title = stringResource(Res.string.TIER_FLOW_PROCESSING),
+      )
+    }
 
     is Success -> {
       LaunchedEffect(uiState.paramsToNavigate) {
@@ -99,13 +101,15 @@ private fun StartChangeTierFlowScreen(
       }
     }
 
-    is StartTierChangeState.Deflect -> DeflectScreen(
-      title = uiState.title,
-      message = uiState.message,
-      closeFlow = popBackStack,
-      onNavigateToNewConversation = onNavigateToNewConversation,
-      navigateUp = navigateUp,
-    )
+    is StartTierChangeState.Deflect -> {
+      DeflectScreen(
+        title = uiState.title,
+        message = uiState.message,
+        closeFlow = popBackStack,
+        onNavigateToNewConversation = onNavigateToNewConversation,
+        navigateUp = navigateUp,
+      )
+    }
   }
 }
 
