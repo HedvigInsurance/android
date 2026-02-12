@@ -187,6 +187,16 @@ type AddonOffer {
   Agreement total cost
   """
   currentTotalCost: ItemCost!
+  """
+  Title to show in what's included page.
+  eg "What is Travel Insurance Plus?"
+  """
+  whatsIncludedPageTitle: String!
+  """
+  Description to show in what's included page.
+  eg "Travel Insurance Plus is extended coverage for those..."
+  """
+  whatsIncludedPageDescription: String!
 }
 """
 AddonOfferSelectable is used when we have multiple variants for the same quote
@@ -1012,6 +1022,7 @@ type ClaimIntentStepContentFormField {
 }
 type ClaimIntentStepContentFormFieldOption {
   title: String!
+  subtitle: String
   value: ClaimIntentStepContentFormFieldValue!
 }
 enum ClaimIntentStepContentFormFieldType {
@@ -3917,6 +3928,10 @@ type Query {
   Cost for selected configuration of moveIntent
   """
   moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
+  """
+  Cost for selected configuration of addon offer
+  """
+  addonOfferCost(quoteId: ID!, addonIds: [ID!]!): ItemCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
