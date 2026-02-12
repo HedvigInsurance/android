@@ -238,7 +238,7 @@
   <string name="COINSURED_ERROR_TEXT">You can’t edit your co-insured at this moment. Send us a message here in the app for further assistance</string>
   <string name="COINSURED_WITHOUT_SSN_INFO">We were unable to retrieve the information linked to this Social Security number. Please enter it manually.</string>
   <string name="CONFIRM_AND_PROCEED_BUTTON">Confirm and proceed</string>
-  <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your updates will be effective on %1$s.</string>
+  <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your changes will be effective on %1$s.</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>
@@ -357,6 +357,7 @@
   <string name="GENERAL_UNSUBSCRIBED">Unsubscribed</string>
   <string name="GENERAL_YES">Yes</string>
   <string name="GENERAL_ADD_NEW">Add new</string>
+  <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Your insurance will be updated starting from %1$s</string>
   <string name="GENERAL_CONFIRM">Confirm</string>
   <string name="GENERAL_CONTACT_US_TITLE">Contact our service team</string>
   <string name="GENERAL_DOWNLOAD">Download</string>
@@ -606,16 +607,18 @@
   <string name="REFERRAL_PENDING_STATUS_LABEL">Pending...</string>
   <string name="REFERRAL_SMS_MESSAGE">Hey! Get Hedvig using my link and we both get %1$s per month discount on the monthly cost. Follow the link: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inactive</string>
+  <string name="REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES">None of your insurances have addons you can remove.</string>
   <string name="REMOVE_ADDON_CONFIRMATION_BUTTON">Yes, remove</string>
   <string name="REMOVE_ADDON_CONFIRMATION_DESCRIPTION">This change will take effect from %1$s.</string>
   <string name="REMOVE_ADDON_CONFIRMATION_TITLE">Confirm removing selected addons</string>
-  <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">Your changes will be effective from %1$s.</string>
+  <string name="REMOVE_ADDON_OFFER_PAGE_TITLE">Remove addon</string>
+  <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">This change will take effect from %1$s.</string>
   <string name="REMOVE_ADDON_SUCCESS_TITLE">Removed successfully</string>
   <string name="REMOVE_CONFIRMATION_BUTTON">Yes, remove</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Save and continue</string>
   <string name="SEARCH_NOTHING_FOUND">No results for your search</string>
   <string name="SEARCH_PLACEHOLDER">Search</string>
-  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Which insurance do you want to remove addon from</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Select the insurance you want to edit</string>
   <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Language</string>
   <string name="SETTINGS_LOGIN_ROW">Login</string>
