@@ -259,7 +259,7 @@ internal class ClaimChatPresenter(
       currentStep = currentStep,
       claimIntentId = { claimIntentId },
       onFailure = { failedStepId, errorMessage ->
-        onTaskSubmissionFailed(failedStepId, errorMessage, steps, { errorSubmittingStep = it })
+        onTaskSubmissionFailed(failedStepId, errorMessage, steps) { errorSubmittingStep = it }
       },
       steps = steps,
     )
@@ -267,7 +267,7 @@ internal class ClaimChatPresenter(
       submitTaskUseCase = submitTaskUseCase,
       currentStep = currentStep,
       onFailure = { failedStepId, errorMessage ->
-        onTaskSubmissionFailed(failedStepId, errorMessage, steps, { errorSubmittingStep = it })
+        onTaskSubmissionFailed(failedStepId, errorMessage, steps) { errorSubmittingStep = it }
       },
       onSuccess = { claimIntent ->
         handleNext(
@@ -476,6 +476,7 @@ internal class ClaimChatPresenter(
                                 FieldOption(
                                   selectedDateString,
                                   selectedDateString,
+                                  null,
                                 ),
                               ),
                             )

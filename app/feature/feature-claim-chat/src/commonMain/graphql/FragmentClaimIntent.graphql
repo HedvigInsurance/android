@@ -35,6 +35,7 @@ fragment FormFragment on ClaimIntentStepContentForm {
     isRequired
     options {
       title
+      subtitle
       value
     }
     defaultValues

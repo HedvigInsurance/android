@@ -202,6 +202,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         StepContent.Form.FieldOption(
           text = it.title,
           value = it.value,
+          subtitle = it.subtitle,
         )
       } ?: emptyList(),
       selectedOptions = field.defaultValues.toFieldOptions(field.options),
@@ -232,10 +233,11 @@ private fun List<String>.toFieldOptions(
         StepContent.Form.FieldOption(
           value = it.value,
           text = it.title, // if we have a list to choose from
+          subtitle = it.subtitle,
         )
       }
       ?: // if it is just a value
-      StepContent.Form.FieldOption(defaultStringValue, defaultStringValue)
+      StepContent.Form.FieldOption(defaultStringValue, defaultStringValue, null)
   }
 }
 
