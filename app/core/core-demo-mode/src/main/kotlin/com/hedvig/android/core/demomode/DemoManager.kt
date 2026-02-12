@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,7 +24,7 @@ internal class DataStoreDemoManager(
     return dataStore.data.map {
       it[demoModeKey] ?: false
     }.distinctUntilChanged().onEach {
-      logcat { "DemoManager: isDemoMode:$it" }
+      logcat(LogPriority.DEBUG) { "DemoManager: isDemoMode:$it" }
     }
   }
 
