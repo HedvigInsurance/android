@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
@@ -609,21 +610,33 @@ private fun ControlButton(
 
   var countDownText by remember { mutableStateOf("3") }
   var startRecordingCountdown by remember { mutableStateOf(false) }
+  val scale = remember { Animatable(1f) }
 
   val lifecycleOwner = LocalLifecycleOwner.current
   LaunchedEffect(startRecordingCountdown, lifecycleOwner) {
     if (startRecordingCountdown) {
-      delay(1000)
+      val maxScale = 1.3f
+      scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
+      scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
+      delay(500)
+
       countDownText = "2"
-      delay(1000)
+      scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
+      scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
+      delay(500)
+
       countDownText = "1"
-      delay(1000)
+      scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
+      scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
+      delay(500)
+
       if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
         onStartRecording()
       }
       startRecordingCountdown = false
     }
     countDownText = "3"
+    scale.snapTo(1f)
   }
 
   Surface(
@@ -661,23 +674,32 @@ private fun ControlButton(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Box(
-        modifier = Modifier.clip(HedvigTheme.shapes.cornerXXLarge).background(
-          color = if (!isEnabled) {
-            HedvigTheme.colorScheme.surfaceSecondaryTransparent
-          } else {
-            when (audioRecordingState) {
-              AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
-              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
-              is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
-            }
-          },
-        ),
+        modifier = Modifier
+          .graphicsLayer {
+            scaleX = scale.value
+            scaleY = scale.value
+          }
+          .clip(HedvigTheme.shapes.cornerXXLarge)
+          .background(
+            color = if (!isEnabled) {
+              HedvigTheme.colorScheme.surfaceSecondaryTransparent
+            } else {
+              when (audioRecordingState) {
+                AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
+                is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
+                is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
+              }
+            },
+          ),
         contentAlignment = Alignment.Center,
       ) {
         Icon(
-          modifier = Modifier.padding(4.dp).size(24.dp).then(
-            if (startRecordingCountdown) Modifier.withoutPlacement() else Modifier,
-          ),
+          modifier = Modifier
+            .padding(4.dp)
+            .size(24.dp)
+            .then(
+              if (startRecordingCountdown) Modifier.withoutPlacement() else Modifier,
+            ),
           imageVector = when (audioRecordingState) {
             AudioRecordingStepState.AudioRecording.NotRecording -> {
               HedvigIcons.Mic
