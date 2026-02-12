@@ -387,12 +387,16 @@ internal fun DateSelectBubble(
   modifier: Modifier = Modifier,
   errorText: String? = null,
 ) {
+  val focusManager = LocalFocusManager.current
   Column(modifier) {
     DatePickerWithDialog(
       datePickerState,
       canInteract = true,
       startText = questionLabel ?: "",
       Modifier.fillMaxWidth(),
+      onBeforeShow = {
+        focusManager.clearFocus()
+      },
     )
     AnimatedVisibility(
       // Adding this since datePickerState handles update internally and it's hard to clear the error state as with
@@ -423,6 +427,7 @@ internal fun SingleSelectBubbleWithDialog(
   modifier: Modifier = Modifier,
   errorText: String? = null,
 ) {
+  val focusManager = LocalFocusManager.current
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     SingleSelectDialog(
@@ -437,7 +442,10 @@ internal fun SingleSelectBubbleWithDialog(
   }
   Column(modifier) {
     HedvigBigCard(
-      onClick = { showDialog = true },
+      onClick = {
+        focusManager.clearFocus()
+        showDialog = true
+      },
       labelText = questionLabel,
       inputText = options.firstOrNull {
         it.id == selectedOptionId
@@ -470,6 +478,7 @@ internal fun MultiSelectBubbleWithDialog(
   modifier: Modifier = Modifier,
   errorText: String? = null,
 ) {
+  val focusManager = LocalFocusManager.current
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     MultiSelectDialog(
@@ -483,7 +492,10 @@ internal fun MultiSelectBubbleWithDialog(
   }
   Column(modifier) {
     HedvigBigCard(
-      onClick = { showDialog = true },
+      onClick = {
+        focusManager.clearFocus()
+        showDialog = true
+      },
       labelText = questionLabel,
       inputText = when {
         selectedOptionIds.isEmpty() -> null

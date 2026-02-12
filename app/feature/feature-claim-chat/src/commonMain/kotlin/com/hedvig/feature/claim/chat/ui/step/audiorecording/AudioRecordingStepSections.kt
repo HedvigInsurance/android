@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
@@ -238,6 +239,7 @@ internal fun AudioRecorderBubble(
         is AudioRecordingStepState.AudioRecording -> {
           Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val state = rememberHedvigBottomSheetState<Unit>()
+            val focusManager = LocalFocusManager.current
             if (isCurrentStep) {
               AudioRecordingBottomSheet(
                 audioRecordingState = recordingState,
@@ -254,7 +256,10 @@ internal fun AudioRecorderBubble(
               HedvigButton(
                 enabled = true,
                 text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
-                onClick = state::show,
+                onClick = {
+                  focusManager.clearFocus()
+                  state.show()
+                },
                 modifier = Modifier.fillMaxWidth(),
               )
               if (freeTextAvailable) {
@@ -820,10 +825,14 @@ private fun FreeTextInputSection(
   canSubmit: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  val focusManager = LocalFocusManager.current
   Column(modifier) {
     if (isCurrentStep) {
       FreeTextDisplay(
-        onClick = { onLaunchFullScreenEditText() },
+        onClick = {
+          focusManager.clearFocus()
+          onLaunchFullScreenEditText()
+        },
         freeTextValue = freeText,
         freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
         supportingText = when (errorType) {

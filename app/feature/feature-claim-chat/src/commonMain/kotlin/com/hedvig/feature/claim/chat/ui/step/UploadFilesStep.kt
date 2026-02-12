@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
@@ -176,6 +177,7 @@ private fun UploadFilesBubble(
   ) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val focusManager = LocalFocusManager.current
   val fileTypeSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
     addLocalFile(uri)
@@ -207,6 +209,7 @@ private fun UploadFilesBubble(
   )
   UploadFilesBubbleContent(
     onAddFilesButtonClick = {
+      focusManager.clearFocus()
       fileTypeSelectBottomSheetState.show()
     },
     onRemoveFile = onRemoveFile,
@@ -348,7 +351,8 @@ private fun PreviewUploadFilesStep(
       UploadFilesStep(
         itemId = StepId(""),
         stepContent = StepContent.FileUpload(
-          "", true,
+          "",
+          true,
           listOf(
             UiFile(
               name = "file",
