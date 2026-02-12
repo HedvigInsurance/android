@@ -40,7 +40,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -611,26 +613,30 @@ private fun ControlButton(
   var countDownText by remember { mutableStateOf("3") }
   var startRecordingCountdown by remember { mutableStateOf(false) }
   val scale = remember { Animatable(1f) }
-
+  val hapticFeedback = LocalHapticFeedback.current
   val lifecycleOwner = LocalLifecycleOwner.current
   LaunchedEffect(startRecordingCountdown, lifecycleOwner) {
     if (startRecordingCountdown) {
       val maxScale = 1.3f
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
       scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
       scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
       delay(500)
 
       countDownText = "2"
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
       scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
       scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
       delay(500)
 
       countDownText = "1"
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
       scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
       scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
       delay(500)
 
       if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
         onStartRecording()
       }
       startRecordingCountdown = false
