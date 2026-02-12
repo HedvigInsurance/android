@@ -61,7 +61,7 @@ internal class GetTravelAddonBannerInfoUseCaseImpl(
         }
         val bannerData = travelAddonBannerQueryResult.bind().currentMember.upsellTravelAddonBanner
         if (bannerData == null) {
-          logcat(LogPriority.DEBUG) { "Got null response from TravelAddonBannerQuery" }
+          logcat(LogPriority.INFO) { "Got null response from TravelAddonBannerQuery" }
           return@either null
         }
         val nonEmptyContracts = bannerData.contractIds.toNonEmptyListOrNull()
