@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
@@ -50,10 +49,10 @@ import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.FilesRow
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
-import hedvig.resources.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.claim_status_detail_add_files
 import hedvig.resources.claim_status_detail_add_more_files
+import hedvig.resources.claims_continue_button
 import hedvig.resources.claims_skip_button
 import hedvig.resources.file_upload_choose_files
 import hedvig.resources.file_upload_photo_library
@@ -101,7 +100,7 @@ internal fun UploadFilesStep(
         )
         if (stepContent.localFiles.isNotEmpty()) {
           HedvigButton(
-            text = stringResource(Res.string.CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON),
+            text = stringResource(Res.string.claims_continue_button),
             enabled = !continueButtonLoading,
             onClick = {
               onEvent(
