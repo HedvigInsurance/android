@@ -523,7 +523,7 @@ private fun ToggleableAddons(
         option = AddonCheckboxOption(
           title = addonQuote.displayTitle,
           description = addonQuote.displayDescription,
-          type = AddonCheckBoxOptionType.NotActive(addonQuote.itemCost.monthlyNet),
+          type = AddonCheckBoxOptionType.NotActive(addonQuote.itemCost.monthlyGross),
         ),
         selected = currentlyChosenOptions.contains(addonQuote),
         onCheckboxSelected = {
@@ -563,10 +563,10 @@ private fun AddonCheckbox(
         )
 
         is AddonCheckBoxOptionType.NotActive -> {
-          val pricePerMonth = option.type.monthlyNet.getPerMonthDescription()
+          val pricePerMonth = option.type.monthlyGross.getPerMonthDescription()
           HighlightLabel(
             labelText = stringResource(Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              option.type.monthlyNet),
+              option.type.monthlyGross),
             size = HighLightSize.Small,
             color = Grey(MEDIUM),
             modifier = Modifier
@@ -589,7 +589,7 @@ private data class AddonCheckboxOption(
 
 private sealed interface AddonCheckBoxOptionType {
   data object Active : AddonCheckBoxOptionType
-  data class NotActive(val monthlyNet: UiMoney) : AddonCheckBoxOptionType
+  data class NotActive(val monthlyGross: UiMoney) : AddonCheckBoxOptionType
 }
 
 @Composable
@@ -687,7 +687,7 @@ private fun DropdownContent(
       textEndContent = { id ->
         val addon = addonOptions.first { it.addonId == id.id }
         HighlightLabel(
-          labelText = stringResource(Res.string.ADDON_FLOW_PRICE_LABEL, addon.itemCost.monthlyNet),
+          labelText = stringResource(Res.string.ADDON_FLOW_PRICE_LABEL, addon.itemCost.monthlyGross),
           size = HighLightSize.Small,
           color = Grey(MEDIUM),
         )

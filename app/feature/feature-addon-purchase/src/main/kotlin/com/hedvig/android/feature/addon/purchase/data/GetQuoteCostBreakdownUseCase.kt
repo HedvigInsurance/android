@@ -69,11 +69,14 @@ internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: Apollo
                   ),
                 )
               }
-              newAddons.forEach { existingAddon ->
+              newAddons.forEach { newAddon ->
+                val areDisplayNamesTheSame = newAddon.addonVariant.displayName == newAddon.displayTitle
+                val displayName = if (areDisplayNamesTheSame) newAddon.displayTitle else
+                  "${newAddon.addonVariant.displayName} ${newAddon.displayTitle}"
                 add(
                   CostBreakdownEntry(
-                    displayName = existingAddon.displayTitle,
-                    displayValue = existingAddon.itemCost.monthlyGross,
+                    displayName = displayName,
+                    displayValue = newAddon.itemCost.monthlyGross,
                     false,
                   ),
                 )

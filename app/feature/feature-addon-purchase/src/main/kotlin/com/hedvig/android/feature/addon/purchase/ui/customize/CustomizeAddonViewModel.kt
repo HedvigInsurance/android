@@ -236,19 +236,19 @@ private fun updateExtraForSelectable(
     // shouldn't happen
     UiMoney(0.0, UiCurrencyCode.SEK)
   } else if (currentlyActiveAddon == null) {
-    chosenAddonQuote.itemCost.monthlyNet
+    chosenAddonQuote.itemCost.monthlyGross
   } else {
-    val sum = chosenAddonQuote.itemCost.monthlyNet.amount - currentlyActiveAddon.cost.monthlyNet.amount
-    UiMoney(sum, chosenAddonQuote.itemCost.monthlyNet.currencyCode)
+    val sum = chosenAddonQuote.itemCost.monthlyGross.amount - currentlyActiveAddon.cost.monthlyGross.amount
+    UiMoney(sum, chosenAddonQuote.itemCost.monthlyGross.currencyCode)
   }
 }
 
 private fun List<AddonQuote>.updateTotalExtraForSelectedToggleable(): UiMoney? {
   if (this.isEmpty()) return null else {
     val sum = this.sumOf {
-      it.itemCost.monthlyNet.amount
+      it.itemCost.monthlyGross.amount
     }
-    val currency = this.first().itemCost.monthlyNet.currencyCode
+    val currency = this.first().itemCost.monthlyGross.currencyCode
     return UiMoney(sum, currency)
   }
 }

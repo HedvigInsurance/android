@@ -31,7 +31,10 @@ import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
+import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
+import hedvig.resources.CONFIRM_CHANGES_TITLE
 import hedvig.resources.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION
+import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_BUTTON
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_DESCRIPTION
 import hedvig.resources.REMOVE_ADDON_CONFIRMATION_TITLE
@@ -144,14 +147,14 @@ private fun SummaryContentScreen(
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
       HedvigAlertDialog(
-        title = stringResource(Res.string.REMOVE_ADDON_CONFIRMATION_TITLE),
+        title = stringResource(Res.string.CONFIRM_CHANGES_TITLE),
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
         buttonSize = DialogDefaults.ButtonSize.BIG,
-        confirmButtonLabel = stringResource(Res.string.REMOVE_ADDON_CONFIRMATION_BUTTON),
+        confirmButtonLabel = stringResource(Res.string.GENERAL_CONFIRM),
         dismissButtonLabel = stringResource(Res.string.general_close_button),
         text = stringResource(
-          Res.string.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION,
+          Res.string.CONFIRM_CHANGES_SUBTITLE,
           formattedDate,
         ),
       )
