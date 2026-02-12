@@ -1,4 +1,4 @@
-mutation StartAddonRemoval($contractId: ID!) {
+query StartAddonRemoval($contractId: ID!) {
   addonRemoveStart(contractId: $contractId) {
     ... on UserError {
       message

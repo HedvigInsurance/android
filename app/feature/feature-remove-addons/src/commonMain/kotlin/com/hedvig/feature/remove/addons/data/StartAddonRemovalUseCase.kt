@@ -14,7 +14,7 @@ import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import octopus.InsurancesWithRemovableAddonsQuery
-import octopus.StartAddonRemovalMutation
+import octopus.StartAddonRemovalQuery
 
 @Serializable
 internal data class CurrentlyActiveAddon(
@@ -34,20 +34,20 @@ internal class StartAddonRemovalUseCaseImpl(
   override suspend fun invoke(contractId: String): Either<ErrorMessage, StartAddonRemovalResponse> {
     return either {
       val productVariant = apolloClient
-      .query(InsurancesWithRemovableAddonsQuery())
-      .fetchPolicy(FetchPolicy.NetworkOnly)
-      .safeExecute()
+        .query(InsurancesWithRemovableAddonsQuery())
+        .fetchPolicy(FetchPolicy.NetworkOnly)
+        .safeExecute()
         .getOrNull()
         ?.currentMember
         ?.activeContracts
-        ?.firstOrNull{ it.id==contractId}
+        ?.firstOrNull { it.id == contractId }
         ?.currentAgreement?.productVariant?.toProductVariant()
-      if (productVariant==null) {
+      if (productVariant == null) {
         logcat { "StartAddonRemovalMutation returned null productVariant" }
         raise(ErrorMessage())
       }
       apolloClient
-        .mutation(StartAddonRemovalMutation(contractId))
+        .query(StartAddonRemovalQuery(contractId))
         .safeExecute()
         .fold(
           ifLeft = {
@@ -56,7 +56,7 @@ internal class StartAddonRemovalUseCaseImpl(
           },
           ifRight = { result ->
             when (val addonRemoveStart = result.addonRemoveStart) {
-              is StartAddonRemovalMutation.Data.AddonRemoveOfferAddonRemoveStart -> {
+              is StartAddonRemovalQuery.Data.AddonRemoveOfferAddonRemoveStart -> {
                 val removableAddons = addonRemoveStart.removableAddons.map { addon ->
                   CurrentlyActiveAddon(
                     displayTitle = addon.displayTitle,
@@ -72,15 +72,15 @@ internal class StartAddonRemovalUseCaseImpl(
                   currentTotalCost = ItemCost.fromItemCostFragment(addonRemoveStart.currentTotalCost),
                   pageDescription = addonRemoveStart.pageDescription,
                   pageTitle = addonRemoveStart.pageTitle,
-                  productVariant = productVariant
+                  productVariant = productVariant,
                 )
               }
 
-              is StartAddonRemovalMutation.Data.OtherAddonRemoveStart -> {
+              is StartAddonRemovalQuery.Data.OtherAddonRemoveStart -> {
                 raise(ErrorMessage())
               }
 
-              is StartAddonRemovalMutation.Data.UserErrorAddonRemoveStart -> {
+              is StartAddonRemovalQuery.Data.UserErrorAddonRemoveStart -> {
                 raise(ErrorMessage(addonRemoveStart.message))
               }
             }
@@ -99,5 +99,5 @@ internal data class StartAddonRemovalResponse(
   val currentTotalCost: ItemCost,
   val pageDescription: String,
   val pageTitle: String,
-  val productVariant: ProductVariant
+  val productVariant: ProductVariant,
 )

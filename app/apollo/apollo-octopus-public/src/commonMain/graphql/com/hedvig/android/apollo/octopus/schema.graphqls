@@ -1022,6 +1022,7 @@ type ClaimIntentStepContentFormField {
 }
 type ClaimIntentStepContentFormFieldOption {
   title: String!
+  subtitle: String
   value: ClaimIntentStepContentFormFieldValue!
 }
 enum ClaimIntentStepContentFormFieldType {
@@ -3351,10 +3352,6 @@ type Mutation {
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
   """
-  Call this to get removable addon quotes to show in the removal flow.
-  """
-  addonRemoveStart(contractId: ID!): AddonRemoveOutput!
-  """
   Call this to confirm removal of selected addon(s).
   """
   addonRemoveConfirm(contractId: ID!, addonIds: [ID!]!): UserError
@@ -3927,6 +3924,14 @@ type Query {
   Cost for selected configuration of moveIntent
   """
   moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
+  """
+  Call this to get removable addon quotes to show in the removal flow.
+  """
+  addonRemoveStart(contractId: ID!): AddonRemoveOutput!
+  """
+  Cost for selected configuration of removed addon offer
+  """
+  addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
   """
   Cost for selected configuration of addon offer
   """
