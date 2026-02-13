@@ -14,11 +14,7 @@ import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.first
 import octopus.MemberActionsQuery
 
-internal interface GetMemberActionsUseCase {
-  suspend fun invoke(): Either<ErrorMessage, MemberAction>
-}
-
-internal class GetMemberActionsUseCaseImpl(
+class GetMemberActionsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) : GetMemberActionsUseCase {
@@ -56,35 +52,6 @@ internal class GetMemberActionsUseCaseImpl(
     }
   }
 }
-
-internal data class MemberAction(
-  val isCancelInsuranceEnabled: Boolean,
-  val isConnectPaymentEnabled: Boolean,
-  val isEditCoInsuredEnabled: Boolean,
-  val isMovingEnabled: Boolean,
-  val isTravelCertificateEnabled: Boolean,
-  val isTierChangeEnabled: Boolean,
-  val sickAbroadAction: MemberActionWithDetails.SickAbroadAction?,
-  val firstVetAction: MemberActionWithDetails.FirstVetAction?,
-)
-
-internal sealed interface MemberActionWithDetails {
-  data class SickAbroadAction(
-    val partners: List<DeflectPartner>?,
-  ) : MemberActionWithDetails
-
-  data class FirstVetAction(
-    val sections: List<FirstVetSection>,
-  ) : MemberActionWithDetails
-}
-
-internal data class DeflectPartner(
-  val id: String,
-  val imageUrl: String?,
-  val phoneNumber: String?,
-  val url: String?,
-  val preferredImageHeight: Int?,
-)
 
 private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.toVetAction():
   MemberActionWithDetails.FirstVetAction {

@@ -15,6 +15,7 @@ import com.hedvig.android.feature.help.center.data.GetInsuranceForEditCoInsuredU
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCase
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCaseImpl
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.featureflags.FeatureManager
@@ -32,7 +33,7 @@ val helpCenterModule = module {
   }
 
   single<GetQuickLinksUseCase> {
-    GetQuickLinksUseCase(
+    GetQuickLinksUseCaseImpl(
       apolloClient = get(),
       featureManager = get(),
       getMemberActionsUseCase = get<GetMemberActionsUseCase>(),

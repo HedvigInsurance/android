@@ -37,12 +37,12 @@ import hedvig.resources.Res
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
 
-internal class GetQuickLinksUseCase(
+class GetQuickLinksUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
   private val getMemberActionsUseCase: GetMemberActionsUseCase,
-) {
-  suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = either {
+) : GetQuickLinksUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, List<QuickAction>> = either {
     val memberActionOptions = getMemberActionsUseCase.invoke().bind()
 
     buildList {
@@ -172,36 +172,4 @@ private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveC
   } else {
     return null
   }
-}
-
-sealed interface QuickLinkDestination {
-  sealed interface OuterDestination : QuickLinkDestination {
-    data class QuickLinkCoInsuredAddInfo(val contractId: String) : OuterDestination
-
-    data class QuickLinkCoInsuredAddOrRemove(val contractId: String) : OuterDestination
-
-    data object QuickLinkTermination : OuterDestination
-
-    data object QuickLinkTravelCertificate : OuterDestination
-
-    data object QuickLinkChangeAddress : OuterDestination
-
-    data object QuickLinkConnectPayment : OuterDestination
-
-    data object QuickLinkChangeTier : OuterDestination
-
-    data object ChooseInsuranceForEditCoInsured : OuterDestination
-  }
-}
-
-internal sealed interface InnerHelpCenterDestination : QuickLinkDestination {
-  data class QuickLinkSickAbroad(
-    val emergencyNumber: String?,
-    val emergencyUrl: String?,
-    val preferredPartnerImageHeight: Int?,
-  ) : InnerHelpCenterDestination
-
-  data class FirstVet(
-    val sections: List<FirstVetSection>,
-  ) : InnerHelpCenterDestination
 }
