@@ -1,6 +1,8 @@
 package com.hedvig.feature.remove.addons.di
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.feature.remove.addons.data.GetAddonRemovalCostBreakdownUseCase
+import com.hedvig.feature.remove.addons.data.GetAddonRemovalCostBreakdownUseCaseImpl
 import com.hedvig.feature.remove.addons.data.GetInsurancesWithRemovableAddonsUseCase
 import com.hedvig.feature.remove.addons.data.GetInsurancesWithRemovableAddonsUseCaseImpl
 import com.hedvig.feature.remove.addons.data.StartAddonRemovalUseCase
@@ -22,8 +24,11 @@ val addonRemovalModule = module {
   }
 
   viewModel<RemoveAddonSummaryViewModel> {params ->
-    RemoveAddonSummaryViewModel(params.get<CommonSummaryParameters>(),
-      get<SubmitAddonRemovalUseCase>())
+    RemoveAddonSummaryViewModel(
+      params = params.get<CommonSummaryParameters>(),
+      submitAddonRemovalUseCase = get<SubmitAddonRemovalUseCase>(),
+      getAddonRemovalCostBreakdownUseCase = get<GetAddonRemovalCostBreakdownUseCase>()
+    )
   }
 
   viewModel<SelectInsuranceToRemoveAddonViewModel> {
@@ -42,5 +47,9 @@ val addonRemovalModule = module {
 
   single<SubmitAddonRemovalUseCase> {
     SubmitAddonRemovalUseCaseImpl(get<ApolloClient>())
+  }
+
+  single<GetAddonRemovalCostBreakdownUseCase> {
+    GetAddonRemovalCostBreakdownUseCaseImpl(get<ApolloClient>())
   }
 }

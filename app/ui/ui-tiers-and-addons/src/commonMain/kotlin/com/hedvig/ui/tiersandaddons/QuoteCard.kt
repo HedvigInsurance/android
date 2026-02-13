@@ -260,6 +260,13 @@ private fun QuoteDetailsBottomSheet(
   }
 }
 
+data class QuoteCostBreakdown(
+  val totalMonthlyNet: UiMoney,
+  val totalMonthlyGross: UiMoney,
+  val entries: List<CostBreakdownEntry>,
+)
+
+
 data class CostBreakdownEntry(
   val displayName: String,
   val displayValue: DisplayValue,

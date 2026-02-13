@@ -43,7 +43,7 @@ internal class StartAddonRemovalUseCaseImpl(
         ?.firstOrNull { it.id == contractId }
         ?.currentAgreement?.productVariant?.toProductVariant()
       if (productVariant == null) {
-        logcat { "StartAddonRemovalMutation returned null productVariant" }
+        logcat { "InsurancesWithRemovableAddonsQuery returned null productVariant" }
         raise(ErrorMessage())
       }
       apolloClient
@@ -51,7 +51,7 @@ internal class StartAddonRemovalUseCaseImpl(
         .safeExecute()
         .fold(
           ifLeft = {
-            logcat { "StartAddonRemovalMutation returned error: $it" }
+            logcat { "StartAddonRemovalQuery returned error: $it" }
             raise(ErrorMessage())
           },
           ifRight = { result ->

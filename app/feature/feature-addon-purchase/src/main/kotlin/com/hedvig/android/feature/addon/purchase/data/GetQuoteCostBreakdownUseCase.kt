@@ -10,7 +10,9 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
+import com.hedvig.android.logger.logcat
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
 import octopus.AddonOfferCostQuery
 
 internal interface GetQuoteCostBreakdownUseCase {
@@ -23,12 +25,6 @@ internal interface GetQuoteCostBreakdownUseCase {
     addonType: AddonType
   ): Either<ErrorMessage, QuoteCostBreakdown>
 }
-
-internal data class QuoteCostBreakdown(
-  val totalMonthlyNet: UiMoney,
-  val totalMonthlyGross: UiMoney,
-  val entries: List<CostBreakdownEntry>,
-)
 
 internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: ApolloClient) : GetQuoteCostBreakdownUseCase {
   override suspend fun invoke(
@@ -49,7 +45,7 @@ internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: Apollo
             raise(ErrorMessage())
           },
           ifRight = { result ->
-            val list = buildList<CostBreakdownEntry> {
+            val list = buildList {
               add(
                 CostBreakdownEntry(
                   displayName = insuranceDisplayName,
@@ -91,6 +87,8 @@ internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: Apollo
                 )
               }
             }
+            logcat { "Mariia: data result.addonOfferCost.monthlyNet: ${result.addonOfferCost.monthlyNet}" +
+              "result.addonOfferCost.monthlyGross: ${result.addonOfferCost.monthlyGross}" }
             QuoteCostBreakdown(
               UiMoney.fromMoneyFragment(result.addonOfferCost.monthlyNet),
               UiMoney.fromMoneyFragment(result.addonOfferCost.monthlyGross),

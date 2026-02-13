@@ -7,26 +7,30 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.logger.logcat
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.feature.remove.addons.data.GetAddonRemovalCostBreakdownUseCase
 import com.hedvig.feature.remove.addons.data.SubmitAddonRemovalUseCase
+import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
 import kotlinx.datetime.LocalDate
 
 internal class RemoveAddonSummaryViewModel(
   params: CommonSummaryParameters,
   submitAddonRemovalUseCase: SubmitAddonRemovalUseCase,
+  getAddonRemovalCostBreakdownUseCase: GetAddonRemovalCostBreakdownUseCase,
 ) : MoleculeViewModel<
   RemoveAddonSummaryEvent, RemoveAddonSummaryState,
   >(
-  initialState = RemoveAddonSummaryState.Content(params),
-  presenter = RemoveAddonSummaryPresenter(submitAddonRemovalUseCase, params),
+  initialState = RemoveAddonSummaryState.Loading(),
+  presenter = RemoveAddonSummaryPresenter(submitAddonRemovalUseCase, params, getAddonRemovalCostBreakdownUseCase),
 )
 
 private class RemoveAddonSummaryPresenter(
   private val submitAddonRemovalUseCase: SubmitAddonRemovalUseCase,
   private val params: CommonSummaryParameters,
+  private val getAddonRemovalCostBreakdownUseCase: GetAddonRemovalCostBreakdownUseCase,
 ) : MoleculePresenter<
   RemoveAddonSummaryEvent, RemoveAddonSummaryState,
   > {
@@ -35,10 +39,35 @@ private class RemoveAddonSummaryPresenter(
     lastState: RemoveAddonSummaryState,
   ): RemoveAddonSummaryState {
     var currentState: RemoveAddonSummaryState by remember { mutableStateOf(lastState) }
+    var submitIteration by remember { mutableIntStateOf(0) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var activationDateForNavigation by remember { mutableStateOf<LocalDate?>(null) }
+    var failureForNavigation by remember { mutableStateOf<Unit?>(null) }
 
     LaunchedEffect(loadIteration) {
-      if (loadIteration > 0) {
+      getAddonRemovalCostBreakdownUseCase.invoke(
+        contractId = params.contractId,
+        addonsToRemove = params.addonsToRemove,
+        addonsLeft = params.existingAddons.filter {!params.addonsToRemove.contains(it)},
+        baseCost = params.baseCost,
+        insuranceDisplayName = params.productVariant.displayName
+      ).fold(
+        ifLeft = {
+          currentState = RemoveAddonSummaryState.Failure
+        },
+        ifRight = { result ->
+          currentState = RemoveAddonSummaryState.Content(
+            summaryParams = params,
+            costBreakdown = result,
+            navigateToFailure = null
+          )
+        }
+      )
+    }
+
+    LaunchedEffect(submitIteration) {
+      val state = currentState as? RemoveAddonSummaryState.Content ?: return@LaunchedEffect
+      if (submitIteration > 0) {
         currentState = RemoveAddonSummaryState.Loading()
         submitAddonRemovalUseCase.invoke(
           params.contractId,
@@ -47,12 +76,11 @@ private class RemoveAddonSummaryPresenter(
           },
         ).fold(
           ifLeft = {
-            currentState = RemoveAddonSummaryState.Content(
-              params,
-              Unit)
+            failureForNavigation = Unit
+            currentState = state
           },
           ifRight = {
-            currentState = RemoveAddonSummaryState.Loading(params.activationDate)
+            activationDateForNavigation = params.activationDate
           },
         )
       }
@@ -60,31 +88,45 @@ private class RemoveAddonSummaryPresenter(
 
     CollectEvents { event: RemoveAddonSummaryEvent ->
       when (event) {
-         is RemoveAddonSummaryEvent.Submit -> {
-           loadIteration++
-         }
-        is RemoveAddonSummaryEvent.ReturnToInitialState -> {
-          currentState = RemoveAddonSummaryState.Content(params)
+        is RemoveAddonSummaryEvent.Submit -> {
+          submitIteration++
         }
+
+        is RemoveAddonSummaryEvent.ReturnToInitialState -> {
+          failureForNavigation = null
+          activationDateForNavigation = null
+        }
+
         is RemoveAddonSummaryEvent.Retry -> {
           loadIteration++
         }
       }
     }
 
-    return currentState
+    return when (val state = currentState) {
+      is RemoveAddonSummaryState.Content -> state.copy(
+        navigateToFailure = failureForNavigation
+      )
+      is RemoveAddonSummaryState.Loading -> state.copy(
+        activationDateToNavigateToSuccess = activationDateForNavigation)
+
+      RemoveAddonSummaryState.Failure -> state
+    }
   }
 }
 
 internal sealed interface RemoveAddonSummaryState {
   data class Content(
     val summaryParams: CommonSummaryParameters,
+    val costBreakdown: QuoteCostBreakdown,
     val navigateToFailure: Unit? = null,
   ) : RemoveAddonSummaryState
 
   data class Loading(
     val activationDateToNavigateToSuccess: LocalDate? = null,
   ) : RemoveAddonSummaryState
+
+  data object Failure : RemoveAddonSummaryState
 }
 
 internal interface RemoveAddonSummaryEvent {

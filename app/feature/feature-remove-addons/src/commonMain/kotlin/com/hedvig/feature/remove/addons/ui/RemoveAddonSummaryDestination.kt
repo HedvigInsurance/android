@@ -12,10 +12,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
@@ -23,21 +28,22 @@ import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
-import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
+import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
 import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.CONFIRM_CHANGES_TITLE
-import hedvig.resources.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION
 import hedvig.resources.GENERAL_CONFIRM
-import hedvig.resources.REMOVE_ADDON_CONFIRMATION_BUTTON
-import hedvig.resources.REMOVE_ADDON_CONFIRMATION_DESCRIPTION
-import hedvig.resources.REMOVE_ADDON_CONFIRMATION_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
@@ -56,7 +62,6 @@ internal fun RemoveAddonSummaryDestination(
   currentTotalCost: ItemCost,
   existingAddonsToRemove: List<CurrentlyActiveAddon>,
   productVariant: ProductVariant,
-
   navigateToSuccess: (activationDate: LocalDate) -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
@@ -70,7 +75,7 @@ internal fun RemoveAddonSummaryDestination(
         baseCost = baseCost,
         currentTotalCost = currentTotalCost,
         productVariant = productVariant,
-        existingAddons = existingAddonsToRemove
+        existingAddons = existingAddonsToRemove,
       ),
     )
   }
@@ -89,6 +94,9 @@ internal fun RemoveAddonSummaryDestination(
     onSubmitQuoteClick = {
       viewModel.emit(RemoveAddonSummaryEvent.Submit)
     },
+    reload = {
+      viewModel.emit(RemoveAddonSummaryEvent.Retry)
+    },
   )
 }
 
@@ -100,6 +108,7 @@ private fun RemoveAddonSummaryScreen(
   onFailure: () -> Unit,
   navigateUp: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
+  reload: () -> Unit,
 ) {
   when (uiState) {
     is RemoveAddonSummaryState.Loading -> {
@@ -125,8 +134,15 @@ private fun RemoveAddonSummaryScreen(
         onConfirmClick = onSubmitQuoteClick,
       )
     }
+
+    RemoveAddonSummaryState.Failure -> HedvigScaffold(
+      navigateUp = navigateUp,
+    ) {
+      HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+    }
   }
 }
+
 
 @Composable
 private fun SummaryContentScreen(
@@ -193,56 +209,24 @@ private fun SummaryCard(
   formattedDate: String,
   modifier: Modifier = Modifier,
 ) {
-  val leftAddons = uiState.summaryParams.existingAddons.filter {
-    !uiState.summaryParams.addonsToRemove.contains(it)
-  }
-  val breakdown = buildList { //todo: there will be a separate entry point!!!
-    add(
-      CostBreakdownEntry(
-        uiState.summaryParams. productVariant.displayName,
-        uiState.summaryParams.baseCost.monthlyNet,
-        false,
-      ),
-    )
-
-    leftAddons.forEach {
-      add(
-        CostBreakdownEntry(
-          it.displayTitle,
-          it.cost.monthlyNet,
-          false,
-        ),
-      )
-    }
-    uiState.summaryParams.addonsToRemove.forEach {
-      add(
-        CostBreakdownEntry(
-          it.displayTitle,
-          it.cost.monthlyNet,
-          true,
-        ),
-      )
-    }
-  }
-  val newNetPremiumAmount = leftAddons.sumOf {
-    it.cost.monthlyNet.amount
-  } + uiState.summaryParams.baseCost.monthlyNet.amount
-  val newPremium = UiMoney(newNetPremiumAmount, uiState.summaryParams.baseCost.monthlyNet.currencyCode)
+  val breakdown = uiState.costBreakdown.entries
+  val newPremium = uiState.costBreakdown.totalMonthlyNet
+  val grossPremium = uiState.costBreakdown.totalMonthlyGross
 
   QuoteCard(
     subtitle = stringResource(
       Res.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
       formattedDate,
-    ),
+    ), //todo!!!
     contractGroup = uiState.summaryParams.productVariant.contractGroup,
     premium = newPremium,
     costBreakdown = breakdown,
-    previousPremium = uiState.summaryParams.currentTotalCost.monthlyNet,
+    previousPremium = grossPremium,
     displayItems = emptyList(),
     modifier = modifier,
     displayName = uiState.summaryParams.productVariant.displayName,
     insurableLimits = uiState.summaryParams.productVariant.insurableLimits,
-    documents = uiState.summaryParams. productVariant.documents.map {
+    documents = uiState.summaryParams.productVariant.documents.map {
       DisplayDocument(
         displayName = it.displayName,
         url = it.url,
@@ -250,3 +234,115 @@ private fun SummaryCard(
     },
   )
 }
+
+
+@HedvigPreview
+@Composable
+private fun PreviewRemoveAddonSummaryScreen(
+  @PreviewParameter(
+    RemoveAddonSummaryStateUiStateProvider::class,
+  ) uiState: RemoveAddonSummaryState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      RemoveAddonSummaryScreen(
+        uiState,
+        {},
+        {},
+        {},
+        {},
+        {},
+      )
+    }
+  }
+}
+
+private class RemoveAddonSummaryStateUiStateProvider :
+  CollectionPreviewParameterProvider<RemoveAddonSummaryState>(
+    listOf(
+      RemoveAddonSummaryState.Loading(),
+      RemoveAddonSummaryState.Failure,
+      RemoveAddonSummaryState.Content(
+        summaryParams = CommonSummaryParameters(
+          contractId = "contractId",
+          addonsToRemove = listOf(CurrentlyActiveAddon(
+            id = "addonToRemove",
+            displayTitle = "addonToRemove",
+            displayDescription = "addonToRemove description",
+            cost = ItemCost(
+              UiMoney(70.0, UiCurrencyCode.SEK),
+              UiMoney(70.0, UiCurrencyCode.SEK),
+              emptyList(),
+            ),
+          )),
+          activationDate = LocalDate(2026,9,1),
+          baseCost = ItemCost(
+            UiMoney(200.0, UiCurrencyCode.SEK),
+            UiMoney(200.0, UiCurrencyCode.SEK),
+            emptyList(),
+          ),
+          currentTotalCost = ItemCost(
+            UiMoney(319.0, UiCurrencyCode.SEK),
+            UiMoney(319.0, UiCurrencyCode.SEK),
+            emptyList(),
+          ),
+          productVariant = ProductVariant(
+            displayName = "base insurance product variant display name",
+            contractGroup = ContractGroup.CAR,
+            contractType = ContractType.SE_CAR_HALF,
+            partner = null,
+            perils = emptyList(),
+            insurableLimits = emptyList(),
+            documents = emptyList(),
+            displayTierName = "base insurance product variant displayTierName",
+            tierDescription = "tierDescription",
+            termsVersion = "termsVersion"
+          ),
+          existingAddons = listOf(
+            CurrentlyActiveAddon(
+              id = "leftAddon1",
+              displayTitle = "leftAddon1",
+              displayDescription = "leftAddon1 description",
+              cost = ItemCost(
+                UiMoney(49.0, UiCurrencyCode.SEK),
+                UiMoney(49.0, UiCurrencyCode.SEK),
+                emptyList(),
+              ),
+            ),
+            CurrentlyActiveAddon(
+              id = "addonToRemove",
+              displayTitle = "addonToRemove",
+              displayDescription = "addonToRemove description",
+              cost = ItemCost(
+                UiMoney(70.0, UiCurrencyCode.SEK),
+                UiMoney(70.0, UiCurrencyCode.SEK),
+                emptyList(),
+              ),
+            ),
+          ),
+        ),
+        costBreakdown = QuoteCostBreakdown(
+          totalMonthlyNet = UiMoney(249.0, UiCurrencyCode.SEK),
+          totalMonthlyGross = UiMoney(249.0, UiCurrencyCode.SEK),
+          entries = listOf(
+            CostBreakdownEntry(
+              displayName = "base insurance",
+              displayValue = "200 kr/mo",
+              hasStrikethrough = false,
+            ),
+            CostBreakdownEntry(
+              displayName = "leftAddon1",
+              displayValue = "49 kr/mo",
+              hasStrikethrough = false,
+            ),
+            CostBreakdownEntry(
+              displayName = "addon to remove",
+              displayValue = "70 kr/mo",
+              hasStrikethrough = true,
+            ),
+          ),
+        ),
+        navigateToFailure = null,
+      ),
+    ),
+  )

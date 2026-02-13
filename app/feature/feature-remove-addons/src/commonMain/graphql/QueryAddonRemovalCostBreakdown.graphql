@@ -1,0 +1,5 @@
+query AddonRemovalCostBreakdown($addonIds: [ID!]!, $contractId: ID!) {
+  addonRemoveOfferCost(addonIds: $addonIds, contractId: $contractId) {
+    ...ItemCostFragment
+  }
+}

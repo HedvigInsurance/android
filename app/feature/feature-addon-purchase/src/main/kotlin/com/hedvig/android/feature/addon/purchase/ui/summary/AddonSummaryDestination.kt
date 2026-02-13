@@ -52,12 +52,12 @@ import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
+import com.hedvig.android.logger.logcat
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_BUTTON
-import hedvig.resources.ADDON_FLOW_CONFIRMATION_DESCRIPTION
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_TITLE
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL
 import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
@@ -270,13 +270,12 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   } else {
     uiState.costBreakdownWithExtras?.totalMonthlyGross
   }
+  logcat { "Mariia: ui uiState.costBreakdownWithExtras?.totalMonthlyNet: ${uiState.costBreakdownWithExtras?.totalMonthlyNet}" +
+    "uiState.costBreakdownWithExtras?.totalMonthlyGross: ${uiState.costBreakdownWithExtras?.totalMonthlyGross}" }
   val costBreakdown: List<CostBreakdownEntry> = uiState.costBreakdownWithExtras?.displayItems
     ?: emptyList()
   QuoteCard(
-    subtitle = stringResource(
-      Res.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
-      formattedDate,
-    ),
+    subtitle = uiState.insuranceExposure,
     contractGroup = uiState.contractGroup,
     premium = premium ?: UiMoney(0.0, UiCurrencyCode.SEK), //todo: should be notnull, wait for BE
     costBreakdown = costBreakdown,
@@ -290,7 +289,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     },
     modifier = modifier,
     displayName = uiState.insuranceDisplayName,
-    insurableLimits = emptyList(),
+    insurableLimits = emptyList(), //todo!!!
     documents = uiState.documents.map {
       DisplayDocument(
         displayName = it.displayName,
@@ -379,7 +378,7 @@ private fun AddonCostBreakdownComposable(
 
 @HedvigPreview
 @Composable
-private fun PreviewChooseInsuranceToTerminateScreen(
+private fun PreviewAddonSummaryScreen(
   @PreviewParameter(
     ChooseInsuranceForAddonUiStateProvider::class,
   ) uiState: AddonSummaryState,
