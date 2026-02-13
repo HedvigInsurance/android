@@ -214,10 +214,7 @@ private fun SummaryCard(
   val grossPremium = uiState.costBreakdown.totalMonthlyGross
 
   QuoteCard(
-    subtitle = stringResource(
-      Res.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
-      formattedDate,
-    ), //todo!!!
+    subtitle = uiState.exposureName,
     contractGroup = uiState.summaryParams.productVariant.contractGroup,
     premium = newPremium,
     costBreakdown = breakdown,
@@ -225,7 +222,7 @@ private fun SummaryCard(
     displayItems = emptyList(),
     modifier = modifier,
     displayName = uiState.summaryParams.productVariant.displayName,
-    insurableLimits = uiState.summaryParams.productVariant.insurableLimits,
+    insurableLimits = emptyList(),
     documents = uiState.summaryParams.productVariant.documents.map {
       DisplayDocument(
         displayName = it.displayName,
@@ -265,17 +262,19 @@ private class RemoveAddonSummaryStateUiStateProvider :
       RemoveAddonSummaryState.Content(
         summaryParams = CommonSummaryParameters(
           contractId = "contractId",
-          addonsToRemove = listOf(CurrentlyActiveAddon(
-            id = "addonToRemove",
-            displayTitle = "addonToRemove",
-            displayDescription = "addonToRemove description",
-            cost = ItemCost(
-              UiMoney(70.0, UiCurrencyCode.SEK),
-              UiMoney(70.0, UiCurrencyCode.SEK),
-              emptyList(),
-            ),
-          )),
-          activationDate = LocalDate(2026,9,1),
+          addonsToRemove = listOf(
+            CurrentlyActiveAddon(
+              id = "addonToRemove",
+              displayTitle = "addonToRemove",
+              displayDescription = "addonToRemove description",
+              cost = ItemCost(
+                UiMoney(70.0, UiCurrencyCode.SEK),
+                UiMoney(70.0, UiCurrencyCode.SEK),
+                emptyList(),
+              ),
+            )
+          ),
+          activationDate = LocalDate(2026, 9, 1),
           baseCost = ItemCost(
             UiMoney(200.0, UiCurrencyCode.SEK),
             UiMoney(200.0, UiCurrencyCode.SEK),
@@ -343,6 +342,7 @@ private class RemoveAddonSummaryStateUiStateProvider :
           ),
         ),
         navigateToFailure = null,
+        exposureName = "exposureName",
       ),
     ),
   )

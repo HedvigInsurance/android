@@ -12,25 +12,34 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.remove.addons.data.GetAddonRemovalCostBreakdownUseCase
+import com.hedvig.feature.remove.addons.data.GetInsurancesWithRemovableAddonsUseCase
 import com.hedvig.feature.remove.addons.data.SubmitAddonRemovalUseCase
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 internal class RemoveAddonSummaryViewModel(
   params: CommonSummaryParameters,
   submitAddonRemovalUseCase: SubmitAddonRemovalUseCase,
   getAddonRemovalCostBreakdownUseCase: GetAddonRemovalCostBreakdownUseCase,
+  getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase
 ) : MoleculeViewModel<
   RemoveAddonSummaryEvent, RemoveAddonSummaryState,
   >(
   initialState = RemoveAddonSummaryState.Loading(),
-  presenter = RemoveAddonSummaryPresenter(submitAddonRemovalUseCase, params, getAddonRemovalCostBreakdownUseCase),
+  presenter = RemoveAddonSummaryPresenter(
+    submitAddonRemovalUseCase = submitAddonRemovalUseCase,
+    params = params,
+    getAddonRemovalCostBreakdownUseCase = getAddonRemovalCostBreakdownUseCase,
+    getInsurancesWithRemovableAddonsUseCase = getInsurancesWithRemovableAddonsUseCase
+  ),
 )
 
 private class RemoveAddonSummaryPresenter(
   private val submitAddonRemovalUseCase: SubmitAddonRemovalUseCase,
   private val params: CommonSummaryParameters,
   private val getAddonRemovalCostBreakdownUseCase: GetAddonRemovalCostBreakdownUseCase,
+  private val getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase
 ) : MoleculePresenter<
   RemoveAddonSummaryEvent, RemoveAddonSummaryState,
   > {
@@ -45,6 +54,15 @@ private class RemoveAddonSummaryPresenter(
     var failureForNavigation by remember { mutableStateOf<Unit?>(null) }
 
     LaunchedEffect(loadIteration) {
+      val exposureName = getInsurancesWithRemovableAddonsUseCase
+        .invoke()
+        .getOrNull()
+        ?.firstOrNull { it.id==params.contractId }
+        ?.contractExposure
+      if (exposureName == null) {
+        currentState = RemoveAddonSummaryState.Failure
+        return@LaunchedEffect
+      }
       getAddonRemovalCostBreakdownUseCase.invoke(
         contractId = params.contractId,
         addonsToRemove = params.addonsToRemove,
@@ -59,6 +77,7 @@ private class RemoveAddonSummaryPresenter(
           currentState = RemoveAddonSummaryState.Content(
             summaryParams = params,
             costBreakdown = result,
+            exposureName = exposureName,
             navigateToFailure = null
           )
         }
@@ -119,6 +138,7 @@ internal sealed interface RemoveAddonSummaryState {
   data class Content(
     val summaryParams: CommonSummaryParameters,
     val costBreakdown: QuoteCostBreakdown,
+    val exposureName: String,
     val navigateToFailure: Unit? = null,
   ) : RemoveAddonSummaryState
 

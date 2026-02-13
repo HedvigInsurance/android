@@ -2,7 +2,7 @@ query InsurancesWithRemovableAddons {
   currentMember {
     activeContracts {
       id
-      exposureDisplayName
+      exposureDisplayNameShort
       currentAgreement {
         productVariant {
           ...ProductVariantFragment

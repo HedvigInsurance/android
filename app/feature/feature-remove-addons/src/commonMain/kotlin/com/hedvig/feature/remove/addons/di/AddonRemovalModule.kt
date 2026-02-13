@@ -27,7 +27,8 @@ val addonRemovalModule = module {
     RemoveAddonSummaryViewModel(
       params = params.get<CommonSummaryParameters>(),
       submitAddonRemovalUseCase = get<SubmitAddonRemovalUseCase>(),
-      getAddonRemovalCostBreakdownUseCase = get<GetAddonRemovalCostBreakdownUseCase>()
+      getAddonRemovalCostBreakdownUseCase = get<GetAddonRemovalCostBreakdownUseCase>(),
+      getInsurancesWithRemovableAddonsUseCase = get<GetInsurancesWithRemovableAddonsUseCase>()
     )
   }
 
