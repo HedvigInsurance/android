@@ -391,15 +391,10 @@ internal fun HedvigNavHost(
       navController = hedvigAppState.navController,
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      onNavigateToChangeTier = { contractId, backStackEntry ->
-        with(navigator) {
-          backStackEntry.navigate(
-            destination =
-              StartTierFlowDestination(
-                insuranceId = contractId,
-              ),
-          )
-        }
+      onNavigateToChangeTier = { contractId, _ ->
+        hedvigAppState.navController.navigate(StartTierFlowDestination(
+          insuranceId = contractId,
+        ))
       },
     )
     changeTierGraph(

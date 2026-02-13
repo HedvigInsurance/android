@@ -171,7 +171,7 @@ internal class CustomizeTravelAddonPresenter(
             is GenerateAddonOfferResult.AddonOfferDeflect -> {
               currentState = CustomizeAddonState.Failure.SpecificDeflect(
                 title = result.pageTitle, description = result.pageDescription, type = result.type,
-                contractId = insuranceId
+                contractId = insuranceId,
               )
             }
 
@@ -299,11 +299,13 @@ internal sealed interface CustomizeAddonState {
   }
 
   sealed interface Failure : CustomizeAddonState {
-    data object GeneralFailure: Failure
-    data class SpecificDeflect(val title: String, 
-                               val description: String, 
-                               val type: AddonOfferDeflectType,
-      val contractId: String) : Failure
+    data object GeneralFailure : Failure
+    data class SpecificDeflect(
+      val title: String,
+      val description: String,
+      val type: AddonOfferDeflectType,
+      val contractId: String,
+    ) : Failure
   }
 }
 
