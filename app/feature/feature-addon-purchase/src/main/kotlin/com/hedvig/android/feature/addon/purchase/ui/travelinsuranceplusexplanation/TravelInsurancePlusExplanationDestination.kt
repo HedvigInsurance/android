@@ -30,10 +30,7 @@ import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun TravelInsurancePlusExplanationDestination(
-  params: PerilComparisonParams,
-  navigateUp: () -> Unit,
-) {
+internal fun TravelInsurancePlusExplanationDestination(params: PerilComparisonParams, navigateUp: () -> Unit) {
   TravelInsurancePlusExplanationScreen(
     travelPerilData = params,
     navigateUp = navigateUp,
@@ -41,10 +38,7 @@ internal fun TravelInsurancePlusExplanationDestination(
 }
 
 @Composable
-private fun TravelInsurancePlusExplanationScreen(
-  travelPerilData: PerilComparisonParams,
-  navigateUp: () -> Unit,
-) {
+private fun TravelInsurancePlusExplanationScreen(travelPerilData: PerilComparisonParams, navigateUp: () -> Unit) {
   HedvigScaffold(navigateUp) {
     FlowHeading(
       travelPerilData.whatsIncludedPageTitle,
@@ -52,7 +46,7 @@ private fun TravelInsurancePlusExplanationScreen(
       Modifier
         .fillMaxWidth()
         .padding(horizontal = 18.dp),
-    ) //todo: change when BE allows
+    ) // todo: change when BE allows
     Spacer(Modifier.height(32.dp))
     HighlightLabel(
       labelText = stringResource(Res.string.ADDON_LEARN_MORE_LABEL),
@@ -74,17 +68,20 @@ private fun TravelInsurancePlusExplanationScreen(
       }
       item.first?.let {
         Spacer(Modifier.height(8.dp))
-        HedvigText(it,
-        modifier = Modifier.padding(horizontal = 16.dp))
+        HedvigText(
+          it,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
         Spacer(Modifier.height(8.dp))
       }
       PerilList(
-        perilData, Small,
+        perilData,
+        Small,
         Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
       )
-      if (index!=travelPerilData.perilList.lastIndex) {
+      if (index != travelPerilData.perilList.lastIndex) {
         Spacer(Modifier.height(16.dp))
       }
     }
@@ -101,7 +98,7 @@ private fun PreviewTravelInsurancePlusExplanationScreen() {
         PerilComparisonParams(
           whatsIncludedPageTitle = "What is this addon about",
           whatsIncludedPageDescription = "This addon is about that",
-          perilList =  List(4) { index ->
+          perilList = List(4) { index ->
             "Addon 1" to List(4) {
               TravelPerilData(
                 title = "Title$index",
@@ -110,7 +107,7 @@ private fun PreviewTravelInsurancePlusExplanationScreen() {
                 colorCode = "#FFD0ECFB",
               )
             }
-          }
+          },
         ),
         navigateUp = {},
       )
