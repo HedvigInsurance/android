@@ -16,6 +16,7 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
+import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCase
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
@@ -27,6 +28,7 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 internal class AddonSummaryViewModel(
@@ -34,6 +36,7 @@ internal class AddonSummaryViewModel(
   addonPurchaseSource: AddonBannerSource,
   submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
   getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
+  getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
   initialState = Loading(),
   presenter = AddonSummaryPresenter(
@@ -41,6 +44,7 @@ internal class AddonSummaryViewModel(
     submitAddonPurchaseUseCase,
     addonPurchaseSource,
     getQuoteCostBreakdownUseCase,
+    getInsuranceForTravelAddonUseCase,
   ),
 )
 
@@ -49,6 +53,7 @@ internal class AddonSummaryPresenter(
   private val submitAddonPurchaseUseCase: SubmitAddonPurchaseUseCase,
   private val addonPurchaseSource: AddonBannerSource,
   private val getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
+  private val getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
 ) : MoleculePresenter<AddonSummaryEvent, AddonSummaryState> {
   @Composable
   override fun MoleculePresenterScope<AddonSummaryEvent>.present(lastState: AddonSummaryState): AddonSummaryState {
@@ -71,19 +76,25 @@ internal class AddonSummaryPresenter(
     }
 
     LaunchedEffect(loadIteration) {
+      val exposureName = getInsuranceForTravelAddonUseCase
+        .invoke(listOf(summaryParameters.contractId))
+        .firstOrNull()?.getOrNull()?.firstOrNull()?.contractExposure
+      if (exposureName == null) {
+        currentState = AddonSummaryState.Error
+        return@LaunchedEffect
+      }
       getQuoteCostBreakdownUseCase.invoke(
         quoteId = summaryParameters.quoteId,
         existingAddons = summaryParameters.currentlyActiveAddons,
         newAddons = summaryParameters.chosenQuotes,
         baseCost = summaryParameters.baseInsuranceCost,
         insuranceDisplayName = summaryParameters.productVariant.displayName,
-        addonType = summaryParameters.addonType
+        addonType = summaryParameters.addonType,
       ).fold(
         ifLeft = {
           currentState = AddonSummaryState.Error
         },
         ifRight = {
-          val state = getInitialState(summaryParameters)
           val baseCurrency = summaryParameters.baseInsuranceCost.monthlyNet.currencyCode
           val extraSum = summaryParameters.chosenQuotes.sumOf { chosenQuote ->
             chosenQuote.itemCost.monthlyNet.amount
@@ -97,7 +108,9 @@ internal class AddonSummaryPresenter(
             }
           }
           val totalExtra = UiMoney(extraSum, baseCurrency)
-          currentState = state.copy(
+          currentState = getInitialState(
+            summaryParameters = summaryParameters,
+            exposureName = exposureName,
             costBreakdownWithExtras = CostBreakdownWithExtras(
               totalMonthlyNet =
                 it.totalMonthlyNet,
@@ -147,19 +160,24 @@ internal class AddonSummaryPresenter(
   }
 }
 
-internal fun getInitialState(summaryParameters: SummaryParameters): Content {
+internal fun getInitialState(
+  summaryParameters: SummaryParameters,
+  exposureName: String,
+  costBreakdownWithExtras: CostBreakdownWithExtras,
+): Content {
   return Content(
     insuranceDisplayName = summaryParameters.productVariant.displayName,
     quotes = summaryParameters.chosenQuotes,
     activationDate = summaryParameters.activationDate,
     currentlyActiveAddons = summaryParameters.currentlyActiveAddons,
-    insuranceExposure = null, //todo
+    insuranceExposure = exposureName,
     notificationMessage = summaryParameters.notificationMessage,
     documents = summaryParameters.productVariant.documents,
-    costBreakdownWithExtras = null,
-    displayItems = summaryParameters.chosenQuotes.flatMap {
-      it.displayDetails
-    },
+    costBreakdownWithExtras = costBreakdownWithExtras,
+//    displayItems = summaryParameters.chosenQuotes.flatMap {
+//      it.displayDetails
+//    },
+    displayItems = emptyList(), //todo: check on test session
     navigateToFailure = null,
     contractGroup = summaryParameters.productVariant.contractGroup,
   )
@@ -189,7 +207,7 @@ internal sealed interface AddonSummaryState {
     val currentlyActiveAddons: List<CurrentlyActiveAddon>,
     val notificationMessage: String?,
     val documents: List<InsuranceVariantDocument>,
-    val costBreakdownWithExtras: CostBreakdownWithExtras?,
+    val costBreakdownWithExtras: CostBreakdownWithExtras,
     val displayItems: List<Pair<String, String>>, //todo: check how those look
     val navigateToFailure: ErrorMessage? = null,
   ) : AddonSummaryState
@@ -210,7 +228,7 @@ private fun logSuccessfulAddonPurchaseAction(
 ) {
   summaryParameters.chosenQuotes.forEach { chosenQuote ->
     chosenQuote.addonSubtype?.let {
-      //todo: review later when will have new entrypoints. Prob new addonPurchaseSource, "product"?
+      //todo: review later when will have new entrypoints. Prob new addonPurchaseSource
       val logInfo = AddonLogInfo(
         flow = addonPurchaseSource,
         subType = chosenQuote.addonSubtype,

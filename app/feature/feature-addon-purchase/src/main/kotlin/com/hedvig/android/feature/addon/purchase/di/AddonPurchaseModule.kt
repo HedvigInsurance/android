@@ -41,7 +41,8 @@ val addonPurchaseModule = module {
       summaryParameters = params.get<SummaryParameters>(),
       addonPurchaseSource = params.get<AddonBannerSource>(),
       submitAddonPurchaseUseCase = get<SubmitAddonPurchaseUseCase>(),
-      getQuoteCostBreakdownUseCase = get<GetQuoteCostBreakdownUseCase>()
+      getQuoteCostBreakdownUseCase = get<GetQuoteCostBreakdownUseCase>(),
+      getInsuranceForTravelAddonUseCase = get<GetInsuranceForTravelAddonUseCase>()
     )
   }
 

@@ -258,26 +258,18 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
 
 @Composable
 private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
-  val locale = getLocale()
-  val formattedDate = remember(uiState.activationDate, locale) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(
-      locale,
-    ).format(uiState.activationDate)
-  }
   val premium: UiMoney? = uiState.costBreakdownWithExtras?.totalMonthlyNet
   val previousPremium: UiMoney? = if (premium==uiState.costBreakdownWithExtras?.totalMonthlyGross) {
     null
   } else {
     uiState.costBreakdownWithExtras?.totalMonthlyGross
   }
-  logcat { "Mariia: ui uiState.costBreakdownWithExtras?.totalMonthlyNet: ${uiState.costBreakdownWithExtras?.totalMonthlyNet}" +
-    "uiState.costBreakdownWithExtras?.totalMonthlyGross: ${uiState.costBreakdownWithExtras?.totalMonthlyGross}" }
   val costBreakdown: List<CostBreakdownEntry> = uiState.costBreakdownWithExtras?.displayItems
     ?: emptyList()
   QuoteCard(
     subtitle = uiState.insuranceExposure,
     contractGroup = uiState.contractGroup,
-    premium = premium ?: UiMoney(0.0, UiCurrencyCode.SEK), //todo: should be notnull, wait for BE
+    premium = premium ?: UiMoney(0.0, UiCurrencyCode.SEK),
     costBreakdown = costBreakdown,
     previousPremium = previousPremium,
     displayItems = uiState.displayItems.map {
@@ -289,7 +281,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     },
     modifier = modifier,
     displayName = uiState.insuranceDisplayName,
-    insurableLimits = emptyList(), //todo!!!
+    insurableLimits = emptyList(),
     documents = uiState.documents.map {
       DisplayDocument(
         displayName = it.displayName,
@@ -297,83 +289,6 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       )
     },
   )
-}
-
-@Composable
-private fun AddonCostBreakdownComposable(
-  currentlyActiveAddon: CurrentlyActiveAddon?,
-  quote: AddonQuote,
-  modifier: Modifier = Modifier,
-) {
-  ProvideTextStyle(HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary)) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Spacer(Modifier.height(8.dp))
-      if (currentlyActiveAddon != null) {
-        HorizontalItemsWithMaximumSpaceTaken(
-          {
-            HedvigText(
-              currentlyActiveAddon.displayTitle,
-              style = LocalTextStyle.current.copy(
-                textDecoration = TextDecoration.LineThrough,
-              ),
-            )
-          },
-          {
-            HedvigText(
-              text = stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                currentlyActiveAddon.cost.monthlyNet, //todo: CHECK!!!
-              ),
-              textAlign = TextAlign.End,
-              style = LocalTextStyle.current.copy(
-                textDecoration = TextDecoration.LineThrough,
-              ),
-            )
-          },
-          spaceBetween = 8.dp,
-        )
-        HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(quote.displayDescription) },
-          {
-            HedvigText(
-              text = stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                quote.itemCost.monthlyNet,
-              ),
-              textAlign = TextAlign.End,
-            )
-          },
-          spaceBetween = 8.dp,
-        )
-      } else {
-        HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(quote.displayDescription) },
-          {
-            HedvigText(
-              text = stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                quote.itemCost.monthlyGross,
-              ),
-              textAlign = TextAlign.End,
-            )
-          },
-          spaceBetween = 8.dp,
-        )
-        quote.itemCost.discounts.forEach { discount ->
-          HorizontalItemsWithMaximumSpaceTaken(
-            { HedvigText(discount.displayName) },
-            {
-              HedvigText(
-                text = discount.displayValue,
-                textAlign = TextAlign.End,
-              )
-            },
-            spaceBetween = 8.dp,
-          )
-        }
-      }
-    }
-  }
 }
 
 @HedvigPreview
@@ -457,7 +372,23 @@ private class ChooseInsuranceForAddonUiStateProvider :
         insuranceExposure = "Exposure",
         notificationMessage = "Notification message",
         documents = emptyList(),
-        costBreakdownWithExtras = null,
+        costBreakdownWithExtras = CostBreakdownWithExtras(
+          totalMonthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalMonthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalExtra = UiMoney(50.0, UiCurrencyCode.SEK),
+          displayItems = listOf(
+            CostBreakdownEntry(
+              displayName = "base insurance",
+              displayValue = "200 kr/mo",
+              hasStrikethrough = false
+            ),
+            CostBreakdownEntry(
+              displayName = "addon",
+              displayValue = "50 kr/mo",
+              hasStrikethrough = false
+            ),
+          )
+        ),
         displayItems = emptyList(),
         contractGroup = null
       ),

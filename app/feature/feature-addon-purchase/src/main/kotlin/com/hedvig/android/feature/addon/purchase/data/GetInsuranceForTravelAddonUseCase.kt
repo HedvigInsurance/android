@@ -71,7 +71,7 @@ private fun InsurancesForTravelAddonQuery.Data.CurrentMember.toInsurancesForAddo
         id = it.id,
         displayName = it.currentAgreement.productVariant.displayName,
         contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),
-        contractExposure = it.exposureDisplayName,
+        contractExposure = it.exposureDisplayNameShort,
       )
     }
 }

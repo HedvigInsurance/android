@@ -10,7 +10,6 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
-import com.hedvig.android.logger.logcat
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
 import octopus.AddonOfferCostQuery
@@ -22,7 +21,7 @@ internal interface GetQuoteCostBreakdownUseCase {
     newAddons: List<AddonQuote>,
     baseCost: ItemCost,
     insuranceDisplayName: String,
-    addonType: AddonType
+    addonType: AddonType,
   ): Either<ErrorMessage, QuoteCostBreakdown>
 }
 
@@ -33,7 +32,7 @@ internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: Apollo
     newAddons: List<AddonQuote>,
     baseCost: ItemCost,
     insuranceDisplayName: String,
-    addonType: AddonType
+    addonType: AddonType,
   ): Either<ErrorMessage, QuoteCostBreakdown> {
     return either {
       apolloClient
@@ -69,6 +68,7 @@ internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: Apollo
                 val areDisplayNamesTheSame = newAddon.addonVariant.displayName == newAddon.displayTitle
                 val displayName = if (areDisplayNamesTheSame) newAddon.displayTitle else
                   "${newAddon.addonVariant.displayName} ${newAddon.displayTitle}"
+
                 add(
                   CostBreakdownEntry(
                     displayName = displayName,
@@ -87,8 +87,6 @@ internal class GetQuoteCostBreakdownUseCaseImpl(private val apolloClient: Apollo
                 )
               }
             }
-            logcat { "Mariia: data result.addonOfferCost.monthlyNet: ${result.addonOfferCost.monthlyNet}" +
-              "result.addonOfferCost.monthlyGross: ${result.addonOfferCost.monthlyGross}" }
             QuoteCostBreakdown(
               UiMoney.fromMoneyFragment(result.addonOfferCost.monthlyNet),
               UiMoney.fromMoneyFragment(result.addonOfferCost.monthlyGross),
