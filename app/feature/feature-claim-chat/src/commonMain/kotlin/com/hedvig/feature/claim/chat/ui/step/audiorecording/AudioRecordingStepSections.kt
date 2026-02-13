@@ -39,7 +39,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -235,6 +239,7 @@ internal fun AudioRecorderBubble(
         is AudioRecordingStepState.AudioRecording -> {
           Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             val state = rememberHedvigBottomSheetState<Unit>()
+            val focusManager = LocalFocusManager.current
             if (isCurrentStep) {
               AudioRecordingBottomSheet(
                 audioRecordingState = recordingState,
@@ -251,7 +256,10 @@ internal fun AudioRecorderBubble(
               HedvigButton(
                 enabled = true,
                 text = stringResource(Res.string.CLAIM_CHAT_USE_AUDIO),
-                onClick = state::show,
+                onClick = {
+                  focusManager.clearFocus()
+                  state.show()
+                },
                 modifier = Modifier.fillMaxWidth(),
               )
               if (freeTextAvailable) {
@@ -609,21 +617,37 @@ private fun ControlButton(
 
   var countDownText by remember { mutableStateOf("3") }
   var startRecordingCountdown by remember { mutableStateOf(false) }
-
+  val scale = remember { Animatable(1f) }
+  val hapticFeedback = LocalHapticFeedback.current
   val lifecycleOwner = LocalLifecycleOwner.current
   LaunchedEffect(startRecordingCountdown, lifecycleOwner) {
     if (startRecordingCountdown) {
-      delay(1000)
+      val maxScale = 1.3f
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+      scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
+      scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
+      delay(500)
+
       countDownText = "2"
-      delay(1000)
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+      scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
+      scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
+      delay(500)
+
       countDownText = "1"
-      delay(1000)
+      hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+      scale.animateTo(maxScale, animationSpec = tween(durationMillis = 200))
+      scale.animateTo(1f, animationSpec = tween(durationMillis = 300))
+      delay(500)
+
       if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
         onStartRecording()
       }
       startRecordingCountdown = false
     }
     countDownText = "3"
+    scale.snapTo(1f)
   }
 
   Surface(
@@ -661,23 +685,32 @@ private fun ControlButton(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Box(
-        modifier = Modifier.clip(HedvigTheme.shapes.cornerXXLarge).background(
-          color = if (!isEnabled) {
-            HedvigTheme.colorScheme.surfaceSecondaryTransparent
-          } else {
-            when (audioRecordingState) {
-              AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
-              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
-              is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
-            }
-          },
-        ),
+        modifier = Modifier
+          .graphicsLayer {
+            scaleX = scale.value
+            scaleY = scale.value
+          }
+          .clip(HedvigTheme.shapes.cornerXXLarge)
+          .background(
+            color = if (!isEnabled) {
+              HedvigTheme.colorScheme.surfaceSecondaryTransparent
+            } else {
+              when (audioRecordingState) {
+                AudioRecordingStepState.AudioRecording.NotRecording -> HedvigTheme.colorScheme.signalRedElement
+                is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillPrimary
+                is AudioRecordingStepState.AudioRecording.Recording -> HedvigTheme.colorScheme.signalRedElement
+              }
+            },
+          ),
         contentAlignment = Alignment.Center,
       ) {
         Icon(
-          modifier = Modifier.padding(4.dp).size(24.dp).then(
-            if (startRecordingCountdown) Modifier.withoutPlacement() else Modifier,
-          ),
+          modifier = Modifier
+            .padding(4.dp)
+            .size(24.dp)
+            .then(
+              if (startRecordingCountdown) Modifier.withoutPlacement() else Modifier,
+            ),
           imageVector = when (audioRecordingState) {
             AudioRecordingStepState.AudioRecording.NotRecording -> {
               HedvigIcons.Mic
@@ -792,10 +825,14 @@ private fun FreeTextInputSection(
   canSubmit: Boolean,
   modifier: Modifier = Modifier,
 ) {
+  val focusManager = LocalFocusManager.current
   Column(modifier) {
     if (isCurrentStep) {
       FreeTextDisplay(
-        onClick = { onLaunchFullScreenEditText() },
+        onClick = {
+          focusManager.clearFocus()
+          onLaunchFullScreenEditText()
+        },
         freeTextValue = freeText,
         freeTextPlaceholder = stringResource(Res.string.CLAIMS_TEXT_INPUT_PLACEHOLDER),
         supportingText = when (errorType) {

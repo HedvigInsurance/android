@@ -797,7 +797,6 @@ private fun StepBottomContent(
           onNavigateToImageViewer = onNavigateToImageViewer,
           appPackageId = appPackageId,
           imageLoader = imageLoader,
-          localFiles = stepItem.stepContent.localFiles,
           onEvent = onEvent,
           canEdit = stepItem.isRegrettable,
           continueButtonLoading = currentContinueButtonLoading,

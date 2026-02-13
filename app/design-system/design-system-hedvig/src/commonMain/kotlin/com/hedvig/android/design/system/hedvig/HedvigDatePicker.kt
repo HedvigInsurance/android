@@ -33,6 +33,7 @@ fun DatePickerWithDialog(
   canInteract: Boolean,
   startText: String,
   modifier: Modifier = Modifier,
+  onBeforeShow: (() -> Unit)? = null,
 ) {
   var showDatePicker by rememberSaveable { mutableStateOf(false) }
   if (showDatePicker) {
@@ -66,7 +67,10 @@ fun DatePickerWithDialog(
     }
   }
   HedvigBigCard(
-    onClick = { showDatePicker = true },
+    onClick = {
+      onBeforeShow?.invoke()
+      showDatePicker = true
+    },
     labelText = startText,
     inputText = selectedDateText,
     enabled = canInteract,
