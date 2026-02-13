@@ -9,7 +9,7 @@ import com.hedvig.android.featureflags.HedvigUnleashClient
 import com.hedvig.android.featureflags.flags.UnleashFeatureFlagProvider
 import org.koin.dsl.module
 
-val featureManagerModule = module {
+actual val featureManagerModule = module {
   single<HedvigUnleashClient> {
     HedvigUnleashClient(
       androidContext = get<Context>().applicationContext,

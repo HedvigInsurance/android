@@ -26,7 +26,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.dataPayingMember)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
 
   testImplementation(libs.apollo.annotations)
   testImplementation(libs.apollo.testingSupport)

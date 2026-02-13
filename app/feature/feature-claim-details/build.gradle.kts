@@ -45,7 +45,7 @@ dependencies {
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataDisplayItems)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.fileUploadUi)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)

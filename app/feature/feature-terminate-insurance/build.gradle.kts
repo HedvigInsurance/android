@@ -40,7 +40,7 @@ dependencies {
   implementation(projects.dataProductVariantPublic)
   implementation(projects.dataTermination)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)

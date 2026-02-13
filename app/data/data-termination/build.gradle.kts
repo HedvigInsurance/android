@@ -18,5 +18,5 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreUiData)
   implementation(projects.dataContract)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
 }

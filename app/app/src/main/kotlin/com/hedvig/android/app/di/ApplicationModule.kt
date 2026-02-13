@@ -335,7 +335,7 @@ val applicationModule = module {
   )
 }
 
-private class AndroidBuildConfig() : AppBuildConfig {
+private class AndroidBuildConfig : AppBuildConfig {
   override val debug: Boolean = BuildConfig.DEBUG
   override val applicationId: String = BuildConfig.APPLICATION_ID
   override val buildType: String = BuildConfig.BUILD_TYPE
