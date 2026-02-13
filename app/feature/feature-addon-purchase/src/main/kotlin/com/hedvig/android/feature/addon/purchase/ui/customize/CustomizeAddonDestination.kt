@@ -84,6 +84,7 @@ import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
+import com.hedvig.android.feature.addon.purchase.data.AddonOfferDeflectType
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
@@ -109,7 +110,9 @@ import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
+import hedvig.resources.insurance_details_change_coverage
 import hedvig.resources.open_chat
+import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
@@ -120,8 +123,8 @@ internal fun CustomizeAddonDestination(
   popBackStack: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
-  onNavigateToNewConversation: () -> Unit,
   onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
+  navigateToChangeTier: (contractId: String) -> Unit
 ) {
   val uiState: CustomizeAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   CustomizeTravelAddonScreen(
@@ -152,10 +155,10 @@ internal fun CustomizeAddonDestination(
       navigateToSummary(params)
     },
     onNavigateToTravelInsurancePlusExplanation = onNavigateToTravelInsurancePlusExplanation,
-    navigateToChat = onNavigateToNewConversation,
     onToggleOption = {
       viewModel.emit(CustomizeTravelAddonEvent.ToggleOption(it))
     },
+    navigateToChangeTier = navigateToChangeTier
   )
 }
 
@@ -174,7 +177,7 @@ private fun CustomizeTravelAddonScreen(
   onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
   reload: () -> Unit,
   popAddonFlow: () -> Unit,
-  navigateToChat: () -> Unit,
+  navigateToChangeTier: (contractId: String) -> Unit
 ) {
   Box(
     Modifier.fillMaxSize(),
@@ -182,10 +185,10 @@ private fun CustomizeTravelAddonScreen(
     when (uiState) {
       is Failure -> {
         FailureScreen(
-          errorMessage = uiState.errorMessage,
+          uiState = uiState,
           reload = reload,
           popBackStack = popBackStack,
-          navigateToChat = navigateToChat,
+          navigateToChangeTier = navigateToChangeTier
         )
       }
 
@@ -219,10 +222,10 @@ private fun CustomizeTravelAddonScreen(
 
 @Composable
 private fun FailureScreen(
-  errorMessage: String?,
+  uiState : CustomizeAddonState.Failure,
   reload: () -> Unit,
   popBackStack: () -> Unit,
-  navigateToChat: () -> Unit,
+  navigateToChangeTier: (contractId: String) -> Unit
 ) {
   Box(Modifier.fillMaxSize()) {
     Column(
@@ -237,14 +240,48 @@ private fun FailureScreen(
         ),
     ) {
       Spacer(Modifier.weight(1f))
-      val buttonText = if (errorMessage == null) {
-        stringResource(Res.string.GENERAL_RETRY)
-      } else {
-        stringResource(Res.string.open_chat)
+      val buttonText = when (uiState) {
+        Failure.GeneralFailure -> stringResource(Res.string.GENERAL_RETRY)
+        is Failure.SpecificDeflect -> {
+          when (uiState.type) {
+            AddonOfferDeflectType.UPGRADE_TIER -> stringResource(Res.string.insurance_details_change_coverage)
+          }
+        }
+      }
+      val title = when (uiState) {
+        Failure.GeneralFailure -> stringResource(Res.string.something_went_wrong)
+        is Failure.SpecificDeflect -> {
+          when (uiState.type) {
+            AddonOfferDeflectType.UPGRADE_TIER -> uiState.title
+          }
+        }
+      }
+
+
+      val subTitle = when (uiState) {
+        Failure.GeneralFailure -> stringResource(Res.string.GENERAL_ERROR_BODY)
+        is Failure.SpecificDeflect -> {
+          when (uiState.type) {
+            AddonOfferDeflectType.UPGRADE_TIER -> uiState.description
+          }
+        }
+      }
+      val onButtonClick = when (uiState) {
+        Failure.GeneralFailure -> reload
+        is Failure.SpecificDeflect -> {
+          when (uiState.type) {
+            AddonOfferDeflectType.UPGRADE_TIER -> {
+              {
+                navigateToChangeTier(uiState.contractId)
+              }
+            }
+          }
+        }
       }
       HedvigErrorSection(
-        onButtonClick = if (errorMessage == null) reload else navigateToChat,
-        subTitle = errorMessage ?: stringResource(Res.string.GENERAL_ERROR_BODY),
+        title = title,
+        onButtonClick = onButtonClick,
+        subTitle = subTitle,
         modifier = Modifier.fillMaxSize(),
         buttonText = buttonText,
       )
@@ -827,7 +864,10 @@ internal class CustomizeTravelAddonPreviewProvider :
         ),
         chosenOptionPremiumExtra = UiMoney(10.0, UiCurrencyCode.SEK),
       ),
-      Failure("Ooops"),
+      Failure.GeneralFailure,
+      Failure.SpecificDeflect ("Ooops",
+        "You need to change tier",
+        AddonOfferDeflectType.UPGRADE_TIER, "contractId"),
     ),
   )
 

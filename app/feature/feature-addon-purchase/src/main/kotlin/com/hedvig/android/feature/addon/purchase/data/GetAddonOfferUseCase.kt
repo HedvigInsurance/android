@@ -10,6 +10,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
+import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Toggleable
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -18,6 +19,7 @@ import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.first
 import octopus.AddonGenerateOfferMutation
 import octopus.fragment.AddonOfferQuoteFragment
+import octopus.type.AddonDeflectType
 
 internal interface GetAddonOfferUseCase {
   suspend fun invoke(contractId: String): Either<ErrorMessage, GenerateAddonOfferResult>
@@ -91,7 +93,7 @@ internal class GetAddonOfferUseCaseImpl(
                       logcat(LogPriority.ERROR) { "Tried to do AddonGenerateOfferMutation but got empty quotes" }
                       raise(ErrorMessage())
                     } else {
-                      AddonOffer.Toggleable(
+                      Toggleable(
                         addonOptions = nonEmptyQuotes.toAddonQuotes(
                           result.quote.productVariant.documents.map {
                             TravelAddonQuoteInsuranceDocument(
@@ -110,7 +112,7 @@ internal class GetAddonOfferUseCaseImpl(
                   }
                 }
 
-                GenerateAddonOfferResult(
+                GenerateAddonOfferResult.AddonOfferResult(
                   contractId = contractId,
                   pageTitle = result.pageTitle,
                   pageDescription = result.pageDescription,
@@ -130,6 +132,19 @@ internal class GetAddonOfferUseCaseImpl(
                   whatsIncludedPageDescription = result.whatsIncludedPageDescription,
                 )
               }
+
+              is AddonGenerateOfferMutation.Data.AddonOfferDeflectAddonGenerateOffer ->
+                GenerateAddonOfferResult.AddonOfferDeflect(
+                  pageTitle = response.addonGenerateOffer.pageTitle,
+                  pageDescription = response.addonGenerateOffer.pageDescription,
+                  type = when (response.addonGenerateOffer.type) {
+                    AddonDeflectType.UPGRADE_TIER -> AddonOfferDeflectType.UPGRADE_TIER
+                    AddonDeflectType.UNKNOWN__ -> {
+                      logcat { "addonGenerateOffer got AddonDeflectType.UNKNOWN" }
+                      raise(ErrorMessage())
+                    }
+                  }
+                )
             }
           },
         )

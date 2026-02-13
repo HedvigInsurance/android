@@ -16,6 +16,11 @@ mutation AddonGenerateOffer($contractId: ID!) {
       whatsIncludedPageDescription
       infoMessage
     }
+    ... on AddonOfferDeflect {
+      pageDescription
+      pageTitle
+      type
+    }
   }
 }
 

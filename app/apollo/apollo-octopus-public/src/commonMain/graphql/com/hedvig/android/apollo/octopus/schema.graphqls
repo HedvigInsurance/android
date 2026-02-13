@@ -152,6 +152,9 @@ type AddonContractQuote {
   """
   productVariant: ProductVariant!
 }
+enum AddonDeflectType {
+  UPGRADE_TIER
+}
 type AddonDisplayItem {
   displayTitle: String!
   displayValue: String!
@@ -203,11 +206,26 @@ AddonOfferSelectable is used when we have multiple variants for the same quote
 AddonOfferToggleable is used when we have only one variant
 """
 union AddonOfferContent = AddonOfferSelectable|AddonOfferToggleable
+type AddonOfferDeflect {
+  """
+  Title to show in the page.
+  eg "You have to upgrade your tier"
+  """
+  pageTitle: String!
+  """
+  Description to show in the page.
+  """
+  pageDescription: String!
+  """
+  Deflect type for clients so clients know which action to take
+  """
+  type: AddonDeflectType!
+}
 """
 Output type for AddonOffer mutation.
 Returns offer with quote and addons with prices etc to show in the offer page.
 """
-union AddonOfferOutput = UserError|AddonOffer
+union AddonOfferOutput = UserError|AddonOffer|AddonOfferDeflect
 type AddonOfferQuote {
   """
   Id of the addon.
@@ -3307,6 +3325,10 @@ type Mutation {
   """
   shopSessionCartCampaignUnredeem(input: ShopSessionCartCampaignUnredeemInput!): ShopSessionMutationOutput!
   """
+  Update cookie consent given during the shop session.
+  """
+  shopSessionCookieConsentUpdate(input: ShopSessionCookieConsentUpdateInput!): ShopSessionMutationOutput!
+  """
   Begin signing the session, with the ultimate goal of creating insurances in our system, and possibly
   also creating a new Member.
   Signing is an asynchronous process, where the client must poll using `Query.shopSessionSigning` and follow
@@ -4088,6 +4110,11 @@ input ShopSessionCartEntriesAddInput {
 input ShopSessionCartEntriesRemoveInput {
   shopSessionId: UUID!
   offerIds: [UUID!]!
+}
+input ShopSessionCookieConsentUpdateInput {
+  shopSessionId: UUID!
+  provider: String!
+  preferences: [String!]!
 }
 input ShopSessionCreateInput {
   countryCode: CountryCode!

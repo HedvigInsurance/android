@@ -14,8 +14,10 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer
+import com.hedvig.android.feature.addon.purchase.data.AddonOfferDeflectType
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
+import com.hedvig.android.feature.addon.purchase.data.GenerateAddonOfferResult
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
@@ -28,12 +30,12 @@ internal class CustomizeAddonViewModel(
   insuranceId: String,
   getAddonOfferUseCase: GetAddonOfferUseCase,
 ) : MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeAddonState>(
-    initialState = CustomizeAddonState.Loading,
-    presenter = CustomizeTravelAddonPresenter(
-      getAddonOfferUseCase = getAddonOfferUseCase,
-      insuranceId = insuranceId,
-    ),
-  )
+  initialState = CustomizeAddonState.Loading,
+  presenter = CustomizeTravelAddonPresenter(
+    getAddonOfferUseCase = getAddonOfferUseCase,
+    insuranceId = insuranceId,
+  ),
+)
 
 internal class CustomizeTravelAddonPresenter(
   private val insuranceId: String,
@@ -59,7 +61,7 @@ internal class CustomizeTravelAddonPresenter(
         *(
           (lastState as? CustomizeAddonState.Success.Toggleable)
             ?.currentlyChosenOptions ?: emptyList()
-        ).toTypedArray(),
+          ).toTypedArray(),
       )
     }
 
@@ -162,53 +164,64 @@ internal class CustomizeTravelAddonPresenter(
       currentState = CustomizeAddonState.Loading
       getAddonOfferUseCase.invoke(insuranceId).fold(
         ifLeft = { error ->
-          currentState = CustomizeAddonState.Failure(error.message)
+          currentState = CustomizeAddonState.Failure.GeneralFailure
         },
-        ifRight = { offerResult ->
-          val commonParams =
-            CommonSuccessParameters(
-              pageTitle = offerResult.pageTitle,
-              pageDescription = offerResult.pageDescription,
-              currentTotalCost = offerResult.currentTotalCost,
-              umbrellaDisplayTitle = offerResult.umbrellaAddonQuote.displayTitle,
-              umbrellaDisplayDescription = offerResult.umbrellaAddonQuote.displayDescription,
-              quoteId = offerResult.umbrellaAddonQuote.quoteId,
-              activationDate = offerResult.umbrellaAddonQuote.activationDate,
-              baseQuoteCost = offerResult.umbrellaAddonQuote.baseInsuranceCost,
-              notificationMessage = offerResult.notificationMessage,
-              productVariant = offerResult.umbrellaAddonQuote.productVariant,
-              contractId = offerResult.contractId,
-              summaryParamsToNavigateFurther = null,
-              whatsIncludedPageTitle = offerResult.whatsIncludedPageTitle,
-              whatsIncludedPageDescription = offerResult.whatsIncludedPageDescription,
-            )
-          when (offerResult.umbrellaAddonQuote.addonOffer) {
-            is AddonOffer.Selectable -> {
-              val chosenDefault = offerResult.umbrellaAddonQuote.addonOffer.addonOptions[0]
-              val currentAddon = offerResult.umbrellaAddonQuote.activeAddons.firstOrNull()
-              selectedOptionInDialog = chosenDefault
-              val extra = updateExtraForSelectable(
-                currentAddon,
-                selectedOptionInDialog,
-              )
-              currentState = CustomizeAddonState.Success.Selectable(
-                addonOffer = offerResult.umbrellaAddonQuote.addonOffer,
-                currentlyChosenOption = chosenDefault,
-                currentlyChosenOptionInDialog = selectedOptionInDialog,
-                chosenOptionPremiumExtra = extra,
-                currentlyActiveAddon = currentAddon,
-                commonParams = commonParams,
+        ifRight = { result ->
+          when (result) {
+            is GenerateAddonOfferResult.AddonOfferDeflect -> {
+              currentState = CustomizeAddonState.Failure.SpecificDeflect(
+                title = result.pageTitle, description = result.pageDescription, type = result.type,
+                contractId = insuranceId
               )
             }
 
-            is AddonOffer.Toggleable -> {
-              currentState = CustomizeAddonState.Success.Toggleable(
-                commonParams = commonParams,
-                addonOffer = offerResult.umbrellaAddonQuote.addonOffer,
-                currentlyActiveAddons = offerResult.umbrellaAddonQuote.activeAddons,
-                currentlyChosenOptions = emptyList(),
-                totalPremiumExtra = null,
-              )
+            is GenerateAddonOfferResult.AddonOfferResult -> {
+              val commonParams =
+                CommonSuccessParameters(
+                  pageTitle = result.pageTitle,
+                  pageDescription = result.pageDescription,
+                  currentTotalCost = result.currentTotalCost,
+                  umbrellaDisplayTitle = result.umbrellaAddonQuote.displayTitle,
+                  umbrellaDisplayDescription = result.umbrellaAddonQuote.displayDescription,
+                  quoteId = result.umbrellaAddonQuote.quoteId,
+                  activationDate = result.umbrellaAddonQuote.activationDate,
+                  baseQuoteCost = result.umbrellaAddonQuote.baseInsuranceCost,
+                  notificationMessage = result.notificationMessage,
+                  productVariant = result.umbrellaAddonQuote.productVariant,
+                  contractId = result.contractId,
+                  summaryParamsToNavigateFurther = null,
+                  whatsIncludedPageTitle = result.whatsIncludedPageTitle,
+                  whatsIncludedPageDescription = result.whatsIncludedPageDescription,
+                )
+              when (result.umbrellaAddonQuote.addonOffer) {
+                is AddonOffer.Selectable -> {
+                  val chosenDefault = result.umbrellaAddonQuote.addonOffer.addonOptions[0]
+                  val currentAddon = result.umbrellaAddonQuote.activeAddons.firstOrNull()
+                  selectedOptionInDialog = chosenDefault
+                  val extra = updateExtraForSelectable(
+                    currentAddon,
+                    selectedOptionInDialog,
+                  )
+                  currentState = CustomizeAddonState.Success.Selectable(
+                    addonOffer = result.umbrellaAddonQuote.addonOffer,
+                    currentlyChosenOption = chosenDefault,
+                    currentlyChosenOptionInDialog = selectedOptionInDialog,
+                    chosenOptionPremiumExtra = extra,
+                    currentlyActiveAddon = currentAddon,
+                    commonParams = commonParams,
+                  )
+                }
+
+                is AddonOffer.Toggleable -> {
+                  currentState = CustomizeAddonState.Success.Toggleable(
+                    commonParams = commonParams,
+                    addonOffer = result.umbrellaAddonQuote.addonOffer,
+                    currentlyActiveAddons = result.umbrellaAddonQuote.activeAddons,
+                    currentlyChosenOptions = emptyList(),
+                    totalPremiumExtra = null,
+                  )
+                }
+              }
             }
           }
         },
@@ -285,7 +298,13 @@ internal sealed interface CustomizeAddonState {
     ) : Success
   }
 
-  data class Failure(val errorMessage: String? = null) : CustomizeAddonState
+  sealed interface Failure : CustomizeAddonState {
+    data object GeneralFailure: Failure
+    data class SpecificDeflect(val title: String, 
+                               val description: String, 
+                               val type: AddonOfferDeflectType,
+      val contractId: String) : Failure
+  }
 }
 
 internal data class CommonSuccessParameters(

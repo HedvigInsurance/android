@@ -135,6 +135,10 @@ internal fun HedvigNavHost(
     hedvigAppState.navController.navigate(SelectContractForMoving, navOptions)
   }
 
+  fun navigateToChangeTier(navOptions: NavOptionsBuilder.() -> Unit = {}) {
+    hedvigAppState.navController.navigate(SelectContractForMoving, navOptions)
+  }
+
   val onNavigateToImageViewer = { imageUrl: String, cacheKey: String ->
     hedvigAppState.navController.navigate(ImageViewer(imageUrl, cacheKey))
   }
@@ -387,6 +391,16 @@ internal fun HedvigNavHost(
       navController = hedvigAppState.navController,
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      onNavigateToChangeTier = { contractId, backStackEntry ->
+        with(navigator) {
+          backStackEntry.navigate(
+            destination =
+              StartTierFlowDestination(
+                insuranceId = contractId,
+              ),
+          )
+        }
+      },
     )
     changeTierGraph(
       navigator = navigator,

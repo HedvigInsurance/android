@@ -49,6 +49,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  onNavigateToChangeTier: (contractId: String, NavBackStackEntry) -> Unit,
 ) {
   /**
    * Destination to get eligible insuranceIds if member comes to the feature using the deeplink
@@ -71,7 +72,8 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         }
       },
       onNavigateToNewConversation = {
-        onNavigateToNewConversation(backStackEntry)
+        onNavigateToNewConversation(
+          backStackEntry)
       },
     )
   }
@@ -127,10 +129,10 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
             TravelInsurancePlusExplanation(perilData),
           )
         },
-        onNavigateToNewConversation = {
+        navigateToChangeTier = { contractId ->
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
-          onNavigateToNewConversation(backStackEntry)
-        },
+          onNavigateToChangeTier(contractId, backStackEntry)
+        }
       )
     }
 
