@@ -99,6 +99,7 @@ internal sealed interface StepContent {
     data class FieldOption(
       val value: String,
       val text: String,
+      val subtitle: String?,
     )
 
     enum class FieldType {

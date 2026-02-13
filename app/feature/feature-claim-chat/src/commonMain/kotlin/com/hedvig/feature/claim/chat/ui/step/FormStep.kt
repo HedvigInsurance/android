@@ -138,7 +138,7 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
                   )
                 },
                 errorText = errorText,
@@ -150,7 +150,7 @@ private fun FormContent(
                 onSelectFieldAnswer(
                   field.id,
                   field.datePickerUiState?.datePickerState?.selectedDateMillis?.let {
-                    StepContent.Form.FieldOption(it.toString(), it.toString())
+                    StepContent.Form.FieldOption(it.toString(), it.toString(), null)
                   },
                 )
               }
@@ -170,7 +170,7 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
                   )
                 },
                 keyboardType = KeyboardType.Number,
@@ -185,6 +185,7 @@ private fun FormContent(
                   RadioOption(
                     id = RadioOptionId(it.value),
                     text = it.text,
+                    label = it.subtitle,
                     iconResource = null,
                   )
                 },
@@ -216,6 +217,7 @@ private fun FormContent(
                   RadioOption(
                     id = RadioOptionId(it.value),
                     text = it.text,
+                    label = it.subtitle,
                     iconResource = null,
                   )
                 },
@@ -242,7 +244,7 @@ private fun FormContent(
                 onSelect = {
                   onSelectFieldAnswer(
                     field.id,
-                    StepContent.Form.FieldOption(it, it),
+                    StepContent.Form.FieldOption(it, it, null),
                   )
                 },
                 questionText = field.title,
