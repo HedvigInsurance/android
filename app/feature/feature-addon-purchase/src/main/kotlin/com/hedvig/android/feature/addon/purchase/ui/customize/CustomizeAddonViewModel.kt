@@ -2,16 +2,13 @@ package com.hedvig.android.feature.addon.purchase.ui.customize
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -22,7 +19,6 @@ import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -32,12 +28,12 @@ internal class CustomizeAddonViewModel(
   insuranceId: String,
   getAddonOfferUseCase: GetAddonOfferUseCase,
 ) : MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeAddonState>(
-  initialState = CustomizeAddonState.Loading,
-  presenter = CustomizeTravelAddonPresenter(
-    getAddonOfferUseCase = getAddonOfferUseCase,
-    insuranceId = insuranceId,
-  ),
-)
+    initialState = CustomizeAddonState.Loading,
+    presenter = CustomizeTravelAddonPresenter(
+      getAddonOfferUseCase = getAddonOfferUseCase,
+      insuranceId = insuranceId,
+    ),
+  )
 
 internal class CustomizeTravelAddonPresenter(
   private val insuranceId: String,
@@ -59,13 +55,20 @@ internal class CustomizeTravelAddonPresenter(
       )
     }
     val selectedToggleableOptions = remember {
-      mutableStateListOf(*((lastState as? CustomizeAddonState.Success.Toggleable)
-        ?.currentlyChosenOptions ?: emptyList()).toTypedArray())
+      mutableStateListOf(
+        *(
+          (lastState as? CustomizeAddonState.Success.Toggleable)
+            ?.currentlyChosenOptions ?: emptyList()
+        ).toTypedArray(),
+      )
     }
 
     CollectEvents { event ->
       when (event) {
-        CustomizeTravelAddonEvent.Reload -> loadIteration++
+        CustomizeTravelAddonEvent.Reload -> {
+          loadIteration++
+        }
+
         is CustomizeTravelAddonEvent.ChooseOptionInDialog -> {
           selectedOptionInDialog = event.option
         }
@@ -88,13 +91,14 @@ internal class CustomizeTravelAddonPresenter(
           currentState = when (state) {
             is CustomizeAddonState.Success.Selectable -> state.copy(
               commonParams = state.commonParams.copy(
-                summaryParamsToNavigateFurther = null
-              )
+                summaryParamsToNavigateFurther = null,
+              ),
             )
+
             is CustomizeAddonState.Success.Toggleable -> state.copy(
               commonParams = state.commonParams.copy(
-                summaryParamsToNavigateFurther = null
-              )
+                summaryParamsToNavigateFurther = null,
+              ),
             )
           }
         }
@@ -112,12 +116,12 @@ internal class CustomizeTravelAddonPresenter(
             notificationMessage = state.commonParams.notificationMessage,
             contractId = state.commonParams.contractId,
             productVariant = state.commonParams.productVariant,
-            addonType = AddonType.SELECTABLE
+            addonType = AddonType.SELECTABLE,
           )
           currentState = state.copy(
             commonParams = state.commonParams.copy(
-              summaryParamsToNavigateFurther = summaryParams
-            )
+              summaryParamsToNavigateFurther = summaryParams,
+            ),
           )
         }
 
@@ -136,8 +140,8 @@ internal class CustomizeTravelAddonPresenter(
           )
           currentState = state.copy(
             commonParams = state.commonParams.copy(
-              summaryParamsToNavigateFurther = summaryParams
-            )
+              summaryParamsToNavigateFurther = summaryParams,
+            ),
           )
         }
 
@@ -213,10 +217,12 @@ internal class CustomizeTravelAddonPresenter(
 
     return when (val state = currentState) {
       is CustomizeAddonState.Failure, is CustomizeAddonState.Loading -> state
+
       is CustomizeAddonState.Success.Selectable -> state.copy(
         currentlyChosenOptionInDialog = selectedOptionInDialog,
         chosenOptionPremiumExtra = updateExtraForSelectable(
-          state.currentlyActiveAddon, selectedOptionInDialog,
+          state.currentlyActiveAddon,
+          selectedOptionInDialog,
         ),
       )
 
@@ -244,7 +250,9 @@ private fun updateExtraForSelectable(
 }
 
 private fun List<AddonQuote>.updateTotalExtraForSelectedToggleable(): UiMoney? {
-  if (this.isEmpty()) return null else {
+  if (this.isEmpty()) {
+    return null
+  } else {
     val sum = this.sumOf {
       it.itemCost.monthlyGross.amount
     }
@@ -258,6 +266,7 @@ internal sealed interface CustomizeAddonState {
 
   sealed interface Success : CustomizeAddonState {
     val commonParams: CommonSuccessParameters
+
     data class Selectable(
       override val commonParams: CommonSuccessParameters,
       val addonOffer: AddonOffer.Selectable,

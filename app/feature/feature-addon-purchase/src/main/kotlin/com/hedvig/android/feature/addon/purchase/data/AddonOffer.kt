@@ -29,7 +29,7 @@ internal data class UmbrellaAddonQuote(
   val addonOffer: AddonOffer,
   val activeAddons: List<CurrentlyActiveAddon>,
   val baseInsuranceCost: ItemCost,
-  val productVariant: ProductVariant
+  val productVariant: ProductVariant,
 )
 
 internal sealed interface AddonOffer {
@@ -55,7 +55,7 @@ internal data class AddonQuote(
   val displayDetails: List<Pair<String, String>>,
   val documents: List<TravelAddonQuoteInsuranceDocument>,
   val itemCost: ItemCost,
-  val addonSubtype: String?
+  val addonSubtype: String?,
 )
 
 @Serializable

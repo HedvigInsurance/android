@@ -24,17 +24,19 @@ internal class SelectAddonToRemoveViewModel(
   startAddonRemovalUseCase: StartAddonRemovalUseCase,
   contractAndAddonId: Pair<String, String?>,
 ) : MoleculeViewModel<
-  SelectAddonToRemoveEvent, SelectAddonToRemoveState,
+    SelectAddonToRemoveEvent,
+    SelectAddonToRemoveState,
   >(
-  initialState = SelectAddonToRemoveState.Loading,
-  presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractAndAddonId),
-)
+    initialState = SelectAddonToRemoveState.Loading,
+    presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractAndAddonId),
+  )
 
 private class SelectAddonToRemovePresenter(
   private val startAddonRemovalUseCase: StartAddonRemovalUseCase,
   private val contractAndAddonId: Pair<String, String?>,
 ) : MoleculePresenter<
-  SelectAddonToRemoveEvent, SelectAddonToRemoveState,
+    SelectAddonToRemoveEvent,
+    SelectAddonToRemoveState,
   > {
   @Composable
   override fun MoleculePresenterScope<SelectAddonToRemoveEvent>.present(
@@ -44,8 +46,12 @@ private class SelectAddonToRemovePresenter(
     var loadIteration by remember { mutableIntStateOf(0) }
     var paramsToNavigateToSummary by remember { mutableStateOf<CommonSummaryParameters?>(null) }
     val selectedToggleableOptions = remember {
-      mutableStateListOf(*((lastState as? SelectAddonToRemoveState.Success)
-        ?.addonsChosenForRemoval ?: emptyList()).toTypedArray())
+      mutableStateListOf(
+        *(
+          (lastState as? SelectAddonToRemoveState.Success)
+            ?.addonsChosenForRemoval ?: emptyList()
+        ).toTypedArray(),
+      )
     }
 
     LaunchedEffect(loadIteration) {
@@ -57,7 +63,7 @@ private class SelectAddonToRemovePresenter(
           currentState = SelectAddonToRemoveState.Success(
             addonOffer = result,
             addonsChosenForRemoval = contractAndAddonId.second?.let { preselectedId ->
-              val preselected = result.existingAddonsToRemove.firstOrNull{it.id==preselectedId}
+              val preselected = result.existingAddonsToRemove.firstOrNull { it.id == preselectedId }
               preselected?.let {
                 listOf(preselected)
               }
@@ -69,8 +75,11 @@ private class SelectAddonToRemovePresenter(
 
     CollectEvents { event ->
       when (event) {
-        SelectAddonToRemoveEvent.Retry -> loadIteration++
-        SelectAddonToRemoveEvent.ClearNavigation ->   {
+        SelectAddonToRemoveEvent.Retry -> {
+          loadIteration++
+        }
+
+        SelectAddonToRemoveEvent.ClearNavigation -> {
           paramsToNavigateToSummary = null
         }
 
@@ -83,16 +92,18 @@ private class SelectAddonToRemovePresenter(
             currentTotalCost = state.addonOffer.currentTotalCost,
             contractId = contractAndAddonId.first,
             productVariant = state.addonOffer.productVariant,
-            existingAddons = state.addonOffer.existingAddonsToRemove
+            existingAddons = state.addonOffer.existingAddonsToRemove,
           )
           paramsToNavigateToSummary = summaryParams
         }
 
-        is SelectAddonToRemoveEvent.ToggleOption -> Snapshot.withMutableSnapshot {
-          if (selectedToggleableOptions.contains(event.option)) {
-            selectedToggleableOptions.remove(event.option)
-          } else {
-            selectedToggleableOptions.add(event.option)
+        is SelectAddonToRemoveEvent.ToggleOption -> {
+          Snapshot.withMutableSnapshot {
+            if (selectedToggleableOptions.contains(event.option)) {
+              selectedToggleableOptions.remove(event.option)
+            } else {
+              selectedToggleableOptions.add(event.option)
+            }
           }
         }
       }
@@ -101,7 +112,7 @@ private class SelectAddonToRemovePresenter(
     return when (val state = currentState) {
       is SelectAddonToRemoveState.Error,
       SelectAddonToRemoveState.Loading,
-        -> state
+      -> state
 
       is SelectAddonToRemoveState.Success -> state.copy(
         addonsChosenForRemoval = selectedToggleableOptions,
@@ -125,17 +136,17 @@ internal sealed interface SelectAddonToRemoveState {
 
 internal sealed interface SelectAddonToRemoveEvent {
   data object Retry : SelectAddonToRemoveEvent
+
   data object ClearNavigation : SelectAddonToRemoveEvent
 
-  data object Submit: SelectAddonToRemoveEvent
+  data object Submit : SelectAddonToRemoveEvent
 
   data class ToggleOption(val option: CurrentlyActiveAddon) : SelectAddonToRemoveEvent
-
 }
 
 internal data class CommonSummaryParameters(
   val contractId: String,
-  val addonsToRemove:  List<CurrentlyActiveAddon>,
+  val addonsToRemove: List<CurrentlyActiveAddon>,
   val activationDate: LocalDate,
   val baseCost: ItemCost,
   val currentTotalCost: ItemCost,

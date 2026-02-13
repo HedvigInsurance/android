@@ -17,11 +17,11 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.InsuranceVariantDocument
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
-import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
+import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonPresenter
-import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest

@@ -11,10 +11,10 @@ import com.apollographql.apollo.testing.registerTestResponse
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
-import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCaseImpl
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource.INSURANCES_TAB
 import com.hedvig.android.data.addons.data.AddonBannerSource.TRAVEL_CERTIFICATES
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCaseImpl
 import com.hedvig.android.featureflags.flags.Feature.TRAVEL_ADDON
 import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule

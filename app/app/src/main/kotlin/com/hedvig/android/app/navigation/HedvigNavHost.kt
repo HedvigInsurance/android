@@ -312,7 +312,8 @@ internal fun HedvigNavHost(
       onNavigateToRemoveAddon = { insuranceId, addonId ->
         navigator.navigateUnsafe(
           AddonRemoveGraphDestination(
-            insuranceId, addonId
+            insuranceId,
+            addonId,
           ),
         )
       },
@@ -413,13 +414,33 @@ internal fun HedvigNavHost(
             return@onNavigateToQuickLink
           }
 
-          is QuickLinkCoInsuredAddInfo -> CoInsuredAddInfo(quickLinkDestination.contractId)
-          is QuickLinkCoInsuredAddOrRemove -> CoInsuredAddOrRemove(quickLinkDestination.contractId)
-          QuickLinkConnectPayment -> TrustlyDestination
-          QuickLinkTermination -> TerminateInsuranceGraphDestination(null)
-          QuickLinkTravelCertificate -> TravelCertificateGraphDestination
-          QuickLinkChangeTier -> StartTierFlowChooseInsuranceDestination
-          QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured -> EditCoInsuredTriage()
+          is QuickLinkCoInsuredAddInfo -> {
+            CoInsuredAddInfo(quickLinkDestination.contractId)
+          }
+
+          is QuickLinkCoInsuredAddOrRemove -> {
+            CoInsuredAddOrRemove(quickLinkDestination.contractId)
+          }
+
+          QuickLinkConnectPayment -> {
+            TrustlyDestination
+          }
+
+          QuickLinkTermination -> {
+            TerminateInsuranceGraphDestination(null)
+          }
+
+          QuickLinkTravelCertificate -> {
+            TravelCertificateGraphDestination
+          }
+
+          QuickLinkChangeTier -> {
+            StartTierFlowChooseInsuranceDestination
+          }
+
+          QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured -> {
+            EditCoInsuredTriage()
+          }
         }
         with(navigator) {
           backStackEntry.navigate(destination)
@@ -440,7 +461,7 @@ internal fun HedvigNavHost(
       navController = hedvigAppState.navController,
       onNavigateToNewConversation = { backStackEntry ->
         navigateToNewConversation(backStackEntry)
-      }
+      },
     )
   }
 }

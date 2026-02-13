@@ -100,7 +100,6 @@ internal fun RemoveAddonSummaryDestination(
   )
 }
 
-
 @Composable
 private fun RemoveAddonSummaryScreen(
   uiState: RemoveAddonSummaryState,
@@ -135,14 +134,15 @@ private fun RemoveAddonSummaryScreen(
       )
     }
 
-    RemoveAddonSummaryState.Failure -> HedvigScaffold(
-      navigateUp = navigateUp,
-    ) {
-      HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+    RemoveAddonSummaryState.Failure -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+      }
     }
   }
 }
-
 
 @Composable
 private fun SummaryContentScreen(
@@ -232,7 +232,6 @@ private fun SummaryCard(
   )
 }
 
-
 @HedvigPreview
 @Composable
 private fun PreviewRemoveAddonSummaryScreen(
@@ -272,7 +271,7 @@ private class RemoveAddonSummaryStateUiStateProvider :
                 UiMoney(70.0, UiCurrencyCode.SEK),
                 emptyList(),
               ),
-            )
+            ),
           ),
           activationDate = LocalDate(2026, 9, 1),
           baseCost = ItemCost(
@@ -295,7 +294,7 @@ private class RemoveAddonSummaryStateUiStateProvider :
             documents = emptyList(),
             displayTierName = "base insurance product variant displayTierName",
             tierDescription = "tierDescription",
-            termsVersion = "termsVersion"
+            termsVersion = "termsVersion",
           ),
           existingAddons = listOf(
             CurrentlyActiveAddon(

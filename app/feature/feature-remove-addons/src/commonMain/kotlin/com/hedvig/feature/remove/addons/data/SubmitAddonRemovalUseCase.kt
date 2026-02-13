@@ -15,14 +15,15 @@ internal interface SubmitAddonRemovalUseCase {
 
 internal class SubmitAddonRemovalUseCaseImpl(
   private val apolloClient: ApolloClient,
-): SubmitAddonRemovalUseCase {
-  override suspend fun invoke(
-    contractId: String,
-    addonIds: List<String>,
-  ): Either<ErrorMessage, Unit> {
+) : SubmitAddonRemovalUseCase {
+  override suspend fun invoke(contractId: String, addonIds: List<String>): Either<ErrorMessage, Unit> {
     return either {
-      apolloClient.mutation(ConfirmAddonRemovalMutation(addonIds = addonIds,
-        contractId = contractId)).safeExecute().fold(
+      apolloClient.mutation(
+        ConfirmAddonRemovalMutation(
+          addonIds = addonIds,
+          contractId = contractId,
+        ),
+      ).safeExecute().fold(
         ifLeft = { error ->
           logcat(LogPriority.ERROR) { "Tried to do ConfirmAddonRemovalMutation but got error: $error" }
           raise(ErrorMessage())
@@ -31,7 +32,7 @@ internal class SubmitAddonRemovalUseCaseImpl(
           if (result.addonRemoveConfirm != null) {
             raise(ErrorMessage(result.addonRemoveConfirm.message))
           }
-        //todo maybe:  crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully
+          // todo maybe:  crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully
         },
       )
     }

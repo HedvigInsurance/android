@@ -89,9 +89,9 @@ internal class GetAddonRemovalCostBreakdownUseCaseImpl(
               }
             }
             QuoteCostBreakdown(
-              totalMonthlyNet = UiMoney.fromMoneyFragment( result.addonRemoveOfferCost.monthlyNet),
-              totalMonthlyGross = UiMoney.fromMoneyFragment( result.addonRemoveOfferCost.monthlyGross),
-              entries = costBreakdownEntries
+              totalMonthlyNet = UiMoney.fromMoneyFragment(result.addonRemoveOfferCost.monthlyNet),
+              totalMonthlyGross = UiMoney.fromMoneyFragment(result.addonRemoveOfferCost.monthlyGross),
+              entries = costBreakdownEntries,
             )
           },
         )

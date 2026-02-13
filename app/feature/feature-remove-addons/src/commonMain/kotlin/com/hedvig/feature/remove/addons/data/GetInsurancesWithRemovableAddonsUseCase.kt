@@ -32,12 +32,11 @@ internal class GetInsurancesWithRemovableAddonsUseCaseImpl(
         },
         ifRight = {
           it.currentMember.activeContracts.toInsurancesForAddon()
-        }
+        },
       )
     }
   }
 }
-
 
 data class InsuranceForAddon(
   val id: String,
@@ -48,15 +47,15 @@ data class InsuranceForAddon(
 
 private fun List<InsurancesWithRemovableAddonsQuery.Data.CurrentMember.ActiveContract>.toInsurancesForAddon():
   List<InsuranceForAddon> {
-  return filter {it.currentAgreement.addons.isNotEmpty()}
-    //todo: redo, change for it.existingAddons
-    //TODO: filter out non-removable addons!
+  return filter { it.currentAgreement.addons.isNotEmpty() }
+    // todo: redo, change for it.existingAddons
+    // TODO: filter out non-removable addons!
     .map { contract ->
-    InsuranceForAddon(
-      id = contract.id,
-      displayName = contract.currentAgreement.productVariant.displayName,
-      contractExposure = contract.exposureDisplayNameShort,
-      contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup(),
-    )
-  }
+      InsuranceForAddon(
+        id = contract.id,
+        displayName = contract.currentAgreement.productVariant.displayName,
+        contractExposure = contract.exposureDisplayNameShort,
+        contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup(),
+      )
+    }
 }

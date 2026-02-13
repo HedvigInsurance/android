@@ -84,13 +84,11 @@ internal class StartAddonRemovalUseCaseImpl(
                 raise(ErrorMessage(addonRemoveStart.message))
               }
             }
-
           },
         )
     }
   }
 }
-
 
 internal data class StartAddonRemovalResponse(
   val existingAddonsToRemove: List<CurrentlyActiveAddon>,

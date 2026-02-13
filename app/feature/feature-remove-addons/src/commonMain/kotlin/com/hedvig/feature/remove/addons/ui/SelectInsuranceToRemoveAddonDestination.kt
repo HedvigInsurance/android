@@ -41,11 +41,10 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun SelectInsuranceToRemoveAddonDestination(
-
   navigateUp: () -> Unit,
   navigateToChooseAddon: (chosenInsuranceId: String) -> Unit,
 ) {
-  val viewModel: SelectInsuranceToRemoveAddonViewModel = koinViewModel() //TODO
+  val viewModel: SelectInsuranceToRemoveAddonViewModel = koinViewModel()
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceToRemoveAddonScreen(
     uiState = uiState,
@@ -66,7 +65,6 @@ internal fun SelectInsuranceToRemoveAddonDestination(
   )
 }
 
-
 @Composable
 private fun SelectInsuranceToRemoveAddonScreen(
   uiState: SelectInsuranceToRemoveAddonState,
@@ -85,7 +83,9 @@ private fun SelectInsuranceToRemoveAddonScreen(
       }
     }
 
-    SelectInsuranceToRemoveAddonState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    SelectInsuranceToRemoveAddonState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
 
     is SelectInsuranceToRemoveAddonState.Success -> {
       LaunchedEffect(uiState.insuranceIdToContinue) {
@@ -101,7 +101,7 @@ private fun SelectInsuranceToRemoveAddonScreen(
       )
     }
 
-    SelectInsuranceToRemoveAddonState.EmptyList ->
+    SelectInsuranceToRemoveAddonState.EmptyList -> {
       HedvigScaffold(
         navigateUp = navigateUp,
       ) {
@@ -112,6 +112,7 @@ private fun SelectInsuranceToRemoveAddonScreen(
           modifier = Modifier.weight(1f),
         )
       }
+    }
   }
 }
 
@@ -245,6 +246,3 @@ private class ChooseInsuranceToRemoveAddonUiStateProvider :
       SelectInsuranceToRemoveAddonState.Loading,
     ),
   )
-
-
-

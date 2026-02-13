@@ -73,7 +73,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.PerilData
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
@@ -181,12 +180,14 @@ private fun CustomizeTravelAddonScreen(
     Modifier.fillMaxSize(),
   ) {
     when (uiState) {
-      is Failure -> FailureScreen(
-        errorMessage = uiState.errorMessage,
-        reload = reload,
-        popBackStack = popBackStack,
-        navigateToChat = navigateToChat,
-      )
+      is Failure -> {
+        FailureScreen(
+          errorMessage = uiState.errorMessage,
+          reload = reload,
+          popBackStack = popBackStack,
+          navigateToChat = navigateToChat,
+        )
+      }
 
       Loading -> {
         HedvigFullScreenCenterAlignedProgress()
@@ -428,11 +429,12 @@ private fun CustomizeAddonCard(
               }
             }
           }
-          onNavigateToTravelInsurancePlusExplanation(PerilComparisonParams(
-            perilList = perilsList,
-            whatsIncludedPageTitle = uiState.commonParams.whatsIncludedPageTitle,
-            whatsIncludedPageDescription = uiState.commonParams.whatsIncludedPageDescription
-          )
+          onNavigateToTravelInsurancePlusExplanation(
+            PerilComparisonParams(
+              perilList = perilsList,
+              whatsIncludedPageTitle = uiState.commonParams.whatsIncludedPageTitle,
+              whatsIncludedPageDescription = uiState.commonParams.whatsIncludedPageDescription,
+            ),
           )
         },
       )
@@ -529,7 +531,7 @@ private fun ToggleableAddons(
         onCheckboxSelected = {
           onToggleOption(addonQuote)
         },
-        enabled = true
+        enabled = true,
       )
       if (index != addonOptions.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -548,7 +550,7 @@ private fun AddonCheckbox(
   Checkbox(
     option = CheckboxOption(
       text = option.title,
-      label = option.description
+      label = option.description,
     ),
     selected = selected,
     style = RadioGroupStyle.LeftAligned,
@@ -556,17 +558,21 @@ private fun AddonCheckbox(
     enabled = enabled,
     textEndContent = {
       when (option.type) {
-        AddonCheckBoxOptionType.Active -> HighlightLabel(
-          stringResource(Res.string.ADDON_BADGE_ACTIVE),
-          size = HighLightSize.Small,
-          color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.MEDIUM),
-        )
+        AddonCheckBoxOptionType.Active -> {
+          HighlightLabel(
+            stringResource(Res.string.ADDON_BADGE_ACTIVE),
+            size = HighLightSize.Small,
+            color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.MEDIUM),
+          )
+        }
 
         is AddonCheckBoxOptionType.NotActive -> {
           val pricePerMonth = option.type.monthlyGross.getPerMonthDescription()
           HighlightLabel(
-            labelText = stringResource(Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              option.type.monthlyGross),
+            labelText = stringResource(
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              option.type.monthlyGross,
+            ),
             size = HighLightSize.Small,
             color = Grey(MEDIUM),
             modifier = Modifier
@@ -589,6 +595,7 @@ private data class AddonCheckboxOption(
 
 private sealed interface AddonCheckBoxOptionType {
   data object Active : AddonCheckBoxOptionType
+
   data class NotActive(val monthlyGross: UiMoney) : AddonCheckBoxOptionType
 }
 
@@ -624,7 +631,7 @@ private fun HeaderInfoWithCurrentPrice(
             labelText = stringResource(Res.string.ADDON_FLOW_PRICE_LABEL, ""),
             size = HighLightSize.Small,
             color = Grey(MEDIUM),
-            modifier = Modifier.withoutPlacement()
+            modifier = Modifier.withoutPlacement(),
           )
         }
       },
@@ -770,7 +777,8 @@ private fun SelectTierScreenPreview(
         {},
         {},
         {},
-        {}, {},
+        {},
+        {},
       )
     }
   }
@@ -808,7 +816,6 @@ internal class CustomizeTravelAddonPreviewProvider :
           whatsIncludedPageTitle = "whatsIncludedPageTitle",
           whatsIncludedPageDescription = "whatsIncludedPageDescription",
         ),
-
         currentlyActiveAddon = CurrentlyActiveAddon(
           "CurrentAddon Display Title",
           "CurrentAddon Display Description",
@@ -819,8 +826,7 @@ internal class CustomizeTravelAddonPreviewProvider :
           ),
         ),
         chosenOptionPremiumExtra = UiMoney(10.0, UiCurrencyCode.SEK),
-
-        ),
+      ),
       Failure("Ooops"),
     ),
   )

@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
@@ -41,18 +40,15 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
-import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
-import com.hedvig.android.logger.logcat
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
@@ -60,7 +56,6 @@ import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_BUTTON
 import hedvig.resources.ADDON_FLOW_CONFIRMATION_TITLE
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL
-import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
 import hedvig.resources.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE
 import hedvig.resources.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION
@@ -96,7 +91,7 @@ internal fun AddonSummaryDestination(
     },
     reload = {
       viewModel.emit(AddonSummaryEvent.Reload)
-    }
+    },
   )
 }
 
@@ -124,7 +119,7 @@ private fun AddonSummaryScreen(
     is Content -> {
       LaunchedEffect(uiState.navigateToFailure) {
         val fail = uiState.navigateToFailure
-        if (fail!=null) {
+        if (fail != null) {
           onFailure()
         }
       }
@@ -136,10 +131,12 @@ private fun AddonSummaryScreen(
       )
     }
 
-    AddonSummaryState.Error -> HedvigScaffold(
-      navigateUp = navigateUp,
-    ) {
-      HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+    AddonSummaryState.Error -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+      }
     }
   }
 }
@@ -202,7 +199,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         spaceBetween = 8.dp,
         endSlot = {
           val totalExtra = uiState.costBreakdownWithExtras?.totalExtra
-          if (totalExtra!=null) {
+          if (totalExtra != null) {
             val text = if (totalExtra.amount > 0) {
               // with +
               stringResource(
@@ -226,7 +223,6 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
               },
             )
           }
-
         },
       )
       Row(
@@ -259,7 +255,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
 @Composable
 private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
   val premium: UiMoney? = uiState.costBreakdownWithExtras?.totalMonthlyNet
-  val previousPremium: UiMoney? = if (premium==uiState.costBreakdownWithExtras?.totalMonthlyGross) {
+  val previousPremium: UiMoney? = if (premium == uiState.costBreakdownWithExtras?.totalMonthlyGross) {
     null
   } else {
     uiState.costBreakdownWithExtras?.totalMonthlyGross
@@ -285,7 +281,7 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
     documents = uiState.documents.map {
       DisplayDocument(
         displayName = it.displayName,
-        url = it.url
+        url = it.url,
       )
     },
   )
@@ -306,7 +302,7 @@ private fun PreviewAddonSummaryScreen(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }
@@ -315,7 +311,7 @@ private fun PreviewAddonSummaryScreen(
 private class ChooseInsuranceForAddonUiStateProvider :
   CollectionPreviewParameterProvider<AddonSummaryState>(
     listOf(
-      Loading(      activationDateToNavigateToSuccess = null),
+      Loading(activationDateToNavigateToSuccess = null),
       Content(
         currentlyActiveAddons = listOf(
           CurrentlyActiveAddon(
@@ -324,9 +320,9 @@ private class ChooseInsuranceForAddonUiStateProvider :
             cost = ItemCost(
               UiMoney(49.0, UiCurrencyCode.SEK),
               UiMoney(49.0, UiCurrencyCode.SEK),
-              emptyList()
+              emptyList(),
             ),
-          )
+          ),
         ),
         insuranceDisplayName = "TravelPlus",
         activationDate = LocalDate(2025, 1, 1),
@@ -349,8 +345,8 @@ private class ChooseInsuranceForAddonUiStateProvider :
             documents = listOf(
               TravelAddonQuoteInsuranceDocument(
                 displayName = "Document display name",
-                url = ""
-              )
+                url = "",
+              ),
             ),
             itemCost = ItemCost(
               UiMoney(79.0, UiCurrencyCode.SEK),
@@ -364,10 +360,9 @@ private class ChooseInsuranceForAddonUiStateProvider :
                 ),
               ),
             ),
-            addonSubtype = "DAYS_60"
-          )
+            addonSubtype = "DAYS_60",
+          ),
         ),
-
         navigateToFailure = null,
         insuranceExposure = "Exposure",
         notificationMessage = "Notification message",
@@ -380,17 +375,17 @@ private class ChooseInsuranceForAddonUiStateProvider :
             CostBreakdownEntry(
               displayName = "base insurance",
               displayValue = "200 kr/mo",
-              hasStrikethrough = false
+              hasStrikethrough = false,
             ),
             CostBreakdownEntry(
               displayName = "addon",
               displayValue = "50 kr/mo",
-              hasStrikethrough = false
+              hasStrikethrough = false,
             ),
-          )
+          ),
         ),
         displayItems = emptyList(),
-        contractGroup = null
+        contractGroup = null,
       ),
       Content(
         currentlyActiveAddons = emptyList(),
@@ -415,8 +410,8 @@ private class ChooseInsuranceForAddonUiStateProvider :
             documents = listOf(
               TravelAddonQuoteInsuranceDocument(
                 displayName = "Document display name",
-                url = ""
-              )
+                url = "",
+              ),
             ),
             itemCost = ItemCost(
               UiMoney(40.0, UiCurrencyCode.SEK),
@@ -436,32 +431,32 @@ private class ChooseInsuranceForAddonUiStateProvider :
                 ),
               ),
             ),
-            addonSubtype = "DAYS_60"
-          )
+            addonSubtype = "DAYS_60",
+          ),
         ),
         navigateToFailure = null,
         insuranceExposure = "Exposure",
         notificationMessage = "Notification message",
         documents = emptyList(),
         costBreakdownWithExtras = CostBreakdownWithExtras(
-            totalMonthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
-            totalMonthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalMonthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalMonthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
           totalExtra = UiMoney(50.0, UiCurrencyCode.SEK),
           displayItems = listOf(
             CostBreakdownEntry(
-              displayName =  "base insurance" ,
+              displayName = "base insurance",
               displayValue = "200 kr/mo",
-              hasStrikethrough = false
+              hasStrikethrough = false,
             ),
             CostBreakdownEntry(
-              displayName =  "addon" ,
+              displayName = "addon",
               displayValue = "50 kr/mo",
-              hasStrikethrough = false
+              hasStrikethrough = false,
             ),
-          )
+          ),
         ),
         displayItems = emptyList(),
-        contractGroup = null
+        contractGroup = null,
       ),
     ),
   )

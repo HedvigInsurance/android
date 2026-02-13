@@ -33,11 +33,11 @@ internal class GetAddonBannerInfoUseCaseImpl(
     val mappedSource = when (source) {
       AddonBannerSource.TRAVEL_CERTIFICATES,
       AddonBannerSource.TRAVEL_DEEPLINK,
-        -> listOf(AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE)
+      -> listOf(AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE)
 
       AddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
       AddonBannerSource.INSURANCES_TAB,
-        -> listOf(
+      -> listOf(
         AddonFlow.APP_CAR_PLUS,
         AddonFlow.APP_TRAVEL_PLUS_SELL_ONLY,
       )
@@ -109,7 +109,7 @@ data class AddonBannerInfo(
 enum class FlowType {
   APP_TRAVEL_PLUS_SELL_ONLY,
   APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
-  APP_CAR_PLUS
+  APP_CAR_PLUS,
 }
 
 @Serializable

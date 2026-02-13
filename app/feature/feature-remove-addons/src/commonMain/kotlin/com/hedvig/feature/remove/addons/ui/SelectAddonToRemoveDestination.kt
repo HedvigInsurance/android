@@ -66,8 +66,13 @@ internal fun SelectAddonToRemoveDestination(
   preselectedAddonId: String?,
   navigateUp: () -> Unit,
   navigateToSummary: (
-    contractId: String, addonsToRemove: List<CurrentlyActiveAddon>, activationDate: LocalDate, baseCost: ItemCost,
-    currentTotalCost: ItemCost, productVariant: ProductVariant, allAddons: List<CurrentlyActiveAddon>,
+    contractId: String,
+    addonsToRemove: List<CurrentlyActiveAddon>,
+    activationDate: LocalDate,
+    baseCost: ItemCost,
+    currentTotalCost: ItemCost,
+    productVariant: ProductVariant,
+    allAddons: List<CurrentlyActiveAddon>,
   ) -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel = koinViewModel {
@@ -111,21 +116,29 @@ private fun SelectAddonToRemoveScreen(
   navigateToSummary: (params: CommonSummaryParameters) -> Unit,
 ) {
   when (uiState) {
-    is SelectAddonToRemoveState.Error -> HedvigScaffold(
-      navigateUp = navigateUp,
-    ) {
-      val subtitle = if (uiState.message != null) null else stringResource(Res.string.GENERAL_ERROR_BODY)
-      HedvigErrorSection(
-        title = uiState.message ?: stringResource(Res.string.something_went_wrong),
-        subTitle = subtitle,
-        onButtonClick = if (uiState.message != null) navigateUp else reload,
-        modifier = Modifier.weight(1f).fillMaxWidth(),
-        buttonText = if (uiState.message != null) stringResource(Res.string.general_back_button)
-        else stringResource(Res.string.GENERAL_RETRY),
-      )
+    is SelectAddonToRemoveState.Error -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        val subtitle = if (uiState.message != null) null else stringResource(Res.string.GENERAL_ERROR_BODY)
+        HedvigErrorSection(
+          title = uiState.message ?: stringResource(Res.string.something_went_wrong),
+          subTitle = subtitle,
+          onButtonClick = if (uiState.message != null) navigateUp else reload,
+          modifier = Modifier.weight(1f).fillMaxWidth(),
+          buttonText = if (uiState.message != null) {
+            stringResource(Res.string.general_back_button)
+          } else {
+            stringResource(Res.string.GENERAL_RETRY)
+          },
+        )
+      }
     }
 
-    is SelectAddonToRemoveState.Loading -> HedvigFullScreenCenterAlignedProgress()
+    is SelectAddonToRemoveState.Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is SelectAddonToRemoveState.Success -> {
       LaunchedEffect(uiState.paramsToNavigateToSummary) {
         val summaryParams = uiState.paramsToNavigateToSummary
@@ -219,11 +232,7 @@ private fun ToggleableAddons(
 }
 
 @Composable
-private fun AddonCheckbox(
-  option: AddonCheckboxOption,
-  selected: Boolean,
-  onCheckboxSelected: () -> Unit,
-) {
+private fun AddonCheckbox(option: AddonCheckboxOption, selected: Boolean, onCheckboxSelected: () -> Unit) {
   Checkbox(
     option = CheckboxOption(
       text = option.title,
@@ -287,26 +296,41 @@ private class SelectAddonToRemoveStateProvider :
       SelectAddonToRemoveState.Error("Big error message"),
       SelectAddonToRemoveState.Success(
         addonOffer = StartAddonRemovalResponse(
-          existingAddonsToRemove = listOf(CurrentlyActiveAddon(
-            displayTitle = "Addon title 1",
-            displayDescription = "Addon desc 1",
-            cost = ItemCost( UiMoney(25.0, UiCurrencyCode.SEK),
-              UiMoney(25.0, UiCurrencyCode.SEK), listOf()),
-            id = "id1"
-          ), CurrentlyActiveAddon(
-            displayTitle = "Addon title 2",
-            displayDescription = "Addon desc 2",
-            cost = ItemCost( UiMoney(50.0, UiCurrencyCode.SEK),
-              UiMoney(50.0, UiCurrencyCode.SEK), listOf()),
-            id = "id2"
-          )),
-          activationDate = LocalDate(2026,3,3),
-          baseCost = ItemCost( UiMoney(100.0, UiCurrencyCode.SEK),
-            UiMoney(100.0, UiCurrencyCode.SEK), listOf()),
-          currentTotalCost = ItemCost( UiMoney(175.0, UiCurrencyCode.SEK),
-            UiMoney(175.0, UiCurrencyCode.SEK), listOf()),
+          existingAddonsToRemove = listOf(
+            CurrentlyActiveAddon(
+              displayTitle = "Addon title 1",
+              displayDescription = "Addon desc 1",
+              cost = ItemCost(
+                UiMoney(25.0, UiCurrencyCode.SEK),
+                UiMoney(25.0, UiCurrencyCode.SEK),
+                listOf(),
+              ),
+              id = "id1",
+            ),
+            CurrentlyActiveAddon(
+              displayTitle = "Addon title 2",
+              displayDescription = "Addon desc 2",
+              cost = ItemCost(
+                UiMoney(50.0, UiCurrencyCode.SEK),
+                UiMoney(50.0, UiCurrencyCode.SEK),
+                listOf(),
+              ),
+              id = "id2",
+            ),
+          ),
+          activationDate = LocalDate(2026, 3, 3),
+          baseCost = ItemCost(
+            UiMoney(100.0, UiCurrencyCode.SEK),
+            UiMoney(100.0, UiCurrencyCode.SEK),
+            listOf(),
+          ),
+          currentTotalCost = ItemCost(
+            UiMoney(175.0, UiCurrencyCode.SEK),
+            UiMoney(175.0, UiCurrencyCode.SEK),
+            listOf(),
+          ),
           pageDescription = "Page description",
-          pageTitle =  "Page title",
+          pageTitle = "Page title",
           productVariant = ProductVariant(
             displayName = "HomeownerInsurance",
             contractGroup = ContractGroup.HOUSE,
@@ -318,17 +342,21 @@ private class SelectAddonToRemoveStateProvider :
             displayTierName = "displayTierName",
             tierDescription = "tierDescription",
             termsVersion = "termsVersion",
-          )
+          ),
         ),
-        addonsChosenForRemoval = listOf(CurrentlyActiveAddon(
-          displayTitle = "Addon title 1",
-          displayDescription = "Addon desc 1",
-          cost = ItemCost( UiMoney(25.0, UiCurrencyCode.SEK),
-            UiMoney(25.0, UiCurrencyCode.SEK), listOf()),
-          id = "id1"
-        )),
-        paramsToNavigateToSummary = null
-      )
+        addonsChosenForRemoval = listOf(
+          CurrentlyActiveAddon(
+            displayTitle = "Addon title 1",
+            displayDescription = "Addon desc 1",
+            cost = ItemCost(
+              UiMoney(25.0, UiCurrencyCode.SEK),
+              UiMoney(25.0, UiCurrencyCode.SEK),
+              listOf(),
+            ),
+            id = "id1",
+          ),
+        ),
+        paramsToNavigateToSummary = null,
+      ),
     ),
   )
-

@@ -256,9 +256,8 @@ internal fun YourInfoTab(
     }
     Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
-      
       HedvigButton(
-        text = "Remove addon TODO", //TODO!!!
+        text = "Remove addon TODO", // TODO!!!
         onClick = navigateToRemoveAddon,
         enabled = true,
         modifier = Modifier

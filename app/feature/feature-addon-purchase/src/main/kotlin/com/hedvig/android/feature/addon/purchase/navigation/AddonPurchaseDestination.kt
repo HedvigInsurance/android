@@ -31,7 +31,7 @@ internal sealed interface AddonPurchaseDestination {
 
   @Serializable
   data class TravelInsurancePlusExplanation(
-    val perilData: PerilComparisonParams
+    val perilData: PerilComparisonParams,
   ) : AddonPurchaseDestination, Destination {
     @Serializable
     data class TravelPerilData(
@@ -88,5 +88,5 @@ internal data class SummaryParameters(
 @Serializable
 internal enum class AddonType {
   SELECTABLE,
-  TOGGLEABLE
+  TOGGLEABLE,
 }

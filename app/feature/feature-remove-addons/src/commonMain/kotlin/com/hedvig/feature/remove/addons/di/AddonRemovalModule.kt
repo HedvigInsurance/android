@@ -20,21 +20,22 @@ val addonRemovalModule = module {
   viewModel<SelectAddonToRemoveViewModel> { params ->
     SelectAddonToRemoveViewModel(
       get<StartAddonRemovalUseCase>(),
-      params.get<Pair<String,String?>>())
+      params.get<Pair<String, String?>>(),
+    )
   }
 
-  viewModel<RemoveAddonSummaryViewModel> {params ->
+  viewModel<RemoveAddonSummaryViewModel> { params ->
     RemoveAddonSummaryViewModel(
       params = params.get<CommonSummaryParameters>(),
       submitAddonRemovalUseCase = get<SubmitAddonRemovalUseCase>(),
       getAddonRemovalCostBreakdownUseCase = get<GetAddonRemovalCostBreakdownUseCase>(),
-      getInsurancesWithRemovableAddonsUseCase = get<GetInsurancesWithRemovableAddonsUseCase>()
+      getInsurancesWithRemovableAddonsUseCase = get<GetInsurancesWithRemovableAddonsUseCase>(),
     )
   }
 
   viewModel<SelectInsuranceToRemoveAddonViewModel> {
     SelectInsuranceToRemoveAddonViewModel(
-      get<GetInsurancesWithRemovableAddonsUseCase>()
+      get<GetInsurancesWithRemovableAddonsUseCase>(),
     )
   }
 

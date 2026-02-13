@@ -41,7 +41,7 @@ import org.koin.core.parameter.parametersOf
 internal data class PerilComparisonParams(
   val whatsIncludedPageTitle: String,
   val whatsIncludedPageDescription: String,
-  val perilList: List<Pair<String?, List<TravelPerilData>>>
+  val perilList: List<Pair<String?, List<TravelPerilData>>>,
 )
 
 fun NavGraphBuilder.addonPurchaseNavGraph(

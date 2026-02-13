@@ -22,26 +22,28 @@ internal class RemoveAddonSummaryViewModel(
   params: CommonSummaryParameters,
   submitAddonRemovalUseCase: SubmitAddonRemovalUseCase,
   getAddonRemovalCostBreakdownUseCase: GetAddonRemovalCostBreakdownUseCase,
-  getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase
+  getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase,
 ) : MoleculeViewModel<
-  RemoveAddonSummaryEvent, RemoveAddonSummaryState,
+    RemoveAddonSummaryEvent,
+    RemoveAddonSummaryState,
   >(
-  initialState = RemoveAddonSummaryState.Loading(),
-  presenter = RemoveAddonSummaryPresenter(
-    submitAddonRemovalUseCase = submitAddonRemovalUseCase,
-    params = params,
-    getAddonRemovalCostBreakdownUseCase = getAddonRemovalCostBreakdownUseCase,
-    getInsurancesWithRemovableAddonsUseCase = getInsurancesWithRemovableAddonsUseCase
-  ),
-)
+    initialState = RemoveAddonSummaryState.Loading(),
+    presenter = RemoveAddonSummaryPresenter(
+      submitAddonRemovalUseCase = submitAddonRemovalUseCase,
+      params = params,
+      getAddonRemovalCostBreakdownUseCase = getAddonRemovalCostBreakdownUseCase,
+      getInsurancesWithRemovableAddonsUseCase = getInsurancesWithRemovableAddonsUseCase,
+    ),
+  )
 
 private class RemoveAddonSummaryPresenter(
   private val submitAddonRemovalUseCase: SubmitAddonRemovalUseCase,
   private val params: CommonSummaryParameters,
   private val getAddonRemovalCostBreakdownUseCase: GetAddonRemovalCostBreakdownUseCase,
-  private val getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase
+  private val getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase,
 ) : MoleculePresenter<
-  RemoveAddonSummaryEvent, RemoveAddonSummaryState,
+    RemoveAddonSummaryEvent,
+    RemoveAddonSummaryState,
   > {
   @Composable
   override fun MoleculePresenterScope<RemoveAddonSummaryEvent>.present(
@@ -57,7 +59,7 @@ private class RemoveAddonSummaryPresenter(
       val exposureName = getInsurancesWithRemovableAddonsUseCase
         .invoke()
         .getOrNull()
-        ?.firstOrNull { it.id==params.contractId }
+        ?.firstOrNull { it.id == params.contractId }
         ?.contractExposure
       if (exposureName == null) {
         currentState = RemoveAddonSummaryState.Failure
@@ -66,9 +68,9 @@ private class RemoveAddonSummaryPresenter(
       getAddonRemovalCostBreakdownUseCase.invoke(
         contractId = params.contractId,
         addonsToRemove = params.addonsToRemove,
-        addonsLeft = params.existingAddons.filter {!params.addonsToRemove.contains(it)},
+        addonsLeft = params.existingAddons.filter { !params.addonsToRemove.contains(it) },
         baseCost = params.baseCost,
-        insuranceDisplayName = params.productVariant.displayName
+        insuranceDisplayName = params.productVariant.displayName,
       ).fold(
         ifLeft = {
           currentState = RemoveAddonSummaryState.Failure
@@ -78,9 +80,9 @@ private class RemoveAddonSummaryPresenter(
             summaryParams = params,
             costBreakdown = result,
             exposureName = exposureName,
-            navigateToFailure = null
+            navigateToFailure = null,
           )
-        }
+        },
       )
     }
 
@@ -124,10 +126,10 @@ private class RemoveAddonSummaryPresenter(
 
     return when (val state = currentState) {
       is RemoveAddonSummaryState.Content -> state.copy(
-        navigateToFailure = failureForNavigation
+        navigateToFailure = failureForNavigation,
       )
-      is RemoveAddonSummaryState.Loading -> state.copy(
-        activationDateToNavigateToSuccess = activationDateForNavigation)
+
+      is RemoveAddonSummaryState.Loading -> state.copy(activationDateToNavigateToSuccess = activationDateForNavigation)
 
       RemoveAddonSummaryState.Failure -> state
     }
@@ -151,6 +153,8 @@ internal sealed interface RemoveAddonSummaryState {
 
 internal interface RemoveAddonSummaryEvent {
   data object Retry : RemoveAddonSummaryEvent
+
   data object ReturnToInitialState : RemoveAddonSummaryEvent
+
   data object Submit : RemoveAddonSummaryEvent
 }

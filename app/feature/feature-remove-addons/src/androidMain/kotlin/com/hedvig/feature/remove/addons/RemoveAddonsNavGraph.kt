@@ -5,6 +5,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
@@ -22,8 +23,6 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import com.hedvig.android.data.productvariant.ProductVariant
-
 
 @Serializable
 internal data class SummaryParameters(
@@ -42,7 +41,6 @@ data class AddonRemoveGraphDestination(
   val addonId: String?,
 ) : Destination
 
-
 internal sealed interface AddonRemoveDestination {
   @Serializable
   data object ChooseInsuranceDestination : AddonRemoveDestination, Destination
@@ -52,7 +50,6 @@ internal sealed interface AddonRemoveDestination {
     val insuranceId: String,
     val addonId: String?,
   ) : AddonRemoveDestination, Destination
-
 
   @Serializable
   data class Summary(
@@ -75,7 +72,6 @@ internal sealed interface AddonRemoveDestination {
   @Serializable
   data object SubmitFailure : AddonRemoveDestination, Destination
 }
-
 
 fun NavGraphBuilder.removeAddonsNavGraph(
   navigator: Navigator,
@@ -121,9 +117,15 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         contractId = this.insuranceId,
         preselectedAddonId = this.addonId,
         navigateUp = navigator::navigateUp,
-        navigateToSummary = { contractId: String, addons: List<CurrentlyActiveAddon>,
-                              activationDate: LocalDate, baseCost: ItemCost, currentCost: ItemCost,
-          productVariant: ProductVariant, allAddons: List<CurrentlyActiveAddon> ->
+        navigateToSummary = {
+          contractId: String,
+          addons: List<CurrentlyActiveAddon>,
+          activationDate: LocalDate,
+          baseCost: ItemCost,
+          currentCost: ItemCost,
+          productVariant: ProductVariant,
+          allAddons: List<CurrentlyActiveAddon>,
+          ->
           navigator.navigateUnsafe(
             AddonRemoveDestination.Summary(
               params = SummaryParameters(
@@ -133,7 +135,7 @@ fun NavGraphBuilder.removeAddonsNavGraph(
                 baseCost = baseCost,
                 currentTotalCost = currentCost,
                 productVariant = productVariant,
-                allAddons
+                allAddons,
               ),
             ),
           )
@@ -160,7 +162,7 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         },
         navigateUp = navigator::navigateUp,
         existingAddonsToRemove = this.params.existingAddons,
-        productVariant = this.params.productVariant
+        productVariant = this.params.productVariant,
       )
     }
 

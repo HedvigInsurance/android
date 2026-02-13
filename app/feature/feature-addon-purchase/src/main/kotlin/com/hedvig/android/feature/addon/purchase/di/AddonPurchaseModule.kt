@@ -1,13 +1,13 @@
 package com.hedvig.android.feature.addon.purchase.di
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
-import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
-import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCaseImpl
+import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
+import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCase
 import com.hedvig.android.feature.addon.purchase.data.GetQuoteCostBreakdownUseCaseImpl
 import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
@@ -42,7 +42,7 @@ val addonPurchaseModule = module {
       addonPurchaseSource = params.get<AddonBannerSource>(),
       submitAddonPurchaseUseCase = get<SubmitAddonPurchaseUseCase>(),
       getQuoteCostBreakdownUseCase = get<GetQuoteCostBreakdownUseCase>(),
-      getInsuranceForTravelAddonUseCase = get<GetInsuranceForTravelAddonUseCase>()
+      getInsuranceForTravelAddonUseCase = get<GetInsuranceForTravelAddonUseCase>(),
     )
   }
 
