@@ -239,6 +239,7 @@
   <string name="COINSURED_WITHOUT_SSN_INFO">Vi kunde inte hämta informationen kopplat till personnumret. Ange det manuellt.</string>
   <string name="CONFIRM_AND_PROCEED_BUTTON">Bekräfta och fortsätt</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Notera att dina ändringar börjar gälla från och med %1$s.</string>
+  <string name="CONFIRM_CHANGES_TITLE">Godkänn ändringar</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Giltigt till %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Giltigt till imorgon</string>
