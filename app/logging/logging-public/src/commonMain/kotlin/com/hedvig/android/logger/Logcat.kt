@@ -7,7 +7,7 @@ import com.hedvig.android.apollo.ApolloOperationError
  */
 @Suppress("NOTHING_TO_INLINE")
 inline fun logcat(
-  priority: LogPriority = LogPriority.DEBUG,
+  priority: LogPriority = LogPriority.INFO,
   throwable: Throwable? = null,
   tag: String? = null,
   noinline message: () -> String,
@@ -19,7 +19,7 @@ inline fun logcat(
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun logcat(
-  priority: LogPriority = LogPriority.DEBUG,
+  priority: LogPriority = LogPriority.INFO,
   operationError: ApolloOperationError,
   tag: String? = null,
   noinline message: () -> String,

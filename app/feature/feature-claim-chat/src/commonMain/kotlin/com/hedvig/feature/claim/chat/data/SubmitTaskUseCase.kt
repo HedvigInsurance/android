@@ -37,7 +37,7 @@ internal class SubmitTaskUseCase(
         return result
       }
       val delay = (100 * (2.0.pow(attempt))).milliseconds
-      logcat(LogPriority.DEBUG) { "SubmitTaskUseCase retrying in $delay" }
+      logcat(LogPriority.INFO) { "SubmitTaskUseCase retrying in $delay" }
       delay(delay)
     }
 
