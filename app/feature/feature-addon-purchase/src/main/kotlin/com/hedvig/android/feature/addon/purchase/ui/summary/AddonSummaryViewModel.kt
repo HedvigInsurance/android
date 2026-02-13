@@ -38,15 +38,15 @@ internal class AddonSummaryViewModel(
   getQuoteCostBreakdownUseCase: GetQuoteCostBreakdownUseCase,
   getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
 ) : MoleculeViewModel<AddonSummaryEvent, AddonSummaryState>(
-  initialState = Loading(),
-  presenter = AddonSummaryPresenter(
-    summaryParameters,
-    submitAddonPurchaseUseCase,
-    addonPurchaseSource,
-    getQuoteCostBreakdownUseCase,
-    getInsuranceForTravelAddonUseCase,
-  ),
-)
+    initialState = Loading(),
+    presenter = AddonSummaryPresenter(
+      summaryParameters,
+      submitAddonPurchaseUseCase,
+      addonPurchaseSource,
+      getQuoteCostBreakdownUseCase,
+      getInsuranceForTravelAddonUseCase,
+    ),
+  )
 
 internal class AddonSummaryPresenter(
   private val summaryParameters: SummaryParameters,
@@ -65,13 +65,18 @@ internal class AddonSummaryPresenter(
 
     CollectEvents { event ->
       when (event) {
-        AddonSummaryEvent.Submit -> submitIteration++
+        AddonSummaryEvent.Submit -> {
+          submitIteration++
+        }
+
         AddonSummaryEvent.ReturnToInitialState -> {
           activationDateForNavigation = null
           errorForNavigation = null
         }
 
-        AddonSummaryEvent.Reload -> loadIteration++
+        AddonSummaryEvent.Reload -> {
+          loadIteration++
+        }
       }
     }
 
@@ -177,7 +182,7 @@ internal fun getInitialState(
 //    displayItems = summaryParameters.chosenQuotes.flatMap {
 //      it.displayDetails
 //    },
-    displayItems = emptyList(), //todo: check on test session
+    displayItems = emptyList(), // todo: check on test session
     navigateToFailure = null,
     contractGroup = summaryParameters.productVariant.contractGroup,
   )
@@ -197,10 +202,9 @@ internal sealed interface AddonSummaryState {
 
   data object Error : AddonSummaryState
 
-
   data class Content(
     val insuranceDisplayName: String,
-    val insuranceExposure: String?, //todo: add separate query
+    val insuranceExposure: String?, // todo: add separate query
     val contractGroup: ContractGroup?,
     val quotes: List<AddonQuote>,
     val activationDate: LocalDate,
@@ -208,11 +212,10 @@ internal sealed interface AddonSummaryState {
     val notificationMessage: String?,
     val documents: List<InsuranceVariantDocument>,
     val costBreakdownWithExtras: CostBreakdownWithExtras,
-    val displayItems: List<Pair<String, String>>, //todo: check how those look
+    val displayItems: List<Pair<String, String>>, // todo: check how those look
     val navigateToFailure: ErrorMessage? = null,
   ) : AddonSummaryState
 }
-
 
 internal sealed interface AddonSummaryEvent {
   data object Submit : AddonSummaryEvent
@@ -228,7 +231,7 @@ private fun logSuccessfulAddonPurchaseAction(
 ) {
   summaryParameters.chosenQuotes.forEach { chosenQuote ->
     chosenQuote.addonSubtype?.let {
-      //todo: review later when will have new entrypoints. Prob new addonPurchaseSource
+      // todo: review later when will have new entrypoints. Prob new addonPurchaseSource
       val logInfo = AddonLogInfo(
         flow = addonPurchaseSource,
         subType = chosenQuote.addonSubtype,
@@ -241,7 +244,6 @@ private fun logSuccessfulAddonPurchaseAction(
       logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
     }
   }
-
 }
 
 private data class AddonLogInfo(
