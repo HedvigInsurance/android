@@ -8,8 +8,13 @@ import com.hedvig.android.ui.emergency.FirstVetScreen
 import com.hedvig.android.ui.emergency.FirstVetSection
 
 @Composable
-internal fun FirstVetDestination(sections: List<FirstVetSection>, navigateUp: () -> Unit, navigateBack: () -> Unit) {
-  FirstVetScreen(sections, navigateUp, navigateBack)
+internal fun FirstVetDestination(
+  sections: List<FirstVetSection>,
+  navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
+  openUrl: (String) -> Unit,
+) {
+  FirstVetScreen(sections, navigateUp, navigateBack, openUrl)
 }
 
 @HedvigPreview
@@ -32,6 +37,7 @@ private fun PreviewCommonClaimDestination() {
             url = null,
           ),
         ),
+        {},
         {},
         {},
       )

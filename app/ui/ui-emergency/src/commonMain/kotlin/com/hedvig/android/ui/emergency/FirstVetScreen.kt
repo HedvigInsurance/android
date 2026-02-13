@@ -1,7 +1,5 @@
 package com.hedvig.android.ui.emergency
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
@@ -43,9 +40,9 @@ fun FirstVetScreen(
   sections: List<FirstVetSection>,
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
+  openUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val context = LocalContext.current
   HedvigScaffold(
     topAppBarText = stringResource(Res.string.HC_QUICK_ACTIONS_FIRSTVET_TITLE),
     navigateUp = navigateUp,
@@ -98,9 +95,7 @@ fun FirstVetScreen(
                   ?: stringResource(Res.string.SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON),
                 onClick = {
                   val url = section.url ?: "https://firstvet-se.go.link/kHxkt"
-                  context.startActivity(
-                    Intent(Intent.ACTION_VIEW, Uri.parse(url)),
-                  )
+                  openUrl(url)
                 },
                 modifier = Modifier.fillMaxWidth(),
               )
@@ -135,6 +130,7 @@ private fun PreviewFirstVetScreen() {
             url = null,
           )
         },
+        {},
         {},
         {},
       )

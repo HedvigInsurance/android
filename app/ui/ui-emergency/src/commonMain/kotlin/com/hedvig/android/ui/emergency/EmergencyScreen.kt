@@ -1,7 +1,5 @@
 package com.hedvig.android.ui.emergency
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -147,7 +144,6 @@ fun EmergencyScreen(
                 ButtonDefaults.ButtonStyle.SecondaryAlt
               }
               Spacer(Modifier.height(8.dp))
-              val context = LocalContext.current
               HedvigButton(
                 buttonStyle = style,
                 buttonSize = ButtonDefaults.ButtonSize.Medium,

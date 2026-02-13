@@ -74,6 +74,7 @@ fun NavGraphBuilder.homeGraph(
         sections,
         navigateUp = navigator::navigateUp,
         navigateBack = navigator::popBackStack,
+        openUrl = openUrl,
       )
     }
     nestedGraphs()
