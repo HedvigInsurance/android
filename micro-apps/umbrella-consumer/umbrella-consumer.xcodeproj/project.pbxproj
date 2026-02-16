@@ -11,7 +11,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		559F51542EBE260600A059AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		559F51542EBE260600A059AF /* Exceptions for "umbrella-consumer" folder in "umbrella-consumer" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -24,7 +24,7 @@
 		55D8AB972EBE16C700E53763 /* umbrella-consumer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				559F51542EBE260600A059AF /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+				559F51542EBE260600A059AF /* Exceptions for "umbrella-consumer" folder in "umbrella-consumer" target */,
 			);
 			path = "umbrella-consumer";
 			sourceTree = "<group>";
@@ -145,7 +145,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT\"\ncd ../..\nexport JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-23.jdk/Contents/Home\"\n./gradlew :umbrella:embedAndSignAppleFrameworkForXcode";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT\"\ncd ../..\nexport JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-23.jdk/Contents/Home\"\n./gradlew :umbrella:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
