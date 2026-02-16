@@ -48,6 +48,10 @@ kotlin {
       implementation(libs.compose.richtextCommonmark)
       implementation(libs.koin.composeViewModel)
     }
+    jvmMain.dependencies {
+      implementation(libs.compose.richtext)
+      implementation(libs.compose.richtextCommonmark)
+    }
     androidInstrumentedTest.dependencies {
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)

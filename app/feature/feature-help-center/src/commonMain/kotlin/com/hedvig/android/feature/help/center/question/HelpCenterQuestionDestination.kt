@@ -17,13 +17,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -33,7 +31,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
-import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.feature.help.center.ShowNavigateToInboxViewModel
@@ -44,6 +41,7 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionUiState
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionUiState.NoQuestionFound
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionUiState.Success
 import com.hedvig.android.feature.help.center.ui.HelpCenterSection
+import com.hedvig.android.feature.help.center.ui.MarkdownText
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
@@ -93,7 +91,7 @@ private fun HelpCenterQuestionScreen(
         title = stringResource(Res.string.HC_TITLE),
         onClick = onNavigateUp,
       )
-      when (val state = uiState) {
+      when (uiState) {
         Failure -> {
           FailureScreen(
             onClick = onReload,
@@ -116,7 +114,7 @@ private fun HelpCenterQuestionScreen(
 
         is Success -> {
           HelpCenterQuestionScreen(
-            faqItem = state.faqItem,
+            faqItem = uiState.faqItem,
             showNavigateToInboxButton = showNavigateToInboxButton,
             onNavigateToInbox = onNavigateToInbox,
             onNavigateToNewConversation = onNavigateToNewConversation,
@@ -153,7 +151,6 @@ private fun HelpCenterQuestionScreen(
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
 ) {
-  LocalConfiguration.current
   Column(
     Modifier
       .fillMaxSize()
@@ -185,11 +182,9 @@ private fun HelpCenterQuestionScreen(
           ProvideTextStyle(
             HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
           ) {
-            RichText {
-              Markdown(
-                content = faqItem.answer,
-              )
-            }
+            MarkdownText(
+              markdown = faqItem.answer,
+            )
           }
         },
       )
