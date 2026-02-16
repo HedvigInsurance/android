@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.help.center.home
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -50,9 +49,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +59,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationEventHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
@@ -120,10 +120,13 @@ import hedvig.resources.HC_TITLE
 import hedvig.resources.Res
 import hedvig.resources.SEARCH_NOTHING_FOUND
 import hedvig.resources.SEARCH_PLACEHOLDER
+import hedvig.resources.blur_background
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
+import hedvig.resources.pillow_hedvig
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -382,7 +385,7 @@ private fun ContentWithoutSearch(
     ) {
       Spacer(Modifier.height(32.dp))
       Image(
-        painter = painterResource(hedvig.resources.R.drawable.pillow_hedvig),
+        painter = painterResource(Res.drawable.pillow_hedvig),
         contentDescription = null,
         modifier = Modifier
           .size(170.dp)
@@ -436,7 +439,6 @@ private fun ContentWithoutSearch(
             Spacer(Modifier.height(32.dp))
           }
         }
-        LocalConfiguration.current
         AnimatedVisibility(
           !questions.isEmpty(),
         ) {
@@ -470,7 +472,7 @@ private fun SearchResults(
   onNavigateToQuestion: (questionId: String) -> Unit,
   onQuickActionsSelected: (QuickAction) -> Unit,
 ) {
-  BackHandler(true) {
+  NavigationEventHandler(state = rememberNavigationEventState(NavigationEventInfo.None), isBackEnabled = true) {
     onBackPressed()
   }
 
