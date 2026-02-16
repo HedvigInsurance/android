@@ -22,6 +22,7 @@ kotlin {
       implementation(projects.coreDatastorePublic)
       implementation(projects.featureClaimChat)
       implementation(projects.featureFlags)
+      implementation(projects.featureHelpCenter)
       implementation(projects.languageCore)
       implementation(projects.networkClients)
     }

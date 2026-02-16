@@ -16,6 +16,7 @@ kotlin {
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
     projects.authlib,
     projects.featureClaimChat,
+    projects.featureHelpCenter,
     projects.shareddi,
   )
   listOf(

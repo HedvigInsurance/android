@@ -2,6 +2,7 @@ package com.hedvig.android.shareddi
 
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.datastore.DeviceIdFetcher
+import com.hedvig.android.feature.help.center.di.helpCenterModule
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.feature.claim.chat.di.claimChatModule
@@ -19,6 +20,7 @@ fun initKoin(
       iosPlatformModule(accessTokenFetcher, deviceIdFetcher, featureManager),
       sharedModule(appBuildConfig),
       claimChatModule,
+      helpCenterModule,
     )
   }
 }
