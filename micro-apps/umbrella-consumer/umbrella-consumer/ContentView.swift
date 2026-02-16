@@ -4,15 +4,16 @@ import HedvigShared
 struct ContentView: View {
     var body: some View {
         VStack {
-            ClaimChatViewController()
+            HelpCenterViewController()
         }
         .padding()
     }
 }
 
-struct ClaimChatViewController: UIViewControllerRepresentable {
+struct HelpCenterViewController: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        return ClaimChatViewControllerKt.ClaimChatViewController()
+//        return HelpCenterViewControllerKt.HelpCenterViewController()
+        return UIViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
