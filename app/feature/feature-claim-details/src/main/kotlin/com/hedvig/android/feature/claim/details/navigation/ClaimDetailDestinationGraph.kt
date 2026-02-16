@@ -2,7 +2,6 @@ package com.hedvig.android.feature.claim.details.navigation
 
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
@@ -23,14 +22,14 @@ fun NavGraphBuilder.claimDetailsGraph(
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateUp: () -> Unit,
-  navigateToConversation: (NavBackStackEntry, String) -> Unit,
+  navigateToConversation: (String) -> Unit,
   navigator: Navigator,
   applicationId: String,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
   navdestination<ClaimDetailDestination.ClaimOverviewDestination>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimDetails),
-  ) { backStackEntry ->
+  ) {
     val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
     val context = LocalContext.current
     ClaimDetailsDestination(
@@ -38,10 +37,10 @@ fun NavGraphBuilder.claimDetailsGraph(
       imageLoader = imageLoader,
       appPackageId = appPackageId,
       navigateUp = navigateUp,
-      navigateToConversation = { conversationId -> navigateToConversation(backStackEntry, conversationId) },
+      navigateToConversation = { conversationId -> navigateToConversation(conversationId) },
       onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
         if (filesUri.isNotEmpty()) {
-          navigator.navigateUnsafe(
+          navigator.navigate(
             ClaimDetailInternalDestination.AddFilesDestination(
               targetUploadUrl = uploadUri,
               initialFilesUri = filesUri.map { it.toString() },

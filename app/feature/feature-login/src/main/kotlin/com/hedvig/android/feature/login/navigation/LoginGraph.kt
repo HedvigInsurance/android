@@ -31,7 +31,7 @@ fun NavGraphBuilder.loginGraph(
   navgraph<LoginDestination>(
     startDestination = LoginDestinations.Marketing::class,
   ) {
-    navdestination<LoginDestinations.Marketing> { backStackEntry ->
+    navdestination<LoginDestinations.Marketing> {
       val marketingViewModel: MarketingViewModel = koinViewModel()
       val locale = getLocale()
       MarketingDestination(
@@ -43,37 +43,31 @@ fun NavGraphBuilder.loginGraph(
           openUrl(uri)
         },
         navigateToLoginScreen = {
-          with(navigator) {
-            backStackEntry.navigate(LoginDestinations.SwedishLogin)
-          }
+          navigator.navigate(LoginDestinations.SwedishLogin)
         },
       )
     }
-    navdestination<LoginDestinations.SwedishLogin> { backStackEntry ->
+    navdestination<LoginDestinations.SwedishLogin> {
       val swedishLoginViewModel: SwedishLoginViewModel = koinViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
         navigateUp = navigator::navigateUp,
         navigateToEmailLogin = {
           logcat(LogPriority.INFO) { "Login with OTP clicked" }
-          with(navigator) {
-            backStackEntry.navigate(LoginDestinations.GenericAuthCredentialsInput)
-          }
+          navigator.navigate(LoginDestinations.GenericAuthCredentialsInput)
         },
         onNavigateToLoggedIn = onNavigateToLoggedIn,
       )
     }
-    navdestination<LoginDestinations.GenericAuthCredentialsInput> { backStackEntry ->
+    navdestination<LoginDestinations.GenericAuthCredentialsInput> {
       val viewModel: GenericAuthViewModel = koinViewModel()
       GenericAuthDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         onStartOtpInput = { verifyUrl: String, resendUrl: String, email: String ->
-          with(navigator) {
-            backStackEntry.navigate(
-              LoginDestinations.OtpInput(LoginDestinations.OtpInput.OtpInformation(verifyUrl, resendUrl, email)),
-            )
-          }
+          navigator.navigate(
+            LoginDestinations.OtpInput(LoginDestinations.OtpInput.OtpInformation(verifyUrl, resendUrl, email)),
+          )
         },
       )
     }

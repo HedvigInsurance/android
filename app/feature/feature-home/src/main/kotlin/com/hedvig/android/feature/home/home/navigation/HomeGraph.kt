@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.home.home.navigation
 
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
@@ -18,14 +17,14 @@ fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigator: Navigator,
-  onNavigateToInbox: (NavBackStackEntry) -> Unit,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
-  navigateToOldClaimFlow: (NavBackStackEntry) -> Unit,
-  navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  navigateToOldClaimFlow: () -> Unit,
+  navigateToClaimDetails: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToContactInfo: (NavBackStackEntry) -> Unit,
-  navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
-  navigateToHelpCenter: (NavBackStackEntry) -> Unit,
+  navigateToContactInfo: () -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
+  navigateToHelpCenter: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
   openAppSettings: () -> Unit,
@@ -39,30 +38,28 @@ fun NavGraphBuilder.homeGraph(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.home),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) { backStackEntry ->
+    ) {
       val viewModel: HomeViewModel = koinViewModel()
       HomeDestination(
         viewModel = viewModel,
-        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
-        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        onNavigateToInbox = { onNavigateToInbox() },
+        onNavigateToNewConversation = { onNavigateToNewConversation() },
         navigateToClaimChat = navigateToClaimChat,
         navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
         onClaimDetailCardClicked = { claimId: String ->
-          navigateToClaimDetails(backStackEntry, claimId)
+          navigateToClaimDetails(claimId)
         },
         navigateToConnectPayment = navigateToConnectPayment,
-        navigateToOldClaimFlow = { navigateToOldClaimFlow(backStackEntry) },
-        navigateToMissingInfo = { contractId -> navigateToMissingInfo(backStackEntry, contractId) },
-        navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
+        navigateToOldClaimFlow = { navigateToOldClaimFlow() },
+        navigateToMissingInfo = { contractId -> navigateToMissingInfo(contractId) },
+        navigateToHelpCenter = { navigateToHelpCenter() },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
         navigateToFirstVet = { sections ->
-          with(navigator) {
-            backStackEntry.navigate(HomeDestination.FirstVet(sections))
-          }
+          navigator.navigate(HomeDestination.FirstVet(sections))
         },
         navigateToContactInfo = {
-          navigateToContactInfo(backStackEntry)
+          navigateToContactInfo()
         },
         imageLoader = imageLoader,
       )

@@ -35,21 +35,17 @@ fun NavGraphBuilder.travelCertificateGraph(
   ) {
     navdestination<TravelCertificateDestination.TravelCertificateHistory>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelCertificate),
-    ) { navBackStackEntry ->
+    ) {
       val viewModel: CertificateHistoryViewModel = koinViewModel()
       val localContext = LocalContext.current
       TravelCertificateHistoryDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         onStartGenerateTravelCertificateFlow = {
-          with(navigator) {
-            navBackStackEntry.navigate(TravelCertificateDestination.TravelCertificateDateInput(null))
-          }
+          navigator.navigate(TravelCertificateDestination.TravelCertificateDateInput(null))
         },
         onNavigateToChooseContract = {
-          with(navigator) {
-            navBackStackEntry.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
-          }
+          navigator.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
         },
         onShareTravelCertificate = {
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
@@ -59,14 +55,12 @@ fun NavGraphBuilder.travelCertificateGraph(
       )
     }
 
-    navdestination<TravelCertificateDestination.TravelCertificateChooseContract> { navBackStackEntry ->
+    navdestination<TravelCertificateDestination.TravelCertificateChooseContract> {
       val viewModel: ChooseContractForCertificateViewModel = koinViewModel()
       ChooseContractForCertificateDestination(
         viewModel = viewModel,
         onContinue = { contractId ->
-          with(navigator) {
-            navBackStackEntry.navigate(TravelCertificateDestination.TravelCertificateDateInput(contractId))
-          }
+          navigator.navigate(TravelCertificateDestination.TravelCertificateDateInput(contractId))
         },
         navigateUp = navigator::navigateUp,
       )
@@ -82,14 +76,14 @@ fun NavGraphBuilder.travelCertificateGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         onNavigateToFellowTravellers = { travelCertificatePrimaryInput ->
-          navigator.navigateUnsafe(
+          navigator.navigate(
             TravelCertificateDestination.TravelCertificateTravellersInput(
               travelCertificatePrimaryInput,
             ),
           )
         },
         onNavigateToOverview = { travelCertificateUrl ->
-          navigator.navigateUnsafe(
+          navigator.navigate(
             TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
           ) {
             typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
@@ -102,7 +96,7 @@ fun NavGraphBuilder.travelCertificateGraph(
 
     navdestination<TravelCertificateDestination.TravelCertificateTravellersInput>(
       TravelCertificateDestination.TravelCertificateTravellersInput,
-    ) { navBackStackEntry ->
+    ) {
       val viewModel: TravelCertificateTravellersInputViewModel = koinViewModel(
         parameters = {
           parametersOf(primaryInput)
@@ -112,7 +106,7 @@ fun NavGraphBuilder.travelCertificateGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         onNavigateToOverview = { travelCertificateUrl ->
-          navigator.navigateUnsafe(
+          navigator.navigate(
             TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
           ) {
             typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {

@@ -44,7 +44,7 @@ fun NavGraphBuilder.changeTierGraph(
         navigator.popBackStack()
       },
       launchFlow = { params: InsuranceCustomizationParameters ->
-        navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
+        navigator.navigate(ChooseTierGraphDestination(params)) {
           typedPopUpTo<StartTierFlowDestination> {
             inclusive = true
           }
@@ -63,7 +63,7 @@ fun NavGraphBuilder.changeTierGraph(
       viewModel = viewModel,
       navigateUp = navigator::navigateUp,
       navigateToNextStep = { params: InsuranceCustomizationParameters ->
-        navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
+        navigator.navigate(ChooseTierGraphDestination(params)) {
           typedPopUpTo<StartTierFlowChooseInsuranceDestination> {
             inclusive = true
           }
@@ -90,7 +90,7 @@ fun NavGraphBuilder.changeTierGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         navigateToSummary = { quote ->
-          navigator.navigateUnsafe(
+          navigator.navigate(
             ChooseTierDestination.Summary(
               SummaryParameters(
                 quoteIdToSubmit = quote.id,
@@ -104,7 +104,7 @@ fun NavGraphBuilder.changeTierGraph(
           navigator.popBackStack()
         },
         navigateToComparison = { listOfQuotes, selectedTerms ->
-          navigator.navigateUnsafe(
+          navigator.navigate(
             ChooseTierDestination.Comparison(
               ComparisonParameters(
                 termsIds = listOfQuotes.map {
@@ -143,10 +143,10 @@ fun NavGraphBuilder.changeTierGraph(
           navController.typedPopBackStack<ChooseTierGraphDestination>(inclusive = true)
         },
         onFailure = {
-          navigator.navigateUnsafe(ChooseTierDestination.SubmitFailure)
+          navigator.navigate(ChooseTierDestination.SubmitFailure)
         },
         onSuccess = {
-          navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {
+          navigator.navigate(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {
             typedPopUpTo<ChooseTierDestination.SelectTierAndDeductible> {
               inclusive = true
             }

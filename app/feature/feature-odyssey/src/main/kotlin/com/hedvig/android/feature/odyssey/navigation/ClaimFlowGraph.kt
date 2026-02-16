@@ -64,7 +64,7 @@ fun NavGraphBuilder.claimFlowGraph(
   navigateToTriaging: () -> Unit,
   openAppSettings: () -> Unit,
   closeClaimFlow: () -> Unit,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   openUrl: (String) -> Unit,
   tryToDialPhone: (String) -> Unit,
@@ -83,7 +83,7 @@ fun NavGraphBuilder.claimFlowGraph(
       HonestyPledgeDestination(
         windowSizeClass = windowSizeClass,
         openNotificationPermissionStep = {
-          with(navigator) { backStackEntry.navigate(ClaimFlowDestination.NotificationPermission) }
+          navigator.navigate(ClaimFlowDestination.NotificationPermission)
         },
         pledgeAccepted = {
           navigateToTriaging()
@@ -116,7 +116,7 @@ fun NavGraphBuilder.claimFlowGraph(
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -134,7 +134,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep: ClaimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -152,7 +152,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -167,7 +167,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -180,7 +180,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -196,7 +196,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -211,7 +211,7 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -229,11 +229,10 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToAppUpdateStep = {
-          navigator.navigateToClaimFlowDestination(backStackEntry, ClaimFlowDestination.UpdateApp)
+          navigator.navigateToClaimFlowDestination( ClaimFlowDestination.UpdateApp)
         },
         navigateToPayoutStep = { checkoutMethod ->
           navigator.navigateToClaimFlowDestination(
-            backStackEntry = backStackEntry,
             destination = ClaimFlowDestination.SingleItemPayout(checkoutMethod = checkoutMethod),
           )
         },
@@ -250,7 +249,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.emit(SelectContractEvent.HandledNextStepNavigation)
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -264,7 +263,7 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
@@ -277,7 +276,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectGlassDamageDestination(
         deflectGlassDamage = this,
         onNavigateToNewConversation = {
-          onNavigateToNewConversation(navBackStackEntry)
+          onNavigateToNewConversation()
         },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
@@ -292,7 +291,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectTowingDestination(
         deflectTowing = this,
         onNavigateToNewConversation = {
-          onNavigateToNewConversation(navBackStackEntry)
+          onNavigateToNewConversation()
         },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
@@ -329,7 +328,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectPestsDestination(
         deflectPests = this,
         onNavigateToNewConversation = {
-          onNavigateToNewConversation(navBackStackEntry)
+          onNavigateToNewConversation()
         },
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
@@ -344,7 +343,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectIdProtectionDestination(
         deflectIdProtection = this,
         onNavigateToNewConversation = {
-          onNavigateToNewConversation(navBackStackEntry)
+          onNavigateToNewConversation()
         },
         navigateUp = navigator::navigateUp,
         windowSizeClass = windowSizeClass,
@@ -364,7 +363,7 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination(backStackEntry, claimFlowStep.toClaimFlowDestination())
+          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         onNavigateToImageViewer = onNavigateToImageViewer,
         appPackageId = appPackageId,
@@ -380,7 +379,7 @@ fun NavGraphBuilder.claimFlowGraph(
 fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   navigator: Navigator,
   openPlayStore: () -> Unit,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   navdestination<ClaimFlowDestination.SingleItemPayout>(
     ClaimFlowDestination.SingleItemPayout,
@@ -390,7 +389,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
     SingleItemPayoutDestination(
       viewModel = viewModel,
       onDoneAfterPayout = navigator::popBackStack,
-      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+      onNavigateToNewConversation = { onNavigateToNewConversation() },
       closePayoutScreen = navigator::popBackStack,
     )
   }
@@ -407,7 +406,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
   }
   navdestination<ClaimFlowDestination.Failure> { backStackEntry ->
     UnknownErrorDestination(
-      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+      onNavigateToNewConversation = { onNavigateToNewConversation() },
       closeFailureScreenDestination = navigator::popBackStack,
     )
   }
@@ -416,7 +415,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
 /**
  * If we're going to a terminal destination, pop the claims flow backstack completely before going there.
  */
-fun Navigator.navigateToClaimFlowDestination(backStackEntry: NavBackStackEntry, destination: Destination) {
+fun Navigator.navigateToClaimFlowDestination(destination: Destination) {
   val navOptions: NavOptionsBuilder.() -> Unit = {
     when (destination) {
       is ClaimFlowDestination.ClaimSuccess,
@@ -432,5 +431,5 @@ fun Navigator.navigateToClaimFlowDestination(backStackEntry: NavBackStackEntry, 
       else -> {}
     }
   }
-  backStackEntry.navigate(destination, navOptions)
+  navigate(destination, navOptions)
 }

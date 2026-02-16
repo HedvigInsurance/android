@@ -27,14 +27,14 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
       viewModel = viewModel,
       navigateUp = navigator::navigateUp,
       navigateToAddMissingInfo = { contractId: String ->
-        navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddInfo(contractId)) {
+        navigator.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId)) {
           typedPopUpTo<EditCoInsuredTriage> {
             inclusive = true
           }
         }
       },
       navigateToAddOrRemoveCoInsured = { contractId: String ->
-        navigator.navigateUnsafe(EditCoInsuredDestination.CoInsuredAddOrRemove(contractId)) {
+        navigator.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contractId)) {
           typedPopUpTo<EditCoInsuredTriage> {
             inclusive = true
           }
@@ -47,7 +47,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
     EditCoInsuredAddMissingInfoDestination(
       viewModel = koinViewModel { parametersOf(contractId) },
       navigateToSuccessScreen = {
-        navigator.navigateUnsafe(EditCoInsuredDestination.Success(it)) {
+        navigator.navigate(EditCoInsuredDestination.Success(it)) {
           typedPopUpTo<EditCoInsuredDestination.CoInsuredAddInfo> {
             inclusive = true
           }
@@ -60,7 +60,7 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
     EditCoInsuredAddOrRemoveDestination(
       koinViewModel { parametersOf(contractId) },
       navigateToSuccessScreen = {
-        navigator.navigateUnsafe(EditCoInsuredDestination.Success(it)) {
+        navigator.navigate(EditCoInsuredDestination.Success(it)) {
           typedPopUpTo<EditCoInsuredDestination.CoInsuredAddOrRemove> {
             inclusive = true
           }

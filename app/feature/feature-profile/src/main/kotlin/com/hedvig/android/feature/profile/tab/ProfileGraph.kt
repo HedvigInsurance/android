@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.profile.tab
 
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
@@ -33,11 +32,11 @@ fun NavGraphBuilder.profileGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
-  navigateToAddMissingInfo: (navBackStackEntry: NavBackStackEntry, contractId: String) -> Unit,
-  navigateToDeleteAccountFeature: (navBackStackEntry: NavBackStackEntry) -> Unit,
+  navigateToAddMissingInfo: (contractId: String) -> Unit,
+  navigateToDeleteAccountFeature: () -> Unit,
   navigateToClaimHistory: () -> Unit,
   openAppSettings: () -> Unit,
-  onNavigateToNewConversation: (navBackStackEntry: NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   onNavigateToTravelCertificate: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
@@ -49,34 +48,34 @@ fun NavGraphBuilder.profileGraph(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.profile),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) { backStackEntry ->
+    ) {
       val viewModel: ProfileViewModel = koinViewModel()
       ProfileDestination(
         navigateToEurobonus = {
-          with(navigator) { backStackEntry.navigate(ProfileDestinations.Eurobonus) }
+          navigator.navigate(ProfileDestinations.Eurobonus)
         },
         navigateToClaimHistory = navigateToClaimHistory,
         navigateToContactInfo = {
-          with(navigator) { backStackEntry.navigate(ProfileDestination.ContactInfo) }
+          navigator.navigate(ProfileDestination.ContactInfo)
         },
         navigateToAboutApp = {
-          with(navigator) { backStackEntry.navigate(ProfileDestinations.AboutApp) }
+          navigator.navigate(ProfileDestinations.AboutApp)
         },
         navigateToSettings = {
-          with(navigator) { backStackEntry.navigate(ProfileDestinations.SettingsGraph) }
+          navigator.navigate(ProfileDestinations.SettingsGraph)
         },
         navigateToCertificates = {
-          with(navigator) { backStackEntry.navigate(Certificates) }
+          navigator.navigate(Certificates)
         },
         navigateToConnectPayment = navigateToConnectPayment,
         navigateToAddMissingInfo = { contractId ->
-          navigateToAddMissingInfo(backStackEntry, contractId)
+          navigateToAddMissingInfo(contractId)
         },
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,
         onNavigateToNewConversation = {
-          onNavigateToNewConversation(backStackEntry)
+          onNavigateToNewConversation()
         },
       )
     }
@@ -98,15 +97,15 @@ fun NavGraphBuilder.profileGraph(
         navigateUp = navigator::navigateUp,
       )
     }
-    navdestination<ProfileDestinations.AboutApp> { backStackEntry ->
+    navdestination<ProfileDestinations.AboutApp> {
       val viewModel: AboutAppViewModel = koinViewModel()
       AboutAppDestination(
         viewModel = viewModel,
         onBackPressed = navigator::navigateUp,
         showOpenSourceLicenses = {
-          with(navigator) { backStackEntry.navigate(ProfileDestinations.Licenses) }
+          navigator.navigate(ProfileDestinations.Licenses)
         },
-        navigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        navigateToNewConversation = { onNavigateToNewConversation() },
         hedvigBuildConstants = hedvigBuildConstants,
       )
     }
@@ -127,13 +126,13 @@ fun NavGraphBuilder.profileGraph(
     navgraph<ProfileDestinations.SettingsGraph>(
       startDestination = SettingsDestinations.Settings::class,
     ) {
-      navdestination<SettingsDestinations.Settings> { backStackEntry ->
+      navdestination<SettingsDestinations.Settings> {
         val viewModel: SettingsViewModel = koinViewModel()
         SettingsDestination(
           viewModel = viewModel,
           navigateUp = navigator::navigateUp,
           openAppSettings = openAppSettings,
-          onNavigateToDeleteAccountFeature = { navigateToDeleteAccountFeature(backStackEntry) },
+          onNavigateToDeleteAccountFeature = { navigateToDeleteAccountFeature() },
         )
       }
       settingsDestinationNestedGraphs()

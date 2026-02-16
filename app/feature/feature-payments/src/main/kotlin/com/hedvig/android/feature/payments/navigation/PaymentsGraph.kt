@@ -38,31 +38,27 @@ fun NavGraphBuilder.paymentsGraph(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.payments),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) { backStackEntry ->
+    ) {
       val viewModel: PaymentsViewModel = koinViewModel()
       PaymentsDestination(
         viewModel = viewModel,
         onPaymentHistoryClicked = {
-          with(navigator) { backStackEntry.navigate(PaymentsDestinations.History) }
+          navigator.navigate(PaymentsDestinations.History)
         },
         onChangeBankAccount = navigateToConnectPayment,
         onDiscountClicked = {
-          with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts) }
+          navigator.navigate(PaymentsDestinations.Discounts)
         },
         onPaymentClicked = { id: String? ->
-          with(navigator) {
-            backStackEntry.navigate(PaymentsDestinations.Details(id))
-          }
+          navigator.navigate(PaymentsDestinations.Details(id))
         },
         onMemberPaymentDetailsClicked = {
-          with(navigator) {
-            backStackEntry.navigate(PaymentsDestinations.MemberPaymentDetails)
-          }
+          navigator.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
       )
     }
 
-    navdestination<PaymentsDestinations.Details> { backStackEntry ->
+    navdestination<PaymentsDestinations.Details> {
       val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
       PaymentDetailsDestination(
         viewModel = viewModel,
@@ -70,18 +66,16 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    navdestination<PaymentsDestinations.History> { backStackEntry ->
+    navdestination<PaymentsDestinations.History> {
       val viewModel: PaymentHistoryViewModel = koinViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,
         onChargeClicked = { memberChargeId: String ->
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Details(
-                memberChargeId,
-              ),
-            )
-          }
+          navigator.navigate(
+            PaymentsDestinations.Details(
+              memberChargeId,
+            ),
+          )
         },
         navigateUp = navigator::navigateUp,
       )
@@ -96,22 +90,20 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    navdestination<PaymentsDestinations.Discounts> { backStackEntry ->
+    navdestination<PaymentsDestinations.Discounts> {
       val viewModel: DiscountsViewModel = koinViewModel()
       DiscountsDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         navigateToForever = {
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Forever,
-            )
-          }
+          navigator.navigate(
+            PaymentsDestinations.Forever,
+          )
         },
       )
     }
 
-    navdestination<PaymentsDestinations.MemberPaymentDetails> { backStackEntry ->
+    navdestination<PaymentsDestinations.MemberPaymentDetails> {
       val viewModel: MemberPaymentDetailsViewModel = koinViewModel()
       MemberPaymentDetailsDestination(
         viewModel,

@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
@@ -41,19 +40,19 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToMovingFlow: () -> Unit,
   openPlayStore: () -> Unit,
   navigateToInsurances: (NavOptionsBuilder.() -> Unit) -> Unit,
   closeTerminationFlow: () -> Unit,
-  redirectToChangeTierFlow: (NavBackStackEntry, Pair<String, IntentOutput>) -> Unit,
+  redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
-  navdestination<TerminateInsuranceDestination.TerminationFailure> { backStackEntry ->
+  navdestination<TerminateInsuranceDestination.TerminationFailure> {
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(message),
-      onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+      onNavigateToNewConversation = onNavigateToNewConversation,
       navigateUp = navigator::navigateUp,
       navigateBack = navigator::popBackStack,
     )
@@ -100,7 +99,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        onNavigateToNewConversation = onNavigateToNewConversation,
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
           val commonParams = TerminationGraphParameters(
@@ -118,7 +117,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 
     navdestination<TerminateInsuranceDestination.TerminationSurveyFirstStep>(
       TerminateInsuranceDestination.TerminationSurveyFirstStep,
-    ) { backStackEntry ->
+    ) {
       val viewModel: TerminationSurveyViewModel = koinViewModel {
         parametersOf(options)
       }
@@ -139,14 +138,14 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateToMovingFlow = navigateToMovingFlow,
         openUrl = openUrl,
         redirectToChangeTierFlow = { intent ->
-          redirectToChangeTierFlow(backStackEntry, intent)
+          redirectToChangeTierFlow(intent)
         },
       )
     }
 
     navdestination<TerminateInsuranceDestination.TerminationSurveySecondStep>(
       TerminateInsuranceDestination.TerminationSurveySecondStep,
-    ) { backStackEntry ->
+    ) {
       val viewModel: TerminationSurveyViewModel = koinViewModel {
         parametersOf(subOptions)
       }
@@ -163,7 +162,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         navigateToMovingFlow = navigateToMovingFlow,
         openUrl = openUrl,
         redirectToChangeTierFlow = { intent ->
-          redirectToChangeTierFlow(backStackEntry, intent)
+          redirectToChangeTierFlow(intent)
         },
       )
     }
@@ -246,10 +245,10 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 
     navdestination<TerminateInsuranceDestination.DeflectAutoCancel>(
       TerminateInsuranceDestination.DeflectAutoCancel,
-    ) { backStackEntry ->
+    ) {
       DeflectAutoCancelStepDestination(
         params = autoCancelDeflectStepParameters,
-        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        onNavigateToNewConversation = onNavigateToNewConversation,
         closeTerminationFlow = closeTerminationFlow,
         navigateUp = navigator::navigateUp,
       )
@@ -295,5 +294,5 @@ private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(desti
       else -> {}
     }
   }
-  navigateUnsafe(destination, navOptions)
+  navigate(destination, navOptions)
 }

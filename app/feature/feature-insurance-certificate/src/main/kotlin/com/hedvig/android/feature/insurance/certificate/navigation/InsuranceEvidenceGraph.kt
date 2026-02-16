@@ -25,14 +25,14 @@ fun NavGraphBuilder.insuranceEvidenceGraph(
   ) {
     navdestination<InsuranceEvidenceDestination.InsuranceEvidenceEmailInput>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.insuranceEvidence),
-    ) { navBackStackEntry ->
+    ) {
       val viewModel: InsuranceEvidenceEmailInputViewModel = koinViewModel()
       InsuranceEvidenceEmailInputDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         navigateToShowCertificate = { url ->
           with(navigator) {
-            navigateUnsafe(InsuranceEvidenceDestination.ShowCertificate(url)) {
+            navigate(InsuranceEvidenceDestination.ShowCertificate(url)) {
               typedPopUpTo<InsuranceEvidenceDestination.InsuranceEvidenceEmailInput>({ inclusive = true })
             }
           }
