@@ -21,6 +21,7 @@
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
   <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
+  <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Bil Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Ja, uppgradera mitt skydd</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
