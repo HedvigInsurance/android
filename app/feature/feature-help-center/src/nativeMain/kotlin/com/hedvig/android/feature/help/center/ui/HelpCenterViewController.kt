@@ -10,7 +10,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import platform.UIKit.UIViewController
 
 @Suppress("unused", "FunctionName") // Used from iOS
-fun HelpCenterViewController(isDevelopmentFlow: Boolean, messageId: String?): UIViewController {
+fun HelpCenterViewController(): UIViewController {
   return ComposeUIViewController {
     Box(Modifier.fillMaxSize()) {
       val viewModel = koinViewModel<HelpCenterViewModel>()

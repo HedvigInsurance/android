@@ -12,8 +12,7 @@ struct ContentView: View {
 
 struct HelpCenterViewController: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-//        return HelpCenterViewControllerKt.HelpCenterViewController()
-        return UIViewController()
+        return HelpCenterViewControllerKt.HelpCenterViewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
