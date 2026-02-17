@@ -1,6 +1,8 @@
 package com.hedvig.android.feature.help.center
 
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
 import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination
@@ -41,13 +43,13 @@ fun NavGraphBuilder.helpCenterGraph(
       val viewModel = koinViewModel<HelpCenterViewModel>()
       HelpCenterHomeDestination(
         viewModel = viewModel,
-        onNavigateToTopic = { topic ->
+        onNavigateToTopic = dropUnlessResumed { topic ->
           navigateToTopic(topic, navigator)
         },
-        onNavigateToQuestion = { question ->
+        onNavigateToQuestion = dropUnlessResumed { question ->
           navigateToQuestion(question, navigator)
         },
-        onNavigateToQuickLink = { destination ->
+        onNavigateToQuickLink = dropUnlessResumed { destination ->
           when (destination) {
             is QuickLinkDestination.OuterDestination -> {
               onNavigateToQuickLink(destination)
@@ -72,10 +74,10 @@ fun NavGraphBuilder.helpCenterGraph(
             }
           }
         },
-        onNavigateToInbox = {
+        onNavigateToInbox = dropUnlessResumed {
           onNavigateToInbox()
         },
-        onNavigateToNewConversation = {
+        onNavigateToNewConversation = dropUnlessResumed {
           onNavigateToNewConversation()
         },
         onNavigateUp = navigator::navigateUp,
@@ -92,13 +94,13 @@ fun NavGraphBuilder.helpCenterGraph(
       HelpCenterTopicDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
-        onNavigateToQuestion = { question ->
+        onNavigateToQuestion = dropUnlessResumed { question ->
           navigateToQuestion(question, navigator)
         },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
-        onNavigateToInbox = { onNavigateToInbox() },
-        onNavigateToNewConversation = { onNavigateToNewConversation() },
+        onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       )
     }
     navdestination<HelpCenterDestinations.Question>(
@@ -110,8 +112,8 @@ fun NavGraphBuilder.helpCenterGraph(
       }
       HelpCenterQuestionDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
-        onNavigateToInbox = { onNavigateToInbox() },
-        onNavigateToNewConversation = { onNavigateToNewConversation() },
+        onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         onNavigateUp = navigator::navigateUp,
         onNavigateBack = navigator::popBackStack,
         helpCenterQuestionViewModel = helpCenterQuestionViewModel,

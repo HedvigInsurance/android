@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
@@ -26,14 +27,14 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
       navigateUp = navigator::navigateUp,
-      navigateToAddMissingInfo = { contractId: String ->
+      navigateToAddMissingInfo = dropUnlessResumed { contractId: String ->
         navigator.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId)) {
           typedPopUpTo<EditCoInsuredTriage> {
             inclusive = true
           }
         }
       },
-      navigateToAddOrRemoveCoInsured = { contractId: String ->
+      navigateToAddOrRemoveCoInsured = dropUnlessResumed { contractId: String ->
         navigator.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contractId)) {
           typedPopUpTo<EditCoInsuredTriage> {
             inclusive = true

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
@@ -52,7 +53,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     TerminationFailureDestination(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(message),
-      onNavigateToNewConversation = onNavigateToNewConversation,
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       navigateUp = navigator::navigateUp,
       navigateBack = navigator::popBackStack,
     )
@@ -99,7 +100,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        onNavigateToNewConversation = onNavigateToNewConversation,
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
           val commonParams = TerminationGraphParameters(
@@ -248,7 +249,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     ) {
       DeflectAutoCancelStepDestination(
         params = autoCancelDeflectStepParameters,
-        onNavigateToNewConversation = onNavigateToNewConversation,
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         closeTerminationFlow = closeTerminationFlow,
         navigateUp = navigator::navigateUp,
       )

@@ -20,6 +20,8 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -42,17 +44,17 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: PaymentsViewModel = koinViewModel()
       PaymentsDestination(
         viewModel = viewModel,
-        onPaymentHistoryClicked = {
+        onPaymentHistoryClicked = dropUnlessResumed {
           navigator.navigate(PaymentsDestinations.History)
         },
-        onChangeBankAccount = navigateToConnectPayment,
-        onDiscountClicked = {
+        onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
+        onDiscountClicked = dropUnlessResumed {
           navigator.navigate(PaymentsDestinations.Discounts)
         },
-        onPaymentClicked = { id: String? ->
+        onPaymentClicked = dropUnlessResumed { id: String? ->
           navigator.navigate(PaymentsDestinations.Details(id))
         },
-        onMemberPaymentDetailsClicked = {
+        onMemberPaymentDetailsClicked = dropUnlessResumed {
           navigator.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
       )
@@ -70,7 +72,7 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: PaymentHistoryViewModel = koinViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,
-        onChargeClicked = { memberChargeId: String ->
+        onChargeClicked = dropUnlessResumed { memberChargeId: String ->
           navigator.navigate(
             PaymentsDestinations.Details(
               memberChargeId,
@@ -95,7 +97,7 @@ fun NavGraphBuilder.paymentsGraph(
       DiscountsDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        navigateToForever = {
+        navigateToForever = dropUnlessResumed {
           navigator.navigate(
             PaymentsDestinations.Forever,
           )

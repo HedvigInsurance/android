@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.change.tier.navigation
 
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToChangeTierDestination
@@ -50,7 +51,7 @@ fun NavGraphBuilder.changeTierGraph(
           }
         }
       },
-      onNavigateToNewConversation = onNavigateToNewConversation,
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       navigateUp = navigator::navigateUp,
     )
   }
@@ -72,7 +73,7 @@ fun NavGraphBuilder.changeTierGraph(
       popBackStack = {
         navigator.popBackStack()
       },
-      onNavigateToNewConversation = onNavigateToNewConversation,
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
 

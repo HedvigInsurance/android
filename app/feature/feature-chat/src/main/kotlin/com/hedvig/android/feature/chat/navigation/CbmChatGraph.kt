@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.chat.navigation
 
 import androidx.media3.datasource.cache.SimpleCache
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -39,7 +40,7 @@ fun NavGraphBuilder.cbmChatGraph(
       InboxDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        onConversationClick = { conversationId ->
+        onConversationClick = dropUnlessResumed { conversationId ->
           navigator.navigate(ChatDestinations.Chat(conversationId))
         },
       )

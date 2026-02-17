@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.odyssey.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.navigation.NavBackStackEntry
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import coil3.ImageLoader
@@ -272,12 +272,10 @@ fun NavGraphBuilder.claimFlowGraph(
     }
     navdestination<ClaimFlowDestination.DeflectGlassDamage>(
       ClaimFlowDestination.DeflectGlassDamage,
-    ) { navBackStackEntry ->
+    ) {
       DeflectGlassDamageDestination(
         deflectGlassDamage = this,
-        onNavigateToNewConversation = {
-          onNavigateToNewConversation()
-        },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
@@ -287,12 +285,10 @@ fun NavGraphBuilder.claimFlowGraph(
     }
     navdestination<ClaimFlowDestination.DeflectTowing>(
       ClaimFlowDestination.DeflectTowing,
-    ) { navBackStackEntry ->
+    ) {
       DeflectTowingDestination(
         deflectTowing = this,
-        onNavigateToNewConversation = {
-          onNavigateToNewConversation()
-        },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         windowSizeClass = windowSizeClass,
         navigateUp = navigator::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -324,12 +320,10 @@ fun NavGraphBuilder.claimFlowGraph(
     }
     navdestination<ClaimFlowDestination.DeflectPests>(
       ClaimFlowDestination.DeflectPests,
-    ) { navBackStackEntry ->
+    ) {
       DeflectPestsDestination(
         deflectPests = this,
-        onNavigateToNewConversation = {
-          onNavigateToNewConversation()
-        },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         navigateUp = navigator::navigateUp,
         openUrl = openUrl,
         windowSizeClass = windowSizeClass,
@@ -339,12 +333,10 @@ fun NavGraphBuilder.claimFlowGraph(
     }
     navdestination<ClaimFlowDestination.DeflectIdProtection>(
       ClaimFlowDestination.DeflectIdProtection,
-    ) { navBackStackEntry ->
+    ) {
       DeflectIdProtectionDestination(
         deflectIdProtection = this,
-        onNavigateToNewConversation = {
-          onNavigateToNewConversation()
-        },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         navigateUp = navigator::navigateUp,
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
@@ -383,13 +375,13 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
 ) {
   navdestination<ClaimFlowDestination.SingleItemPayout>(
     ClaimFlowDestination.SingleItemPayout,
-  ) { backStackEntry ->
+  ) {
     val singleItemPayout = this
     val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
     SingleItemPayoutDestination(
       viewModel = viewModel,
       onDoneAfterPayout = navigator::popBackStack,
-      onNavigateToNewConversation = { onNavigateToNewConversation() },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       closePayoutScreen = navigator::popBackStack,
     )
   }
@@ -404,9 +396,9 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
       closeUnknownScreenDestination = navigator::popBackStack,
     )
   }
-  navdestination<ClaimFlowDestination.Failure> { backStackEntry ->
+  navdestination<ClaimFlowDestination.Failure> {
     UnknownErrorDestination(
-      onNavigateToNewConversation = { onNavigateToNewConversation() },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       closeFailureScreenDestination = navigator::popBackStack,
     )
   }

@@ -1,7 +1,9 @@
 package com.hedvig.android.feature.insurances.navigation
 
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
@@ -47,16 +49,16 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: InsuranceViewModel = koinViewModel()
       InsuranceDestination(
         viewModel = viewModel,
-        onInsuranceCardClick = { contractId: String ->
+        onInsuranceCardClick = dropUnlessResumed { contractId: String ->
           navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        onCrossSellClick = openUrl,
-        navigateToCancelledInsurances = {
+        onCrossSellClick = dropUnlessResumed { url: String -> openUrl(url) },
+        navigateToCancelledInsurances = dropUnlessResumed {
           navigator.navigate(InsurancesDestinations.TerminatedInsurances)
         },
-        onNavigateToMovingFlow = startMovingFlow,
+        onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
         imageLoader = imageLoader,
-        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<String> -> onNavigateToAddonPurchaseFlow(ids) },
       )
     }
     navdestination<InsurancesDestinations.InsuranceContractDetail>(
@@ -66,18 +68,18 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
         viewModel = viewModel,
-        onEditCoInsuredClick = { contractId: String -> startEditCoInsured(contractId) },
-        onMissingInfoClick = { contractId -> startEditCoInsuredAddMissingInfo(contractId) },
-        onChangeAddressClick = startMovingFlow,
-        onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
+        onEditCoInsuredClick = dropUnlessResumed { contractId: String -> startEditCoInsured(contractId) },
+        onMissingInfoClick = dropUnlessResumed { contractId: String -> startEditCoInsuredAddMissingInfo(contractId) },
+        onChangeAddressClick = dropUnlessResumed { startMovingFlow() },
+        onCancelInsuranceClick = dropUnlessResumed { cancelInsuranceData: CancelInsuranceData ->
           startTerminationFlow(cancelInsuranceData)
         },
-        onNavigateToNewConversation = { onNavigateToNewConversation() },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         openUrl = openUrl,
         navigateUp = navigator::navigateUp,
         navigateBack = navigator::popBackStack,
         imageLoader = imageLoader,
-        onChangeTierClick = { contractId: String ->
+        onChangeTierClick = dropUnlessResumed { contractId: String ->
           onNavigateToStartChangeTier(contractId)
         },
       )
@@ -86,7 +88,7 @@ fun NavGraphBuilder.insuranceGraph(
       val viewModel: TerminatedContractsViewModel = koinViewModel()
       TerminatedContractsDestination(
         viewModel = viewModel,
-        navigateToContractDetail = { contractId: String ->
+        navigateToContractDetail = dropUnlessResumed { contractId: String ->
           navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
         navigateUp = navigator::navigateUp,

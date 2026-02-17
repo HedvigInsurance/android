@@ -23,6 +23,8 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.Navigator
+import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.profileGraph(
@@ -51,30 +53,30 @@ fun NavGraphBuilder.profileGraph(
     ) {
       val viewModel: ProfileViewModel = koinViewModel()
       ProfileDestination(
-        navigateToEurobonus = {
+        navigateToEurobonus = dropUnlessResumed {
           navigator.navigate(ProfileDestinations.Eurobonus)
         },
-        navigateToClaimHistory = navigateToClaimHistory,
-        navigateToContactInfo = {
+        navigateToClaimHistory = dropUnlessResumed { navigateToClaimHistory() },
+        navigateToContactInfo = dropUnlessResumed {
           navigator.navigate(ProfileDestination.ContactInfo)
         },
-        navigateToAboutApp = {
+        navigateToAboutApp = dropUnlessResumed {
           navigator.navigate(ProfileDestinations.AboutApp)
         },
-        navigateToSettings = {
+        navigateToSettings = dropUnlessResumed {
           navigator.navigate(ProfileDestinations.SettingsGraph)
         },
-        navigateToCertificates = {
+        navigateToCertificates = dropUnlessResumed {
           navigator.navigate(Certificates)
         },
-        navigateToConnectPayment = navigateToConnectPayment,
-        navigateToAddMissingInfo = { contractId ->
+        navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+        navigateToAddMissingInfo = dropUnlessResumed { contractId: String ->
           navigateToAddMissingInfo(contractId)
         },
         openAppSettings = openAppSettings,
         openUrl = openUrl,
         viewModel = viewModel,
-        onNavigateToNewConversation = {
+        onNavigateToNewConversation = dropUnlessResumed {
           onNavigateToNewConversation()
         },
       )
@@ -102,10 +104,10 @@ fun NavGraphBuilder.profileGraph(
       AboutAppDestination(
         viewModel = viewModel,
         onBackPressed = navigator::navigateUp,
-        showOpenSourceLicenses = {
+        showOpenSourceLicenses = dropUnlessResumed {
           navigator.navigate(ProfileDestinations.Licenses)
         },
-        navigateToNewConversation = { onNavigateToNewConversation() },
+        navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         hedvigBuildConstants = hedvigBuildConstants,
       )
     }
@@ -119,8 +121,8 @@ fun NavGraphBuilder.profileGraph(
       CertificatesDestination(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
-        onNavigateToInsuranceEvidence = onNavigateToInsuranceEvidence,
-        onNavigateToTravelCertificate = onNavigateToTravelCertificate,
+        onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
+        onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
       )
     }
     navgraph<ProfileDestinations.SettingsGraph>(
@@ -132,7 +134,7 @@ fun NavGraphBuilder.profileGraph(
           viewModel = viewModel,
           navigateUp = navigator::navigateUp,
           openAppSettings = openAppSettings,
-          onNavigateToDeleteAccountFeature = { navigateToDeleteAccountFeature() },
+          onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
         )
       }
       settingsDestinationNestedGraphs()

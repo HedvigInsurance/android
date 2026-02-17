@@ -1,7 +1,9 @@
 package com.hedvig.android.feature.home.home.navigation
 
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
@@ -42,23 +44,23 @@ fun NavGraphBuilder.homeGraph(
       val viewModel: HomeViewModel = koinViewModel()
       HomeDestination(
         viewModel = viewModel,
-        onNavigateToInbox = { onNavigateToInbox() },
-        onNavigateToNewConversation = { onNavigateToNewConversation() },
-        navigateToClaimChat = navigateToClaimChat,
-        navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
-        onClaimDetailCardClicked = { claimId: String ->
+        onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+        navigateToClaimChat = dropUnlessResumed { navigateToClaimChat() },
+        navigateToClaimChatInDevMode = dropUnlessResumed { navigateToClaimChatInDevMode() },
+        onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
           navigateToClaimDetails(claimId)
         },
-        navigateToConnectPayment = navigateToConnectPayment,
-        navigateToOldClaimFlow = { navigateToOldClaimFlow() },
-        navigateToMissingInfo = { contractId -> navigateToMissingInfo(contractId) },
-        navigateToHelpCenter = { navigateToHelpCenter() },
+        navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+        navigateToOldClaimFlow = dropUnlessResumed { navigateToOldClaimFlow() },
+        navigateToMissingInfo = dropUnlessResumed { contractId -> navigateToMissingInfo(contractId) },
+        navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
-        navigateToFirstVet = { sections ->
+        navigateToFirstVet = dropUnlessResumed { sections ->
           navigator.navigate(HomeDestination.FirstVet(sections))
         },
-        navigateToContactInfo = {
+        navigateToContactInfo = dropUnlessResumed {
           navigateToContactInfo()
         },
         imageLoader = imageLoader,

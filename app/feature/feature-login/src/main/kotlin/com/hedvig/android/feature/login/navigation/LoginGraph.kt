@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.login.navigation
 
 import android.net.Uri
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.login.genericauth.GenericAuthDestination
@@ -37,12 +38,12 @@ fun NavGraphBuilder.loginGraph(
       MarketingDestination(
         viewModel = marketingViewModel,
         appVersionName = appVersionName,
-        openWebOnboarding = {
+        openWebOnboarding = dropUnlessResumed {
           val baseUrl = urlBaseWeb.substringAfter("//")
           val uri = createOnboardingUri(baseUrl, Language.from(locale.toLanguageTag())).toString()
           openUrl(uri)
         },
-        navigateToLoginScreen = {
+        navigateToLoginScreen = dropUnlessResumed {
           navigator.navigate(LoginDestinations.SwedishLogin)
         },
       )
@@ -52,7 +53,7 @@ fun NavGraphBuilder.loginGraph(
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
         navigateUp = navigator::navigateUp,
-        navigateToEmailLogin = {
+        navigateToEmailLogin = dropUnlessResumed {
           logcat(LogPriority.INFO) { "Login with OTP clicked" }
           navigator.navigate(LoginDestinations.GenericAuthCredentialsInput)
         },
@@ -80,7 +81,7 @@ fun NavGraphBuilder.loginGraph(
         viewModel = viewModel,
         navigateUp = navigator::navigateUp,
         onNavigateToLoggedIn = onNavigateToLoggedIn,
-        onOpenEmailApp = onOpenEmailApp,
+        onOpenEmailApp = dropUnlessResumed { onOpenEmailApp() },
       )
     }
   }

@@ -2,6 +2,7 @@ package com.hedvig.android.feature.claimtriaging
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimtriaging.ClaimGroup
 import com.hedvig.android.data.claimtriaging.EntryPoint
@@ -60,7 +61,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
     val viewModel: ClaimGroupsViewModel = koinViewModel()
     ClaimGroupsDestination(
       viewModel = viewModel,
-      onClaimGroupWithEntryPointsSubmit = { claimGroup: ClaimGroup ->
+      onClaimGroupWithEntryPointsSubmit = dropUnlessResumed { claimGroup: ClaimGroup ->
         navigator.navigate(ClaimTriagingDestination.ClaimEntryPoints(claimGroup.entryPoints))
       },
       startClaimFlow = { claimFlowStep ->
@@ -68,7 +69,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
         startClaimFlow(claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
-      closeClaimFlow = closeClaimFlow,
+      closeClaimFlow = dropUnlessResumed { closeClaimFlow() },
       windowSizeClass = windowSizeClass,
     )
   }
@@ -79,7 +80,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
     val viewModel: ClaimEntryPointsViewModel = koinViewModel { parametersOf(entryPoints) }
     ClaimEntryPointsDestination(
       viewModel = viewModel,
-      onEntryPointWithOptionsSubmit = { entryPointId, entryPointOptions ->
+      onEntryPointWithOptionsSubmit = dropUnlessResumed { entryPointId, entryPointOptions ->
         navigator.navigate(ClaimTriagingDestination.ClaimEntryPointOptions(entryPointId, entryPointOptions))
       },
       startClaimFlow = { claimFlowStep ->
@@ -87,7 +88,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
         startClaimFlow(claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
-      closeClaimFlow = closeClaimFlow,
+      closeClaimFlow = dropUnlessResumed { closeClaimFlow() },
       windowSizeClass = windowSizeClass,
     )
   }
@@ -104,7 +105,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
         startClaimFlow(claimFlowStep)
       },
       navigateUp = navigator::navigateUp,
-      closeClaimFlow = closeClaimFlow,
+      closeClaimFlow = dropUnlessResumed { closeClaimFlow() },
       windowSizeClass = windowSizeClass,
     )
   }

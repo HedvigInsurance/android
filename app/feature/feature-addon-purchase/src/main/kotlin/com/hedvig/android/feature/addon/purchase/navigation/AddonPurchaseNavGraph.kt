@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
@@ -62,7 +63,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })
         }
       },
-      onNavigateToNewConversation = onNavigateToNewConversation,
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
 
@@ -127,7 +128,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
             ),
           )
         },
-        onNavigateToNewConversation = {
+        onNavigateToNewConversation = dropUnlessResumed {
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
           onNavigateToNewConversation()
         },

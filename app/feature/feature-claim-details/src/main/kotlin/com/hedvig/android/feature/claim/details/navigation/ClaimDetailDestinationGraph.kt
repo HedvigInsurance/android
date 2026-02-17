@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
@@ -37,7 +38,9 @@ fun NavGraphBuilder.claimDetailsGraph(
       imageLoader = imageLoader,
       appPackageId = appPackageId,
       navigateUp = navigateUp,
-      navigateToConversation = { conversationId -> navigateToConversation(conversationId) },
+      navigateToConversation = dropUnlessResumed { conversationId: String ->
+        navigateToConversation(conversationId)
+      },
       onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
         if (filesUri.isNotEmpty()) {
           navigator.navigate(
