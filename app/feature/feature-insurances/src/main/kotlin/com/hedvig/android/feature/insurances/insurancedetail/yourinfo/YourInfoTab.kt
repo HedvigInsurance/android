@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -152,9 +153,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                addon.premium.toString(),
-              ),
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              addon.premium.toString(),
+            ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -190,7 +191,7 @@ internal fun YourInfoTab(
     }
   }
 
-  Column(modifier) {
+  Column(modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
     if (upcomingChangesInsuranceAgreement != null) {
       if (upcomingChangesInsuranceAgreement.creationCause == InsuranceAgreement.CreationCause.RENEWAL &&
         upcomingChangesInsuranceAgreement.certificateUrl != null
@@ -225,9 +226,6 @@ internal fun YourInfoTab(
           },
         )
       }
-      if (isDecommissioned) {
-        Spacer(Modifier.height(16.dp))
-      }
     }
     if (isDecommissioned) {
       HedvigNotificationCard(
@@ -236,61 +234,64 @@ internal fun YourInfoTab(
         priority = Info,
       )
     }
-    CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
-    PriceRow(
-      priceToShow,
-      showPriceInfoIcon,
-      onInfoIconClick,
-      Modifier.padding(horizontal = 16.dp),
-    )
-    if (allowEditCoInsured) {
-      HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-      Spacer(Modifier.height(16.dp))
-      CoInsuredSection(
-        coInsuredList = coInsured,
-        contractHolderDisplayName = contractHolderDisplayName,
-        contractHolderSSN = contractHolderSSN,
-        onMissingInfoClick = onMissingInfoClick,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
+    Surface(
+      shape = HedvigTheme.shapes.cornerXLarge,
+      modifier = modifier.padding(horizontal = 16.dp),
+    ) {
+      Column {
+        CoverageRows(coverageItems, Modifier.padding(horizontal = 16.dp))
+        PriceRow(
+          priceToShow,
+          showPriceInfoIcon,
+          onInfoIconClick,
+          Modifier.padding(horizontal = 16.dp),
+        )
+        if (allowEditCoInsured) {
+          HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+          Spacer(Modifier.height(16.dp))
+          CoInsuredSection(
+            coInsuredList = coInsured,
+            contractHolderDisplayName = contractHolderDisplayName,
+            contractHolderSSN = contractHolderSSN,
+            onMissingInfoClick = onMissingInfoClick,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
+      }
     }
-    Spacer(Modifier.height(16.dp))
     if (!isTerminated) {
-      HedvigButton(
-        text = "Remove addon TODO", // TODO!!!
-        onClick = navigateToRemoveAddon,
-        enabled = true,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
-      )
-      Spacer(Modifier.height(8.dp))
-
-      if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
+      Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         HedvigButton(
-          text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
+          text = "Remove addon TODO", // TODO!!!
+          onClick = navigateToRemoveAddon,
           enabled = true,
-          onClick = { editYourInfoBottomSheet.show() },
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
         )
-        Spacer(Modifier.height(8.dp))
+        if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
+          HedvigButton(
+            text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
+            enabled = true,
+            onClick = { editYourInfoBottomSheet.show() },
+            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
+          )
+        }
+        if (allowChangeAddress) {
+          HedvigButton(
+            text = stringResource(Res.string.insurance_details_move_button),
+            buttonStyle = Ghost,
+            enabled = true,
+            onClick = { onChangeAddressClick() },
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
+          )
+        }
       }
-      if (allowChangeAddress) {
-        HedvigButton(
-          text = stringResource(Res.string.insurance_details_move_button),
-          buttonStyle = Ghost,
-          enabled = true,
-          onClick = { onChangeAddressClick() },
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        )
-        Spacer(Modifier.height(8.dp))
-      }
-      Spacer(Modifier.height(8.dp))
     }
   }
 }
