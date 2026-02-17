@@ -21,13 +21,13 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigator: Navigator,
+  navController: NavController,
   onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -44,10 +44,10 @@ fun NavGraphBuilder.helpCenterGraph(
       HelpCenterHomeDestination(
         viewModel = viewModel,
         onNavigateToTopic = dropUnlessResumed { topic ->
-          navigateToTopic(topic, navigator)
+          navigateToTopic(topic, navController)
         },
         onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, navigator)
+          navigateToQuestion(question, navController)
         },
         onNavigateToQuickLink = dropUnlessResumed { destination ->
           when (destination) {
@@ -58,11 +58,11 @@ fun NavGraphBuilder.helpCenterGraph(
             is InnerHelpCenterDestination -> {
               when (destination) {
                 is FirstVet -> {
-                  navigator.navigate(HelpCenterDestinations.FirstVet(destination.sections))
+                  navController.navigate(HelpCenterDestinations.FirstVet(destination.sections))
                 }
 
                 is QuickLinkSickAbroad -> {
-                  navigator.navigate(
+                  navController.navigate(
                     Emergency(
                       destination.emergencyNumber,
                       destination.emergencyUrl,
@@ -80,7 +80,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateToNewConversation = dropUnlessResumed {
           onNavigateToNewConversation()
         },
-        onNavigateUp = navigator::navigateUp,
+        onNavigateUp = navController::navigateUp,
       )
     }
 
@@ -95,10 +95,10 @@ fun NavGraphBuilder.helpCenterGraph(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
         onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, navigator)
+          navigateToQuestion(question, navController)
         },
-        onNavigateUp = navigator::navigateUp,
-        onNavigateBack = navigator::popBackStack,
+        onNavigateUp = navController::navigateUp,
+        onNavigateBack = navController::popBackStack,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       )
@@ -114,8 +114,8 @@ fun NavGraphBuilder.helpCenterGraph(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        onNavigateUp = navigator::navigateUp,
-        onNavigateBack = navigator::popBackStack,
+        onNavigateUp = navController::navigateUp,
+        onNavigateBack = navController::popBackStack,
         helpCenterQuestionViewModel = helpCenterQuestionViewModel,
       )
     }
@@ -124,8 +124,8 @@ fun NavGraphBuilder.helpCenterGraph(
     ) {
       FirstVetDestination(
         sections = sections,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = navController::navigateUp,
+        navigateBack = navController::popBackStack,
       )
     }
     navdestination<Emergency> {
@@ -133,7 +133,7 @@ fun NavGraphBuilder.helpCenterGraph(
         emergencyNumber = emergencyNumber,
         emergencyUrl = emergencyUrl,
         preferredPartnerImageHeight = preferredPartnerImageHeight,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         openUrl = openUrl,
         tryToDialPhone = tryToDialPhone,
       )
@@ -141,16 +141,16 @@ fun NavGraphBuilder.helpCenterGraph(
   }
 }
 
-private fun navigateToTopic(topicId: String, navigator: Navigator) {
+private fun navigateToTopic(topicId: String, navController: NavController) {
   val destination = HelpCenterDestinations.Topic(
     topicId = topicId,
   )
-  navigator.navigate(destination)
+  navController.navigate(destination)
 }
 
-private fun navigateToQuestion(questionId: String, navigator: Navigator) {
+private fun navigateToQuestion(questionId: String, navController: NavController) {
   val destination = HelpCenterDestinations.Question(
     questionId = questionId,
   )
-  navigator.navigate(destination)
+  navController.navigate(destination)
 }

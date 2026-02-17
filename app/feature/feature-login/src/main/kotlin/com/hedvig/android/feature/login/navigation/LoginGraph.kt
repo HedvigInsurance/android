@@ -2,6 +2,7 @@ package com.hedvig.android.feature.login.navigation
 
 import android.net.Uri
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.login.genericauth.GenericAuthDestination
@@ -17,12 +18,11 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.core.Navigator
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.loginGraph(
-  navigator: Navigator,
+  navController: NavController,
   appVersionName: String,
   urlBaseWeb: String,
   openUrl: (String) -> Unit,
@@ -44,7 +44,7 @@ fun NavGraphBuilder.loginGraph(
           openUrl(uri)
         },
         navigateToLoginScreen = dropUnlessResumed {
-          navigator.navigate(LoginDestinations.SwedishLogin)
+          navController.navigate(LoginDestinations.SwedishLogin)
         },
       )
     }
@@ -52,10 +52,10 @@ fun NavGraphBuilder.loginGraph(
       val swedishLoginViewModel: SwedishLoginViewModel = koinViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         navigateToEmailLogin = dropUnlessResumed {
           logcat(LogPriority.INFO) { "Login with OTP clicked" }
-          navigator.navigate(LoginDestinations.GenericAuthCredentialsInput)
+          navController.navigate(LoginDestinations.GenericAuthCredentialsInput)
         },
         onNavigateToLoggedIn = onNavigateToLoggedIn,
       )
@@ -64,9 +64,9 @@ fun NavGraphBuilder.loginGraph(
       val viewModel: GenericAuthViewModel = koinViewModel()
       GenericAuthDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onStartOtpInput = { verifyUrl: String, resendUrl: String, email: String ->
-          navigator.navigate(
+          navController.navigate(
             LoginDestinations.OtpInput(LoginDestinations.OtpInput.OtpInformation(verifyUrl, resendUrl, email)),
           )
         },
@@ -79,7 +79,7 @@ fun NavGraphBuilder.loginGraph(
       val viewModel: OtpInputViewModel = koinViewModel { parametersOf(otpInputInformation) }
       OtpInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onNavigateToLoggedIn = onNavigateToLoggedIn,
         onOpenEmailApp = dropUnlessResumed { onOpenEmailApp() },
       )

@@ -13,7 +13,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,7 +25,7 @@ fun NavGraphBuilder.cbmChatGraph(
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-  navigator: Navigator,
+  navController: NavController,
 ) {
   navgraph<ChatDestination>(
     startDestination = ChatDestinations.Inbox::class,
@@ -39,9 +39,9 @@ fun NavGraphBuilder.cbmChatGraph(
       val viewModel: InboxViewModel = koinViewModel()
       InboxDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onConversationClick = dropUnlessResumed { conversationId ->
-          navigator.navigate(ChatDestinations.Chat(conversationId))
+          navController.navigate(ChatDestinations.Chat(conversationId))
         },
       )
     }
@@ -56,7 +56,7 @@ fun NavGraphBuilder.cbmChatGraph(
         openUrl = openUrl,
         onNavigateToClaimDetails = onNavigateToClaimDetails,
         onNavigateToImageViewer = onNavigateToImageViewer,
-        onNavigateUp = navigator::navigateUp,
+        onNavigateUp = navController::navigateUp,
         simpleVideoCache = simpleVideoCache,
       )
     }

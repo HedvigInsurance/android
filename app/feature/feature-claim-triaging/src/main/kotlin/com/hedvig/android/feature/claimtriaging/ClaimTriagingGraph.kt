@@ -17,7 +17,7 @@ import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
@@ -52,7 +52,7 @@ sealed interface ClaimTriagingDestination {
 }
 
 fun NavGraphBuilder.claimTriagingDestinations(
-  navigator: Navigator,
+  navController: NavController,
   windowSizeClass: WindowSizeClass,
   startClaimFlow: (ClaimFlowStep) -> Unit,
   closeClaimFlow: () -> Unit,
@@ -62,13 +62,13 @@ fun NavGraphBuilder.claimTriagingDestinations(
     ClaimGroupsDestination(
       viewModel = viewModel,
       onClaimGroupWithEntryPointsSubmit = dropUnlessResumed { claimGroup: ClaimGroup ->
-        navigator.navigate(ClaimTriagingDestination.ClaimEntryPoints(claimGroup.entryPoints))
+        navController.navigate(ClaimTriagingDestination.ClaimEntryPoints(claimGroup.entryPoints))
       },
       startClaimFlow = { claimFlowStep ->
         viewModel.handledNextStepNavigation()
         startClaimFlow(claimFlowStep)
       },
-      navigateUp = navigator::navigateUp,
+      navigateUp = navController::navigateUp,
       closeClaimFlow = dropUnlessResumed { closeClaimFlow() },
       windowSizeClass = windowSizeClass,
     )
@@ -81,13 +81,13 @@ fun NavGraphBuilder.claimTriagingDestinations(
     ClaimEntryPointsDestination(
       viewModel = viewModel,
       onEntryPointWithOptionsSubmit = dropUnlessResumed { entryPointId, entryPointOptions ->
-        navigator.navigate(ClaimTriagingDestination.ClaimEntryPointOptions(entryPointId, entryPointOptions))
+        navController.navigate(ClaimTriagingDestination.ClaimEntryPointOptions(entryPointId, entryPointOptions))
       },
       startClaimFlow = { claimFlowStep ->
         viewModel.handledNextStepNavigation()
         startClaimFlow(claimFlowStep)
       },
-      navigateUp = navigator::navigateUp,
+      navigateUp = navController::navigateUp,
       closeClaimFlow = dropUnlessResumed { closeClaimFlow() },
       windowSizeClass = windowSizeClass,
     )
@@ -104,7 +104,7 @@ fun NavGraphBuilder.claimTriagingDestinations(
         viewModel.handledNextStepNavigation()
         startClaimFlow(claimFlowStep)
       },
-      navigateUp = navigator::navigateUp,
+      navigateUp = navController::navigateUp,
       closeClaimFlow = dropUnlessResumed { closeClaimFlow() },
       windowSizeClass = windowSizeClass,
     )

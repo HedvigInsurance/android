@@ -22,7 +22,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import org.koin.compose.viewmodel.koinViewModel
@@ -30,7 +30,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NavGraphBuilder.profileGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   settingsDestinationNestedGraphs: NavGraphBuilder.() -> Unit,
-  navigator: Navigator,
+  navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
@@ -54,20 +54,20 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: ProfileViewModel = koinViewModel()
       ProfileDestination(
         navigateToEurobonus = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.Eurobonus)
+          navController.navigate(ProfileDestinations.Eurobonus)
         },
         navigateToClaimHistory = dropUnlessResumed { navigateToClaimHistory() },
         navigateToContactInfo = dropUnlessResumed {
-          navigator.navigate(ProfileDestination.ContactInfo)
+          navController.navigate(ProfileDestination.ContactInfo)
         },
         navigateToAboutApp = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.AboutApp)
+          navController.navigate(ProfileDestinations.AboutApp)
         },
         navigateToSettings = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.SettingsGraph)
+          navController.navigate(ProfileDestinations.SettingsGraph)
         },
         navigateToCertificates = dropUnlessResumed {
-          navigator.navigate(Certificates)
+          navController.navigate(Certificates)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
         navigateToAddMissingInfo = dropUnlessResumed { contractId: String ->
@@ -87,7 +87,7 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: EurobonusViewModel = koinViewModel()
       EurobonusDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
     navdestination<ProfileDestination.ContactInfo>(
@@ -96,16 +96,16 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: ContactInfoViewModel = koinViewModel()
       ContactInfoDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
     navdestination<ProfileDestinations.AboutApp> {
       val viewModel: AboutAppViewModel = koinViewModel()
       AboutAppDestination(
         viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
+        onBackPressed = navController::navigateUp,
         showOpenSourceLicenses = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.Licenses)
+          navController.navigate(ProfileDestinations.Licenses)
         },
         navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         hedvigBuildConstants = hedvigBuildConstants,
@@ -113,14 +113,14 @@ fun NavGraphBuilder.profileGraph(
     }
     navdestination<ProfileDestinations.Licenses> {
       LicensesDestination(
-        onBackPressed = navigator::navigateUp,
+        onBackPressed = navController::navigateUp,
       )
     }
     navdestination<Certificates> {
       val viewModel: CertificatesViewModel = koinViewModel()
       CertificatesDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
         onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
       )
@@ -132,7 +132,7 @@ fun NavGraphBuilder.profileGraph(
         val viewModel: SettingsViewModel = koinViewModel()
         SettingsDestination(
           viewModel = viewModel,
-          navigateUp = navigator::navigateUp,
+          navigateUp = navController::navigateUp,
           openAppSettings = openAppSettings,
           onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
         )

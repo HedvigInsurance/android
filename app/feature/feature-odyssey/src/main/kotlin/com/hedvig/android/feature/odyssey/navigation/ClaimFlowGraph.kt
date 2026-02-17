@@ -51,13 +51,13 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.claimFlowGraph(
   windowSizeClass: WindowSizeClass,
-  navigator: Navigator,
+  navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   appPackageId: String,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -83,12 +83,12 @@ fun NavGraphBuilder.claimFlowGraph(
       HonestyPledgeDestination(
         windowSizeClass = windowSizeClass,
         openNotificationPermissionStep = {
-          navigator.navigate(ClaimFlowDestination.NotificationPermission)
+          navController.navigate(ClaimFlowDestination.NotificationPermission)
         },
         pledgeAccepted = {
           navigateToTriaging()
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -99,7 +99,7 @@ fun NavGraphBuilder.claimFlowGraph(
           navigateToTriaging()
         },
         openAppSettings = openAppSettings,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -116,9 +116,9 @@ fun NavGraphBuilder.claimFlowGraph(
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
         freeTextAvailable = this.freeTextAvailable,
         freeTextQuestions = this.freeTextQuestions,
@@ -134,9 +134,9 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep: ClaimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = navigator::navigateUp,
+        navigateBack = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -152,9 +152,9 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateBack = navigator::navigateUp,
+        navigateBack = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -167,9 +167,9 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -180,9 +180,9 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -196,9 +196,9 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -211,9 +211,9 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
         onNavigateToImageViewer = onNavigateToImageViewer,
         imageLoader = imageLoader,
@@ -229,14 +229,14 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToAppUpdateStep = {
-          navigator.navigateToClaimFlowDestination( ClaimFlowDestination.UpdateApp)
+          navController.navigateToClaimFlowDestination( ClaimFlowDestination.UpdateApp)
         },
         navigateToPayoutStep = { checkoutMethod ->
-          navigator.navigateToClaimFlowDestination(
+          navController.navigateToClaimFlowDestination(
             destination = ClaimFlowDestination.SingleItemPayout(checkoutMethod = checkoutMethod),
           )
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -249,9 +249,9 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.emit(SelectContractEvent.HandledNextStepNavigation)
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -263,10 +263,10 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         windowSizeClass = windowSizeClass,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
       )
     }
@@ -277,7 +277,7 @@ fun NavGraphBuilder.claimFlowGraph(
         deflectGlassDamage = this,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         windowSizeClass = windowSizeClass,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         openUrl = openUrl,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
@@ -290,7 +290,7 @@ fun NavGraphBuilder.claimFlowGraph(
         deflectTowing = this,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         windowSizeClass = windowSizeClass,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
       )
@@ -302,7 +302,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectCarOtherDamageDestination(
         deflectCarOtherDamage = this,
         windowSizeClass = windowSizeClass,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
         openUrl = openUrl,
       )
@@ -313,7 +313,7 @@ fun NavGraphBuilder.claimFlowGraph(
     ) {
       DeflectEmergencyDestination(
         deflectEmergency = this,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         openUrl = openUrl,
         tryToDialPhone = tryToDialPhone,
       )
@@ -324,7 +324,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectPestsDestination(
         deflectPests = this,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         openUrl = openUrl,
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
@@ -337,7 +337,7 @@ fun NavGraphBuilder.claimFlowGraph(
       DeflectIdProtectionDestination(
         deflectIdProtection = this,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
@@ -349,13 +349,13 @@ fun NavGraphBuilder.claimFlowGraph(
       val viewModel: FileUploadViewModel = koinViewModel { parametersOf(this) }
       FileUploadDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         windowSizeClass = windowSizeClass,
         closeClaimFlow = closeClaimFlow,
         imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navigator.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
         },
         onNavigateToImageViewer = onNavigateToImageViewer,
         appPackageId = appPackageId,
@@ -369,7 +369,7 @@ fun NavGraphBuilder.claimFlowGraph(
  * NavGraphBuilder function so that they're not under the AppDestination.ClaimsFlow parent graph.
  */
 fun NavGraphBuilder.terminalClaimFlowStepDestinations(
-  navigator: Navigator,
+  navController: NavController,
   openPlayStore: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
 ) {
@@ -380,26 +380,26 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
     val viewModel: SingleItemPayoutViewModel = koinViewModel { parametersOf(singleItemPayout) }
     SingleItemPayoutDestination(
       viewModel = viewModel,
-      onDoneAfterPayout = navigator::popBackStack,
+      onDoneAfterPayout = navController::popBackStack,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      closePayoutScreen = navigator::popBackStack,
+      closePayoutScreen = navController::popBackStack,
     )
   }
   navdestination<ClaimFlowDestination.ClaimSuccess> {
     ClaimSuccessDestination(
-      closeSuccessScreen = navigator::popBackStack,
+      closeSuccessScreen = navController::popBackStack,
     )
   }
   navdestination<ClaimFlowDestination.UpdateApp> {
     UnknownScreenDestination(
       openPlayStore = openPlayStore,
-      closeUnknownScreenDestination = navigator::popBackStack,
+      closeUnknownScreenDestination = navController::popBackStack,
     )
   }
   navdestination<ClaimFlowDestination.Failure> {
     UnknownErrorDestination(
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      closeFailureScreenDestination = navigator::popBackStack,
+      closeFailureScreenDestination = navController::popBackStack,
     )
   }
 }
@@ -407,7 +407,7 @@ fun NavGraphBuilder.terminalClaimFlowStepDestinations(
 /**
  * If we're going to a terminal destination, pop the claims flow backstack completely before going there.
  */
-fun Navigator.navigateToClaimFlowDestination(destination: Destination) {
+fun NavController.navigateToClaimFlowDestination(destination: Destination) {
   val navOptions: NavOptionsBuilder.() -> Unit = {
     when (destination) {
       is ClaimFlowDestination.ClaimSuccess,

@@ -33,12 +33,10 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.addonPurchaseNavGraph(
-  navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToNewConversation: () -> Unit,
@@ -52,9 +50,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
     val viewModel: TravelAddonTriageViewModel = koinViewModel()
     TravelAddonTriageDestination(
       viewModel = viewModel,
-      popBackStack = navigator::popBackStack,
+      popBackStack = navController::popBackStack,
       launchFlow = { insuranceIds: List<String> ->
-        navigator.navigate(
+        navController.navigate(
           AddonPurchaseGraphDestination(
             insuranceIds,
             TravelAddonBannerSource.DEEPLINK,
@@ -78,7 +76,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
       if (addonPurchaseGraphDestination.insuranceIds.size == 1) {
         LaunchedEffect(Unit) {
-          navigator.navigate(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0])) {
+          navController.navigate(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0])) {
             typedPopUpTo<ChooseInsuranceToAddAddonDestination>({ inclusive = true })
           }
         }
@@ -88,9 +86,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         }
         SelectInsuranceForAddonDestination(
           viewModel = viewModel,
-          navigateUp = navigator::navigateUp,
+          navigateUp = navController::navigateUp,
           navigateToCustomizeAddon = { chosenInsuranceId: String ->
-            navigator.navigate(CustomizeAddon(chosenInsuranceId))
+            navController.navigate(CustomizeAddon(chosenInsuranceId))
           },
         )
       }
@@ -105,8 +103,8 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       }
       CustomizeTravelAddonDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
-        popBackStack = navigator::popBackStack,
+        navigateUp = navController::navigateUp,
+        popBackStack = navController::popBackStack,
         popAddonFlow = {
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
         },
@@ -114,7 +112,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           navController.navigate(Summary(summaryParameters))
         },
         onNavigateToTravelInsurancePlusExplanation = { perilDataList: List<PerilData> ->
-          navigator.navigate(
+          navController.navigate(
             TravelInsurancePlusExplanation(
               perilDataList.map { perilData ->
                 TravelPerilData(
@@ -154,12 +152,12 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       }
       AddonSummaryDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onFailure = {
-          navigator.navigate(SubmitFailure)
+          navController.navigate(SubmitFailure)
         },
         onSuccess = {
-          navigator.navigate(SubmitSuccess(this.params.activationDate)) {
+          navController.navigate(SubmitSuccess(this.params.activationDate)) {
             typedPopUpTo<AddonPurchaseGraphDestination> {
               inclusive = true
             }
@@ -170,7 +168,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
 
     navdestination<SubmitFailure> {
       SubmitAddonFailureScreen(
-        popBackStack = navigator::popBackStack,
+        popBackStack = navController::popBackStack,
       )
     }
   }
@@ -178,7 +176,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
   navdestination<SubmitSuccess>(SubmitSuccess) {
     SubmitAddonSuccessScreen(
       activationDate = this.activationDate,
-      popBackStack = navigator::popBackStack,
+      popBackStack = navController::popBackStack,
     )
   }
 }

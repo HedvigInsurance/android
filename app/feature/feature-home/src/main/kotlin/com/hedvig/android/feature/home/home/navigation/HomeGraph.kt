@@ -12,13 +12,13 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigator: Navigator,
+  navController: NavController,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToOldClaimFlow: () -> Unit,
@@ -58,7 +58,7 @@ fun NavGraphBuilder.homeGraph(
         openUrl = openUrl,
         openAppSettings = openAppSettings,
         navigateToFirstVet = dropUnlessResumed { sections ->
-          navigator.navigate(HomeDestination.FirstVet(sections))
+          navController.navigate(HomeDestination.FirstVet(sections))
         },
         navigateToContactInfo = dropUnlessResumed {
           navigateToContactInfo()
@@ -71,8 +71,8 @@ fun NavGraphBuilder.homeGraph(
     ) {
       FirstVetDestination(
         sections,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = navController::navigateUp,
+        navigateBack = navController::popBackStack,
       )
     }
     nestedGraphs()

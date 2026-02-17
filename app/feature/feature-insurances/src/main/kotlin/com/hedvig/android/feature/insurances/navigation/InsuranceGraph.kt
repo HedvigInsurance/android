@@ -16,13 +16,13 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
-  navigator: Navigator,
+  navController: NavController,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   startMovingFlow: () -> Unit,
@@ -50,11 +50,11 @@ fun NavGraphBuilder.insuranceGraph(
       InsuranceDestination(
         viewModel = viewModel,
         onInsuranceCardClick = dropUnlessResumed { contractId: String ->
-          navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
+          navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
         onCrossSellClick = dropUnlessResumed { url: String -> openUrl(url) },
         navigateToCancelledInsurances = dropUnlessResumed {
-          navigator.navigate(InsurancesDestinations.TerminatedInsurances)
+          navController.navigate(InsurancesDestinations.TerminatedInsurances)
         },
         onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
         imageLoader = imageLoader,
@@ -76,8 +76,8 @@ fun NavGraphBuilder.insuranceGraph(
         },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         openUrl = openUrl,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = navController::navigateUp,
+        navigateBack = navController::popBackStack,
         imageLoader = imageLoader,
         onChangeTierClick = dropUnlessResumed { contractId: String ->
           onNavigateToStartChangeTier(contractId)
@@ -89,9 +89,9 @@ fun NavGraphBuilder.insuranceGraph(
       TerminatedContractsDestination(
         viewModel = viewModel,
         navigateToContractDetail = dropUnlessResumed { contractId: String ->
-          navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
+          navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         imageLoader = imageLoader,
       )
     }

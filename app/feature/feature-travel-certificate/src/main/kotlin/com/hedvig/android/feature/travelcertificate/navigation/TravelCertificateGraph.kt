@@ -18,13 +18,13 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import com.hedvig.core.common.android.sharePDF
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.travelCertificateGraph(
-  navigator: Navigator,
+  navController: NavController,
   applicationId: String,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToCoInsuredAddInfo: (String) -> Unit,
@@ -40,12 +40,12 @@ fun NavGraphBuilder.travelCertificateGraph(
       val localContext = LocalContext.current
       TravelCertificateHistoryDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onStartGenerateTravelCertificateFlow = {
-          navigator.navigate(TravelCertificateDestination.TravelCertificateDateInput(null))
+          navController.navigate(TravelCertificateDestination.TravelCertificateDateInput(null))
         },
         onNavigateToChooseContract = {
-          navigator.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
+          navController.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
         },
         onShareTravelCertificate = {
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
@@ -60,9 +60,9 @@ fun NavGraphBuilder.travelCertificateGraph(
       ChooseContractForCertificateDestination(
         viewModel = viewModel,
         onContinue = { contractId ->
-          navigator.navigate(TravelCertificateDestination.TravelCertificateDateInput(contractId))
+          navController.navigate(TravelCertificateDestination.TravelCertificateDateInput(contractId))
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 
@@ -74,16 +74,16 @@ fun NavGraphBuilder.travelCertificateGraph(
       )
       TravelCertificateDateInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onNavigateToFellowTravellers = { travelCertificatePrimaryInput ->
-          navigator.navigate(
+          navController.navigate(
             TravelCertificateDestination.TravelCertificateTravellersInput(
               travelCertificatePrimaryInput,
             ),
           )
         },
         onNavigateToOverview = { travelCertificateUrl ->
-          navigator.navigate(
+          navController.navigate(
             TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
           ) {
             typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
@@ -104,9 +104,9 @@ fun NavGraphBuilder.travelCertificateGraph(
       )
       TravelCertificateTravellersInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onNavigateToOverview = { travelCertificateUrl ->
-          navigator.navigate(
+          navController.navigate(
             TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
           ) {
             typedPopUpTo<TravelCertificateDestination.TravelCertificateHistory> {
@@ -126,7 +126,7 @@ fun NavGraphBuilder.travelCertificateGraph(
       TravelCertificateOverviewDestination(
         travelCertificateUrl = travelCertificateUrl,
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onShareTravelCertificate = {
           context.sharePDF(it, applicationId)
         },

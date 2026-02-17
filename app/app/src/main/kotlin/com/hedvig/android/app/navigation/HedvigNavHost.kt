@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.media3.datasource.cache.SimpleCache
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
@@ -81,7 +82,6 @@ import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.feature.claim.chat.ClaimChatDestination
 import com.hedvig.feature.claim.chat.claimChatGraph
 
@@ -101,21 +101,21 @@ internal fun HedvigNavHost(
 ) {
   LocalConfiguration.current
   val density = LocalDensity.current
-  val navigator: Navigator = rememberNavigator(hedvigAppState.navController, finishApp)
+  val navController = hedvigAppState.navController
 
   val navigateToConnectPayment = {
-    hedvigAppState.navController.navigate(TrustlyDestination)
+    navController.navigate(TrustlyDestination)
   }
   val navigateToInbox = {
-    navigator.navigate(ChatDestination)
+    navController.navigate(ChatDestination)
   }
 
   fun navigateToNewConversation(builder: (NavOptionsBuilder.() -> Unit)? = null) {
-    navigator.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
+    navController.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
   }
 
   val navigateToConversation = { conversationId: String ->
-    navigator.navigate(ChatDestinations.Chat(conversationId))
+    navController.navigate(ChatDestinations.Chat(conversationId))
   }
 
   fun navigateToMovingFlow(navOptions: NavOptionsBuilder.() -> Unit = {}) {
@@ -127,7 +127,7 @@ internal fun HedvigNavHost(
   }
 
   NavHost(
-    navController = hedvigAppState.navController,
+    navController = navController,
     startDestination = HomeDestination.Graph::class,
     route = RootGraph::class,
     modifier = modifier,
@@ -137,7 +137,7 @@ internal fun HedvigNavHost(
     popExitTransition = { MotionDefaults.sharedXAxisPopExit(density) },
   ) {
     loginGraph(
-      navigator = navigator,
+      navController = navController,
       appVersionName = hedvigBuildConstants.appVersionName,
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,
@@ -150,7 +150,7 @@ internal fun HedvigNavHost(
           hedvigAppState = hedvigAppState,
           hedvigBuildConstants = hedvigBuildConstants,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          navigator = navigator,
+          navController = navController,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           externalNavigator = externalNavigator,
           imageLoader = imageLoader,
@@ -158,6 +158,7 @@ internal fun HedvigNavHost(
           onNavigateToImageViewer = onNavigateToImageViewer,
           navigateToNewConversation = ::navigateToNewConversation,
           navigateToConversation = navigateToConversation,
+          finishApp = finishApp,
         )
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -168,20 +169,20 @@ internal fun HedvigNavHost(
         navigateToNewConversation()
       },
       navigateToOldClaimFlow = {
-        navigator.navigate(ClaimsFlowGraphDestination)
+        navController.navigate(ClaimsFlowGraphDestination)
       },
       navigateToClaimDetails = { claimId ->
-        navigator.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { contractId: String ->
-        navigator.navigate(CoInsuredAddInfo(contractId))
+        navController.navigate(CoInsuredAddInfo(contractId))
       },
       navigateToHelpCenter = {
-        navigator.navigate(HelpCenterDestination)
+        navController.navigate(HelpCenterDestination)
       },
       navigateToClaimChat = {
-        hedvigAppState.navController.navigate(
+        navController.navigate(
           ClaimChatDestination(
             messageId = null,
             isDevelopmentFlow = false,
@@ -189,7 +190,7 @@ internal fun HedvigNavHost(
         )
       },
       navigateToClaimChatInDevMode = {
-        hedvigAppState.navController.navigate(
+        navController.navigate(
           ClaimChatDestination(
             messageId = null,
             isDevelopmentFlow = true,
@@ -198,9 +199,9 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
-      navigator = navigator,
+      navController = navController,
       navigateToContactInfo = {
-        navigator.navigate(ProfileDestination.ContactInfo)
+        navController.navigate(ProfileDestination.ContactInfo)
       },
       imageLoader = imageLoader,
     )
@@ -208,8 +209,7 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         terminateInsuranceGraph(
           windowSizeClass = hedvigAppState.windowSizeClass,
-          navigator = navigator,
-          navController = hedvigAppState.navController,
+          navController = navController,
           onNavigateToNewConversation = {
             navigateToNewConversation()
           },
@@ -217,7 +217,7 @@ internal fun HedvigNavHost(
           openPlayStore = externalNavigator::tryOpenPlayStore,
           hedvigDeepLinkContainer = hedvigDeepLinkContainer,
           navigateToInsurances = { navOptionsBuilder ->
-            hedvigAppState.navController.navigate(InsurancesDestination.Graph, navOptionsBuilder)
+            navController.navigate(InsurancesDestination.Graph, navOptionsBuilder)
           },
           navigateToMovingFlow = {
             navigateToMovingFlow {
@@ -233,13 +233,13 @@ internal fun HedvigNavHost(
              * The right way to handle this is to simply finish the app as per the docs:
              * https://developer.android.com/guide/navigation/backstack#handle-failure
              */
-            if (!hedvigAppState.navController.typedPopBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
+            if (!navController.typedPopBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
               finishApp()
             }
           },
           redirectToChangeTierFlow = { idWithIntent ->
-            navigator.navigate(
-              destination = ChooseTierGraphDestination(
+            navController.navigate(
+              ChooseTierGraphDestination(
                 InsuranceCustomizationParameters(
                   insuranceId = idWithIntent.first,
                   activationDate = idWithIntent.second.activationDate,
@@ -256,35 +256,34 @@ internal fun HedvigNavHost(
           },
         )
       },
-      navigator = navigator,
+      navController = navController,
       openUrl = openUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
       startMovingFlow = ::navigateToMovingFlow,
       startTerminationFlow = { data: CancelInsuranceData ->
-        navigator.navigate(
+        navController.navigate(
           TerminateInsuranceGraphDestination(insuranceId = data.contractId),
         )
       },
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       imageLoader = imageLoader,
       startEditCoInsured = { contractId: String ->
-        navigator.navigate(CoInsuredAddOrRemove(contractId))
+        navController.navigate(CoInsuredAddOrRemove(contractId))
       },
       onNavigateToStartChangeTier = { contractId: String ->
-        navigator.navigate(
-          destination =
-            StartTierFlowDestination(
-              insuranceId = contractId,
-            ),
+        navController.navigate(
+          StartTierFlowDestination(
+            insuranceId = contractId,
+          ),
         )
       },
       startEditCoInsuredAddMissingInfo = { contractId: String ->
-        navigator.navigate(CoInsuredAddInfo(contractId))
+        navController.navigate(CoInsuredAddInfo(contractId))
       },
       onNavigateToAddonPurchaseFlow = { ids ->
-        navigator.navigate(AddonPurchaseGraphDestination(ids, TravelAddonBannerSource.INSURANCES_TAB))
+        navController.navigate(AddonPurchaseGraphDestination(ids, TravelAddonBannerSource.INSURANCES_TAB))
       },
     )
     foreverGraph(
@@ -293,7 +292,7 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
     )
     paymentsGraph(
-      navigator = navigator,
+      navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectPayment = navigateToConnectPayment,
       languageService = languageService,
@@ -302,27 +301,27 @@ internal fun HedvigNavHost(
     profileGraph(
       nestedGraphs = {
         claimHistoryGraph(
-          navigateUp = hedvigAppState.navController::navigateUp,
+          navigateUp = navController::navigateUp,
           navigateToClaimDetails = { claimId ->
-            hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+            navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
           },
         )
       },
       settingsDestinationNestedGraphs = {
-        deleteAccountGraph(hedvigDeepLinkContainer, navigator)
+        deleteAccountGraph(hedvigDeepLinkContainer, navController)
       },
-      navigator = navigator,
+      navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToAddMissingInfo = { contractId: String ->
-        navigator.navigate(CoInsuredAddInfo(contractId))
+        navController.navigate(CoInsuredAddInfo(contractId))
       },
       navigateToDeleteAccountFeature = {
-        navigator.navigate(DeleteAccountDestination)
+        navController.navigate(DeleteAccountDestination)
       },
       navigateToClaimHistory = {
-        hedvigAppState.navController.navigate(ClaimHistoryDestination)
+        navController.navigate(ClaimHistoryDestination)
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
@@ -330,10 +329,10 @@ internal fun HedvigNavHost(
         navigateToNewConversation()
       },
       onNavigateToTravelCertificate = {
-        hedvigAppState.navController.navigate(TravelCertificateGraphDestination)
+        navController.navigate(TravelCertificateGraphDestination)
       },
       onNavigateToInsuranceEvidence = {
-        hedvigAppState.navController.navigate(InsuranceEvidenceGraphDestination)
+        navController.navigate(InsuranceEvidenceGraphDestination)
       },
     )
     cbmChatGraph(
@@ -344,36 +343,34 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
       onNavigateToClaimDetails = { claimId ->
         logcat { "Navigating to claim details from chat" }
-        hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
-      navigator = navigator,
+      navController = navController,
     )
     addonPurchaseNavGraph(
-      navigator = navigator,
-      navController = hedvigAppState.navController,
+      navController = navController,
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     changeTierGraph(
-      navigator = navigator,
-      navController = hedvigAppState.navController,
+      navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onNavigateToNewConversation = ::navigateToNewConversation,
     )
     movingFlowGraph(
-      navController = hedvigAppState.navController,
+      navController = navController,
       goToChat = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     connectPaymentGraph(
-      navigator = navigator,
+      navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
-    editCoInsuredGraph(navigator, hedvigDeepLinkContainer = hedvigDeepLinkContainer)
+    editCoInsuredGraph(navController, hedvigDeepLinkContainer = hedvigDeepLinkContainer)
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      navigator = navigator,
+      navController = navController,
       onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
         val destination: Destination = when (quickLinkDestination) {
           QuickLinkChangeAddress -> {
@@ -409,7 +406,7 @@ internal fun HedvigNavHost(
             EditCoInsuredTriage()
           }
         }
-        navigator.navigate(destination)
+        navController.navigate(destination)
       },
       onNavigateToNewConversation = {
         navigateToNewConversation()
@@ -420,7 +417,7 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
       tryToDialPhone = externalNavigator::tryToDialPhone,
     )
-    imageViewerGraph(hedvigAppState.navController, imageLoader)
+    imageViewerGraph(navController, imageLoader)
   }
 }
 
@@ -428,7 +425,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   hedvigAppState: HedvigAppState,
   hedvigBuildConstants: HedvigBuildConstants,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigator: Navigator,
+  navController: NavController,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
   imageLoader: ImageLoader,
@@ -436,14 +433,15 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateToNewConversation: ((NavOptionsBuilder.() -> Unit)?) -> Unit,
   navigateToConversation: (String) -> Unit,
+  finishApp: () -> Unit,
 ) {
   claimChatGraph(
-    navController = hedvigAppState.navController,
+    navController = navController,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     openAppSettings = externalNavigator::openAppSettings,
     onNavigateToImageViewer = onNavigateToImageViewer,
     navigateToClaimDetails = { claimId: String ->
-      hedvigAppState.navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+      navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
     },
     tryOpenPlayStore = externalNavigator::tryOpenPlayStore,
     openUrl = openUrl,
@@ -455,11 +453,11 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
   )
   claimDetailsGraph(
-    navigator = navigator,
+    navController = navController,
     imageLoader = imageLoader,
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
-    navigateUp = navigator::navigateUp,
+    navigateUp = navController::navigateUp,
     appPackageId = hedvigBuildConstants.appPackageId,
     navigateToConversation = { conversationId ->
       navigateToConversation(conversationId)
@@ -468,14 +466,14 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
   )
   travelCertificateGraph(
-    navigator = navigator,
+    navController = navController,
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     onNavigateToCoInsuredAddInfo = { contractId ->
-      navigator.navigate(CoInsuredAddInfo(contractId))
+      navController.navigate(CoInsuredAddInfo(contractId))
     },
     onNavigateToAddonPurchaseFlow = { ids ->
-      navigator.navigate(
+      navController.navigate(
         AddonPurchaseGraphDestination(
           ids,
           TravelAddonBannerSource.TRAVEL_CERTIFICATES,
@@ -484,32 +482,32 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
   )
   insuranceEvidenceGraph(
-    navigator = navigator,
+    navController = navController,
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
   )
   claimFlowGraph(
     windowSizeClass = hedvigAppState.windowSizeClass,
-    navigator = navigator,
+    navController = navController,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     navigateToTriaging = {
-      navigator.navigate(ClaimTriagingDestination.ClaimGroups)
+      navController.navigate(ClaimTriagingDestination.ClaimGroups)
     },
     onNavigateToImageViewer = onNavigateToImageViewer,
     openAppSettings = externalNavigator::openAppSettings,
     closeClaimFlow = {
-      hedvigAppState.navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
+      navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
     },
     nestedGraphs = {
       claimTriagingDestinations(
-        navigator = navigator,
+        navController = navController,
         windowSizeClass = hedvigAppState.windowSizeClass,
         startClaimFlow = { claimFlowStep: ClaimFlowStep ->
-          navigator.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         closeClaimFlow = {
-          hedvigAppState.navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
+          navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
         },
       )
     },
@@ -522,9 +520,11 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     appPackageId = hedvigBuildConstants.appPackageId,
   )
   terminalClaimFlowStepDestinations(
-    navigator = navigator,
+    navController = navController,
     openPlayStore = {
-      navigator.popBackStack()
+      if (!navController.popBackStack()) {
+        finishApp()
+      }
       externalNavigator.tryOpenPlayStore()
     },
     onNavigateToNewConversation = {

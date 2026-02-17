@@ -32,13 +32,11 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
-  navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToNewConversation: () -> Unit,
@@ -54,16 +52,16 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(message),
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      navigateUp = navigator::navigateUp,
-      navigateBack = navigator::popBackStack,
+      navigateUp = navController::navigateUp,
+      navigateBack = navController::popBackStack,
     )
   }
   navdestination<TerminateInsuranceDestination.UnknownScreen> {
     UnknownScreenDestination(
       windowSizeClass = windowSizeClass,
       openPlayStore = openPlayStore,
-      navigateUp = navigator::navigateUp,
-      navigateBack = navigator::popBackStack,
+      navigateUp = navController::navigateUp,
+      navigateBack = navController::popBackStack,
     )
   }
 
@@ -99,7 +97,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       }
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
@@ -109,7 +107,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             insuranceForCancellation.contractExposure,
             insuranceForCancellation.contractGroup,
           )
-          navigator.navigateToTerminateFlowDestination(
+          navController.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
@@ -124,7 +122,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       }
       TerminationSurveyDestination(
         viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
         navigateToSubOptions = { subOptions ->
           navController.navigate(
@@ -132,7 +130,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           )
         },
         navigateToNextStep = { step ->
-          navigator.navigateToTerminateFlowDestination(
+          navController.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
@@ -152,11 +150,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       }
       TerminationSurveyDestination(
         viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
         navigateToSubOptions = null,
         navigateToNextStep = { step ->
-          navigator.navigateToTerminateFlowDestination(
+          navController.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
@@ -193,7 +191,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             ),
           )
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       )
     }
@@ -213,7 +211,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             ),
           )
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       )
     }
@@ -235,11 +233,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         },
         navigateToNextStep = { terminationStep ->
           viewModel.emit(TerminationConfirmationEvent.HandledNextStepNavigation)
-          navigator.navigateToTerminateFlowDestination(
+          navController.navigateToTerminateFlowDestination(
             destination = terminationStep.toTerminateInsuranceDestination(commonParams),
           )
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
       )
     }
@@ -251,7 +249,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         params = autoCancelDeflectStepParameters,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         closeTerminationFlow = closeTerminationFlow,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 
@@ -266,9 +264,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       DeflectAutoDecomStepDestination(
         viewModel = viewModel,
         closeTerminationFlow = closeTerminationFlow,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onContinueTermination = { step ->
-          navigator.navigateToTerminateFlowDestination(
+          navController.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
@@ -280,7 +278,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
 /**
  * If we're going to a terminal destination, pop the termination flow backstack completely before going there.
  */
-private fun <T : Destination> Navigator.navigateToTerminateFlowDestination(destination: T) {
+private fun <T : Destination> NavController.navigateToTerminateFlowDestination(destination: T) {
   val navOptions: NavOptionsBuilder.() -> Unit = {
     when (destination) {
       is TerminateInsuranceDestination.TerminationSuccess,

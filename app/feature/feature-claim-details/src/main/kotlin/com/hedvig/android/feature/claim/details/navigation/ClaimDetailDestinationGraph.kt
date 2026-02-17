@@ -12,7 +12,7 @@ import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import com.hedvig.core.common.android.sharePDF
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -24,7 +24,7 @@ fun NavGraphBuilder.claimDetailsGraph(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateUp: () -> Unit,
   navigateToConversation: (String) -> Unit,
-  navigator: Navigator,
+  navController: NavController,
   applicationId: String,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
@@ -43,7 +43,7 @@ fun NavGraphBuilder.claimDetailsGraph(
       },
       onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
         if (filesUri.isNotEmpty()) {
-          navigator.navigate(
+          navController.navigate(
             ClaimDetailInternalDestination.AddFilesDestination(
               targetUploadUrl = uploadUri,
               initialFilesUri = filesUri.map { it.toString() },

@@ -12,11 +12,11 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkContainer: HedvigDeepLinkContainer) {
+fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepLinkContainer: HedvigDeepLinkContainer) {
   navdestination<EditCoInsuredTriage>(
     deepLinks = navDeepLinks(
       hedvigDeepLinkContainer.editCoInsured,
@@ -26,16 +26,16 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
     val viewModel: EditCoInsuredTriageViewModel = koinViewModel { parametersOf(contractId) }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
-      navigateUp = navigator::navigateUp,
+      navigateUp = navController::navigateUp,
       navigateToAddMissingInfo = dropUnlessResumed { contractId: String ->
-        navigator.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId)) {
+        navController.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contractId)) {
           typedPopUpTo<EditCoInsuredTriage> {
             inclusive = true
           }
         }
       },
       navigateToAddOrRemoveCoInsured = dropUnlessResumed { contractId: String ->
-        navigator.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contractId)) {
+        navController.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contractId)) {
           typedPopUpTo<EditCoInsuredTriage> {
             inclusive = true
           }
@@ -48,26 +48,26 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
     EditCoInsuredAddMissingInfoDestination(
       viewModel = koinViewModel { parametersOf(contractId) },
       navigateToSuccessScreen = {
-        navigator.navigate(EditCoInsuredDestination.Success(it)) {
+        navController.navigate(EditCoInsuredDestination.Success(it)) {
           typedPopUpTo<EditCoInsuredDestination.CoInsuredAddInfo> {
             inclusive = true
           }
         }
       },
-      navigateUp = navigator::navigateUp,
+      navigateUp = navController::navigateUp,
     )
   }
   navdestination<EditCoInsuredDestination.CoInsuredAddOrRemove> {
     EditCoInsuredAddOrRemoveDestination(
       koinViewModel { parametersOf(contractId) },
       navigateToSuccessScreen = {
-        navigator.navigate(EditCoInsuredDestination.Success(it)) {
+        navController.navigate(EditCoInsuredDestination.Success(it)) {
           typedPopUpTo<EditCoInsuredDestination.CoInsuredAddOrRemove> {
             inclusive = true
           }
         }
       },
-      navigateUp = navigator::navigateUp,
+      navigateUp = navController::navigateUp,
     )
   }
   navdestination<EditCoInsuredDestination.Success>(
@@ -75,8 +75,8 @@ fun NavGraphBuilder.editCoInsuredGraph(navigator: Navigator, hedvigDeepLinkConta
   ) {
     EditCoInsuredSuccessDestination(
       date = date,
-      navigateUp = navigator::navigateUp,
-      navigateBack = navigator::popBackStack,
+      navigateUp = navController::navigateUp,
+      navigateBack = navController::popBackStack,
     )
   }
 }

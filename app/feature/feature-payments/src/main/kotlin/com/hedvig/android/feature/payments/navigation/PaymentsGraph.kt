@@ -18,7 +18,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.dropUnlessResumed
@@ -27,7 +27,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.paymentsGraph(
-  navigator: Navigator,
+  navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -45,17 +45,17 @@ fun NavGraphBuilder.paymentsGraph(
       PaymentsDestination(
         viewModel = viewModel,
         onPaymentHistoryClicked = dropUnlessResumed {
-          navigator.navigate(PaymentsDestinations.History)
+          navController.navigate(PaymentsDestinations.History)
         },
         onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
         onDiscountClicked = dropUnlessResumed {
-          navigator.navigate(PaymentsDestinations.Discounts)
+          navController.navigate(PaymentsDestinations.Discounts)
         },
         onPaymentClicked = dropUnlessResumed { id: String? ->
-          navigator.navigate(PaymentsDestinations.Details(id))
+          navController.navigate(PaymentsDestinations.Details(id))
         },
         onMemberPaymentDetailsClicked = dropUnlessResumed {
-          navigator.navigate(PaymentsDestinations.MemberPaymentDetails)
+          navController.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
       )
     }
@@ -64,7 +64,7 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
       PaymentDetailsDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 
@@ -73,13 +73,13 @@ fun NavGraphBuilder.paymentsGraph(
       PaymentHistoryDestination(
         viewModel = viewModel,
         onChargeClicked = dropUnlessResumed { memberChargeId: String ->
-          navigator.navigate(
+          navController.navigate(
             PaymentsDestinations.Details(
               memberChargeId,
             ),
           )
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 
@@ -96,9 +96,9 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: DiscountsViewModel = koinViewModel()
       DiscountsDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         navigateToForever = dropUnlessResumed {
-          navigator.navigate(
+          navController.navigate(
             PaymentsDestinations.Forever,
           )
         },
@@ -110,7 +110,7 @@ fun NavGraphBuilder.paymentsGraph(
       MemberPaymentDetailsDestination(
         viewModel,
         onChangeBankAccount = navigateToConnectPayment,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
   }
