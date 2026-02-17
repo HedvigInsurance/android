@@ -461,6 +461,8 @@ private fun PreviewContractDetailScreen() {
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
             supportsTierChange = true,
+            existingAddons = null,
+            availableAddons = null,
           ),
           true,
         ),

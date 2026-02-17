@@ -90,6 +90,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = null,
+      availableAddons = null,
     ),
     EstablishedInsuranceContract(
       id = "contractId#2",
@@ -133,6 +135,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = null,
+      availableAddons = null,
     ),
   )
   private val terminatedContracts: List<EstablishedInsuranceContract> = listOf(
@@ -178,6 +182,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = null,
+      availableAddons = null,
     ),
     EstablishedInsuranceContract(
       id = "contractId#4",
@@ -221,6 +227,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = null,
+      availableAddons = null,
     ),
   )
   private val validCrossSells: CrossSellResult = CrossSellResult(

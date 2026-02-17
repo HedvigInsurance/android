@@ -286,6 +286,8 @@ class ContractDetailPresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = null,
+      availableAddons = null,
     )
 
     private val insuranceWithTerminationDate = EstablishedInsuranceContract(
@@ -330,6 +332,8 @@ class ContractDetailPresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = null,
+      availableAddons = null,
     )
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, EstablishedInsuranceContract>>()

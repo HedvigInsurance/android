@@ -229,6 +229,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = null,
+        availableAddons = null,
       ),
       EstablishedInsuranceContract(
         "contractId2",
@@ -272,6 +274,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = null,
+        availableAddons = null,
       ),
     )
 
@@ -317,6 +321,8 @@ class TerminatedContractsPresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = null,
+      availableAddons = null,
     )
 
     private val activeInsurances = listOf(
@@ -362,6 +368,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = null,
+        availableAddons = null,
       ),
       EstablishedInsuranceContract(
         "contractId4",
@@ -405,6 +413,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = null,
+        availableAddons = null,
       ),
     )
   }

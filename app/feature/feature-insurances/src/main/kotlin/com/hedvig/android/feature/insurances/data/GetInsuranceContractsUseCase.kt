@@ -193,6 +193,19 @@ private fun ContractFragment.toContract(
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
+    existingAddons = existingAddons?.map {
+      ContractAddon(
+        addonVariant = it.addonVariant.toAddonVariant(),
+        displayName = it.displayName,
+        description = it.description,
+      )
+    },
+    availableAddons = availableAddons?.map {
+      AvailableAddon(
+        displayName = it.displayName,
+        description = it.description,
+      )
+    },
   )
 }
 
