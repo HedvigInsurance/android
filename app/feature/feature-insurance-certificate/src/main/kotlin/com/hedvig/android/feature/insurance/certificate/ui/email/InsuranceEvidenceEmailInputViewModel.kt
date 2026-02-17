@@ -72,11 +72,16 @@ internal class InsuranceEvidenceEmailInputPresenter(
             emailValidationErrorMessage = null,
           )
         }
+
         InsuranceEvidenceEmailInputEvent.ClearNavigation -> {
           val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@CollectEvents
           currentState = successScreenState.copy(fetchedCertificateUrl = null)
         }
-        InsuranceEvidenceEmailInputEvent.RetryLoadData -> loadIteration++
+
+        InsuranceEvidenceEmailInputEvent.RetryLoadData -> {
+          loadIteration++
+        }
+
         InsuranceEvidenceEmailInputEvent.Submit -> {
           validateInputAndContinue()
         }

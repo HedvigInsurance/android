@@ -25,9 +25,9 @@ internal class LoggingInterceptor : ApolloInterceptor {
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
-    logcat { "GraphQL request for ${request.operation.name()} START." }
+    logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
-      logcat { "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}" }
+      logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}" }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
       if (errors.isNotEmpty() && !errors.isUnauthenticated()) {
@@ -39,7 +39,7 @@ internal class LoggingInterceptor : ApolloInterceptor {
         }
       }
     }.onCompletion {
-      logcat { "GraphQL request for ${request.operation.name()} END." }
+      logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} END." }
     }
   }
 

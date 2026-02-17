@@ -47,6 +47,7 @@ internal class AuthTokenServiceImpl(
         logoutAndInvalidateTokens()
         null
       }
+
       is AuthTokenResult.Success -> {
         logcat(LogPriority.VERBOSE) { "Refreshing token success. Updating tokens" }
         authTokenStorage.updateTokens(result.accessToken, result.refreshToken)

@@ -118,8 +118,13 @@ fun Media(
               }
             }
 
-            ControllerVisibility.PartiallyVisible -> ControllerVisibility.Visible
-            ControllerVisibility.Invisible -> ControllerVisibility.Visible
+            ControllerVisibility.PartiallyVisible -> {
+              ControllerVisibility.Visible
+            }
+
+            ControllerVisibility.Invisible -> {
+              ControllerVisibility.Visible
+            }
           }
         }
       },
@@ -158,11 +163,17 @@ fun Media(
           .collect { isVideoTrackSelected ->
             when (isVideoTrackSelected) {
               // non video track is selected, so the shutter must be closed
-              false -> state.closeShutter = true
+              false -> {
+                state.closeShutter = true
+              }
+
               // no track
               // If keepContentOnPlayerReset is false, close shutter
               // Otherwise, open it
-              null -> state.closeShutter = !keepContentOnPlayerReset
+              null -> {
+                state.closeShutter = !keepContentOnPlayerReset
+              }
+
               true -> {}
             }
           }

@@ -120,9 +120,18 @@ internal class CbmChatRepositoryImpl(
   override fun bannerText(conversationId: Uuid): Flow<BannerText?> {
     fun ConversationStatusMessageQuery.Data.toBannerText(): BannerText? {
       return when {
-        conversation == null -> null
-        conversation.isOpen == false -> BannerText.ClosedConversation
-        conversation.statusMessage != null -> BannerText.Text(conversation.statusMessage)
+        conversation == null -> {
+          null
+        }
+
+        conversation.isOpen == false -> {
+          BannerText.ClosedConversation
+        }
+
+        conversation.statusMessage != null -> {
+          BannerText.Text(conversation.statusMessage)
+        }
+
         else -> {
           logcat(LogPriority.INFO) { "Got unknown conversation status message:$conversation" }
           null
@@ -192,9 +201,18 @@ internal class CbmChatRepositoryImpl(
       }
       return with(messageToRetry) {
         when {
-          failedToSend == TEXT && text != null -> sendText(conversationId, messageToRetry.id, text!!)
-          failedToSend == PHOTO && url != null -> sendOnePhoto(conversationId, messageToRetry.id, url!!.toUri())
-          failedToSend == MEDIA && url != null -> sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
+          failedToSend == TEXT && text != null -> {
+            sendText(conversationId, messageToRetry.id, text!!)
+          }
+
+          failedToSend == PHOTO && url != null -> {
+            sendOnePhoto(conversationId, messageToRetry.id, url!!.toUri())
+          }
+
+          failedToSend == MEDIA && url != null -> {
+            sendOneMedia(conversationId, messageToRetry.id, url!!.toUri())
+          }
+
           else -> {
             logcat(LogPriority.ERROR) { "Tried to retry sending a message which had a wrong structure:$messageToRetry" }
             raise(ErrorMessage("Unknown message type").toMessageSendError())
@@ -203,7 +221,9 @@ internal class CbmChatRepositoryImpl(
           when (failedToSend) {
             PHOTO,
             MEDIA,
-            -> url!!.toUri().tryReleasePersistableUriPermission()
+            -> {
+              url!!.toUri().tryReleasePersistableUriPermission()
+            }
 
             else -> {}
           }
@@ -504,20 +524,22 @@ internal data class ChatMessagePageResponse(
 )
 
 private fun ChatMessageFragment.toChatMessage(): CbmChatMessage? = when (this) {
-  is ChatMessageFileChatMessageFragment -> CbmChatMessage.ChatMessageFile(
-    id = id,
-    sender = sender.toSender(),
-    sentAt = sentAt,
-    url = signedUrl,
-    mimeType = when (mimeType) {
-      "image/jpeg" -> CbmChatMessage.ChatMessageFile.MimeType.IMAGE
-      "image/png" -> CbmChatMessage.ChatMessageFile.MimeType.IMAGE
-      "application/pdf" -> CbmChatMessage.ChatMessageFile.MimeType.PDF
-      "video/mp4" -> CbmChatMessage.ChatMessageFile.MimeType.MP4
-      else -> CbmChatMessage.ChatMessageFile.MimeType.OTHER
-    },
-    banner = disclaimer.toBanner(),
-  )
+  is ChatMessageFileChatMessageFragment -> {
+    CbmChatMessage.ChatMessageFile(
+      id = id,
+      sender = sender.toSender(),
+      sentAt = sentAt,
+      url = signedUrl,
+      mimeType = when (mimeType) {
+        "image/jpeg" -> CbmChatMessage.ChatMessageFile.MimeType.IMAGE
+        "image/png" -> CbmChatMessage.ChatMessageFile.MimeType.IMAGE
+        "application/pdf" -> CbmChatMessage.ChatMessageFile.MimeType.PDF
+        "video/mp4" -> CbmChatMessage.ChatMessageFile.MimeType.MP4
+        else -> CbmChatMessage.ChatMessageFile.MimeType.OTHER
+      },
+      banner = disclaimer.toBanner(),
+    )
+  }
 
   is ChatMessageTextChatMessageFragment -> {
     if (text.isGifUrl()) {

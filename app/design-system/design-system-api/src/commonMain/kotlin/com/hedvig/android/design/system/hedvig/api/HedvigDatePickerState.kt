@@ -3,6 +3,7 @@ package com.hedvig.android.design.system.hedvig.api
 import androidx.compose.material3.CalendarLocale
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import kotlin.jvm.JvmInline
 
 @Stable
 interface HedvigDatePickerState {

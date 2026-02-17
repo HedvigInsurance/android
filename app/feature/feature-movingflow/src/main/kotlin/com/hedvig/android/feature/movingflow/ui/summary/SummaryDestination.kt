@@ -156,13 +156,17 @@ private fun SummaryScreen(
         propagateMinConstraints = true,
       ) {
         when (uiState) {
-          SummaryUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+          SummaryUiState.Loading -> {
+            HedvigFullScreenCenterAlignedProgress()
+          }
 
-          SummaryUiState.Error -> HedvigErrorSection(
-            onButtonClick = navigateBack,
-            subTitle = null,
-            buttonText = stringResource(Res.string.general_back_button),
-          )
+          SummaryUiState.Error -> {
+            HedvigErrorSection(
+              onButtonClick = navigateBack,
+              subTitle = null,
+              buttonText = stringResource(Res.string.general_back_button),
+            )
+          }
 
           is SummaryUiState.Content -> {
             SummaryScreen(

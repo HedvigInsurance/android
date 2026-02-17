@@ -191,14 +191,16 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
             )
           }
 
-          is Content -> ChoseCoverageLevelAndDeductibleScreen(
-            content = uiState,
-            onSubmit = uiState.tiersInfo.selectedHomeQuoteId?.let { { onSubmit(it) } },
-            onSelectCoverageOption = onSelectCoverageOption,
-            onSelectDeductibleOption = onSelectDeductibleOption,
-            onCompareCoverageClicked = onCompareCoverageClicked,
-            onChangeAddonExclusion = onChangeAddonExclusion,
-          )
+          is Content -> {
+            ChoseCoverageLevelAndDeductibleScreen(
+              content = uiState,
+              onSubmit = uiState.tiersInfo.selectedHomeQuoteId?.let { { onSubmit(it) } },
+              onSelectCoverageOption = onSelectCoverageOption,
+              onSelectDeductibleOption = onSelectDeductibleOption,
+              onCompareCoverageClicked = onCompareCoverageClicked,
+              onChangeAddonExclusion = onChangeAddonExclusion,
+            )
+          }
         }
       }
     }
@@ -375,6 +377,7 @@ private fun CoverageCard(
         }
         when (val deductibleOptions = tiersInfo.deductibleOptions) {
           NoOptions -> {}
+
           is MutlipleOptions -> {
             val chosenDeductibleItemIndex = deductibleOptions.deductibleOptions.indexOfFirst {
               it.homeQuoteId == tiersInfo.selectedDeductible?.id

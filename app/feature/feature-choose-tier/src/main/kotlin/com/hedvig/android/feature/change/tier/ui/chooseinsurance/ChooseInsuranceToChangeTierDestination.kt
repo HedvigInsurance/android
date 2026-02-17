@@ -216,13 +216,15 @@ private fun ChooseInsuranceScreen(
       }
     }
 
-    is ChooseInsuranceUiState.Deflect -> DeflectScreen(
-      uiState.title,
-      uiState.message,
-      closeFlow = popBackStack,
-      onNavigateToNewConversation = onNavigateToNewConversation,
-      navigateUp = navigateUp,
-    )
+    is ChooseInsuranceUiState.Deflect -> {
+      DeflectScreen(
+        uiState.title,
+        uiState.message,
+        closeFlow = popBackStack,
+        onNavigateToNewConversation = onNavigateToNewConversation,
+        navigateUp = navigateUp,
+      )
+    }
   }
 }
 

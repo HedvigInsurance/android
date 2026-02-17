@@ -141,9 +141,13 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
           submittingSelectedHomeQuoteId = event.homeQuoteId
         }
 
-        NavigatedToSummary -> navigateToSummaryScreenWithHomeQuoteId = null
+        NavigatedToSummary -> {
+          navigateToSummaryScreenWithHomeQuoteId = null
+        }
 
-        ClearNavigateToComparison -> comparisonParameters = null
+        ClearNavigateToComparison -> {
+          comparisonParameters = null
+        }
 
         LaunchComparison -> {
           val currentContent = tiersInfo.getOrNull() ?: return@CollectEvents
@@ -215,10 +219,16 @@ private class ChoseCoverageLevelAndDeductiblePresenter(
     }
 
     return when (val tiersInfoValue = tiersInfo) {
-      None -> ChoseCoverageLevelAndDeductibleUiState.Loading
+      None -> {
+        ChoseCoverageLevelAndDeductibleUiState.Loading
+      }
+
       is Some -> {
         when (val info = tiersInfoValue.value) {
-          null -> ChoseCoverageLevelAndDeductibleUiState.MissingOngoingMovingFlow
+          null -> {
+            ChoseCoverageLevelAndDeductibleUiState.MissingOngoingMovingFlow
+          }
+
           else -> {
             val selectedQuoteCost = moveIntentCost?.quoteCosts?.firstOrNull {
               it.id == info.selectedCoverage.id
@@ -302,17 +312,22 @@ internal data class TiersInfo(
     } else {
       val allOptionsWithDeductible = moveHomeQuotes.filter { it.deductible != null }
       when (allOptionsWithDeductible.size) {
-        0 -> NoOptions
+        0 -> {
+          NoOptions
+        }
+
         1 -> {
           val onlyOption = allOptionsWithDeductible.first()
           OneOption(onlyOption.toDeductibleOption(onlyOption.deductible!!))
         }
 
-        else -> MutlipleOptions(
-          allOptionsWithDeductible.map { moveHomeQuote ->
-            moveHomeQuote.toDeductibleOption(moveHomeQuote.deductible!!)
-          },
-        )
+        else -> {
+          MutlipleOptions(
+            allOptionsWithDeductible.map { moveHomeQuote ->
+              moveHomeQuote.toDeductibleOption(moveHomeQuote.deductible!!)
+            },
+          )
+        }
       }
     }
   }

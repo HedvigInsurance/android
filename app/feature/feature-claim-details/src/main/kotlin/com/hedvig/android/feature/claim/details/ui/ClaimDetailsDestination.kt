@@ -233,7 +233,9 @@ private fun ClaimDetailScreen(
           Spacer(Modifier.weight(1f))
         }
 
-        ClaimDetailUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+        ClaimDetailUiState.Loading -> {
+          HedvigFullScreenCenterAlignedProgressDebounced()
+        }
       }
     }
   }
@@ -700,31 +702,49 @@ private fun statusParagraphText(
   claimStatus: ClaimDetailUiState.Content.ClaimStatus,
   claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
 ): String = when (claimStatus) {
-  ClaimDetailUiState.Content.ClaimStatus.CREATED -> stringResource(Res.string.claim_status_submitted_support_text)
-  ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS -> stringResource(
-    Res.string.claim_status_being_handled_support_text,
-  )
-  ClaimDetailUiState.Content.ClaimStatus.CLOSED -> when (claimOutcome) {
-    ClaimDetailUiState.Content.ClaimOutcome.PAID -> stringResource(Res.string.claim_status_paid_support_text_short)
-    ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED -> {
-      stringResource(Res.string.claim_status_not_compensated_support_text)
-    }
+  ClaimDetailUiState.Content.ClaimStatus.CREATED -> {
+    stringResource(Res.string.claim_status_submitted_support_text)
+  }
 
-    ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED -> {
-      stringResource(Res.string.claim_status_not_covered_support_text)
-    }
-
-    ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN -> ""
-    ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE -> stringResource(
-      Res.string.claim_outcome_unresponsive_support_text,
+  ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS -> {
+    stringResource(
+      Res.string.claim_status_being_handled_support_text,
     )
+  }
+
+  ClaimDetailUiState.Content.ClaimStatus.CLOSED -> {
+    when (claimOutcome) {
+      ClaimDetailUiState.Content.ClaimOutcome.PAID -> {
+        stringResource(Res.string.claim_status_paid_support_text_short)
+      }
+
+      ClaimDetailUiState.Content.ClaimOutcome.NOT_COMPENSATED -> {
+        stringResource(Res.string.claim_status_not_compensated_support_text)
+      }
+
+      ClaimDetailUiState.Content.ClaimOutcome.NOT_COVERED -> {
+        stringResource(Res.string.claim_status_not_covered_support_text)
+      }
+
+      ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN -> {
+        ""
+      }
+
+      ClaimDetailUiState.Content.ClaimOutcome.UNRESPONSIVE -> {
+        stringResource(
+          Res.string.claim_outcome_unresponsive_support_text,
+        )
+      }
+    }
   }
 
   ClaimDetailUiState.Content.ClaimStatus.REOPENED -> {
     stringResource(Res.string.claim_status_being_handled_reopened_support_text)
   }
 
-  ClaimDetailUiState.Content.ClaimStatus.UNKNOWN -> stringResource(Res.string.claim_status_being_handled_support_text)
+  ClaimDetailUiState.Content.ClaimStatus.UNKNOWN -> {
+    stringResource(Res.string.claim_status_being_handled_support_text)
+  }
 }
 
 @Composable

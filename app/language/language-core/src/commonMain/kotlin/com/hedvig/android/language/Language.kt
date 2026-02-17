@@ -42,8 +42,14 @@ enum class Language {
      * @param value: A language tag in BCP-47 format
      */
     fun from(value: String): Language = when {
-      value == BCP_47_SV_SE -> SV_SE
-      value == BCP_47_EN_SE -> EN_SE
+      value == BCP_47_SV_SE -> {
+        SV_SE
+      }
+
+      value == BCP_47_EN_SE -> {
+        EN_SE
+      }
+
       value == BCP_47_EN || value.startsWithSubstring(BCP_47_EN_FOR_SUBSTRING) -> {
         EN_SE.also { logcat(LogPriority.WARN) { "Mapping to EN_SE for language tag: $value" } }
       }
@@ -52,7 +58,9 @@ enum class Language {
         SV_SE.also { logcat(LogPriority.WARN) { "Mapping to SV_SE for language tag: $value" } }
       }
 
-      else -> EN_SE.also { logcat(LogPriority.WARN) { "Defaulting to EN_SE for language tag: $value" } }
+      else -> {
+        EN_SE.also { logcat(LogPriority.WARN) { "Defaulting to EN_SE for language tag: $value" } }
+      }
     }
 
     private fun String.startsWithSubstring(subString: String): Boolean {

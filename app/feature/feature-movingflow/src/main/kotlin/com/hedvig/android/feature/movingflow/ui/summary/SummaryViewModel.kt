@@ -180,8 +180,11 @@ internal class SummaryPresenter(
       val summaryInfoValue = summaryInfo
     ) {
       SummaryInfoState.Loading -> Loading
+
       SummaryInfoState.Error.MissingOngoingMovingFlow -> SummaryUiState.Error
+
       SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error
+
       is SummaryInfoState.Content -> SummaryUiState.Content(
         summaryInfo = summaryInfoValue.summaryInfo,
         isSubmitting = submitChangesWithData != null,

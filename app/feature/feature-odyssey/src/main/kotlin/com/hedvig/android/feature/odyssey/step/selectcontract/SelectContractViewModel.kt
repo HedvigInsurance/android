@@ -86,6 +86,7 @@ private class SelectContractPresenter(
           val state = currentState as? Success ?: return@CollectEvents
           currentState = state.copy(nextStep = null)
         }
+
         is SelectContractEvent.SelectContractOption -> {
           val state = currentState as? Success ?: return@CollectEvents
           val selected = state.contractOptions.first { it.id == event.selectedContractId }
@@ -96,11 +97,14 @@ private class SelectContractPresenter(
           val state = currentState as? Success ?: return@CollectEvents
           currentState = state.copy(error = false)
         }
+
         SelectContractEvent.Submit -> {
           submitIteration++
         }
 
-        SelectContractEvent.Reload -> loadIteration++
+        SelectContractEvent.Reload -> {
+          loadIteration++
+        }
       }
     }
     return currentState

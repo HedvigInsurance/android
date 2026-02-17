@@ -78,6 +78,7 @@ public class NetworkAuthRepository(
           }
           when (otpResponse) {
             is LoginOtpResponse.Error -> AuthAttemptResult.Error.Localised(otpResponse.reason)
+
             is LoginOtpResponse.Success -> AuthAttemptResult.OtpProperties(
               id = otpResponse.id,
               statusUrl = StatusUrl(otpResponse.statusUrl.url),
@@ -91,7 +92,9 @@ public class NetworkAuthRepository(
     } catch (e: Throwable) {
       when (e) {
         is CancellationException -> throw e
+
         is IOException -> AuthAttemptResult.Error.IOError("IO Error with message: ${e.message ?: "unknown message"}")
+
         is NoTransformationFoundException -> AuthAttemptResult.Error.BackendErrorResponse(
           e.message ?: "unknown error",
         )
@@ -105,18 +108,23 @@ public class NetworkAuthRepository(
     return try {
       val response = authService.loginStatus(LoginStatusUrl(statusUrl.url))
       when (response.status) {
-        LoginStatusResponse.LoginStatus.PENDING -> LoginStatusResult.Pending(
-          response.statusText,
-          response.seBankIdProperties?.let { bankIdProperties ->
-            LoginStatusResult.Pending.BankIdProperties(
-              bankIdProperties.autoStartToken,
-              bankIdProperties.liveQrCodeData,
-              bankIdProperties.bankIdAppOpened,
-            )
-          },
-        )
+        LoginStatusResponse.LoginStatus.PENDING -> {
+          LoginStatusResult.Pending(
+            response.statusText,
+            response.seBankIdProperties?.let { bankIdProperties ->
+              LoginStatusResult.Pending.BankIdProperties(
+                bankIdProperties.autoStartToken,
+                bankIdProperties.liveQrCodeData,
+                bankIdProperties.bankIdAppOpened,
+              )
+            },
+          )
+        }
 
-        LoginStatusResponse.LoginStatus.FAILED -> LoginStatusResult.Failed(response.statusText)
+        LoginStatusResponse.LoginStatus.FAILED -> {
+          LoginStatusResult.Failed(response.statusText)
+        }
+
         LoginStatusResponse.LoginStatus.COMPLETED -> {
           require(response.authorizationCode != null) {
             "Login status completed but did not receive authorization code"
@@ -196,7 +204,9 @@ public class NetworkAuthRepository(
     } catch (e: Throwable) {
       when (e) {
         is CancellationException -> throw e
+
         is IOException -> AuthTokenResult.Error.IOError("IO Error with message: ${e.message ?: "unknown message"}")
+
         is NoTransformationFoundException -> AuthTokenResult.Error.BackendErrorResponse(
           e.message ?: "unknown error",
         )

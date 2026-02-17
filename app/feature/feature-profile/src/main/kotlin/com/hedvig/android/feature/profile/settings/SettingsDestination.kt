@@ -352,8 +352,14 @@ fun Theme?.getLabel() = when (this) {
 }
 
 private fun Theme.apply() = when (this) {
-  Theme.LIGHT -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-  Theme.DARK -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+  Theme.LIGHT -> {
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+  }
+
+  Theme.DARK -> {
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+  }
+
   Theme.SYSTEM_DEFAULT -> {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
