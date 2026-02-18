@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.core.uidata.UiCurrencyCode
@@ -253,11 +254,24 @@ internal fun YourInfoTab(
             coInsuredList = coInsured,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
-            onMissingInfoClick = onMissingInfoClick,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
       }
+    }
+    val hasMissingInfoAndIsNotTerminating = coInsured.any { it.hasMissingInfo && it.terminatesOn == null }
+    if (hasMissingInfoAndIsNotTerminating) {
+      HedvigNotificationCard(
+        message = stringResource(Res.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
+        priority = Attention,
+        style = Button(
+          stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+          onMissingInfoClick,
+        ),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
     }
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -389,7 +403,6 @@ internal fun CoInsuredSection(
   coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  onMissingInfoClick: () -> Unit,
   modifier: Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -522,24 +535,12 @@ internal fun CoInsuredSection(
         spaceBetween = 8.dp,
       )
     }
-
-    val hasMissingInfoAndIsNotTerminating = coInsuredList.any { it.hasMissingInfo && it.terminatesOn == null }
-    if (hasMissingInfoAndIsNotTerminating) {
-      Spacer(Modifier.height(8.dp))
-      HedvigNotificationCard(
-        message = stringResource(Res.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
-        priority = Attention,
-        style = Button(
-          stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-          onMissingInfoClick,
-        ),
-      )
-    }
   }
 }
 
 @Composable
 @HedvigPreview
+@Preview(name = "long", device = "spec:width=1080px,height=5000px,dpi=440")
 private fun PreviewYourInfoTab() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
