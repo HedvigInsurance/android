@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.claimtriaging
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.claimflow.ClaimFlowStep
