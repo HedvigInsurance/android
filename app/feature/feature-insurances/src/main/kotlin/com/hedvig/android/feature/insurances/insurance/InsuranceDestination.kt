@@ -670,6 +670,6 @@ private val previewInsurance = EstablishedInsuranceContract(
   contractHolderSSN = "19910913-1893",
   tierName = "Bas",
   supportsTierChange = true,
-  existingAddons = null,
-  availableAddons = null,
+  existingAddons = emptyList(),
+  availableAddons = emptyList(),
 )

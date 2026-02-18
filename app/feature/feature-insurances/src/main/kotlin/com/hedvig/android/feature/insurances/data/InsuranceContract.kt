@@ -28,8 +28,8 @@ sealed interface InsuranceContract {
   val upcomingInsuranceAgreement: InsuranceAgreement?
   val isTerminated: Boolean
   val addons: List<Addon>?
-  val existingAddons: List<ContractAddon>?
-  val availableAddons: List<AvailableAddon>?
+  val existingAddons: List<ContractAddon>
+  val availableAddons: List<AvailableAddon>
 
   val cost: MonthlyCost
 
@@ -51,8 +51,8 @@ sealed interface InsuranceContract {
     override val supportsTierChange: Boolean,
     override val isTerminated: Boolean,
     override val tierName: String?,
-    override val existingAddons: List<ContractAddon>?,
-    override val availableAddons: List<AvailableAddon>?,
+    override val existingAddons: List<ContractAddon>,
+    override val availableAddons: List<AvailableAddon>,
   ) : InsuranceContract {
     override val productVariant: ProductVariant = currentInsuranceAgreement.productVariant
     override val displayItems: List<DisplayItem> = currentInsuranceAgreement.displayItems
@@ -81,8 +81,8 @@ sealed interface InsuranceContract {
     override val supportsTierChange: Boolean = false
     override val upcomingInsuranceAgreement: InsuranceAgreement? = null
     override val isTerminated: Boolean = false
-    override val existingAddons: List<ContractAddon>? = null
-    override val availableAddons: List<AvailableAddon>? = null
+    override val existingAddons: List<ContractAddon> = emptyList()
+    override val availableAddons: List<AvailableAddon> = emptyList()
   }
 }
 

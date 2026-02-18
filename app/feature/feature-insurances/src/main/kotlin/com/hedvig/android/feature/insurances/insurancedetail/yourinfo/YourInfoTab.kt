@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,21 +27,23 @@ import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Amber
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Red
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
@@ -61,9 +65,13 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBirthDateDateTimeFo
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
+import com.hedvig.android.feature.insurances.data.AvailableAddon
+import com.hedvig.android.feature.insurances.data.ContractAddon
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
 import com.hedvig.android.feature.insurances.data.MonthlyCost
+import hedvig.resources.ADDON_ADDED_COVERAGE
+import hedvig.resources.ADDON_ADD_COVERAGE
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
 import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
@@ -114,6 +122,8 @@ internal fun YourInfoTab(
   onInfoIconClick: () -> Unit,
   navigateToRemoveAddon: () -> Unit,
   modifier: Modifier = Modifier,
+  existingAddons: List<ContractAddon>,
+  availableAddons: List<AvailableAddon>,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val editYourInfoBottomSheet = rememberHedvigBottomSheetState<Unit>()
@@ -273,6 +283,7 @@ internal fun YourInfoTab(
           .padding(horizontal = 16.dp),
       )
     }
+    AddonsSection(existingAddons, availableAddons, Modifier.padding(horizontal = 16.dp))
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         HedvigButton(
@@ -308,6 +319,80 @@ internal fun YourInfoTab(
       }
     }
   }
+}
+
+@Composable
+private fun AddonsSection(
+  existingAddons: List<ContractAddon>,
+  availableAddons: List<AvailableAddon>,
+  modifier: Modifier,
+) {
+  if (existingAddons.isNotEmpty() || availableAddons.isNotEmpty()) {
+    Surface(
+      shape = HedvigTheme.shapes.cornerXLarge,
+      modifier = modifier,
+    ) {
+      Column {
+        existingAddons.forEachIndexed { index, existingAddon ->
+          AddonRow(
+            title = existingAddon.displayName,
+            description = existingAddon.description,
+            showTopDivider = index != 0,
+            isAlreadyAdded = true,
+          )
+        }
+        availableAddons.forEachIndexed { index, availableAddon ->
+          AddonRow(
+            title = availableAddon.displayName,
+            description = availableAddon.description,
+            showTopDivider = index != 0 || existingAddons.isNotEmpty(),
+            isAlreadyAdded = false,
+            modifier = Modifier.clickable {
+              //todo navigate to add addon flow
+            },
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun AddonRow(
+  title: String,
+  description: String,
+  showTopDivider: Boolean,
+  isAlreadyAdded: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    {
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        HedvigText(title)
+        HedvigText(description, style = HedvigTheme.typography.label)
+      }
+    },
+    {
+      HighlightLabel(
+        labelText = if (isAlreadyAdded) {
+          stringResource(Res.string.ADDON_ADDED_COVERAGE)
+        } else {
+          stringResource(Res.string.ADDON_ADD_COVERAGE)
+        },
+        size = HighlightLabelDefaults.HighLightSize.Large,
+        color = if (isAlreadyAdded) {
+          HighlightLabelDefaults.HighlightColor.Grey(MEDIUM)
+        } else {
+          HighlightLabelDefaults.HighlightColor.Green(MEDIUM)
+        },
+        Modifier.wrapContentSize(Alignment.TopEnd),
+      )
+    },
+    4.dp,
+    modifier
+      .horizontalDivider(DividerPosition.Top, showTopDivider)
+      .padding(16.dp),
+  )
 }
 
 @Composable
@@ -574,6 +659,9 @@ private fun PreviewYourInfoTab() {
         allowChangeAddress = true,
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
+        allowChangeTier = true,
+        onChangeTierClick = {},
+        isDecommissioned = true,
         upcomingChangesInsuranceAgreement = InsuranceAgreement(
           activeFrom = LocalDate.fromEpochDays(200),
           activeTo = LocalDate.fromEpochDays(300),
@@ -626,21 +714,34 @@ private fun PreviewYourInfoTab() {
           ),
         ),
         onEditCoInsuredClick = {},
+        onMissingInfoClick = {},
         onChangeAddressClick = {},
         onNavigateToNewConversation = {},
+        openUrl = {},
         onCancelInsuranceClick = {},
         isTerminated = false,
         contractHolderDisplayName = "Hugo Linder",
         contractHolderSSN = "19910113-1093",
-        onMissingInfoClick = {},
-        openUrl = {},
-        allowChangeTier = true,
-        onChangeTierClick = {},
         priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
         showPriceInfoIcon = true,
         onInfoIconClick = {},
-        isDecommissioned = true,
         navigateToRemoveAddon = {},
+        existingAddons = listOf(
+          ContractAddon(
+            AddonVariant(
+              termsVersion = "1",
+              displayName = "displayName",
+              product = "product",
+              documents = emptyList(),
+              perils = emptyList(),
+            ),
+            "Existing display name",
+            "Description",
+          ),
+        ),
+        availableAddons = listOf(
+          AvailableAddon("Available addon", "Description"),
+        ),
       )
     }
   }

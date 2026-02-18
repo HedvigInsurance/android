@@ -199,13 +199,13 @@ private fun ContractFragment.toContract(
         displayName = it.displayName,
         description = it.description,
       )
-    },
+    }.orEmpty(),
     availableAddons = availableAddons?.map {
       AvailableAddon(
         displayName = it.displayName,
         description = it.description,
       )
-    },
+    }.orEmpty(),
   )
 }
 

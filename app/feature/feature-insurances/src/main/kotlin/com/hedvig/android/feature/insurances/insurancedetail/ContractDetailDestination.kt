@@ -102,7 +102,7 @@ internal fun ContractDetailDestination(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToRemoveAddon: (contractId: String) -> Unit
+  navigateToRemoveAddon: (contractId: String) -> Unit,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -118,7 +118,7 @@ internal fun ContractDetailDestination(
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     onChangeTierClick = onChangeTierClick,
-    navigateToRemoveAddon = navigateToRemoveAddon
+    navigateToRemoveAddon = navigateToRemoveAddon,
   )
 }
 
@@ -137,7 +137,7 @@ private fun ContractDetailScreen(
   navigateBack: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToRemoveAddon: (contractId: String) -> Unit
+  navigateToRemoveAddon: (contractId: String) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
     val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
@@ -276,9 +276,9 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                                addon.premium.toString(),
-                              ),
+                              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                              addon.premium.toString(),
+                            ),
                           )
                         }
                         contract.cost.discounts.forEach { discount ->
@@ -328,7 +328,10 @@ private fun ContractDetailScreen(
                         == ContractType.SE_CAR_DECOMMISSIONED,
                       navigateToRemoveAddon = {
                         navigateToRemoveAddon(contract.id)
-                      })
+                      },
+                      existingAddons = contract.existingAddons,
+                      availableAddons = contract.availableAddons,
+                    )
                   }
 
                   1 -> {
@@ -461,8 +464,8 @@ private fun PreviewContractDetailScreen() {
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
             supportsTierChange = true,
-            existingAddons = null,
-            availableAddons = null,
+            existingAddons = emptyList(),
+            availableAddons = emptyList(),
           ),
           true,
         ),

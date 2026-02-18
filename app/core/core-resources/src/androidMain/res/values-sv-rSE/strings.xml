@@ -18,6 +18,7 @@
     <item quantity="other">Inskickade värden</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
+  <string name="ADDON_ADDED_COVERAGE">Tillagd</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
   <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
