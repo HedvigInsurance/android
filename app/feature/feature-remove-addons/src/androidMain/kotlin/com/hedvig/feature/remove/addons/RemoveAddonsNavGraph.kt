@@ -12,7 +12,6 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.feature.remove.addons.ui.RemoveAddonFailureScreen
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSuccessScreen
@@ -74,7 +73,6 @@ internal sealed interface AddonRemoveDestination {
 }
 
 fun NavGraphBuilder.removeAddonsNavGraph(
-  navigator: Navigator,
   navController: NavController,
   onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
 ) {
@@ -86,22 +84,22 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         .getRouteFromBackStack<AddonRemoveGraphDestination>(backStackEntry)
       if (graphDestination.insuranceId != null) {
         LaunchedEffect(Unit) {
-          navigator.navigateUnsafe(
+          navController.navigate(
             AddonRemoveDestination.ChooseAddonDestination(
               insuranceId = graphDestination.insuranceId,
               addonId = graphDestination.addonId,
             ),
           ) {
-            typedPopUpTo<AddonRemoveDestination.ChooseInsuranceDestination>(
-              { inclusive = true },
-            )
+            typedPopUpTo<AddonRemoveDestination.ChooseInsuranceDestination> {
+              inclusive = true
+            }
           }
         }
       } else {
         SelectInsuranceToRemoveAddonDestination(
-          navigateUp = navigator::navigateUp,
+          navigateUp = navController::navigateUp,
           navigateToChooseAddon = { chosenInsuranceId: String ->
-            navigator.navigateUnsafe(
+            navController.navigate(
               AddonRemoveDestination.ChooseAddonDestination(
                 insuranceId = chosenInsuranceId,
                 addonId = null,
@@ -116,17 +114,17 @@ fun NavGraphBuilder.removeAddonsNavGraph(
       SelectAddonToRemoveDestination(
         contractId = this.insuranceId,
         preselectedAddonId = this.addonId,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         navigateToSummary = {
-          contractId: String,
-          addons: List<CurrentlyActiveAddon>,
-          activationDate: LocalDate,
-          baseCost: ItemCost,
-          currentCost: ItemCost,
-          productVariant: ProductVariant,
-          allAddons: List<CurrentlyActiveAddon>,
+            contractId: String,
+            addons: List<CurrentlyActiveAddon>,
+            activationDate: LocalDate,
+            baseCost: ItemCost,
+            currentCost: ItemCost,
+            productVariant: ProductVariant,
+            allAddons: List<CurrentlyActiveAddon>,
           ->
-          navigator.navigateUnsafe(
+          navController.navigate(
             AddonRemoveDestination.Summary(
               params = SummaryParameters(
                 contractId = contractId,
@@ -146,7 +144,7 @@ fun NavGraphBuilder.removeAddonsNavGraph(
     navdestination<AddonRemoveDestination.Summary>(AddonRemoveDestination.Summary) { backStackEntry ->
       RemoveAddonSummaryDestination(
         navigateToSuccess = {
-          navigator.navigateUnsafe(AddonRemoveDestination.SubmitSuccess(this.params.activationDate)) {
+          navController.navigate(AddonRemoveDestination.SubmitSuccess(this.params.activationDate)) {
             typedPopUpTo<AddonRemoveGraphDestination> {
               inclusive = true
             }
@@ -158,9 +156,9 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         baseCost = this.params.baseCost,
         currentTotalCost = this.params.currentTotalCost,
         onFailure = {
-          navigator.navigateUnsafe(AddonRemoveDestination.SubmitFailure)
+          navController.navigate(AddonRemoveDestination.SubmitFailure)
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         existingAddonsToRemove = this.params.existingAddons,
         productVariant = this.params.productVariant,
       )
@@ -168,14 +166,14 @@ fun NavGraphBuilder.removeAddonsNavGraph(
 
     navdestination<AddonRemoveDestination.SubmitFailure> { backStackEntry ->
       RemoveAddonFailureScreen(
-        popBackStack = navigator::popBackStack,
+        popBackStack = navController::popBackStack,
       )
     }
   }
   navdestination<AddonRemoveDestination.SubmitSuccess>(AddonRemoveDestination.SubmitSuccess) { backStackEntry ->
     RemoveAddonSuccessScreen(
       this.activationDate,
-      popBackStack = navigator::popBackStack,
+      popBackStack = navController::popBackStack,
     )
   }
 }

@@ -366,7 +366,7 @@ internal fun HedvigNavHost(
       navController = navController,
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-      onNavigateToChangeTier = { contractId, _ ->
+      onNavigateToChangeTier = { contractId ->
         navController.navigate(
           StartTierFlowDestination(insuranceId = contractId)
         )
