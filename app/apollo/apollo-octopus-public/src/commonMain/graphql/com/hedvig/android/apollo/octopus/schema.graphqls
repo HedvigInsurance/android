@@ -152,6 +152,9 @@ type AddonContractQuote {
   """
   productVariant: ProductVariant!
 }
+enum AddonDeflectType {
+  UPGRADE_TIER
+}
 type AddonDisplayItem {
   displayTitle: String!
   displayValue: String!
@@ -203,11 +206,26 @@ AddonOfferSelectable is used when we have multiple variants for the same quote
 AddonOfferToggleable is used when we have only one variant
 """
 union AddonOfferContent = AddonOfferSelectable|AddonOfferToggleable
+type AddonOfferDeflect {
+  """
+  Title to show in the page.
+  eg "You have to upgrade your tier"
+  """
+  pageTitle: String!
+  """
+  Description to show in the page.
+  """
+  pageDescription: String!
+  """
+  Deflect type for clients so clients know which action to take
+  """
+  type: AddonDeflectType!
+}
 """
 Output type for AddonOffer mutation.
 Returns offer with quote and addons with prices etc to show in the offer page.
 """
-union AddonOfferOutput = UserError|AddonOffer
+union AddonOfferOutput = UserError|AddonOffer|AddonOfferDeflect
 type AddonOfferQuote {
   """
   Id of the addon.
@@ -423,6 +441,19 @@ type AgreementDisplayItem {
 enum AppPlatform {
   IOS
   ANDROID
+}
+"""
+An addon available for purchase.
+"""
+type AvailableAddon {
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
 }
 type AvailablePaymentMethodsResponse {
   paymentMethodsResponse: PaymentMethodsResponse!
@@ -1245,6 +1276,48 @@ type Contract {
   User messages to show due to self change is blocked.
   """
   selfChangeBlockers: ContractSelfChangeBlockers
+  """
+  List of available addons for the contract.
+  """
+  existingAddons: [ContractAddon!]!
+  """
+  List of available addons for the contract.
+  """
+  availableAddons: [AvailableAddon!]!
+}
+"""
+Represents an existing addon variant on a Contract level, on current or upcoming agreement.
+"""
+type ContractAddon {
+  """
+  The AddonVariant of the agreement, which is the umbrella container for a lot of data related to the addon,
+  such as names, legal documents, perils etc.
+  """
+  addonVariant: AddonVariant!
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
+  """
+  If the addon is currently removable.
+  """
+  isRemovable: Boolean!
+  """
+  If the addon is currently upgradeable.
+  """
+  isUpgradable: Boolean!
+  """
+  Start date, null if pending
+  """
+  startDate: Date
+  """
+  End date, null if open-ended
+  """
+  endDate: Date
 }
 """
 A co-insured on contract.
@@ -3307,6 +3380,10 @@ type Mutation {
   """
   shopSessionCartCampaignUnredeem(input: ShopSessionCartCampaignUnredeemInput!): ShopSessionMutationOutput!
   """
+  Update cookie consent given during the shop session.
+  """
+  shopSessionCookieConsentUpdate(input: ShopSessionCookieConsentUpdateInput!): ShopSessionMutationOutput!
+  """
   Begin signing the session, with the ultimate goal of creating insurances in our system, and possibly
   also creating a new Member.
   Signing is an asynchronous process, where the client must poll using `Query.shopSessionSigning` and follow
@@ -3427,6 +3504,14 @@ type PendingContract {
   List of addons on the agreement.
   """
   addons: [Addon!]!
+  """
+  List of available addons for the contract.
+  """
+  existingAddons: [ContractAddon!]!
+  """
+  List of available addons for the contract.
+  """
+  availableAddons: [AvailableAddon!]!
 }
 type Peril {
   id: ID!
@@ -4088,6 +4173,11 @@ input ShopSessionCartEntriesAddInput {
 input ShopSessionCartEntriesRemoveInput {
   shopSessionId: UUID!
   offerIds: [UUID!]!
+}
+input ShopSessionCookieConsentUpdateInput {
+  shopSessionId: UUID!
+  provider: String!
+  preferences: [String!]!
 }
 input ShopSessionCreateInput {
   countryCode: CountryCode!
