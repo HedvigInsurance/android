@@ -33,7 +33,7 @@ internal class GetAddonOfferUseCaseImpl(
     return either {
       val isAddonFlagOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
       if (!isAddonFlagOn) {
-        logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but travel addon feature flag is off" }
+        logcat(LogPriority.ERROR) { "Tried to start AddonGenerateOffer but travel addon feature flag is off" }
         raise(ErrorMessage())
       }
       apolloClient

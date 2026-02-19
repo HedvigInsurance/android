@@ -81,19 +81,19 @@ internal class GetHomeUseCaseTest {
       override suspend fun setDemoMode(demoMode: Boolean) {}
     },
     demoImpl = object : GetAddonBannerInfoUseCase {
-      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, AddonBannerInfo?>> {
+      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
         return flowOf(
           either {
-            null
+            emptyList()
           },
         )
       }
     },
     prodImpl = object : GetAddonBannerInfoUseCase {
-      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, AddonBannerInfo?>> {
+      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
         return flowOf(
           either {
-            null
+            emptyList()
           },
         )
       }
