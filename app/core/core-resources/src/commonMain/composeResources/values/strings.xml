@@ -135,6 +135,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
+  <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!</string>
   <string name="CHAT_CONVERSATION_CLAIM_TITLE">Claim</string>

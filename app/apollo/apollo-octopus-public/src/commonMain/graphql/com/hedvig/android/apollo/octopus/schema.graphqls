@@ -442,6 +442,19 @@ enum AppPlatform {
   IOS
   ANDROID
 }
+"""
+An addon available for purchase.
+"""
+type AvailableAddon {
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
+}
 type AvailablePaymentMethodsResponse {
   paymentMethodsResponse: PaymentMethodsResponse!
 }
@@ -1266,65 +1279,46 @@ type Contract {
   """
   List of available addons for the contract.
   """
-  existingAddons:[ContractAddon!]!
-
+  existingAddons: [ContractAddon!]!
   """
   List of available addons for the contract.
   """
   availableAddons: [AvailableAddon!]!
 }
-
 """
 Represents an existing addon variant on a Contract level, on current or upcoming agreement.
 """
 type ContractAddon {
-
-    """
-    The AddonVariant of the agreement, which is the umbrella container for a lot of data related to the addon,
-    such as names, legal documents, perils etc.
-    """
-    addonVariant: AddonVariant!
-    """
-    Display name of the addon.
-    """
-    displayName: String!
-    """
-    Description of the addon.
-    """
-    description: String!
-    """
-    If the addon is currently removable.
-    """
-    isRemovable: Boolean!
-    """
-    If the addon is currently upgradeable.
-    """
-    isUpgradable: Boolean!
-    """
-    Start date, null if pending
-    """
-    startDate: Date
-    """
-    End date, null if open-ended
-    """
-    endDate: Date
+  """
+  The AddonVariant of the agreement, which is the umbrella container for a lot of data related to the addon,
+  such as names, legal documents, perils etc.
+  """
+  addonVariant: AddonVariant!
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
+  """
+  If the addon is currently removable.
+  """
+  isRemovable: Boolean!
+  """
+  If the addon is currently upgradeable.
+  """
+  isUpgradable: Boolean!
+  """
+  Start date, null if pending
+  """
+  startDate: Date
+  """
+  End date, null if open-ended
+  """
+  endDate: Date
 }
-
-
-"""
-An addon available for purchase.
-"""
-type AvailableAddon {
-    """
-    Display name of the addon.
-    """
-    displayName: String!
-    """
-    Description of the addon.
-    """
-    description: String!
-}
-
 """
 A co-insured on contract.
 """
@@ -3510,6 +3504,14 @@ type PendingContract {
   List of addons on the agreement.
   """
   addons: [Addon!]!
+  """
+  List of available addons for the contract.
+  """
+  existingAddons: [ContractAddon!]!
+  """
+  List of available addons for the contract.
+  """
+  availableAddons: [AvailableAddon!]!
 }
 type Peril {
   id: ID!

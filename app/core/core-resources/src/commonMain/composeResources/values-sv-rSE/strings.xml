@@ -135,6 +135,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Ange byggår</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Byggår</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">Du + %1$d</string>
+  <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Chatta med en specialist</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">Om det inte fungerar eller om du har några andra frågor, vänligen meddela oss så hjälper en av våra specialister till inom kort!</string>
   <string name="CHAT_CONVERSATION_CLAIM_TITLE">Skadeärende</string>
