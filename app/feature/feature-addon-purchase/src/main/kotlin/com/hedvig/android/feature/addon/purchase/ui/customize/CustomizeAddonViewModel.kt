@@ -30,12 +30,12 @@ internal class CustomizeAddonViewModel(
   insuranceId: String,
   getAddonOfferUseCase: GetAddonOfferUseCase,
 ) : MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeAddonState>(
-  initialState = CustomizeAddonState.Loading,
-  presenter = CustomizeTravelAddonPresenter(
-    getAddonOfferUseCase = getAddonOfferUseCase,
-    insuranceId = insuranceId,
-  ),
-)
+    initialState = CustomizeAddonState.Loading,
+    presenter = CustomizeTravelAddonPresenter(
+      getAddonOfferUseCase = getAddonOfferUseCase,
+      insuranceId = insuranceId,
+    ),
+  )
 
 internal class CustomizeTravelAddonPresenter(
   private val insuranceId: String,
@@ -61,7 +61,7 @@ internal class CustomizeTravelAddonPresenter(
         *(
           (lastState as? CustomizeAddonState.Success.Toggleable)
             ?.currentlyChosenOptions ?: emptyList()
-          ).toTypedArray(),
+        ).toTypedArray(),
       )
     }
 
@@ -170,7 +170,9 @@ internal class CustomizeTravelAddonPresenter(
           when (result) {
             is GenerateAddonOfferResult.AddonOfferDeflect -> {
               currentState = CustomizeAddonState.Failure.SpecificDeflect(
-                title = result.pageTitle, description = result.pageDescription, type = result.type,
+                title = result.pageTitle,
+                description = result.pageDescription,
+                type = result.type,
                 contractId = insuranceId,
               )
             }
@@ -300,6 +302,7 @@ internal sealed interface CustomizeAddonState {
 
   sealed interface Failure : CustomizeAddonState {
     data object GeneralFailure : Failure
+
     data class SpecificDeflect(
       val title: String,
       val description: String,

@@ -2,6 +2,7 @@ package com.hedvig.android.feature.claimtriaging
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.claimflow.ClaimFlowStep
@@ -18,7 +19,6 @@ import com.hedvig.android.feature.claimtriaging.claimgroups.ClaimGroupsViewModel
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
-import androidx.navigation.NavController
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable

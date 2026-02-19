@@ -276,9 +276,9 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                              addon.premium.toString(),
-                            ),
+                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                addon.premium.toString(),
+                              ),
                           )
                         }
                         contract.cost.discounts.forEach { discount ->
@@ -324,8 +324,7 @@ private fun ContractDetailScreen(
                       onInfoIconClick = {
                         costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
                       },
-                      isDecommissioned = contract.productVariant.contractType
-                        == ContractType.SE_CAR_DECOMMISSIONED,
+                      isDecommissioned = contract.productVariant.contractType == ContractType.SE_CAR_DECOMMISSIONED,
                       navigateToRemoveAddon = {
                         navigateToRemoveAddon(contract.id)
                       },

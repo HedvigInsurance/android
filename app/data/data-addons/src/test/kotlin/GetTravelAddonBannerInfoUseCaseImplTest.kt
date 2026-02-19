@@ -75,7 +75,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
                 descriptionDisplayName = "Description"
                 displayTitleName = "Title"
                 flow = AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
-              }
+              },
             )
           }
         },
@@ -106,7 +106,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
                 descriptionDisplayName = "Description"
                 displayTitleName = "Title"
                 flow = AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
-              }
+              },
             )
           }
         },
@@ -131,7 +131,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
                 descriptionDisplayName = "Description"
                 displayTitleName = "Title"
                 flow = AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
-              }
+              },
             )
           }
         },

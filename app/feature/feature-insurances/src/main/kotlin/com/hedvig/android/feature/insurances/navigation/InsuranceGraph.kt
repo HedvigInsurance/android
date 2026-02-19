@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.insurances.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
@@ -16,7 +17,6 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -33,7 +33,7 @@ fun NavGraphBuilder.insuranceGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
-  onNavigateToRemoveAddon: (insuranceId: String?, addonId: String?)  -> Unit,
+  onNavigateToRemoveAddon: (insuranceId: String?, addonId: String?) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -84,8 +84,8 @@ fun NavGraphBuilder.insuranceGraph(
           onNavigateToStartChangeTier(contractId)
         },
         navigateToRemoveAddon = { insuranceId ->
-          //todo: pass the right params for addon here!
-          onNavigateToRemoveAddon(insuranceId,null)
+          // todo: pass the right params for addon here!
+          onNavigateToRemoveAddon(insuranceId, null)
         },
       )
     }

@@ -266,7 +266,6 @@ data class QuoteCostBreakdown(
   val entries: List<CostBreakdownEntry>,
 )
 
-
 data class CostBreakdownEntry(
   val displayName: String,
   val displayValue: DisplayValue,

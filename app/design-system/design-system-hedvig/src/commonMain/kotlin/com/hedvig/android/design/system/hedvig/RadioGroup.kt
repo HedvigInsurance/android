@@ -103,7 +103,7 @@ fun Checkbox(
     style = style,
     colors = colors,
     enabled = enabled,
-    textEndContent = textEndContent
+    textEndContent = textEndContent,
   )
 }
 
@@ -471,8 +471,12 @@ private fun RadioOption(
       }
       Column {
         val textComposable: @Composable () -> Unit = {
-          HedvigText(option.text, style = style.textStyle, color =
-            if (enabled) colors.textColor else colors.disabledTextColor)
+          HedvigText(
+            option.text,
+            style = style.textStyle,
+            color =
+              if (enabled) colors.textColor else colors.disabledTextColor,
+          )
         }
         if (textEndContent != null) {
           HorizontalItemsWithMaximumSpaceTaken(
@@ -485,8 +489,12 @@ private fun RadioOption(
         }
         if (option.label != null) {
           Spacer(Modifier.height(style.textToLabelSpacing))
-          HedvigText(option.label, style = style.textStyleLabel, color =
-           if (enabled) colors.labelTextColor else colors.disabledLabelTextColor)
+          HedvigText(
+            option.label,
+            style = style.textStyleLabel,
+            color =
+              if (enabled) colors.labelTextColor else colors.disabledLabelTextColor,
+          )
         }
       }
     }

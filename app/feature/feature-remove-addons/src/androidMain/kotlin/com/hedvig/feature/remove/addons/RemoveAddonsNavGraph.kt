@@ -116,13 +116,13 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         preselectedAddonId = this.addonId,
         navigateUp = navController::navigateUp,
         navigateToSummary = {
-            contractId: String,
-            addons: List<CurrentlyActiveAddon>,
-            activationDate: LocalDate,
-            baseCost: ItemCost,
-            currentCost: ItemCost,
-            productVariant: ProductVariant,
-            allAddons: List<CurrentlyActiveAddon>,
+          contractId: String,
+          addons: List<CurrentlyActiveAddon>,
+          activationDate: LocalDate,
+          baseCost: ItemCost,
+          currentCost: ItemCost,
+          productVariant: ProductVariant,
+          allAddons: List<CurrentlyActiveAddon>,
           ->
           navController.navigate(
             AddonRemoveDestination.Summary(

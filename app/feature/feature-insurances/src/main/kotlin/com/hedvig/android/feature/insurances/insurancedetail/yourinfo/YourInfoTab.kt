@@ -164,9 +164,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              addon.premium.toString(),
-            ),
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                addon.premium.toString(),
+              ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -348,7 +348,7 @@ private fun AddonsSection(
             showTopDivider = index != 0 || existingAddons.isNotEmpty(),
             isAlreadyAdded = false,
             modifier = Modifier.clickable {
-              //todo navigate to add addon flow
+              // todo navigate to add addon flow
             },
           )
         }

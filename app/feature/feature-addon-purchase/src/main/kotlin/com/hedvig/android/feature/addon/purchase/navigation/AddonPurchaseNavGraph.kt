@@ -127,7 +127,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         navigateToChangeTier = { contractId ->
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
           onNavigateToChangeTier(contractId)
-        }
+        },
       )
     }
 

@@ -368,7 +368,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onNavigateToChangeTier = { contractId ->
         navController.navigate(
-          StartTierFlowDestination(insuranceId = contractId)
+          StartTierFlowDestination(insuranceId = contractId),
         )
       },
     )
