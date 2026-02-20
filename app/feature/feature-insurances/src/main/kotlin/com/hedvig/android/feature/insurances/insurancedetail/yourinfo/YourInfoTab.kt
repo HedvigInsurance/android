@@ -369,7 +369,11 @@ private fun AddonRow(
     {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         HedvigText(title)
-        HedvigText(description, style = HedvigTheme.typography.label)
+        HedvigText(
+          text = description,
+          style = HedvigTheme.typography.label,
+          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+        )
       }
     },
     {
@@ -379,7 +383,7 @@ private fun AddonRow(
         } else {
           stringResource(Res.string.ADDON_ADD_COVERAGE)
         },
-        size = HighlightLabelDefaults.HighLightSize.Large,
+        size = HighlightLabelDefaults.HighLightSize.Medium,
         color = if (isAlreadyAdded) {
           HighlightLabelDefaults.HighlightColor.Grey(MEDIUM)
         } else {
