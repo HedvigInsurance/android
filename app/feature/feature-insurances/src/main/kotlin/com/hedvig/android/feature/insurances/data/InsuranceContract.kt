@@ -3,14 +3,13 @@ package com.hedvig.android.feature.insurances.data
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.DateFormatter
-import java.time.format.DateTimeFormatter
 import kotlin.String
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 
 sealed interface InsuranceContract {
   val id: String
@@ -92,12 +91,16 @@ data class Addon(
 )
 
 data class ContractAddon(
+  val relatedContractId: ContractId,
   val addonVariant: AddonVariant,
   val displayName: String,
   val description: String,
+  val isUpgradable: Boolean,
+  val isRemovable: Boolean,
 )
 
 data class AvailableAddon(
+  val relatedContractId: ContractId,
   val displayName: String,
   val description: String,
 )

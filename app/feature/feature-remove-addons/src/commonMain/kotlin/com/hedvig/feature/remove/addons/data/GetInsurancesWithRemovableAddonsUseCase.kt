@@ -8,11 +8,12 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.logger.logcat
 import octopus.InsurancesWithRemovableAddonsQuery
 
-interface GetInsurancesWithRemovableAddonsUseCase {
+internal interface GetInsurancesWithRemovableAddonsUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<InsuranceForAddon>>
 }
 
@@ -38,8 +39,8 @@ internal class GetInsurancesWithRemovableAddonsUseCaseImpl(
   }
 }
 
-data class InsuranceForAddon(
-  val id: String,
+internal data class InsuranceForAddon(
+  val contractId: ContractId,
   val displayName: String,
   val contractExposure: String,
   val contractGroup: ContractGroup,
@@ -52,7 +53,7 @@ private fun List<InsurancesWithRemovableAddonsQuery.Data.CurrentMember.ActiveCon
     // TODO: filter out non-removable addons!
     .map { contract ->
       InsuranceForAddon(
-        id = contract.id,
+        contractId = ContractId(contract.id),
         displayName = contract.currentAgreement.productVariant.displayName,
         contractExposure = contract.exposureDisplayNameShort,
         contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup(),

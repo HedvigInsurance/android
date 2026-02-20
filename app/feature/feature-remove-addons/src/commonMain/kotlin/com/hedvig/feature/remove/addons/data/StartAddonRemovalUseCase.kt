@@ -8,6 +8,8 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.data.contract.AddonId
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.data.productvariant.toProductVariant
 import com.hedvig.android.logger.logcat
@@ -21,17 +23,17 @@ internal data class CurrentlyActiveAddon(
   val displayTitle: String,
   val displayDescription: String?,
   val cost: ItemCost,
-  val id: String,
+  val id: AddonId,
 )
 
 internal interface StartAddonRemovalUseCase {
-  suspend fun invoke(contractId: String): Either<ErrorMessage, StartAddonRemovalResponse>
+  suspend fun invoke(contractId: ContractId): Either<ErrorMessage, StartAddonRemovalResponse>
 }
 
 internal class StartAddonRemovalUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : StartAddonRemovalUseCase {
-  override suspend fun invoke(contractId: String): Either<ErrorMessage, StartAddonRemovalResponse> {
+  override suspend fun invoke(contractId: ContractId): Either<ErrorMessage, StartAddonRemovalResponse> {
     return either {
       val productVariant = apolloClient
         .query(InsurancesWithRemovableAddonsQuery())
@@ -40,14 +42,14 @@ internal class StartAddonRemovalUseCaseImpl(
         .getOrNull()
         ?.currentMember
         ?.activeContracts
-        ?.firstOrNull { it.id == contractId }
+        ?.firstOrNull { it.id == contractId.id }
         ?.currentAgreement?.productVariant?.toProductVariant()
       if (productVariant == null) {
         logcat { "InsurancesWithRemovableAddonsQuery returned null productVariant" }
         raise(ErrorMessage())
       }
       apolloClient
-        .query(StartAddonRemovalQuery(contractId))
+        .query(StartAddonRemovalQuery(contractId.id))
         .safeExecute()
         .fold(
           ifLeft = {
@@ -62,7 +64,7 @@ internal class StartAddonRemovalUseCaseImpl(
                     displayTitle = addon.displayTitle,
                     displayDescription = addon.displayDescription,
                     cost = ItemCost.fromItemCostFragment(addon.cost),
-                    id = addon.id,
+                    id = AddonId(addon.id),
                   )
                 }
                 StartAddonRemovalResponse(

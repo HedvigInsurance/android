@@ -16,6 +16,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
@@ -288,14 +289,20 @@ internal fun HedvigNavHost(
       startEditCoInsuredAddMissingInfo = { contractId: String ->
         navController.navigate(CoInsuredAddInfo(contractId))
       },
-      onNavigateToAddonPurchaseFlow = { ids ->
-        navController.navigate(AddonPurchaseGraphDestination(ids, AddonBannerSource.INSURANCES_TAB))
+      onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon ->
+        navController.navigate(
+          AddonPurchaseGraphDestination(
+            insuranceIds.map(ContractId::id),
+            availableAddon?.displayName,
+            AddonBannerSource.INSURANCES_TAB,
+          )
+        )
       },
-      onNavigateToRemoveAddon = { insuranceId, addonId ->
+      onNavigateToRemoveAddon = { contractId, addonVariant ->
         navController.navigate(
           AddonRemoveGraphDestination(
-            insuranceId,
-            addonId,
+            contractId,
+            addonVariant,
           ),
         )
       },
@@ -500,8 +507,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     onNavigateToAddonPurchaseFlow = { ids ->
       navController.navigate(
         AddonPurchaseGraphDestination(
-          ids,
-          AddonBannerSource.TRAVEL_CERTIFICATES,
+          insuranceIds = ids,
+          preselectedAddonDisplayName = null,
+          source = AddonBannerSource.TRAVEL_CERTIFICATES,
         ),
       )
     },

@@ -22,6 +22,7 @@ import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
@@ -43,7 +44,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Amber
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Red
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
@@ -120,10 +120,11 @@ internal fun YourInfoTab(
   priceToShow: UiMoney,
   showPriceInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
-  navigateToRemoveAddon: () -> Unit,
-  modifier: Modifier = Modifier,
   existingAddons: List<ContractAddon>,
   availableAddons: List<AvailableAddon>,
+  navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToAddAddon: (AvailableAddon) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val editYourInfoBottomSheet = rememberHedvigBottomSheetState<Unit>()
@@ -164,9 +165,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                addon.premium.toString(),
-              ),
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              addon.premium.toString(),
+            ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -215,8 +216,8 @@ internal fun YourInfoTab(
           message = stringResource(Res.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
           priority = Info,
           style = Button(
-            stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
-            { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
+            buttonText = stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+            onButtonClick = { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
           ),
         )
       } else {
@@ -229,8 +230,8 @@ internal fun YourInfoTab(
           priority = Info,
           style = if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
             Button(
-              stringResource(Res.string.insurances_tab_view_details),
-              { upcomingChangesBottomSheet.show() },
+              buttonText = stringResource(Res.string.insurances_tab_view_details),
+              onButtonClick = { upcomingChangesBottomSheet.show() },
             )
           } else {
             Default
@@ -283,17 +284,15 @@ internal fun YourInfoTab(
           .padding(horizontal = 16.dp),
       )
     }
-    AddonsSection(existingAddons, availableAddons, Modifier.padding(horizontal = 16.dp))
+    AddonsSection(
+      existingAddons = existingAddons,
+      availableAddons = availableAddons,
+      navigateToRemoveAddon = navigateToRemoveAddon,
+      navigateToAddAddon = navigateToAddAddon,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        HedvigButton(
-          text = "Remove addon TODO", // TODO!!!
-          onClick = navigateToRemoveAddon,
-          enabled = true,
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        )
         if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
@@ -325,6 +324,8 @@ internal fun YourInfoTab(
 private fun AddonsSection(
   existingAddons: List<ContractAddon>,
   availableAddons: List<AvailableAddon>,
+  navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToAddAddon: (AvailableAddon) -> Unit,
   modifier: Modifier,
 ) {
   if (existingAddons.isNotEmpty() || availableAddons.isNotEmpty()) {
@@ -339,6 +340,9 @@ private fun AddonsSection(
             description = existingAddon.description,
             showTopDivider = index != 0,
             isAlreadyAdded = true,
+            modifier = Modifier.clickable {
+              navigateToRemoveAddon(existingAddon.relatedContractId, existingAddon.addonVariant)
+            },
           )
         }
         availableAddons.forEachIndexed { index, availableAddon ->
@@ -348,7 +352,7 @@ private fun AddonsSection(
             showTopDivider = index != 0 || existingAddons.isNotEmpty(),
             isAlreadyAdded = false,
             modifier = Modifier.clickable {
-              // todo navigate to add addon flow
+              navigateToAddAddon(availableAddon)
             },
           )
         }
@@ -729,23 +733,27 @@ private fun PreviewYourInfoTab() {
         priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
         showPriceInfoIcon = true,
         onInfoIconClick = {},
-        navigateToRemoveAddon = {},
         existingAddons = listOf(
           ContractAddon(
-            AddonVariant(
+            relatedContractId = ContractId(""),
+            addonVariant = AddonVariant(
               termsVersion = "1",
               displayName = "displayName",
               product = "product",
               documents = emptyList(),
               perils = emptyList(),
             ),
-            "Existing display name",
-            "Description",
+            displayName = "DisplayName",
+            description = "Description",
+            isUpgradable = false,
+            isRemovable = false,
           ),
         ),
         availableAddons = listOf(
-          AvailableAddon("Available addon", "Description"),
+          AvailableAddon(ContractId("id"), "Available addon", "Description"),
         ),
+        navigateToRemoveAddon = { _, _ -> },
+        navigateToAddAddon = {},
       )
     }
   }

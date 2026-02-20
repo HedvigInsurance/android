@@ -22,8 +22,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.AddonId
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxOption
@@ -62,21 +65,13 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun SelectAddonToRemoveDestination(
-  contractId: String,
-  preselectedAddonId: String?,
+  contractId: ContractId,
+  preselectedAddonProduct: AddonVariant?,
   navigateUp: () -> Unit,
-  navigateToSummary: (
-    contractId: String,
-    addonsToRemove: List<CurrentlyActiveAddon>,
-    activationDate: LocalDate,
-    baseCost: ItemCost,
-    currentTotalCost: ItemCost,
-    productVariant: ProductVariant,
-    allAddons: List<CurrentlyActiveAddon>,
-  ) -> Unit,
+  navigateToSummary: (ContractId, List<CurrentlyActiveAddon>, LocalDate, ItemCost, ItemCost, ProductVariant, List<CurrentlyActiveAddon>) -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel = koinViewModel {
-    parametersOf(contractId to preselectedAddonId)
+    parametersOf(contractId, preselectedAddonProduct)
   }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectAddonToRemoveScreen(
@@ -305,7 +300,7 @@ private class SelectAddonToRemoveStateProvider :
                 UiMoney(25.0, UiCurrencyCode.SEK),
                 listOf(),
               ),
-              id = "id1",
+              id = AddonId("id1"),
             ),
             CurrentlyActiveAddon(
               displayTitle = "Addon title 2",
@@ -315,7 +310,7 @@ private class SelectAddonToRemoveStateProvider :
                 UiMoney(50.0, UiCurrencyCode.SEK),
                 listOf(),
               ),
-              id = "id2",
+              id = AddonId("id2"),
             ),
           ),
           activationDate = LocalDate(2026, 3, 3),
@@ -353,7 +348,7 @@ private class SelectAddonToRemoveStateProvider :
               UiMoney(25.0, UiCurrencyCode.SEK),
               listOf(),
             ),
-            id = "id1",
+            id = AddonId("id1"),
           ),
         ),
         paramsToNavigateToSummary = null,

@@ -19,7 +19,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.AddonId
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -40,7 +42,6 @@ import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
-import hedvig.resources.ADDON_FLOW_SUMMARY_ACTIVE_FROM
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.CONFIRM_CHANGES_TITLE
 import hedvig.resources.GENERAL_CONFIRM
@@ -55,7 +56,7 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun RemoveAddonSummaryDestination(
-  contractId: String,
+  contractId: ContractId,
   addonsToRemove: List<CurrentlyActiveAddon>,
   activationDate: LocalDate,
   baseCost: ItemCost,
@@ -260,10 +261,10 @@ private class RemoveAddonSummaryStateUiStateProvider :
       RemoveAddonSummaryState.Failure,
       RemoveAddonSummaryState.Content(
         summaryParams = CommonSummaryParameters(
-          contractId = "contractId",
+          contractId = ContractId("contractId"),
           addonsToRemove = listOf(
             CurrentlyActiveAddon(
-              id = "addonToRemove",
+              id = AddonId("addonToRemove"),
               displayTitle = "addonToRemove",
               displayDescription = "addonToRemove description",
               cost = ItemCost(
@@ -298,7 +299,7 @@ private class RemoveAddonSummaryStateUiStateProvider :
           ),
           existingAddons = listOf(
             CurrentlyActiveAddon(
-              id = "leftAddon1",
+              id = AddonId("leftAddon1"),
               displayTitle = "leftAddon1",
               displayDescription = "leftAddon1 description",
               cost = ItemCost(
@@ -308,7 +309,7 @@ private class RemoveAddonSummaryStateUiStateProvider :
               ),
             ),
             CurrentlyActiveAddon(
-              id = "addonToRemove",
+              id = AddonId("addonToRemove"),
               displayTitle = "addonToRemove",
               displayDescription = "addonToRemove description",
               cost = ItemCost(

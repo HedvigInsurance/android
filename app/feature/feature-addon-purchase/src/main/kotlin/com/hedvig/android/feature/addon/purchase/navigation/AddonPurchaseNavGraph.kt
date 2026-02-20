@@ -49,9 +49,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
   onNavigateToNewConversation: () -> Unit,
   onNavigateToChangeTier: (contractId: String) -> Unit,
 ) {
-  /**
-   * Destination to get eligible insuranceIds if member comes to the feature using the deeplink
-   */
+  // Destination to get eligible insuranceIds if member comes to the feature using the deeplink
   navdestination<TravelAddonTriage>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelAddon),
   ) {
@@ -62,8 +60,9 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       launchFlow = { insuranceIds: List<String> ->
         navController.navigate(
           AddonPurchaseGraphDestination(
-            insuranceIds,
-            AddonBannerSource.TRAVEL_DEEPLINK,
+            insuranceIds = insuranceIds,
+            preselectedAddonDisplayName = null,
+            source = AddonBannerSource.TRAVEL_DEEPLINK,
           ),
         ) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })
@@ -76,15 +75,16 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
   navgraph<AddonPurchaseGraphDestination>(
     startDestination = ChooseInsuranceToAddAddonDestination::class,
   ) {
-    /**
-     * Choose insurance to add addon to. Redirects to CustomizeAddon if insuranceIds list has only 1 insurance
-     */
+    // Choose insurance to add addon to. Redirects to CustomizeAddon if insuranceIds list has only 1 insurance
     navdestination<ChooseInsuranceToAddAddonDestination> { backStackEntry ->
       val addonPurchaseGraphDestination = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
+      val preselectedAddonDisplayNames = listOfNotNull(addonPurchaseGraphDestination.preselectedAddonDisplayName)
       if (addonPurchaseGraphDestination.insuranceIds.size == 1) {
         LaunchedEffect(Unit) {
-          navController.navigate(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0])) {
+          navController.navigate(
+            CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0], preselectedAddonDisplayNames),
+          ) {
             typedPopUpTo<ChooseInsuranceToAddAddonDestination>({ inclusive = true })
           }
         }
@@ -96,15 +96,13 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           viewModel = viewModel,
           navigateUp = navController::navigateUp,
           navigateToCustomizeAddon = { chosenInsuranceId: String ->
-            navController.navigate(CustomizeAddon(chosenInsuranceId))
+            navController.navigate(CustomizeAddon(chosenInsuranceId, preselectedAddonDisplayNames))
           },
         )
       }
     }
 
-    /**
-     * Choose addon option (e.g. 45/60 days)
-     */
+    // Choose addon option (e.g. 45/60 days)
     navdestination<CustomizeAddon> {
       val viewModel: CustomizeAddonViewModel = koinViewModel {
         parametersOf(this.insuranceId)
@@ -139,9 +137,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       )
     }
 
-    /**
-     * Summary for the purchase addon flow (not upgrade 45->60)
-     */
+    // Summary for the purchase addon flow (not upgrade 45->60)
     navdestination<Summary>(Summary) { backStackEntry ->
       val source = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry).source

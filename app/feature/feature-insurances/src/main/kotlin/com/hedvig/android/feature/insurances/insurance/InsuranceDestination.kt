@@ -49,6 +49,7 @@ import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
@@ -104,7 +105,7 @@ internal fun InsuranceDestination(
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
 ) {
   val uiState: InsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
   InsuranceScreen(
@@ -128,7 +129,7 @@ private fun InsuranceScreen(
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
   imageLoader: ImageLoader,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
 ) {
   val isRetrying = uiState.isRetrying
   val systemBarInsetTopDp = with(LocalDensity.current) {
@@ -198,7 +199,7 @@ private fun InsuranceScreenContent(
   onCrossSellClick: (String) -> Unit,
   navigateToCancelledInsurances: () -> Unit,
   onNavigateToMovingFlow: () -> Unit,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<ContractId>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -270,7 +271,7 @@ private fun InsuranceScreenContent(
               TravelAddonBanner(
                 addonBannerInfo = bannerInfo,
                 launchAddonPurchaseFlow = {
-                  onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds)
+                  onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds.map(::ContractId))
                 },
                 modifier = Modifier
                   .fillMaxWidth()
