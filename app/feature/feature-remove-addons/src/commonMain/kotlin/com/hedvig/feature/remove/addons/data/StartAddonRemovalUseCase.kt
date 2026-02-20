@@ -65,6 +65,9 @@ internal class StartAddonRemovalUseCaseImpl(
                     id = addon.id,
                   )
                 }
+                if (removableAddons.isEmpty()) {
+                  raise(ErrorMessage()) //todo: maybe we need other display there for empty state
+                }
                 StartAddonRemovalResponse(
                   existingAddonsToRemove = removableAddons,
                   activationDate = addonRemoveStart.activationDate,
