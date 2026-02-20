@@ -372,13 +372,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     } else {
       null
     },
-    costBreakdown = uiState.quote.costBreakdown.map {
-      CostBreakdownEntry(
-        it.first,
-        it.second,
-        false,
-      )
-    },
+    costBreakdown = uiState.quote.costBreakdown,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -431,7 +425,6 @@ private class SummaryUiStateProvider :
             description = "En fast del och en rörlig del om 25% av skadekostnaden",
           ),
           displayItems = listOf(),
-          premium = UiMoney(655.0, SEK),
           tier = Tier(
             "STANDARD",
             tierLevel = 1,
@@ -476,10 +469,11 @@ private class SummaryUiStateProvider :
             monthlyNet = UiMoney(304.0, SEK),
           ),
           costBreakdown = listOf(
-            "Home Insurance Max" to "300 kr/mo",
-            "Travel Plus" to "80 kr/mo",
-            "Bundle discount 20%" to "76 kr/mo",
+            CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+            CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+            CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
           ),
+          info = "Some important info"
         ),
       ),
       Failure,

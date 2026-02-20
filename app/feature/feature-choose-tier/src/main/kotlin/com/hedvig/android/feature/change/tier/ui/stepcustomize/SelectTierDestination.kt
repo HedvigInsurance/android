@@ -54,6 +54,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -66,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
@@ -81,6 +83,7 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMPARE_BUTTON
@@ -263,7 +266,6 @@ private fun SelectTierScreen(
       data = uiState.contractData,
       onChooseTierClick = onChooseTierClick,
       onChooseDeductibleClick = onChooseDeductibleClick,
-      newDisplayPremium = uiState.chosenQuote?.premium,
       isCurrentChosen = uiState.isCurrentChosen,
       chosenQuote = uiState.chosenQuote,
       isTierChoiceEnabled = uiState.isTierChoiceEnabled,
@@ -319,7 +321,6 @@ private fun CustomizationCard(
   chosenQuoteInDialog: TierDeductibleQuote?,
   onChooseDeductibleInDialogClick: (quote: TierDeductibleQuote) -> Unit,
   onChooseTierInDialogClick: (tier: Tier) -> Unit,
-  newDisplayPremium: UiMoney?,
   isTierChoiceEnabled: Boolean,
   onChooseDeductibleClick: () -> Unit,
   onSetDeductibleBackToPreviouslyChosen: () -> Unit,
@@ -452,6 +453,19 @@ private fun CustomizationCard(
           )
         }
       }
+      if (chosenQuote != null) {
+        val info = chosenQuote.info
+        if (info != null) {
+          Spacer(modifier = Modifier.height(4.dp))
+          HedvigNotificationCard(
+            message = info,
+            priority = NotificationDefaults.NotificationPriority.Info,
+            style = NotificationDefaults.InfoCardStyle.Default,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+      }
+      Spacer(modifier = Modifier.height(16.dp))
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -462,13 +476,13 @@ private fun CustomizationCard(
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val description = newDisplayPremium?.getPerMonthDescription() ?: ""
+          val description = chosenQuote?.newTotalCost?.monthlyNet?.getPerMonthDescription() ?: ""
           HedvigText(
             text =
-              newDisplayPremium?.let {
+              chosenQuote?.newTotalCost?.monthlyNet?.let { money ->
                 stringResource(
                   Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                  it,
+                  money,
                 )
               }
                 ?: "-",
@@ -529,7 +543,10 @@ private fun QuoteDeductibleRadioGroup(
     textEndContent = { id ->
       val quote = quotesForChosenTier.first { it.id == id.id }
       HighlightLabel(
-        labelText = stringResource(Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
+        labelText = stringResource(
+          Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          quote.newTotalCost.monthlyNet,
+        ),
         size = HighLightSize.Small,
         color = HighlightColor.Grey(MEDIUM),
         modifier = Modifier.wrapContentSize(Alignment.TopEnd),
@@ -665,8 +682,6 @@ private fun CustomizationCardPreview() {
       data = dataForPreview,
       onChooseTierClick = {},
       onChooseDeductibleClick = {},
-      newDisplayPremium = UiMoney(199.0, SEK),
-      isCurrentChosen = false,
       isTierChoiceEnabled = true,
       chosenQuote = quotesForPreview[0],
       quotesForChosenTier = quotesForPreview,
@@ -697,6 +712,7 @@ private fun CustomizationCardPreview() {
       chosenQuoteIndex = null,
       onSetTierBackToPreviouslyChosen = {},
       onSetDeductibleBackToPreviouslyChosen = {},
+      isCurrentChosen = false,
     )
   }
 }
@@ -758,7 +774,6 @@ private fun SelectTierScreenPreview() {
           ) to UiMoney(155.0, SEK),
         ),
         quotesForChosenTier = listOf(quotesForPreview[0]),
-        isCurrentChosen = false,
         isTierChoiceEnabled = true,
         chosenTier = Tier(
           "BAS",
@@ -776,6 +791,7 @@ private fun SelectTierScreenPreview() {
         chosenInDialogQuote = quotesForPreview[0],
         chosenTierIndex = null,
         chosenQuoteIndex = null,
+        isCurrentChosen = false,
       ),
       {},
       {},
@@ -806,7 +822,6 @@ private val quotesForPreview = listOf(
       description = "Endast en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
-    premium = UiMoney(199.0, SEK),
     tier = Tier(
       "BAS",
       tierLevel = 0,
@@ -835,10 +850,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id1",
@@ -848,7 +864,6 @@ private val quotesForPreview = listOf(
       description = "En fast del och en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
-    premium = UiMoney(255.0, SEK),
     tier = Tier(
       "BAS",
       tierLevel = 0,
@@ -877,10 +892,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id2",
@@ -890,7 +906,6 @@ private val quotesForPreview = listOf(
       description = "En fast del och en rörlig del om 25% av skadekostnaden",
     ),
     displayItems = listOf(),
-    premium = UiMoney(355.0, SEK),
     tier = Tier(
       "BAS",
       tierLevel = 0,
@@ -919,10 +934,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id3",
@@ -932,7 +948,6 @@ private val quotesForPreview = listOf(
       description = "Endast en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
-    premium = UiMoney(230.0, SEK),
     tier = Tier(
       "STANDARD",
       tierLevel = 1,
@@ -961,10 +976,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id4",
@@ -974,7 +990,6 @@ private val quotesForPreview = listOf(
       description = "En fast del och en rörlig del om 25% av skadekostnaden",
     ),
     displayItems = listOf(),
-    premium = UiMoney(655.0, SEK),
     tier = Tier(
       "STANDARD",
       tierLevel = 1,
@@ -1003,9 +1018,10 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
 )
