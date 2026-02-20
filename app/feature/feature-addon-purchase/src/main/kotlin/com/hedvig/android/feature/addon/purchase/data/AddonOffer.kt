@@ -31,6 +31,7 @@ internal sealed interface GenerateAddonOfferResult {
 
 internal enum class AddonOfferDeflectType {
   UPGRADE_TIER,
+  GENERAL_CLOSE
 }
 
 /** Top-level addon type, like Travel+ or Car+ */

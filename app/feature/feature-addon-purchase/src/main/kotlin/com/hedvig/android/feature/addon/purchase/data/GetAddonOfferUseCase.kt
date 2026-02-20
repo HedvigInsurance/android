@@ -144,7 +144,11 @@ internal class GetAddonOfferUseCaseImpl(
 
                     AddonDeflectType.UNKNOWN__ -> {
                       logcat { "addonGenerateOffer got AddonDeflectType.UNKNOWN" }
-                      raise(ErrorMessage())
+                      AddonOfferDeflectType.GENERAL_CLOSE
+                    }
+
+                    null -> {
+                      AddonOfferDeflectType.GENERAL_CLOSE
                     }
                   },
                 )

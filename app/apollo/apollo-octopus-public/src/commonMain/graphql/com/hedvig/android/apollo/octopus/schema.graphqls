@@ -219,7 +219,7 @@ type AddonOfferDeflect {
   """
   Deflect type for clients so clients know which action to take
   """
-  type: AddonDeflectType!
+  type: AddonDeflectType
 }
 """
 Output type for AddonOffer mutation.
@@ -721,6 +721,10 @@ type ChangeTierDeductibleQuote {
   insurance base premium, addons premiums, campaigns and bundle discounts
   """
   costBreakdown: [ChangeTierPriceDetailItem!]!
+  """
+  Info message we want to show for selected quote
+  """
+  info: String
 }
 enum ChangeTierDeductibleSource {
   SELF_SERVICE
@@ -734,6 +738,7 @@ type ChangeTierDeflectOutput {
 type ChangeTierPriceDetailItem {
   displayName: String!
   displayValue: String!
+  isCrossed: Boolean!
 }
 interface ChatMessage {
   id: ID!
@@ -1546,6 +1551,7 @@ type DirectDebitResponse2 {
 }
 input DisplayItemOptions {
   hidePrice: Boolean! = false
+  hideAddons: Boolean! = false
 }
 type EmailMessage {
   id: ID!
@@ -3440,7 +3446,7 @@ type Mutation {
   """
   Call this to accept an addon offer and activate selected addon(s).
   """
-  addonActivateOffer(quoteId: ID!, addonIds: [ID!]!): AddonActivationOutput!
+  addonActivateOffer(quoteId: ID!, selectedAddonIds: [ID!]!): AddonActivationOutput!
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when member clicks on the "See price" button in the Travel Addon Upsell banner.
@@ -4018,9 +4024,9 @@ type Query {
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
   """
-  Cost for selected configuration of addon offer
+  Call this to get the cost of an addon offer for selected addon(s).
   """
-  addonOfferCost(quoteId: ID!, addonIds: [ID!]!): ItemCost!
+  addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
