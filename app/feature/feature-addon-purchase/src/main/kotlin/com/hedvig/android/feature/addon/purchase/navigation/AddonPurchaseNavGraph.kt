@@ -105,7 +105,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
     // Choose addon option (e.g. 45/60 days)
     navdestination<CustomizeAddon> {
       val viewModel: CustomizeAddonViewModel = koinViewModel {
-        parametersOf(this.insuranceId)
+        parametersOf(this.insuranceId, this.preselectedAddonDisplayNames)
       }
       CustomizeAddonDestination(
         viewModel = viewModel,
