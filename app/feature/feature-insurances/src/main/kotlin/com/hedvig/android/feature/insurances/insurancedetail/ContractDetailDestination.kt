@@ -107,6 +107,7 @@ internal fun ContractDetailDestination(
   navigateBack: () -> Unit,
   imageLoader: ImageLoader,
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -125,6 +126,7 @@ internal fun ContractDetailDestination(
     onChangeTierClick = onChangeTierClick,
     navigateToAddAddon = navigateToAddAddon,
     navigateToRemoveAddon = navigateToRemoveAddon,
+    navigateToUpgradeAddon = navigateToUpgradeAddon,
   )
 }
 
@@ -144,6 +146,7 @@ private fun ContractDetailScreen(
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
@@ -336,6 +339,7 @@ private fun ContractDetailScreen(
                       availableAddons = contract.availableAddons,
                       navigateToAddAddon = navigateToAddAddon,
                       navigateToRemoveAddon = navigateToRemoveAddon,
+                      navigateToUpgradeAddon = navigateToUpgradeAddon,
                     )
                   }
 
@@ -488,6 +492,7 @@ private fun PreviewContractDetailScreen() {
         onChangeTierClick = {},
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
+        navigateToUpgradeAddon = { _, _ -> },
       )
     }
   }
@@ -514,6 +519,7 @@ private fun PreviewContractDetailScreenFailure() {
         onChangeTierClick = {},
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
+        navigateToUpgradeAddon = { _, _ -> },
       )
     }
   }

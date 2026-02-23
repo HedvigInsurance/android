@@ -306,6 +306,15 @@ internal fun HedvigNavHost(
           ),
         )
       },
+      navigateToUpgradeAddon = { contractId, addonVariant ->
+        navController.navigate(
+          AddonPurchaseGraphDestination(
+            listOfNotNull(contractId?.id),
+            null,
+            AddonBannerSource.INSURANCES_TAB,
+          ),
+        )
+      }
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
