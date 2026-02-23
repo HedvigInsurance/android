@@ -44,6 +44,7 @@ import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -65,7 +66,9 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.Addon
+import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.data.ContractAddon
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
 import com.hedvig.android.feature.insurances.data.InsuranceContract
@@ -77,6 +80,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.documents.Documents
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.logger.logcat
 import hedvig.resources.CONTRACT_DETAILS_ERROR
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_CERTIFICATE
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
@@ -102,7 +106,9 @@ internal fun ContractDetailDestination(
   navigateUp: () -> Unit,
   navigateBack: () -> Unit,
   imageLoader: ImageLoader,
-  navigateToRemoveAddon: (contractId: String) -> Unit,
+  navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToAddAddon: (AvailableAddon) -> Unit,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -118,7 +124,9 @@ internal fun ContractDetailDestination(
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     onChangeTierClick = onChangeTierClick,
+    navigateToAddAddon = navigateToAddAddon,
     navigateToRemoveAddon = navigateToRemoveAddon,
+    navigateToUpgradeAddon = navigateToUpgradeAddon,
   )
 }
 
@@ -137,7 +145,9 @@ private fun ContractDetailScreen(
   navigateBack: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToRemoveAddon: (contractId: String) -> Unit,
+  navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToAddAddon: (AvailableAddon) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
     val costBreakdownBottomSheetState = rememberHedvigBottomSheetState<PriceInfoForBottomSheet>()
@@ -276,9 +286,9 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                                addon.premium.toString(),
-                              ),
+                              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                              addon.premium.toString(),
+                            ),
                           )
                         }
                         contract.cost.discounts.forEach { discount ->
@@ -291,15 +301,15 @@ private fun ContractDetailScreen(
                     YourInfoTab(
                       coverageItems = contract.displayItems,
                       coInsured = contract.coInsured,
-                      allowEditCoInsured = contract.supportsEditCoInsured,
-                      contractHolderDisplayName = contract.contractHolderDisplayName,
-                      contractHolderSSN = contract.contractHolderSSN,
                       allowChangeAddress = contract.supportsAddressChange,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
+                      allowEditCoInsured = contract.supportsEditCoInsured,
                       allowChangeTier = contract.supportsTierChange,
                       onChangeTierClick = {
                         onChangeTierClick(contract.id)
                       },
+                      isDecommissioned = contract.productVariant.contractType == ContractType.SE_CAR_DECOMMISSIONED,
+                      upcomingChangesInsuranceAgreement = contract.upcomingInsuranceAgreement,
                       onEditCoInsuredClick = {
                         onEditCoInsuredClick(contract.id)
                       },
@@ -316,20 +326,20 @@ private fun ContractDetailScreen(
                           ),
                         )
                       },
-                      upcomingChangesInsuranceAgreement = contract.upcomingInsuranceAgreement,
                       isTerminated = contract.isTerminated,
+                      contractHolderDisplayName = contract.contractHolderDisplayName,
+                      contractHolderSSN = contract.contractHolderSSN,
                       priceToShow = contract.cost.monthlyNet,
                       showPriceInfoIcon = contract.cost.monthlyNet != contract.cost.monthlyGross ||
                         contract.basePremium != contract.cost.monthlyNet,
                       onInfoIconClick = {
                         costBreakdownBottomSheetState.show(priceInfoForBottomSheet)
                       },
-                      isDecommissioned = contract.productVariant.contractType == ContractType.SE_CAR_DECOMMISSIONED,
-                      navigateToRemoveAddon = {
-                        navigateToRemoveAddon(contract.id)
-                      },
                       existingAddons = contract.existingAddons,
                       availableAddons = contract.availableAddons,
+                      navigateToAddAddon = navigateToAddAddon,
+                      navigateToRemoveAddon = navigateToRemoveAddon,
+                      navigateToUpgradeAddon = navigateToUpgradeAddon,
                     )
                   }
 
@@ -363,7 +373,7 @@ private fun ContractDetailScreen(
   }
 }
 
-private fun <T> horizontalPagerSpringSpec(visibilityThreshold: T? = null) = spring<T>(
+private fun <T> horizontalPagerSpringSpec(visibilityThreshold: T? = null) = spring(
   stiffness = Spring.StiffnessMediumLow,
   visibilityThreshold = visibilityThreshold,
 )
@@ -480,7 +490,9 @@ private fun PreviewContractDetailScreen() {
         onMissingInfoClick = {},
         openUrl = {},
         onChangeTierClick = {},
-        navigateToRemoveAddon = {},
+        navigateToAddAddon = {},
+        navigateToRemoveAddon = { _, _ -> },
+        navigateToUpgradeAddon = { _, _ -> },
       )
     }
   }
@@ -505,7 +517,9 @@ private fun PreviewContractDetailScreenFailure() {
         onMissingInfoClick = {},
         openUrl = {},
         onChangeTierClick = {},
-        navigateToRemoveAddon = {},
+        navigateToAddAddon = {},
+        navigateToRemoveAddon = { _, _ -> },
+        navigateToUpgradeAddon = { _, _ -> },
       )
     }
   }

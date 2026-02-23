@@ -29,6 +29,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.feature.remove.addons.data.InsuranceForAddon
 import hedvig.resources.REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES
 import hedvig.resources.REMOVE_ADDON_OFFER_PAGE_TITLE
@@ -42,7 +43,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun SelectInsuranceToRemoveAddonDestination(
   navigateUp: () -> Unit,
-  navigateToChooseAddon: (chosenInsuranceId: String) -> Unit,
+  navigateToChooseAddon: (ContractId) -> Unit,
 ) {
   val viewModel: SelectInsuranceToRemoveAddonViewModel = koinViewModel()
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -69,9 +70,9 @@ internal fun SelectInsuranceToRemoveAddonDestination(
 private fun SelectInsuranceToRemoveAddonScreen(
   uiState: SelectInsuranceToRemoveAddonState,
   navigateUp: () -> Unit,
-  navigateToChooseAddon: (chosenInsuranceId: String) -> Unit,
-  selectInsurance: (chosenInsuranceId: String) -> Unit,
-  submitSelected: (chosenInsuranceId: String) -> Unit,
+  navigateToChooseAddon: (ContractId) -> Unit,
+  selectInsurance: (ContractId) -> Unit,
+  submitSelected: (ContractId) -> Unit,
   reload: () -> Unit,
 ) {
   when (uiState) {
@@ -119,8 +120,8 @@ private fun SelectInsuranceToRemoveAddonScreen(
 @Composable
 private fun SelectInsuranceToRemoveAddonContentScreen(
   uiState: SelectInsuranceToRemoveAddonState.Success,
-  selectInsurance: (chosenInsuranceId: String) -> Unit,
-  submitSelected: (chosenInsuranceId: String) -> Unit,
+  selectInsurance: (ContractId) -> Unit,
+  submitSelected: (ContractId) -> Unit,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
@@ -150,14 +151,18 @@ private fun SelectInsuranceToRemoveAddonContentScreen(
     RadioGroup(
       options = uiState.listOfInsurances.map { insuranceForAddon ->
         RadioOption(
-          id = RadioOptionId(insuranceForAddon.id),
+          id = RadioOptionId(insuranceForAddon.contractId.id),
           text = insuranceForAddon.displayName,
           label = insuranceForAddon.contractExposure,
         )
       },
-      selectedOption = uiState.currentlySelected?.id?.let { RadioOptionId(it) },
-      onRadioOptionSelected = { id ->
-        selectInsurance(uiState.listOfInsurances.first { it.id == id.id }.id)
+      selectedOption = uiState.currentlySelected?.contractId?.let { RadioOptionId(it.id) },
+      onRadioOptionSelected = { radioOptionId ->
+        selectInsurance(
+          uiState.listOfInsurances
+            .map(InsuranceForAddon::contractId)
+            .first { it.id == radioOptionId.id },
+        )
       },
       modifier = Modifier
         .fillMaxWidth()
@@ -170,7 +175,7 @@ private fun SelectInsuranceToRemoveAddonContentScreen(
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-      onClick = { uiState.currentlySelected?.let { submitSelected(it.id) } },
+      onClick = { uiState.currentlySelected?.let { submitSelected(it.contractId) } },
       isLoading = false,
     )
     Spacer(Modifier.height(16.dp))
@@ -204,13 +209,13 @@ private class ChooseInsuranceToRemoveAddonUiStateProvider :
       SelectInsuranceToRemoveAddonState.Success(
         listOfInsurances = listOf(
           InsuranceForAddon(
-            id = "1",
+            contractId = ContractId("1"),
             displayName = "HomeownerInsurance",
             contractExposure = "Opulullegatan 19",
             contractGroup = ContractGroup.HOUSE,
           ),
           InsuranceForAddon(
-            id = "3",
+            contractId = ContractId("3"),
             displayName = "Tenant Insurance",
             contractExposure = "Bullegatan 23",
             contractGroup = ContractGroup.HOUSE,
@@ -222,20 +227,20 @@ private class ChooseInsuranceToRemoveAddonUiStateProvider :
       SelectInsuranceToRemoveAddonState.Success(
         listOfInsurances = listOf(
           InsuranceForAddon(
-            id = "1",
+            contractId = ContractId("1"),
             displayName = "HomeownerInsurance",
             contractExposure = "Opulullegatan 19",
             contractGroup = ContractGroup.HOUSE,
           ),
           InsuranceForAddon(
-            id = "3",
+            contractId = ContractId("3"),
             displayName = "Tenant Insurance",
             contractExposure = "Bullegatan 23",
             contractGroup = ContractGroup.HOUSE,
           ),
         ),
         currentlySelected = InsuranceForAddon(
-          id = "1",
+          contractId = ContractId("1"),
           displayName = "HomeownerInsurance",
           contractExposure = "Opulullegatan 19",
           contractGroup = ContractGroup.HOUSE,

@@ -1,6 +1,9 @@
 package com.hedvig.feature.remove.addons.di
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.data.contract.AddonId
+import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.feature.remove.addons.data.GetAddonRemovalCostBreakdownUseCase
 import com.hedvig.feature.remove.addons.data.GetAddonRemovalCostBreakdownUseCaseImpl
 import com.hedvig.feature.remove.addons.data.GetInsurancesWithRemovableAddonsUseCase
@@ -20,7 +23,8 @@ val addonRemovalModule = module {
   viewModel<SelectAddonToRemoveViewModel> { params ->
     SelectAddonToRemoveViewModel(
       get<StartAddonRemovalUseCase>(),
-      params.get<Pair<String, String?>>(),
+      params.get<ContractId>(),
+      params.getOrNull<AddonVariant>(),
     )
   }
 

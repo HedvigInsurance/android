@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -15,7 +14,6 @@ import com.hedvig.feature.remove.addons.data.GetAddonRemovalCostBreakdownUseCase
 import com.hedvig.feature.remove.addons.data.GetInsurancesWithRemovableAddonsUseCase
 import com.hedvig.feature.remove.addons.data.SubmitAddonRemovalUseCase
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 internal class RemoveAddonSummaryViewModel(
@@ -59,7 +57,7 @@ private class RemoveAddonSummaryPresenter(
       val exposureName = getInsurancesWithRemovableAddonsUseCase
         .invoke()
         .getOrNull()
-        ?.firstOrNull { it.id == params.contractId }
+        ?.firstOrNull { it.contractId == params.contractId }
         ?.contractExposure
       if (exposureName == null) {
         currentState = RemoveAddonSummaryState.Failure

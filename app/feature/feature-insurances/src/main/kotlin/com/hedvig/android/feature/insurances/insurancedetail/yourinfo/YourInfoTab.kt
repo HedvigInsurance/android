@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.insurancedetail.yourinfo
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,16 +13,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
@@ -43,7 +49,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize.Small
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Amber
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor.Red
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.DARK
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.MEDIUM
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
@@ -55,6 +60,9 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Attention
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.PriceInfoForBottomSheet
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -72,6 +80,7 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
 import com.hedvig.android.feature.insurances.data.MonthlyCost
 import hedvig.resources.ADDON_ADDED_COVERAGE
 import hedvig.resources.ADDON_ADD_COVERAGE
+import hedvig.resources.ADDON_FLOW_ADD_TO_INSURANCE_BUTTON
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
 import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
@@ -87,8 +96,11 @@ import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
 import hedvig.resources.DETAILS_TABLE_INSURANCE_PREMIUM
 import hedvig.resources.INSURANCE_DETAILS_DECOMMISSION_INFO
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.REMOVE_ADDON_OFFER_PAGE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
 import hedvig.resources.insurance_details_move_button
 import hedvig.resources.insurances_tab_view_details
 import hedvig.resources.insurances_tab_your_insurance_will_be_updated
@@ -120,10 +132,12 @@ internal fun YourInfoTab(
   priceToShow: UiMoney,
   showPriceInfoIcon: Boolean,
   onInfoIconClick: () -> Unit,
-  navigateToRemoveAddon: () -> Unit,
-  modifier: Modifier = Modifier,
   existingAddons: List<ContractAddon>,
   availableAddons: List<AvailableAddon>,
+  navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToAddAddon: (AvailableAddon) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
   val editYourInfoBottomSheet = rememberHedvigBottomSheetState<Unit>()
@@ -164,9 +178,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                addon.premium.toString(),
-              ),
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              addon.premium.toString(),
+            ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -215,8 +229,8 @@ internal fun YourInfoTab(
           message = stringResource(Res.string.DASHBOARD_RENEWAL_PROMPTER_BODY, daysUntilRenewal),
           priority = Info,
           style = Button(
-            stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
-            { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
+            buttonText = stringResource(Res.string.CONTRACT_VIEW_CERTIFICATE_BUTTON),
+            onButtonClick = { openUrl(upcomingChangesInsuranceAgreement.certificateUrl) },
           ),
         )
       } else {
@@ -229,8 +243,8 @@ internal fun YourInfoTab(
           priority = Info,
           style = if (upcomingChangesInsuranceAgreement.displayItems.isNotEmpty()) {
             Button(
-              stringResource(Res.string.insurances_tab_view_details),
-              { upcomingChangesBottomSheet.show() },
+              buttonText = stringResource(Res.string.insurances_tab_view_details),
+              onButtonClick = { upcomingChangesBottomSheet.show() },
             )
           } else {
             Default
@@ -283,17 +297,16 @@ internal fun YourInfoTab(
           .padding(horizontal = 16.dp),
       )
     }
-    AddonsSection(existingAddons, availableAddons, Modifier.padding(horizontal = 16.dp))
+    AddonsSection(
+      existingAddons = existingAddons,
+      availableAddons = availableAddons,
+      navigateToRemoveAddon = navigateToRemoveAddon,
+      navigateToUpgradeAddon = navigateToUpgradeAddon,
+      navigateToAddAddon = navigateToAddAddon,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        HedvigButton(
-          text = "Remove addon TODO", // TODO!!!
-          onClick = navigateToRemoveAddon,
-          enabled = true,
-          modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        )
         if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
@@ -325,8 +338,46 @@ internal fun YourInfoTab(
 private fun AddonsSection(
   existingAddons: List<ContractAddon>,
   availableAddons: List<AvailableAddon>,
+  navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToAddAddon: (AvailableAddon) -> Unit,
   modifier: Modifier,
 ) {
+  val removeAddonBottomSheetState = rememberHedvigBottomSheetState<ContractAddon>()
+  HedvigBottomSheet(
+    removeAddonBottomSheetState,
+    contentPadding = PaddingValues(horizontal = 24.dp),
+  ) { addon ->
+    RemoveAddonBottomSheetContent(
+      addon = addon,
+      onRemove = dropUnlessResumed {
+        removeAddonBottomSheetState.dismiss {
+          navigateToRemoveAddon(addon.relatedContractId, addon.addonVariant)
+        }
+      },
+      onUpgrade = dropUnlessResumed {
+        removeAddonBottomSheetState.dismiss {
+          navigateToUpgradeAddon(addon.relatedContractId, addon.addonVariant)
+        }
+      },
+      onDismiss = { removeAddonBottomSheetState.dismiss() },
+    )
+  }
+  val addAddonBottomSheetState = rememberHedvigBottomSheetState<AvailableAddon>()
+  HedvigBottomSheet(
+    addAddonBottomSheetState,
+    contentPadding = PaddingValues(horizontal = 24.dp),
+  ) { addon ->
+    AddAddonBottomSheetContent(
+      addon = addon,
+      onAdd = dropUnlessResumed {
+        addAddonBottomSheetState.dismiss {
+          navigateToAddAddon(addon)
+        }
+      },
+      onDismiss = { addAddonBottomSheetState.dismiss() },
+    )
+  }
   if (existingAddons.isNotEmpty() || availableAddons.isNotEmpty()) {
     Surface(
       shape = HedvigTheme.shapes.cornerXLarge,
@@ -339,6 +390,9 @@ private fun AddonsSection(
             description = existingAddon.description,
             showTopDivider = index != 0,
             isAlreadyAdded = true,
+            modifier = Modifier.clickable {
+              removeAddonBottomSheetState.show(existingAddon)
+            },
           )
         }
         availableAddons.forEachIndexed { index, availableAddon ->
@@ -348,12 +402,113 @@ private fun AddonsSection(
             showTopDivider = index != 0 || existingAddons.isNotEmpty(),
             isAlreadyAdded = false,
             modifier = Modifier.clickable {
-              // todo navigate to add addon flow
+              addAddonBottomSheetState.show(availableAddon)
             },
           )
         }
       }
     }
+  }
+}
+
+@Composable
+private fun RemoveAddonBottomSheetContent(
+  addon: ContractAddon,
+  onRemove: () -> Unit,
+  onUpgrade: () -> Unit,
+  onDismiss: () -> Unit,
+) {
+  Column {
+    HedvigText(
+      text = addon.displayName,
+      style = HedvigTheme.typography.headlineSmall,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    val radioOptions: List<RadioOption> = buildList {
+      if (addon.isRemovable) {
+        add(
+          RadioOption(
+            RadioOptionId("remove"),
+            stringResource(Res.string.REMOVE_ADDON_OFFER_PAGE_TITLE),
+            "todo change or edit an existing addon",
+          ),
+        )
+      }
+      if (addon.isUpgradable) {
+        add(
+          RadioOption(
+            RadioOptionId("upgrade"),
+            "todo upgrade",
+            "todo upgrade",
+          ),
+        )
+      }
+    }
+    Spacer(Modifier.height(32.dp))
+    var selectedRadioOption: RadioOptionId? by remember { mutableStateOf(null) }
+    RadioGroup(
+      radioOptions,
+      selectedRadioOption,
+      onRadioOptionSelected = { selectedRadioOption = it },
+    )
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      text = stringResource(Res.string.REMOVE_ADDON_OFFER_PAGE_TITLE),
+      enabled = selectedRadioOption != null,
+      onClick = {
+        when (selectedRadioOption?.id) {
+          "remove" -> onRemove()
+          "upgrade" -> onUpgrade()
+          null -> {}
+          else -> error("RemoveAddonBottomSheetContent wrong radio option selected")
+        }
+      },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_cancel_button),
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      enabled = true,
+      onClick = onDismiss,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+  }
+}
+
+@Composable
+private fun AddAddonBottomSheetContent(
+  addon: AvailableAddon,
+  onAdd: () -> Unit,
+  onDismiss: () -> Unit,
+) {
+  Column {
+    HedvigText(
+      text = addon.displayName,
+      style = HedvigTheme.typography.headlineSmall,
+    )
+    HedvigText(
+      text = addon.description,
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigButton(
+      text = stringResource(Res.string.ADDON_ADD_COVERAGE),
+      enabled = true,
+      onClick = onAdd,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_close_button),
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      enabled = true,
+      onClick = onDismiss,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
   }
 }
 
@@ -729,23 +884,28 @@ private fun PreviewYourInfoTab() {
         priceToShow = UiMoney(89.0, UiCurrencyCode.SEK),
         showPriceInfoIcon = true,
         onInfoIconClick = {},
-        navigateToRemoveAddon = {},
         existingAddons = listOf(
           ContractAddon(
-            AddonVariant(
+            relatedContractId = ContractId(""),
+            addonVariant = AddonVariant(
               termsVersion = "1",
               displayName = "displayName",
               product = "product",
               documents = emptyList(),
               perils = emptyList(),
             ),
-            "Existing display name",
-            "Description",
+            displayName = "DisplayName",
+            description = "Description",
+            isUpgradable = false,
+            isRemovable = false,
           ),
         ),
         availableAddons = listOf(
-          AvailableAddon("Available addon", "Description"),
+          AvailableAddon(ContractId("id"), "Available addon", "Description"),
         ),
+        navigateToRemoveAddon = { _, _ -> },
+        navigateToUpgradeAddon = { _, _ -> },
+        navigateToAddAddon = {},
       )
     }
   }

@@ -5,12 +5,15 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.core.uidata.ItemCost
+import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.feature.remove.addons.ui.RemoveAddonFailureScreen
@@ -25,7 +28,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class SummaryParameters(
-  val contractId: String,
+  val contractId: ContractId,
   val addonsToRemove: List<CurrentlyActiveAddon>,
   val activationDate: LocalDate,
   val baseCost: ItemCost,
@@ -36,9 +39,16 @@ internal data class SummaryParameters(
 
 @Serializable
 data class AddonRemoveGraphDestination(
-  val insuranceId: String?,
-  val addonId: String?,
-) : Destination
+  val insuranceId: ContractId?,
+  val preselectedAddonVariant: AddonVariant?,
+) : Destination {
+  companion object : DestinationNavTypeAware {
+    override val typeList: List<KType> = listOf(
+      typeOf<ContractId?>(),
+      typeOf<AddonVariant?>(),
+    )
+  }
+}
 
 internal sealed interface AddonRemoveDestination {
   @Serializable
@@ -46,9 +56,16 @@ internal sealed interface AddonRemoveDestination {
 
   @Serializable
   data class ChooseAddonDestination(
-    val insuranceId: String,
-    val addonId: String?,
-  ) : AddonRemoveDestination, Destination
+    val insuranceId: ContractId,
+    val preselectedAddonVariant: AddonVariant?,
+  ) : AddonRemoveDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<ContractId>(),
+        typeOf<AddonVariant?>(),
+      )
+    }
+  }
 
   @Serializable
   data class Summary(
@@ -78,6 +95,7 @@ fun NavGraphBuilder.removeAddonsNavGraph(
 ) {
   navgraph<AddonRemoveGraphDestination>(
     startDestination = AddonRemoveDestination.ChooseInsuranceDestination::class,
+    AddonRemoveGraphDestination,
   ) {
     navdestination<AddonRemoveDestination.ChooseInsuranceDestination> { backStackEntry ->
       val graphDestination = navController
@@ -87,7 +105,7 @@ fun NavGraphBuilder.removeAddonsNavGraph(
           navController.navigate(
             AddonRemoveDestination.ChooseAddonDestination(
               insuranceId = graphDestination.insuranceId,
-              addonId = graphDestination.addonId,
+              preselectedAddonVariant = graphDestination.preselectedAddonVariant,
             ),
           ) {
             typedPopUpTo<AddonRemoveDestination.ChooseInsuranceDestination> {
@@ -98,11 +116,11 @@ fun NavGraphBuilder.removeAddonsNavGraph(
       } else {
         SelectInsuranceToRemoveAddonDestination(
           navigateUp = navController::navigateUp,
-          navigateToChooseAddon = { chosenInsuranceId: String ->
+          navigateToChooseAddon = { contractId ->
             navController.navigate(
               AddonRemoveDestination.ChooseAddonDestination(
-                insuranceId = chosenInsuranceId,
-                addonId = null,
+                insuranceId = contractId,
+                preselectedAddonVariant = null,
               ),
             )
           },
@@ -110,19 +128,19 @@ fun NavGraphBuilder.removeAddonsNavGraph(
       }
     }
 
-    navdestination<AddonRemoveDestination.ChooseAddonDestination> { backStackEntry ->
+    navdestination<AddonRemoveDestination.ChooseAddonDestination>(AddonRemoveDestination.ChooseAddonDestination) {
       SelectAddonToRemoveDestination(
         contractId = this.insuranceId,
-        preselectedAddonId = this.addonId,
+        preselectedAddonProduct = this.preselectedAddonVariant,
         navigateUp = navController::navigateUp,
         navigateToSummary = {
-          contractId: String,
-          addons: List<CurrentlyActiveAddon>,
-          activationDate: LocalDate,
-          baseCost: ItemCost,
-          currentCost: ItemCost,
-          productVariant: ProductVariant,
-          allAddons: List<CurrentlyActiveAddon>,
+            contractId: ContractId,
+            addons: List<CurrentlyActiveAddon>,
+            activationDate: LocalDate,
+            baseCost: ItemCost,
+            currentCost: ItemCost,
+            productVariant: ProductVariant,
+            allAddons: List<CurrentlyActiveAddon>,
           ->
           navController.navigate(
             AddonRemoveDestination.Summary(
@@ -157,6 +175,9 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         currentTotalCost = this.params.currentTotalCost,
         onFailure = {
           navController.navigate(AddonRemoveDestination.SubmitFailure)
+        },
+        onCloseFlow = {
+          navController.typedPopBackStack<AddonRemoveGraphDestination>(true)
         },
         navigateUp = navController::navigateUp,
         existingAddonsToRemove = this.params.existingAddons,

@@ -75,6 +75,8 @@ fragment ContractFragment on Contract {
     }
     displayName
     description
+    isRemovable
+    isUpgradable
   }
   availableAddons @include(if: $addonsEnabled) {
     displayName

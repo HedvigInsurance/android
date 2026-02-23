@@ -5,7 +5,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
+import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -32,8 +35,9 @@ fun NavGraphBuilder.insuranceGraph(
   startEditCoInsuredAddMissingInfo: (contractId: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
-  onNavigateToRemoveAddon: (insuranceId: String?, addonId: String?) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
+  onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -59,7 +63,9 @@ fun NavGraphBuilder.insuranceGraph(
         },
         onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
         imageLoader = imageLoader,
-        onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<String> -> onNavigateToAddonPurchaseFlow(ids) },
+        onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<ContractId> ->
+          onNavigateToAddonPurchaseFlow(ids, null)
+        },
       )
     }
     navdestination<InsurancesDestinations.InsuranceContractDetail>(
@@ -83,9 +89,10 @@ fun NavGraphBuilder.insuranceGraph(
         onChangeTierClick = dropUnlessResumed { contractId: String ->
           onNavigateToStartChangeTier(contractId)
         },
-        navigateToRemoveAddon = { insuranceId ->
-          // todo: pass the right params for addon here!
-          onNavigateToRemoveAddon(insuranceId, null)
+        navigateToRemoveAddon = onNavigateToRemoveAddon,
+        navigateToUpgradeAddon = navigateToUpgradeAddon,
+        navigateToAddAddon = { availableAddon ->
+          onNavigateToAddonPurchaseFlow(listOf(availableAddon.relatedContractId), availableAddon)
         },
       )
     }

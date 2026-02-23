@@ -9,6 +9,8 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.AddonId
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.logger.logcat
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
@@ -16,7 +18,7 @@ import octopus.AddonRemovalCostBreakdownQuery
 
 internal interface GetAddonRemovalCostBreakdownUseCase {
   suspend fun invoke(
-    contractId: String,
+    contractId: ContractId,
     addonsToRemove: List<CurrentlyActiveAddon>,
     addonsLeft: List<CurrentlyActiveAddon>,
     baseCost: ItemCost,
@@ -28,7 +30,7 @@ internal class GetAddonRemovalCostBreakdownUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetAddonRemovalCostBreakdownUseCase {
   override suspend fun invoke(
-    contractId: String,
+    contractId: ContractId,
     addonsToRemove: List<CurrentlyActiveAddon>,
     addonsLeft: List<CurrentlyActiveAddon>,
     baseCost: ItemCost,
@@ -38,10 +40,8 @@ internal class GetAddonRemovalCostBreakdownUseCaseImpl(
       apolloClient
         .query(
           AddonRemovalCostBreakdownQuery(
-            contractId = contractId,
-            addonIds = addonsToRemove.map {
-              it.id
-            },
+            contractId = contractId.id,
+            addonIds = addonsToRemove.map(CurrentlyActiveAddon::id).map(AddonId::id),
           ),
         )
         .fetchPolicy(FetchPolicy.NetworkOnly)
