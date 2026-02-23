@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - cmp/ds
+      - feat/upsell-addons-generic
   workflow_dispatch:
 
 concurrency:
