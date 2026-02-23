@@ -13,6 +13,7 @@ import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.feature.remove.addons.ui.RemoveAddonFailureScreen
@@ -174,6 +175,9 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         currentTotalCost = this.params.currentTotalCost,
         onFailure = {
           navController.navigate(AddonRemoveDestination.SubmitFailure)
+        },
+        onCloseFlow = {
+          navController.typedPopBackStack<AddonRemoveGraphDestination>(true)
         },
         navigateUp = navController::navigateUp,
         existingAddonsToRemove = this.params.existingAddons,

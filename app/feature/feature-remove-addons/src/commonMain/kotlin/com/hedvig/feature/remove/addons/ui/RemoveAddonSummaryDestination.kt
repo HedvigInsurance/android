@@ -24,6 +24,7 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.DialogDefaults
@@ -44,10 +45,15 @@ import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.CONFIRM_CHANGES_TITLE
+import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_CONFIRM
+import hedvig.resources.GENERAL_NO
+import hedvig.resources.GENERAL_PROGRESS_WILL_BE_LOST_ALERT
+import hedvig.resources.GENERAL_YES
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
+import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
@@ -66,6 +72,7 @@ internal fun RemoveAddonSummaryDestination(
   navigateToSuccess: (activationDate: LocalDate) -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
+  onCloseFlow: () -> Unit,
 ) {
   val viewModel: RemoveAddonSummaryViewModel = koinViewModel {
     parametersOf(
@@ -95,6 +102,7 @@ internal fun RemoveAddonSummaryDestination(
     onSubmitQuoteClick = {
       viewModel.emit(RemoveAddonSummaryEvent.Submit)
     },
+    onCloseFlow = onCloseFlow,
     reload = {
       viewModel.emit(RemoveAddonSummaryEvent.Retry)
     },
@@ -108,6 +116,7 @@ private fun RemoveAddonSummaryScreen(
   onFailure: () -> Unit,
   navigateUp: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
+  onCloseFlow: () -> Unit,
   reload: () -> Unit,
 ) {
   when (uiState) {
@@ -132,6 +141,7 @@ private fun RemoveAddonSummaryScreen(
         uiState = uiState,
         navigateUp = navigateUp,
         onConfirmClick = onSubmitQuoteClick,
+        onCloseFlow = onCloseFlow,
       )
     }
 
@@ -150,6 +160,7 @@ private fun SummaryContentScreen(
   uiState: RemoveAddonSummaryState.Content,
   navigateUp: () -> Unit,
   onConfirmClick: () -> Unit,
+  onCloseFlow: () -> Unit,
 ) {
   HedvigScaffold(
     navigateUp,
@@ -176,6 +187,18 @@ private fun SummaryContentScreen(
         ),
       )
     }
+    var showCancelFlowDialog by remember { mutableStateOf(false) }
+    if (showCancelFlowDialog) {
+      HedvigAlertDialog(
+        title = stringResource(Res.string.GENERAL_ARE_YOU_SURE),
+        onDismissRequest = { showCancelFlowDialog = false },
+        onConfirmClick = onCloseFlow,
+        buttonSize = DialogDefaults.ButtonSize.BIG,
+        confirmButtonLabel = stringResource(Res.string.GENERAL_YES),
+        dismissButtonLabel = stringResource(Res.string.GENERAL_NO),
+        text = stringResource(Res.string.GENERAL_PROGRESS_WILL_BE_LOST_ALERT),
+      )
+    }
     SummaryCard(
       uiState = uiState,
       modifier = Modifier
@@ -197,6 +220,17 @@ private fun SummaryContentScreen(
         enabled = true,
         onClick = {
           showConfirmationDialog = true
+        },
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigButton(
+        text = stringResource(Res.string.general_cancel_button),
+        modifier = Modifier.fillMaxWidth(),
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        buttonSize = Large,
+        enabled = true,
+        onClick = {
+          showCancelFlowDialog = true
         },
       )
       Spacer(Modifier.height(16.dp))
@@ -244,6 +278,7 @@ private fun PreviewRemoveAddonSummaryScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       RemoveAddonSummaryScreen(
         uiState,
+        {},
         {},
         {},
         {},
