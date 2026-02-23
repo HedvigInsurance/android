@@ -5,23 +5,25 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.contract.AddonId
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.ConfirmAddonRemovalMutation
 
 internal interface SubmitAddonRemovalUseCase {
-  suspend fun invoke(contractId: String, addonIds: List<String>): Either<ErrorMessage, Unit>
+  suspend fun invoke(contractId: ContractId, addonIds: List<AddonId>): Either<ErrorMessage, Unit>
 }
 
 internal class SubmitAddonRemovalUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : SubmitAddonRemovalUseCase {
-  override suspend fun invoke(contractId: String, addonIds: List<String>): Either<ErrorMessage, Unit> {
+  override suspend fun invoke(contractId: ContractId, addonIds: List<AddonId>): Either<ErrorMessage, Unit> {
     return either {
       apolloClient.mutation(
         ConfirmAddonRemovalMutation(
-          addonIds = addonIds,
-          contractId = contractId,
+          addonIds = addonIds.map(AddonId::id),
+          contractId = contractId.id,
         ),
       ).safeExecute().fold(
         ifLeft = { error ->

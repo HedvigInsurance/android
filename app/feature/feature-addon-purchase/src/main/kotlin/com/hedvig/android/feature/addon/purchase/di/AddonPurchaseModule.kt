@@ -32,6 +32,7 @@ val addonPurchaseModule = module {
   viewModel<CustomizeAddonViewModel> { params ->
     CustomizeAddonViewModel(
       insuranceId = params.get<String>(),
+      preselectedAddonDisplayNames = params.get<List<String>>(),
       getAddonOfferUseCase = get<GetAddonOfferUseCase>(),
     )
   }

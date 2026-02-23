@@ -2,6 +2,7 @@ package com.hedvig.android.feature.addon.purchase.navigation
 
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
@@ -11,10 +12,12 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import octopus.type.AvailableAddon
 
 @Serializable
 data class AddonPurchaseGraphDestination(
   val insuranceIds: List<String>,
+  val preselectedAddonDisplayName: String?,
   val source: AddonBannerSource,
 ) : Destination {
   companion object : DestinationNavTypeAware {
@@ -27,7 +30,7 @@ internal sealed interface AddonPurchaseDestination {
   data object ChooseInsuranceToAddAddonDestination : AddonPurchaseDestination, Destination
 
   @Serializable
-  data class CustomizeAddon(val insuranceId: String) : AddonPurchaseDestination, Destination
+  data class CustomizeAddon(val insuranceId: String, val preselectedAddonDisplayNames: List<String>) : AddonPurchaseDestination, Destination
 
   @Serializable
   data class TravelInsurancePlusExplanation(

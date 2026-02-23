@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
 import androidx.compose.runtime.LaunchedEffect
-import androidx.navigation.NavBackStackEntry
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
@@ -32,7 +32,6 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -45,51 +44,47 @@ internal data class PerilComparisonParams(
 )
 
 fun NavGraphBuilder.addonPurchaseNavGraph(
-  navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
-  onNavigateToChangeTier: (contractId: String, NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  onNavigateToChangeTier: (contractId: String) -> Unit,
 ) {
-  /**
-   * Destination to get eligible insuranceIds if member comes to the feature using the deeplink
-   */
+  // Destination to get eligible insuranceIds if member comes to the feature using the deeplink
   navdestination<TravelAddonTriage>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelAddon),
-  ) { backStackEntry ->
+  ) {
     val viewModel: TravelAddonTriageViewModel = koinViewModel()
     TravelAddonTriageDestination(
       viewModel = viewModel,
-      popBackStack = navigator::popBackStack,
+      popBackStack = navController::popBackStack,
       launchFlow = { insuranceIds: List<String> ->
-        navigator.navigateUnsafe(
+        navController.navigate(
           AddonPurchaseGraphDestination(
-            insuranceIds,
-            AddonBannerSource.TRAVEL_DEEPLINK,
+            insuranceIds = insuranceIds,
+            preselectedAddonDisplayName = null,
+            source = AddonBannerSource.TRAVEL_DEEPLINK,
           ),
         ) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })
         }
       },
-      onNavigateToNewConversation = {
-        onNavigateToNewConversation(
-          backStackEntry)
-      },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
 
   navgraph<AddonPurchaseGraphDestination>(
     startDestination = ChooseInsuranceToAddAddonDestination::class,
   ) {
-    /**
-     * Choose insurance to add addon to. Redirects to CustomizeAddon if insuranceIds list has only 1 insurance
-     */
+    // Choose insurance to add addon to. Redirects to CustomizeAddon if insuranceIds list has only 1 insurance
     navdestination<ChooseInsuranceToAddAddonDestination> { backStackEntry ->
       val addonPurchaseGraphDestination = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry)
+      val preselectedAddonDisplayNames = listOfNotNull(addonPurchaseGraphDestination.preselectedAddonDisplayName)
       if (addonPurchaseGraphDestination.insuranceIds.size == 1) {
         LaunchedEffect(Unit) {
-          navigator.navigateUnsafe(CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0])) {
+          navController.navigate(
+            CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0], preselectedAddonDisplayNames),
+          ) {
             typedPopUpTo<ChooseInsuranceToAddAddonDestination>({ inclusive = true })
           }
         }
@@ -99,25 +94,23 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         }
         SelectInsuranceForAddonDestination(
           viewModel = viewModel,
-          navigateUp = navigator::navigateUp,
+          navigateUp = navController::navigateUp,
           navigateToCustomizeAddon = { chosenInsuranceId: String ->
-            navigator.navigateUnsafe(CustomizeAddon(chosenInsuranceId))
+            navController.navigate(CustomizeAddon(chosenInsuranceId, preselectedAddonDisplayNames))
           },
         )
       }
     }
 
-    /**
-     * Choose addon option (e.g. 45/60 days)
-     */
-    navdestination<CustomizeAddon> { backStackEntry ->
+    // Choose addon option (e.g. 45/60 days)
+    navdestination<CustomizeAddon> {
       val viewModel: CustomizeAddonViewModel = koinViewModel {
-        parametersOf(this.insuranceId)
+        parametersOf(this.insuranceId, this.preselectedAddonDisplayNames)
       }
       CustomizeAddonDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
-        popBackStack = navigator::popBackStack,
+        navigateUp = navController::navigateUp,
+        popBackStack = navController::popBackStack,
         popAddonFlow = {
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
         },
@@ -125,14 +118,14 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           navController.navigate(Summary(summaryParameters))
         },
         onNavigateToTravelInsurancePlusExplanation = { perilData ->
-          navigator.navigateUnsafe(
+          navController.navigate(
             TravelInsurancePlusExplanation(perilData),
           )
         },
         navigateToChangeTier = { contractId ->
           navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
-          onNavigateToChangeTier(contractId, backStackEntry)
-        }
+          onNavigateToChangeTier(contractId)
+        },
       )
     }
 
@@ -144,9 +137,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       )
     }
 
-    /**
-     * Summary for the purchase addon flow (not upgrade 45->60)
-     */
+    // Summary for the purchase addon flow (not upgrade 45->60)
     navdestination<Summary>(Summary) { backStackEntry ->
       val source = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry).source
@@ -155,12 +146,12 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       }
       AddonSummaryDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onFailure = {
-          navigator.navigateUnsafe(SubmitFailure)
+          navController.navigate(SubmitFailure)
         },
         onSuccess = {
-          navigator.navigateUnsafe(SubmitSuccess(this.params.activationDate)) {
+          navController.navigate(SubmitSuccess(this.params.activationDate)) {
             typedPopUpTo<AddonPurchaseGraphDestination> {
               inclusive = true
             }
@@ -169,17 +160,17 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       )
     }
 
-    navdestination<SubmitFailure> { backStackEntry ->
+    navdestination<SubmitFailure> {
       SubmitAddonFailureScreen(
-        popBackStack = navigator::popBackStack,
+        popBackStack = navController::popBackStack,
       )
     }
   }
 
-  navdestination<SubmitSuccess>(SubmitSuccess) { backStackEntry ->
+  navdestination<SubmitSuccess>(SubmitSuccess) {
     SubmitAddonSuccessScreen(
       activationDate = this.activationDate,
-      popBackStack = navigator::popBackStack,
+      popBackStack = navController::popBackStack,
     )
   }
 }

@@ -12,6 +12,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
@@ -193,6 +194,23 @@ private fun ContractFragment.toContract(
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
+    existingAddons = existingAddons?.map {
+      ContractAddon(
+        relatedContractId = ContractId(id),
+        addonVariant = it.addonVariant.toAddonVariant(),
+        displayName = it.displayName,
+        description = it.description,
+        isUpgradable = it.isUpgradable,
+        isRemovable = it.isRemovable,
+      )
+    }.orEmpty(),
+    availableAddons = availableAddons?.map {
+      AvailableAddon(
+        relatedContractId = ContractId(id),
+        displayName = it.displayName,
+        description = it.description,
+      )
+    }.orEmpty(),
   )
 }
 

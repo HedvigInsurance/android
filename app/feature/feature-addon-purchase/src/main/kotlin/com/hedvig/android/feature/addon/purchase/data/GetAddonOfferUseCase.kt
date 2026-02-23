@@ -10,8 +10,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
-import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Toggleable
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
+import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Toggleable
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
@@ -33,7 +33,7 @@ internal class GetAddonOfferUseCaseImpl(
     return either {
       val isAddonFlagOn = featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON).first()
       if (!isAddonFlagOn) {
-        logcat(LogPriority.ERROR) { "Tried to start UpsellAddonOfferMutation but travel addon feature flag is off" }
+        logcat(LogPriority.ERROR) { "Tried to start AddonGenerateOffer but travel addon feature flag is off" }
         raise(ErrorMessage())
       }
       apolloClient
@@ -133,18 +133,26 @@ internal class GetAddonOfferUseCaseImpl(
                 )
               }
 
-              is AddonGenerateOfferMutation.Data.AddonOfferDeflectAddonGenerateOffer ->
+              is AddonGenerateOfferMutation.Data.AddonOfferDeflectAddonGenerateOffer -> {
                 GenerateAddonOfferResult.AddonOfferDeflect(
                   pageTitle = response.addonGenerateOffer.pageTitle,
                   pageDescription = response.addonGenerateOffer.pageDescription,
                   type = when (response.addonGenerateOffer.type) {
-                    AddonDeflectType.UPGRADE_TIER -> AddonOfferDeflectType.UPGRADE_TIER
+                    AddonDeflectType.UPGRADE_TIER -> {
+                      AddonOfferDeflectType.UPGRADE_TIER
+                    }
+
                     AddonDeflectType.UNKNOWN__ -> {
                       logcat { "addonGenerateOffer got AddonDeflectType.UNKNOWN" }
-                      raise(ErrorMessage())
+                      AddonOfferDeflectType.GENERAL_CLOSE
                     }
-                  }
+
+                    null -> {
+                      AddonOfferDeflectType.GENERAL_CLOSE
+                    }
+                  },
                 )
+              }
             }
           },
         )

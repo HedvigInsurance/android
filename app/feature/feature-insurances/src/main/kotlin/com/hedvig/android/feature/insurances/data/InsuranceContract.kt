@@ -3,14 +3,13 @@ package com.hedvig.android.feature.insurances.data
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.DateFormatter
-import java.time.format.DateTimeFormatter
 import kotlin.String
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 
 sealed interface InsuranceContract {
   val id: String
@@ -28,6 +27,8 @@ sealed interface InsuranceContract {
   val upcomingInsuranceAgreement: InsuranceAgreement?
   val isTerminated: Boolean
   val addons: List<Addon>?
+  val existingAddons: List<ContractAddon>
+  val availableAddons: List<AvailableAddon>
 
   val cost: MonthlyCost
 
@@ -49,6 +50,8 @@ sealed interface InsuranceContract {
     override val supportsTierChange: Boolean,
     override val isTerminated: Boolean,
     override val tierName: String?,
+    override val existingAddons: List<ContractAddon>,
+    override val availableAddons: List<AvailableAddon>,
   ) : InsuranceContract {
     override val productVariant: ProductVariant = currentInsuranceAgreement.productVariant
     override val displayItems: List<DisplayItem> = currentInsuranceAgreement.displayItems
@@ -77,12 +80,29 @@ sealed interface InsuranceContract {
     override val supportsTierChange: Boolean = false
     override val upcomingInsuranceAgreement: InsuranceAgreement? = null
     override val isTerminated: Boolean = false
+    override val existingAddons: List<ContractAddon> = emptyList()
+    override val availableAddons: List<AvailableAddon> = emptyList()
   }
 }
 
 data class Addon(
   val addonVariant: AddonVariant,
   val premium: UiMoney,
+)
+
+data class ContractAddon(
+  val relatedContractId: ContractId,
+  val addonVariant: AddonVariant,
+  val displayName: String,
+  val description: String,
+  val isUpgradable: Boolean,
+  val isRemovable: Boolean,
+)
+
+data class AvailableAddon(
+  val relatedContractId: ContractId,
+  val displayName: String,
+  val description: String,
 )
 
 data class MonthlyCost(

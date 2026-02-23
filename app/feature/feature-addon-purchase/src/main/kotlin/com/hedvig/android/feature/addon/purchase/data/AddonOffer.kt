@@ -9,13 +9,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal sealed interface GenerateAddonOfferResult {
-
   @Serializable
   data class AddonOfferDeflect(
     val pageTitle: String,
     val pageDescription: String,
-    val type: AddonOfferDeflectType
-  ): GenerateAddonOfferResult
+    val type: AddonOfferDeflectType,
+  ) : GenerateAddonOfferResult
 
   @Serializable
   data class AddonOfferResult(
@@ -27,14 +26,13 @@ internal sealed interface GenerateAddonOfferResult {
     val contractId: String,
     val whatsIncludedPageTitle: String,
     val whatsIncludedPageDescription: String,
-  ): GenerateAddonOfferResult
+  ) : GenerateAddonOfferResult
 }
 
-internal enum class AddonOfferDeflectType{
-  UPGRADE_TIER
+internal enum class AddonOfferDeflectType {
+  UPGRADE_TIER,
+  GENERAL_CLOSE
 }
-
-
 
 /** Top-level addon type, like Travel+ or Car+ */
 @Serializable

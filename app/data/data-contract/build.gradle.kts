@@ -7,14 +7,16 @@ plugins {
 hedvig {
   compose()
   androidResources()
+  serialization()
 }
 
 kotlin {
   sourceSets {
     commonMain.dependencies {
-      implementation(projects.coreResources)
       implementation(libs.jetbrains.components.resources)
       implementation(libs.jetbrains.compose.runtime)
+      implementation(libs.kotlinx.serialization.core)
+      implementation(projects.coreResources)
     }
   }
 }

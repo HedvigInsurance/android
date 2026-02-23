@@ -265,8 +265,7 @@ data class QuoteCostBreakdown(
   val totalMonthlyGross: UiMoney,
   val entries: List<CostBreakdownEntry>,
 )
-
-
+@Serializable
 data class CostBreakdownEntry(
   val displayName: String,
   val displayValue: DisplayValue,
@@ -284,9 +283,11 @@ data class CostBreakdownEntry(
     hasStrikethrough: Boolean = false,
   ) : this(displayName, Currency(displayValue), hasStrikethrough)
 
+  @Serializable
   sealed interface DisplayValue {
+    @Serializable
     data class Text(val value: String) : DisplayValue
-
+    @Serializable
     data class Currency(val value: UiMoney) : DisplayValue
   }
 }

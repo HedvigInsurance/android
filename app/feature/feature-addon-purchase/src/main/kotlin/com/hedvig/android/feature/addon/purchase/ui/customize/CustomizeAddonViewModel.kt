@@ -21,6 +21,7 @@ import com.hedvig.android.feature.addon.purchase.data.GenerateAddonOfferResult
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
+import com.hedvig.android.feature.addon.purchase.ui.customize.updateTotalExtraForSelectedToggleable
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -28,17 +29,20 @@ import kotlinx.datetime.LocalDate
 
 internal class CustomizeAddonViewModel(
   insuranceId: String,
+  preselectedAddonDisplayNames: List<String>,
   getAddonOfferUseCase: GetAddonOfferUseCase,
 ) : MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeAddonState>(
-  initialState = CustomizeAddonState.Loading,
-  presenter = CustomizeTravelAddonPresenter(
-    getAddonOfferUseCase = getAddonOfferUseCase,
-    insuranceId = insuranceId,
-  ),
-)
+    initialState = CustomizeAddonState.Loading,
+    presenter = CustomizeTravelAddonPresenter(
+      insuranceId = insuranceId,
+      preselectedAddonDisplayNames = preselectedAddonDisplayNames,
+      getAddonOfferUseCase = getAddonOfferUseCase,
+    ),
+  )
 
 internal class CustomizeTravelAddonPresenter(
   private val insuranceId: String,
+  private val preselectedAddonDisplayNames: List<String>,
   private val getAddonOfferUseCase: GetAddonOfferUseCase,
 ) : MoleculePresenter<CustomizeTravelAddonEvent, CustomizeAddonState> {
   @Composable
@@ -61,7 +65,7 @@ internal class CustomizeTravelAddonPresenter(
         *(
           (lastState as? CustomizeAddonState.Success.Toggleable)
             ?.currentlyChosenOptions ?: emptyList()
-          ).toTypedArray(),
+        ).toTypedArray(),
       )
     }
 
@@ -163,14 +167,16 @@ internal class CustomizeTravelAddonPresenter(
       if (currentState is CustomizeAddonState.Success) return@LaunchedEffect
       currentState = CustomizeAddonState.Loading
       getAddonOfferUseCase.invoke(insuranceId).fold(
-        ifLeft = { error ->
+        ifLeft = {
           currentState = CustomizeAddonState.Failure.GeneralFailure
         },
         ifRight = { result ->
           when (result) {
             is GenerateAddonOfferResult.AddonOfferDeflect -> {
               currentState = CustomizeAddonState.Failure.SpecificDeflect(
-                title = result.pageTitle, description = result.pageDescription, type = result.type,
+                title = result.pageTitle,
+                description = result.pageDescription,
+                type = result.type,
                 contractId = insuranceId,
               )
             }
@@ -193,9 +199,9 @@ internal class CustomizeTravelAddonPresenter(
                   whatsIncludedPageTitle = result.whatsIncludedPageTitle,
                   whatsIncludedPageDescription = result.whatsIncludedPageDescription,
                 )
-              when (result.umbrellaAddonQuote.addonOffer) {
+              when (val addonOffer = result.umbrellaAddonQuote.addonOffer) {
                 is AddonOffer.Selectable -> {
-                  val chosenDefault = result.umbrellaAddonQuote.addonOffer.addonOptions[0]
+                  val chosenDefault = addonOffer.addonOptions[0]
                   val currentAddon = result.umbrellaAddonQuote.activeAddons.firstOrNull()
                   selectedOptionInDialog = chosenDefault
                   val extra = updateExtraForSelectable(
@@ -203,7 +209,7 @@ internal class CustomizeTravelAddonPresenter(
                     selectedOptionInDialog,
                   )
                   currentState = CustomizeAddonState.Success.Selectable(
-                    addonOffer = result.umbrellaAddonQuote.addonOffer,
+                    addonOffer = addonOffer,
                     currentlyChosenOption = chosenDefault,
                     currentlyChosenOptionInDialog = selectedOptionInDialog,
                     chosenOptionPremiumExtra = extra,
@@ -213,9 +219,13 @@ internal class CustomizeTravelAddonPresenter(
                 }
 
                 is AddonOffer.Toggleable -> {
+                  val preselectedAddon = addonOffer.addonOptions.firstOrNull { it.displayTitle in preselectedAddonDisplayNames }
+                  if (preselectedAddon != null) {
+                    selectedToggleableOptions.add(preselectedAddon)
+                  }
                   currentState = CustomizeAddonState.Success.Toggleable(
                     commonParams = commonParams,
-                    addonOffer = result.umbrellaAddonQuote.addonOffer,
+                    addonOffer = addonOffer,
                     currentlyActiveAddons = result.umbrellaAddonQuote.activeAddons,
                     currentlyChosenOptions = emptyList(),
                     totalPremiumExtra = null,
@@ -300,6 +310,7 @@ internal sealed interface CustomizeAddonState {
 
   sealed interface Failure : CustomizeAddonState {
     data object GeneralFailure : Failure
+
     data class SpecificDeflect(
       val title: String,
       val description: String,

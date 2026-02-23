@@ -28,25 +28,29 @@ private class CombiningPaddingValuesInsets(
 ) : WindowInsets {
   override fun getLeft(density: Density, layoutDirection: LayoutDirection): Int {
     return with(density) {
-      paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
+      originalWindowInsets.getLeft(density, layoutDirection) +
+        paddingValues.calculateLeftPadding(layoutDirection).roundToPx()
     }
   }
 
   override fun getTop(density: Density): Int {
     return with(density) {
-      paddingValues.calculateTopPadding().roundToPx()
+      originalWindowInsets.getTop(density) +
+        paddingValues.calculateTopPadding().roundToPx()
     }
   }
 
   override fun getRight(density: Density, layoutDirection: LayoutDirection): Int {
     return with(density) {
-      paddingValues.calculateRightPadding(layoutDirection).roundToPx()
+      originalWindowInsets.getRight(density, layoutDirection) +
+        paddingValues.calculateRightPadding(layoutDirection).roundToPx()
     }
   }
 
   override fun getBottom(density: Density): Int {
     return with(density) {
-      paddingValues.calculateBottomPadding().roundToPx()
+      originalWindowInsets.getBottom(density) +
+        paddingValues.calculateBottomPadding().roundToPx()
     }
   }
 

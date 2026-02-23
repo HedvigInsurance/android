@@ -18,9 +18,11 @@
     <item quantity="other">Submitted values</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">View details</string>
+  <string name="ADDON_ADDED_COVERAGE">Added</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
   <string name="ADDON_BADGE_ACTIVE">Active</string>
+  <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Car Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">This upgrade will take effect from %1$s and can only be removed when your insurance is renewed or cancelled.</string>
@@ -133,6 +135,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
+  <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!</string>
   <string name="CHAT_CONVERSATION_CLAIM_TITLE">Claim</string>

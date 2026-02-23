@@ -219,7 +219,7 @@ type AddonOfferDeflect {
   """
   Deflect type for clients so clients know which action to take
   """
-  type: AddonDeflectType!
+  type: AddonDeflectType
 }
 """
 Output type for AddonOffer mutation.
@@ -441,6 +441,19 @@ type AgreementDisplayItem {
 enum AppPlatform {
   IOS
   ANDROID
+}
+"""
+An addon available for purchase.
+"""
+type AvailableAddon {
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
 }
 type AvailablePaymentMethodsResponse {
   paymentMethodsResponse: PaymentMethodsResponse!
@@ -708,6 +721,10 @@ type ChangeTierDeductibleQuote {
   insurance base premium, addons premiums, campaigns and bundle discounts
   """
   costBreakdown: [ChangeTierPriceDetailItem!]!
+  """
+  Info message we want to show for selected quote
+  """
+  info: String
 }
 enum ChangeTierDeductibleSource {
   SELF_SERVICE
@@ -721,6 +738,7 @@ type ChangeTierDeflectOutput {
 type ChangeTierPriceDetailItem {
   displayName: String!
   displayValue: String!
+  isCrossed: Boolean!
 }
 interface ChatMessage {
   id: ID!
@@ -1263,6 +1281,48 @@ type Contract {
   User messages to show due to self change is blocked.
   """
   selfChangeBlockers: ContractSelfChangeBlockers
+  """
+  List of available addons for the contract.
+  """
+  existingAddons: [ContractAddon!]!
+  """
+  List of available addons for the contract.
+  """
+  availableAddons: [AvailableAddon!]!
+}
+"""
+Represents an existing addon variant on a Contract level, on current or upcoming agreement.
+"""
+type ContractAddon {
+  """
+  The AddonVariant of the agreement, which is the umbrella container for a lot of data related to the addon,
+  such as names, legal documents, perils etc.
+  """
+  addonVariant: AddonVariant!
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
+  """
+  If the addon is currently removable.
+  """
+  isRemovable: Boolean!
+  """
+  If the addon is currently upgradeable.
+  """
+  isUpgradable: Boolean!
+  """
+  Start date, null if pending
+  """
+  startDate: Date
+  """
+  End date, null if open-ended
+  """
+  endDate: Date
 }
 """
 A co-insured on contract.
@@ -1491,6 +1551,7 @@ type DirectDebitResponse2 {
 }
 input DisplayItemOptions {
   hidePrice: Boolean! = false
+  hideAddons: Boolean! = false
 }
 type EmailMessage {
   id: ID!
@@ -3385,7 +3446,7 @@ type Mutation {
   """
   Call this to accept an addon offer and activate selected addon(s).
   """
-  addonActivateOffer(quoteId: ID!, addonIds: [ID!]!): AddonActivationOutput!
+  addonActivateOffer(quoteId: ID!, selectedAddonIds: [ID!]!): AddonActivationOutput!
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when member clicks on the "See price" button in the Travel Addon Upsell banner.
@@ -3449,6 +3510,14 @@ type PendingContract {
   List of addons on the agreement.
   """
   addons: [Addon!]!
+  """
+  List of available addons for the contract.
+  """
+  existingAddons: [ContractAddon!]!
+  """
+  List of available addons for the contract.
+  """
+  availableAddons: [AvailableAddon!]!
 }
 type Peril {
   id: ID!
@@ -3955,9 +4024,9 @@ type Query {
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
   """
-  Cost for selected configuration of addon offer
+  Call this to get the cost of an addon offer for selected addon(s).
   """
-  addonOfferCost(quoteId: ID!, addonIds: [ID!]!): ItemCost!
+  addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!

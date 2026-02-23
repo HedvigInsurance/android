@@ -173,6 +173,7 @@ dependencies {
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataPayingMember)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
   implementation(projects.databaseAndroid)

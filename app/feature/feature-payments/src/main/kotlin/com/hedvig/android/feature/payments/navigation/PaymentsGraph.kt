@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.payments.navigation
 
+import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
@@ -18,14 +21,13 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.paymentsGraph(
-  navigator: Navigator,
+  navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -38,52 +40,46 @@ fun NavGraphBuilder.paymentsGraph(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.payments),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) { backStackEntry ->
+    ) {
       val viewModel: PaymentsViewModel = koinViewModel()
       PaymentsDestination(
         viewModel = viewModel,
-        onPaymentHistoryClicked = {
-          with(navigator) { backStackEntry.navigate(PaymentsDestinations.History) }
+        onPaymentHistoryClicked = dropUnlessResumed {
+          navController.navigate(PaymentsDestinations.History)
         },
-        onChangeBankAccount = navigateToConnectPayment,
-        onDiscountClicked = {
-          with(navigator) { backStackEntry.navigate(PaymentsDestinations.Discounts) }
+        onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
+        onDiscountClicked = dropUnlessResumed {
+          navController.navigate(PaymentsDestinations.Discounts)
         },
-        onPaymentClicked = { id: String? ->
-          with(navigator) {
-            backStackEntry.navigate(PaymentsDestinations.Details(id))
-          }
+        onPaymentClicked = dropUnlessResumed { id: String? ->
+          navController.navigate(PaymentsDestinations.Details(id))
         },
-        onMemberPaymentDetailsClicked = {
-          with(navigator) {
-            backStackEntry.navigate(PaymentsDestinations.MemberPaymentDetails)
-          }
+        onMemberPaymentDetailsClicked = dropUnlessResumed {
+          navController.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
       )
     }
 
-    navdestination<PaymentsDestinations.Details> { backStackEntry ->
+    navdestination<PaymentsDestinations.Details> {
       val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
       PaymentDetailsDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 
-    navdestination<PaymentsDestinations.History> { backStackEntry ->
+    navdestination<PaymentsDestinations.History> {
       val viewModel: PaymentHistoryViewModel = koinViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,
-        onChargeClicked = { memberChargeId: String ->
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Details(
-                memberChargeId,
-              ),
-            )
-          }
+        onChargeClicked = dropUnlessResumed { memberChargeId: String ->
+          navController.navigate(
+            PaymentsDestinations.Details(
+              memberChargeId,
+            ),
+          )
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 
@@ -96,27 +92,25 @@ fun NavGraphBuilder.paymentsGraph(
       )
     }
 
-    navdestination<PaymentsDestinations.Discounts> { backStackEntry ->
+    navdestination<PaymentsDestinations.Discounts> {
       val viewModel: DiscountsViewModel = koinViewModel()
       DiscountsDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
-        navigateToForever = {
-          with(navigator) {
-            backStackEntry.navigate(
-              PaymentsDestinations.Forever,
-            )
-          }
+        navigateUp = navController::navigateUp,
+        navigateToForever = dropUnlessResumed {
+          navController.navigate(
+            PaymentsDestinations.Forever,
+          )
         },
       )
     }
 
-    navdestination<PaymentsDestinations.MemberPaymentDetails> { backStackEntry ->
+    navdestination<PaymentsDestinations.MemberPaymentDetails> {
       val viewModel: MemberPaymentDetailsViewModel = koinViewModel()
       MemberPaymentDetailsDestination(
         viewModel,
         onChangeBankAccount = navigateToConnectPayment,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
   }

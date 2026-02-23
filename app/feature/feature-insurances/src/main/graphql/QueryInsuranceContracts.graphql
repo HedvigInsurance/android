@@ -69,6 +69,19 @@ fragment ContractFragment on Contract {
   upcomingChangedAgreement {
     ...AgreementFragment
   }
+  existingAddons @include(if: $addonsEnabled) {
+    addonVariant {
+      ...AddonVariantFragment
+    }
+    displayName
+    description
+    isRemovable
+    isUpgradable
+  }
+  availableAddons @include(if: $addonsEnabled) {
+    displayName
+    description
+  }
 }
 
 fragment AgreementFragment on Agreement {

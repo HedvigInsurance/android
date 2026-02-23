@@ -7,7 +7,9 @@ import arrow.core.raise.either
 import arrow.fx.coroutines.raceN
 import assertk.assertAll
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.containsSubList
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
@@ -16,9 +18,10 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.addons.data.FlowType
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
@@ -90,6 +93,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     ),
     EstablishedInsuranceContract(
       id = "contractId#2",
@@ -133,6 +138,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     ),
   )
   private val terminatedContracts: List<EstablishedInsuranceContract> = listOf(
@@ -178,6 +185,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     ),
     EstablishedInsuranceContract(
       id = "contractId#4",
@@ -221,6 +230,8 @@ internal class InsurancePresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     ),
   )
   private val validCrossSells: CrossSellResult = CrossSellResult(
@@ -255,7 +266,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       awaitItem().also { uiState ->
         assertAll {
           assertThat(uiState.hasError).isFalse()
@@ -285,7 +296,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.errorMessages.add(ErrorMessage())
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
@@ -311,7 +322,7 @@ internal class InsurancePresenterTest {
       getInsuranceContractsUseCase.errorMessages.add(ErrorMessage())
       expectNoEvents() // No events while we're still waiting for all backend calls to finish
       getCrossSellsUseCase.errorMessages.add(ErrorMessage())
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
@@ -335,7 +346,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.errorMessages.add(ErrorMessage())
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isTrue()
         assertThat(uiState.isLoading).isFalse()
@@ -353,7 +364,7 @@ internal class InsurancePresenterTest {
 
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       getInsuranceContractsUseCase.contracts.add(validContracts)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       awaitItem().also { uiState ->
         assertThat(uiState.hasError).isFalse()
         assertThat(uiState.isLoading).isFalse()
@@ -380,7 +391,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(allContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       awaitItem().also { uiState ->
         assertAll {
           assertThat(uiState.contracts.map(EstablishedInsuranceContract::id))
@@ -412,7 +423,7 @@ internal class InsurancePresenterTest {
 
       getInsuranceContractsUseCase.contracts.add(contracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       assertThat(awaitItem().shouldSuggestMovingFlow).isEqualTo(supportsAddressChange)
     }
   }
@@ -431,8 +442,8 @@ internal class InsurancePresenterTest {
       skipItems(1)
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { null })
-      assertThat(awaitItem().addonBannerInfoList).isEqualTo(null)
+      getTravelAddonBannerInfoUseCase.turbine.add(either { emptyList() })
+      assertThat(awaitItem().addonBannerInfoList).isEmpty()
     }
   }
 
@@ -450,8 +461,8 @@ internal class InsurancePresenterTest {
       skipItems(1)
       getInsuranceContractsUseCase.contracts.add(validContracts)
       getCrossSellsUseCase.crossSells.add(validCrossSells)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
-      assertThat(awaitItem().addonBannerInfoList).isEqualTo(fakeTravelAddon)
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
+      assertThat(awaitItem().addonBannerInfoList).containsExactly(fakeTravelAddon)
     }
   }
 
@@ -473,8 +484,8 @@ internal class InsurancePresenterTest {
       hasError = false,
       isLoading = false,
       isRetrying = false,
-      addonBannerInfoList = null,
-      pendingContracts = listOf(),
+      addonBannerInfoList = emptyList(),
+      pendingContracts = emptyList(),
     )
     presenter.test(initialState) {
       awaitItem().also { uiState ->
@@ -484,7 +495,7 @@ internal class InsurancePresenterTest {
       }
 
       getInsuranceContractsUseCase.contracts.add(validContracts)
-      getTravelAddonBannerInfoUseCase.turbine.add(either { fakeTravelAddon })
+      getTravelAddonBannerInfoUseCase.turbine.add(either { listOf(fakeTravelAddon) })
       expectNoEvents()
       getCrossSellsUseCase.crossSells.add(validCrossSells)
       assertThat(awaitItem().isLoading).isEqualTo(false)
@@ -520,9 +531,9 @@ internal class InsurancePresenterTest {
   }
 
   private class FakeGetAddonBannerInfoUseCase : GetAddonBannerInfoUseCase {
-    val turbine = Turbine<Either<ErrorMessage, AddonBannerInfo?>>()
+    val turbine = Turbine<Either<ErrorMessage, List<AddonBannerInfo>>>()
 
-    override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, AddonBannerInfo?>> {
+    override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
       return turbine.asChannel().receiveAsFlow()
     }
   }
@@ -532,5 +543,6 @@ internal class InsurancePresenterTest {
     "desc",
     listOf(),
     nonEmptyListOf("id"),
+    FlowType.APP_CAR_PLUS,
   )
 }
