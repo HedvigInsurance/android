@@ -18,8 +18,11 @@
     <item quantity="other">Inskickade värden</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
+  <string name="ADDON_ADDED_COVERAGE">Tillagd</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
+  <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
+  <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Bil Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Ja, uppgradera mitt skydd</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
@@ -132,6 +135,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Ange byggår</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Byggår</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">Du + %1$d</string>
+  <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Chatta med en specialist</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">Om det inte fungerar eller om du har några andra frågor, vänligen meddela oss så hjälper en av våra specialister till inom kort!</string>
   <string name="CHAT_CONVERSATION_CLAIM_TITLE">Skadeärende</string>
@@ -238,6 +242,7 @@
   <string name="COINSURED_WITHOUT_SSN_INFO">Vi kunde inte hämta informationen kopplat till personnumret. Ange det manuellt.</string>
   <string name="CONFIRM_AND_PROCEED_BUTTON">Bekräfta och fortsätt</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Notera att dina ändringar börjar gälla från och med %s.</string>
+  <string name="CONFIRM_CHANGES_TITLE">Godkänn ändringar</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Giltigt till %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Giltigt till imorgon</string>
@@ -356,6 +361,7 @@
   <string name="GENERAL_UNSUBSCRIBED">Avregistrerad</string>
   <string name="GENERAL_YES">Ja</string>
   <string name="GENERAL_ADD_NEW">Lägg till ny</string>
+  <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Din försäkring kommer att uppdateras den %1$s.</string>
   <string name="GENERAL_CONFIRM">Bekräfta</string>
   <string name="GENERAL_CONTACT_US_TITLE">Kontakta vårt serviceteam</string>
   <string name="GENERAL_DOWNLOAD">Ladda ner</string>
@@ -605,10 +611,19 @@
   <string name="REFERRAL_PENDING_STATUS_LABEL">Avvaktar...</string>
   <string name="REFERRAL_SMS_MESSAGE">Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$s rabatt på månadskostnaden. Följ länken: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inaktiv</string>
+  <string name="REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES">Inga av dina försäkringar har tillägg som kan tas bort.</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_BUTTON">Ja, ta bort</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s.</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_TITLE">Confirm removing selected addons</string>
+  <string name="REMOVE_ADDON_OFFER_PAGE_TITLE">Ta bort tillägg</string>
+  <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">Den här ändringar börjar gälla %s.</string>
+  <string name="REMOVE_ADDON_SUCCESS_TITLE">Tillägg avslutade</string>
   <string name="REMOVE_CONFIRMATION_BUTTON">Ja, radera</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Spara och fortsätt</string>
   <string name="SEARCH_NOTHING_FOUND">Inga träffar på din sökning</string>
   <string name="SEARCH_PLACEHOLDER">Sök</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Välj den försäkring du vill uppdatera</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Språk</string>
   <string name="SETTINGS_LOGIN_ROW">Logga in</string>
   <string name="SETTINGS_NOTIFICATIONS_TITLE">Notiser</string>
@@ -690,7 +705,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A2">Så länge skadan täcks av försäkringsvillkoren så betalar du endast självrisken på 1750 kr direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">Du får såklart använda den bärgningstjänst som passar dig bäst. Men förloppet blir oftast snabbare och enklare om du vänder dig direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Läs mer</string>
-  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till 010–45 99 222. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
+  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till +46 020 912 912. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">Vi samarbetar med Assistancekåren för att du ska kunna få hjälp så snabbt som möjligt.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">Du behöver kontakta Assistancekåren direkt för att få hjälp med din bärgning</string>
   <string name="SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON">Ring nu</string>
@@ -871,6 +886,9 @@
   <string name="TOAST_NEW_OFFER">Nytt erbjudande</string>
   <string name="TOAST_READ_MORE">Mer info</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE">Antal resdagar</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Välj antalet resdagar som täcks</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Välj antal resdagar</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
   <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
@@ -934,7 +952,7 @@
   <string name="claim_status_detail_email">Ta kontakt med skadeteamet</string>
   <string name="claims_alert_body">Om du avslutar går du tillbaka till startsidan och dina inmatade uppgifter kommer att gå förlorade.</string>
   <string name="claims_continue_button">Fortsätt</string>
-  <string name="claims_edit_button">Edit</string>
+  <string name="claims_edit_button">Ändra</string>
   <string name="claims_history_overview">Översikt</string>
   <string name="claims_history_overview_total_claims">Totalt antal skadeanmälningar</string>
   <string name="claims_history_overview_total_compensation">Total ersättning</string>

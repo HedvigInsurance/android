@@ -149,6 +149,7 @@ internal class AudioRecordingViewModel(
   fun switchMode(mode: ScreenMode) {
     when (mode) {
       ScreenMode.RECORDING -> redo()
+
       ScreenMode.FREE_TEXT -> _uiState.update {
         WhatHappenedUiState.FreeTextDescription(
           freeText = currentFreeText.value,

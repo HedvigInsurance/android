@@ -163,14 +163,17 @@ private fun DeleteAccountUiState.CanNotDelete.titleStringRes(): StringResource {
 
 private fun DeleteAccountUiState.CanNotDelete.descriptionStringRes(): StringResource {
   return when (this) {
-    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion ->
+    DeleteAccountUiState.CanNotDelete.AlreadyRequestedDeletion -> {
       Res.string.DELETE_ACCOUNT_PROCESSED_DESCRIPTION
+    }
 
-    DeleteAccountUiState.CanNotDelete.HasActiveInsurance ->
+    DeleteAccountUiState.CanNotDelete.HasActiveInsurance -> {
       Res.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION
+    }
 
-    DeleteAccountUiState.CanNotDelete.HasOngoingClaim ->
+    DeleteAccountUiState.CanNotDelete.HasOngoingClaim -> {
       Res.string.DELETE_ACCOUNT_YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION
+    }
   }
 }
 

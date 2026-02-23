@@ -18,8 +18,11 @@
     <item quantity="other">Submitted values</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">View details</string>
+  <string name="ADDON_ADDED_COVERAGE">Added</string>
   <string name="ADDON_ADD_COVERAGE">Add coverage</string>
   <string name="ADDON_BADGE">Popular</string>
+  <string name="ADDON_BADGE_ACTIVE">Active</string>
+  <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Car Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">This upgrade will take effect from %1$s and can only be removed when your insurance is renewed or cancelled.</string>
@@ -132,6 +135,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
+  <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!</string>
   <string name="CHAT_CONVERSATION_CLAIM_TITLE">Claim</string>
@@ -237,7 +241,8 @@
   <string name="COINSURED_ERROR_TEXT">You can’t edit your co-insured at this moment. Send us a message here in the app for further assistance</string>
   <string name="COINSURED_WITHOUT_SSN_INFO">We were unable to retrieve the information linked to this Social Security number. Please enter it manually.</string>
   <string name="CONFIRM_AND_PROCEED_BUTTON">Confirm and proceed</string>
-  <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your updates will be effective on %1$s.</string>
+  <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your changes will be effective on %1$s.</string>
+  <string name="CONFIRM_CHANGES_TITLE">Confirm changes</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>
@@ -356,6 +361,7 @@
   <string name="GENERAL_UNSUBSCRIBED">Unsubscribed</string>
   <string name="GENERAL_YES">Yes</string>
   <string name="GENERAL_ADD_NEW">Add new</string>
+  <string name="GENERAL_CHANGE_CONFIRMATION_DESCRIPTION">Your insurance will be updated starting from %1$s</string>
   <string name="GENERAL_CONFIRM">Confirm</string>
   <string name="GENERAL_CONTACT_US_TITLE">Contact our service team</string>
   <string name="GENERAL_DOWNLOAD">Download</string>
@@ -605,10 +611,19 @@
   <string name="REFERRAL_PENDING_STATUS_LABEL">Pending...</string>
   <string name="REFERRAL_SMS_MESSAGE">Hey! Get Hedvig using my link and we both get %1$s per month discount on the monthly cost. Follow the link: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inactive</string>
+  <string name="REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES">None of your insurances have addons you can remove.</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_BUTTON">Yes, remove</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_DESCRIPTION">This change will take effect from %1$s.</string>
+  <string name="REMOVE_ADDON_CONFIRMATION_TITLE">Confirm removing selected addons</string>
+  <string name="REMOVE_ADDON_OFFER_PAGE_TITLE">Remove addon</string>
+  <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">This change will take effect from %1$s.</string>
+  <string name="REMOVE_ADDON_SUCCESS_TITLE">Removed successfully</string>
   <string name="REMOVE_CONFIRMATION_BUTTON">Yes, remove</string>
   <string name="SAVE_AND_CONTINUE_BUTTON_LABEL">Save and continue</string>
   <string name="SEARCH_NOTHING_FOUND">No results for your search</string>
   <string name="SEARCH_PLACEHOLDER">Search</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Select the insurance you want to edit</string>
+  <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Language</string>
   <string name="SETTINGS_LOGIN_ROW">Login</string>
   <string name="SETTINGS_NOTIFICATIONS_TITLE">Notifications</string>
@@ -690,7 +705,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A2">As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.</string>
   <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Read more</string>
-  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">You can contact Assistancekåren by phone using the button above or by calling directly at +46 10–45 99 222. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.</string>
+  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">You can contact Assistancekåren by phone using the button above or by calling directly at +46 020 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">We collaborate with Assistancekåren to ensure that you receive assistance as quickly as possible.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">You need to contact Assistancekåren directly to receive further assistance</string>
   <string name="SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON">Call now</string>
@@ -871,6 +886,9 @@
   <string name="TOAST_NEW_OFFER">New offer</string>
   <string name="TOAST_READ_MORE">Learn more</string>
   <string name="TOAST_PLAY_STORE_MISSING_ON_DEVICE">Unable to open play store on this device - please open it manually.</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE">Maximum travel limit</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION">Days covered when travelling</string>
+  <string name="UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE">Choose your maximum travel limit</string>
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %1$s</string>
   <string name="VOICEOVER_CHANGE_VALUE">change value</string>

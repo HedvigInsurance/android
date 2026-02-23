@@ -402,7 +402,9 @@ data class IdProtectionDeflectPartner(
       url = partner.url,
       urlButtonTitle = urlButtonTitle,
     )
+
     partner.phoneNumber != null -> ButtonsState.PhoneNumber(partner.phoneNumber)
+
     else -> ButtonsState.None
   }
 

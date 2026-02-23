@@ -58,7 +58,10 @@ internal fun FileContainer(
             state
           }
 
-          AsyncImagePainter.State.Empty -> state
+          AsyncImagePainter.State.Empty -> {
+            state
+          }
+
           is AsyncImagePainter.State.Success -> {
             loadedImageIntrinsicSize.value = IntSize(
               state.result.image.width,

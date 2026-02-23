@@ -221,10 +221,13 @@ private fun ChatTopAppBar(
       when (uiState) {
         is Loaded -> {
           when (val topAppBarText = uiState.topAppBarText) {
-            Legacy -> HedvigText(
-              stringResource(Res.string.CHAT_CONVERSATION_HISTORY_TITLE),
-              modifier = headingModifier,
-            )
+            Legacy -> {
+              HedvigText(
+                stringResource(Res.string.CHAT_CONVERSATION_HISTORY_TITLE),
+                modifier = headingModifier,
+              )
+            }
+
             NewConversation -> {
               Column(modifier = headingModifier) {
                 HedvigText(stringResource(Res.string.CHAT_NEW_CONVERSATION_TITLE))
@@ -253,7 +256,9 @@ private fun ChatTopAppBar(
           }
         }
 
-        else -> HedvigText(stringResource(Res.string.CHAT_TITLE), modifier = headingModifier)
+        else -> {
+          HedvigText(stringResource(Res.string.CHAT_TITLE), modifier = headingModifier)
+        }
       }
     }
   }

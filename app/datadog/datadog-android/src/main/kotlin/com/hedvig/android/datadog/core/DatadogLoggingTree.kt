@@ -6,7 +6,7 @@ internal class DatadogLoggingTree(
   private val logger: com.datadog.android.log.Logger,
 ) : Timber.Tree() {
   override fun isLoggable(tag: String?, priority: Int): Boolean {
-    return priority >= android.util.Log.DEBUG
+    return priority > android.util.Log.DEBUG
   }
 
   override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {

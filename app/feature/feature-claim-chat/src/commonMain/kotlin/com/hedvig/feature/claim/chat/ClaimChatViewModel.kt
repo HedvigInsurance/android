@@ -116,6 +116,8 @@ internal sealed interface ClaimChatEvent {
   data class HandledDeflectNavigation(val stepId: StepId) : ClaimChatEvent
 
   data class AddToShownAnimations(val stepId: StepId) : ClaimChatEvent
+
+  data class RetrySubmittingTaskStep(val stepId: StepId) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -226,7 +228,10 @@ internal class ClaimChatPresenter(
         startClaimIntentUseCase
           .invoke(developmentFlow)
           .fold(
-            ifLeft = { failedToStart = true },
+            ifLeft = {
+              initializing = false
+              failedToStart = true
+            },
             ifRight = { claimIntent ->
               Snapshot.withMutableSnapshot {
                 initializing = false
@@ -235,7 +240,10 @@ internal class ClaimChatPresenter(
                 steps.clear()
                 progress = claimIntent.progress
                 when (val next = claimIntent.next) {
-                  is ClaimIntent.Next.Outcome -> outcome = next.claimIntentOutcome
+                  is ClaimIntent.Next.Outcome -> {
+                    outcome = next.claimIntentOutcome
+                  }
+
                   is ClaimIntent.Next.Step -> {
                     steps.add(next.claimIntentStep)
                   }
@@ -246,14 +254,29 @@ internal class ClaimChatPresenter(
       }
     }
 
-    ObserveIncompleteTaskEffect(getClaimIntentUseCase, currentStep, { claimIntentId }, steps)
-    SubmitCompleteTaskEffect(submitTaskUseCase, currentStep) { claimIntent ->
-      handleNext(
-        steps,
-        setOutcome,
-        claimIntent,
-      ) { progress = it }
-    }
+    ObserveIncompleteTaskEffect(
+      getClaimIntentUseCase = getClaimIntentUseCase,
+      currentStep = currentStep,
+      claimIntentId = { claimIntentId },
+      onFailure = { failedStepId, errorMessage ->
+        onTaskSubmissionFailed(failedStepId, errorMessage, steps) { errorSubmittingStep = it }
+      },
+      steps = steps,
+    )
+    SubmitCompleteTaskEffect(
+      submitTaskUseCase = submitTaskUseCase,
+      currentStep = currentStep,
+      onFailure = { failedStepId, errorMessage ->
+        onTaskSubmissionFailed(failedStepId, errorMessage, steps) { errorSubmittingStep = it }
+      },
+      onSuccess = { claimIntent ->
+        handleNext(
+          steps,
+          setOutcome,
+          claimIntent,
+        ) { progress = it }
+      },
+    )
 
     CollectEvents { event ->
       when (event) {
@@ -453,6 +476,7 @@ internal class ClaimChatPresenter(
                                 FieldOption(
                                   selectedDateString,
                                   selectedDateString,
+                                  null,
                                 ),
                               ),
                             )
@@ -469,13 +493,15 @@ internal class ClaimChatPresenter(
                   )
                 }
 
-                else -> FieldToSubmit(
-                  field.id,
-                  field.selectedOptions
-                    .map { selectedOption ->
-                      selectedOption.value.ifEmpty { null }
-                    },
-                )
+                else -> {
+                  FieldToSubmit(
+                    field.id,
+                    field.selectedOptions
+                      .map { selectedOption ->
+                        selectedOption.value.ifEmpty { null }
+                      },
+                  )
+                }
               }
             }
             currentContinueButtonLoading = true
@@ -533,8 +559,14 @@ internal class ClaimChatPresenter(
           }
         }
 
-        ClaimChatEvent.CloseFreeChatOverlay -> showFreeTextOverlay = null
-        is ClaimChatEvent.OpenFreeTextOverlay -> showFreeTextOverlay = event.restrictions
+        ClaimChatEvent.CloseFreeChatOverlay -> {
+          showFreeTextOverlay = null
+        }
+
+        is ClaimChatEvent.OpenFreeTextOverlay -> {
+          showFreeTextOverlay = event.restrictions
+        }
+
         is ClaimChatEvent.Skip -> {
           val claimChatState = claimIntentId != null
           if (!claimChatState) return@CollectEvents
@@ -666,14 +698,19 @@ internal class ClaimChatPresenter(
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
                   null,
-                  -> field.copy(
-                    selectedOptions = event.answer?.let {
-                      listOf(it)
-                    } ?: emptyList(),
-                    hasError = null,
-                  )
+                  -> {
+                    field.copy(
+                      selectedOptions = event.answer?.let {
+                        listOf(it)
+                      } ?: emptyList(),
+                      hasError = null,
+                    )
+                  }
 
-                  FieldType.DATE -> field.copy(hasError = null)
+                  FieldType.DATE -> {
+                    field.copy(hasError = null)
+                  }
+
                   // Date gets selected date from DatePickerState, not from Event
 
                   FieldType.MULTI_SELECT -> {
@@ -705,7 +742,10 @@ internal class ClaimChatPresenter(
           }
         }
 
-        ClaimChatEvent.DismissErrorDialog -> errorSubmittingStep = null
+        ClaimChatEvent.DismissErrorDialog -> {
+          errorSubmittingStep = null
+        }
+
         is ClaimChatEvent.SubmitFile -> {
           val stepContent = currentStep?.stepContent as? StepContent.FileUpload ?: return@CollectEvents
           val fileUris = stepContent.localFiles
@@ -761,17 +801,36 @@ internal class ClaimChatPresenter(
           // todo or remove
         }
 
-        ClaimChatEvent.DismissConfirmEditDialog -> showConfirmEditDialogForStep = null
-        is ClaimChatEvent.ShowConfirmEditDialog -> showConfirmEditDialogForStep = event.id
+        ClaimChatEvent.DismissConfirmEditDialog -> {
+          showConfirmEditDialogForStep = null
+        }
+
+        is ClaimChatEvent.ShowConfirmEditDialog -> {
+          showConfirmEditDialogForStep = event.id
+        }
+
         is ClaimChatEvent.AddToShownAnimations -> {
           stepsWithShownAnimations.add(event.stepId)
+        }
+
+        is ClaimChatEvent.RetrySubmittingTaskStep -> {
+          steps.updateStepWithSuccess<StepContent.Task>(event.stepId) { step, content ->
+            step.copy(
+              stepContent = content.copy(
+                isCompleted = false,
+                failedToSubmit = false,
+              ),
+            )
+          }
         }
       }
     }
 
     return when {
       initializing -> ClaimChatUiState.Initializing
+
       failedToStart -> ClaimChatUiState.FailedToStart
+
       claimIntentId != null -> ClaimChatUiState.ClaimChat(
         claimIntentId = claimIntentId!!,
         steps = steps,
@@ -802,16 +861,19 @@ private fun ObserveIncompleteTaskEffect(
   getClaimIntentUseCase: GetClaimIntentUseCase,
   currentStep: ClaimIntentStep?,
   claimIntentId: () -> ClaimIntentId?,
+  onFailure: (StepId, ErrorMessage) -> Unit,
   steps: SnapshotStateList<ClaimIntentStep>,
 ) {
-  val isIncompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted?.not() == true
-  LaunchedEffect(isIncompleteTask) {
+  val stepContent = currentStep?.stepContent as? StepContent.Task
+  LaunchedEffect(stepContent) {
+    val isIncompleteTask = stepContent?.isCompleted?.not() == true
     if (!isIncompleteTask) return@LaunchedEffect
+    if (stepContent.failedToSubmit) return@LaunchedEffect
     getClaimIntentUseCase
       .invoke(claimIntentId()!!)
       .collect { result ->
         result.fold(
-          ifLeft = { error("handle getClaimIntent error") },
+          ifLeft = { onFailure(currentStep.id, it) },
           ifRight = { taskStepContent ->
             Snapshot.withMutableSnapshot {
               val previousTask = steps.find { it.id == taskStepContent.step.id }
@@ -837,6 +899,7 @@ private fun ObserveIncompleteTaskEffect(
 private fun SubmitCompleteTaskEffect(
   submitTaskUseCase: SubmitTaskUseCase,
   currentStep: ClaimIntentStep?,
+  onFailure: (StepId, ErrorMessage) -> Unit,
   onSuccess: (ClaimIntent) -> Unit,
 ) {
   val isCompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted == true
@@ -845,7 +908,7 @@ private fun SubmitCompleteTaskEffect(
     submitTaskUseCase
       .invoke(currentStep.id.value)
       .fold(
-        ifLeft = { error("todo left submitTaskUseCase") },
+        ifLeft = { onFailure(currentStep.id, it) },
         ifRight = { claimIntent ->
           onSuccess(claimIntent)
         },
@@ -936,6 +999,18 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Deflect,
   StepContent.Unknown,
   -> this
+}
+
+private fun onTaskSubmissionFailed(
+  failedStepId: StepId,
+  errorMessage: ErrorMessage,
+  steps: SnapshotStateList<ClaimIntentStep>,
+  setErrorMessage: (ErrorMessage) -> Unit,
+) {
+  steps.updateStepWithSuccess<StepContent.Task>(failedStepId) { step, content ->
+    step.copy(stepContent = content.copy(failedToSubmit = true))
+  }
+  setErrorMessage(errorMessage)
 }
 
 private fun <T> MutableList<T>.removeLastIf(predicate: (T) -> Boolean) {

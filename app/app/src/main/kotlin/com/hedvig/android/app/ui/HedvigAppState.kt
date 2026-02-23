@@ -107,7 +107,10 @@ internal class HedvigAppState(
     get() {
       if (!shouldShowNavBars) return NavigationSuiteType.None
       return when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
+        WindowWidthSizeClass.Compact -> {
+          NavigationSuiteType.NavigationBar
+        }
+
         else -> {
           when (windowSizeClass.heightSizeClass) {
             WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge

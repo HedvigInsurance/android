@@ -1,5 +1,6 @@
 package com.hedvig.feature.claim.chat.data
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import com.hedvig.android.core.fileupload.AndroidFile
@@ -17,7 +18,6 @@ internal class AndroidAudioRecordingManager(
   private var timer: Timer? = null
   private var player: MediaPlayer? = null
   private var currentFilePath: String? = null
-  private var currentAmplitudes: List<Int> = emptyList()
 
   override fun startRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Recording) -> Unit) {
     if (recorder != null) return // Already recording
@@ -38,7 +38,8 @@ internal class AndroidAudioRecordingManager(
       start()
 
       val startTime = clock.now()
-      val amplitudes = mutableListOf<Int>()
+      var amplitudes = emptyList<Int>()
+      val samplesPerSecond = 20
 
       onStateUpdate(
         AudioRecordingStepState.AudioRecording.Recording(
@@ -52,7 +53,8 @@ internal class AndroidAudioRecordingManager(
       timer?.schedule(
         timerTask {
           recorder?.maxAmplitude?.let { amplitude ->
-            amplitudes.add(amplitude)
+            if (amplitude == 0) return@let
+            amplitudes = amplitudes.plus(amplitude).takeLast((1.5 * samplesPerSecond).toInt())
             onStateUpdate(
               AudioRecordingStepState.AudioRecording.Recording(
                 amplitudes = amplitudes.toList(),
@@ -63,14 +65,13 @@ internal class AndroidAudioRecordingManager(
           }
         },
         0L,
-        1000L / 60,
+        1000L / samplesPerSecond,
       )
     }
   }
 
   override fun stopRecording(onStateUpdate: (AudioRecordingStepState.AudioRecording.Playback) -> Unit) {
     val filePath = currentFilePath ?: return
-    val amplitudes = currentAmplitudes
 
     cleanupRecorder()
 
@@ -82,7 +83,6 @@ internal class AndroidAudioRecordingManager(
             filePath = filePath,
             isPlaying = false,
             isPrepared = true,
-            amplitudes = amplitudes,
             hasError = false,
           ),
         )
@@ -110,7 +110,6 @@ internal class AndroidAudioRecordingManager(
   override fun reset() {
     cleanup()
     currentFilePath = null
-    currentAmplitudes = emptyList()
   }
 
   private fun cleanupRecorder() {

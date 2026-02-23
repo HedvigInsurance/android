@@ -17,3 +17,17 @@ fun <T> dropUnlessResumed(block: (T) -> Unit): (T) -> Unit {
     }
   }
 }
+
+/**
+ * A copy of [androidx.lifecycle.compose.dropUnlessResumed] which allows for two generic [E], [T] parameters
+ */
+@Composable
+fun <E, T> dropUnlessResumed(block: (E, T) -> Unit): (E, T) -> Unit {
+  return with(LocalLifecycleOwner.current) {
+    { e, t ->
+      if (lifecycle.currentState.isAtLeast(State.RESUMED)) {
+        block(e, t)
+      }
+    }
+  }
+}

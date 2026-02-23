@@ -1,10 +1,11 @@
 package com.hedvig.android
 
 import androidx.room.gradle.RoomExtension
-import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.Lint
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import com.apollographql.apollo.gradle.api.ApolloExtension
 import com.apollographql.apollo.gradle.api.Service
 import com.apollographql.apollo.gradle.internal.ApolloDownloadSchemaTask
@@ -26,6 +27,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 abstract class HedvigGradlePluginExtension @Inject constructor(
   private val project: Project,
@@ -181,13 +183,13 @@ private abstract class ComposeHandler {
 //      configureComposeCompilerMetrics(project)
 //    }
     project.configureIfPresent<LibraryExtension> {
-      configureComposeAndroidBuildFeature()
+      buildFeatures.compose = true
     }
-    project.configureIfPresent<BaseAppModuleExtension> {
-      configureComposeAndroidBuildFeature()
+    project.configureIfPresent<ApplicationExtension> {
+      buildFeatures.compose = true
     }
     val isAndroidLibrary = project.extensions.findByType<LibraryExtension>() != null
-    val isAndroidApp = project.extensions.findByType<BaseAppModuleExtension>() != null
+    val isAndroidApp = project.extensions.findByType<ApplicationExtension>() != null
     val isAndroidMultiplatformLibrary =
       project.extensions.findByType<KotlinMultiplatformAndroidComponentsExtension>() != null
     project.dependencies {
@@ -202,12 +204,6 @@ private abstract class ComposeHandler {
           add("implementation", libs.androidx.compose.uiTooling)
         }
       }
-    }
-  }
-
-  private fun AndroidCommonExtension.configureComposeAndroidBuildFeature() {
-    buildFeatures {
-      compose = true
     }
   }
 
@@ -238,9 +234,12 @@ private abstract class AndroidResHandler {
     project.configureIfPresent<LibraryExtension> {
       androidResources.enable = true
     }
-    project.configureIfPresent<KotlinMultiplatformAndroidLibraryExtension> {
-      @Suppress("UnstableApiUsage")
-      androidResources.enable = true
+    // For KMP android library targets, configure android resources via the KMP extension's targets
+    project.configureIfPresent<KotlinMultiplatformExtension> {
+      targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java) {
+        @Suppress("UnstableApiUsage")
+        androidResources.enable = true
+      }
     }
     project.configureIfPresent<ComposeExtension> {
       extensions.configure<ResourcesExtension> {
@@ -272,6 +271,14 @@ private abstract class RoomHandler {
     }
     project.extensions.configure<RoomExtension> {
       schemaDirectory(project.rootDir.resolveSchemaRelativeToRootDir().absolutePath)
+    }
+    // Room's KSP-generated code calls internal Room APIs annotated with @RestrictTo(LIBRARY_GROUP),
+    // which triggers RestrictedApi lint errors. Since this is generated code we don't control,
+    // allow modules to disable specific lint checks when using Room.
+    project.afterEvaluate {
+      project.extensions.findByType<Lint>()?.apply {
+        disable.add("RestrictedApi")
+      }
     }
   }
 }

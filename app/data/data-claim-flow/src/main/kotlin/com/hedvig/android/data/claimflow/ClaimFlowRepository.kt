@@ -500,65 +500,88 @@ private suspend fun ClaimFlowStepFragment.CurrentStep.toClaimFlowStep(
       )
     }
 
-    is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> ClaimFlowStep.ClaimFailedStep(flowId)
+    is ClaimFlowStepFragment.FlowClaimFailedStepCurrentStep -> {
+      ClaimFlowStep.ClaimFailedStep(flowId)
+    }
+
     is ClaimFlowStepFragment.FlowClaimSuccessStepCurrentStep -> {
       selfServiceCompletedEventManager.completedSelfServiceSuccessfully()
       ClaimFlowStep.ClaimSuccessStep(flowId)
     }
 
-    is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> ClaimFlowStep.ClaimSelectContractStep(
-      flowId,
-      options,
-      selectedOptionId,
-    )
+    is ClaimFlowStepFragment.FlowClaimContractSelectStepCurrentStep -> {
+      ClaimFlowStep.ClaimSelectContractStep(
+        flowId,
+        options,
+        selectedOptionId,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimDeflectGlassDamageStepCurrentStep -> ClaimFlowStep.ClaimDeflectGlassDamageStep(
-      flowId,
-      partners,
-    )
+    is ClaimFlowStepFragment.FlowClaimDeflectGlassDamageStepCurrentStep -> {
+      ClaimFlowStep.ClaimDeflectGlassDamageStep(
+        flowId,
+        partners,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimDeflectTowingStepCurrentStep -> ClaimFlowStep.ClaimDeflectTowingStep(
-      flowId,
-      partners,
-    )
+    is ClaimFlowStepFragment.FlowClaimDeflectTowingStepCurrentStep -> {
+      ClaimFlowStep.ClaimDeflectTowingStep(
+        flowId,
+        partners,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimDeflectEirStepCurrentStep -> ClaimFlowStep.ClaimDeflectEirStep(
-      flowId,
-      partners,
-    )
+    is ClaimFlowStepFragment.FlowClaimDeflectEirStepCurrentStep -> {
+      ClaimFlowStep.ClaimDeflectEirStep(
+        flowId,
+        partners,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep -> ClaimFlowStep.ClaimConfirmEmergencyStep(
-      flowId,
-      text,
-      confirmEmergency,
-      options,
-    )
+    is ClaimFlowStepFragment.FlowClaimConfirmEmergencyStepCurrentStep -> {
+      ClaimFlowStep.ClaimConfirmEmergencyStep(
+        flowId,
+        text,
+        confirmEmergency,
+        options,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimDeflectEmergencyStepCurrentStep -> ClaimFlowStep.ClaimDeflectEmergencyStep(
-      flowId,
-      partners,
-    )
+    is ClaimFlowStepFragment.FlowClaimDeflectEmergencyStepCurrentStep -> {
+      ClaimFlowStep.ClaimDeflectEmergencyStep(
+        flowId,
+        partners,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimDeflectPestsStepCurrentStep -> ClaimFlowStep.ClaimDeflectPestsStep(
-      flowId,
-      partners,
-    )
+    is ClaimFlowStepFragment.FlowClaimDeflectPestsStepCurrentStep -> {
+      ClaimFlowStep.ClaimDeflectPestsStep(
+        flowId,
+        partners,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimFileUploadStepCurrentStep -> ClaimFlowStep.ClaimFileUploadStep(
-      flowId,
-      title,
-      targetUploadUrl,
-      uploads,
-    )
+    is ClaimFlowStepFragment.FlowClaimFileUploadStepCurrentStep -> {
+      ClaimFlowStep.ClaimFileUploadStep(
+        flowId,
+        title,
+        targetUploadUrl,
+        uploads,
+      )
+    }
 
-    is ClaimFlowStepFragment.FlowClaimDeflectIDProtectionStepCurrentStep -> ClaimFlowStep.ClaimDeflectIdProtectionStep(
-      flowId,
-      title,
-      description,
-      partners,
-    )
+    is ClaimFlowStepFragment.FlowClaimDeflectIDProtectionStepCurrentStep -> {
+      ClaimFlowStep.ClaimDeflectIdProtectionStep(
+        flowId,
+        title,
+        description,
+        partners,
+      )
+    }
 
-    else -> ClaimFlowStep.UnknownStep(flowId)
+    else -> {
+      ClaimFlowStep.UnknownStep(flowId)
+    }
   }
 }
 

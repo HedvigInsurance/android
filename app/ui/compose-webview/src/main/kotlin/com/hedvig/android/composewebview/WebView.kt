@@ -452,17 +452,31 @@ class WebViewNavigator(private val coroutineScope: CoroutineScope) {
   internal suspend fun WebView.handleNavigationEvents(): Nothing = withContext(Dispatchers.Main) {
     navigationEvents.collect { event ->
       when (event) {
-        is NavigationEvent.Back -> goBack()
-        is NavigationEvent.Forward -> goForward()
-        is NavigationEvent.Reload -> reload()
-        is NavigationEvent.StopLoading -> stopLoading()
-        is NavigationEvent.LoadHtml -> loadDataWithBaseURL(
-          event.baseUrl,
-          event.html,
-          event.mimeType,
-          event.encoding,
-          event.historyUrl,
-        )
+        is NavigationEvent.Back -> {
+          goBack()
+        }
+
+        is NavigationEvent.Forward -> {
+          goForward()
+        }
+
+        is NavigationEvent.Reload -> {
+          reload()
+        }
+
+        is NavigationEvent.StopLoading -> {
+          stopLoading()
+        }
+
+        is NavigationEvent.LoadHtml -> {
+          loadDataWithBaseURL(
+            event.baseUrl,
+            event.html,
+            event.mimeType,
+            event.encoding,
+            event.historyUrl,
+          )
+        }
 
         is NavigationEvent.LoadUrl -> {
           loadUrl(event.url, event.additionalHttpHeaders)

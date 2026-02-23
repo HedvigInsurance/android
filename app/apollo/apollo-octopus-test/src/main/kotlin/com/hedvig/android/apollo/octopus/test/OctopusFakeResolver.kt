@@ -19,17 +19,36 @@ object OctopusFakeResolver : FakeResolver by delegate {
         .rawType()
         .name
     ) {
-      "Date" ->
+      "Date" -> {
         Clock.System
           .now()
           .toLocalDateTime(TimeZone.currentSystemDefault())
           .date
-      "UUID" -> UUID.randomUUID().toString()
-      "Url" -> """www.example.com"""
-      "Instant" -> kotlin.time.Instant.DISTANT_FUTURE
-      "DateTime" -> kotlin.time.Instant.DISTANT_FUTURE
-      "Markdown" -> MarkdownString("test")
-      else -> delegate.resolveLeaf(context)
+      }
+
+      "UUID" -> {
+        UUID.randomUUID().toString()
+      }
+
+      "Url" -> {
+        """www.example.com"""
+      }
+
+      "Instant" -> {
+        kotlin.time.Instant.DISTANT_FUTURE
+      }
+
+      "DateTime" -> {
+        kotlin.time.Instant.DISTANT_FUTURE
+      }
+
+      "Markdown" -> {
+        MarkdownString("test")
+      }
+
+      else -> {
+        delegate.resolveLeaf(context)
+      }
     }
   }
 

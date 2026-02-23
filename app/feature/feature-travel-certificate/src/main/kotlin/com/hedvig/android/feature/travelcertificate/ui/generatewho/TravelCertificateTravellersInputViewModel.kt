@@ -63,8 +63,14 @@ internal class TravelCertificateTravellersInputPresenter(
 
     CollectEvents { event ->
       when (event) {
-        TravelCertificateTravellersInputEvent.RetryLoadData -> loadIteration++
-        TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> generateIteration++
+        TravelCertificateTravellersInputEvent.RetryLoadData -> {
+          loadIteration++
+        }
+
+        TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> {
+          generateIteration++
+        }
+
         is TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked -> {
           coInsuredIncludedMap.put(event.coInsured.id, !event.coInsured.isIncluded)
         }
@@ -131,8 +137,14 @@ internal class TravelCertificateTravellersInputPresenter(
     }
 
     return when (val screenContentValue = screenContent) {
-      TravelersInputScreenContent.Failure -> TravelCertificateTravellersInputUiState.Failure
-      TravelersInputScreenContent.Loading -> TravelCertificateTravellersInputUiState.Loading
+      TravelersInputScreenContent.Failure -> {
+        TravelCertificateTravellersInputUiState.Failure
+      }
+
+      TravelersInputScreenContent.Loading -> {
+        TravelCertificateTravellersInputUiState.Loading
+      }
+
       is TravelersInputScreenContent.Success -> {
         TravelCertificateTravellersInputUiState.Success(
           coInsuredHasMissingInfo = screenContentValue.coInsuredHasMissingInfo,
@@ -143,9 +155,11 @@ internal class TravelCertificateTravellersInputPresenter(
         )
       }
 
-      is TravelersInputScreenContent.UrlFetched -> TravelCertificateTravellersInputUiState.UrlFetched(
-        screenContentValue.travelCertificateUrl,
-      )
+      is TravelersInputScreenContent.UrlFetched -> {
+        TravelCertificateTravellersInputUiState.UrlFetched(
+          screenContentValue.travelCertificateUrl,
+        )
+      }
     }
   }
 }

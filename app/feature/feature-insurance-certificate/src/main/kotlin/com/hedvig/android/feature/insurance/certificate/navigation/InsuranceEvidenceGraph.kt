@@ -11,12 +11,12 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
+import androidx.navigation.NavController
 import com.hedvig.core.common.android.sharePDF
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.insuranceEvidenceGraph(
-  navigator: Navigator,
+  navController: NavController,
   applicationId: String,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
@@ -25,14 +25,14 @@ fun NavGraphBuilder.insuranceEvidenceGraph(
   ) {
     navdestination<InsuranceEvidenceDestination.InsuranceEvidenceEmailInput>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.insuranceEvidence),
-    ) { navBackStackEntry ->
+    ) {
       val viewModel: InsuranceEvidenceEmailInputViewModel = koinViewModel()
       InsuranceEvidenceEmailInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         navigateToShowCertificate = { url ->
-          with(navigator) {
-            navigateUnsafe(InsuranceEvidenceDestination.ShowCertificate(url)) {
+          with(navController) {
+            navigate(InsuranceEvidenceDestination.ShowCertificate(url)) {
               typedPopUpTo<InsuranceEvidenceDestination.InsuranceEvidenceEmailInput>({ inclusive = true })
             }
           }
@@ -45,7 +45,7 @@ fun NavGraphBuilder.insuranceEvidenceGraph(
       InsuranceEvidenceOverviewDestination(
         insuranceEvidenceUrl = certificateUrl,
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onShareInsuranceEvidence = {
           context.sharePDF(it, applicationId)
         },

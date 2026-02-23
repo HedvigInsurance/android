@@ -22,8 +22,14 @@ class MonetaryAmountOffsetMapping(
     if (text.length <= 3) return offset.coerceAtMost(text.length)
     val numberOfCharsBeforeFirstSpace = text.length % 3
     return when {
-      numberOfCharsBeforeFirstSpace == 0 -> offset - (offset / 4)
-      offset <= numberOfCharsBeforeFirstSpace -> offset
+      numberOfCharsBeforeFirstSpace == 0 -> {
+        offset - (offset / 4)
+      }
+
+      offset <= numberOfCharsBeforeFirstSpace -> {
+        offset
+      }
+
       else -> {
         val indexOfAfterFirstSpace = numberOfCharsBeforeFirstSpace + 1
         offset - 1 - ((offset - indexOfAfterFirstSpace) / 4)

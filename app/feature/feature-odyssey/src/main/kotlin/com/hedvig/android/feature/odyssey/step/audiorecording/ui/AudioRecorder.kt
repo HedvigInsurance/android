@@ -98,25 +98,29 @@ internal fun AudioRecorder(
   modifier: Modifier = Modifier,
 ) {
   when (uiState) {
-    is Playback -> Playback(
-      uiState = uiState,
-      submit = {
-        val filePath = uiState.filePath
-        val audioFile = File(filePath)
-        submitAudioFile(audioFile)
-      },
-      redo = redo,
-      modifier = modifier,
-    )
+    is Playback -> {
+      Playback(
+        uiState = uiState,
+        submit = {
+          val filePath = uiState.filePath
+          val audioFile = File(filePath)
+          submitAudioFile(audioFile)
+        },
+        redo = redo,
+        modifier = modifier,
+      )
+    }
 
-    is PrerecordedWithAudioContent -> PrerecordedPlayback(
-      uiState = uiState,
-      submitAudioUrl = {
-        submitAudioUrl(uiState.audioContent.audioUrl)
-      },
-      redo = redo,
-      modifier = modifier,
-    )
+    is PrerecordedWithAudioContent -> {
+      PrerecordedPlayback(
+        uiState = uiState,
+        submitAudioUrl = {
+          submitAudioUrl(uiState.audioContent.audioUrl)
+        },
+        redo = redo,
+        modifier = modifier,
+      )
+    }
 
     else -> {
       val isRecording = uiState is Recording
@@ -153,6 +157,7 @@ internal fun AudioRecorder(
               .clickable(
                 onClickLabel = when (isRecording) {
                   true -> stopRecordingText
+
                   // todo: this one is not working somehow,
                   // so added onClickLabel inside val recordingState
                   false -> startRecordingText

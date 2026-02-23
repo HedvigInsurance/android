@@ -154,6 +154,7 @@ private fun EnterNewAddressScreen(
       ) {
         when (uiState) {
           Loading -> HedvigFullScreenCenterAlignedProgress()
+
           MissingOngoingMovingFlow -> HedvigErrorSection(
             onButtonClick = popBackStack,
             subTitle = null,
@@ -386,7 +387,10 @@ private fun DatePickerField(
 @Composable
 private fun EnterNewAddressValidationError.string(): String {
   return when (this) {
-    EmptyAddress -> stringResource(Res.string.CHANGE_ADDRESS_STREET_ERROR)
+    EmptyAddress -> {
+      stringResource(Res.string.CHANGE_ADDRESS_STREET_ERROR)
+    }
+
     is InvalidMovingDate -> {
       when (this) {
         is InvalidMovingDate.InvalidChoice -> {
@@ -398,7 +402,9 @@ private fun EnterNewAddressValidationError.string(): String {
           stringResource(Res.string.GENERAL_INVALID_INPUT)
         }
 
-        is InvalidMovingDate.MustSelectDate -> stringResource(Res.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
+        is InvalidMovingDate.MustSelectDate -> {
+          stringResource(Res.string.CHANGE_ADDRESS_MOVING_DATE_ERROR)
+        }
       }
     }
 
@@ -412,11 +418,15 @@ private fun EnterNewAddressValidationError.string(): String {
           stringResource(Res.string.GENERAL_INVALID_INPUT)
         }
 
-        InvalidPostalCode.Missing -> stringResource(Res.string.CHANGE_ADDRESS_POSTAL_CODE_ERROR)
+        InvalidPostalCode.Missing -> {
+          stringResource(Res.string.CHANGE_ADDRESS_POSTAL_CODE_ERROR)
+        }
       }
     }
 
-    is InvalidSquareMeters -> stringResource(Res.string.GENERAL_INVALID_INPUT)
+    is InvalidSquareMeters -> {
+      stringResource(Res.string.GENERAL_INVALID_INPUT)
+    }
   }
 }
 

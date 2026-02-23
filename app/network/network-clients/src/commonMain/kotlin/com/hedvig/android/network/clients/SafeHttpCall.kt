@@ -68,6 +68,7 @@ private fun Throwable.toNetworkError(): NetworkError {
       message = "Network error: ${message ?: "Unable to reach server"}",
       throwable = this,
     )
+
     else -> NetworkError.UnknownError(
       message = "Unexpected error: ${message ?: "Unknown error"}",
       throwable = this,

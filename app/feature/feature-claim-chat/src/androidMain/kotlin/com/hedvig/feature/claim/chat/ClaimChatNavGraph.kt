@@ -1,6 +1,6 @@
 package com.hedvig.feature.claim.chat
 
-import androidx.navigation.NavBackStackEntry
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
@@ -56,7 +56,7 @@ fun NavGraphBuilder.claimChatGraph(
   tryToDialPhone: (String) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   navdestination<ClaimChatDestination> {
     ClaimChatDestination(
@@ -83,16 +83,14 @@ fun NavGraphBuilder.claimChatGraph(
       navigateUp = navController::navigateUp,
     )
   }
-  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) { backStackEntry ->
+  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
     ClaimOutcomeDeflectDestination(
       deflect = deflect,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
       openUrl = openUrl,
       tryToDialPhone = tryToDialPhone,
-      onNavigateToNewConversation = {
-        onNavigateToNewConversation(backStackEntry)
-      },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
   navdestination<ClaimOutcomeNewClaimDestination>(ClaimOutcomeNewClaimDestination) {

@@ -79,13 +79,18 @@ private fun EditCoInsuredTriageScreen(
   clearNavigation: () -> Unit,
 ) {
   when (uiState) {
-    Failure -> HedvigScaffold(
-      navigateUp = navigateUp,
-    ) {
-      HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+    Failure -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+      }
     }
 
-    Loading -> HedvigFullScreenCenterAlignedProgress()
+    Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is Success -> {
       LaunchedEffect(uiState.idToNavigateToAddOrRemoveCoInsured) {
         if (uiState.idToNavigateToAddOrRemoveCoInsured != null) {

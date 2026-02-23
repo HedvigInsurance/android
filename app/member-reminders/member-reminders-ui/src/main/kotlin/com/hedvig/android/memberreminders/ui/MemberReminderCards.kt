@@ -152,29 +152,37 @@ private fun ColumnScope.MemberReminderCard(
   modifier: Modifier = Modifier,
 ) {
   when (memberReminder) {
-    is MemberReminder.CoInsuredInfo -> ReminderCoInsuredInfo(
-      navigateToContractDetail = {
-        navigateToAddMissingInfo(memberReminder.contractId)
-      },
-      modifier = modifier,
-    )
+    is MemberReminder.CoInsuredInfo -> {
+      ReminderCoInsuredInfo(
+        navigateToContractDetail = {
+          navigateToAddMissingInfo(memberReminder.contractId)
+        },
+        modifier = modifier,
+      )
+    }
 
-    is MemberReminder.PaymentReminder.ConnectPayment -> ReminderCardConnectPayment(
-      navigateToConnectPayment = navigateToConnectPayment,
-      modifier = modifier,
-    )
+    is MemberReminder.PaymentReminder.ConnectPayment -> {
+      ReminderCardConnectPayment(
+        navigateToConnectPayment = navigateToConnectPayment,
+        modifier = modifier,
+      )
+    }
 
-    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> ReminderCardMissingPayment(
-      terminationDate = memberReminder.terminationDate,
-      onNavigateToNewConversation = onNavigateToNewConversation,
-      modifier = modifier,
-    )
+    is MemberReminder.PaymentReminder.TerminationDueToMissedPayments -> {
+      ReminderCardMissingPayment(
+        terminationDate = memberReminder.terminationDate,
+        onNavigateToNewConversation = onNavigateToNewConversation,
+        modifier = modifier,
+      )
+    }
 
-    is UpcomingRenewal -> ReminderCardUpcomingRenewals(
-      upcomingRenewal = memberReminder,
-      openUrl = openUrl,
-      modifier = modifier,
-    )
+    is UpcomingRenewal -> {
+      ReminderCardUpcomingRenewals(
+        upcomingRenewal = memberReminder,
+        openUrl = openUrl,
+        modifier = modifier,
+      )
+    }
 
     is MemberReminder.EnableNotifications -> {
       if (notificationPermissionState != null) {
@@ -193,10 +201,12 @@ private fun ColumnScope.MemberReminderCard(
       }
     }
 
-    is MemberReminder.ContactInfoUpdateNeeded -> ReminderCardUpdateContactInfo(
-      navigateToContactInfo = navigateToContactInfo,
-      modifier = modifier,
-    )
+    is MemberReminder.ContactInfoUpdateNeeded -> {
+      ReminderCardUpdateContactInfo(
+        navigateToContactInfo = navigateToContactInfo,
+        modifier = modifier,
+      )
+    }
   }
 }
 

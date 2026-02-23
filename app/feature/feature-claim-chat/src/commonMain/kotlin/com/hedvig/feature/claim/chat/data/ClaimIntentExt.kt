@@ -57,53 +57,66 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLoca
 
 private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): StepContent {
   return when (this) {
-    is FormFragment -> StepContent.Form(
-      fields = this.fields.toFields(locale),
-      isSkippable = isSkippable,
-    )
+    is FormFragment -> {
+      StepContent.Form(
+        fields = this.fields.toFields(locale),
+        isSkippable = isSkippable,
+      )
+    }
 
-    is ContentSelectFragment -> StepContent.ContentSelect(
-      options = options.toOptions(),
-      selectedOptionId = defaultSelectedId,
-      isSkippable = isSkippable,
-      style = when (style) {
-        ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
-        ClaimIntentStepContentSelectStyle.BINARY -> StepContent.ContentSelectStyle.BINARY
-        ClaimIntentStepContentSelectStyle.UNKNOWN__ -> StepContent.ContentSelectStyle.PILL
-      },
-    )
+    is ContentSelectFragment -> {
+      StepContent.ContentSelect(
+        options = options.toOptions(),
+        selectedOptionId = defaultSelectedId,
+        isSkippable = isSkippable,
+        style = when (style) {
+          ClaimIntentStepContentSelectStyle.PILL -> StepContent.ContentSelectStyle.PILL
+          ClaimIntentStepContentSelectStyle.BINARY -> StepContent.ContentSelectStyle.BINARY
+          ClaimIntentStepContentSelectStyle.UNKNOWN__ -> StepContent.ContentSelectStyle.PILL
+        },
+      )
+    }
 
-    is TaskFragment -> StepContent.Task(
-      descriptions = listOf(element = description),
-      isCompleted = isCompleted,
-    )
+    is TaskFragment -> {
+      StepContent.Task(
+        descriptions = listOf(element = description),
+        isCompleted = isCompleted,
+        failedToSubmit = false,
+      )
+    }
 
-    is AudioRecordingFragment -> StepContent.AudioRecording(
-      uploadUri = uploadUri,
-      isSkippable = isSkippable,
-      recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
-      freeTextMinLength = freeTextMinLength,
-      freeTextMaxLength = freeTextMaxLength,
-    )
+    is AudioRecordingFragment -> {
+      StepContent.AudioRecording(
+        uploadUri = uploadUri,
+        isSkippable = isSkippable,
+        recordingState = AudioRecordingStepState.AudioRecording.NotRecording,
+        freeTextMinLength = freeTextMinLength,
+        freeTextMaxLength = freeTextMaxLength,
+      )
+    }
 
-    is FileUploadFragment -> StepContent.FileUpload(
-      uploadUri = uploadUri,
-      isSkippable = isSkippable,
-      localFiles = emptyList(),
-    )
+    is FileUploadFragment -> {
+      StepContent.FileUpload(
+        uploadUri = uploadUri,
+        isSkippable = isSkippable,
+        localFiles = emptyList(),
+      )
+    }
 
-    is SummaryFragment -> StepContent.Summary(
-      items = items.map { StepContent.Summary.Item(it.title, it.value) },
-      audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
-      fileUploads = fileUploads.map {
-        StepContent.Summary.FileUpload(
-          it.url,
-          it.contentType,
-          it.fileName,
-        )
-      },
-      freeTexts = freeTexts,
-    )
+    is SummaryFragment -> {
+      StepContent.Summary(
+        items = items.map { StepContent.Summary.Item(it.title, it.value) },
+        audioRecordings = audioRecordings.map { StepContent.Summary.AudioRecording(it.url) },
+        fileUploads = fileUploads.map {
+          StepContent.Summary.FileUpload(
+            it.url,
+            it.contentType,
+            it.fileName,
+          )
+        },
+        freeTexts = freeTexts,
+      )
+    }
 
     is DeflectionFragment -> {
       fun DeflectionInfoBlockFragment.toInfoBlock(): StepContent.Deflect.InfoBlock {
@@ -150,7 +163,9 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       )
     }
 
-    else -> StepContent.Unknown
+    else -> {
+      StepContent.Unknown
+    }
   }
 }
 
@@ -187,19 +202,23 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         StepContent.Form.FieldOption(
           text = it.title,
           value = it.value,
+          subtitle = it.subtitle,
         )
       } ?: emptyList(),
       selectedOptions = field.defaultValues.toFieldOptions(field.options),
       datePickerUiState = when (field.type) {
-        ClaimIntentStepContentFormFieldType.DATE ->
+        ClaimIntentStepContentFormFieldType.DATE -> {
           DatePickerUiState(
             locale = locale,
             initiallySelectedDate = field.defaultValues.getOrNull(0)?.let { LocalDate.parse(it) },
             minDate = field.minValue?.let { LocalDate.parse(it) } ?: LocalDate(1900, 1, 1),
             maxDate = field.maxValue?.let { LocalDate.parse(it) } ?: LocalDate(2100, 1, 1),
           )
+        }
 
-        else -> null
+        else -> {
+          null
+        }
       },
     )
   }
@@ -214,10 +233,11 @@ private fun List<String>.toFieldOptions(
         StepContent.Form.FieldOption(
           value = it.value,
           text = it.title, // if we have a list to choose from
+          subtitle = it.subtitle,
         )
       }
       ?: // if it is just a value
-      StepContent.Form.FieldOption(defaultStringValue, defaultStringValue)
+      StepContent.Form.FieldOption(defaultStringValue, defaultStringValue, null)
   }
 }
 

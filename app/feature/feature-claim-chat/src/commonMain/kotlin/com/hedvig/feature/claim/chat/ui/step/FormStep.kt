@@ -138,7 +138,7 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
                   )
                 },
                 errorText = errorText,
@@ -150,7 +150,7 @@ private fun FormContent(
                 onSelectFieldAnswer(
                   field.id,
                   field.datePickerUiState?.datePickerState?.selectedDateMillis?.let {
-                    StepContent.Form.FieldOption(it.toString(), it.toString())
+                    StepContent.Form.FieldOption(it.toString(), it.toString(), null)
                   },
                 )
               }
@@ -170,7 +170,7 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it) },
+                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
                   )
                 },
                 keyboardType = KeyboardType.Number,
@@ -185,6 +185,7 @@ private fun FormContent(
                   RadioOption(
                     id = RadioOptionId(it.value),
                     text = it.text,
+                    label = it.subtitle,
                     iconResource = null,
                   )
                 },
@@ -216,6 +217,7 @@ private fun FormContent(
                   RadioOption(
                     id = RadioOptionId(it.value),
                     text = it.text,
+                    label = it.subtitle,
                     iconResource = null,
                   )
                 },
@@ -242,7 +244,7 @@ private fun FormContent(
                 onSelect = {
                   onSelectFieldAnswer(
                     field.id,
-                    StepContent.Form.FieldOption(it, it),
+                    StepContent.Form.FieldOption(it, it, null),
                   )
                 },
                 questionText = field.title,
@@ -387,12 +389,16 @@ internal fun DateSelectBubble(
   modifier: Modifier = Modifier,
   errorText: String? = null,
 ) {
+  val focusManager = LocalFocusManager.current
   Column(modifier) {
     DatePickerWithDialog(
       datePickerState,
       canInteract = true,
       startText = questionLabel ?: "",
       Modifier.fillMaxWidth(),
+      onBeforeShow = {
+        focusManager.clearFocus()
+      },
     )
     AnimatedVisibility(
       // Adding this since datePickerState handles update internally and it's hard to clear the error state as with
@@ -423,6 +429,7 @@ internal fun SingleSelectBubbleWithDialog(
   modifier: Modifier = Modifier,
   errorText: String? = null,
 ) {
+  val focusManager = LocalFocusManager.current
   var showDialog by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     SingleSelectDialog(
@@ -437,7 +444,10 @@ internal fun SingleSelectBubbleWithDialog(
   }
   Column(modifier) {
     HedvigBigCard(
-      onClick = { showDialog = true },
+      onClick = {
+        focusManager.clearFocus()
+        showDialog = true
+      },
       labelText = questionLabel,
       inputText = options.firstOrNull {
         it.id == selectedOptionId
@@ -470,6 +480,7 @@ internal fun MultiSelectBubbleWithDialog(
   modifier: Modifier = Modifier,
   errorText: String? = null,
 ) {
+  val focusManager = LocalFocusManager.current
   var showDialog: Boolean by rememberSaveable { mutableStateOf(false) }
   if (showDialog) {
     MultiSelectDialog(
@@ -483,7 +494,10 @@ internal fun MultiSelectBubbleWithDialog(
   }
   Column(modifier) {
     HedvigBigCard(
-      onClick = { showDialog = true },
+      onClick = {
+        focusManager.clearFocus()
+        showDialog = true
+      },
       labelText = questionLabel,
       inputText = when {
         selectedOptionIds.isEmpty() -> null

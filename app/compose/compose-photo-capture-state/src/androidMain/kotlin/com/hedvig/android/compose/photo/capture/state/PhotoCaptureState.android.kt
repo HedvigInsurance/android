@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.content.FileProvider
 import com.eygraber.uri.toKmpUri
 import com.hedvig.android.logger.LogPriority
@@ -73,6 +74,12 @@ actual fun rememberPhotoCaptureState(
   appPackageId: String,
   onPhotoCaptured: (uri: com.eygraber.uri.Uri) -> Unit,
 ): PhotoCaptureState {
+  if (LocalInspectionMode.current) {
+    return object : PhotoCaptureState {
+      override fun launchTakePhotoRequest() {
+      }
+    }
+  }
   val context = LocalContext.current
   val activity = context.findActivity()
   val externalPhotosDirectory = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)

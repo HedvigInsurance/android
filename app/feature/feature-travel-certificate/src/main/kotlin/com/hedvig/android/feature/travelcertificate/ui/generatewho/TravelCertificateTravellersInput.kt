@@ -72,7 +72,9 @@ private fun TravelCertificateTravellersInput(
 ) {
   Box(Modifier.fillMaxSize()) {
     when (uiState) {
-      TravelCertificateTravellersInputUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+      TravelCertificateTravellersInputUiState.Loading -> {
+        HedvigFullScreenCenterAlignedProgress()
+      }
 
       Failure -> {
         HedvigScaffold(

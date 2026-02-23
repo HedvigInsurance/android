@@ -318,9 +318,18 @@ private fun SelectedSurveyInfoBox(
             is SurveyOptionSuggestion.Known.Action -> InfoCardStyle.Button(
               buttonText = suggestion.buttonTitle,
               onButtonClick = when (suggestion) {
-                is DowngradePriceByChangingTier -> tryToDowngradePrice
-                is UpdateAddress -> dropUnlessResumed { navigateToMovingFlow() }
-                is UpgradeCoverageByChangingTier -> tryToUpgradeCoverage
+                is DowngradePriceByChangingTier -> {
+                  tryToDowngradePrice
+                }
+
+                is UpdateAddress -> {
+                  dropUnlessResumed { navigateToMovingFlow() }
+                }
+
+                is UpgradeCoverageByChangingTier -> {
+                  tryToUpgradeCoverage
+                }
+
                 is Redirect -> {
                   { openUrl(suggestion.url) }
                 }
