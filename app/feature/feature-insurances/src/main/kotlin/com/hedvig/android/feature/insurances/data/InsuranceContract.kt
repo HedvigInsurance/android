@@ -95,9 +95,16 @@ data class ContractAddon(
   val addonVariant: AddonVariant,
   val displayName: String,
   val description: String,
+  val status: Status,
   val isUpgradable: Boolean,
   val isRemovable: Boolean,
-)
+) {
+  sealed interface Status {
+    data class ActiveFrom(val date: LocalDate) : Status
+    data class EndsAt(val date: LocalDate) : Status
+    data object Unknown : Status
+  }
+}
 
 data class AvailableAddon(
   val relatedContractId: ContractId,

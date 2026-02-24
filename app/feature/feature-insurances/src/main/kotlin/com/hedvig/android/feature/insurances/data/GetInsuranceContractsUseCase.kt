@@ -200,6 +200,11 @@ private fun ContractFragment.toContract(
         addonVariant = it.addonVariant.toAddonVariant(),
         displayName = it.displayName,
         description = it.description,
+        status = when {
+          it.startDate != null -> ContractAddon.Status.ActiveFrom(it.startDate!!)
+          it.endDate != null -> ContractAddon.Status.EndsAt(it.endDate!!)
+          else -> ContractAddon.Status.Unknown
+        },
         isUpgradable = it.isUpgradable,
         isRemovable = it.isRemovable,
       )
