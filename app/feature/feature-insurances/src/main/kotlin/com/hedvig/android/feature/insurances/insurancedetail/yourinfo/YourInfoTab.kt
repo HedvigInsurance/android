@@ -363,21 +363,6 @@ private fun AddonsSection(
       onDismiss = { removeAddonBottomSheetState.dismiss() },
     )
   }
-  val addAddonBottomSheetState = rememberHedvigBottomSheetState<AvailableAddon>()
-  HedvigBottomSheet(
-    addAddonBottomSheetState,
-    contentPadding = PaddingValues(horizontal = 24.dp),
-  ) { addon ->
-    AddAddonBottomSheetContent(
-      addon = addon,
-      onAdd = dropUnlessResumed {
-        addAddonBottomSheetState.dismiss {
-          navigateToAddAddon(addon)
-        }
-      },
-      onDismiss = { addAddonBottomSheetState.dismiss() },
-    )
-  }
   if (existingAddons.isNotEmpty() || availableAddons.isNotEmpty()) {
     Surface(
       shape = HedvigTheme.shapes.cornerXLarge,
@@ -401,9 +386,7 @@ private fun AddonsSection(
             description = availableAddon.description,
             showTopDivider = index != 0 || existingAddons.isNotEmpty(),
             isAlreadyAdded = false,
-            modifier = Modifier.clickable {
-              addAddonBottomSheetState.show(availableAddon)
-            },
+            modifier = Modifier.clickable(onClick = dropUnlessResumed { navigateToAddAddon(availableAddon) }),
           )
         }
       }
