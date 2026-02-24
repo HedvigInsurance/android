@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.addon.purchase.ui.travelinsuranceplusexplanation
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,52 +42,58 @@ internal fun TravelInsurancePlusExplanationDestination(params: PerilComparisonPa
 @Composable
 private fun TravelInsurancePlusExplanationScreen(travelPerilData: PerilComparisonParams, navigateUp: () -> Unit) {
   HedvigScaffold(navigateUp) {
-    FlowHeading(
-      travelPerilData.whatsIncludedPageTitle,
-      travelPerilData.whatsIncludedPageDescription,
-      Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 18.dp),
-    ) // todo: change when BE allows
-    Spacer(Modifier.height(32.dp))
-    HighlightLabel(
-      labelText = stringResource(Res.string.ADDON_LEARN_MORE_LABEL),
-      size = Medium,
-      color = Blue(LIGHT),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(8.dp))
-    travelPerilData.perilList.forEachIndexed { index, item ->
-      val perilData = remember(travelPerilData) {
-        item.second.map {
-          PerilData(
-            title = it.title,
-            description = it.description,
-            covered = it.covered,
-            colorCode = it.colorCode,
-          )
-        }
-      }
-      item.first?.let {
-        Spacer(Modifier.height(8.dp))
-        HedvigText(
-          it,
-          modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Spacer(Modifier.height(8.dp))
-      }
-      PerilList(
-        perilData,
-        Small,
+    Column(
+      modifier = Modifier.padding(bottom = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(32.dp),
+    ) {
+      FlowHeading(
+        travelPerilData.whatsIncludedPageTitle,
+        travelPerilData.whatsIncludedPageDescription,
         Modifier
           .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+          .padding(horizontal = 18.dp),
       )
-      if (index != travelPerilData.perilList.lastIndex) {
-        Spacer(Modifier.height(16.dp))
+      travelPerilData.perilList.forEach { (perilTitle, perilList) ->
+        if (perilList.isNotEmpty()) {
+          PerilItem(perilTitle, perilList, Modifier.padding(horizontal = 16.dp))
+        }
       }
     }
-    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun PerilItem(
+  perilTitle: String?,
+  perilList: List<TravelPerilData>,
+  modifier: Modifier = Modifier,
+) {
+  val perilData = remember(perilList) {
+    perilList.map {
+      PerilData(
+        title = it.title,
+        description = it.description,
+        covered = it.covered,
+        colorCode = it.colorCode,
+      )
+    }
+  }
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    perilTitle?.let {
+      HighlightLabel(
+        labelText = it,
+        size = Medium,
+        color = Blue(LIGHT),
+      )
+    }
+    PerilList(
+      perilData,
+      Small,
+      Modifier.fillMaxWidth(),
+    )
   }
 }
 
