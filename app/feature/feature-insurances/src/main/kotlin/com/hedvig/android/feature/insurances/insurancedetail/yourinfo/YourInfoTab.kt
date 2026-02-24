@@ -91,6 +91,7 @@ import hedvig.resources.CONTRACT_COINSURED_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
 import hedvig.resources.CONTRACT_EDIT_INFO_LABEL
 import hedvig.resources.CONTRACT_NO_INFORMATION
+import hedvig.resources.CONTRACT_OVERVIEW_ADDON_ADD
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
 import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
 import hedvig.resources.DETAILS_TABLE_INSURANCE_PREMIUM
@@ -375,7 +376,9 @@ private fun AddonsSection(
             description = existingAddon.description,
             showTopDivider = index != 0,
             isAlreadyAdded = true,
-            modifier = Modifier.clickable {
+            modifier = Modifier.clickable(
+              enabled = existingAddon.isUpgradable || existingAddon.isRemovable,
+            ) {
               removeAddonBottomSheetState.show(existingAddon)
             },
           )
@@ -519,7 +522,7 @@ private fun AddonRow(
         labelText = if (isAlreadyAdded) {
           stringResource(Res.string.ADDON_ADDED_COVERAGE)
         } else {
-          stringResource(Res.string.ADDON_ADD_COVERAGE)
+          stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ADD)
         },
         size = HighlightLabelDefaults.HighLightSize.Medium,
         color = if (isAlreadyAdded) {
