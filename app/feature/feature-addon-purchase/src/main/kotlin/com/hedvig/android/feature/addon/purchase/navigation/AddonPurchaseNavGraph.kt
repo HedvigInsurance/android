@@ -147,6 +147,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       AddonSummaryDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
+        navigateBack = navController::popBackStack,
         onFailure = {
           navController.navigate(SubmitFailure)
         },

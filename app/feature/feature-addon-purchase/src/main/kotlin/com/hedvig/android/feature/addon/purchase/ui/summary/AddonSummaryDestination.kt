@@ -21,11 +21,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.DialogDefaults
@@ -58,11 +60,14 @@ import hedvig.resources.ADDON_FLOW_CONFIRMATION_TITLE
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL
 import hedvig.resources.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON
 import hedvig.resources.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE
+import hedvig.resources.CONFIRM_CHANGES_TITLE
 import hedvig.resources.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION
+import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
 import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
@@ -70,6 +75,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun AddonSummaryDestination(
   viewModel: AddonSummaryViewModel,
+  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
   onSuccess: (activationDate: LocalDate) -> Unit,
@@ -86,6 +92,7 @@ internal fun AddonSummaryDestination(
       onFailure()
     },
     navigateUp = navigateUp,
+    navigateBack = navigateBack,
     onSubmitQuoteClick = {
       viewModel.emit(AddonSummaryEvent.Submit)
     },
@@ -99,6 +106,7 @@ internal fun AddonSummaryDestination(
 private fun AddonSummaryScreen(
   uiState: AddonSummaryState,
   onSuccess: (LocalDate) -> Unit,
+  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
   reload: () -> Unit,
@@ -126,6 +134,7 @@ private fun AddonSummaryScreen(
 
       SummarySuccessScreen(
         uiState = uiState,
+        navigateBack = navigateBack,
         navigateUp = navigateUp,
         onConfirmClick = onSubmitQuoteClick,
       )
@@ -142,7 +151,12 @@ private fun AddonSummaryScreen(
 }
 
 @Composable
-private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
+private fun SummarySuccessScreen(
+  uiState: Content,
+  onConfirmClick: () -> Unit,
+  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
+) {
   HedvigScaffold(
     navigateUp,
     topAppBarText = stringResource(Res.string.TIER_FLOW_SUMMARY_TITLE),
@@ -160,7 +174,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
         buttonSize = DialogDefaults.ButtonSize.BIG,
-        confirmButtonLabel = stringResource(Res.string.ADDON_FLOW_CONFIRMATION_BUTTON),
+        confirmButtonLabel = stringResource(Res.string.GENERAL_CONFIRM),
         dismissButtonLabel = stringResource(Res.string.general_close_button),
         text = stringResource(
           Res.string.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION,
@@ -238,7 +252,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       }
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(Res.string.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON),
+        text = stringResource(Res.string.CONFIRM_CHANGES_TITLE),
         modifier = Modifier.fillMaxWidth(),
         buttonStyle = Primary,
         buttonSize = Large,
@@ -246,6 +260,15 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         onClick = {
           showConfirmationDialog = true
         },
+      )
+      Spacer(Modifier.height(8.dp))
+      HedvigButton(
+        text = stringResource(Res.string.general_cancel_button),
+        modifier = Modifier.fillMaxWidth(),
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        buttonSize = Large,
+        enabled = true,
+        onClick = dropUnlessResumed(block = navigateBack),
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -298,6 +321,7 @@ private fun PreviewAddonSummaryScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddonSummaryScreen(
         uiState,
+        {},
         {},
         {},
         {},
