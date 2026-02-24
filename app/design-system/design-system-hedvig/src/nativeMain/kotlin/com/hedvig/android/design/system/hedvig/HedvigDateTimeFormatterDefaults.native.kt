@@ -6,7 +6,7 @@ import kotlinx.datetime.LocalDateTime
 
 // todo ios date formatting
 actual object HedvigDateTimeFormatterDefaults {
-  actual fun isoLocalDateWithDots(locale: CommonLocale): DateFormatter {
+  actual fun isoLocalDateWithDashes(locale: CommonLocale): DateFormatter {
     return IosDateFormatter()
   }
 
