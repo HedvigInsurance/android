@@ -40,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -64,6 +65,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
@@ -80,7 +82,6 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
 import com.hedvig.android.feature.insurances.data.MonthlyCost
 import hedvig.resources.ADDON_ADDED_COVERAGE
 import hedvig.resources.ADDON_ADD_COVERAGE
-import hedvig.resources.ADDON_FLOW_ADD_TO_INSURANCE_BUTTON
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
 import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
@@ -91,7 +92,9 @@ import hedvig.resources.CONTRACT_COINSURED_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
 import hedvig.resources.CONTRACT_EDIT_INFO_LABEL
 import hedvig.resources.CONTRACT_NO_INFORMATION
+import hedvig.resources.CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE
 import hedvig.resources.CONTRACT_OVERVIEW_ADDON_ADD
+import hedvig.resources.CONTRACT_OVERVIEW_ADDON_ENDS_DATE
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
 import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
 import hedvig.resources.DETAILS_TABLE_INSURANCE_PREMIUM
@@ -365,6 +368,7 @@ private fun AddonsSection(
     )
   }
   if (existingAddons.isNotEmpty() || availableAddons.isNotEmpty()) {
+    val dateFormatter = HedvigDateTimeFormatterDefaults.isoLocalDateWithDashes(getLocale())
     Surface(
       shape = HedvigTheme.shapes.cornerXLarge,
       modifier = modifier,
@@ -373,7 +377,16 @@ private fun AddonsSection(
         existingAddons.forEachIndexed { index, existingAddon ->
           AddonRow(
             title = existingAddon.displayName,
-            description = existingAddon.description,
+            description = when (val status = existingAddon.status) {
+              is ContractAddon.Status.ActiveFrom -> {
+                stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE, dateFormatter.format(status.date))
+              }
+
+              is ContractAddon.Status.EndsAt -> {
+                stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ENDS_DATE, dateFormatter.format(status.date))
+              }
+              ContractAddon.Status.Unknown -> existingAddon.description
+            },
             showTopDivider = index != 0,
             isAlreadyAdded = true,
             modifier = Modifier.clickable(
@@ -882,6 +895,7 @@ private fun PreviewYourInfoTab() {
             ),
             displayName = "DisplayName",
             description = "Description",
+            status = ContractAddon.Status.ActiveFrom(LocalDate.fromEpochDays(100)),
             isUpgradable = false,
             isRemovable = false,
           ),
