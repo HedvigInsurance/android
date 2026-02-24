@@ -24,6 +24,7 @@ sealed interface InsuranceContract {
   val supportsEditCoInsured: Boolean
   val supportsAddressChange: Boolean
   val supportsTierChange: Boolean
+  val supportsRemovingAddon: Boolean
   val upcomingInsuranceAgreement: InsuranceAgreement?
   val isTerminated: Boolean
   val addons: List<Addon>?
@@ -59,6 +60,9 @@ sealed interface InsuranceContract {
     override val addons: List<Addon>? = currentInsuranceAgreement.addons
     override val cost: MonthlyCost = currentInsuranceAgreement.cost
     override val basePremium: UiMoney = currentInsuranceAgreement.basePremium
+    override val supportsRemovingAddon: Boolean = existingAddons.any {
+      it.isRemovable && it.status !is ContractAddon.Status.EndsAt
+    }
   }
 
   data class PendingInsuranceContract(
@@ -78,6 +82,7 @@ sealed interface InsuranceContract {
     override val supportsEditCoInsured: Boolean = false
     override val supportsAddressChange: Boolean = false
     override val supportsTierChange: Boolean = false
+    override val supportsRemovingAddon: Boolean = false
     override val upcomingInsuranceAgreement: InsuranceAgreement? = null
     override val isTerminated: Boolean = false
     override val existingAddons: List<ContractAddon> = emptyList()

@@ -299,12 +299,14 @@ private fun ContractDetailScreen(
                       totalNet = contract.cost.monthlyNet,
                     )
                     YourInfoTab(
+                      contractId = contract.id,
                       coverageItems = contract.displayItems,
                       coInsured = contract.coInsured,
                       allowChangeAddress = contract.supportsAddressChange,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
                       allowEditCoInsured = contract.supportsEditCoInsured,
                       allowChangeTier = contract.supportsTierChange,
+                      allowRemovingAddon = contract.supportsRemovingAddon,
                       onChangeTierClick = {
                         onChangeTierClick(contract.id)
                       },

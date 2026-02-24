@@ -115,12 +115,14 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun YourInfoTab(
+  contractId: String,
   coverageItems: List<DisplayItem>,
   coInsured: List<CoInsured>,
   allowChangeAddress: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
   allowChangeTier: Boolean,
+  allowRemovingAddon: Boolean,
   onChangeTierClick: () -> Unit,
   isDecommissioned: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
@@ -150,6 +152,7 @@ internal fun YourInfoTab(
       allowTerminatingInsurance = allowTerminatingInsurance,
       allowEditCoInsured = allowEditCoInsured,
       allowChangeTier = allowChangeTier,
+      allowRemovingAddon = allowRemovingAddon,
       onChangeTierClick = {
         editYourInfoBottomSheet.dismiss()
         onChangeTierClick()
@@ -164,6 +167,10 @@ internal fun YourInfoTab(
       onCancelInsuranceClick = {
         editYourInfoBottomSheet.dismiss()
         onCancelInsuranceClick()
+      },
+      onRemoveAddonClick = {
+        editYourInfoBottomSheet.dismiss()
+        navigateToRemoveAddon(ContractId(contractId), null)
       },
     )
   }
@@ -478,40 +485,6 @@ private fun RemoveAddonBottomSheetContent(
 }
 
 @Composable
-private fun AddAddonBottomSheetContent(
-  addon: AvailableAddon,
-  onAdd: () -> Unit,
-  onDismiss: () -> Unit,
-) {
-  Column {
-    HedvigText(
-      text = addon.displayName,
-      style = HedvigTheme.typography.headlineSmall,
-    )
-    HedvigText(
-      text = addon.description,
-      color = HedvigTheme.colorScheme.textSecondary,
-    )
-    Spacer(Modifier.height(32.dp))
-    HedvigButton(
-      text = stringResource(Res.string.ADDON_ADD_COVERAGE),
-      enabled = true,
-      onClick = onAdd,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    HedvigButton(
-      text = stringResource(Res.string.general_close_button),
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      enabled = true,
-      onClick = onDismiss,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-  }
-}
-
-@Composable
 private fun AddonRow(
   title: String,
   description: String,
@@ -788,6 +761,7 @@ private fun PreviewYourInfoTab() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       YourInfoTab(
+        contractId = "",
         coverageItems = listOf(
           DisplayItem("Address".repeat(4), Text("Bellmansgatan 19A")),
           DisplayItem("Postal code", Text("118 47".repeat(6))),
@@ -818,6 +792,7 @@ private fun PreviewYourInfoTab() {
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
         allowChangeTier = true,
+        allowRemovingAddon = true,
         onChangeTierClick = {},
         isDecommissioned = true,
         upcomingChangesInsuranceAgreement = InsuranceAgreement(
