@@ -81,7 +81,6 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
 import com.hedvig.android.feature.insurances.data.MonthlyCost
 import hedvig.resources.ADDON_ADDED_COVERAGE
-import hedvig.resources.ADDON_ADD_COVERAGE
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
 import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
@@ -100,11 +99,12 @@ import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
 import hedvig.resources.DETAILS_TABLE_INSURANCE_PREMIUM
 import hedvig.resources.INSURANCE_DETAILS_DECOMMISSION_INFO
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.REMOVE_ADDON_BUTTON_TITLE
+import hedvig.resources.REMOVE_ADDON_DESCRIPTION
 import hedvig.resources.REMOVE_ADDON_OFFER_PAGE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS
 import hedvig.resources.general_cancel_button
-import hedvig.resources.general_close_button
 import hedvig.resources.insurance_details_move_button
 import hedvig.resources.insurances_tab_view_details
 import hedvig.resources.insurances_tab_your_insurance_will_be_updated
@@ -359,20 +359,39 @@ private fun AddonsSection(
     removeAddonBottomSheetState,
     contentPadding = PaddingValues(horizontal = 24.dp),
   ) { addon ->
-    RemoveAddonBottomSheetContent(
-      addon = addon,
-      onRemove = dropUnlessResumed {
-        removeAddonBottomSheetState.dismiss {
-          navigateToRemoveAddon(addon.relatedContractId, addon.addonVariant)
-        }
-      },
-      onUpgrade = dropUnlessResumed {
-        removeAddonBottomSheetState.dismiss {
-          navigateToUpgradeAddon(addon.relatedContractId, addon.addonVariant)
-        }
-      },
-      onDismiss = { removeAddonBottomSheetState.dismiss() },
-    )
+    // TODO Remove `&& false` when we finalize the implementation of UpgradeOrRemoveAddonBottomSheetContent and we want
+    //  to allow also upgrading coverage of an existing addon
+    //  https://hedviginsurance.slack.com/archives/C0A1GAGLPAA/p1771943941276239
+    @Suppress("SimplifyBooleanWithConstants", "KotlinConstantConditions")
+    if (addon.isUpgradable && addon.isRemovable && false) {
+      UpgradeOrRemoveAddonBottomSheetContent(
+        addon = addon,
+        onRemove = dropUnlessResumed {
+          removeAddonBottomSheetState.dismiss {
+            navigateToRemoveAddon(addon.relatedContractId, addon.addonVariant)
+          }
+        },
+        onUpgrade = dropUnlessResumed {
+          removeAddonBottomSheetState.dismiss {
+            navigateToUpgradeAddon(addon.relatedContractId, addon.addonVariant)
+          }
+        },
+        onDismiss = { removeAddonBottomSheetState.dismiss() },
+      )
+    } else {
+      // TODO pass in upgrade-specific strings if we want the upgrade to also show in the style of a single option
+      SingleButtonBottomSheetContent(
+        title = addon.displayName,
+        subtitle = stringResource(Res.string.REMOVE_ADDON_DESCRIPTION),
+        buttonText = stringResource(Res.string.REMOVE_ADDON_BUTTON_TITLE),
+        onClick = dropUnlessResumed {
+          removeAddonBottomSheetState.dismiss {
+            navigateToRemoveAddon(addon.relatedContractId, addon.addonVariant)
+          }
+        },
+        onDismiss = { removeAddonBottomSheetState.dismiss() },
+      )
+    }
   }
   if (existingAddons.isNotEmpty() || availableAddons.isNotEmpty()) {
     val dateFormatter = HedvigDateTimeFormatterDefaults.isoLocalDateWithDashes(getLocale())
@@ -392,6 +411,7 @@ private fun AddonsSection(
               is ContractAddon.Status.EndsAt -> {
                 stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ENDS_DATE, dateFormatter.format(status.date))
               }
+
               ContractAddon.Status.Unknown -> existingAddon.description
             },
             showTopDivider = index != 0,
@@ -418,7 +438,45 @@ private fun AddonsSection(
 }
 
 @Composable
-private fun RemoveAddonBottomSheetContent(
+private fun SingleButtonBottomSheetContent(
+  title: String,
+  subtitle: String,
+  buttonText: String,
+  onClick: () -> Unit,
+  onDismiss: () -> Unit,
+) {
+  Column {
+    HedvigText(
+      text = title,
+      style = HedvigTheme.typography.headlineSmall,
+    )
+    HedvigText(
+      text = subtitle,
+      style = HedvigTheme.typography.bodySmall,
+      color = HedvigTheme.colorScheme.textSecondary
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigButton(
+      text = buttonText,
+      buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+      enabled = true,
+      onClick = onClick,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_cancel_button),
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      enabled = true,
+      onClick = onDismiss,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+private fun UpgradeOrRemoveAddonBottomSheetContent(
   addon: ContractAddon,
   onRemove: () -> Unit,
   onUpgrade: () -> Unit,
@@ -480,7 +538,7 @@ private fun RemoveAddonBottomSheetContent(
       onClick = onDismiss,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(16.dp))
   }
 }
 
