@@ -1,17 +1,10 @@
 package com.hedvig.android.data.contract
 
 import hedvigandroid.data_contract.generated.resources.Res
-import hedvigandroid.data_contract.generated.resources.gradient_accident
-import hedvigandroid.data_contract.generated.resources.gradient_car
-import hedvigandroid.data_contract.generated.resources.gradient_cat
-import hedvigandroid.data_contract.generated.resources.gradient_dog
-import hedvigandroid.data_contract.generated.resources.gradient_homeowner
-import hedvigandroid.data_contract.generated.resources.gradient_rental
-import hedvigandroid.data_contract.generated.resources.gradient_student
-import hedvigandroid.data_contract.generated.resources.gradient_villa
 import hedvigandroid.data_contract.generated.resources.ic_pillow_accident
 import hedvigandroid.data_contract.generated.resources.ic_pillow_car
 import hedvigandroid.data_contract.generated.resources.ic_pillow_cat
+import hedvigandroid.data_contract.generated.resources.ic_pillow_countryhome
 import hedvigandroid.data_contract.generated.resources.ic_pillow_dog
 import hedvigandroid.data_contract.generated.resources.ic_pillow_homeowner
 import hedvigandroid.data_contract.generated.resources.ic_pillow_rental
@@ -34,16 +27,17 @@ enum class ContractGroup {
 }
 
 fun ContractGroup.gradientResource(): DrawableResource = when (this) {
-  ContractGroup.HOMEOWNER -> Res.drawable.gradient_homeowner
-  ContractGroup.HOUSE -> Res.drawable.gradient_villa
-  ContractGroup.RENTAL -> Res.drawable.gradient_rental
-  ContractGroup.STUDENT -> Res.drawable.gradient_student
-  ContractGroup.ACCIDENT -> Res.drawable.gradient_accident
-  ContractGroup.CAR -> Res.drawable.gradient_car
-  ContractGroup.CAT -> Res.drawable.gradient_cat
-  ContractGroup.DOG -> Res.drawable.gradient_dog
-  ContractGroup.TRAVEL -> Res.drawable.gradient_homeowner
-  ContractGroup.UNKNOWN -> Res.drawable.gradient_homeowner
+  ContractGroup.HOMEOWNER -> Res.drawable.ic_pillow_homeowner
+  ContractGroup.HOUSE -> Res.drawable.ic_pillow_villa
+  ContractGroup.RENTAL -> Res.drawable.ic_pillow_rental
+  ContractGroup.STUDENT -> Res.drawable.ic_pillow_student
+  ContractGroup.ACCIDENT -> Res.drawable.ic_pillow_accident
+  ContractGroup.CAR -> Res.drawable.ic_pillow_car
+  ContractGroup.CAT -> Res.drawable.ic_pillow_cat
+  ContractGroup.DOG -> Res.drawable.ic_pillow_dog
+  ContractGroup.TRAVEL -> Res.drawable.ic_pillow_homeowner
+  ContractGroup.COUNTRY_HOME -> Res.drawable.ic_pillow_countryhome
+  ContractGroup.UNKNOWN -> Res.drawable.ic_pillow_homeowner
 }
 
 fun ContractGroup.pillowResource(): DrawableResource = when (this) {
