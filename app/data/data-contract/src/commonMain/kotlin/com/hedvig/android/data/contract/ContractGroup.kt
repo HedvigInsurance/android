@@ -29,6 +29,7 @@ enum class ContractGroup {
   CAT,
   DOG,
   STUDENT,
+  COUNTRY_HOME,
   UNKNOWN,
 }
 
@@ -55,6 +56,7 @@ fun ContractGroup.pillowResource(): DrawableResource = when (this) {
   ContractGroup.CAT -> Res.drawable.ic_pillow_cat
   ContractGroup.DOG -> Res.drawable.ic_pillow_dog
   ContractGroup.TRAVEL -> Res.drawable.ic_pillow_homeowner
+  ContractGroup.COUNTRY_HOME -> Res.drawable.ic_pillow_countryhome
   ContractGroup.UNKNOWN -> Res.drawable.ic_pillow_homeowner
 }
 
@@ -119,6 +121,10 @@ fun String.toContractGroup(): ContractGroup = when (this) {
   "SE_DOG_PREMIUM",
   "SE_DOG_STANDARD",
   -> ContractGroup.DOG
+
+  "SE_VACATION_HOME_BAS",
+  "SE_VACATION_HOME_STANDARD",
+  -> ContractGroup.COUNTRY_HOME
 
   else -> ContractGroup.UNKNOWN
 }
