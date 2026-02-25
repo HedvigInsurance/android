@@ -304,7 +304,7 @@ private fun FailureScreen(
           buttonSize = Large,
           modifier = Modifier.fillMaxWidth(),
         )
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
       }
     }
   }
