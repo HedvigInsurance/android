@@ -95,6 +95,7 @@ fun InsuranceCard(
   modifier: Modifier = Modifier,
   fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f)),
   backgroundImageUrl: String? = null,
+  imageContentScale: ContentScale = ContentScale.Crop,
 ) {
   val description = stringResource(Res.string.TALKBACK_INSURANCE_CARD)
   Box(
@@ -115,6 +116,7 @@ fun InsuranceCard(
             highlight = PlaceholderHighlight.shimmer(),
           ),
         contentDescription = EmptyContentDescription,
+        contentScale = imageContentScale,
       )
     } else {
       AsyncImage(
@@ -124,7 +126,7 @@ fun InsuranceCard(
         error = fallbackPainter,
         fallback = fallbackPainter,
         imageLoader = imageLoader,
-        contentScale = ContentScale.Crop,
+        contentScale = imageContentScale,
         modifier = Modifier.matchParentSize().blur(8.dp),
       )
     }
@@ -200,6 +202,7 @@ fun InsuranceCardPlaceholder(imageLoader: ImageLoader, modifier: Modifier = Modi
     imageLoader = imageLoader,
     isLoading = true,
     modifier = modifier,
+    imageContentScale = ContentScale.Crop,
   )
 }
 
