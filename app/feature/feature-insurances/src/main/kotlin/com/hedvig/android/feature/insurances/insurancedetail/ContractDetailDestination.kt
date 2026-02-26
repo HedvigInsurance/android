@@ -68,7 +68,6 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.Addon
 import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
-import com.hedvig.android.feature.insurances.data.ContractAddon
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
 import com.hedvig.android.feature.insurances.data.InsuranceContract
@@ -80,7 +79,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.documents.Documents
 import com.hedvig.android.feature.insurances.insurancedetail.yourinfo.YourInfoTab
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
-import com.hedvig.android.logger.logcat
+import com.hedvig.android.feature.insurances.ui.imageContentScale
 import hedvig.resources.CONTRACT_DETAILS_ERROR
 import hedvig.resources.MY_DOCUMENTS_INSURANCE_CERTIFICATE
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
@@ -240,9 +239,10 @@ private fun ContractDetailScreen(
                 topText = contract.productVariant.displayName,
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
+                isLoading = false,
                 modifier = Modifier.padding(horizontal = 16.dp),
                 fallbackPainter = contract.createPainter(),
-                isLoading = false,
+                imageContentScale = contract.imageContentScale(),
               )
             }
             item(key = 2, contentType = "space") { Spacer(Modifier.height(16.dp)) }

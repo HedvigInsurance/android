@@ -47,6 +47,7 @@ class CustomizeTravelAddonPresenterTest {
     val presenter = CustomizeTravelAddonPresenter(
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
+      preselectedAddonDisplayNames = emptyList(),
     )
     presenter.test(CustomizeAddonState.Loading) {
       skipItems(1)
@@ -62,6 +63,7 @@ class CustomizeTravelAddonPresenterTest {
     val presenter = CustomizeTravelAddonPresenter(
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
+      preselectedAddonDisplayNames = emptyList(),
     )
     presenter.test(
       CustomizeAddonState.Success.Selectable(
@@ -85,6 +87,7 @@ class CustomizeTravelAddonPresenterTest {
     val presenter = CustomizeTravelAddonPresenter(
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
+      preselectedAddonDisplayNames = emptyList(),
     )
     presenter.test(
       CustomizeAddonState.Loading,
@@ -115,6 +118,7 @@ class CustomizeTravelAddonPresenterTest {
       val presenter = CustomizeTravelAddonPresenter(
         getAddonOfferUseCase = useCase,
         insuranceId = insuranceId,
+        preselectedAddonDisplayNames = emptyList(),
       )
       presenter.test(
         CustomizeAddonState.Loading,
@@ -142,6 +146,7 @@ class CustomizeTravelAddonPresenterTest {
     val presenter = CustomizeTravelAddonPresenter(
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
+      preselectedAddonDisplayNames = emptyList(),
     )
     presenter.test(
       CustomizeAddonState.Loading,

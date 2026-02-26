@@ -4,11 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import com.hedvig.android.data.contract.gradientResource
 import com.hedvig.android.data.contract.isTrialContract
 import com.hedvig.android.design.system.hedvig.ChipType.GENERAL
 import com.hedvig.android.design.system.hedvig.ChipType.TIER
 import com.hedvig.android.design.system.hedvig.ChipUiData
+import com.hedvig.android.design.system.hedvig.scaledBy
 import com.hedvig.android.feature.insurances.data.InsuranceContract
 import hedvig.resources.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE
 import hedvig.resources.CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW
@@ -102,4 +104,13 @@ internal fun InsuranceContract.createPainter(): Painter {
         .let { drawableRes -> painterResource(drawableRes) }
     }
   }
+}
+
+/**
+ * Contract painter return a pill which does not uniformly fit the area it is being put in. This scales the image to a
+ * degree where the content it is being put in will be filled out by the painter by "zooming in" the pillow enough.
+ */
+@Suppress("UnusedReceiverParameter")
+internal fun InsuranceContract.imageContentScale(): ContentScale {
+  return ContentScale.Crop.scaledBy(1.32f)
 }

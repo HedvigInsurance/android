@@ -78,6 +78,7 @@ import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceUiS
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.ui.createChips
 import com.hedvig.android.feature.insurances.ui.createPainter
+import com.hedvig.android.feature.insurances.ui.imageContentScale
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.PullRefreshState
@@ -352,11 +353,11 @@ private fun InsuranceCard(
     }
   }
   InsuranceCard(
-    backgroundImageUrl = null,
     chips = contract.createChips(),
     topText = topText,
     bottomText = contract.exposureDisplayName,
     imageLoader = imageLoader,
+    isLoading = false,
     modifier = modifier
       .padding(horizontal = 16.dp)
       .clip(HedvigTheme.shapes.cornerXLarge)
@@ -364,7 +365,7 @@ private fun InsuranceCard(
         onInsuranceCardClick(contract.id)
       },
     fallbackPainter = contract.createPainter(),
-    isLoading = false,
+    imageContentScale = contract.imageContentScale()
   )
 }
 
