@@ -16,6 +16,7 @@ import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 
 internal class FakeChangeTierRepository() : ChangeTierRepository {
   val changeTierIntentTurbine = Turbine<Either<ErrorMessage, ChangeTierDeductibleIntent>>()
@@ -78,7 +79,6 @@ internal val testQuote = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(299.0, SEK),
   tier = standardTier,
   productVariant = ProductVariant(
     displayName = "Test",
@@ -102,9 +102,10 @@ internal val testQuote = TierDeductibleQuote(
     monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
+    CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
+    CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
+  info = null
 )
 
 internal val testQuote2 = TierDeductibleQuote(
@@ -121,7 +122,6 @@ internal val testQuote2 = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(259.0, SEK),
   tier = standardTier,
   productVariant = ProductVariant(
     displayName = "Test",
@@ -145,9 +145,10 @@ internal val testQuote2 = TierDeductibleQuote(
     monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
+    CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
+    CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
+  info = null,
 )
 
 internal val testQuote3 = TierDeductibleQuote(
@@ -164,7 +165,6 @@ internal val testQuote3 = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(205.0, SEK),
   tier = standardTier,
   productVariant = ProductVariant(
     displayName = "Test",
@@ -188,9 +188,10 @@ internal val testQuote3 = TierDeductibleQuote(
     monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
+    CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
+    CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
+  info = null,
 )
 
 internal val currentQuote = TierDeductibleQuote(
@@ -207,7 +208,6 @@ internal val currentQuote = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(199.0, SEK),
   tier = basTier,
   productVariant = ProductVariant(
     displayName = "Test",
@@ -231,7 +231,8 @@ internal val currentQuote = TierDeductibleQuote(
     monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
+    CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
+    CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
+  info = null
 )
