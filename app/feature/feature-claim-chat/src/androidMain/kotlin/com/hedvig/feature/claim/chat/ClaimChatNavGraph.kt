@@ -6,8 +6,10 @@ import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -47,6 +49,7 @@ internal data object UpdateAppDestination : Destination
 
 fun NavGraphBuilder.claimChatGraph(
   navController: NavController,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -58,7 +61,9 @@ fun NavGraphBuilder.claimChatGraph(
   imageLoader: ImageLoader,
   onNavigateToNewConversation: () -> Unit,
 ) {
-  navdestination<ClaimChatDestination> {
+  navdestination<ClaimChatDestination>(
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimFlow),
+  ) {
     ClaimChatDestination(
       isDevelopmentFlow = isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,

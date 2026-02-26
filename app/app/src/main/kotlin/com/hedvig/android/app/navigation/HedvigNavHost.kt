@@ -478,6 +478,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 ) {
   claimChatGraph(
     navController = navController,
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     openAppSettings = externalNavigator::openAppSettings,
     onNavigateToImageViewer = onNavigateToImageViewer,

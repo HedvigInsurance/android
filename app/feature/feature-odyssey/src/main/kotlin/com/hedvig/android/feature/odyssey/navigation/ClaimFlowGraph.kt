@@ -78,7 +78,6 @@ fun NavGraphBuilder.claimFlowGraph(
     navdestination<ClaimFlowDestination.HonestyPledge>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimFlow),
     ) { backStackEntry ->
       HonestyPledgeDestination(
         windowSizeClass = windowSizeClass,
