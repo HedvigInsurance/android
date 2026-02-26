@@ -31,7 +31,9 @@ fun FeatureAddonBanner(
   val containerColor = HedvigTheme.colorScheme.fillNegative
   val borderColor = HedvigTheme.colorScheme.borderPrimary
   Surface(
-    modifier = modifier.semantics(mergeDescendants = true) {},
+    modifier = modifier
+      .semantics(mergeDescendants = true) {}
+      .hedvigDropShadow(),
     shape = HedvigTheme.shapes.cornerLarge,
     color = containerColor,
     border = borderColor,

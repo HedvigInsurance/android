@@ -68,6 +68,7 @@ import com.hedvig.android.design.system.hedvig.InsuranceCardPlaceholder
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract
@@ -365,7 +366,7 @@ private fun InsuranceCard(
         onInsuranceCardClick(contract.id)
       },
     fallbackPainter = contract.createPainter(),
-    imageContentScale = contract.imageContentScale()
+    imageContentScale = contract.imageContentScale(),
   )
 }
 
@@ -389,6 +390,7 @@ private fun MovingFlowSuggestionSection(onNavigateToMovingFlow: () -> Unit, modi
         stringResource(Res.string.insurances_tab_moving_flow_info_button_title),
         dropUnlessResumed { onNavigateToMovingFlow() },
       ),
+      modifier = Modifier.hedvigDropShadow(),
     )
   }
 }
@@ -423,7 +425,7 @@ private fun PreviewInsuranceScreen(
           } else {
             listOf()
           },
-          crossSells = List(10) { index ->
+          crossSells = List(2) { index ->
             CrossSell(
               id = index.toString(),
               title = "Pet#$index",
