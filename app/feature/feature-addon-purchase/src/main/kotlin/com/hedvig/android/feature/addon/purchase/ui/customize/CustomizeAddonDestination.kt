@@ -387,7 +387,7 @@ private fun CustomizeSelectableAddonScreenContent(
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
       text = stringResource(Res.string.general_cancel_button),
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       buttonSize = Large,
       onClick = { popAddonFlow() },
     )
