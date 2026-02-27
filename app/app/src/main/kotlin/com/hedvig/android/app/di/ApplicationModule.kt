@@ -35,6 +35,7 @@ import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
 import com.hedvig.android.app.notification.senders.TravelAddonSender
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.permission.PermissionManager
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.AppBuildConfig
@@ -95,6 +96,7 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.permission.di.androidPermissionModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
 import com.hedvig.android.shared.tier.comparison.di.comparisonModule
 import com.hedvig.android.shareddi.sharedModule
@@ -138,6 +140,7 @@ private val notificationModule = module {
   single<PaymentNotificationSender> {
     PaymentNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Payments,
@@ -146,6 +149,7 @@ private val notificationModule = module {
   single<CrossSellNotificationSender> {
     CrossSellNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       HedvigNotificationChannel.CrossSell,
     )
@@ -153,6 +157,7 @@ private val notificationModule = module {
   single<ReferralsNotificationSender> {
     ReferralsNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Referrals,
@@ -161,6 +166,7 @@ private val notificationModule = module {
   single<GenericNotificationSender> {
     GenericNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       HedvigNotificationChannel.Other,
     )
@@ -168,6 +174,7 @@ private val notificationModule = module {
   single<ChatNotificationSender> {
     ChatNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Chat,
@@ -176,6 +183,7 @@ private val notificationModule = module {
   single<ClaimClosedNotificationSender> {
     ClaimClosedNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Payments,
@@ -184,6 +192,7 @@ private val notificationModule = module {
   single<ContactInfoSender> {
     ContactInfoSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Other,
@@ -192,6 +201,7 @@ private val notificationModule = module {
   single<InsuranceTabNotificationSender> {
     InsuranceTabNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Other,
@@ -200,6 +210,7 @@ private val notificationModule = module {
   single<TravelAddonSender> {
     TravelAddonSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.CrossSell,
@@ -209,6 +220,7 @@ private val notificationModule = module {
   single<InsuranceEvidenceNotificationSender> {
     InsuranceEvidenceNotificationSender(
       get<Context>(),
+      get<PermissionManager>(),
       get<HedvigBuildConstants>(),
       get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Other,
@@ -269,6 +281,7 @@ val applicationModule = module {
     listOf(
       addonPurchaseModule,
       addonRemovalModule,
+      androidPermissionModule,
       apolloAuthListenersModule,
       appModule,
       authModule,

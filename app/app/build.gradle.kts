@@ -217,6 +217,7 @@ dependencies {
   implementation(projects.languageMigration)
   implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
+  implementation(projects.permissionCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)
