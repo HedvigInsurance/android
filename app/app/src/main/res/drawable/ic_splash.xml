@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <!--
-    We got 72dp room for our image.
-    We got an icon with size 70x70 for the masking not to cut the edges slightly.
-    Our viewport needs to be 108dp https://developer.android.com/develop/ui/views/launch/icon_design_adaptive#design-adaptive-icons
-    So we need 38dp of nothingness around, hence the 19dp translation
-    -->
-    <group>
-        <path
-            android:fillColor="@color/splash_background"
-            android:pathData="M0,0h108v108h-108z" />
-        <group
-            android:translateX="19"
-            android:translateY="19">
-            <path
-                android:fillColor="@color/splash_foreground"
-                android:pathData="M24.66 32.64h20.68v-16.7h4.72v38.11h-4.72V37.36H24.66v16.69H19.8v-38.1h4.87v16.69Z" />
-            <path
-                android:fillColor="@color/splash_foreground"
-                android:fillType="evenOdd"
-                android:pathData="M0 35C0 15.65 15.65 0 35 0s35 15.65 35 35-15.65 35-35 35S0 54.35 0 35Zm4.73 0C4.73 51.69 18.3 65.27 35 65.27c16.69 0 30.27-13.58 30.27-30.27C65.27 18.31 51.7 4.73 35 4.73 18.31 4.73 4.73 18.3 4.73 35Z" />
-        </group>
-    </group>
+  android:width="108dp"
+  android:height="108dp"
+  android:viewportWidth="800"
+  android:viewportHeight="800">
+  <!--
+  We got 72dp room for our image in the splash screen.
+  Scaling our 108 icon by 0.667% makes it take up 72dp worth of space
+  By doing that, our icon now takes up 533 out of the 800 units of its viewport
+  Translating it by 133.33 ((800 - 533) / 2)) centers it
+  -->
+  <group
+    android:scaleX="0.6666666667"
+    android:scaleY="0.6666666667"
+    android:translateX="133.3333333333"
+    android:translateY="133.3333333333">
+    <path
+      android:fillColor="@color/splash_background"
+      android:pathData="M0,0h108v108h-108z" />
+    <path
+      android:fillColor="@color/splash_foreground"
+      android:pathData="M500,370.15L300,370.15L300,200L240,200L240,370.15L240,430.15L240,600L300,600L300,430.15L500,430.15L500,600L560,600L560,430.15L560,370.15L560,200L500,200L500,370.15Z" />
+    <path
+      android:fillColor="@color/splash_foreground"
+      android:pathData="M400,0C179.08,0 0,179.08 0,400C0,620.92 179.08,800 400,800C620.92,800 800,620.92 800,400C800,179.08 620.92,0 400,0ZM400,743.39C210.77,743.39 56.62,589.23 56.62,400C56.62,210.77 210.77,56.62 400,56.62C589.23,56.62 743.39,210.77 743.39,400C743.39,589.23 589.23,743.39 400,743.39Z" />
+  </group>
 </vector>
