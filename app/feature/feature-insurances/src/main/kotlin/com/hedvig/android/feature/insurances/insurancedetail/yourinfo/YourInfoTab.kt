@@ -21,8 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -65,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -81,6 +84,9 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
 import com.hedvig.android.feature.insurances.data.MonthlyCost
 import hedvig.resources.ADDON_ADDED_COVERAGE
+import hedvig.resources.ADDON_FLOW_UPDATE_ADDON_DESCRIPTION
+import hedvig.resources.ADDON_FLOW_UPGRADE_ADDON
+import hedvig.resources.ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
 import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
@@ -101,10 +107,11 @@ import hedvig.resources.INSURANCE_DETAILS_DECOMMISSION_INFO
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.REMOVE_ADDON_BUTTON_TITLE
 import hedvig.resources.REMOVE_ADDON_DESCRIPTION
-import hedvig.resources.REMOVE_ADDON_OFFER_PAGE_TITLE
+import hedvig.resources.REMOVE_ADDON_DESCRIPTION_RENEWAL
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_DOUBLE_TAP_TO_READ_DETAILS
 import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_move_button
 import hedvig.resources.insurances_tab_view_details
 import hedvig.resources.insurances_tab_your_insurance_will_be_updated
@@ -189,9 +196,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              addon.premium.toString(),
-            ),
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                addon.premium.toString(),
+              ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -357,41 +364,22 @@ private fun AddonsSection(
   val removeAddonBottomSheetState = rememberHedvigBottomSheetState<ContractAddon>()
   HedvigBottomSheet(
     removeAddonBottomSheetState,
-    contentPadding = PaddingValues(horizontal = 24.dp),
+    contentPadding = PaddingValues(horizontal = 16.dp),
   ) { addon ->
-    // TODO Remove `&& false` when we finalize the implementation of UpgradeOrRemoveAddonBottomSheetContent and we want
-    //  to allow also upgrading coverage of an existing addon
-    //  https://hedviginsurance.slack.com/archives/C0A1GAGLPAA/p1771943941276239
-    @Suppress("SimplifyBooleanWithConstants", "KotlinConstantConditions")
-    if (addon.isUpgradable && addon.isRemovable && false) {
-      UpgradeOrRemoveAddonBottomSheetContent(
-        addon = addon,
-        onRemove = dropUnlessResumed {
-          removeAddonBottomSheetState.dismiss {
-            navigateToRemoveAddon(addon.relatedContractId, addon.addonVariant)
-          }
-        },
-        onUpgrade = dropUnlessResumed {
-          removeAddonBottomSheetState.dismiss {
-            navigateToUpgradeAddon(addon.relatedContractId, addon.addonVariant)
-          }
-        },
-        onDismiss = { removeAddonBottomSheetState.dismiss() },
-      )
-    } else {
-      // TODO pass in upgrade-specific strings if we want the upgrade to also show in the style of a single option
-      SingleButtonBottomSheetContent(
-        title = addon.displayName,
-        subtitle = stringResource(Res.string.REMOVE_ADDON_DESCRIPTION),
-        buttonText = stringResource(Res.string.REMOVE_ADDON_BUTTON_TITLE),
-        onClick = dropUnlessResumed {
-          removeAddonBottomSheetState.dismiss {
-            navigateToRemoveAddon(addon.relatedContractId, addon.addonVariant)
-          }
-        },
-        onDismiss = { removeAddonBottomSheetState.dismiss() },
-      )
-    }
+    ManageAddonBottomSheetContent(
+      addon = addon,
+      onRemove = dropUnlessResumed {
+        removeAddonBottomSheetState.dismiss {
+          navigateToRemoveAddon(addon.relatedContractId, addon.addonVariant)
+        }
+      },
+      onUpgrade = dropUnlessResumed {
+        removeAddonBottomSheetState.dismiss {
+          navigateToUpgradeAddon(addon.relatedContractId, addon.addonVariant)
+        }
+      },
+      onDismiss = { removeAddonBottomSheetState.dismiss() },
+    )
   }
   if (existingAddons.isNotEmpty() || availableAddons.isNotEmpty()) {
     val dateFormatter = HedvigDateTimeFormatterDefaults.isoLocalDateWithDashes(getLocale())
@@ -412,7 +400,9 @@ private fun AddonsSection(
                 stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ENDS_DATE, dateFormatter.format(status.date))
               }
 
-              ContractAddon.Status.Unknown -> existingAddon.description
+              ContractAddon.Status.Unknown -> {
+                existingAddon.description
+              }
             },
             showTopDivider = index != 0,
             isAlreadyAdded = true,
@@ -438,106 +428,97 @@ private fun AddonsSection(
 }
 
 @Composable
-private fun SingleButtonBottomSheetContent(
-  title: String,
-  subtitle: String,
-  buttonText: String,
-  onClick: () -> Unit,
-  onDismiss: () -> Unit,
-) {
-  Column {
-    HedvigText(
-      text = title,
-      style = HedvigTheme.typography.headlineSmall,
-    )
-    HedvigText(
-      text = subtitle,
-      style = HedvigTheme.typography.bodySmall,
-      color = HedvigTheme.colorScheme.textSecondary
-    )
-    Spacer(Modifier.height(32.dp))
-    HedvigButton(
-      text = buttonText,
-      buttonStyle = ButtonDefaults.ButtonStyle.Primary,
-      enabled = true,
-      onClick = onClick,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    HedvigButton(
-      text = stringResource(Res.string.general_cancel_button),
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      enabled = true,
-      onClick = onDismiss,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(16.dp))
-  }
-}
-
-@Composable
-private fun UpgradeOrRemoveAddonBottomSheetContent(
+private fun ManageAddonBottomSheetContent(
   addon: ContractAddon,
   onRemove: () -> Unit,
   onUpgrade: () -> Unit,
   onDismiss: () -> Unit,
 ) {
-  Column {
-    HedvigText(
-      text = addon.displayName,
-      style = HedvigTheme.typography.headlineSmall,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth(),
-    )
-    val radioOptions: List<RadioOption> = buildList {
-      if (addon.isRemovable) {
-        add(
-          RadioOption(
-            RadioOptionId("remove"),
-            stringResource(Res.string.REMOVE_ADDON_OFFER_PAGE_TITLE),
-            "todo change or edit an existing addon",
-          ),
-        )
-      }
-      if (addon.isUpgradable) {
-        add(
-          RadioOption(
-            RadioOptionId("upgrade"),
-            "todo upgrade",
-            "todo upgrade",
-          ),
-        )
-      }
-    }
-    Spacer(Modifier.height(32.dp))
-    var selectedRadioOption: RadioOptionId? by remember { mutableStateOf(null) }
-    RadioGroup(
-      radioOptions,
-      selectedRadioOption,
-      onRadioOptionSelected = { selectedRadioOption = it },
-    )
-    Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(Res.string.REMOVE_ADDON_OFFER_PAGE_TITLE),
-      enabled = selectedRadioOption != null,
-      onClick = {
-        when (selectedRadioOption?.id) {
-          "remove" -> onRemove()
-          "upgrade" -> onUpgrade()
-          null -> {}
-          else -> error("RemoveAddonBottomSheetContent wrong radio option selected")
-        }
+  var selectedRadioOption: RadioOptionId? by remember {
+    mutableStateOf(
+      when {
+        addon.isUpgradable && addon.isRemovable -> null
+        addon.isUpgradable -> RadioOptionId("1")
+        addon.isRemovable -> RadioOptionId("2")
+        else -> null
       },
+    )
+  }
+  Column {
+    FlowHeading(
+      title = when {
+        addon.isUpgradable && addon.isRemovable -> "Manage addon"
+        addon.isUpgradable -> addon.displayName
+        addon.isRemovable -> addon.displayName
+        else -> addon.displayName
+      },
+      description = when {
+        addon.isUpgradable && addon.isRemovable -> stringResource(Res.string.ADDON_FLOW_UPDATE_ADDON_DESCRIPTION)
+        addon.isUpgradable -> stringResource(Res.string.ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION)
+        addon.isRemovable -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION)
+        else -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION_RENEWAL)
+      },
+      baseStyle = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.fillMaxWidth(),
     )
-    Spacer(Modifier.height(8.dp))
-    HedvigButton(
-      text = stringResource(Res.string.general_cancel_button),
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-      enabled = true,
-      onClick = onDismiss,
-      modifier = Modifier.fillMaxWidth(),
-    )
+    if (addon.isUpgradable && addon.isRemovable) {
+      Spacer(Modifier.height(24.dp))
+      RadioGroup(
+        listOf(
+          RadioOption(
+            RadioOptionId("1"),
+            stringResource(Res.string.ADDON_FLOW_UPGRADE_ADDON),
+          ),
+          RadioOption(
+            RadioOptionId("2"),
+            stringResource(Res.string.REMOVE_ADDON_BUTTON_TITLE),
+          ),
+        ),
+        selectedRadioOption,
+        onRadioOptionSelected = { selectedRadioOption = it },
+      )
+      Spacer(Modifier.height(16.dp))
+    } else {
+      Spacer(Modifier.height(32.dp))
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      if (addon.isUpgradable || addon.isRemovable) {
+        HedvigButton(
+          text = @Suppress("KotlinConstantConditions") when {
+            addon.isUpgradable && addon.isRemovable -> stringResource(Res.string.general_continue_button)
+            addon.isUpgradable -> stringResource(Res.string.ADDON_FLOW_UPGRADE_ADDON)
+            addon.isRemovable -> stringResource(Res.string.REMOVE_ADDON_BUTTON_TITLE)
+            else -> error("Impossible")
+          },
+          enabled = selectedRadioOption != null,
+          onClick = {
+            when (selectedRadioOption?.id) {
+              "1" -> {
+                onUpgrade()
+              }
+
+              "2" -> {
+                onRemove()
+              }
+
+              null -> {}
+
+              else -> {
+                error("UpgradeOrRemoveAddonBottomSheetContent wrong radio option selected")
+              }
+            }
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+      HedvigButton(
+        text = stringResource(Res.string.general_cancel_button),
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        enabled = true,
+        onClick = onDismiss,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -939,6 +920,37 @@ private fun PreviewYourInfoTab() {
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
         navigateToAddAddon = {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewManageAddonBottomSheetContent(
+  @PreviewParameter(DoubleBooleanCollectionPreviewParameterProvider::class) input: Pair<Boolean, Boolean>,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ManageAddonBottomSheetContent(
+        ContractAddon(
+          ContractId(""),
+          addonVariant = AddonVariant(
+            termsVersion = "",
+            displayName = "",
+            product = "",
+            documents = emptyList(),
+            perils = emptyList(),
+          ),
+          displayName = "Display Name",
+          description = "Description",
+          status = ContractAddon.Status.Unknown,
+          isUpgradable = input.first,
+          isRemovable = input.second,
+        ),
+        {},
+        {},
+        {},
       )
     }
   }

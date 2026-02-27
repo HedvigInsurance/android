@@ -47,6 +47,9 @@
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT">Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION">Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_TITLE">Vad är Reseskydd Plus?</string>
+  <string name="ADDON_FLOW_UPDATE_ADDON_DESCRIPTION">Välj vad du vill göra med det här tillägget.</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON">Uppgradera tillägg</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">Du kan uppgradera ditt tillägg för att utöka skyddet. Detta tillägg kan bara tas bort när din försäkring förnyas eller sägs upp.</string>
   <string name="ADDON_LEARN_MORE_LABEL">Se vad som ingår</string>
   <string name="ADDON_REMOVE_CANCEL_BUTTON">Behåll nuvarande skydd</string>
   <string name="ADDON_REMOVE_CONFIRM_BUTTON">Avsluta %1$s</string>
@@ -340,7 +343,7 @@
   <string name="FIELD_EXTRA_BUIDLINGS_CARPORT_LABEL">Carport</string>
   <string name="FIELD_EXTRA_BUIDLINGS_FRIGGEBOD_LABEL">Friggebod</string>
   <string name="FIELD_EXTRA_BUIDLINGS_GARAGE_LABEL">Garage</string>
-  <string name="FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL">Gazebo</string>
+  <string name="FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL">Lusthus</string>
   <string name="FIELD_EXTRA_BUIDLINGS_GREENHOUSE_LABEL">Växthus</string>
   <string name="FIELD_EXTRA_BUIDLINGS_GUESTHOUSE_LABEL">Gästhus</string>
   <string name="FIELD_EXTRA_BUIDLINGS_OTHER_LABEL">Annat</string>
@@ -464,6 +467,7 @@
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Tillägg</string>
+  <string name="INSURANCE_ADDON_SUBHEADING">Tillägg</string>
   <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
   <string name="INSURANCE_EVIDENCE_DOCUMENT_TITLE">Giltighetsintyg</string>
@@ -629,6 +633,7 @@
   <string name="REMOVE_ADDON_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s.</string>
   <string name="REMOVE_ADDON_CONFIRMATION_TITLE">Confirm removing selected addons</string>
   <string name="REMOVE_ADDON_DESCRIPTION">Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring</string>
+  <string name="REMOVE_ADDON_DESCRIPTION_RENEWAL">Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
   <string name="REMOVE_ADDON_OFFER_PAGE_TITLE">Ta bort tillägg</string>
   <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">Den här ändringar börjar gälla %s.</string>
   <string name="REMOVE_ADDON_SUCCESS_TITLE">Tillägg avslutade</string>
