@@ -22,8 +22,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ClaimChatDestination(
-  val isDevelopmentFlow: Boolean,
-  val messageId: String?,
+  val isDevelopmentFlow: Boolean = false,
+  val messageId: String? = null,
 ) : Destination
 
 @Serializable
