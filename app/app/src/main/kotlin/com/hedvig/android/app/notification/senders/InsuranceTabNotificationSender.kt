@@ -14,10 +14,12 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import com.hedvig.android.permission.PermissionManager
 import hedvig.resources.R
 
 internal class InsuranceTabNotificationSender(
   private val context: Context,
+  private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val deepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
@@ -53,6 +55,7 @@ internal class InsuranceTabNotificationSender(
 
     sendHedvigNotification(
       context = context,
+      permissionManager = permissionManager,
       notificationId = NotificationId,
       notification = builder.build(),
       notificationChannel = notificationChannel,
