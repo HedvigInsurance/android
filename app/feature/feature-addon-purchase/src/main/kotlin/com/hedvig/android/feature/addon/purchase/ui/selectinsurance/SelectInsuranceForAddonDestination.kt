@@ -35,6 +35,7 @@ import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsura
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Success
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
 import hedvig.resources.ADDON_FLOW_TITLE
+import hedvig.resources.ADDON_FLOW_TITLE_GENERIC
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
@@ -129,7 +130,7 @@ private fun SelectInsuranceForAddonContentScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-      stringResource(Res.string.ADDON_FLOW_TITLE),
+      stringResource(Res.string.ADDON_FLOW_TITLE_GENERIC),
       stringResource(Res.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),
     )

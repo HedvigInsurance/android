@@ -16,13 +16,15 @@ import kotlinx.coroutines.flow.first
 
 internal class TravelAddonTriageViewModel(
   getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
+  addonBannerSource: AddonBannerSource
 ) : MoleculeViewModel<TravelAddonTriageEvent, TravelAddonTriageState>(
     initialState = TravelAddonTriageState.Loading,
-    presenter = TravelAddonTriagePresenter(getAddonBannerInfoUseCase),
+    presenter = TravelAddonTriagePresenter(getAddonBannerInfoUseCase, addonBannerSource),
   )
 
 internal class TravelAddonTriagePresenter(
   private val getAddonBannerInfoUseCase: GetAddonBannerInfoUseCase,
+  private val addonBannerSource: AddonBannerSource
 ) : MoleculePresenter<TravelAddonTriageEvent, TravelAddonTriageState> {
   @Composable
   override fun MoleculePresenterScope<TravelAddonTriageEvent>.present(
@@ -33,7 +35,7 @@ internal class TravelAddonTriagePresenter(
 
     LaunchedEffect(loadIteration) {
       currentState = TravelAddonTriageState.Loading
-      val result = getAddonBannerInfoUseCase.invoke(AddonBannerSource.TRAVEL_DEEPLINK)
+      val result = getAddonBannerInfoUseCase.invoke(addonBannerSource)
       result.first().fold(
         ifLeft = { _ ->
           currentState = TravelAddonTriageState.Failure(FailureReason.GENERAL)
@@ -41,6 +43,7 @@ internal class TravelAddonTriagePresenter(
         ifRight = { travelBannerInfoList ->
           val travelBannerInfo = travelBannerInfoList.firstOrNull()
           currentState = if (travelBannerInfo == null || travelBannerInfo.eligibleInsurancesIds.isEmpty()) {
+            //todo: check here
             TravelAddonTriageState.Failure(FailureReason.NO_TRAVEL_ADDON_AVAILABLE)
           } else {
             TravelAddonTriageState.Success(travelBannerInfo.eligibleInsurancesIds)

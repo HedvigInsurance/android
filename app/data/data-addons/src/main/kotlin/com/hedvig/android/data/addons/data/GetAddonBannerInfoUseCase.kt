@@ -41,6 +41,9 @@ internal class GetAddonBannerInfoUseCaseImpl(
         AddonFlow.APP_CAR_PLUS,
         AddonFlow.APP_TRAVEL_PLUS_SELL_ONLY,
       )
+
+      AddonBannerSource.CAR_ADDON_DEEPLINK -> listOf(
+        AddonFlow.APP_CAR_PLUS)
     }
     return combine(
       featureManager.isFeatureEnabled(Feature.TRAVEL_ADDON),
@@ -119,4 +122,6 @@ enum class AddonBannerSource {
   INSURANCES_TAB,
   AFTER_FINISHING_SUCCESSFUL_FLOW,
   TRAVEL_DEEPLINK,
+
+  CAR_ADDON_DEEPLINK
 }

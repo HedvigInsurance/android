@@ -46,6 +46,7 @@
   <string name="ADDON_FLOW_SUMMARY_INFO_TEXT">Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
   <string name="ADDON_FLOW_SUMMARY_PRICE_SUBTITLE">Läggs på ditt totala månadspris</string>
   <string name="ADDON_FLOW_TITLE">Utöka ditt reseskydd</string>
+  <string name="ADDON_FLOW_TITLE_GENERIC">Utöka ditt skydd</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT">Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION">Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_TITLE">Vad är Reseskydd Plus?</string>

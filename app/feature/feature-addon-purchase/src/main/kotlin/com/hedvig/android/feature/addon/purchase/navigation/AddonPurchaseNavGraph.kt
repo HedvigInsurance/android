@@ -2,6 +2,7 @@ package com.hedvig.android.feature.addon.purchase.navigation
 
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
@@ -25,6 +26,7 @@ import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewMode
 import com.hedvig.android.feature.addon.purchase.ui.travelinsuranceplusexplanation.TravelInsurancePlusExplanationDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -51,25 +53,49 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
 ) {
   // Destination to get eligible insuranceIds if member comes to the feature using the deeplink
   navdestination<TravelAddonTriage>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelAddon),
-  ) {
-    val viewModel: TravelAddonTriageViewModel = koinViewModel()
-    TravelAddonTriageDestination(
-      viewModel = viewModel,
-      popBackStack = navController::popBackStack,
-      launchFlow = { insuranceIds: List<String> ->
+    deepLinks = navDeepLinks(
+      hedvigDeepLinkContainer.travelAddon,
+      hedvigDeepLinkContainer.carAddon,
+      hedvigDeepLinkContainer.travelAddonWithContractId,
+      hedvigDeepLinkContainer.carAddonWithContractId
+    ),
+  ) { backStackEntry ->
+
+    val deepLinkInfo = getDeepLinkInfoFromBackStackEntry(backStackEntry)
+    logcat { "Mariia: deepLinkInfo: $deepLinkInfo" }
+    if (deepLinkInfo.contractId!=null) {
+      LaunchedEffect(Unit) {
         navController.navigate(
           AddonPurchaseGraphDestination(
-            insuranceIds = insuranceIds,
+            insuranceIds = listOf(deepLinkInfo.contractId),
             preselectedAddonDisplayName = null,
-            source = AddonBannerSource.TRAVEL_DEEPLINK,
+            source = deepLinkInfo.source,
           ),
         ) {
           typedPopUpTo<TravelAddonTriage>({ inclusive = true })
         }
-      },
-      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-    )
+      }
+    } else {
+      val viewModel: TravelAddonTriageViewModel = koinViewModel {
+        parametersOf(deepLinkInfo.source)
+      }
+      TravelAddonTriageDestination(
+        viewModel = viewModel,
+        popBackStack = navController::popBackStack,
+        launchFlow = { insuranceIds: List<String> ->
+          navController.navigate(
+            AddonPurchaseGraphDestination(
+              insuranceIds = insuranceIds,
+              preselectedAddonDisplayName = null,
+              source = deepLinkInfo.source,
+            ),
+          ) {
+            typedPopUpTo<TravelAddonTriage>({ inclusive = true })
+          }
+        },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      )
+    }
   }
 
   navgraph<AddonPurchaseGraphDestination>(
@@ -102,7 +128,7 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       }
     }
 
-    // Choose addon option (e.g. 45/60 days)
+    // Choose addon option (e.g. 45/60 days for travel addon or different car plus options)
     navdestination<CustomizeAddon> {
       val viewModel: CustomizeAddonViewModel = koinViewModel {
         parametersOf(this.insuranceId, this.preselectedAddonDisplayNames)
@@ -137,7 +163,6 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
       )
     }
 
-    // Summary for the purchase addon flow (not upgrade 45->60)
     navdestination<Summary>(Summary) { backStackEntry ->
       val source = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry).source
@@ -175,3 +200,35 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
     )
   }
 }
+
+private fun getDeepLinkInfoFromBackStackEntry(backStackEntry: NavBackStackEntry): DeepLinkInfo {
+
+  val intent = if (android.os.Build.VERSION.SDK_INT >= 33) {
+    backStackEntry.arguments?.getParcelable(
+      "android-support-nav:controller:deepLinkIntent",
+      android.content.Intent::class.java,
+    )
+  } else {
+    @Suppress("DEPRECATION")
+    backStackEntry.arguments?.getParcelable(
+      "android-support-nav:controller:deepLinkIntent",
+    )
+  }
+  val deepLinkPath = intent?.data?.path
+  val contractId = intent?.data?.getQueryParameter("contractId")?.removeSurrounding("{", "}")
+
+
+  val source: AddonBannerSource = when {
+    deepLinkPath?.contains("travel-addon") == true -> AddonBannerSource.TRAVEL_DEEPLINK
+    deepLinkPath?.contains("car-plus-addon") == true -> AddonBannerSource.CAR_ADDON_DEEPLINK
+    else -> AddonBannerSource.TRAVEL_DEEPLINK
+  }
+
+  return DeepLinkInfo(source, contractId)
+}
+
+
+private data class DeepLinkInfo(
+  val source: AddonBannerSource,
+  val contractId: String?,
+)

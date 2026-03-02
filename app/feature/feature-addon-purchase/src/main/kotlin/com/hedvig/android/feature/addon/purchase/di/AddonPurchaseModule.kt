@@ -47,9 +47,10 @@ val addonPurchaseModule = module {
     )
   }
 
-  viewModel<TravelAddonTriageViewModel> {
+  viewModel<TravelAddonTriageViewModel> { params ->
     TravelAddonTriageViewModel(
       get<GetAddonBannerInfoUseCase>(),
+      params.get< AddonBannerSource>()
     )
   }
 

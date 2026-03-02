@@ -46,6 +46,7 @@
   <string name="ADDON_FLOW_SUMMARY_INFO_TEXT">The addon is tied to your contract period and can only be removed when your insurance is renewed or cancelled.</string>
   <string name="ADDON_FLOW_SUMMARY_PRICE_SUBTITLE">Added to your total monthly premium</string>
   <string name="ADDON_FLOW_TITLE">Extend your travel coverage</string>
+  <string name="ADDON_FLOW_TITLE_GENERIC">Extend your coverage</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT">Travel Insurance Plus is our extended travel insurance, for extra coverage on your trip.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION">Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_TITLE">What is Travel Insurance Plus?</string>
