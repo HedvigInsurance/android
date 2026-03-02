@@ -68,7 +68,7 @@ internal fun SelectAddonToRemoveDestination(
   contractId: ContractId,
   preselectedAddonProduct: AddonVariant?,
   navigateUp: () -> Unit,
-  navigateToSummary: (ContractId, List<CurrentlyActiveAddon>, LocalDate, ItemCost, ItemCost, ProductVariant, List<CurrentlyActiveAddon>) -> Unit,
+  navigateToSummary: (ContractId, List<CurrentlyActiveAddon>, LocalDate, ItemCost, ItemCost, ProductVariant, List<CurrentlyActiveAddon>, Boolean) -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel = koinViewModel {
     parametersOf(contractId, preselectedAddonProduct)
@@ -80,7 +80,7 @@ internal fun SelectAddonToRemoveDestination(
     reload = {
       viewModel.emit(SelectAddonToRemoveEvent.Retry)
     },
-    navigateToSummary = { params ->
+    navigateToSummary = { params, popDestination ->
       viewModel.emit(SelectAddonToRemoveEvent.ClearNavigation)
       navigateToSummary(
         params.contractId,
@@ -90,6 +90,7 @@ internal fun SelectAddonToRemoveDestination(
         params.currentTotalCost,
         params.productVariant,
         params.existingAddons,
+        popDestination
       )
     },
     onSubmit = {
@@ -108,7 +109,8 @@ private fun SelectAddonToRemoveScreen(
   reload: () -> Unit,
   onSubmit: () -> Unit,
   onToggleOption: (CurrentlyActiveAddon) -> Unit,
-  navigateToSummary: (params: CommonSummaryParameters) -> Unit,
+  navigateToSummary: (params: CommonSummaryParameters,
+    popThisDestination: Boolean) -> Unit,
 ) {
   when (uiState) {
     is SelectAddonToRemoveState.Error -> {
@@ -131,6 +133,12 @@ private fun SelectAddonToRemoveScreen(
     }
 
     is SelectAddonToRemoveState.Loading -> {
+      LaunchedEffect(uiState.paramsToNavigateToSummary) {
+        val summaryParams = uiState.paramsToNavigateToSummary
+        if (summaryParams != null) {
+          navigateToSummary(summaryParams, true)
+        }
+      }
       HedvigFullScreenCenterAlignedProgress()
     }
 
@@ -138,7 +146,7 @@ private fun SelectAddonToRemoveScreen(
       LaunchedEffect(uiState.paramsToNavigateToSummary) {
         val summaryParams = uiState.paramsToNavigateToSummary
         if (summaryParams != null) {
-          navigateToSummary(summaryParams)
+          navigateToSummary(summaryParams, false)
         }
       }
       SelectAddonToRemoveSuccessScreen(
@@ -277,7 +285,7 @@ private fun PreviewChooseInsuranceToRemoveAddonScreen(
         {},
         {},
         {},
-        {},
+        {_,_->},
       )
     }
   }
@@ -286,7 +294,7 @@ private fun PreviewChooseInsuranceToRemoveAddonScreen(
 private class SelectAddonToRemoveStateProvider :
   CollectionPreviewParameterProvider<SelectAddonToRemoveState>(
     listOf(
-      SelectAddonToRemoveState.Loading,
+      SelectAddonToRemoveState.Loading(),
       SelectAddonToRemoveState.Error(null),
       SelectAddonToRemoveState.Error("Big error message"),
       SelectAddonToRemoveState.Success(

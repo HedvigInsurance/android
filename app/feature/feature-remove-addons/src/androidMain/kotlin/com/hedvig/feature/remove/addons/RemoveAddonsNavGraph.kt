@@ -141,6 +141,7 @@ fun NavGraphBuilder.removeAddonsNavGraph(
             currentCost: ItemCost,
             productVariant: ProductVariant,
             allAddons: List<CurrentlyActiveAddon>,
+            popDestination: Boolean
           ->
           navController.navigate(
             AddonRemoveDestination.Summary(
@@ -154,7 +155,13 @@ fun NavGraphBuilder.removeAddonsNavGraph(
                 allAddons,
               ),
             ),
-          )
+          )  {
+            if (popDestination) {
+              typedPopUpTo<AddonRemoveDestination.ChooseAddonDestination> {
+                inclusive = true
+              }
+            }
+          }
         },
       )
     }

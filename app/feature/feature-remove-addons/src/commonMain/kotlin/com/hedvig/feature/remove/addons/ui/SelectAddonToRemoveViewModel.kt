@@ -26,9 +26,9 @@ internal class SelectAddonToRemoveViewModel(
   contractId: ContractId,
   preselectedAddonVariant: AddonVariant?,
 ) : MoleculeViewModel<SelectAddonToRemoveEvent, SelectAddonToRemoveState>(
-    initialState = SelectAddonToRemoveState.Loading,
-    presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractId, preselectedAddonVariant),
-  )
+  initialState = SelectAddonToRemoveState.Loading(),
+  presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractId, preselectedAddonVariant),
+)
 
 private class SelectAddonToRemovePresenter(
   private val startAddonRemovalUseCase: StartAddonRemovalUseCase,
@@ -66,16 +66,32 @@ private class SelectAddonToRemovePresenter(
             listOfNotNull(
               result.existingAddonsToRemove.firstOrNull { it.displayTitle == addonVariant.displayName },
             )
-          } ?: emptyList()
-          Snapshot.withMutableSnapshot {
-            response = result
-            errorMessage = null
-            selectedToggleableOptions.clear()
-            selectedToggleableOptions.addAll(addonsChosenForRemoval)
+          } ?: if (result.existingAddonsToRemove.size == 1) result.existingAddonsToRemove else emptyList()
+
+
+          val summaryParams = if (result.existingAddonsToRemove.size == 1) CommonSummaryParameters(
+            contractId = contractId,
+            addonsToRemove = result.existingAddonsToRemove,
+            activationDate = result.activationDate,
+            baseCost = result.baseCost,
+            currentTotalCost = result.currentTotalCost,
+            productVariant = result.productVariant,
+            existingAddons = result.existingAddonsToRemove,
+          ) else null
+          if (summaryParams!=null) {
+            isLoading = true
+            paramsToNavigateToSummary = summaryParams
+          } else {
+            Snapshot.withMutableSnapshot {
+              response = result
+              errorMessage = null
+              selectedToggleableOptions.clear()
+              selectedToggleableOptions.addAll(addonsChosenForRemoval)
+              isLoading = false
+            }
           }
         },
       )
-      isLoading = false
     }
 
     CollectEvents { event ->
@@ -116,12 +132,12 @@ private class SelectAddonToRemovePresenter(
     return when {
       errorMessage != null -> SelectAddonToRemoveState.Error(errorMessage)
 
-      isLoading -> SelectAddonToRemoveState.Loading
+      isLoading -> SelectAddonToRemoveState.Loading(paramsToNavigateToSummary = paramsToNavigateToSummary)
 
       responseValue != null -> SelectAddonToRemoveState.Success(
-        responseValue,
-        selectedToggleableOptions,
-        paramsToNavigateToSummary,
+        addonOffer = responseValue,
+        addonsChosenForRemoval = selectedToggleableOptions,
+        paramsToNavigateToSummary = paramsToNavigateToSummary,
       )
 
       else -> SelectAddonToRemoveState.Error(null)
@@ -138,7 +154,9 @@ internal sealed interface SelectAddonToRemoveState {
 
   data class Error(val message: String?) : SelectAddonToRemoveState
 
-  data object Loading : SelectAddonToRemoveState
+  data class Loading(
+    val paramsToNavigateToSummary: CommonSummaryParameters? = null,
+  ) : SelectAddonToRemoveState
 }
 
 internal sealed interface SelectAddonToRemoveEvent {
