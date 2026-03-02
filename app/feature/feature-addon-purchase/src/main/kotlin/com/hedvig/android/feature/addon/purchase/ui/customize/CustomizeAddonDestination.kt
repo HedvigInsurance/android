@@ -384,13 +384,6 @@ private fun CustomizeSelectableAddonScreenContent(
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.height(8.dp))
-    HedvigTextButton(
-      text = stringResource(Res.string.general_cancel_button),
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      buttonSize = Large,
-      onClick = { popAddonFlow() },
-    )
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -557,19 +550,6 @@ private fun ToggleableAddons(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
-    currentlyActiveAddons.forEach { activeAddon ->
-      AddonCheckbox(
-        option = AddonCheckboxOption(
-          title = activeAddon.displayTitle,
-          description = activeAddon.displayDescription,
-          type = AddonCheckBoxOptionType.Active,
-        ),
-        selected = true,
-        enabled = false,
-        onCheckboxSelected = {},
-      )
-      Spacer(Modifier.height(4.dp))
-    }
     addonOptions.forEachIndexed { index, addonQuote ->
       AddonCheckbox(
         option = AddonCheckboxOption(
@@ -584,6 +564,22 @@ private fun ToggleableAddons(
         enabled = true,
       )
       if (index != addonOptions.lastIndex) {
+        Spacer(Modifier.height(4.dp))
+      }
+    }
+    currentlyActiveAddons.forEachIndexed { index, activeAddon ->
+      Spacer(Modifier.height(4.dp))
+      AddonCheckbox(
+        option = AddonCheckboxOption(
+          title = activeAddon.displayTitle,
+          description = activeAddon.displayDescription,
+          type = AddonCheckBoxOptionType.Active,
+        ),
+        selected = true,
+        enabled = false,
+        onCheckboxSelected = {},
+      )
+      if (index != currentlyActiveAddons.lastIndex) {
         Spacer(Modifier.height(4.dp))
       }
     }
