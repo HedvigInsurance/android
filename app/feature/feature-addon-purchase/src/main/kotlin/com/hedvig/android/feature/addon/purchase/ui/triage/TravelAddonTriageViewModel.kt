@@ -43,8 +43,9 @@ internal class TravelAddonTriagePresenter(
         ifRight = { travelBannerInfoList ->
           val travelBannerInfo = travelBannerInfoList.firstOrNull()
           currentState = if (travelBannerInfo == null || travelBannerInfo.eligibleInsurancesIds.isEmpty()) {
-            //todo: check here
-            TravelAddonTriageState.Failure(FailureReason.NO_TRAVEL_ADDON_AVAILABLE)
+            if (addonBannerSource == AddonBannerSource.TRAVEL_DEEPLINK) {
+              TravelAddonTriageState.Failure(FailureReason.NO_TRAVEL_ADDON_AVAILABLE)
+            } else TravelAddonTriageState.Failure(FailureReason.GENERAL)
           } else {
             TravelAddonTriageState.Success(travelBannerInfo.eligibleInsurancesIds)
           }
