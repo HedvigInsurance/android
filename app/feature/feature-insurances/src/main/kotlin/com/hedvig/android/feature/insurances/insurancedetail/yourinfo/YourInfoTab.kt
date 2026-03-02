@@ -452,15 +452,17 @@ private fun ManageAddonBottomSheetContent(
         addon.isRemovable -> addon.displayName
         else -> addon.displayName
       },
-      description = when {
-        addon.isUpgradable && addon.isRemovable -> stringResource(Res.string.ADDON_FLOW_UPDATE_ADDON_DESCRIPTION)
-        addon.isUpgradable -> stringResource(Res.string.ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION)
-        addon.isRemovable -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION)
-        else -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION_RENEWAL)
-      },
+      description = null,
       baseStyle = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.fillMaxWidth(),
     )
+    val description =when {
+      addon.isUpgradable && addon.isRemovable -> stringResource(Res.string.ADDON_FLOW_UPDATE_ADDON_DESCRIPTION)
+      addon.isUpgradable -> stringResource(Res.string.ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION)
+      addon.isRemovable -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION)
+      else -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION_RENEWAL)
+    }
+    HedvigText(description, color = HedvigTheme.colorScheme.textSecondary)
     if (addon.isUpgradable && addon.isRemovable) {
       Spacer(Modifier.height(24.dp))
       RadioGroup(
