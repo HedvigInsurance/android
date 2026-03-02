@@ -506,7 +506,7 @@ private fun SelectableAddons(
 ) {
   val addonSimpleItems = buildList {
     for (option in addonOptions) {
-      add(SimpleDropdownItem(option.displayTitle))
+      add(SimpleDropdownItem(option.displayDescription))
     }
   }
   val isDropdownEnabled = addonOptions.size > 1
