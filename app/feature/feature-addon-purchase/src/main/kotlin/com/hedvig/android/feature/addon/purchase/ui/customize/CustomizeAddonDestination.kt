@@ -1,9 +1,11 @@
 package com.hedvig.android.feature.addon.purchase.ui.customize
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -25,6 +27,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -48,6 +51,7 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.Checkbox
 import com.hedvig.android.design.system.hedvig.CheckboxOption
@@ -55,6 +59,7 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Sma
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle.Label
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigButtonGhostWithBorder
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -83,6 +88,7 @@ import com.hedvig.android.design.system.hedvig.a11y.accessibilityForDropdown
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.addon.purchase.data.AddonOffer.Selectable
 import com.hedvig.android.feature.addon.purchase.data.AddonOfferDeflectType
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
@@ -100,6 +106,8 @@ import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAdd
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SetSelectedOptionBackToPreviouslyChosen
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.SubmitSelected
 import hedvig.resources.ADDON_BADGE_ACTIVE
+import hedvig.resources.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE
+import hedvig.resources.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE
 import hedvig.resources.ADDON_FLOW_COVER_BUTTON
 import hedvig.resources.ADDON_FLOW_PRICE_LABEL
 import hedvig.resources.ADDON_FLOW_SELECT_BUTTON
@@ -562,11 +570,44 @@ private fun ToggleableAddons(
           onToggleOption(addonQuote)
         },
         enabled = true,
+        onBadgeClick = {
+          onToggleOption(addonQuote)
+        }
       )
       if (index != addonOptions.lastIndex) {
         Spacer(Modifier.height(4.dp))
       }
     }
+
+    val alreadyActiveAddonBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+    HedvigBottomSheet(
+      alreadyActiveAddonBottomSheetState,
+      contentPadding = PaddingValues(horizontal = 16.dp),
+    ) { _ ->
+      Column {
+        FlowHeading(
+          title = stringResource(Res.string.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE),
+          description = null,
+          baseStyle = HedvigTheme.typography.bodySmall
+        )
+        HedvigText(
+          stringResource(Res.string.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE),
+          color = HedvigTheme.colorScheme.textSecondary
+        )
+        Spacer(Modifier.height(32.dp))
+        HedvigButton(
+          text = stringResource(Res.string.general_close_button),
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          onClick = {
+            alreadyActiveAddonBottomSheetState.dismiss()
+          },
+          modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(16.dp))
+      }
+    }
+
     currentlyActiveAddons.forEachIndexed { index, activeAddon ->
       Spacer(Modifier.height(4.dp))
       AddonCheckbox(
@@ -578,6 +619,9 @@ private fun ToggleableAddons(
         selected = true,
         enabled = false,
         onCheckboxSelected = {},
+        onBadgeClick = {
+          alreadyActiveAddonBottomSheetState.show(Unit)
+        }
       )
       if (index != currentlyActiveAddons.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -592,8 +636,11 @@ private fun AddonCheckbox(
   selected: Boolean,
   enabled: Boolean,
   onCheckboxSelected: () -> Unit,
+  onBadgeClick: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
   Checkbox(
+    modifier = modifier,
     option = CheckboxOption(
       text = option.title,
       label = option.description,
@@ -609,6 +656,9 @@ private fun AddonCheckbox(
             stringResource(Res.string.ADDON_BADGE_ACTIVE),
             size = HighLightSize.Small,
             color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.MEDIUM),
+            modifier = Modifier
+              .clip(HedvigTheme.shapes.cornerXSmall)
+              .clickable(enabled = true, onClick = onBadgeClick)
           )
         }
 

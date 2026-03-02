@@ -24,6 +24,8 @@
   <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
   <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Bil Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
+  <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE">Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring.\n\nVill du ta bort den behöver du göra det från försäkringen den är kopplad till.</string>
+  <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE">Tillägget är aktivt</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Ja, uppgradera mitt skydd</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
   <string name="ADDON_FLOW_CONFIRMATION_TITLE">Bekräfta uppgraderat skydd</string>
@@ -47,9 +49,9 @@
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT">Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION">Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_TITLE">Vad är Reseskydd Plus?</string>
-  <string name="ADDON_FLOW_UPDATE_ADDON_DESCRIPTION">Välj vad du vill göra med det här tillägget.</string>
-  <string name="ADDON_FLOW_UPGRADE_ADDON">Uppgradera tillägg</string>
-  <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">Du kan uppgradera ditt tillägg för att utöka skyddet. Detta tillägg kan bara tas bort när din försäkring förnyas eller sägs upp.</string>
+  <string name="ADDON_FLOW_UPDATE_ADDON_DESCRIPTION">Välj ett alternativ</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON">Utöka skydd</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">Du kan utöka skyddet för det här tillägget. Det kan tas bort vid förnyelse eller uppsägning av försäkringen.</string>
   <string name="ADDON_LEARN_MORE_LABEL">Se vad som ingår</string>
   <string name="ADDON_REMOVE_CANCEL_BUTTON">Behåll nuvarande skydd</string>
   <string name="ADDON_REMOVE_CONFIRM_BUTTON">Avsluta %1$s</string>

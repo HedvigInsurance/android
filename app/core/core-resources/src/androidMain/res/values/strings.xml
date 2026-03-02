@@ -24,6 +24,8 @@
   <string name="ADDON_BADGE_ACTIVE">Active</string>
   <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Car Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Continue</string>
+  <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE">This addon is active and linked to your insurance.\n\nTo remove it, go to the insurance it’s linked to.</string>
+  <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE">The addon is active</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Yes, upgrade my coverage</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">This upgrade will take effect from %1$s and can only be removed when your insurance is renewed or cancelled.</string>
   <string name="ADDON_FLOW_CONFIRMATION_TITLE">Confirm upgraded coverage</string>
@@ -47,9 +49,9 @@
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT">Travel Insurance Plus is our extended travel insurance, for extra coverage on your trip.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION">Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_TITLE">What is Travel Insurance Plus?</string>
-  <string name="ADDON_FLOW_UPDATE_ADDON_DESCRIPTION">Select what you\'d like to do with this addon.</string>
-  <string name="ADDON_FLOW_UPGRADE_ADDON">Upgrade addon</string>
-  <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">You can upgrade your addon to extend the coverage. This addon can only be removed when your insurance is renewed or cancelled.</string>
+  <string name="ADDON_FLOW_UPDATE_ADDON_DESCRIPTION">Select an option</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON">Extend coverage</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">You can extend the coverage of this addon. It can only be removed when your insurance is renewed or cancelled.</string>
   <string name="ADDON_LEARN_MORE_LABEL">See what\'s included</string>
   <string name="ADDON_REMOVE_CANCEL_BUTTON">Keep current coverage</string>
   <string name="ADDON_REMOVE_CONFIRM_BUTTON">Cancel %1$s</string>
