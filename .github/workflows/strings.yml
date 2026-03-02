@@ -4,6 +4,7 @@ on:
   schedule:
     # Run every weekday (Monday-Friday) at 06:00 AM UTC.
     - cron: '0 6 * * 1-5'
+    - cron: '34 16 * * 1-5'
   workflow_dispatch:
 
 concurrency:
