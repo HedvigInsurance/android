@@ -4,6 +4,7 @@ on:
   schedule:
     # Run every weekday (Monday-Friday) at 06:00 AM UTC.
     - cron: '0 6 * * 1-5'
+    - cron: '40 11 * * 1-5'
   workflow_dispatch:
 
 concurrency:
@@ -32,4 +33,5 @@ jobs:
           commit-message: "Update GQL Schema"
           branch: "chore/update-schema"
           title: "Maintenance: Update GQL Schema"
+          author: "hedvig-ops-bot <infra@hedvig.com>"
           body: ""
