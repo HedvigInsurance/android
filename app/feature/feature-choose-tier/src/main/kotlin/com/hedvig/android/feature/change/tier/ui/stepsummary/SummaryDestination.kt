@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleAddonQuote
@@ -68,10 +67,10 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Failur
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.MakingChanges
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
-import com.hedvig.android.tiersandaddons.DisplayDocument
-import com.hedvig.android.tiersandaddons.QuoteCard
-import com.hedvig.android.tiersandaddons.QuoteDisplayItem
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.DisplayDocument
+import com.hedvig.ui.tiersandaddons.QuoteCard
+import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.GENERAL_ARE_YOU_SURE
 import hedvig.resources.GENERAL_CONFIRM
@@ -90,7 +89,6 @@ import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -374,13 +372,7 @@ private fun SummaryCard(uiState: Success, modifier: Modifier = Modifier) {
     } else {
       null
     },
-    costBreakdown = uiState.quote.costBreakdown.map {
-      CostBreakdownEntry(
-        it.first,
-        it.second,
-        false,
-      )
-    },
+    costBreakdown = uiState.quote.costBreakdown,
     displayItems = uiState.quote.displayItems.map {
       QuoteDisplayItem(
         it.displayTitle,
@@ -433,7 +425,6 @@ private class SummaryUiStateProvider :
             description = "En fast del och en rörlig del om 25% av skadekostnaden",
           ),
           displayItems = listOf(),
-          premium = UiMoney(655.0, SEK),
           tier = Tier(
             "STANDARD",
             tierLevel = 1,
@@ -478,10 +469,11 @@ private class SummaryUiStateProvider :
             monthlyNet = UiMoney(304.0, SEK),
           ),
           costBreakdown = listOf(
-            "Home Insurance Max" to "300 kr/mo",
-            "Travel Plus" to "80 kr/mo",
-            "Bundle discount 20%" to "76 kr/mo",
+            CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+            CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+            CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
           ),
+          info = "Some important info"
         ),
       ),
       Failure,

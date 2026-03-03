@@ -1,0 +1,29 @@
+query StartAddonRemoval($contractId: ID!) {
+  addonRemoveStart(contractId: $contractId) {
+    ... on UserError {
+      message
+    }
+    ... on AddonRemoveOffer {
+      activationDate
+      baseCost {
+        ...ItemCostFragment
+      }
+      currentTotalCost {
+        ...ItemCostFragment
+      }
+      pageDescription
+      pageTitle
+      productVariant {
+        ...ProductVariantFragment
+      }
+      removableAddons {
+        cost {
+          ...ItemCostFragment
+        }
+        displayDescription
+        displayTitle
+        id
+      }
+    }
+  }
+}

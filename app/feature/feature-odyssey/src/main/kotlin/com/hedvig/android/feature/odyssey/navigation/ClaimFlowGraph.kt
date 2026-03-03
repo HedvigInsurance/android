@@ -2,6 +2,7 @@ package com.hedvig.android.feature.odyssey.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import coil3.ImageLoader
@@ -51,7 +52,6 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -78,7 +78,6 @@ fun NavGraphBuilder.claimFlowGraph(
     navdestination<ClaimFlowDestination.HonestyPledge>(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimFlow),
     ) { backStackEntry ->
       HonestyPledgeDestination(
         windowSizeClass = windowSizeClass,
@@ -116,7 +115,7 @@ fun NavGraphBuilder.claimFlowGraph(
         openAppSettings = openAppSettings,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -134,7 +133,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep: ClaimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -152,7 +151,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateBack = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -167,7 +166,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -180,7 +179,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -196,7 +195,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -211,7 +210,7 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -229,7 +228,7 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         windowSizeClass = windowSizeClass,
         navigateToAppUpdateStep = {
-          navController.navigateToClaimFlowDestination( ClaimFlowDestination.UpdateApp)
+          navController.navigateToClaimFlowDestination(ClaimFlowDestination.UpdateApp)
         },
         navigateToPayoutStep = { checkoutMethod ->
           navController.navigateToClaimFlowDestination(
@@ -249,7 +248,7 @@ fun NavGraphBuilder.claimFlowGraph(
         windowSizeClass = windowSizeClass,
         navigateToNextStep = { claimFlowStep ->
           viewModel.emit(SelectContractEvent.HandledNextStepNavigation)
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         navigateUp = navController::navigateUp,
         closeClaimFlow = closeClaimFlow,
@@ -263,7 +262,7 @@ fun NavGraphBuilder.claimFlowGraph(
         viewModel = viewModel,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         windowSizeClass = windowSizeClass,
         navigateUp = navController::navigateUp,
@@ -355,7 +354,7 @@ fun NavGraphBuilder.claimFlowGraph(
         imageLoader = imageLoader,
         navigateToNextStep = { claimFlowStep ->
           viewModel.handledNextStepNavigation()
-          navController.navigateToClaimFlowDestination( claimFlowStep.toClaimFlowDestination())
+          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
         },
         onNavigateToImageViewer = onNavigateToImageViewer,
         appPackageId = appPackageId,

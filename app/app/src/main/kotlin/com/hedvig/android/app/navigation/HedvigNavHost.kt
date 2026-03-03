@@ -13,9 +13,10 @@ import coil3.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.claimflow.ClaimFlowStep
 import com.hedvig.android.data.claimflow.toClaimFlowDestination
+import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
@@ -84,6 +85,8 @@ import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.feature.claim.chat.ClaimChatDestination
 import com.hedvig.feature.claim.chat.claimChatGraph
+import com.hedvig.feature.remove.addons.AddonRemoveGraphDestination
+import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 
 @Composable
 internal fun HedvigNavHost(
@@ -119,6 +122,10 @@ internal fun HedvigNavHost(
   }
 
   fun navigateToMovingFlow(navOptions: NavOptionsBuilder.() -> Unit = {}) {
+    hedvigAppState.navController.navigate(SelectContractForMoving, navOptions)
+  }
+
+  fun navigateToChangeTier(navOptions: NavOptionsBuilder.() -> Unit = {}) {
     hedvigAppState.navController.navigate(SelectContractForMoving, navOptions)
   }
 
@@ -282,9 +289,32 @@ internal fun HedvigNavHost(
       startEditCoInsuredAddMissingInfo = { contractId: String ->
         navController.navigate(CoInsuredAddInfo(contractId))
       },
-      onNavigateToAddonPurchaseFlow = { ids ->
-        navController.navigate(AddonPurchaseGraphDestination(ids, TravelAddonBannerSource.INSURANCES_TAB))
+      onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon ->
+        navController.navigate(
+          AddonPurchaseGraphDestination(
+            insuranceIds.map(ContractId::id),
+            availableAddon?.displayName,
+            AddonBannerSource.INSURANCES_TAB,
+          )
+        )
       },
+      onNavigateToRemoveAddon = { contractId, addonVariant ->
+        navController.navigate(
+          AddonRemoveGraphDestination(
+            contractId,
+            addonVariant,
+          ),
+        )
+      },
+      navigateToUpgradeAddon = { contractId, addonVariant ->
+        navController.navigate(
+          AddonPurchaseGraphDestination(
+            listOfNotNull(contractId?.id),
+            null,
+            AddonBannerSource.INSURANCES_TAB,
+          ),
+        )
+      }
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -352,6 +382,11 @@ internal fun HedvigNavHost(
       navController = navController,
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      onNavigateToChangeTier = { contractId ->
+        navController.navigate(
+          StartTierFlowDestination(insuranceId = contractId),
+        )
+      },
     )
     changeTierGraph(
       navController = navController,
@@ -418,6 +453,12 @@ internal fun HedvigNavHost(
       tryToDialPhone = externalNavigator::tryToDialPhone,
     )
     imageViewerGraph(navController, imageLoader)
+    removeAddonsNavGraph(
+      navController = hedvigAppState.navController,
+      onNavigateToNewConversation = {
+        navigateToNewConversation()
+      },
+    )
   }
 }
 
@@ -437,6 +478,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
 ) {
   claimChatGraph(
     navController = navController,
+    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     openAppSettings = externalNavigator::openAppSettings,
     onNavigateToImageViewer = onNavigateToImageViewer,
@@ -475,8 +517,9 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     onNavigateToAddonPurchaseFlow = { ids ->
       navController.navigate(
         AddonPurchaseGraphDestination(
-          ids,
-          TravelAddonBannerSource.TRAVEL_CERTIFICATES,
+          insuranceIds = ids,
+          preselectedAddonDisplayName = null,
+          source = AddonBannerSource.TRAVEL_CERTIFICATES,
         ),
       )
     },
@@ -522,9 +565,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
   terminalClaimFlowStepDestinations(
     navController = navController,
     openPlayStore = {
-      if (!navController.popBackStack()) {
-        finishApp()
-      }
+      navController.popBackStack()
       externalNavigator.tryOpenPlayStore()
     },
     onNavigateToNewConversation = {

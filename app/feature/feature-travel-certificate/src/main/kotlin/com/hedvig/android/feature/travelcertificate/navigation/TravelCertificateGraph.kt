@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
@@ -18,7 +19,6 @@ import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import com.hedvig.core.common.android.sharePDF
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf

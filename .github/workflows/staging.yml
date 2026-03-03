@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - cmp/ds
+      - feat/new-launcher-icon
   workflow_dispatch:
 
 concurrency:

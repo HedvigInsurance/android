@@ -12,11 +12,13 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import com.hedvig.android.permission.PermissionManager
 import hedvig.resources.R
 import java.util.concurrent.atomic.AtomicInteger
 
 class GenericNotificationSender(
   private val context: Context,
+  private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
@@ -47,6 +49,7 @@ class GenericNotificationSender(
 
     sendHedvigNotification(
       context = context,
+      permissionManager = permissionManager,
       notificationId = id.getAndIncrement(),
       notification = notification,
       notificationChannel = notificationChannel,

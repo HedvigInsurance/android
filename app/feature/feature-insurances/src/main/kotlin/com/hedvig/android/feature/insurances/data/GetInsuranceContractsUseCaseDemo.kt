@@ -87,6 +87,8 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           contractHolderSSN = "1111111111-33322",
           supportsTierChange = true,
           tierName = "STANDARD",
+          existingAddons = emptyList(),
+          availableAddons = emptyList(),
         ),
       ).right(),
     )

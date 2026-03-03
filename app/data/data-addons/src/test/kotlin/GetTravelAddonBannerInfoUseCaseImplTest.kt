@@ -3,29 +3,28 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
-import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
+import com.apollographql.apollo.api.Error
 import com.apollographql.apollo.testing.registerTestResponse
 import com.hedvig.android.apollo.octopus.test.OctopusFakeResolver
 import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseImpl
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource.INSURANCES_TAB
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource.TRAVEL_CERTIFICATES
-import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource.INSURANCES_TAB
+import com.hedvig.android.data.addons.data.AddonBannerSource.TRAVEL_CERTIFICATES
+import com.hedvig.android.data.addons.data.FlowType
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCaseImpl
 import com.hedvig.android.featureflags.flags.Feature.TRAVEL_ADDON
 import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import octopus.TravelAddonBannerQuery
-import octopus.type.UpsellTravelAddonFlow
+import octopus.AddonBannersQuery
+import octopus.type.AddonFlow
+import octopus.type.buildAddonBanner
 import octopus.type.buildMember
-import octopus.type.buildUpsellTravelAddonBanner
 import org.junit.Rule
 import org.junit.Test
 
@@ -40,8 +39,8 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   private val apolloClientWithError: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = TravelAddonBannerQuery(UpsellTravelAddonFlow.APP_UPSELL_UPGRADE),
-        errors = listOf(com.apollographql.apollo.api.Error.Builder(message = "Bad message").build()),
+        operation = AddonBannersQuery(listOf(AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE)),
+        errors = listOf(Error.Builder(message = "Bad message").build()),
       )
     }
 
@@ -49,10 +48,10 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   private val apolloClientWithNullBannerData: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = TravelAddonBannerQuery(UpsellTravelAddonFlow.APP_UPSELL_UPGRADE),
-        data = TravelAddonBannerQuery.Data(OctopusFakeResolver) {
+        operation = AddonBannersQuery(listOf(AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE)),
+        data = AddonBannersQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
-            upsellTravelAddonBanner = null
+            addonBanners = emptyList()
           }
         },
       )
@@ -62,27 +61,30 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   private val apolloClientWithTwoFlows: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = TravelAddonBannerQuery(UpsellTravelAddonFlow.APP_UPSELL_UPGRADE),
-        data = TravelAddonBannerQuery.Data(OctopusFakeResolver) {
+        operation = AddonBannersQuery(listOf(AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE)),
+        data = AddonBannersQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
-            upsellTravelAddonBanner = buildUpsellTravelAddonBanner {
-              badges = buildList {
-                add("60 days")
-              }
-              contractIds = buildList {
-                add("ContractId")
-              }
-              descriptionDisplayName = "Description"
-              titleDisplayName = "Title"
-            }
+            addonBanners = listOf(
+              buildAddonBanner {
+                badges = buildList {
+                  add("60 days")
+                }
+                contractIds = buildList {
+                  add("ContractId")
+                }
+                descriptionDisplayName = "Description"
+                displayTitleName = "Title"
+                flow = AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
+              },
+            )
           }
         },
       )
       registerTestResponse(
-        operation = TravelAddonBannerQuery(UpsellTravelAddonFlow.APP_ONLY_UPSALE),
-        data = TravelAddonBannerQuery.Data(OctopusFakeResolver) {
+        operation = AddonBannersQuery(listOf(AddonFlow.APP_CAR_PLUS, AddonFlow.APP_TRAVEL_PLUS_SELL_ONLY)),
+        data = AddonBannersQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
-            upsellTravelAddonBanner = null
+            addonBanners = emptyList()
           }
         },
       )
@@ -92,17 +94,20 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   private val apolloClientWithEmptyContracts: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = TravelAddonBannerQuery(UpsellTravelAddonFlow.APP_UPSELL_UPGRADE),
-        data = TravelAddonBannerQuery.Data(OctopusFakeResolver) {
+        operation = AddonBannersQuery(listOf(AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE)),
+        data = AddonBannersQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
-            upsellTravelAddonBanner = buildUpsellTravelAddonBanner {
-              badges = buildList {
-                add("60 days")
-              }
-              contractIds = listOf()
-              descriptionDisplayName = "Description"
-              titleDisplayName = "Title"
-            }
+            addonBanners = listOf(
+              buildAddonBanner {
+                badges = buildList {
+                  add("60 days")
+                }
+                contractIds = emptyList()
+                descriptionDisplayName = "Description"
+                displayTitleName = "Title"
+                flow = AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
+              },
+            )
           }
         },
       )
@@ -112,68 +117,71 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   private val apolloClientWithFullBannerData: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = TravelAddonBannerQuery(UpsellTravelAddonFlow.APP_UPSELL_UPGRADE),
-        data = TravelAddonBannerQuery.Data(OctopusFakeResolver) {
+        operation = AddonBannersQuery(listOf(AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE)),
+        data = AddonBannersQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
-            upsellTravelAddonBanner = buildUpsellTravelAddonBanner {
-              badges = buildList {
-                add("60 days")
-              }
-              contractIds = buildList {
-                add("ContractId")
-              }
-              descriptionDisplayName = "Description"
-              titleDisplayName = "Title"
-            }
+            addonBanners = listOf(
+              buildAddonBanner {
+                badges = buildList {
+                  add("60 days")
+                }
+                contractIds = buildList {
+                  add("ContractId")
+                }
+                descriptionDisplayName = "Description"
+                displayTitleName = "Title"
+                flow = AddonFlow.APP_TRAVEL_PLUS_SELL_OR_UPGRADE
+              },
+            )
           }
         },
       )
     }
 
   @Test
-  fun `if FF for addons is off return null`() = runTest {
+  fun `if FF for addons is off return empty list`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to false))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithTwoFlows, featureManager)
+    val sut = GetAddonBannerInfoUseCaseImpl(apolloClientWithTwoFlows, featureManager)
     val resultFromInsurances = sut.invoke(INSURANCES_TAB).first()
     assertThat(resultFromInsurances)
-      .isEqualTo(null.right())
+      .isEqualTo(emptyList<AddonBannerInfo>().right())
     val resultFromTravel = sut.invoke(TRAVEL_CERTIFICATES).first()
     assertThat(resultFromTravel)
-      .isEqualTo(null.right())
+      .isEqualTo(emptyList<AddonBannerInfo>().right())
   }
 
   @Test
-  fun `if get null bannerData from BE return null`() = runTest {
+  fun `if get null bannerData from BE return empty list`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithNullBannerData, featureManager)
+    val sut = GetAddonBannerInfoUseCaseImpl(apolloClientWithNullBannerData, featureManager)
     val result = sut.invoke(TRAVEL_CERTIFICATES).first()
     assertThat(result)
-      .isEqualTo(null.right())
+      .isEqualTo(emptyList<AddonBannerInfo>().right())
   }
 
   @Test
   fun `the source is mapped to the correct flow for the query`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithTwoFlows, featureManager)
+    val sut = GetAddonBannerInfoUseCaseImpl(apolloClientWithTwoFlows, featureManager)
     val resultFromTravelCertificates = sut.invoke(TRAVEL_CERTIFICATES).first().getOrNull()
     assertThat(resultFromTravelCertificates).isNotNull()
     val resultFromInsurances = sut.invoke(INSURANCES_TAB).first().getOrNull()
-    assertThat(resultFromInsurances).isNull()
+    assertThat(resultFromInsurances).isEqualTo(emptyList())
   }
 
   @Test
-  fun `if get bannerData from BE is not null but contractIds are empty return null`() = runTest {
+  fun `if get bannerData from BE is not null but contractIds are empty return empty list`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithEmptyContracts, featureManager)
+    val sut = GetAddonBannerInfoUseCaseImpl(apolloClientWithEmptyContracts, featureManager)
     val result = sut.invoke(TRAVEL_CERTIFICATES).first()
     assertThat(result)
-      .isEqualTo(null.right())
+      .isEqualTo(emptyList<AddonBannerInfo>().right())
   }
 
   @Test
   fun `if get error from BE return ErrorMessage`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithError, featureManager)
+    val sut = GetAddonBannerInfoUseCaseImpl(apolloClientWithError, featureManager)
     val resultFromTravels = sut.invoke(TRAVEL_CERTIFICATES).first().isLeft()
     assertThat(resultFromTravels)
       .isTrue()
@@ -182,7 +190,7 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   @Test
   fun `if get full banner data from BE return TravelAddonBannerInfo`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithFullBannerData, featureManager)
+    val sut = GetAddonBannerInfoUseCaseImpl(apolloClientWithFullBannerData, featureManager)
     val resultFromTravel = sut.invoke(TRAVEL_CERTIFICATES).first().getOrNull()
     assertThat(resultFromTravel)
       .isNotNull()
@@ -191,15 +199,18 @@ class GetTravelAddonBannerInfoUseCaseImplTest {
   @Test
   fun `the received data is passed correctly and in full`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(TRAVEL_ADDON to true))
-    val sut = GetTravelAddonBannerInfoUseCaseImpl(apolloClientWithFullBannerData, featureManager)
+    val sut = GetAddonBannerInfoUseCaseImpl(apolloClientWithFullBannerData, featureManager)
     val resultFromTravel = sut.invoke(TRAVEL_CERTIFICATES).first().getOrNull()
     assertThat(resultFromTravel)
       .isEqualTo(
-        TravelAddonBannerInfo(
-          title = "Title",
-          description = "Description",
-          labels = listOf("60 days"),
-          eligibleInsurancesIds = nonEmptyListOf("ContractId"),
+        listOf(
+          AddonBannerInfo(
+            title = "Title",
+            description = "Description",
+            labels = listOf("60 days"),
+            eligibleInsurancesIds = nonEmptyListOf("ContractId"),
+            flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
+          ),
         ),
       )
   }

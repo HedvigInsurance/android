@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.help.center
 
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
@@ -21,7 +22,6 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
