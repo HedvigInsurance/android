@@ -62,7 +62,6 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
   ) { backStackEntry ->
 
     val deepLinkInfo = getDeepLinkInfoFromBackStackEntry(backStackEntry)
-    logcat { "Mariia: deepLinkInfo: $deepLinkInfo" }
     if (deepLinkInfo.contractId!=null) {
       LaunchedEffect(Unit) {
         navController.navigate(

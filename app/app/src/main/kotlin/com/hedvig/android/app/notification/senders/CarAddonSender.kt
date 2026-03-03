@@ -1,0 +1,67 @@
+package com.hedvig.android.app.notification.senders
+
+import android.app.PendingIntent
+import android.content.Context
+import androidx.core.app.NotificationCompat
+import androidx.core.app.PendingIntentCompat
+import androidx.core.net.toUri
+import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.app.notification.intentForNotification
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.notification.core.HedvigNotificationChannel
+import com.hedvig.android.notification.core.NotificationSender
+import com.hedvig.android.notification.core.sendHedvigNotification
+import com.hedvig.android.permission.PermissionManager
+import hedvig.resources.R
+
+class CarAddonSender(
+  private val context: Context,
+  private val permissionManager: PermissionManager,
+  private val buildConstants: HedvigBuildConstants,
+  private val deepLinkContainer: HedvigDeepLinkContainer,
+  private val notificationChannel: HedvigNotificationChannel,
+) : NotificationSender {
+  override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+    val pendingIntent = PendingIntentCompat.getActivity(
+      context,
+      RequestCode,
+      buildConstants.intentForNotification(deepLinkContainer.carAddon.first().toUri()),
+      PendingIntent.FLAG_UPDATE_CURRENT,
+      false,
+    )
+    val title = remoteMessage.titleFromCustomerIoData()
+    val body = remoteMessage.bodyFromCustomerIoData()
+    val notification = NotificationCompat
+      .Builder(context, notificationChannel.channelId)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
+      .setContentTitle(title)
+      .setContentText(body)
+      .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+      .setAutoCancel(true)
+      .setContentIntent(pendingIntent)
+      .build()
+
+    sendHedvigNotification(
+      context = context,
+      permissionManager = permissionManager,
+      notificationId = NotificationId,
+      notification = notification,
+      notificationChannel = notificationChannel,
+      notificationSenderName = "CarAddonSender",
+    )
+  }
+
+  override fun handlesNotificationType(notificationType: String): Boolean =
+    NOTIFICATION_TYPE_OPEN_CAR_ADDON_FLOW == notificationType
+
+  companion object {
+    private const val NOTIFICATION_TYPE_OPEN_CAR_ADDON_FLOW = "ADDON_CAR_PLUS"
+
+    // Unique number compared to the other request codes. Has no significance otherwise.
+    private const val RequestCode = 688800
+
+    // Unique number compared to the other notification IDs. Has no significance otherwise.
+    private const val NotificationId = 688801
+  }
+}
