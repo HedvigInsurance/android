@@ -231,10 +231,10 @@ private fun logSuccessfulAddonPurchaseAction(
 ) {
   summaryParameters.chosenQuotes.forEach { chosenQuote ->
     chosenQuote.addonSubtype?.let {
-      // todo: review later when will have new entrypoints. Prob new addonPurchaseSource
       val logInfo = AddonLogInfo(
         flow = addonPurchaseSource,
         subType = chosenQuote.addonSubtype,
+        type = chosenQuote.addonVariant.product
       )
       val eventType = if (summaryParameters.currentlyActiveAddons.isEmpty()) {
         AddonEventType.ADDON_PURCHASED
@@ -249,8 +249,8 @@ private fun logSuccessfulAddonPurchaseAction(
 private data class AddonLogInfo(
   val flow: AddonBannerSource,
   val subType: String,
+  val type: String
 ) {
-  val type = "travelAddon"
 
   enum class AddonEventType {
     ADDON_PURCHASED,
