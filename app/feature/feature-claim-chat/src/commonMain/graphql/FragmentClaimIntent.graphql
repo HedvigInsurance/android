@@ -41,6 +41,7 @@ fragment FormFragment on ClaimIntentStepContentForm {
     defaultValues
     minValue
     maxValue
+    suggestedQuery
   }
   isSkippable
 }

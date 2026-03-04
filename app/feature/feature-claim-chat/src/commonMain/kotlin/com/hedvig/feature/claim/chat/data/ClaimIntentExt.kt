@@ -196,7 +196,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
         ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
         ClaimIntentStepContentFormFieldType.PHONE_NUMBER -> StepContent.Form.FieldType.NUMBER
-        ClaimIntentStepContentFormFieldType.SEARCH -> null
+        ClaimIntentStepContentFormFieldType.SEARCH -> StepContent.Form.FieldType.SEARCH
         ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
       },
       options = field.options?.map {
@@ -221,6 +221,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
           null
         }
       },
+      suggestedQuery = field.suggestedQuery
     )
   }
 }

@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
@@ -41,11 +42,14 @@ import com.hedvig.android.design.system.hedvig.MultiSelectDialog
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.data.StepContent.Form.*
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
@@ -71,7 +75,7 @@ internal fun FormStep(
   canBeChanged: Boolean,
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
-  firstFieldWithError: StepContent.Form.Field?,
+  firstFieldWithError: Field?,
   modifier: Modifier = Modifier,
 ) {
   FormContent(
@@ -99,11 +103,11 @@ internal fun FormStep(
 }
 
 @Composable
-private fun getErrorText(field: StepContent.Form.Field): String? {
+private fun getErrorText(field: Field): String? {
   return when (field.hasError) {
-    StepContent.Form.FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
-    StepContent.Form.FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
-    StepContent.Form.FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
+    FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
+    FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
+    FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
     null -> null
   }
 }
@@ -119,8 +123,8 @@ private fun FormContent(
   onSubmit: () -> Unit,
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
-  onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
-  firstFieldWithError: StepContent.Form.Field?,
+  onSelectFieldAnswer: (fieldId: FieldId, answer: FieldOption?) -> Unit,
+  firstFieldWithError: Field?,
   modifier: Modifier = Modifier,
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
@@ -130,7 +134,7 @@ private fun FormContent(
         content.fields.forEach { field ->
           val errorText = getErrorText(field)
           when (field.type) {
-            StepContent.Form.FieldType.TEXT -> {
+            FieldType.TEXT -> {
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -138,19 +142,19 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
+                    answer?.let { FieldOption(it, it, null) },
                   )
                 },
                 errorText = errorText,
               )
             }
 
-            StepContent.Form.FieldType.DATE -> {
+            FieldType.DATE -> {
               LaunchedEffect(field.datePickerUiState?.datePickerState?.selectedDateMillis) {
                 onSelectFieldAnswer(
                   field.id,
                   field.datePickerUiState?.datePickerState?.selectedDateMillis?.let {
-                    StepContent.Form.FieldOption(it.toString(), it.toString(), null)
+                    FieldOption(it.toString(), it.toString(), null)
                   },
                 )
               }
@@ -162,7 +166,7 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.NUMBER -> {
+            FieldType.NUMBER -> {
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -170,7 +174,7 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
+                    answer?.let { FieldOption(it, it, null) },
                   )
                 },
                 keyboardType = KeyboardType.Number,
@@ -178,7 +182,7 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.SINGLE_SELECT -> {
+            FieldType.SINGLE_SELECT -> {
               SingleSelectBubbleWithDialog(
                 questionLabel = field.title,
                 options = field.options.map {
@@ -210,7 +214,7 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.MULTI_SELECT -> {
+            FieldType.MULTI_SELECT -> {
               MultiSelectBubbleWithDialog(
                 questionLabel = field.title,
                 options = field.options.map {
@@ -238,13 +242,13 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.BINARY -> {
+            FieldType.BINARY -> {
               YesNoBubble(
                 answerSelected = field.selectedOptions.firstOrNull()?.text,
                 onSelect = {
                   onSelectFieldAnswer(
                     field.id,
-                    StepContent.Form.FieldOption(it, it, null),
+                    FieldOption(it, it, null),
                   )
                 },
                 questionText = field.title,
@@ -256,6 +260,12 @@ private fun FormContent(
               if (canSkip) {
                 onSkip()
               }
+            }
+
+            FieldType.SEARCH -> {
+              SearchForm(
+                suggestedQuery = field.suggestedQuery
+              )
             }
           }
         }
@@ -311,6 +321,19 @@ private fun FormContent(
       }
     }
   }
+}
+
+@Composable
+internal fun SearchForm(
+  suggestedQuery: String?
+) {
+  val crossSellBottomSheetState = rememberHedvigBottomSheetState<String?>()
+  HedvigBottomSheet(
+    hedvigBottomSheetState = crossSellBottomSheetState,
+    content = { suggestedQuery: String? ->
+      TODO()
+    },
+  )
 }
 
 @Composable

@@ -707,11 +707,11 @@ internal class ClaimChatPresenter(
                     )
                   }
 
+                  // Date gets selected date from DatePickerState, not from Event
                   FieldType.DATE -> {
                     field.copy(hasError = null)
                   }
 
-                  // Date gets selected date from DatePickerState, not from Event
 
                   FieldType.MULTI_SELECT -> {
                     field.copy(

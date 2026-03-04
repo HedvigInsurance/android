@@ -85,6 +85,8 @@ internal sealed interface StepContent {
       val options: List<FieldOption>,
       val selectedOptions: List<FieldOption>,
       val datePickerUiState: DatePickerUiState?,
+
+      val suggestedQuery: String?,
       val hasError: FieldError? = null,
     )
 
@@ -109,6 +111,8 @@ internal sealed interface StepContent {
       SINGLE_SELECT,
       MULTI_SELECT,
       BINARY,
+
+      SEARCH
     }
   }
 
