@@ -36,6 +36,7 @@
   <string name="ADDON_FLOW_SELECT_BUTTON">Välj</string>
   <string name="ADDON_FLOW_SELECT_DAYS_PLACEHOLDER">Antal resdagar</string>
   <string name="ADDON_FLOW_SELECT_INSURANCE_SUBTITLE">Välj den försäkring du vill lägga till extra skydd för</string>
+  <string name="ADDON_FLOW_SELECT_INSURANCE_TITLE">Utöka ditt skydd</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE">Välj antalet resdagar som täcks</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_TITLE">Välj antal resdagar</string>
   <string name="ADDON_FLOW_SUBTITLE">För extra trygghet när du reser utomlands</string>

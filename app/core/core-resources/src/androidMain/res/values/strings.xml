@@ -36,6 +36,7 @@
   <string name="ADDON_FLOW_SELECT_BUTTON">Select</string>
   <string name="ADDON_FLOW_SELECT_DAYS_PLACEHOLDER">Maximum travel limit</string>
   <string name="ADDON_FLOW_SELECT_INSURANCE_SUBTITLE">Select the insurance you would like to add coverage for</string>
+  <string name="ADDON_FLOW_SELECT_INSURANCE_TITLE">Extend your coverage</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE">Days covered when travelling</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_TITLE">Choose your maximum travel limit</string>
   <string name="ADDON_FLOW_SUBTITLE">For extra safety when you are travelling abroad</string>
