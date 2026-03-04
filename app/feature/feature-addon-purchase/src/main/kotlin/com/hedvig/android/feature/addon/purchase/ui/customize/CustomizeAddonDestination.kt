@@ -336,8 +336,8 @@ private fun CustomizeSelectableAddonScreenContent(
     topAppBarText = "",
     topAppBarActions = {
       IconButton(
-        modifier = Modifier.size(24.dp),
-        onClick = { popAddonFlow() },
+        modifier = Modifier.size(48.dp),
+        onClick = dropUnlessResumed { popAddonFlow() },
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
