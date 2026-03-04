@@ -2,6 +2,7 @@ package com.hedvig.feature.claim.chat.ui.step
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.MultiSelectDialog
+import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
@@ -264,7 +266,15 @@ private fun FormContent(
 
             FieldType.SEARCH -> {
               SearchForm(
-                suggestedQuery = field.suggestedQuery
+                suggestedQuery = field.suggestedQuery,
+                onQueryChange = {
+                  TODO()
+                },
+                queryResult = TODO(),
+                searchNoResult = TODO(),
+                selectedOption = TODO(),
+                onOptionSelected = TODO(),
+                modifier = TODO()
               )
             }
           }
@@ -325,13 +335,51 @@ private fun FormContent(
 
 @Composable
 internal fun SearchForm(
-  suggestedQuery: String?
+  queryResult: List<FieldOption>,
+  searchNoResult: Unit?,
+  suggestedQuery: String?,
+  onQueryChange: (String) -> Unit,
+  selectedOption: FieldOption,
+  onOptionSelected: (FieldOption) -> Unit,
+  modifier: Modifier = Modifier
 ) {
   val crossSellBottomSheetState = rememberHedvigBottomSheetState<String?>()
   HedvigBottomSheet(
     hedvigBottomSheetState = crossSellBottomSheetState,
     content = { suggestedQuery: String? ->
-      TODO()
+      Column(modifier) {
+        if (queryResult.isEmpty() && suggestedQuery.isNullOrEmpty()) {
+          Box(Modifier.weight(1f),
+            contentAlignment = Alignment.Center) {
+            HedvigText("Fill in more details about your item") //todo!!
+            HedvigText("Start searching for the item relevant to your claim",
+              color = HedvigTheme.colorScheme.textSecondary)//todo!!
+          }
+        } else if (queryResult.isEmpty()) {
+          HedvigText("Nothing found") //todo!!
+        } else {
+          val radioOptions = queryResult.map { option ->
+            RadioOption(
+              id = RadioOptionId(option.text),
+              text = option.text,
+              label = option.subtitle
+            )
+          }
+//          RadioGroup(
+//            radioOptions,
+//            selectedOptionIds = TODO(),
+//            onRadioOptionSelected = TODO(),
+//            colors = TODO(),
+//            style = TODO(),
+//            selectIndicator = TODO(),
+//            role = TODO(),
+//            modifier = TODO(),
+//            disabledOptions = TODO(),
+//            enabled = TODO(),
+//            textEndContent = TODO(),
+//          )
+        }
+      }
     },
   )
 }

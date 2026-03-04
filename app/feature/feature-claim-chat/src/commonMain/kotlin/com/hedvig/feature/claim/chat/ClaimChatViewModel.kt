@@ -26,6 +26,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
+import com.hedvig.feature.claim.chat.data.FormFieldSearchUseCase
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType.TooShort
@@ -118,6 +119,17 @@ internal sealed interface ClaimChatEvent {
   data class AddToShownAnimations(val stepId: StepId) : ClaimChatEvent
 
   data class RetrySubmittingTaskStep(val stepId: StepId) : ClaimChatEvent
+
+  data class UpdateFormFieldSearchQuery(
+    val query: String,
+    val stepId: StepId,
+    val fieldId: FieldId
+  ) : ClaimChatEvent
+
+  data class ClearQuery(
+    val stepId: StepId,
+    val fieldId: FieldId
+  ) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -138,6 +150,8 @@ internal sealed interface ClaimChatUiState {
     val showConfirmEditDialogForStep: StepId?,
     val stepsWithShownAnimations: List<StepId>,
     val progress: Float?,
+    val searchQuery: SearchObject?,
+    val searchNoResult: Unit?,
   ) : ClaimChatUiState
 }
 
@@ -154,6 +168,7 @@ internal class ClaimChatViewModel(
   audioRecordingManager: AudioRecordingManager,
   skipStepUseCase: SkipStepUseCase,
   regretStepUseCase: RegretStepUseCase,
+  formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
@@ -171,6 +186,7 @@ internal class ClaimChatViewModel(
       audioRecordingManager,
       fileService,
       regretStepUseCase,
+      formFieldSearchUseCase
     ),
   )
 
@@ -188,6 +204,7 @@ internal class ClaimChatPresenter(
   private val audioRecordingManager: AudioRecordingManager,
   private val fileService: FileService,
   private val regretStepUseCase: RegretStepUseCase,
+  private val formFieldSearchUseCase: FormFieldSearchUseCase,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -222,6 +239,10 @@ internal class ClaimChatPresenter(
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
+
+    var searchQuery by remember { mutableStateOf<SearchObject?>(null) }
+
+    var searchNoResult by remember { mutableStateOf<Unit?>(null) }
 
     if (initializing) {
       LaunchedEffect(Unit) {
@@ -277,6 +298,45 @@ internal class ClaimChatPresenter(
         ) { progress = it }
       },
     )
+
+    LaunchedEffect(searchQuery) {
+      val query = searchQuery
+      if (query!=null) {
+        val result = formFieldSearchUseCase.invoke(
+          stepId = query.stepId.value,
+          fieldId = query.fieldId,
+          query = query.query
+        ).getOrNull()
+        if (result.isNullOrEmpty()) {
+          searchNoResult = Unit
+          return@LaunchedEffect
+        }
+        searchNoResult = null
+        steps.updateStepWithSuccess<StepContent.Form>(query.stepId) { step, content ->
+          val newFields = content.fields.map { field ->
+            if (field.id.value == query.fieldId) {
+              when (field.type) {
+                FieldType.SEARCH
+                  -> {
+                  field.copy(
+                    foundOptionsInSearch = result,
+                  )
+                }
+                else -> field //shouldn't happen
+              }
+            } else {
+              field
+            }
+          }
+
+          step.copy(
+            stepContent = content.copy(
+              fields = newFields,
+            ),
+          )
+        }
+      }
+    }
 
     CollectEvents { event ->
       when (event) {
@@ -697,6 +757,7 @@ internal class ClaimChatPresenter(
                   FieldType.NUMBER,
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
+                  FieldType.SEARCH,
                   null,
                   -> {
                     field.copy(
@@ -823,6 +884,14 @@ internal class ClaimChatPresenter(
             )
           }
         }
+
+        is ClaimChatEvent.UpdateFormFieldSearchQuery -> searchQuery = TODO()
+
+        is ClaimChatEvent.ClearQuery -> {
+          searchQuery = null
+          searchNoResult = null
+          event.stepId //todo: update searchedOptions to emptyList
+        }
       }
     }
 
@@ -844,6 +913,8 @@ internal class ClaimChatPresenter(
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
         stepsWithShownAnimations = stepsWithShownAnimations,
         progress = progress,
+        searchQuery = searchQuery,
+        searchNoResult = searchNoResult
       )
 
       else -> error("")
@@ -1052,3 +1123,10 @@ private fun validateField(field: Field): Field {
 
   return field.copy(hasError = null)
 }
+
+
+internal data class SearchObject(
+  val fieldId: String,
+  val stepId: StepId,
+  val query: String
+)

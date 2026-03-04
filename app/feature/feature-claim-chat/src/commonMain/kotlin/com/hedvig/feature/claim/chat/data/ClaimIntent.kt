@@ -88,6 +88,7 @@ internal sealed interface StepContent {
 
       val suggestedQuery: String?,
       val hasError: FieldError? = null,
+      val foundOptionsInSearch: List<FieldOption> = emptyList(),
     )
 
     sealed interface FieldError {
@@ -102,6 +103,7 @@ internal sealed interface StepContent {
       val value: String,
       val text: String,
       val subtitle: String?,
+      val imageUrl: String? = null
     )
 
     enum class FieldType {
