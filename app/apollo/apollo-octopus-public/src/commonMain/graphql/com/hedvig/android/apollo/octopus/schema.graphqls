@@ -913,6 +913,14 @@ type ClaimIntent {
 The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
 """
 scalar Float
+input ClaimIntentFormFieldSearchInput {
+  stepId: ID!
+  fieldId: ID!
+  query: String!
+}
+type ClaimIntentFormFieldSearchOutput {
+  options: [ClaimIntentStepContentFormFieldOption!]!
+}
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
   """
@@ -1059,6 +1067,7 @@ type ClaimIntentStepContentFormField {
 type ClaimIntentStepContentFormFieldOption {
   title: String!
   subtitle: String
+  imageUrl: String
   value: ClaimIntentStepContentFormFieldValue!
 }
 enum ClaimIntentStepContentFormFieldType {
@@ -1069,6 +1078,7 @@ enum ClaimIntentStepContentFormFieldType {
   SINGLE_SELECT
   MULTI_SELECT
   BINARY
+  SEARCH
 }
 """
 A scalar representing client-server agreed upon submittable form values.
@@ -3654,6 +3664,10 @@ type Product {
   """
   variants: [ProductVariant!]!
   """
+  Return all the possible `AddonVariants` available for this Product
+  """
+  addonVariants: [AddonVariant!]!
+  """
   Localized name of the product in short form.
   """
   displayNameShort: String!
@@ -3967,6 +3981,7 @@ type Query {
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
   claimIntent(id: ID!): ClaimIntent!
+  claimIntentFormFieldSearch(input: ClaimIntentFormFieldSearchInput!): ClaimIntentFormFieldSearchOutput!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
   Gets the currently authenticated member. This is the only valid way to query a `Member` type, and it is based
