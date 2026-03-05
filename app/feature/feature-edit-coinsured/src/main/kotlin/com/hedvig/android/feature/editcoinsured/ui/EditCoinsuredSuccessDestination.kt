@@ -19,6 +19,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_LABEL
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_TITLE
 import hedvig.resources.Res
@@ -27,7 +28,12 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () -> Unit, navigateBack: () -> Unit) {
+internal fun EditCoInsuredSuccessDestination(
+  date: LocalDate?,
+  type: CoInsuredFlowType,
+  navigateUp: () -> Unit,
+  navigateBack: () -> Unit,
+) {
   HedvigScaffold(navigateUp = navigateUp, Modifier.fillMaxSize()) {
     Spacer(Modifier.height(8.dp))
     Box(
@@ -36,7 +42,10 @@ internal fun EditCoInsuredSuccessDestination(date: LocalDate?, navigateUp: () ->
         .fillMaxWidth(),
     ) {
       EmptyState(
-        text = stringResource(Res.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE),
+        text = when (type) {
+          CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE)
+          CoInsuredFlowType.CoOwners -> "todo Co-owner added"
+        },
         description = stringResource(
           Res.string.CONTRACT_ADD_COINSURED_UPDATED_LABEL,
           date?.let {
@@ -66,9 +75,9 @@ private fun PreviewEditCoInsuredSuccessDestination() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       EditCoInsuredSuccessDestination(
         date = LocalDate.fromEpochDays(3000),
+        type = CoInsuredFlowType.CoInsured,
         navigateUp = {},
-        navigateBack = {},
-      )
+      ) {}
     }
   }
 }
