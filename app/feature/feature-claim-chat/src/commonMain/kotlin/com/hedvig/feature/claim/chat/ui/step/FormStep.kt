@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -379,72 +380,82 @@ internal fun SearchForm(
   HedvigBottomSheet(
     hedvigBottomSheetState = searchBottomSheetState,
     content = { suggestedQuery: String? ->
-      Column(modifier) {
+      if (queryResult.isEmpty() && suggestedQuery.isNullOrEmpty()) {
+        Column(
+          modifier
+            .fillMaxWidth()
+            .padding(vertical = 64.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.Center,
+        ) {
+          HedvigText("Fill in more details about your item") //todo!!
+          HedvigText(
+            "Start searching for the item relevant to your claim",
+            color = HedvigTheme.colorScheme.textSecondary,
+          ) //todo!!
+        }
+      } else if (queryResult.isEmpty()) {
         Box(
-          Modifier.weight(1f),
+          Modifier
+            .fillMaxWidth()
+            .padding(vertical = 64.dp),
           contentAlignment = Alignment.Center,
         ) {
-          if (queryResult.isEmpty() && suggestedQuery.isNullOrEmpty()) {
-
-            HedvigText("Fill in more details about your item") //todo!!
-            HedvigText(
-              "Start searching for the item relevant to your claim",
-              color = HedvigTheme.colorScheme.textSecondary,
-            )//todo!!
-
-          } else if (queryResult.isEmpty()) {
-            HedvigText("Nothing found") //todo!!
-          } else {
-            val radioOptions = queryResult.map { option ->
-              RadioOption(
-                id = RadioOptionId(option.text),
-                text = option.text,
-                label = option.subtitle,
-              )
-            }
-            RadioGroup(
-              options = radioOptions,
-              selectedOption = selectedOption?.let {
-                RadioOptionId(it.text)
-              },
-              onRadioOptionSelected = { radioOptionId ->
-                val option = queryResult.firstOrNull { it.text == radioOptionId.id }
-                option?.let {
-                  onOptionSelected(option)
-                }
-              },
-            )
-          }
+          HedvigText("Nothing found") //todo!!
         }
-        var searchQuery by remember {
-          mutableStateOf<String?>(suggestedQuery)
+      } else {
+        val radioOptions = queryResult.map { option ->
+          RadioOption(
+            id = RadioOptionId(option.text),
+            text = option.text,
+            label = option.subtitle,
+          )
         }
-        val focusRequester = remember { FocusRequester() }
-        SearchField(
-          searchQuery = searchQuery,
-          focusRequester = focusRequester,
-          onClearSearch = {
-            searchQuery = null
-            onClearSearch()
+        RadioGroup(
+          options = radioOptions,
+          selectedOption = selectedOption?.let {
+            RadioOptionId(it.text)
           },
-          onKeyboardAction = {
-            searchQuery?.let {
-              focusManager.clearFocus()
-            }
-          },
-          onSearchChange = { query ->
-            if (query.isEmpty()) {
-              searchQuery = null
-              onClearSearch()
-            } else {
-              searchQuery = query
-              onQueryChange(query)
+          onRadioOptionSelected = { radioOptionId ->
+            val option = queryResult.firstOrNull { it.text == radioOptionId.id }
+            option?.let {
+              onOptionSelected(option)
             }
           },
           modifier = Modifier
-            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
         )
       }
+      Spacer(Modifier.height(24.dp))
+      var searchQuery by remember {
+        mutableStateOf<String?>(suggestedQuery)
+      }
+      val focusRequester = remember { FocusRequester() }
+      SearchField(
+        searchQuery = searchQuery,
+        focusRequester = focusRequester,
+        onClearSearch = {
+          searchQuery = null
+          onClearSearch()
+        },
+        onKeyboardAction = {
+          searchQuery?.let {
+            focusManager.clearFocus()
+          }
+        },
+        onSearchChange = { query ->
+          if (query.isEmpty()) {
+            searchQuery = null
+            onClearSearch()
+          } else {
+            searchQuery = query
+            onQueryChange(query)
+          }
+        },
+        modifier = Modifier
+          .padding(horizontal = 16.dp)
+      )
     },
   )
 }
