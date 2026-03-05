@@ -1056,6 +1056,10 @@ type ClaimIntentStepContentFormField {
   """
   defaultValues: [ClaimIntentStepContentFormFieldValue!]!
   """
+  If type is SEARCH, then this can be auto-inserted into the search bar.
+  """
+  suggestedQuery: String
+  """
   If present - the minimal value this field can hold.
   """
   minValue: ClaimIntentStepContentFormFieldValue
@@ -3830,6 +3834,10 @@ type ProductOfferCost {
   The original price of the base insurance, without selected addons.
   """
   baseInsuranceGross: Money!
+  """
+  The net price of the base insurance after discounts, without selected addons.
+  """
+  baseInsuranceNet: Money!
   """
   Price you will pay after discount for the entire offer, including selected addons.
   """
