@@ -16,9 +16,9 @@ import octopus.type.AvailableAddon
 
 @Serializable
 data class AddonPurchaseGraphDestination(
-  val insuranceIds: List<String>,
-  val preselectedAddonDisplayName: String?,
-  val source: AddonBannerSource,
+  val insuranceIds: List<String> = emptyList(),
+  val preselectedAddonDisplayName: String? = null,
+  val source: AddonBannerSource = AddonBannerSource.TRAVEL_DEEPLINK,
 ) : Destination {
   companion object : DestinationNavTypeAware {
     override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
