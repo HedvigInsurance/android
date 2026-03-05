@@ -36,6 +36,7 @@
   <string name="ADDON_FLOW_SELECT_BUTTON">Välj</string>
   <string name="ADDON_FLOW_SELECT_DAYS_PLACEHOLDER">Antal resdagar</string>
   <string name="ADDON_FLOW_SELECT_INSURANCE_SUBTITLE">Välj den försäkring du vill lägga till extra skydd för</string>
+  <string name="ADDON_FLOW_SELECT_INSURANCE_TITLE">Utöka ditt skydd</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE">Välj antalet resdagar som täcks</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_TITLE">Välj antal resdagar</string>
   <string name="ADDON_FLOW_SUBTITLE">För extra trygghet när du reser utomlands</string>
@@ -275,8 +276,10 @@
   <string name="CONTRACT_COINSURED_ADDED">Medförsäkrad tillagd</string>
   <string name="CONTRACT_COINSURED_ADD_PERSONAL_INFO">Du måste lägga till information för dina medförsäkrade</string>
   <string name="CONTRACT_COINSURED_MISSING_ADD_INFO">Lägg till information</string>
-  <string name="CONTRACT_COINSURED_MISSING_INFO_TEXT">Lägg till mer information om dina medförsäkrade för bättre hjälp</string>
+  <string name="CONTRACT_COINSURED_MISSING_INFO_TEXT">Vi saknar information om delägare för ditt fritidshus</string>
   <string name="CONTRACT_COINSURED_REMOVED">Medförsäkrad borttagen</string>
+  <string name="CONTRACT_COOWNERS_ADD_PERSONAL_INFO">Du måste lägga till information om delägarna</string>
+  <string name="CONTRACT_COOWNERS_MISSING_INFO_TEXT">Lägg till mer information om dina delägare för bättre hjälp</string>
   <string name="CONTRACT_COVERAGE_MORE_INFO">Mer information</string>
   <string name="CONTRACT_DETAILS_ERROR">Vi kunde inte hitta din försäkring</string>
   <string name="CONTRACT_EDIT_COINSURED">Ändra medförsäkrade</string>
