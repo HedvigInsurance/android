@@ -245,7 +245,13 @@ private fun RegisterOnDestinationChangedListenerSideEffect(
   coroutineScope: CoroutineScope,
 ) {
   DisposableEffect(navController, coroutineScope) {
-    val listener = NavController.OnDestinationChangedListener { _, destination, bundle ->
+    val listener = NavController.OnDestinationChangedListener { navController, destination, bundle ->
+      // Uncomment to debug the backstack changing in develop builds
+//      logcat {
+//        @android.annotation.SuppressLint("RestrictedApi")
+//        val backstack = navController.currentBackStack.value.map { it.destination.route }.joinToString()
+//        "Backstack: $backstack"
+//      }
       logcat { "Navigated to route:${destination.route} | bundle:$bundle" }
       CurrentDestinationInMemoryStorage.currentDestination = destination
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
