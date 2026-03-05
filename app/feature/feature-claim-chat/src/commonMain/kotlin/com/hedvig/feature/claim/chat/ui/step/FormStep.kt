@@ -17,10 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -43,15 +45,18 @@ import com.hedvig.android.design.system.hedvig.MultiSelectDialog
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.SearchField
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
-import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
-import com.hedvig.feature.claim.chat.data.StepContent.Form.*
+import com.hedvig.feature.claim.chat.data.StepContent.Form.Field
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldError
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldOption
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldType
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
@@ -271,10 +276,10 @@ private fun FormContent(
                   TODO()
                 },
                 queryResult = TODO(),
-                searchNoResult = TODO(),
                 selectedOption = TODO(),
                 onOptionSelected = TODO(),
-                modifier = TODO()
+                modifier = TODO(),
+                onClearSearch = TODO(),
               )
             }
           }
@@ -336,49 +341,83 @@ private fun FormContent(
 @Composable
 internal fun SearchForm(
   queryResult: List<FieldOption>,
-  searchNoResult: Unit?,
   suggestedQuery: String?,
   onQueryChange: (String) -> Unit,
-  selectedOption: FieldOption,
+  onClearSearch: () -> Unit,
+  selectedOption: FieldOption?,
   onOptionSelected: (FieldOption) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   val crossSellBottomSheetState = rememberHedvigBottomSheetState<String?>()
   HedvigBottomSheet(
     hedvigBottomSheetState = crossSellBottomSheetState,
     content = { suggestedQuery: String? ->
       Column(modifier) {
-        if (queryResult.isEmpty() && suggestedQuery.isNullOrEmpty()) {
-          Box(Modifier.weight(1f),
-            contentAlignment = Alignment.Center) {
+        Box(
+          Modifier.weight(1f),
+          contentAlignment = Alignment.Center,
+        ) {
+          if (queryResult.isEmpty() && suggestedQuery.isNullOrEmpty()) {
+
             HedvigText("Fill in more details about your item") //todo!!
-            HedvigText("Start searching for the item relevant to your claim",
-              color = HedvigTheme.colorScheme.textSecondary)//todo!!
-          }
-        } else if (queryResult.isEmpty()) {
-          HedvigText("Nothing found") //todo!!
-        } else {
-          val radioOptions = queryResult.map { option ->
-            RadioOption(
-              id = RadioOptionId(option.text),
-              text = option.text,
-              label = option.subtitle
+            HedvigText(
+              "Start searching for the item relevant to your claim",
+              color = HedvigTheme.colorScheme.textSecondary,
+            )//todo!!
+
+          } else if (queryResult.isEmpty()) {
+            HedvigText("Nothing found") //todo!!
+          } else {
+            val radioOptions = queryResult.map { option ->
+              RadioOption(
+                id = RadioOptionId(option.text),
+                text = option.text,
+                label = option.subtitle,
+              )
+            }
+            RadioGroup(
+              options = radioOptions,
+              selectedOption = selectedOption?.let {
+                RadioOptionId(it.text)
+              },
+              onRadioOptionSelected = { radioOptionId ->
+                val option = queryResult.firstOrNull { it.text == radioOptionId.id }
+                option?.let {
+                  onOptionSelected(option)
+                }
+              },
             )
           }
-//          RadioGroup(
-//            radioOptions,
-//            selectedOptionIds = TODO(),
-//            onRadioOptionSelected = TODO(),
-//            colors = TODO(),
-//            style = TODO(),
-//            selectIndicator = TODO(),
-//            role = TODO(),
-//            modifier = TODO(),
-//            disabledOptions = TODO(),
-//            enabled = TODO(),
-//            textEndContent = TODO(),
-//          )
         }
+        var searchQuery by remember {
+          mutableStateOf<String?>(suggestedQuery)
+        }
+        val focusRequester = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
+        SearchField(
+          searchQuery = searchQuery,
+          focusRequester = focusRequester,
+          onClearSearch = {
+            searchQuery = null
+            onClearSearch()
+          },
+          onKeyboardAction = {
+            searchQuery?.let {
+              focusManager.clearFocus()
+            }
+          },
+          onSearchChange = { query ->
+            if (query.isEmpty()) {
+              searchQuery = null
+              onClearSearch()
+            } else {
+              searchQuery = query
+              onQueryChange(query)
+            }
+          },
+          modifier = Modifier
+            .padding(horizontal = 16.dp)
+        )
       }
     },
   )

@@ -151,7 +151,6 @@ internal sealed interface ClaimChatUiState {
     val stepsWithShownAnimations: List<StepId>,
     val progress: Float?,
     val searchQuery: SearchObject?,
-    val searchNoResult: Unit?,
   ) : ClaimChatUiState
 }
 
@@ -242,8 +241,6 @@ internal class ClaimChatPresenter(
 
     var searchQuery by remember { mutableStateOf<SearchObject?>(null) }
 
-    var searchNoResult by remember { mutableStateOf<Unit?>(null) }
-
     if (initializing) {
       LaunchedEffect(Unit) {
         startClaimIntentUseCase
@@ -306,12 +303,7 @@ internal class ClaimChatPresenter(
           stepId = query.stepId.value,
           fieldId = query.fieldId,
           query = query.query
-        ).getOrNull()
-        if (result.isNullOrEmpty()) {
-          searchNoResult = Unit
-          return@LaunchedEffect
-        }
-        searchNoResult = null
+        ).getOrNull() ?: emptyList()
         steps.updateStepWithSuccess<StepContent.Form>(query.stepId) { step, content ->
           val newFields = content.fields.map { field ->
             if (field.id.value == query.fieldId) {
@@ -889,7 +881,6 @@ internal class ClaimChatPresenter(
 
         is ClaimChatEvent.ClearQuery -> {
           searchQuery = null
-          searchNoResult = null
           event.stepId //todo: update searchedOptions to emptyList
         }
       }
@@ -914,7 +905,6 @@ internal class ClaimChatPresenter(
         stepsWithShownAnimations = stepsWithShownAnimations,
         progress = progress,
         searchQuery = searchQuery,
-        searchNoResult = searchNoResult
       )
 
       else -> error("")
