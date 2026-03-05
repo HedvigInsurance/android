@@ -1274,6 +1274,7 @@ type Contract {
   Whether or not this co-insured for contract can be changed through the 'MidtermChange' API.
   """
   supportsCoInsured: Boolean!
+  supportsCoOwners: Boolean!
   """
   Whether or not travel certificate can be created for the contract
   """
@@ -1287,6 +1288,7 @@ type Contract {
   If current agreement doesn't support co-insured, this is null
   """
   coInsured: [ContractCoInsured!]
+  coOwners: [ContractCoInsured!]
   """
   User messages to show due to self change is blocked.
   """
