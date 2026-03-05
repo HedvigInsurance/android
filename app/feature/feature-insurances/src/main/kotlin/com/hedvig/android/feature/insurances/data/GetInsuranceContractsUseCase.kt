@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
+import octopus.fragment.ContractCoInsuredFragment
 import octopus.fragment.ContractFragment
 import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
@@ -54,9 +55,12 @@ internal class GetInsuranceContractsUseCaseImpl(
                 .query(
                   InsuranceContractsQuery(
                     addonsEnabled = areAddonsEnabled,
-                    options = Optional.present(DisplayItemOptions(
-                      hidePrice = Optional.present(true),
-                      hideAddons = Optional.present(true))),
+                    options = Optional.present(
+                      DisplayItemOptions(
+                        hidePrice = Optional.present(true),
+                        hideAddons = Optional.present(true),
+                      ),
+                    ),
                   ),
                 )
                 .fetchPolicy(FetchPolicy.CacheAndNetwork)
@@ -162,7 +166,8 @@ private fun ContractFragment.toContract(
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
-      coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
+      coInsured = coInsured?.map { it.toCoInsured() }.orEmpty(),
+      coOwners = coOwners?.map { it.toCoInsured() }.orEmpty(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
       addons = currentAgreement.addons?.map {
         Addon(
@@ -180,7 +185,8 @@ private fun ContractFragment.toContract(
         displayItems = it.displayItems.map { it.toDisplayItem() },
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
-        coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
+        coInsured = coInsured?.map { it.toCoInsured() }.orEmpty(),
+        coOwners = coOwners?.map { it.toCoInsured() }.orEmpty(),
         creationCause = it.creationCause.toCreationCause(),
         addons = it.addons?.map {
           Addon(
@@ -194,6 +200,7 @@ private fun ContractFragment.toContract(
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
+    supportsEditCoOwners = supportsCoOwners && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
     existingAddons = existingAddons?.map {
@@ -252,7 +259,7 @@ private fun AgreementCreationCause.toCreationCause() = when (this) {
   -> InsuranceAgreement.CreationCause.UNKNOWN
 }
 
-private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+private fun ContractCoInsuredFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
   firstName = firstName,
   lastName = lastName,
   ssn = ssn,
