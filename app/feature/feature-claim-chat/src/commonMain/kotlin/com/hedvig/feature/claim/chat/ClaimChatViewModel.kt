@@ -877,11 +877,28 @@ internal class ClaimChatPresenter(
           }
         }
 
-        is ClaimChatEvent.UpdateFormFieldSearchQuery -> searchQuery = TODO()
+        is ClaimChatEvent.UpdateFormFieldSearchQuery -> {
+          searchQuery = SearchObject(
+            fieldId = event.fieldId.value,
+            stepId = event.stepId,
+            query = event.query,
+          )
+        }
 
         is ClaimChatEvent.ClearQuery -> {
           searchQuery = null
-          event.stepId //todo: update searchedOptions to emptyList
+          steps.updateStepWithSuccess<StepContent.Form>(event.stepId) { step, content ->
+            val newFields = content.fields.map { field ->
+              if (field.id == event.fieldId) {
+                field.copy(foundOptionsInSearch = emptyList())
+              } else {
+                field
+              }
+            }
+            step.copy(
+              stepContent = content.copy(fields = newFields),
+            )
+          }
         }
       }
     }

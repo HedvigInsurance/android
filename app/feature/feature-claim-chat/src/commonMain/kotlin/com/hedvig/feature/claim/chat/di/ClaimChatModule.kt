@@ -42,7 +42,8 @@ val claimChatModule = module {
       get<AudioRecordingManager>(),
       get<SkipStepUseCase>(),
       get<RegretStepUseCase>(),
-      get<FileService>(),
+      fileService = get<FileService>(),
+      formFieldSearchUseCase = get<FormFieldSearchUseCase>(),
     )
   }
 

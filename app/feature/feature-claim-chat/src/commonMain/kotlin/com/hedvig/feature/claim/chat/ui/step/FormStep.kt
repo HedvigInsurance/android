@@ -105,6 +105,12 @@ internal fun FormStep(
     continueButtonLoading = continueButtonLoading,
     skipButtonLoading = skipButtonLoading,
     firstFieldWithError = firstFieldWithError,
+    onSearchQueryChange = { query, fieldId ->
+      onEvent(ClaimChatEvent.UpdateFormFieldSearchQuery(query, itemId, fieldId))
+    },
+    onSearchClear = { fieldId ->
+      onEvent(ClaimChatEvent.ClearQuery(itemId, fieldId))
+    },
     modifier = modifier,
   )
 }
@@ -132,6 +138,8 @@ private fun FormContent(
   skipButtonLoading: Boolean,
   onSelectFieldAnswer: (fieldId: FieldId, answer: FieldOption?) -> Unit,
   firstFieldWithError: Field?,
+  onSearchQueryChange: (query: String, fieldId: FieldId) -> Unit,
+  onSearchClear: (fieldId: FieldId) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
@@ -272,14 +280,18 @@ private fun FormContent(
             FieldType.SEARCH -> {
               SearchForm(
                 suggestedQuery = field.suggestedQuery,
-                onQueryChange = {
-                  TODO()
+                onQueryChange = { query ->
+                  onSearchQueryChange(query, field.id)
                 },
-                queryResult = TODO(),
-                selectedOption = TODO(),
-                onOptionSelected = TODO(),
-                modifier = TODO(),
-                onClearSearch = TODO(),
+                queryResult = field.foundOptionsInSearch,
+                selectedOption = field.selectedOptions.getOrNull(0),
+                onOptionSelected = { option ->
+                  onSelectFieldAnswer(field.id, option)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                onClearSearch = {
+                  onSearchClear(field.id)
+                },
               )
             }
           }
@@ -348,9 +360,24 @@ internal fun SearchForm(
   onOptionSelected: (FieldOption) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val crossSellBottomSheetState = rememberHedvigBottomSheetState<String?>()
+  val searchBottomSheetState = rememberHedvigBottomSheetState<String?>()
+  val focusManager = LocalFocusManager.current
+
+  Column(modifier) {
+    HedvigBigCard(
+      onClick = {
+        focusManager.clearFocus()
+        searchBottomSheetState.show(suggestedQuery)
+      },
+      labelText = "Search for item",
+      inputText = selectedOption?.text,
+      modifier = Modifier.fillMaxWidth(),
+      enabled = true,
+    )
+  }
+
   HedvigBottomSheet(
-    hedvigBottomSheetState = crossSellBottomSheetState,
+    hedvigBottomSheetState = searchBottomSheetState,
     content = { suggestedQuery: String? ->
       Column(modifier) {
         Box(
@@ -393,7 +420,6 @@ internal fun SearchForm(
           mutableStateOf<String?>(suggestedQuery)
         }
         val focusRequester = remember { FocusRequester() }
-        val focusManager = LocalFocusManager.current
         SearchField(
           searchQuery = searchQuery,
           focusRequester = focusRequester,
