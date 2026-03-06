@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 
@@ -39,6 +40,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -295,6 +297,7 @@ private fun FormContent(
             FieldType.SEARCH -> {
               SearchForm(
                 suggestedQuery = field.suggestedQuery,
+                suggestedFixedQuery = field.suggestedFixedQuery,
                 onQueryChange = { query ->
                   onSearchQueryChange(query, field.id)
                 },
@@ -368,6 +371,7 @@ private fun FormContent(
 internal fun SearchForm(
   queryResult: List<FieldOption>,
   suggestedQuery: String?,
+  suggestedFixedQuery: String?,
   onQueryChange: (String) -> Unit,
   onClearSearch: () -> Unit,
   selectedOption: FieldOption?,
@@ -436,7 +440,7 @@ internal fun SearchForm(
           true -> {
             if (searchQuery.isNullOrEmpty()) SearchState.SearchNotStarted else SearchState.NothingFound(
               query = searchQuery,
-              suggestedFixedQuery = null //todo!
+              suggestedFixedQuery = suggestedFixedQuery
             )
           }
           false -> {
@@ -461,12 +465,17 @@ internal fun SearchForm(
                   verticalArrangement = Arrangement.Center,
                 ) {
                   HedvigText("Nothing found", textAlign = TextAlign.Center) //todo!!
-                  if (animatedState.suggestedFixedQuery!=null) {
+                  if (animatedState.suggestedFixedQuery != null) {
                     HedvigText(
-                      "Did you mean ${animatedState.suggestedFixedQuery}?", //todo: onClick
+                      "Did you mean ${animatedState.suggestedFixedQuery}?",
                       textAlign = TextAlign.Center,
                       color = HedvigTheme.colorScheme.textSecondary,
-                    ) //todo!!
+                      textDecoration = TextDecoration.Underline,
+                      modifier = Modifier.clickable {
+                        searchQuery = animatedState.suggestedFixedQuery
+                        onQueryChange(animatedState.suggestedFixedQuery)
+                      },
+                    )
                   }
                 }
               }

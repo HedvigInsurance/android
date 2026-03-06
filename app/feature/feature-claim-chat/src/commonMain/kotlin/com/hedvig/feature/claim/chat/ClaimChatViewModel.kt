@@ -299,11 +299,11 @@ internal class ClaimChatPresenter(
     LaunchedEffect(searchQuery) {
       val query = searchQuery
       if (query!=null) {
-        val result = formFieldSearchUseCase.invoke(
+        val searchResult = formFieldSearchUseCase.invoke(
           stepId = query.stepId.value,
           fieldId = query.fieldId,
           query = query.query
-        ).getOrNull() ?: emptyList()
+        ).getOrNull()
         steps.updateStepWithSuccess<StepContent.Form>(query.stepId) { step, content ->
           val newFields = content.fields.map { field ->
             if (field.id.value == query.fieldId) {
@@ -311,7 +311,8 @@ internal class ClaimChatPresenter(
                 FieldType.SEARCH
                   -> {
                   field.copy(
-                    foundOptionsInSearch = result,
+                    foundOptionsInSearch = searchResult?.options ?: emptyList(),
+                    suggestedFixedQuery = searchResult?.suggestedFixedQuery,
                   )
                 }
                 else -> field //shouldn't happen

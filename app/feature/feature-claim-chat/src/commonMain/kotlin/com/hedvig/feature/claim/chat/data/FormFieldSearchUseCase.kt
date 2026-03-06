@@ -11,12 +11,17 @@ import com.hedvig.android.logger.logcat
 import octopus.FormFieldSearchQuery
 import octopus.type.ClaimIntentFormFieldSearchInput
 
+internal data class FormFieldSearchResult(
+  val options: List<StepContent.Form.FieldOption>,
+  val suggestedFixedQuery: String?,
+)
+
 internal interface FormFieldSearchUseCase {
   suspend fun invoke(
     stepId: String,
     fieldId: String,
     query: String,
-  ): Either<ErrorMessage, List<StepContent.Form.FieldOption>>
+  ): Either<ErrorMessage, FormFieldSearchResult>
 }
 
 
@@ -27,9 +32,9 @@ internal class FormFieldSearchUseCaseImpl(
     stepId: String,
     fieldId: String,
     query: String,
-  ): Either<ErrorMessage, List<StepContent.Form.FieldOption>> {
+  ): Either<ErrorMessage, FormFieldSearchResult> {
     return either {
-      val data = apolloClient
+      val response = apolloClient
         .query(
           FormFieldSearchQuery(
             ClaimIntentFormFieldSearchInput(
@@ -46,15 +51,19 @@ internal class FormFieldSearchUseCaseImpl(
           ErrorMessage()
         }
         .bind()
-        .claimIntentFormFieldSearch.options
-      data.map { option ->
-        StepContent.Form.FieldOption(
-          value = option.value,
-          text = option.title,
-          subtitle = option.subtitle,
-          imageUrl = option.imageUrl,
-        )
-      }
+        .claimIntentFormFieldSearch
+
+      FormFieldSearchResult(
+        options = response.options.map { option ->
+          StepContent.Form.FieldOption(
+            value = option.value,
+            text = option.title,
+            subtitle = option.subtitle,
+            imageUrl = option.imageUrl,
+          )
+        },
+        suggestedFixedQuery = response.suggestedQuery,
+      )
     }
   }
 }

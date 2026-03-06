@@ -89,6 +89,7 @@ internal sealed interface StepContent {
       val suggestedQuery: String?,
       val hasError: FieldError? = null,
       val foundOptionsInSearch: List<FieldOption> = emptyList(),
+      val suggestedFixedQuery: String? = null,
     )
 
     sealed interface FieldError {

@@ -920,6 +920,11 @@ input ClaimIntentFormFieldSearchInput {
 }
 type ClaimIntentFormFieldSearchOutput {
   options: [ClaimIntentStepContentFormFieldOption!]!
+  """
+  If present, this suggests a different query to use.
+  Typically when there are no options, this could contain a fix for a possible query typo.
+  """
+  suggestedQuery: String
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
@@ -1279,6 +1284,10 @@ type Contract {
   """
   supportsCoInsured: Boolean!
   """
+  Whether or not this co-insured for contract can be changed through the 'MidtermChange' API.
+  """
+  supportsCoOwners: Boolean!
+  """
   Whether or not travel certificate can be created for the contract
   """
   supportsTravelCertificate: Boolean!
@@ -1291,6 +1300,12 @@ type Contract {
   If current agreement doesn't support co-insured, this is null
   """
   coInsured: [ContractCoInsured!]
+  """
+  Current state of co-owners including upcoming changes.
+  If current agreement doesn't support co-owners, this is null
+  Reuses ContractCoInsured type, for now.
+  """
+  coOwners: [ContractCoInsured!]
   """
   User messages to show due to self change is blocked.
   """
