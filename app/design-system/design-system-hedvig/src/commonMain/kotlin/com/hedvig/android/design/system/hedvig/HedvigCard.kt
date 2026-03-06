@@ -58,7 +58,9 @@ fun HedvigCard(
   indication: Indication? = null,
   shape: Shape = HedvigTheme.shapes.cornerXLarge,
   color: Color = HedvigTheme.colorScheme.surfacePrimary,
+  borderColor: Color? = null,
   content: @Composable () -> Unit,
+
 ) {
   if (onClick != null) {
     Surface(
@@ -70,6 +72,7 @@ fun HedvigCard(
       interactionSource = interactionSource,
       indication = indication,
       modifier = modifier,
+      border = borderColor
     ) {
       content()
     }

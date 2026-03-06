@@ -815,6 +815,7 @@ private fun StepBottomContent(
           continueButtonLoading = currentContinueButtonLoading,
           skipButtonLoading = currentSkipButtonLoading,
           firstFieldWithError = stepItem.stepContent.fields.firstOrNull { it.hasError != null },
+          imageLoader = imageLoader,
         )
       }
 

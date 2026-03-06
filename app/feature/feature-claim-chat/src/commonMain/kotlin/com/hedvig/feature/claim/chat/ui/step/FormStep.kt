@@ -2,31 +2,25 @@ package com.hedvig.feature.claim.chat.ui.step
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,15 +30,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
@@ -60,19 +61,15 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.MultiSelectDialog
-import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
 import com.hedvig.android.design.system.hedvig.SearchField
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -92,7 +89,6 @@ import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
-import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_save_button
 import org.jetbrains.compose.resources.stringResource
@@ -108,6 +104,7 @@ internal fun FormStep(
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
   firstFieldWithError: Field?,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   FormContent(
@@ -136,6 +133,7 @@ internal fun FormStep(
     onSearchClear = { fieldId ->
       onEvent(ClaimChatEvent.ClearQuery(itemId, fieldId))
     },
+    imageLoader = imageLoader,
     modifier = modifier,
   )
 }
@@ -165,6 +163,7 @@ private fun FormContent(
   firstFieldWithError: Field?,
   onSearchQueryChange: (query: String, fieldId: FieldId) -> Unit,
   onSearchClear: (fieldId: FieldId) -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
@@ -317,6 +316,7 @@ private fun FormContent(
                 onClearSearch = {
                   onSearchClear(field.id)
                 },
+                imageLoader = imageLoader,
               )
             }
           }
@@ -384,7 +384,8 @@ internal fun SearchForm(
   onClearSearch: () -> Unit,
   selectedOption: FieldOption?,
   onOptionSelected: (FieldOption) -> Unit,
-  modifier: Modifier = Modifier
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
 ) {
   val searchBottomSheetState = rememberHedvigBottomSheetState<String?>()
   val focusManager = LocalFocusManager.current
@@ -450,9 +451,10 @@ internal fun SearchForm(
           true -> {
             if (searchQuery.isNullOrEmpty()) SearchState.SearchNotStarted else SearchState.NothingFound(
               query = searchQuery,
-              suggestedFixedQuery = suggestedFixedQuery
+              suggestedFixedQuery = suggestedFixedQuery,
             )
           }
+
           false -> {
             SearchState.ResultsFound(searchQuery, queryResult)
           }
@@ -461,8 +463,8 @@ internal fun SearchForm(
         AnimatedContent(
           targetState = searchState,
           contentKey = { state ->
-            when (state ) {
-              is SearchState.ResultsFound-> "results"
+            when (state) {
+              is SearchState.ResultsFound -> "results"
               is SearchState.NothingFound -> "nothing_found"
               SearchState.SearchNotStarted -> "not_started"
             }
@@ -501,6 +503,7 @@ internal fun SearchForm(
                   }
                 }
               }
+
               SearchState.SearchNotStarted -> {
                 Column(
                   Modifier
@@ -517,11 +520,12 @@ internal fun SearchForm(
                   ) //todo!!
                 }
               }
+
               is SearchState.ResultsFound -> {
                 LazyColumn(
                   modifier = Modifier
                     .fillMaxWidth(),
-                  verticalArrangement = Arrangement.spacedBy(4.dp)
+                  verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                   items(queryResult) { item ->
                     ItemCard(
@@ -530,7 +534,9 @@ internal fun SearchForm(
                       onClick = {
                         onOptionSelected(item)
                         searchBottomSheetState.dismiss()
-                      }
+                      },
+                      imageLoader = imageLoader,
+                      itemImageUrl = item.imageUrl,
                     )
                   }
                 }
@@ -546,7 +552,7 @@ internal fun SearchForm(
           onClick = {
             searchBottomSheetState.dismiss()
           },
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -555,43 +561,69 @@ internal fun SearchForm(
 }
 
 private sealed interface SearchState {
-  data object SearchNotStarted: SearchState
-  data class NothingFound(val query: String?, val suggestedFixedQuery: String?): SearchState
+  data object SearchNotStarted : SearchState
+  data class NothingFound(val query: String?, val suggestedFixedQuery: String?) : SearchState
   data class ResultsFound(
     val query: String?,
-    val results:List<FieldOption>
-  ): SearchState
+    val results: List<FieldOption>,
+  ) : SearchState
 }
 
 @Composable
 private fun ItemCard(
+  imageLoader: ImageLoader,
   itemTitle: String,
   itemSubtitle: String?,
-  modifier: Modifier = Modifier,
+  itemImageUrl: String?,
   onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   HedvigCard(
     onClick = onClick,
     modifier = modifier
-      .fillMaxWidth(),
+      .fillMaxWidth()
+      .hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
+    color = HedvigTheme.colorScheme.fillNegative,
+    shape = HedvigTheme.shapes.cornerLarge,
+    borderColor = HedvigTheme.colorScheme.borderPrimary
   ) {
-    Column(
-      verticalArrangement = Arrangement.spacedBy(4.dp),
-      modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
     ) {
-      HedvigText(
-        text = itemTitle,
-        textAlign = TextAlign.Start,
-      )
-      itemSubtitle?.let {
-        HedvigText(
-          text = itemSubtitle,
-          textAlign = TextAlign.Start,
-          color = HedvigTheme.colorScheme.textSecondary,
-          style = HedvigTheme.typography.finePrint,
+      if (itemImageUrl != null) {
+        AsyncImage(
+          model = itemImageUrl,
+          contentDescription = itemTitle,
+          placeholder = crossSellPainterFallback(),
+          error = crossSellPainterFallback(),
+          fallback = crossSellPainterFallback(),
+          imageLoader = imageLoader,
+          contentScale = ContentScale.Inside,
+          modifier = Modifier
+            .height(46.dp)
+            .clip(HedvigTheme.shapes.cornerSmall)
+            .padding(start = 16.dp),
         )
       }
+      Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+      ) {
+        HedvigText(
+          text = itemTitle,
+          textAlign = TextAlign.Start,
+        )
+        itemSubtitle?.let {
+          HedvigText(
+            text = itemSubtitle,
+            textAlign = TextAlign.Start,
+            color = HedvigTheme.colorScheme.textSecondary,
+            style = HedvigTheme.typography.finePrint,
+          )
+        }
+      }
     }
+
   }
 }
 
