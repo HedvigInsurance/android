@@ -533,8 +533,7 @@ internal fun SearchForm(
                 }
                 LazyColumn(
                   modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                    .fillMaxWidth(),
                   verticalArrangement = Arrangement.spacedBy(4.dp),
                   state = lazyListState,
                 ) {
@@ -549,6 +548,9 @@ internal fun SearchForm(
                       imageLoader = imageLoader,
                       itemImageUrl = item.imageUrl,
                     )
+                  }
+                  item {
+                    Spacer(Modifier.height(8.dp)) //to allow space for shadow
                   }
                 }
               }
