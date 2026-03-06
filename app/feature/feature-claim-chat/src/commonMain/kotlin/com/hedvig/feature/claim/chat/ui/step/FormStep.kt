@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 
@@ -88,6 +89,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
 import hedvig.resources.claims_skip_button
+import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_save_button
@@ -417,6 +419,8 @@ internal fun SearchForm(
       val focusRequester = remember { FocusRequester() }
 
       Column(Modifier.fillMaxHeight()) {
+        HedvigText("Search for your item", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        Spacer(Modifier.height(16.dp))
         SearchField(
           searchQuery = searchQuery,
           focusRequester = focusRequester,
@@ -469,7 +473,7 @@ internal fun SearchForm(
               is SearchState.NothingFound -> {
                 Column(
                   Modifier
-                    .fillMaxWidth(),
+                    .fillMaxSize(),
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center,
                 ) {
@@ -497,7 +501,7 @@ internal fun SearchForm(
               SearchState.SearchNotStarted -> {
                 Column(
                   Modifier
-                    .fillMaxWidth(),
+                    .fillMaxSize(),
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center,
                 ) {
@@ -532,7 +536,7 @@ internal fun SearchForm(
         }
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          text = stringResource(Res.string.general_close_button),
+          text = stringResource(Res.string.general_cancel_button),
           enabled = true,
           buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
           onClick = {
