@@ -1,36 +1,61 @@
 package com.hedvig.feature.claim.chat.ui.step
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
+import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
@@ -40,12 +65,20 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.MultiSelectDialog
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.SearchField
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.data.StepContent.Form.Field
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldError
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldOption
+import com.hedvig.feature.claim.chat.data.StepContent.Form.FieldType
 import com.hedvig.feature.claim.chat.data.StepId
 import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
@@ -57,6 +90,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
 import hedvig.resources.claims_skip_button
+import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_save_button
 import org.jetbrains.compose.resources.stringResource
@@ -71,7 +105,8 @@ internal fun FormStep(
   canBeChanged: Boolean,
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
-  firstFieldWithError: StepContent.Form.Field?,
+  firstFieldWithError: Field?,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   FormContent(
@@ -94,16 +129,23 @@ internal fun FormStep(
     continueButtonLoading = continueButtonLoading,
     skipButtonLoading = skipButtonLoading,
     firstFieldWithError = firstFieldWithError,
+    onSearchQueryChange = { query, fieldId ->
+      onEvent(ClaimChatEvent.UpdateFormFieldSearchQuery(query, itemId, fieldId))
+    },
+    onSearchClear = { fieldId ->
+      onEvent(ClaimChatEvent.ClearQuery(itemId, fieldId))
+    },
+    imageLoader = imageLoader,
     modifier = modifier,
   )
 }
 
 @Composable
-private fun getErrorText(field: StepContent.Form.Field): String? {
+private fun getErrorText(field: Field): String? {
   return when (field.hasError) {
-    StepContent.Form.FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
-    StepContent.Form.FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
-    StepContent.Form.FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
+    FieldError.Missing -> stringResource(Res.string.CLAIM_CHAT_FORM_REQUIRED_FIELD)
+    FieldError.LessThanMinValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR)
+    FieldError.BiggerThanMaxValue -> stringResource(Res.string.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR)
     null -> null
   }
 }
@@ -119,8 +161,11 @@ private fun FormContent(
   onSubmit: () -> Unit,
   continueButtonLoading: Boolean,
   skipButtonLoading: Boolean,
-  onSelectFieldAnswer: (fieldId: FieldId, answer: StepContent.Form.FieldOption?) -> Unit,
-  firstFieldWithError: StepContent.Form.Field?,
+  onSelectFieldAnswer: (fieldId: FieldId, answer: FieldOption?) -> Unit,
+  firstFieldWithError: Field?,
+  onSearchQueryChange: (query: String, fieldId: FieldId) -> Unit,
+  onSearchClear: (fieldId: FieldId) -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   val errorDescription = firstFieldWithError?.let { "${getErrorText(it)}: ${it.title}" }
@@ -130,7 +175,7 @@ private fun FormContent(
         content.fields.forEach { field ->
           val errorText = getErrorText(field)
           when (field.type) {
-            StepContent.Form.FieldType.TEXT -> {
+            FieldType.TEXT -> {
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -138,19 +183,19 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
+                    answer?.let { FieldOption(it, it, null) },
                   )
                 },
                 errorText = errorText,
               )
             }
 
-            StepContent.Form.FieldType.DATE -> {
+            FieldType.DATE -> {
               LaunchedEffect(field.datePickerUiState?.datePickerState?.selectedDateMillis) {
                 onSelectFieldAnswer(
                   field.id,
                   field.datePickerUiState?.datePickerState?.selectedDateMillis?.let {
-                    StepContent.Form.FieldOption(it.toString(), it.toString(), null)
+                    FieldOption(it.toString(), it.toString(), null)
                   },
                 )
               }
@@ -162,7 +207,7 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.NUMBER -> {
+            FieldType.NUMBER -> {
               TextInputBubble(
                 questionLabel = field.title,
                 text = field.selectedOptions.getOrNull(0)?.text,
@@ -170,7 +215,7 @@ private fun FormContent(
                 onInput = { answer ->
                   onSelectFieldAnswer(
                     field.id,
-                    answer?.let { StepContent.Form.FieldOption(it, it, null) },
+                    answer?.let { FieldOption(it, it, null) },
                   )
                 },
                 keyboardType = KeyboardType.Number,
@@ -178,7 +223,7 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.SINGLE_SELECT -> {
+            FieldType.SINGLE_SELECT -> {
               SingleSelectBubbleWithDialog(
                 questionLabel = field.title,
                 options = field.options.map {
@@ -210,7 +255,7 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.MULTI_SELECT -> {
+            FieldType.MULTI_SELECT -> {
               MultiSelectBubbleWithDialog(
                 questionLabel = field.title,
                 options = field.options.map {
@@ -238,13 +283,13 @@ private fun FormContent(
               )
             }
 
-            StepContent.Form.FieldType.BINARY -> {
+            FieldType.BINARY -> {
               YesNoBubble(
                 answerSelected = field.selectedOptions.firstOrNull()?.text,
                 onSelect = {
                   onSelectFieldAnswer(
                     field.id,
-                    StepContent.Form.FieldOption(it, it, null),
+                    FieldOption(it, it, null),
                   )
                 },
                 questionText = field.title,
@@ -256,6 +301,25 @@ private fun FormContent(
               if (canSkip) {
                 onSkip()
               }
+            }
+
+            FieldType.SEARCH -> {
+              SearchForm(
+                suggestedQuery = field.suggestedQuery,
+                suggestedFixedQuery = field.suggestedFixedQuery,
+                onQueryChange = { query ->
+                  onSearchQueryChange(query, field.id)
+                },
+                queryResult = field.foundOptionsInSearch,
+                selectedOption = field.selectedOptions.getOrNull(0),
+                onOptionSelected = { option ->
+                  onSelectFieldAnswer(field.id, option)
+                },
+                onClearSearch = {
+                  onSearchClear(field.id)
+                },
+                imageLoader = imageLoader,
+              )
             }
           }
         }
@@ -310,6 +374,269 @@ private fun FormContent(
         EditButton(canBeChanged, onRegret)
       }
     }
+  }
+}
+
+@Composable
+internal fun SearchForm(
+  queryResult: List<FieldOption>,
+  suggestedQuery: String?,
+  suggestedFixedQuery: String?,
+  onQueryChange: (String) -> Unit,
+  onClearSearch: () -> Unit,
+  selectedOption: FieldOption?,
+  onOptionSelected: (FieldOption) -> Unit,
+  imageLoader: ImageLoader,
+  modifier: Modifier = Modifier,
+) {
+  val searchBottomSheetState = rememberHedvigBottomSheetState<String?>()
+  val focusManager = LocalFocusManager.current
+  Column(modifier) {
+    HedvigBigCard(
+      onClick = {
+        focusManager.clearFocus()
+        searchBottomSheetState.show(suggestedQuery ?: "")
+        suggestedQuery?.let {
+          onQueryChange(suggestedQuery)
+        }
+
+      },
+      labelText = "Search for your item...", //todo!
+      inputText = selectedOption?.text,
+      modifier = Modifier.fillMaxWidth(),
+      enabled = true,
+    )
+  }
+
+  HedvigBottomSheet(
+    modifier = Modifier
+      .fillMaxHeight(1f),
+    hedvigBottomSheetState = searchBottomSheetState,
+    style = BottomSheetStyle(
+      transparentBackground = false,
+      automaticallyScrollableContent = false,
+      scrimColor = null,
+    ),
+    content = { suggestedQuery: String? ->
+      var searchQuery by remember {
+        mutableStateOf(suggestedQuery)
+      }
+      val focusRequester = remember { FocusRequester() }
+      val keyboardController = LocalSoftwareKeyboardController.current
+
+      Column(Modifier.fillMaxHeight()) {
+        HedvigText("Search for your item", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        Spacer(Modifier.height(16.dp))
+        SearchField(
+          searchQuery = searchQuery,
+          focusRequester = focusRequester,
+          onClearSearch = {
+            searchQuery = null
+            onClearSearch()
+          },
+          onKeyboardAction = {
+            searchQuery?.let {
+              focusManager.clearFocus()
+            }
+          },
+          onSearchChange = { query ->
+            if (query.isEmpty()) {
+              searchQuery = null
+              onClearSearch()
+            } else {
+              searchQuery = query
+              onQueryChange(query)
+            }
+          },
+        )
+        Spacer(Modifier.height(16.dp))
+        val searchState = when (queryResult.isEmpty()) {
+          true -> {
+            if (searchQuery.isNullOrEmpty()) SearchState.SearchNotStarted else SearchState.NothingFound(
+              query = searchQuery,
+              suggestedFixedQuery = suggestedFixedQuery,
+            )
+          }
+
+          false -> {
+            SearchState.ResultsFound(searchQuery, queryResult)
+          }
+        }
+
+        AnimatedContent(
+          targetState = searchState,
+          contentKey = { state ->
+            when (state) {
+              is SearchState.ResultsFound -> "results"
+              is SearchState.NothingFound -> "nothing_found"
+              SearchState.SearchNotStarted -> "not_started"
+            }
+
+          },
+          modifier = Modifier.weight(1f),
+        ) { animatedState ->
+          Column {
+            when (animatedState) {
+              is SearchState.NothingFound -> {
+                Column(
+                  Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center,
+                ) {
+                  HedvigText("Nothing found", textAlign = TextAlign.Center) //todo!!
+                  if (animatedState.suggestedFixedQuery != null) {
+                    val annotatedString = buildAnnotatedString {
+                      append("Did you mean ")
+                      withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(animatedState.suggestedFixedQuery)
+                      }
+                      append("?")
+                    }
+                    HedvigText(
+                      annotatedString,
+                      textAlign = TextAlign.Center,
+                      color = HedvigTheme.colorScheme.textSecondary,
+                      modifier = Modifier.clickable {
+                        onQueryChange(animatedState.suggestedFixedQuery)
+                        searchQuery = animatedState.suggestedFixedQuery
+                      },
+                    )
+                  }
+                }
+              }
+
+              SearchState.SearchNotStarted -> {
+                Column(
+                  Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center,
+                ) {
+                  HedvigText("Fill in more details about your item", textAlign = TextAlign.Center) //todo!!
+                  HedvigText(
+                    "Start searching for the item relevant to your claim",
+                    textAlign = TextAlign.Center,
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  ) //todo!!
+                }
+              }
+
+              is SearchState.ResultsFound -> {
+                val lazyListState = rememberLazyListState()
+                LaunchedEffect(lazyListState.isScrollInProgress) {
+                  if (lazyListState.isScrollInProgress) {
+                    keyboardController?.hide()
+                  }
+                }
+                LazyColumn(
+                  modifier = Modifier
+                    .fillMaxWidth(),
+                  verticalArrangement = Arrangement.spacedBy(4.dp),
+                  state = lazyListState,
+                ) {
+                  items(queryResult) { item ->
+                    ItemCard(
+                      itemTitle = item.text,
+                      itemSubtitle = item.subtitle,
+                      onClick = {
+                        onOptionSelected(item)
+                        searchBottomSheetState.dismiss()
+                      },
+                      imageLoader = imageLoader,
+                      itemImageUrl = item.imageUrl,
+                    )
+                  }
+                  item {
+                    Spacer(Modifier.height(8.dp)) //to allow space for shadow
+                  }
+                }
+              }
+            }
+          }
+        }
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          text = stringResource(Res.string.general_cancel_button),
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          onClick = {
+            searchBottomSheetState.dismiss()
+          },
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
+    },
+  )
+}
+
+private sealed interface SearchState {
+  data object SearchNotStarted : SearchState
+  data class NothingFound(val query: String?, val suggestedFixedQuery: String?) : SearchState
+  data class ResultsFound(
+    val query: String?,
+    val results: List<FieldOption>,
+  ) : SearchState
+}
+
+@Composable
+private fun ItemCard(
+  imageLoader: ImageLoader,
+  itemTitle: String,
+  itemSubtitle: String?,
+  itemImageUrl: String?,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigCard(
+    onClick = onClick,
+    modifier = modifier
+      .fillMaxWidth()
+      .hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
+    color = HedvigTheme.colorScheme.fillNegative,
+    shape = HedvigTheme.shapes.cornerLarge,
+    borderColor = HedvigTheme.colorScheme.borderPrimary
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (itemImageUrl != null) {
+        AsyncImage(
+          model = itemImageUrl,
+          contentDescription = itemTitle,
+          placeholder = crossSellPainterFallback(),
+          error = crossSellPainterFallback(),
+          fallback = crossSellPainterFallback(),
+          imageLoader = imageLoader,
+          contentScale = ContentScale.Inside,
+          modifier = Modifier
+            .height(46.dp)
+            .clip(HedvigTheme.shapes.cornerSmall)
+            .padding(start = 16.dp),
+        )
+      }
+      Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+      ) {
+        HedvigText(
+          text = itemTitle,
+          textAlign = TextAlign.Start,
+        )
+        itemSubtitle?.let {
+          HedvigText(
+            text = itemSubtitle,
+            textAlign = TextAlign.Start,
+            color = HedvigTheme.colorScheme.textSecondary,
+            style = HedvigTheme.typography.finePrint,
+          )
+        }
+      }
+    }
+
   }
 }
 

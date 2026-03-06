@@ -1,0 +1,11 @@
+query FormFieldSearch($input: ClaimIntentFormFieldSearchInput!) {
+  claimIntentFormFieldSearch(input: $input) {
+    options {
+      imageUrl
+      subtitle
+      title
+      value
+    }
+    suggestedQuery
+  }
+}
