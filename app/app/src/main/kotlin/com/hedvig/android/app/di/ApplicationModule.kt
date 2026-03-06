@@ -24,6 +24,7 @@ import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
+import com.hedvig.android.app.notification.senders.CarAddonSender
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
@@ -209,6 +210,16 @@ private val notificationModule = module {
   } bind NotificationSender::class
   single<TravelAddonSender> {
     TravelAddonSender(
+      get<Context>(),
+      get<PermissionManager>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.CrossSell,
+    )
+  } bind NotificationSender::class
+
+  single<CarAddonSender> {
+    CarAddonSender(
       get<Context>(),
       get<PermissionManager>(),
       get<HedvigBuildConstants>(),

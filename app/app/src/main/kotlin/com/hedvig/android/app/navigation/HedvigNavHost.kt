@@ -115,6 +115,11 @@ internal fun HedvigNavHost(
   val navigateToInbox = {
     navController.navigate(ChatDestination)
   }
+  val popBackStackOrFinish = {
+    if (!navController.popBackStack()) {
+      finishApp()
+    }
+  }
 
   fun navigateToNewConversation(builder: (NavOptionsBuilder.() -> Unit)? = null) {
     navController.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
@@ -389,6 +394,8 @@ internal fun HedvigNavHost(
     )
     addonPurchaseNavGraph(
       navController = navController,
+      popBackStack = popBackStackOrFinish,
+      finishApp = finishApp,
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onNavigateToChangeTier = { contractId ->
