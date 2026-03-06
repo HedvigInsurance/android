@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
@@ -420,6 +422,7 @@ internal fun SearchForm(
         mutableStateOf(suggestedQuery)
       }
       val focusRequester = remember { FocusRequester() }
+      val keyboardController = LocalSoftwareKeyboardController.current
 
       Column(Modifier.fillMaxHeight()) {
         HedvigText("Search for your item", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
@@ -522,10 +525,18 @@ internal fun SearchForm(
               }
 
               is SearchState.ResultsFound -> {
+                val lazyListState = rememberLazyListState()
+                LaunchedEffect(lazyListState.isScrollInProgress) {
+                  if (lazyListState.isScrollInProgress) {
+                    keyboardController?.hide()
+                  }
+                }
                 LazyColumn(
                   modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(bottom = 4.dp),
                   verticalArrangement = Arrangement.spacedBy(4.dp),
+                  state = lazyListState,
                 ) {
                   items(queryResult) { item ->
                     ItemCard(
