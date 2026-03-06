@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - feat/new-launcher-icon
+      - chore/fix-app-icon
   workflow_dispatch:
 
 concurrency:
