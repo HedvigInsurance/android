@@ -750,7 +750,6 @@ internal class ClaimChatPresenter(
                   FieldType.NUMBER,
                   FieldType.BINARY,
                   FieldType.SINGLE_SELECT,
-                  FieldType.SEARCH,
                   null,
                   -> {
                     field.copy(
@@ -758,6 +757,17 @@ internal class ClaimChatPresenter(
                         listOf(it)
                       } ?: emptyList(),
                       hasError = null,
+                    )
+                  }
+
+                  FieldType.SEARCH -> {
+                    field.copy(
+                      selectedOptions = event.answer?.let {
+                        listOf(it)
+                      } ?: emptyList(),
+                      hasError = null,
+                      suggestedQuery = searchQuery?.query,
+                      suggestedFixedQuery = null
                     )
                   }
 
@@ -787,7 +797,7 @@ internal class ClaimChatPresenter(
                 field
               }
             }
-            searchQuery = null //todo: check!!!
+            searchQuery = null
             step.copy(
               stepContent = content.copy(
                 fields = newFields,
