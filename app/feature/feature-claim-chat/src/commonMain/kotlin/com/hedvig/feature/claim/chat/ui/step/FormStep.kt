@@ -60,6 +60,10 @@ import com.hedvig.android.design.system.hedvig.MultiSelectDialog
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.hedvig.android.design.system.hedvig.SearchField
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.icon.Close
@@ -466,11 +470,17 @@ internal fun SearchForm(
                 ) {
                   HedvigText("Nothing found", textAlign = TextAlign.Center) //todo!!
                   if (animatedState.suggestedFixedQuery != null) {
+                    val annotatedString = buildAnnotatedString {
+                      append("Did you mean ")
+                      withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(animatedState.suggestedFixedQuery)
+                      }
+                      append("?")
+                    }
                     HedvigText(
-                      "Did you mean ${animatedState.suggestedFixedQuery}?",
+                      annotatedString,
                       textAlign = TextAlign.Center,
                       color = HedvigTheme.colorScheme.textSecondary,
-                      textDecoration = TextDecoration.Underline,
                       modifier = Modifier.clickable {
                         searchQuery = animatedState.suggestedFixedQuery
                         onQueryChange(animatedState.suggestedFixedQuery)
