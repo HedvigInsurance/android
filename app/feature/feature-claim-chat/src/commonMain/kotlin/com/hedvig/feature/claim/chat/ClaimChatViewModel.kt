@@ -786,7 +786,7 @@ internal class ClaimChatPresenter(
                 field
               }
             }
-
+            searchQuery = null //todo: check!!!
             step.copy(
               stepContent = content.copy(
                 fields = newFields,

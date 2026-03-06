@@ -1,19 +1,26 @@
 package com.hedvig.feature.claim.chat.ui.step
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +36,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
@@ -36,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigBigCard
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
@@ -51,6 +60,7 @@ import com.hedvig.android.design.system.hedvig.SingleSelectDialog
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.data.FieldId
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -69,6 +79,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
 import hedvig.resources.claims_skip_button
+import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.general_save_button
 import org.jetbrains.compose.resources.stringResource
@@ -289,7 +300,6 @@ private fun FormContent(
                 onOptionSelected = { option ->
                   onSelectFieldAnswer(field.id, option)
                 },
-                modifier = Modifier.fillMaxWidth(),
                 onClearSearch = {
                   onSearchClear(field.id)
                 },
@@ -359,18 +369,21 @@ internal fun SearchForm(
   onClearSearch: () -> Unit,
   selectedOption: FieldOption?,
   onOptionSelected: (FieldOption) -> Unit,
-  modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier
 ) {
   val searchBottomSheetState = rememberHedvigBottomSheetState<String?>()
   val focusManager = LocalFocusManager.current
-
   Column(modifier) {
     HedvigBigCard(
       onClick = {
         focusManager.clearFocus()
         searchBottomSheetState.show(suggestedQuery)
+        suggestedQuery?.let {
+          onQueryChange(suggestedQuery)
+        }
+
       },
-      labelText = "Search for item",
+      labelText = "Search for your item...", //todo!
       inputText = selectedOption?.text,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
@@ -378,58 +391,12 @@ internal fun SearchForm(
   }
 
   HedvigBottomSheet(
+    modifier = Modifier
+      .fillMaxHeight(1f),
     hedvigBottomSheetState = searchBottomSheetState,
     content = { suggestedQuery: String? ->
-      if (queryResult.isEmpty() && suggestedQuery.isNullOrEmpty()) {
-        Column(
-          modifier
-            .fillMaxWidth()
-            .padding(vertical = 64.dp),
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.Center,
-        ) {
-          HedvigText("Fill in more details about your item") //todo!!
-          HedvigText(
-            "Start searching for the item relevant to your claim",
-            color = HedvigTheme.colorScheme.textSecondary,
-          ) //todo!!
-        }
-      } else if (queryResult.isEmpty()) {
-        Box(
-          Modifier
-            .fillMaxWidth()
-            .padding(vertical = 64.dp),
-          contentAlignment = Alignment.Center,
-        ) {
-          HedvigText("Nothing found") //todo!!
-        }
-      } else {
-        val radioOptions = queryResult.map { option ->
-          RadioOption(
-            id = RadioOptionId(option.text),
-            text = option.text,
-            label = option.subtitle,
-          )
-        }
-        RadioGroup(
-          options = radioOptions,
-          selectedOption = selectedOption?.let {
-            RadioOptionId(it.text)
-          },
-          onRadioOptionSelected = { radioOptionId ->
-            val option = queryResult.firstOrNull { it.text == radioOptionId.id }
-            option?.let {
-              onOptionSelected(option)
-            }
-          },
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        )
-      }
-      Spacer(Modifier.height(24.dp))
       var searchQuery by remember {
-        mutableStateOf<String?>(suggestedQuery)
+        mutableStateOf(suggestedQuery)
       }
       val focusRequester = remember { FocusRequester() }
       SearchField(
@@ -453,11 +420,144 @@ internal fun SearchForm(
             onQueryChange(query)
           }
         },
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
       )
+      Spacer(Modifier.height(16.dp))
+      val searchState = when (queryResult.isEmpty()) {
+        true -> {
+          if (searchQuery.isNullOrEmpty()) SearchState.SearchNotStarted else SearchState.NothingFound(
+            query = searchQuery,
+            suggestedFixedQuery = null //todo!
+          )
+        }
+        false -> {
+          SearchState.ResultsFound(searchQuery, queryResult)
+        }
+      }
+
+      AnimatedContent(
+        targetState = searchState,
+        contentKey = { state ->
+          if (state is SearchState.ResultsFound) "results" else state
+        },
+      ) { animatedState ->
+        Column {
+          when (animatedState) {
+            is SearchState.NothingFound -> {
+              Column(
+                Modifier
+                  .fillMaxWidth()
+                  .padding(vertical = 64.dp), //todo: how to fill all height in this scrollable!
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+              ) {
+                HedvigText("Nothing found", textAlign = TextAlign.Center) //todo!!
+                if (animatedState.suggestedFixedQuery!=null) {
+                  HedvigText(
+                    "Did you mean ${animatedState.suggestedFixedQuery}?", //todo: onClick
+                    textAlign = TextAlign.Center,
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  ) //todo!!
+                }
+              }
+            }
+            SearchState.SearchNotStarted -> {
+              Column(
+                Modifier
+                  .fillMaxWidth()
+                  .padding(
+                    top = 16.dp,
+                    bottom = 64.dp), //todo: how to fill all height in this scrollable!
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+              ) {
+                HedvigText("Fill in more details about your item", textAlign = TextAlign.Center) //todo!!
+                HedvigText(
+                  "Start searching for the item relevant to your claim",
+                  textAlign = TextAlign.Center,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                ) //todo!!
+              }
+            }
+            is SearchState.ResultsFound -> {
+              Column(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(
+                    WindowInsets.safeDrawing
+                      .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+                      .asPaddingValues()
+                  ),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+              ) {
+                queryResult.forEach { item ->
+                  ItemCard(
+                    itemTitle = item.text,
+                    itemSubtitle = item.subtitle,
+                    onClick = {
+                      onOptionSelected(item)
+                      searchBottomSheetState.dismiss()
+                    }
+                  )
+                }
+              }
+            }
+          }
+        }
+      }
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        text = stringResource(Res.string.general_close_button),
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        onClick = {
+          searchBottomSheetState.dismiss()
+        },
+        modifier = Modifier.fillMaxWidth()
+      )
+      Spacer(Modifier.height(16.dp))
     },
   )
+}
+
+private sealed interface SearchState {
+  data object SearchNotStarted: SearchState
+  data class NothingFound(val query: String?, val suggestedFixedQuery: String?): SearchState
+  data class ResultsFound(
+    val query: String?,
+    val results:List<StepContent.Form.FieldOption>
+  ): SearchState
+}
+
+@Composable
+private fun ItemCard(
+  itemTitle: String,
+  itemSubtitle: String?,
+  modifier: Modifier = Modifier,
+  onClick: () -> Unit,
+) {
+  HedvigCard(
+    onClick = onClick,
+    modifier = modifier
+      .fillMaxWidth(),
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+      modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+    ) {
+      HedvigText(
+        text = itemTitle,
+        textAlign = TextAlign.Start,
+      )
+      itemSubtitle?.let {
+        HedvigText(
+          text = itemSubtitle,
+          textAlign = TextAlign.Start,
+          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.finePrint,
+        )
+      }
+    }
+  }
 }
 
 @Composable
