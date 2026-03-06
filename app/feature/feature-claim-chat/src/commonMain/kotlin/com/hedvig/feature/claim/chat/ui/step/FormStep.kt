@@ -455,7 +455,12 @@ internal fun SearchForm(
         AnimatedContent(
           targetState = searchState,
           contentKey = { state ->
-            if (state is SearchState.ResultsFound) "results" else state
+            when (state ) {
+              is SearchState.ResultsFound-> "results"
+              is SearchState.NothingFound -> "nothing_found"
+              SearchState.SearchNotStarted -> "not_started"
+            }
+
           },
           modifier = Modifier.weight(1f),
         ) { animatedState ->
@@ -482,8 +487,8 @@ internal fun SearchForm(
                       textAlign = TextAlign.Center,
                       color = HedvigTheme.colorScheme.textSecondary,
                       modifier = Modifier.clickable {
-                        searchQuery = animatedState.suggestedFixedQuery
                         onQueryChange(animatedState.suggestedFixedQuery)
+                        searchQuery = animatedState.suggestedFixedQuery
                       },
                     )
                   }
@@ -546,7 +551,7 @@ private sealed interface SearchState {
   data class NothingFound(val query: String?, val suggestedFixedQuery: String?): SearchState
   data class ResultsFound(
     val query: String?,
-    val results:List<StepContent.Form.FieldOption>
+    val results:List<FieldOption>
   ): SearchState
 }
 
