@@ -22,6 +22,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_LABEL
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_TITLE
+import hedvig.resources.CONTRACT_ADD_COOWNER_UPDATED_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_done_button
 import kotlinx.datetime.LocalDate
@@ -44,7 +45,7 @@ internal fun EditCoInsuredSuccessDestination(
       EmptyState(
         text = when (type) {
           CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_UPDATED_TITLE)
-          CoInsuredFlowType.CoOwners -> "todo Co-owner added"
+          CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_COOWNER_UPDATED_TITLE)
         },
         description = stringResource(
           Res.string.CONTRACT_ADD_COINSURED_UPDATED_LABEL,

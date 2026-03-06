@@ -365,10 +365,7 @@ private fun PreviewReminderCardUpcomingRenewals() {
 private fun PreviewReminderCardCoInsuredInfo() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ReminderCoInsuredInfo(
-        memberReminder.coInsuredType,
-        {},
-      )
+      ReminderCoInsuredInfo(CoInsuredFlowType.CoInsured, {})
     }
   }
 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -155,6 +156,7 @@ private fun EditCoInsuredScreen(
         ) {
           AddCoInsuredBottomSheetContent(
             bottomSheetState = uiState.addBottomSheetContentState,
+            type = uiState.type,
             onContinue = onBottomSheetContinue,
             onDismiss = {
               hedvigBottomSheetState.dismiss()
@@ -336,6 +338,7 @@ private fun EditCoInsuredScreenEditablePreview() {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             originalCoInsured = listOf(
               CoInsured(
@@ -438,6 +441,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             originalCoInsured = listOf(
               CoInsured(

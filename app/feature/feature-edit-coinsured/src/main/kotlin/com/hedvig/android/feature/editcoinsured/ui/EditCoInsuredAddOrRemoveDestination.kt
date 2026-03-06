@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -60,6 +61,7 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.Man
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.RemoveBottomSheetContentState
 import hedvig.resources.ADDON_FLOW_LEARN_MORE_BUTTON
 import hedvig.resources.COINSURED_EDIT_TITLE
+import hedvig.resources.CONTRACT_ADD_ADDITIONAL_COOWNER
 import hedvig.resources.CONTRACT_ADD_COINSURED
 import hedvig.resources.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
@@ -70,7 +72,6 @@ import hedvig.resources.SUMMARY_TOTAL_PRICE_SUBTITLE
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_error
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -205,6 +206,7 @@ private fun EditCoInsuredScreen(
           ) {
             AddCoInsuredBottomSheetContent(
               bottomSheetState = uiState.addBottomSheetContentState,
+              type = uiState.type,
               onContinue = onSave,
               onDismiss = {
                 addHedvigBottomSheetState.dismiss()
@@ -277,7 +279,10 @@ private fun EditCoInsuredScreen(
               Spacer(Modifier.height(16.dp))
               PriceInfo(uiState.listState.priceInfo, costBreakdownBottomSheetState)
               HedvigButton(
-                text = stringResource(Res.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES),
+                text = when(uiState.type) {
+                  CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES)
+                  CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
+                },
                 onClick = onCommitChanges,
                 enabled = true,
                 isLoading = uiState.listState.isCommittingUpdate,
@@ -434,6 +439,7 @@ private fun EditCoInsuredScreenEditablePreview() {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             originalCoInsured = listOf(
               CoInsured(
@@ -524,6 +530,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             originalCoInsured = listOf(
               CoInsured(

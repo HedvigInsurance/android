@@ -95,6 +95,7 @@ import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
 import hedvig.resources.CONTRACT_COINSURED
 import hedvig.resources.CONTRACT_COINSURED_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
+import hedvig.resources.CONTRACT_COOWNER
 import hedvig.resources.CONTRACT_COOWNERS_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_EDIT_INFO_LABEL
 import hedvig.resources.CONTRACT_NO_INFORMATION
@@ -206,9 +207,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                addon.premium.toString(),
-              ),
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              addon.premium.toString(),
+            ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -299,23 +300,25 @@ internal fun YourInfoTab(
           onInfoIconClick,
           Modifier.padding(horizontal = 16.dp),
         )
-        if (allowEditCoInsured) {
+        if (allowEditCoInsured && coInsured.isNotEmpty()) {
           HorizontalDivider(Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
           CoInsuredSection(
             coInsuredList = coInsured,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
+            isCoOwner = false,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
-        if (coOwners.isNotEmpty()) {
+        if (allowEditCoOwners && coOwners.isNotEmpty()) {
           HorizontalDivider(Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
           CoInsuredSection(
             coInsuredList = coOwners,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
+            isCoOwner = true,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
@@ -490,7 +493,7 @@ private fun ManageAddonBottomSheetContent(
       baseStyle = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.fillMaxWidth(),
     )
-    val description =when {
+    val description = when {
       addon.isUpgradable && addon.isRemovable -> stringResource(Res.string.ADDON_FLOW_UPDATE_ADDON_DESCRIPTION)
       addon.isUpgradable -> stringResource(Res.string.ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION)
       addon.isRemovable -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION)
@@ -694,6 +697,7 @@ internal fun CoInsuredSection(
   coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  isCoOwner: Boolean,
   modifier: Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -773,7 +777,11 @@ internal fun CoInsuredSection(
             Column {
               HedvigText(
                 text = coInsured.getDisplayName().ifBlank {
-                  stringResource(Res.string.CONTRACT_COINSURED)
+                  if (isCoOwner) {
+                    stringResource(Res.string.CONTRACT_COOWNER)
+                  } else {
+                    stringResource(Res.string.CONTRACT_COINSURED)
+                  }
                 },
               )
 
