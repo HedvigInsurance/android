@@ -395,7 +395,7 @@ internal fun SearchForm(
     HedvigBigCard(
       onClick = {
         focusManager.clearFocus()
-        searchBottomSheetState.show(suggestedQuery)
+        searchBottomSheetState.show(suggestedQuery ?: "")
         suggestedQuery?.let {
           onQueryChange(suggestedQuery)
         }
