@@ -920,6 +920,11 @@ input ClaimIntentFormFieldSearchInput {
 }
 type ClaimIntentFormFieldSearchOutput {
   options: [ClaimIntentStepContentFormFieldOption!]!
+  """
+  If present, this suggests a different query to use.
+  Typically when there are no options, this could contain a fix for a possible query typo.
+  """
+  suggestedQuery: String
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
@@ -1055,6 +1060,10 @@ type ClaimIntentStepContentFormField {
   If there are default values, they will show up in this array. Empty means no default value.
   """
   defaultValues: [ClaimIntentStepContentFormFieldValue!]!
+  """
+  If type is SEARCH, then this can be auto-inserted into the search bar.
+  """
+  suggestedQuery: String
   """
   If present - the minimal value this field can hold.
   """
@@ -1274,6 +1283,9 @@ type Contract {
   Whether or not this co-insured for contract can be changed through the 'MidtermChange' API.
   """
   supportsCoInsured: Boolean!
+  """
+  Whether or not this co-insured for contract can be changed through the 'MidtermChange' API.
+  """
   supportsCoOwners: Boolean!
   """
   Whether or not travel certificate can be created for the contract
@@ -1288,6 +1300,11 @@ type Contract {
   If current agreement doesn't support co-insured, this is null
   """
   coInsured: [ContractCoInsured!]
+  """
+  Current state of co-owners including upcoming changes.
+  If current agreement doesn't support co-owners, this is null
+  Reuses ContractCoInsured type, for now.
+  """
   coOwners: [ContractCoInsured!]
   """
   User messages to show due to self change is blocked.
@@ -3832,6 +3849,10 @@ type ProductOfferCost {
   The original price of the base insurance, without selected addons.
   """
   baseInsuranceGross: Money!
+  """
+  The net price of the base insurance after discounts, without selected addons.
+  """
+  baseInsuranceNet: Money!
   """
   Price you will pay after discount for the entire offer, including selected addons.
   """
