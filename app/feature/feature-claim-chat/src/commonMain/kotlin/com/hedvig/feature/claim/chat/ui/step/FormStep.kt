@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 
@@ -38,6 +40,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.design.system.hedvig.DatePickerWithDialog
@@ -394,127 +397,127 @@ internal fun SearchForm(
     modifier = Modifier
       .fillMaxHeight(1f),
     hedvigBottomSheetState = searchBottomSheetState,
+    style = BottomSheetStyle(
+      transparentBackground = false,
+      automaticallyScrollableContent = false,
+      scrimColor = null,
+    ),
     content = { suggestedQuery: String? ->
       var searchQuery by remember {
         mutableStateOf(suggestedQuery)
       }
       val focusRequester = remember { FocusRequester() }
-      SearchField(
-        searchQuery = searchQuery,
-        focusRequester = focusRequester,
-        onClearSearch = {
-          searchQuery = null
-          onClearSearch()
-        },
-        onKeyboardAction = {
-          searchQuery?.let {
-            focusManager.clearFocus()
-          }
-        },
-        onSearchChange = { query ->
-          if (query.isEmpty()) {
+
+      Column(Modifier.fillMaxHeight()) {
+        SearchField(
+          searchQuery = searchQuery,
+          focusRequester = focusRequester,
+          onClearSearch = {
             searchQuery = null
             onClearSearch()
-          } else {
-            searchQuery = query
-            onQueryChange(query)
+          },
+          onKeyboardAction = {
+            searchQuery?.let {
+              focusManager.clearFocus()
+            }
+          },
+          onSearchChange = { query ->
+            if (query.isEmpty()) {
+              searchQuery = null
+              onClearSearch()
+            } else {
+              searchQuery = query
+              onQueryChange(query)
+            }
+          },
+        )
+        Spacer(Modifier.height(16.dp))
+        val searchState = when (queryResult.isEmpty()) {
+          true -> {
+            if (searchQuery.isNullOrEmpty()) SearchState.SearchNotStarted else SearchState.NothingFound(
+              query = searchQuery,
+              suggestedFixedQuery = null //todo!
+            )
           }
-        },
-      )
-      Spacer(Modifier.height(16.dp))
-      val searchState = when (queryResult.isEmpty()) {
-        true -> {
-          if (searchQuery.isNullOrEmpty()) SearchState.SearchNotStarted else SearchState.NothingFound(
-            query = searchQuery,
-            suggestedFixedQuery = null //todo!
-          )
+          false -> {
+            SearchState.ResultsFound(searchQuery, queryResult)
+          }
         }
-        false -> {
-          SearchState.ResultsFound(searchQuery, queryResult)
-        }
-      }
 
-      AnimatedContent(
-        targetState = searchState,
-        contentKey = { state ->
-          if (state is SearchState.ResultsFound) "results" else state
-        },
-      ) { animatedState ->
-        Column {
-          when (animatedState) {
-            is SearchState.NothingFound -> {
-              Column(
-                Modifier
-                  .fillMaxWidth()
-                  .padding(vertical = 64.dp), //todo: how to fill all height in this scrollable!
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-              ) {
-                HedvigText("Nothing found", textAlign = TextAlign.Center) //todo!!
-                if (animatedState.suggestedFixedQuery!=null) {
+        AnimatedContent(
+          targetState = searchState,
+          contentKey = { state ->
+            if (state is SearchState.ResultsFound) "results" else state
+          },
+          modifier = Modifier.weight(1f),
+        ) { animatedState ->
+          Column {
+            when (animatedState) {
+              is SearchState.NothingFound -> {
+                Column(
+                  Modifier
+                    .fillMaxWidth(),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center,
+                ) {
+                  HedvigText("Nothing found", textAlign = TextAlign.Center) //todo!!
+                  if (animatedState.suggestedFixedQuery!=null) {
+                    HedvigText(
+                      "Did you mean ${animatedState.suggestedFixedQuery}?", //todo: onClick
+                      textAlign = TextAlign.Center,
+                      color = HedvigTheme.colorScheme.textSecondary,
+                    ) //todo!!
+                  }
+                }
+              }
+              SearchState.SearchNotStarted -> {
+                Column(
+                  Modifier
+                    .fillMaxWidth(),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center,
+                ) {
+                  HedvigText("Fill in more details about your item", textAlign = TextAlign.Center) //todo!!
                   HedvigText(
-                    "Did you mean ${animatedState.suggestedFixedQuery}?", //todo: onClick
+                    "Start searching for the item relevant to your claim",
                     textAlign = TextAlign.Center,
                     color = HedvigTheme.colorScheme.textSecondary,
                   ) //todo!!
                 }
               }
-            }
-            SearchState.SearchNotStarted -> {
-              Column(
-                Modifier
-                  .fillMaxWidth()
-                  .padding(
-                    top = 16.dp,
-                    bottom = 64.dp), //todo: how to fill all height in this scrollable!
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-              ) {
-                HedvigText("Fill in more details about your item", textAlign = TextAlign.Center) //todo!!
-                HedvigText(
-                  "Start searching for the item relevant to your claim",
-                  textAlign = TextAlign.Center,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                ) //todo!!
-              }
-            }
-            is SearchState.ResultsFound -> {
-              Column(
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(
-                    WindowInsets.safeDrawing
-                      .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
-                      .asPaddingValues()
-                  ),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-              ) {
-                queryResult.forEach { item ->
-                  ItemCard(
-                    itemTitle = item.text,
-                    itemSubtitle = item.subtitle,
-                    onClick = {
-                      onOptionSelected(item)
-                      searchBottomSheetState.dismiss()
-                    }
-                  )
+              is SearchState.ResultsFound -> {
+                LazyColumn(
+                  modifier = Modifier
+                    .fillMaxWidth(),
+                  verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                  items(queryResult) { item ->
+                    ItemCard(
+                      itemTitle = item.text,
+                      itemSubtitle = item.subtitle,
+                      onClick = {
+                        onOptionSelected(item)
+                        searchBottomSheetState.dismiss()
+                      }
+                    )
+                  }
                 }
               }
             }
           }
         }
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          text = stringResource(Res.string.general_close_button),
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          onClick = {
+            searchBottomSheetState.dismiss()
+          },
+          modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(Modifier.height(16.dp))
       }
-      Spacer(Modifier.height(16.dp))
-      HedvigButton(
-        text = stringResource(Res.string.general_close_button),
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        onClick = {
-          searchBottomSheetState.dismiss()
-        },
-        modifier = Modifier.fillMaxWidth()
-      )
-      Spacer(Modifier.height(16.dp))
     },
   )
 }
