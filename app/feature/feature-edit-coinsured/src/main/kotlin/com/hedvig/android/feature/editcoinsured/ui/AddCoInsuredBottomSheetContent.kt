@@ -69,6 +69,7 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.Add
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.COINSURED_WITHOUT_SSN_INFO
+import hedvig.resources.CONTRACT_ADD_ADDITIONAL_COOWNER
 import hedvig.resources.CONTRACT_ADD_COINSURED
 import hedvig.resources.CONTRACT_ADD_COINSURED_NO_SSN
 import hedvig.resources.CONTRACT_ADD_COOWNER_INFO
@@ -112,7 +113,7 @@ internal fun AddCoInsuredBottomSheetContent(
     HedvigText(
       text = when (type) {
         CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED)
-        CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_COOWNER_INFO)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
       },
       textAlign = TextAlign.Center,
       modifier = Modifier
