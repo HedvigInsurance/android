@@ -86,10 +86,16 @@ internal sealed interface StepContent {
       val selectedOptions: List<FieldOption>,
       val datePickerUiState: DatePickerUiState?,
 
-      val suggestedQuery: String?,
+      val searchData: SearchData?,
       val hasError: FieldError? = null,
       val foundOptionsInSearch: List<FieldOption> = emptyList(),
       val suggestedFixedQuery: String? = null,
+    )
+
+    data class SearchData(
+      val suggestedQuery: String?,
+      val modalTitle: String,
+      val modalSubtitle: String
     )
 
     sealed interface FieldError {

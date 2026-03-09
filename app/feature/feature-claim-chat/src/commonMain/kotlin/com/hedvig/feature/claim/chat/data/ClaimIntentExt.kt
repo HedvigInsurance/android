@@ -221,7 +221,13 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
           null
         }
       },
-      suggestedQuery = field.suggestedQuery
+      searchData = field.searchData?.let {
+        StepContent.Form.SearchData(
+          suggestedQuery = it.suggestedQuery,
+          modalTitle = it.modalTitle,
+          modalSubtitle = it.modalSubtitle
+        )
+      }
     )
   }
 }

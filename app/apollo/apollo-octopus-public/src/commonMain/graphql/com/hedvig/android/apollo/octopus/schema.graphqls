@@ -1061,9 +1061,9 @@ type ClaimIntentStepContentFormField {
   """
   defaultValues: [ClaimIntentStepContentFormFieldValue!]!
   """
-  If type is SEARCH, then this can be auto-inserted into the search bar.
+  If type is SEARCH, then this will be present.
   """
-  suggestedQuery: String
+  searchData: ClaimIntentStepContentFormFieldSearchData
   """
   If present - the minimal value this field can hold.
   """
@@ -1078,6 +1078,20 @@ type ClaimIntentStepContentFormFieldOption {
   subtitle: String
   imageUrl: String
   value: ClaimIntentStepContentFormFieldValue!
+}
+type ClaimIntentStepContentFormFieldSearchData {
+  """
+  Can be auto-inserted into the search bar.
+  """
+  suggestedQuery: String
+  """
+  Title of the search modal.
+  """
+  modalTitle: String!
+  """
+  Subtitle of the search modal.
+  """
+  modalSubtitle: String!
 }
 enum ClaimIntentStepContentFormFieldType {
   TEXT
@@ -1492,7 +1506,6 @@ type CrossSell {
   Product page URL for completing the purchase
   """
   storeUrl: String!
-  type: CrossSellType! @deprecated(reason: "Use pillowImage$size for images, you don't need to know cross-sell type on the client")
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
 }
@@ -1521,17 +1534,6 @@ enum CrossSellSource {
   ADDON
   EDIT_COINSURED
   MOVING_FLOW
-}
-enum CrossSellType {
-  CAR
-  HOME
-  ACCIDENT
-  PET
-  PET_CAT
-  PET_DOG
-  APARTMENT_BRF
-  APARTMENT_RENT
-  HOUSE
 }
 type CrossSellV2 {
   """

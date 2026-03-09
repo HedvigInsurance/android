@@ -2,7 +2,6 @@ package com.hedvig.feature.claim.chat.ui.step
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -310,7 +309,7 @@ private fun FormContent(
 
             FieldType.SEARCH -> {
               SearchForm(
-                suggestedQuery = field.suggestedQuery,
+                searchData = field.searchData,
                 suggestedFixedQuery = field.suggestedFixedQuery,
                 onQueryChange = { query ->
                   onSearchQueryChange(query, field.id)
@@ -324,6 +323,7 @@ private fun FormContent(
                   onSearchClear(field.id)
                 },
                 imageLoader = imageLoader,
+                fieldTitle = field.title
               )
             }
           }
@@ -384,8 +384,9 @@ private fun FormContent(
 
 @Composable
 internal fun SearchForm(
+  fieldTitle: String,
   queryResult: List<FieldOption>,
-  suggestedQuery: String?,
+  searchData: StepContent.Form.SearchData?,
   suggestedFixedQuery: String?,
   onQueryChange: (String) -> Unit,
   onClearSearch: () -> Unit,
@@ -400,13 +401,13 @@ internal fun SearchForm(
     HedvigBigCard(
       onClick = {
         focusManager.clearFocus()
-        searchBottomSheetState.show(suggestedQuery ?: "")
-        suggestedQuery?.let {
+        searchBottomSheetState.show(searchData?.suggestedQuery ?: "")
+        searchData?.suggestedQuery?.let { suggestedQuery ->
           onQueryChange(suggestedQuery)
         }
 
       },
-      labelText = stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER),
+      labelText = fieldTitle,
       inputText = selectedOption?.text,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
@@ -430,7 +431,7 @@ internal fun SearchForm(
       val keyboardController = LocalSoftwareKeyboardController.current
 
       Column(Modifier.fillMaxHeight()) {
-        HedvigText(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_TITLE), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        HedvigText(fieldTitle, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         SearchField(
           searchQuery = searchQuery,
@@ -464,7 +465,7 @@ internal fun SearchForm(
           }
 
           false -> {
-            SearchState.ResultsFound(searchQuery, queryResult)
+            SearchState.ResultsFound(searchQuery, queryResult, suggestedFixedQuery)
           }
         }
 
@@ -490,24 +491,15 @@ internal fun SearchForm(
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center,
                 ) {
-                  HedvigText(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND), textAlign = TextAlign.Center)
+                  HedvigText(
+                    stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND),
+                    textAlign = TextAlign.Center,
+                  )
                   if (animatedState.suggestedFixedQuery != null) {
-                    val annotatedString = buildAnnotatedString {
-                      append("Did you mean ") //todo!!
-                      withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append(animatedState.suggestedFixedQuery)
-                      }
-                      append("?") //todo!!
+                    FixQuerySuggestion(animatedState.suggestedFixedQuery) {
+                      onQueryChange(animatedState.suggestedFixedQuery)
+                      searchQuery = animatedState.suggestedFixedQuery
                     }
-                    HedvigText(
-                      annotatedString,
-                      textAlign = TextAlign.Center,
-                      color = HedvigTheme.colorScheme.textSecondary,
-                      modifier = Modifier.clickable {
-                        onQueryChange(animatedState.suggestedFixedQuery)
-                        searchQuery = animatedState.suggestedFixedQuery
-                      },
-                    )
                   }
                 }
               }
@@ -520,12 +512,14 @@ internal fun SearchForm(
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center,
                 ) {
-                  HedvigText(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE), textAlign = TextAlign.Center)
-                  HedvigText(
-                    stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE),
-                    textAlign = TextAlign.Center,
-                    color = HedvigTheme.colorScheme.textSecondary,
-                  )
+                  if (searchData!=null) {
+                    HedvigText(searchData.modalTitle, textAlign = TextAlign.Center)
+                    HedvigText(
+                      searchData.modalSubtitle,
+                      textAlign = TextAlign.Center,
+                      color = HedvigTheme.colorScheme.textSecondary,
+                    )
+                  }
                 }
               }
 
@@ -557,6 +551,14 @@ internal fun SearchForm(
                   item {
                     Spacer(Modifier.height(8.dp)) //to allow space for shadow
                   }
+                  item {
+                    if (animatedState.suggestedFixedQuery != null) {
+                      FixQuerySuggestion(animatedState.suggestedFixedQuery) {
+                        onQueryChange(animatedState.suggestedFixedQuery)
+                        searchQuery = animatedState.suggestedFixedQuery
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -578,12 +580,36 @@ internal fun SearchForm(
   )
 }
 
+@Composable
+private fun FixQuerySuggestion(
+  suggestedFixedQuery: String,
+  onClick: () -> Unit,
+) {
+  val annotatedString = buildAnnotatedString {
+    append("Did you mean ") //todo!!
+    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+      append(suggestedFixedQuery)
+    }
+    append("?") //todo!!
+  }
+  HedvigText(
+    annotatedString,
+    textAlign = TextAlign.Center,
+    color = HedvigTheme.colorScheme.textSecondary,
+    modifier = Modifier.clickable {
+      onClick()
+    },
+  )
+
+}
+
 private sealed interface SearchState {
   data object SearchNotStarted : SearchState
   data class NothingFound(val query: String?, val suggestedFixedQuery: String?) : SearchState
   data class ResultsFound(
     val query: String?,
     val results: List<FieldOption>,
+    val suggestedFixedQuery: String?,
   ) : SearchState
 }
 
@@ -603,7 +629,7 @@ private fun ItemCard(
       .hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
     color = HedvigTheme.colorScheme.fillNegative,
     shape = HedvigTheme.shapes.cornerLarge,
-    borderColor = HedvigTheme.colorScheme.borderPrimary
+    borderColor = HedvigTheme.colorScheme.borderPrimary,
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,

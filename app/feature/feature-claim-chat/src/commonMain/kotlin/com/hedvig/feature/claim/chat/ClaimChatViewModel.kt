@@ -766,7 +766,7 @@ internal class ClaimChatPresenter(
                         listOf(it)
                       } ?: emptyList(),
                       hasError = null,
-                      suggestedQuery = searchQuery?.query,
+                      searchData = field.searchData?.copy(suggestedQuery = searchQuery?.query),
                       suggestedFixedQuery = null
                     )
                   }
