@@ -597,11 +597,11 @@ private fun FixQuerySuggestion(
   onClick: () -> Unit,
 ) {
   val annotatedString = buildAnnotatedString {
-    append(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION)) //todo!!
+    append(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION))
     withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
       append(suggestedFixedQuery)
     }
-    append("?") //todo!!
+    append("?")
   }
   HedvigText(
     annotatedString,
