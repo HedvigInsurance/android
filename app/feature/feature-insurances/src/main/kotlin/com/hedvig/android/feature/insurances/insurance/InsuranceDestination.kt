@@ -343,18 +343,17 @@ private fun InsuranceCardsPile(
   onInsuranceCardClick: (contractId: String) -> Unit,
 ) {
   val peekTopPadding = 10.dp
-  val peekBottomPadding = 16.dp // matches card Column bottom padding
+  val peekBottomPadding = 16.dp
   val textSpacer = 4.dp
 
   SubcomposeLayout(
     modifier = Modifier.fillMaxWidth(),
   ) { constraints ->
-    // --- Phase 1: measure peek strips (NOT placed) ---
+
     val peekHeights = contracts.indices.drop(1).map { idx ->
       val contract = contracts[idx]
       subcompose("peek_$idx") {
         Column(Modifier.padding(horizontal = 32.dp)) {
-          // 16.dp outer + 16.dp inner card padding
           Spacer(Modifier.height(peekTopPadding))
           HedvigText(contract.topText())
           Spacer(Modifier.height(textSpacer))
@@ -364,7 +363,7 @@ private fun InsuranceCardsPile(
       }.first().measure(constraints).height
     }
 
-    // --- Phase 2: measure full cards ---
+
     val cardPlaceables = contracts.mapIndexed { idx, contract ->
       subcompose("card_$idx") {
         InsuranceCardWrapper(
@@ -375,7 +374,7 @@ private fun InsuranceCardsPile(
       }.first().measure(constraints)
     }
 
-    // --- Phase 3: layout ---
+
     val firstCardHeight = cardPlaceables[0].height
     val totalHeight = firstCardHeight + peekHeights.sum()
 
