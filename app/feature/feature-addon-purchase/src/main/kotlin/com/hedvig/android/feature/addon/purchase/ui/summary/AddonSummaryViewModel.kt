@@ -204,7 +204,7 @@ internal sealed interface AddonSummaryState {
 
   data class Content(
     val insuranceDisplayName: String,
-    val insuranceExposure: String?, // todo: add separate query
+    val insuranceExposure: String?,
     val contractGroup: ContractGroup?,
     val quotes: List<AddonQuote>,
     val activationDate: LocalDate,
