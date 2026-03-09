@@ -406,6 +406,7 @@ private fun InsuranceCardWrapper(
     modifier = modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp)
+      .hedvigDropShadow()
       .clip(HedvigTheme.shapes.cornerXLarge)
       .clickable(onClickLabel = stringResource(Res.string.A11Y_VIEW_DETAILS)) {
         onInsuranceCardClick(contract.id)
