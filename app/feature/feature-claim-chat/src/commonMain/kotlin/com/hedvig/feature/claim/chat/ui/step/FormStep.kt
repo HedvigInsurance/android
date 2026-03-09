@@ -84,6 +84,11 @@ import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.feature.claim.chat.ui.common.YesNoBubble
+import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE
+import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE
+import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND
+import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER
+import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_TITLE
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
@@ -401,7 +406,7 @@ internal fun SearchForm(
         }
 
       },
-      labelText = "Search for your item...", //todo!
+      labelText = stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER),
       inputText = selectedOption?.text,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
@@ -425,7 +430,7 @@ internal fun SearchForm(
       val keyboardController = LocalSoftwareKeyboardController.current
 
       Column(Modifier.fillMaxHeight()) {
-        HedvigText("Search for your item", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        HedvigText(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_TITLE), modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         SearchField(
           searchQuery = searchQuery,
@@ -485,14 +490,14 @@ internal fun SearchForm(
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center,
                 ) {
-                  HedvigText("Nothing found", textAlign = TextAlign.Center) //todo!!
+                  HedvigText(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND), textAlign = TextAlign.Center)
                   if (animatedState.suggestedFixedQuery != null) {
                     val annotatedString = buildAnnotatedString {
-                      append("Did you mean ")
+                      append("Did you mean ") //todo!!
                       withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
                         append(animatedState.suggestedFixedQuery)
                       }
-                      append("?")
+                      append("?") //todo!!
                     }
                     HedvigText(
                       annotatedString,
@@ -515,12 +520,12 @@ internal fun SearchForm(
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center,
                 ) {
-                  HedvigText("Fill in more details about your item", textAlign = TextAlign.Center) //todo!!
+                  HedvigText(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE), textAlign = TextAlign.Center)
                   HedvigText(
-                    "Start searching for the item relevant to your claim",
+                    stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE),
                     textAlign = TextAlign.Center,
                     color = HedvigTheme.colorScheme.textSecondary,
-                  ) //todo!!
+                  )
                 }
               }
 
