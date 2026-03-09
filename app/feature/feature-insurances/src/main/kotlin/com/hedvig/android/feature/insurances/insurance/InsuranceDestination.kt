@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -324,50 +325,102 @@ private fun ContractsSection(
         description = null,
       )
     } else {
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (contract in contracts) {
-          InsuranceCard(
-            contract = contract,
-            imageLoader = imageLoader,
-            onInsuranceCardClick = onInsuranceCardClick,
-          )
-        }
-      }
+      InsuranceCardsPile(
+        contracts = contracts,
+        imageLoader = imageLoader,
+        onInsuranceCardClick = onInsuranceCardClick,
+      )
     }
   }
 }
 
 @Composable
-private fun InsuranceCard(
+private fun InsuranceCardsPile(
+  contracts: List<InsuranceContract>,
+  imageLoader: ImageLoader,
+  onInsuranceCardClick: (contractId: String) -> Unit,
+) {
+  val peekTopPadding = 10.dp
+  val peekBottomPadding = 16.dp // matches card Column bottom padding
+  val textSpacer = 4.dp
+
+  SubcomposeLayout(
+    modifier = Modifier.fillMaxWidth(),
+  ) { constraints ->
+    // --- Phase 1: measure peek strips (NOT placed) ---
+    val peekHeights = contracts.indices.drop(1).map { idx ->
+      val contract = contracts[idx]
+      subcompose("peek_$idx") {
+        Column(Modifier.padding(horizontal = 32.dp)) {
+          // 16.dp outer + 16.dp inner card padding
+          Spacer(Modifier.height(peekTopPadding))
+          HedvigText(contract.topText())
+          Spacer(Modifier.height(textSpacer))
+          HedvigText(contract.exposureDisplayName)
+          Spacer(Modifier.height(peekBottomPadding))
+        }
+      }.first().measure(constraints).height
+    }
+
+    // --- Phase 2: measure full cards ---
+    val cardPlaceables = contracts.mapIndexed { idx, contract ->
+      subcompose("card_$idx") {
+        InsuranceCardWrapper(
+          contract = contract,
+          imageLoader = imageLoader,
+          onInsuranceCardClick = onInsuranceCardClick,
+        )
+      }.first().measure(constraints)
+    }
+
+    // --- Phase 3: layout ---
+    val firstCardHeight = cardPlaceables[0].height
+    val totalHeight = firstCardHeight + peekHeights.sum()
+
+    layout(constraints.maxWidth, totalHeight) {
+      cardPlaceables[0].placeRelative(0, 0, zIndex = contracts.size.toFloat())
+
+      var peekAccumulated = 0
+      for (i in 1 until contracts.size) {
+        peekAccumulated += peekHeights[i - 1]
+        val y = firstCardHeight + peekAccumulated - cardPlaceables[i].height
+        cardPlaceables[i].placeRelative(0, y, zIndex = (contracts.size - i).toFloat())
+      }
+    }
+  }
+}
+
+private fun InsuranceContract.topText(): String = when (this) {
+  is EstablishedInsuranceContract -> currentInsuranceAgreement.productVariant.displayName
+  is InsuranceContract.PendingInsuranceContract -> displayName
+}
+
+@Composable
+private fun InsuranceCardWrapper(
   contract: InsuranceContract,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
   onInsuranceCardClick: (contractId: String) -> Unit,
 ) {
-  val topText = when (contract) {
-    is EstablishedInsuranceContract -> {
-      contract.currentInsuranceAgreement.productVariant.displayName
-    }
-
-    is InsuranceContract.PendingInsuranceContract -> {
-      contract.displayName
-    }
-  }
-  InsuranceCard(
-    chips = contract.createChips(),
-    topText = topText,
-    bottomText = contract.exposureDisplayName,
-    imageLoader = imageLoader,
-    isLoading = false,
+  Box(
     modifier = modifier
+      .fillMaxWidth()
       .padding(horizontal = 16.dp)
       .clip(HedvigTheme.shapes.cornerXLarge)
       .clickable(onClickLabel = stringResource(Res.string.A11Y_VIEW_DETAILS)) {
         onInsuranceCardClick(contract.id)
       },
-    fallbackPainter = contract.createPainter(),
-    imageContentScale = contract.imageContentScale(),
-  )
+  ) {
+    InsuranceCard(
+      chips = contract.createChips(),
+      topText = contract.topText(),
+      bottomText = contract.exposureDisplayName,
+      imageLoader = imageLoader,
+      isLoading = false,
+      fallbackPainter = contract.createPainter(),
+      imageContentScale = contract.imageContentScale(),
+    )
+  }
 }
 
 @Composable
