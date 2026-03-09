@@ -2,11 +2,15 @@ package com.hedvig.feature.claim.chat.ui.step
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -87,6 +92,7 @@ import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER
+import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_TITLE
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
@@ -553,10 +559,15 @@ internal fun SearchForm(
                   }
                   item {
                     if (animatedState.suggestedFixedQuery != null) {
-                      FixQuerySuggestion(animatedState.suggestedFixedQuery) {
-                        onQueryChange(animatedState.suggestedFixedQuery)
-                        searchQuery = animatedState.suggestedFixedQuery
+                      Spacer(Modifier.height(8.dp))
+                      Row(horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()) {
+                        FixQuerySuggestion(animatedState.suggestedFixedQuery) {
+                          onQueryChange(animatedState.suggestedFixedQuery)
+                          searchQuery = animatedState.suggestedFixedQuery
+                        }
                       }
+
                     }
                   }
                 }
@@ -586,7 +597,7 @@ private fun FixQuerySuggestion(
   onClick: () -> Unit,
 ) {
   val annotatedString = buildAnnotatedString {
-    append("Did you mean ") //todo!!
+    append(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION)) //todo!!
     withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
       append(suggestedFixedQuery)
     }
@@ -633,25 +644,34 @@ private fun ItemCard(
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(horizontal = 16.dp)
     ) {
       if (itemImageUrl != null) {
-        AsyncImage(
-          model = itemImageUrl,
-          contentDescription = itemTitle,
-          placeholder = crossSellPainterFallback(),
-          error = crossSellPainterFallback(),
-          fallback = crossSellPainterFallback(),
-          imageLoader = imageLoader,
-          contentScale = ContentScale.Inside,
+        Box (
+          contentAlignment = Alignment.Center,
           modifier = Modifier
-            .height(46.dp)
+            .size(46.dp)
+            .background(Color(0xFFFFFFFF), HedvigTheme.shapes.cornerSmall)
+            .border(1.dp,
+              HedvigTheme.colorScheme.borderPrimary,
+              HedvigTheme.shapes.cornerSmall)
             .clip(HedvigTheme.shapes.cornerSmall)
-            .padding(start = 16.dp),
-        )
+        ){
+          AsyncImage(
+            model = itemImageUrl,
+            contentDescription = itemTitle,
+            placeholder = crossSellPainterFallback(),
+            error = crossSellPainterFallback(),
+            fallback = crossSellPainterFallback(),
+            imageLoader = imageLoader,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.padding(2.dp)
+          )
+        }
       }
       Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp),
       ) {
         HedvigText(
           text = itemTitle,
