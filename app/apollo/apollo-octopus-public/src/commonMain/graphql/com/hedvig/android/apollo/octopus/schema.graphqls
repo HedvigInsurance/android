@@ -2573,6 +2573,14 @@ type MemberCharge {
   """
   date: Date!
   """
+  URL to the invoice of a past charge, null if no invoice generated
+  """
+  paymentInvoiceUrl: String
+  """
+  The provider that was or will be used to charge the member, null if unknown
+  """
+  paymentProvider: String
+  """
   Breakdown of the upcoming charge by items
   """
   chargeBreakdown: [MemberChargeBreakdownItem!]!
