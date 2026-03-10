@@ -62,6 +62,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -240,7 +241,8 @@ private fun ContractDetailScreen(
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
                 isLoading = false,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp)
+                  .hedvigDropShadow(),
                 fallbackPainter = contract.createPainter(),
                 imageContentScale = contract.imageContentScale(),
               )
