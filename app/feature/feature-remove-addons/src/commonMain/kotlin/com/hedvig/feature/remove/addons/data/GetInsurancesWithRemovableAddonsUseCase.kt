@@ -48,9 +48,11 @@ internal data class InsuranceForAddon(
 
 private fun List<InsurancesWithRemovableAddonsQuery.Data.CurrentMember.ActiveContract>.toInsurancesForAddon():
   List<InsuranceForAddon> {
-  return filter { it.currentAgreement.addons.isNotEmpty() }
-    // todo: redo, change for it.existingAddons
-    // TODO: filter out non-removable addons!
+  return filter { activeContract ->
+    activeContract.existingAddons.any {
+      it.isRemovable
+    }
+  }
     .map { contract ->
       InsuranceForAddon(
         contractId = ContractId(contract.id),

@@ -779,7 +779,7 @@ private fun DropdownContent(
       options = addonOptions.map { addonQuote ->
         RadioOption(
           id = RadioOptionId(addonQuote.addonId),
-          text = addonQuote.displayTitle,
+          text = addonQuote.displayDescription,
         )
       },
       selectedOption = currentlyChosenOptionInDialog?.addonId?.let { RadioOptionId(it) },
