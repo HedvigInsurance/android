@@ -13,6 +13,7 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
+import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
@@ -102,6 +103,7 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
     MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
     MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
   },
+  chargeMethod = MemberPaymentChargeMethod.TRUSTLY //TODO!
 )
 
 internal class GetUpcomingPaymentUseCaseDemo(
@@ -115,6 +117,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
         status = MemberCharge.MemberChargeStatus.SUCCESS,
         dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,
         failedCharge = null,
+        chargeMethod = MemberPaymentChargeMethod.TRUSTLY
       ),
       emptyList(),
       PaymentConnection.Unknown,
