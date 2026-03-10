@@ -59,7 +59,7 @@ fragment ContractFragment on Contract {
     ...ContractCoInsuredFragment
   }
   coOwners {
-    ...ContractCoInsuredFragment
+    ...ContractCoOwnerFragment
   }
   currentAgreement {
     ...AgreementFragment
@@ -132,6 +132,16 @@ fragment MonthlyCostFragment on ItemCost {
 }
 
 fragment ContractCoInsuredFragment on ContractCoInsured {
+  firstName
+  lastName
+  ssn
+  birthdate
+  hasMissingInfo
+  activatesOn
+  terminatesOn
+}
+
+fragment ContractCoOwnerFragment on ContractCoOwner {
   firstName
   lastName
   ssn

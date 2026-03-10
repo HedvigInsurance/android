@@ -9,13 +9,23 @@ query CoInsured {
         ...CoInsuredFragment
       }
       coOwners {
-        ...CoInsuredFragment
+        ...CoOwnerFragment
       }
     }
   }
 }
 
 fragment CoInsuredFragment on ContractCoInsured {
+  firstName
+  lastName
+  ssn
+  birthdate
+  hasMissingInfo
+  activatesOn
+  terminatesOn
+}
+
+fragment CoOwnerFragment on ContractCoOwner {
   firstName
   lastName
   ssn
