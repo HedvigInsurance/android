@@ -16,6 +16,7 @@ import kotlinx.datetime.LocalDate
 import octopus.FlowTerminationAutoDecomNextMutation
 import octopus.FlowTerminationDateNextMutation
 import octopus.FlowTerminationDeletionNextMutation
+import octopus.FlowTerminationOfferNextMutation
 import octopus.FlowTerminationStartMutation
 import octopus.FlowTerminationSurveyNextMutation
 import octopus.type.FlowTerminationCarAutoDecomInput
@@ -39,6 +40,8 @@ internal interface TerminateInsuranceRepository {
   suspend fun getContractId(): String
 
   suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep>
+
+  suspend fun skipOfferStep(): Either<ErrorMessage, TerminateInsuranceStep>
 }
 
 internal class TerminateInsuranceRepositoryImpl(
@@ -151,6 +154,24 @@ internal class TerminateInsuranceRepositoryImpl(
     }
   }
 
+  override suspend fun skipOfferStep(): Either<ErrorMessage, TerminateInsuranceStep> {
+    return either {
+      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
+      val result = apolloClient
+        .mutation(
+          FlowTerminationOfferNextMutation(
+            context = terminationFlowContextStorage.getContext(),
+            addonsEnabled = isAddonsEnabled,
+          ),
+        )
+        .safeExecute(::ErrorMessage)
+        .bind()
+        .flowTerminationOfferNext
+      terminationFlowContextStorage.saveContext(result.context)
+      result.currentStep.toTerminateInsuranceStep()
+    }
+  }
+
   private val SUPPORTED_STEPS = Optional.present(
     listOf(
       "FlowTerminationSurveyStep",
@@ -160,6 +181,7 @@ internal class TerminateInsuranceRepositoryImpl(
       "FlowTerminationFailedStep",
       "FlowTerminationCarDeflectAutoCancelStep",
       "FlowTerminationCarAutoDecomStep",
+      "FlowTerminationOfferStep",
     ),
   )
 }

@@ -2,6 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
+import com.hedvig.android.feature.terminateinsurance.data.OfferAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.common.Destination
@@ -146,6 +147,23 @@ internal sealed interface TerminateInsuranceDestination {
       override val typeList: List<KType> = listOf(
         typeOf<TerminationGraphParameters>(),
         typeOf<AutoDecommissionDeflectStepParameters>(),
+      )
+    }
+  }
+
+  @Serializable
+  data class OfferScreen(
+    val title: String,
+    val description: String,
+    val buttonTitle: String,
+    val skipButtonTitle: String,
+    val action: OfferAction,
+    val commonParams: TerminationGraphParameters,
+  ) : TerminateInsuranceDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<OfferAction>(),
+        typeOf<TerminationGraphParameters>(),
       )
     }
   }

@@ -17,6 +17,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateP
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecommissionStepViewModel
+import com.hedvig.android.feature.terminateinsurance.step.offer.TerminationOfferViewModel
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
@@ -66,6 +67,18 @@ val terminateInsuranceModule = module {
     DeflectAutoDecommissionStepViewModel(
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
       deflectParameters = deflectParams,
+    )
+  }
+
+  viewModel<TerminationOfferViewModel> { params ->
+    val destination = params.get<TerminateInsuranceDestination.OfferScreen>()
+    TerminationOfferViewModel(
+      title = destination.title,
+      description = destination.description,
+      buttonTitle = destination.buttonTitle,
+      skipButtonTitle = destination.skipButtonTitle,
+      action = destination.action,
+      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }
 

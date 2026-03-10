@@ -8,6 +8,7 @@ fragment TerminationFlowStepFragment on Flow {
     ...FlowTerminationSurveyStepFragment
     ...FlowTerminationAutoDecomStepFragment
     ...FlowTerminationCarDeflectAutoCancelStepFragment
+    ...FlowTerminationOfferStepFragment
   }
 }
 
@@ -113,4 +114,13 @@ fragment FlowTerminationCarDeflectAutoCancelStepFragment on FlowTerminationCarDe
 fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {
   displayName
   displayValue
+}
+
+fragment FlowTerminationOfferStepFragment on FlowTerminationOfferStep {
+  id
+  title
+  description
+  buttonTitle
+  skipButtonTitle
+  action
 }

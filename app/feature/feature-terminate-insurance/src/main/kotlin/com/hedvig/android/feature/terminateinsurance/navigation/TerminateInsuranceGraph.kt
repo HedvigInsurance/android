@@ -8,6 +8,7 @@ import androidx.navigation.NavOptionsBuilder
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.termination.data.TerminatableInsurance
+import com.hedvig.android.feature.terminateinsurance.data.OfferAction
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
@@ -15,6 +16,8 @@ import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.Defl
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepDestination
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecommissionStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
+import com.hedvig.android.feature.terminateinsurance.step.offer.TerminationOfferDestination
+import com.hedvig.android.feature.terminateinsurance.step.offer.TerminationOfferViewModel
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
@@ -266,6 +269,46 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         closeTerminationFlow = closeTerminationFlow,
         navigateUp = navController::navigateUp,
         onContinueTermination = { step ->
+          navController.navigateToTerminateFlowDestination(
+            destination = step.toTerminateInsuranceDestination(commonParams),
+          )
+        },
+      )
+    }
+
+    navdestination<TerminateInsuranceDestination.OfferScreen>(
+      TerminateInsuranceDestination.OfferScreen,
+    ) {
+      val viewModel: TerminationOfferViewModel = koinViewModel {
+        parametersOf(
+          TerminateInsuranceDestination.OfferScreen(
+            title = title,
+            description = description,
+            buttonTitle = buttonTitle,
+            skipButtonTitle = skipButtonTitle,
+            action = action,
+            commonParams = commonParams,
+          ),
+        )
+      }
+      TerminationOfferDestination(
+        viewModel = viewModel,
+        navigateUp = navController::navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+        onCtaClick = dropUnlessResumed { offerAction ->
+          when (offerAction) {
+            OfferAction.UPDATE_ADDRESS -> {
+              navigateToMovingFlow()
+            }
+
+            OfferAction.CHANGE_TIER -> {
+              // TODO: Fetch ChangeTierIntent similar to TryToDowngradePrice in TerminationSurveyViewModel
+              // For now, navigate to moving flow as a placeholder
+              // This needs to be updated when integrating with the change tier flow
+            }
+          }
+        },
+        onNavigateToNextStep = { step ->
           navController.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )

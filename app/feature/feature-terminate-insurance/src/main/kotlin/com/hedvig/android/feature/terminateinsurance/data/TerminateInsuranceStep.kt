@@ -5,6 +5,7 @@ import com.hedvig.android.feature.terminateinsurance.navigation.AutoDecommission
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoCancel
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.DeflectAutoDecommission
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.InsuranceDeletion
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.OfferScreen
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationDate
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationFailure
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationSuccess
@@ -68,6 +69,20 @@ internal sealed interface TerminateInsuranceStep {
     val info: String?,
     val explanations: List<Pair<String?, String>>,
   ) : TerminateInsuranceStep
+
+  data class OfferStep(
+    val title: String,
+    val description: String,
+    val buttonTitle: String,
+    val skipButtonTitle: String,
+    val action: OfferAction,
+  ) : TerminateInsuranceStep
+}
+
+@Serializable
+internal enum class OfferAction {
+  UPDATE_ADDRESS,
+  CHANGE_TIER,
 }
 
 internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep(): TerminateInsuranceStep {
@@ -114,6 +129,29 @@ internal fun TerminationFlowStepFragment.CurrentStep.toTerminateInsuranceStep():
         title = title,
         message = message,
         extraMessage = extraMessage,
+      )
+    }
+
+    is TerminationFlowStepFragment.FlowTerminationOfferStepCurrentStep -> {
+      TerminateInsuranceStep.OfferStep(
+        title = title,
+        description = description,
+        buttonTitle = buttonTitle,
+        skipButtonTitle = skipButtonTitle,
+        action = when (action) {
+          octopus.type.FlowTerminationOfferAction.UPDATE_ADDRESS -> {
+            OfferAction.UPDATE_ADDRESS
+          }
+
+          octopus.type.FlowTerminationOfferAction.CHANGE_TIER -> {
+            OfferAction.CHANGE_TIER
+          }
+
+          else -> {
+            logcat(LogPriority.WARN) { "Unknown FlowTerminationOfferAction: ${action.rawValue}" }
+            return TerminateInsuranceStep.UnknownStep()
+          }
+        },
       )
     }
 
@@ -310,6 +348,17 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
           info = info,
           explanations = explanations,
         ),
+      )
+    }
+
+    is TerminateInsuranceStep.OfferStep -> {
+      OfferScreen(
+        title = title,
+        description = description,
+        buttonTitle = buttonTitle,
+        skipButtonTitle = skipButtonTitle,
+        action = action,
+        commonParams = commonParams,
       )
     }
   }
