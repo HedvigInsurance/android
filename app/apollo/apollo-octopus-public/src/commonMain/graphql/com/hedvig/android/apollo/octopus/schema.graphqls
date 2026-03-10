@@ -1061,9 +1061,9 @@ type ClaimIntentStepContentFormField {
   """
   defaultValues: [ClaimIntentStepContentFormFieldValue!]!
   """
-  If type is SEARCH, then this can be auto-inserted into the search bar.
+  If type is SEARCH, then this will be present.
   """
-  suggestedQuery: String
+  searchData: ClaimIntentStepContentFormFieldSearchData
   """
   If present - the minimal value this field can hold.
   """
@@ -1078,6 +1078,20 @@ type ClaimIntentStepContentFormFieldOption {
   subtitle: String
   imageUrl: String
   value: ClaimIntentStepContentFormFieldValue!
+}
+type ClaimIntentStepContentFormFieldSearchData {
+  """
+  Can be auto-inserted into the search bar.
+  """
+  suggestedQuery: String
+  """
+  Title of the search modal.
+  """
+  modalTitle: String!
+  """
+  Subtitle of the search modal.
+  """
+  modalSubtitle: String!
 }
 enum ClaimIntentStepContentFormFieldType {
   TEXT
@@ -1305,7 +1319,7 @@ type Contract {
   If current agreement doesn't support co-owners, this is null
   Reuses ContractCoInsured type, for now.
   """
-  coOwners: [ContractCoInsured!]
+  coOwners: [ContractCoOwner!]
   """
   User messages to show due to self change is blocked.
   """
@@ -1357,6 +1371,43 @@ type ContractAddon {
 A co-insured on contract.
 """
 type ContractCoInsured {
+  """
+  firstName + lastName + birthDate if all are present, otherwise null
+  """
+  id: ID
+  """
+  First name.
+  """
+  firstName: String
+  """
+  Last name.
+  """
+  lastName: String
+  """
+  National identification number if any.
+  """
+  ssn: String
+  """
+  Co-insured birthdate.
+  """
+  birthdate: Date
+  """
+  The date this co-insured will be removed.
+  """
+  terminatesOn: Date
+  """
+  The date this co-insured will be added.
+  """
+  activatesOn: Date
+  """
+  Whether or not any of firstName, lastName, ssn or birthdate is missing and needs to be added.
+  """
+  hasMissingInfo: Boolean!
+}
+"""
+A co-insured on contract.
+"""
+type ContractCoOwner {
   """
   firstName + lastName + birthDate if all are present, otherwise null
   """
@@ -1469,6 +1520,12 @@ input ConversationStartInput {
   """
   id: UUID!
 }
+input CoOwnersInput {
+  firstName: String
+  lastName: String
+  ssn: String
+  birthdate: Date
+}
 enum CountryCode {
   """
   Sweden
@@ -1492,7 +1549,6 @@ type CrossSell {
   Product page URL for completing the purchase
   """
   storeUrl: String!
-  type: CrossSellType! @deprecated(reason: "Use pillowImage$size for images, you don't need to know cross-sell type on the client")
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
 }
@@ -1521,17 +1577,6 @@ enum CrossSellSource {
   ADDON
   EDIT_COINSURED
   MOVING_FLOW
-}
-enum CrossSellType {
-  CAR
-  HOME
-  ACCIDENT
-  PET
-  PET_CAT
-  PET_DOG
-  APARTMENT_BRF
-  APARTMENT_RENT
-  HOUSE
 }
 type CrossSellV2 {
   """
@@ -2824,6 +2869,11 @@ input MidtermChangeIntentCreateInput {
   This list contains "null" entries for co-insured not yet defined.
   """
   coInsuredInputs: [CoInsuredInput!]
+  """
+  The list of all co-owners to set on the agreement.
+  This list contains "null" entries for co-owners not yet defined.
+  """
+  coOwnersInputs: [CoOwnersInput!]
 }
 type MidtermChangeIntentMutationOutput {
   intent: MidtermChangeIntent
