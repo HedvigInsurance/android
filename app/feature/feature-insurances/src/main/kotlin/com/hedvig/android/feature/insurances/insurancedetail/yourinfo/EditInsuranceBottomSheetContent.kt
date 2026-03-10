@@ -31,6 +31,8 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.CONTRACT_CHANGE_INFORMATION_TITLE
 import hedvig.resources.CONTRACT_EDIT_COINSURED
+import hedvig.resources.EDIT_COOWNER_SUBTITLE
+import hedvig.resources.EDIT_COOWNER_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
@@ -83,8 +85,8 @@ internal fun EditInsuranceBottomSheetContent(
       add(
         RadioOption(
           RadioOptionId("2"),
-          stringResource(Res.string.CONTRACT_EDIT_COINSURED),
-          stringResource(Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
+          stringResource(Res.string.EDIT_COOWNER_TITLE),
+          stringResource(Res.string.EDIT_COOWNER_SUBTITLE),
         ),
       )
     }

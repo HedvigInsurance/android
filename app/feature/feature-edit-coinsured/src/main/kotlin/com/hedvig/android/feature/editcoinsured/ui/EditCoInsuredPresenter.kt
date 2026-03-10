@@ -278,7 +278,7 @@ internal class EditCoInsuredPresenter(
         }
 
         createMidtermChangeUseCase
-          .invoke(contractId, list)
+          .invoke(contractId, list, type)
           .fold(
             ifLeft = {
               Snapshot.withMutableSnapshot {
@@ -497,6 +497,7 @@ internal sealed interface EditCoInsuredState {
         updatedCoInsured != null &&
         originalCoInsured != updatedCoInsured
 
+      fun anyUpdatedCoInsuredHasMissingInfo() = updatedCoInsured?.any { it.hasMissingInfo } == true
       fun noCoInsuredHaveMissingInfo() = coInsured.all { !it.hasMissingInfo }
     }
 

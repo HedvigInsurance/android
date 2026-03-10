@@ -32,6 +32,7 @@ import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
 import octopus.fragment.ContractCoInsuredFragment
+import octopus.fragment.ContractCoOwnerFragment
 import octopus.fragment.ContractFragment
 import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
@@ -260,6 +261,16 @@ private fun AgreementCreationCause.toCreationCause() = when (this) {
 }
 
 private fun ContractCoInsuredFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+  firstName = firstName,
+  lastName = lastName,
+  ssn = ssn,
+  birthDate = birthdate,
+  activatesOn = activatesOn,
+  terminatesOn = terminatesOn,
+  hasMissingInfo = hasMissingInfo,
+)
+
+private fun ContractCoOwnerFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
   firstName = firstName,
   lastName = lastName,
   ssn = ssn,

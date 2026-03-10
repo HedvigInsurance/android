@@ -72,7 +72,6 @@ import hedvig.resources.COINSURED_WITHOUT_SSN_INFO
 import hedvig.resources.CONTRACT_ADD_ADDITIONAL_COOWNER
 import hedvig.resources.CONTRACT_ADD_COINSURED
 import hedvig.resources.CONTRACT_ADD_COINSURED_NO_SSN
-import hedvig.resources.CONTRACT_ADD_COOWNER_INFO
 import hedvig.resources.CONTRACT_BIRTH_DATE
 import hedvig.resources.CONTRACT_FIRST_NAME
 import hedvig.resources.CONTRACT_LAST_NAME

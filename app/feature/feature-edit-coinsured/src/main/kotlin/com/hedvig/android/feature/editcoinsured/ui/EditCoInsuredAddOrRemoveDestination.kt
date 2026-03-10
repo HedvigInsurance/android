@@ -232,6 +232,7 @@ private fun EditCoInsuredScreen(
           ) {
             if (uiState.removeBottomSheetContentState.coInsured != null) {
               RemoveCoInsuredBottomSheetContent(
+                type = uiState.type,
                 onDismiss = {
                   removeHedvigBottomSheetState.dismiss()
                   onResetRemoveBottomSheetState()
@@ -249,6 +250,7 @@ private fun EditCoInsuredScreen(
           )
           CoInsuredList(
             uiState = uiState.listState,
+            type = uiState.type,
             onRemove = { insured ->
               onRemoveCoInsuredClicked(insured)
               removeHedvigBottomSheetState.show(uiState.removeBottomSheetContentState)
@@ -260,7 +262,10 @@ private fun EditCoInsuredScreen(
           Spacer(Modifier.height(8.dp))
           if (uiState.listState.noCoInsuredHaveMissingInfo()) {
             HedvigButton(
-              text = stringResource(Res.string.CONTRACT_ADD_COINSURED),
+              text = when (uiState.type) {
+                CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED)
+                CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
+              },
               onClick = {
                 addHedvigBottomSheetState.show(uiState.addBottomSheetContentState)
                 onAddCoInsuredClicked()
@@ -279,7 +284,7 @@ private fun EditCoInsuredScreen(
               Spacer(Modifier.height(16.dp))
               PriceInfo(uiState.listState.priceInfo, costBreakdownBottomSheetState)
               HedvigButton(
-                text = when(uiState.type) {
+                text = when (uiState.type) {
                   CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_CONFIRM_CHANGES)
                   CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
                 },

@@ -46,6 +46,7 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.Inf
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.COINSURED_EDIT_TITLE
 import hedvig.resources.CONTRACT_ADD_COINSURED_REVIEW_INFO
+import hedvig.resources.CONTRACT_ADD_COOWNER_REVIEW_INFO
 import hedvig.resources.GENERAL_SAVE_CHANGES_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
@@ -184,6 +185,7 @@ private fun EditCoInsuredScreen(
         ) {
           CoInsuredList(
             uiState = uiState.listState,
+            type = uiState.type,
             onRemove = {},
             onEdit = { insured ->
               hedvigBottomSheetState.show(uiState.addBottomSheetContentState)
@@ -193,9 +195,12 @@ private fun EditCoInsuredScreen(
           )
           Spacer(Modifier.height(8.dp))
 
-          if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+          if (uiState.listState.anyUpdatedCoInsuredHasMissingInfo() && uiState.listState.hasMadeChanges()) {
             HedvigNotificationCard(
-              message = stringResource(Res.string.CONTRACT_ADD_COINSURED_REVIEW_INFO),
+              message = when(uiState.type) {
+                CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_REVIEW_INFO)
+                CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_COOWNER_REVIEW_INFO)
+              },
               priority = NotificationDefaults.NotificationPriority.Attention,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
