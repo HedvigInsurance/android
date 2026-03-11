@@ -24,6 +24,7 @@ import com.hedvig.android.apollo.auth.listeners.di.languageAuthListenersModule
 import com.hedvig.android.apollo.di.networkCacheManagerModule
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
+import com.hedvig.android.app.notification.senders.CarAddonSender
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
 import com.hedvig.android.app.notification.senders.ContactInfoSender
@@ -35,7 +36,6 @@ import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
 import com.hedvig.android.app.notification.senders.TravelAddonSender
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.permission.PermissionManager
 import com.hedvig.android.auth.di.authModule
 import com.hedvig.android.core.appreview.di.coreAppReviewModule
 import com.hedvig.android.core.buildconstants.AppBuildConfig
@@ -96,6 +96,7 @@ import com.hedvig.android.notification.badge.data.di.notificationBadgeModule
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.firebase.di.firebaseNotificationModule
+import com.hedvig.android.permission.PermissionManager
 import com.hedvig.android.permission.di.androidPermissionModule
 import com.hedvig.android.shared.foreverui.ui.di.foreverModule
 import com.hedvig.android.shared.tier.comparison.di.comparisonModule
@@ -209,6 +210,16 @@ private val notificationModule = module {
   } bind NotificationSender::class
   single<TravelAddonSender> {
     TravelAddonSender(
+      get<Context>(),
+      get<PermissionManager>(),
+      get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
+      HedvigNotificationChannel.CrossSell,
+    )
+  } bind NotificationSender::class
+
+  single<CarAddonSender> {
+    CarAddonSender(
       get<Context>(),
       get<PermissionManager>(),
       get<HedvigBuildConstants>(),

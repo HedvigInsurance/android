@@ -106,7 +106,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           currentTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
           newTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
           costBreakdown = emptyList(),
-          info = null
+          info = null,
         )
       }
       val quotesToOffer = intent.quotes.map {
@@ -135,13 +135,13 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           currentTotalCost = it.currentTotalCost.toTotalCost(),
           newTotalCost = it.newTotalCost.toTotalCost(),
           costBreakdown = it.costBreakdown.map { entry ->
-           CostBreakdownEntry(
-             hasStrikethrough = entry.isCrossed,
-             displayName = entry.displayName,
-             displayValue = entry.displayValue
-           )
+            CostBreakdownEntry(
+              hasStrikethrough = entry.isCrossed,
+              displayName = entry.displayName,
+              displayValue = entry.displayValue,
+            )
           },
-          info = it.info
+          info = it.info,
         )
       }
       val intentResult = ChangeTierDeductibleIntent(

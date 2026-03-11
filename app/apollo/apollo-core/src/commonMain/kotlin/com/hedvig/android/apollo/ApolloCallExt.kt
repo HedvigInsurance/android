@@ -26,7 +26,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeExecute(): Either<ApolloOperationError, D> {
-  return iorNel<ApolloOperationError, D> { parseResponse(execute()) }.dropPartialResponses()
+  return safeExecuteAllowingPartialResponses().dropPartialResponses()
+}
+
+suspend fun <D : Operation.Data> ApolloCall<D>.safeExecuteAllowingPartialResponses(): IorNel<ApolloOperationError, D> {
+  return iorNel { parseResponse(execute()) }
 }
 
 suspend fun <D : Operation.Data, ErrorType> ApolloCall<D>.safeExecute(

@@ -112,6 +112,11 @@ internal fun HedvigNavHost(
   val navigateToInbox = {
     navController.navigate(ChatDestination)
   }
+  val popBackStackOrFinish = {
+    if (!navController.popBackStack()) {
+      finishApp()
+    }
+  }
 
   fun navigateToNewConversation(builder: (NavOptionsBuilder.() -> Unit)? = null) {
     navController.navigate(ChatDestinations.Chat(Uuid.randomUUID().toString()), builder ?: {})
@@ -295,7 +300,7 @@ internal fun HedvigNavHost(
             insuranceIds.map(ContractId::id),
             availableAddon?.displayName,
             AddonBannerSource.INSURANCES_TAB,
-          )
+          ),
         )
       },
       onNavigateToRemoveAddon = { contractId, addonVariant ->
@@ -314,7 +319,7 @@ internal fun HedvigNavHost(
             AddonBannerSource.INSURANCES_TAB,
           ),
         )
-      }
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -380,6 +385,8 @@ internal fun HedvigNavHost(
     )
     addonPurchaseNavGraph(
       navController = navController,
+      popBackStack = popBackStackOrFinish,
+      finishApp = finishApp,
       onNavigateToNewConversation = ::navigateToNewConversation,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onNavigateToChangeTier = { contractId ->

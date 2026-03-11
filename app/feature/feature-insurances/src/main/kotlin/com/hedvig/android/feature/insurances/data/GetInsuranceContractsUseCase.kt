@@ -54,9 +54,12 @@ internal class GetInsuranceContractsUseCaseImpl(
                 .query(
                   InsuranceContractsQuery(
                     addonsEnabled = areAddonsEnabled,
-                    options = Optional.present(DisplayItemOptions(
-                      hidePrice = Optional.present(true),
-                      hideAddons = Optional.present(true))),
+                    options = Optional.present(
+                      DisplayItemOptions(
+                        hidePrice = Optional.present(true),
+                        hideAddons = Optional.present(true),
+                      ),
+                    ),
                   ),
                 )
                 .fetchPolicy(FetchPolicy.CacheAndNetwork)

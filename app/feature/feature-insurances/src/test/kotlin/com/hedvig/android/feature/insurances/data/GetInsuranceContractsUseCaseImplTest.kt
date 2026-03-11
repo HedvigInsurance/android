@@ -39,11 +39,15 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseThatSupportsTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(false,
-          Optional.Present(DisplayItemOptions(
-            Optional.Present(true),
-            hideAddons =Optional.Present(true)
-          ))),
+        operation = InsuranceContractsQuery(
+          false,
+          Optional.Present(
+            DisplayItemOptions(
+              Optional.Present(true),
+              hideAddons = Optional.Present(true),
+            ),
+          ),
+        ),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"
@@ -63,9 +67,15 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseWithoutTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(false, Optional.Present(
-          DisplayItemOptions(Optional.Present(true),
-            hideAddons =Optional.Present(true)))),
+        operation = InsuranceContractsQuery(
+          false,
+          Optional.Present(
+            DisplayItemOptions(
+              Optional.Present(true),
+              hideAddons = Optional.Present(true),
+            ),
+          ),
+        ),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"

@@ -68,7 +68,16 @@ internal fun SelectAddonToRemoveDestination(
   contractId: ContractId,
   preselectedAddonProduct: AddonVariant?,
   navigateUp: () -> Unit,
-  navigateToSummary: (ContractId, List<CurrentlyActiveAddon>, LocalDate, ItemCost, ItemCost, ProductVariant, List<CurrentlyActiveAddon>, Boolean) -> Unit,
+  navigateToSummary: (
+    ContractId,
+    List<CurrentlyActiveAddon>,
+    LocalDate,
+    ItemCost,
+    ItemCost,
+    ProductVariant,
+    List<CurrentlyActiveAddon>,
+    Boolean,
+  ) -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel = koinViewModel {
     parametersOf(contractId, preselectedAddonProduct)
@@ -90,7 +99,7 @@ internal fun SelectAddonToRemoveDestination(
         params.currentTotalCost,
         params.productVariant,
         params.existingAddons,
-        popDestination
+        popDestination,
       )
     },
     onSubmit = {
@@ -109,8 +118,10 @@ private fun SelectAddonToRemoveScreen(
   reload: () -> Unit,
   onSubmit: () -> Unit,
   onToggleOption: (CurrentlyActiveAddon) -> Unit,
-  navigateToSummary: (params: CommonSummaryParameters,
-    popThisDestination: Boolean) -> Unit,
+  navigateToSummary: (
+    params: CommonSummaryParameters,
+    popThisDestination: Boolean,
+  ) -> Unit,
 ) {
   when (uiState) {
     is SelectAddonToRemoveState.Error -> {
@@ -285,7 +296,7 @@ private fun PreviewChooseInsuranceToRemoveAddonScreen(
         {},
         {},
         {},
-        {_,_->},
+        { _, _ -> },
       )
     }
   }

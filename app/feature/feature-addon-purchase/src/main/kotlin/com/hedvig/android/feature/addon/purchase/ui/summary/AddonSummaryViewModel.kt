@@ -204,7 +204,7 @@ internal sealed interface AddonSummaryState {
 
   data class Content(
     val insuranceDisplayName: String,
-    val insuranceExposure: String?, // todo: add separate query
+    val insuranceExposure: String?,
     val contractGroup: ContractGroup?,
     val quotes: List<AddonQuote>,
     val activationDate: LocalDate,
@@ -230,28 +230,26 @@ private fun logSuccessfulAddonPurchaseAction(
   addonPurchaseSource: AddonBannerSource,
 ) {
   summaryParameters.chosenQuotes.forEach { chosenQuote ->
-    chosenQuote.addonSubtype?.let {
-      // todo: review later when will have new entrypoints. Prob new addonPurchaseSource
-      val logInfo = AddonLogInfo(
-        flow = addonPurchaseSource,
-        subType = chosenQuote.addonSubtype,
-      )
-      val eventType = if (summaryParameters.currentlyActiveAddons.isEmpty()) {
-        AddonEventType.ADDON_PURCHASED
-      } else {
-        AddonEventType.ADDON_UPGRADED
-      }
-      logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
+
+    val logInfo = AddonLogInfo(
+      flow = addonPurchaseSource,
+      subType = chosenQuote.addonSubtype,
+      type = chosenQuote.addonVariant.product,
+    )
+    val eventType = if (summaryParameters.currentlyActiveAddons.isEmpty()) {
+      AddonEventType.ADDON_PURCHASED
+    } else {
+      AddonEventType.ADDON_UPGRADED
     }
+    logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
   }
 }
 
 private data class AddonLogInfo(
   val flow: AddonBannerSource,
-  val subType: String,
+  val subType: String?,
+  val type: String,
 ) {
-  val type = "travelAddon"
-
   enum class AddonEventType {
     ADDON_PURCHASED,
     ADDON_UPGRADED,
@@ -263,7 +261,7 @@ private fun AddonLogInfo.asAddonAttributes(): Map<String, Map<String, String>> {
     "addon" to
       mapOf(
         "flow" to this.flow.name,
-        "subType" to this.subType,
+        "subType" to (this.subType ?: "null"),
         "type" to this.type,
       ),
   )

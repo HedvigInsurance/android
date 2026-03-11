@@ -62,6 +62,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabSize.Small
 import com.hedvig.android.design.system.hedvig.TabDefaults.TabStyle.Filled
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
@@ -240,7 +241,8 @@ private fun ContractDetailScreen(
                 bottomText = contract.exposureDisplayName,
                 imageLoader = imageLoader,
                 isLoading = false,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp)
+                  .hedvigDropShadow(),
                 fallbackPainter = contract.createPainter(),
                 imageContentScale = contract.imageContentScale(),
               )
@@ -286,9 +288,9 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                              addon.premium.toString(),
-                            ),
+                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                addon.premium.toString(),
+                              ),
                           )
                         }
                         contract.cost.discounts.forEach { discount ->

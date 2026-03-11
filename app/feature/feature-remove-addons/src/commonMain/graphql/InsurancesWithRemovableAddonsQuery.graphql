@@ -2,18 +2,13 @@ query InsurancesWithRemovableAddons {
   currentMember {
     activeContracts {
       id
+      existingAddons {
+        isRemovable
+      }
       exposureDisplayNameShort
       currentAgreement {
         productVariant {
           ...ProductVariantFragment
-        }
-        addons {
-          addonVariant {
-            displayName
-          }
-          premium {
-            ...MoneyFragment
-          }
         }
       }
     }

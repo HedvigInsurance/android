@@ -26,9 +26,9 @@ internal class SelectAddonToRemoveViewModel(
   contractId: ContractId,
   preselectedAddonVariant: AddonVariant?,
 ) : MoleculeViewModel<SelectAddonToRemoveEvent, SelectAddonToRemoveState>(
-  initialState = SelectAddonToRemoveState.Loading(),
-  presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractId, preselectedAddonVariant),
-)
+    initialState = SelectAddonToRemoveState.Loading(),
+    presenter = SelectAddonToRemovePresenter(startAddonRemovalUseCase, contractId, preselectedAddonVariant),
+  )
 
 private class SelectAddonToRemovePresenter(
   private val startAddonRemovalUseCase: StartAddonRemovalUseCase,
@@ -68,17 +68,20 @@ private class SelectAddonToRemovePresenter(
             )
           } ?: if (result.existingAddonsToRemove.size == 1) result.existingAddonsToRemove else emptyList()
 
-
-          val summaryParams = if (result.existingAddonsToRemove.size == 1) CommonSummaryParameters(
-            contractId = contractId,
-            addonsToRemove = result.existingAddonsToRemove,
-            activationDate = result.activationDate,
-            baseCost = result.baseCost,
-            currentTotalCost = result.currentTotalCost,
-            productVariant = result.productVariant,
-            existingAddons = result.existingAddonsToRemove,
-          ) else null
-          if (summaryParams!=null) {
+          val summaryParams = if (result.existingAddonsToRemove.size == 1) {
+            CommonSummaryParameters(
+              contractId = contractId,
+              addonsToRemove = result.existingAddonsToRemove,
+              activationDate = result.activationDate,
+              baseCost = result.baseCost,
+              currentTotalCost = result.currentTotalCost,
+              productVariant = result.productVariant,
+              existingAddons = result.existingAddonsToRemove,
+            )
+          } else {
+            null
+          }
+          if (summaryParams != null) {
             isLoading = true
             paramsToNavigateToSummary = summaryParams
           } else {

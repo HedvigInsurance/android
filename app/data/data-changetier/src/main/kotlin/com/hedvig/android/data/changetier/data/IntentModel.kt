@@ -39,7 +39,7 @@ data class TierDeductibleQuote(
   val currentTotalCost: TotalCost,
   val newTotalCost: TotalCost,
   val costBreakdown: List<CostBreakdownEntry>,
-  val info: String?
+  val info: String?,
 )
 
 @Serializable
