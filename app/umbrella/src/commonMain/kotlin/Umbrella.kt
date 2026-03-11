@@ -1,4 +1,4 @@
-@file:Suppress("ktlint:standard:no-empty-file", "ktlint:kdoc")
+@file:Suppress("ktlint:standard:no-empty-file", "ktlint:standard:kdoc")
 
 /**
  * ### DO NOT DELETE

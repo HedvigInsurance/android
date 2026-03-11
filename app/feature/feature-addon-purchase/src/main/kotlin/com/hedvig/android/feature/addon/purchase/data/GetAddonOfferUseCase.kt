@@ -65,7 +65,7 @@ internal class GetAddonOfferUseCaseImpl(
               is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer -> {
                 val addonOffer = when (val addonOfferResult = result.quote.addonOffer) {
                   is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferSelectableAddonOffer,
-                    -> {
+                  -> {
                     val nonEmptyQuotes = result.quote.addonOffer.quotes.toNonEmptyListOrNull()
                     if (nonEmptyQuotes.isNullOrEmpty()) {
                       logcat(LogPriority.ERROR) { "Tried to do AddonGenerateOfferMutation but got empty quotes" }
@@ -88,7 +88,7 @@ internal class GetAddonOfferUseCaseImpl(
                   }
 
                   is AddonGenerateOfferMutation.Data.AddonOfferAddonGenerateOffer.Quote.AddonOfferToggleableAddonOffer,
-                    -> {
+                  -> {
                     val nonEmptyQuotes = result.quote.addonOffer.quotes.toNonEmptyListOrNull()
                     if (nonEmptyQuotes.isNullOrEmpty()) {
                       logcat(LogPriority.ERROR) { "Tried to do AddonGenerateOfferMutation but got empty quotes" }
@@ -163,7 +163,7 @@ internal class GetAddonOfferUseCaseImpl(
 
 private fun NonEmptyList<
   AddonOfferQuoteFragment,
-  >.toAddonQuotes(
+>.toAddonQuotes(
   documents: List<TravelAddonQuoteInsuranceDocument>,
 ): NonEmptyList<AddonQuote> {
   return this.map { addonQuote ->
