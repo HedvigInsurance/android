@@ -231,26 +231,25 @@ private fun logSuccessfulAddonPurchaseAction(
 ) {
   summaryParameters.chosenQuotes.forEach { chosenQuote ->
 
-      val logInfo = AddonLogInfo(
-        flow = addonPurchaseSource,
-        subType = chosenQuote.addonSubtype,
-        type = chosenQuote.addonVariant.product
-      )
-      val eventType = if (summaryParameters.currentlyActiveAddons.isEmpty()) {
-        AddonEventType.ADDON_PURCHASED
-      } else {
-        AddonEventType.ADDON_UPGRADED
-      }
-      logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
+    val logInfo = AddonLogInfo(
+      flow = addonPurchaseSource,
+      subType = chosenQuote.addonSubtype,
+      type = chosenQuote.addonVariant.product,
+    )
+    val eventType = if (summaryParameters.currentlyActiveAddons.isEmpty()) {
+      AddonEventType.ADDON_PURCHASED
+    } else {
+      AddonEventType.ADDON_UPGRADED
     }
+    logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
+  }
 }
 
 private data class AddonLogInfo(
   val flow: AddonBannerSource,
   val subType: String?,
-  val type: String
+  val type: String,
 ) {
-
   enum class AddonEventType {
     ADDON_PURCHASED,
     ADDON_UPGRADED,

@@ -300,7 +300,7 @@ internal fun HedvigNavHost(
             insuranceIds.map(ContractId::id),
             availableAddon?.displayName,
             AddonBannerSource.INSURANCES_TAB,
-          )
+          ),
         )
       },
       onNavigateToRemoveAddon = { contractId, addonVariant ->
@@ -319,7 +319,7 @@ internal fun HedvigNavHost(
             AddonBannerSource.INSURANCES_TAB,
           ),
         )
-      }
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

@@ -134,14 +134,14 @@ fun NavGraphBuilder.removeAddonsNavGraph(
         preselectedAddonProduct = this.preselectedAddonVariant,
         navigateUp = navController::navigateUp,
         navigateToSummary = {
-            contractId: ContractId,
-            addons: List<CurrentlyActiveAddon>,
-            activationDate: LocalDate,
-            baseCost: ItemCost,
-            currentCost: ItemCost,
-            productVariant: ProductVariant,
-            allAddons: List<CurrentlyActiveAddon>,
-            popDestination: Boolean
+          contractId: ContractId,
+          addons: List<CurrentlyActiveAddon>,
+          activationDate: LocalDate,
+          baseCost: ItemCost,
+          currentCost: ItemCost,
+          productVariant: ProductVariant,
+          allAddons: List<CurrentlyActiveAddon>,
+          popDestination: Boolean,
           ->
           navController.navigate(
             AddonRemoveDestination.Summary(
@@ -155,7 +155,7 @@ fun NavGraphBuilder.removeAddonsNavGraph(
                 allAddons,
               ),
             ),
-          )  {
+          ) {
             if (popDestination) {
               typedPopUpTo<AddonRemoveDestination.ChooseAddonDestination> {
                 inclusive = true

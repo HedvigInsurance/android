@@ -364,7 +364,6 @@ private fun InsuranceCardsPile(
       }.first().measure(constraints).height
     }
 
-
     val cardPlaceables = contracts.mapIndexed { idx, contract ->
       subcompose("card_$idx") {
         InsuranceCardWrapper(
@@ -374,7 +373,6 @@ private fun InsuranceCardsPile(
         )
       }.first().measure(constraints)
     }
-
 
     val firstCardHeight = cardPlaceables[0].height
     val totalHeight = firstCardHeight + peekHeights.sum()
@@ -409,10 +407,7 @@ private fun InsuranceCardWrapper(
       .fillMaxWidth()
       .padding(horizontal = 16.dp)
       .hedvigDropShadow()
-      .clip(HedvigTheme.shapes.cornerXLarge)
-      .clickable{
-        onInsuranceCardClick(contract.id)
-      },
+      .clip(HedvigTheme.shapes.cornerXLarge),
   ) {
     val description = stringResource(Res.string.A11Y_VIEW_DETAILS)
     InsuranceCard(
@@ -423,13 +418,13 @@ private fun InsuranceCardWrapper(
       isLoading = false,
       fallbackPainter = contract.createPainter(),
       imageContentScale = contract.imageContentScale(),
-      modifier = Modifier.semantics {
-        role = Role.Button
-        onClick(label = description) {
+      modifier = Modifier
+        .clickable(
+          role = Role.Button,
+          onClickLabel = description,
+        ) {
           onInsuranceCardClick(contract.id)
-          true
-        }
-      },
+        },
     )
   }
 }

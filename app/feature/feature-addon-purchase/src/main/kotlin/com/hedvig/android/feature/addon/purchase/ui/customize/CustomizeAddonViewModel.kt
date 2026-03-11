@@ -219,7 +219,10 @@ internal class CustomizeTravelAddonPresenter(
                 }
 
                 is AddonOffer.Toggleable -> {
-                  val preselectedAddon = addonOffer.addonOptions.firstOrNull { it.displayTitle in preselectedAddonDisplayNames }
+                  val preselectedAddon = addonOffer.addonOptions.firstOrNull {
+                    it.displayTitle in
+                      preselectedAddonDisplayNames
+                  }
                   if (preselectedAddon != null) {
                     selectedToggleableOptions.add(preselectedAddon)
                   }
