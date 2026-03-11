@@ -230,7 +230,7 @@ private fun logSuccessfulAddonPurchaseAction(
   addonPurchaseSource: AddonBannerSource,
 ) {
   summaryParameters.chosenQuotes.forEach { chosenQuote ->
-    chosenQuote.addonSubtype?.let {
+
       val logInfo = AddonLogInfo(
         flow = addonPurchaseSource,
         subType = chosenQuote.addonSubtype,
@@ -243,12 +243,11 @@ private fun logSuccessfulAddonPurchaseAction(
       }
       logAction(type = ActionType.CUSTOM, name = eventType.name, attributes = logInfo.asAddonAttributes())
     }
-  }
 }
 
 private data class AddonLogInfo(
   val flow: AddonBannerSource,
-  val subType: String,
+  val subType: String?,
   val type: String
 ) {
 
@@ -263,7 +262,7 @@ private fun AddonLogInfo.asAddonAttributes(): Map<String, Map<String, String>> {
     "addon" to
       mapOf(
         "flow" to this.flow.name,
-        "subType" to this.subType,
+        "subType" to (this.subType ?: "null"),
         "type" to this.type,
       ),
   )
