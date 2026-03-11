@@ -58,6 +58,7 @@ internal class GetChargeDetailsUseCaseImpl(
               PaymentsInfo.Active(
                 displayName = paymentInformation.chargeMethod.displayName,
                 displayValue = paymentInformation.chargeMethod.descriptor,
+                paymentMethod = paymentInformation.chargeMethod.paymentMethod,
               )
             } else {
               logcat(LogPriority.ERROR) { "Payment connection is active but displayName or descriptor is null" }
@@ -96,6 +97,7 @@ internal data class PaymentDetails(
     data class Active(
       val displayName: String,
       val displayValue: String,
+      val paymentMethod: String
     ) : PaymentsInfo
 
     data object NoPresentableInfo : PaymentsInfo

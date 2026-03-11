@@ -71,6 +71,7 @@ fragment MemberChargeFragment on MemberCharge {
   referralDiscount {
     ...MoneyFragment
   }
+  paymentProvider
 }
 
 fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {

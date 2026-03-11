@@ -120,6 +120,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
   ),
   MemberCharge(
     grossAmount = UiMoney(500.0, UiCurrencyCode.SEK),
@@ -152,6 +153,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.KIVRA,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -184,6 +186,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.UNKNOWN,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -216,6 +219,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = null,
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -248,6 +252,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.KIVRA,
   ),
 )
 
@@ -304,4 +309,5 @@ internal val paymentDetailsPreviewData = MemberCharge(
   referralDiscount = referralDiscountPreviewData,
   carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
   settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+  chargeMethod = MemberPaymentChargeMethod.KIVRA,
 )
