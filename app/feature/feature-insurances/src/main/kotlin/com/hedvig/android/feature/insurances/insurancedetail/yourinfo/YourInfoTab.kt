@@ -578,21 +578,6 @@ private fun AddonRow(
           },
           modifier =Modifier.wrapContentSize(Alignment.TopEnd),
         )
-
-        HighlightLabel(
-          labelText = if (isAlreadyAdded) {
-            stringResource(Res.string.ADDON_ADDED_COVERAGE)
-          } else {
-            stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ADD)
-          },
-          size = HighlightLabelDefaults.HighLightSize.Medium,
-          color = if (isAlreadyAdded) {
-            HighlightLabelDefaults.HighlightColor.Grey(MEDIUM)
-          } else {
-            HighlightLabelDefaults.HighlightColor.Green(MEDIUM)
-          },
-          Modifier.wrapContentSize(Alignment.TopEnd),
-        )
       }
     },
     4.dp,
