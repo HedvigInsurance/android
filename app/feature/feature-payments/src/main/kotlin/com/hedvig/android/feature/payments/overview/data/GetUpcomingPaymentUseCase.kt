@@ -13,14 +13,10 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
-import kotlin.collections.sorted
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.TimeZone
@@ -54,17 +50,10 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentInformation = result.currentMember.paymentInformation
         when (paymentInformation.status) {
           MemberPaymentConnectionStatus.ACTIVE -> {
-            if (paymentInformation.chargeMethod?.displayName != null &&
-              paymentInformation.chargeMethod.descriptor != null
-            ) {
-              PaymentConnection.Active(
-                displayName = paymentInformation.chargeMethod.displayName,
-                displayValue = paymentInformation.chargeMethod.descriptor,
-              )
-            } else {
-              logcat(LogPriority.ERROR) { "Payment connection is active but displayName or descriptor is null" }
-              PaymentConnection.Unknown
-            }
+            PaymentConnection.Active(
+              displayName = paymentInformation.chargeMethod?.displayName,
+              displayValue = paymentInformation.chargeMethod?.descriptor,
+            )
           }
 
           MemberPaymentConnectionStatus.PENDING -> {
@@ -102,7 +91,7 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
     MemberChargeStatus.PENDING -> MemberCharge.MemberChargeStatus.PENDING
     MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
     MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
-  }
+  },
 )
 
 internal class GetUpcomingPaymentUseCaseDemo(
@@ -115,7 +104,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
         id = "id",
         status = MemberCharge.MemberChargeStatus.SUCCESS,
         dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,
-        failedCharge = null
+        failedCharge = null,
       ),
       emptyList(),
       PaymentConnection.Unknown,

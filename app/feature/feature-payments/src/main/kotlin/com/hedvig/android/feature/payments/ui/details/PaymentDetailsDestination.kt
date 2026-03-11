@@ -271,10 +271,12 @@ private fun MemberChargeDetailsScreen(
             endSlot = {
               when (uiState.paymentDetails.memberCharge.chargeMethod) {
                 MemberPaymentChargeMethod.TRUSTLY,
-                MemberPaymentChargeMethod.KIVRA -> {
-                  val textToShow: String = if (uiState.paymentDetails.memberCharge.chargeMethod == MemberPaymentChargeMethod.TRUSTLY)
-                  stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION) else
-                    stringResource(Res.string.KIVRA_PAYMENT_INFO)
+                MemberPaymentChargeMethod.KIVRA,
+                  -> {
+                  val textToShow: String =
+                    if (uiState.paymentDetails.memberCharge.chargeMethod == MemberPaymentChargeMethod.TRUSTLY)
+                      stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION) else
+                      stringResource(Res.string.KIVRA_PAYMENT_INFO)
                   Icon(
                     imageVector = HedvigIcons.InfoFilled,
                     tint = HedvigTheme.colorScheme.fillSecondary,
@@ -287,6 +289,7 @@ private fun MemberChargeDetailsScreen(
                       .minimumInteractiveComponentSize(),
                   )
                 }
+
                 MemberPaymentChargeMethod.UNKNOWN -> {}
               }
             },
@@ -342,53 +345,59 @@ private fun MemberChargeDetailsScreen(
             PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
 
             is PaymentDetails.PaymentsInfo.Active -> {
-              HorizontalItemsWithMaximumSpaceTaken(
-                startSlot = {
-                  HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
-                },
-                endSlot = {
-                  HedvigText( //paymentMethod
-                    text = paymentsInfo.paymentMethod,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = HedvigTheme.colorScheme.textSecondary,
-                  )
-                },
-                modifier = Modifier.padding(vertical = 16.dp),
-                spaceBetween = 8.dp,
-              )
-              HorizontalDivider()
+              if (paymentsInfo.paymentMethod != null) {
+                HorizontalItemsWithMaximumSpaceTaken(
+                  startSlot = {
+                    HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
+                  },
+                  endSlot = {
+                    HedvigText(
+                      text = paymentsInfo.paymentMethod,
+                      textAlign = TextAlign.End,
+                      modifier = Modifier.fillMaxWidth(),
+                      color = HedvigTheme.colorScheme.textSecondary,
+                    )
+                  },
+                  modifier = Modifier.padding(vertical = 16.dp),
+                  spaceBetween = 8.dp,
+                )
+                HorizontalDivider()
+              }
 
-              HorizontalItemsWithMaximumSpaceTaken(
-                startSlot = {
-                  HedvigText(stringResource(Res.string.PAYMENTS_ACCOUNT))
-                },
-                endSlot = {
-                  HedvigText(
-                    text = paymentsInfo.displayValue,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = HedvigTheme.colorScheme.textSecondary,
-                  )
-                },
-                modifier = Modifier.padding(vertical = 16.dp),
-                spaceBetween = 8.dp,
-              )
-              HorizontalDivider()
+              if (paymentsInfo.displayValue != null) {
+                HorizontalItemsWithMaximumSpaceTaken(
+                  startSlot = {
+                    HedvigText(stringResource(Res.string.PAYMENTS_ACCOUNT))
+                  },
+                  endSlot = {
+                    HedvigText(
+                      text = paymentsInfo.displayValue,
+                      textAlign = TextAlign.End,
+                      modifier = Modifier.fillMaxWidth(),
+                      color = HedvigTheme.colorScheme.textSecondary,
+                    )
+                  },
+                  modifier = Modifier.padding(vertical = 16.dp),
+                  spaceBetween = 8.dp,
+                )
+                HorizontalDivider()
+              }
 
-              HorizontalItemsWithMaximumSpaceTaken(
-                startSlot = { HedvigText(stringResource(Res.string.PAYMENTS_BANK_LABEL)) },
-                endSlot = {
-                  HedvigText(
-                    text = paymentsInfo.displayName,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier.fillMaxWidth(),
-                    color = HedvigTheme.colorScheme.textSecondary,
-                  )
-                },
-                spaceBetween = 8.dp,
-                modifier = Modifier.padding(vertical = 16.dp),
-              )
+              if (paymentsInfo.displayName!=null) {
+                HorizontalItemsWithMaximumSpaceTaken(
+                  startSlot = { HedvigText(stringResource(Res.string.PAYMENTS_BANK_LABEL)) },
+                  endSlot = {
+                    HedvigText(
+                      text = paymentsInfo.displayName,
+                      textAlign = TextAlign.End,
+                      modifier = Modifier.fillMaxWidth(),
+                      color = HedvigTheme.colorScheme.textSecondary,
+                    )
+                  },
+                  spaceBetween = 8.dp,
+                  modifier = Modifier.padding(vertical = 16.dp),
+                )
+              }
             }
           }
         }
@@ -450,7 +459,9 @@ private fun PaymentDetailsScreenPreview(
               true -> PaymentDetails.PaymentsInfo.Active(
                 "displayName",
                 "displayValue",
-                "Direct debit")
+                "Direct debit",
+              )
+
               false -> PaymentDetails.PaymentsInfo.NoPresentableInfo
             },
             upComingCharge = paymentDetailsPreviewData,

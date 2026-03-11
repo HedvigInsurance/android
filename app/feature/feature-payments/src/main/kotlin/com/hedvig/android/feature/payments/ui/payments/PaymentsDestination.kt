@@ -305,7 +305,7 @@ private fun PaymentsContent(
 
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
-        is ConnectedPaymentInfo.Connected,
+        is ConnectedPaymentInfo.Active,
           -> {
         }
       }
@@ -414,7 +414,7 @@ private fun PaymentsListItems(
         .fillMaxWidth(),
     )
     if (uiState is Content) {
-      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Connected) {
+      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Active) {
         HorizontalDivider(listItemsSideSpacingModifier)
         PaymentsListItem(
           text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
@@ -607,7 +607,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = NoUpcomingPayment,
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, SEK))),
-        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Active(
           "Card",
           "****1234",
         ),
@@ -623,7 +623,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Active(
           "Card",
           "****1234",
         ),
@@ -639,7 +639,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = InProgress,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Active(
           "Card",
           "****1234",
         ),
@@ -658,7 +658,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
+        connectedPaymentInfo = ConnectedPaymentInfo.Active(
           "Card",
           "****1234",
         ),
