@@ -63,11 +63,7 @@ private fun TravelInsurancePlusExplanationScreen(travelPerilData: PerilCompariso
 }
 
 @Composable
-private fun PerilItem(
-  perilTitle: String?,
-  perilList: List<TravelPerilData>,
-  modifier: Modifier = Modifier,
-) {
+private fun PerilItem(perilTitle: String?, perilList: List<TravelPerilData>, modifier: Modifier = Modifier) {
   val perilData = remember(perilList) {
     perilList.map {
       PerilData(

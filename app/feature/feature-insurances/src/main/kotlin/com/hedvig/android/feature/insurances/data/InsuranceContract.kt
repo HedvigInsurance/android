@@ -112,7 +112,9 @@ data class ContractAddon(
 ) {
   sealed interface Status {
     data class ActiveFrom(val date: LocalDate) : Status
+
     data class EndsAt(val date: LocalDate) : Status
+
     data object Unknown : Status
   }
 }

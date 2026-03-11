@@ -94,8 +94,14 @@ class GetTravelAddonOfferUseCaseImplTest {
             whatsIncludedPageDescription = "Travel Insurance Plus is extended coverage"
             infoMessage = null
             currentTotalCost = buildItemCost {
-              monthlyNet = buildMoney { amount = 500.0; currencyCode = CurrencyCode.SEK }
-              monthlyGross = buildMoney { amount = 500.0; currencyCode = CurrencyCode.SEK }
+              monthlyNet = buildMoney {
+                amount = 500.0
+                currencyCode = CurrencyCode.SEK
+              }
+              monthlyGross = buildMoney {
+                amount = 500.0
+                currencyCode = CurrencyCode.SEK
+              }
               discounts = listOf()
             }
             quote = buildAddonContractQuote {
@@ -111,8 +117,14 @@ class GetTravelAddonOfferUseCaseImplTest {
                 quotes = listOf()
               }
               baseQuoteCost = buildItemCost {
-                monthlyNet = buildMoney { amount = 100.0; currencyCode = CurrencyCode.SEK }
-                monthlyGross = buildMoney { amount = 100.0; currencyCode = CurrencyCode.SEK }
+                monthlyNet = buildMoney {
+                  amount = 100.0
+                  currencyCode = CurrencyCode.SEK
+                }
+                monthlyGross = buildMoney {
+                  amount = 100.0
+                  currencyCode = CurrencyCode.SEK
+                }
                 discounts = listOf()
               }
               productVariant = buildProductVariant {
@@ -200,7 +212,12 @@ class GetTravelAddonOfferUseCaseImplTest {
                         subtype = addonQuote.addonSubtype
                         displayItems = buildList {
                           addonQuote.displayDetails.forEach {
-                            add(buildAddonDisplayItem { displayTitle = it.first; displayValue = it.second })
+                            add(
+                              buildAddonDisplayItem {
+                                displayTitle = it.first
+                                displayValue = it.second
+                              },
+                            )
                           }
                         }
                         cost = buildItemCost {
@@ -329,7 +346,12 @@ class GetTravelAddonOfferUseCaseImplTest {
                         subtype = addonQuote.addonSubtype
                         displayItems = buildList {
                           addonQuote.displayDetails.forEach {
-                            add(buildAddonDisplayItem { displayTitle = it.first; displayValue = it.second })
+                            add(
+                              buildAddonDisplayItem {
+                                displayTitle = it.first
+                                displayValue = it.second
+                              },
+                            )
                           }
                         }
                         cost = buildItemCost {

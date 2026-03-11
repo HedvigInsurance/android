@@ -294,9 +294,9 @@ private fun ContractDetailScreen(
                           add(
                             addon.addonVariant.displayName
                               to stringResource(
-                              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                              addon.premium.toString(),
-                            ),
+                                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                                addon.premium.toString(),
+                              ),
                           )
                         }
                         contract.cost.discounts.forEach { discount ->

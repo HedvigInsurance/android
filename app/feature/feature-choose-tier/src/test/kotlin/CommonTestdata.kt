@@ -105,7 +105,7 @@ internal val testQuote = TierDeductibleQuote(
     CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
     CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
-  info = null
+  info = null,
 )
 
 internal val testQuote2 = TierDeductibleQuote(
@@ -234,5 +234,5 @@ internal val currentQuote = TierDeductibleQuote(
     CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
     CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
-  info = null
+  info = null,
 )

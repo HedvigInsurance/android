@@ -29,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -115,6 +117,7 @@ import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
@@ -264,7 +267,9 @@ private fun FailureScreen(
           stringResource(Res.string.something_went_wrong)
         }
 
-        is Failure.SpecificDeflect -> uiState.title
+        is Failure.SpecificDeflect -> {
+          uiState.title
+        }
       }
 
       val subTitle = when (uiState) {
@@ -572,7 +577,7 @@ private fun ToggleableAddons(
         enabled = true,
         onBadgeClick = {
           onToggleOption(addonQuote)
-        }
+        },
       )
       if (index != addonOptions.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -588,11 +593,11 @@ private fun ToggleableAddons(
         FlowHeading(
           title = stringResource(Res.string.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE),
           description = null,
-          baseStyle = HedvigTheme.typography.bodySmall
+          baseStyle = HedvigTheme.typography.bodySmall,
         )
         HedvigText(
           stringResource(Res.string.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE),
-          color = HedvigTheme.colorScheme.textSecondary
+          color = HedvigTheme.colorScheme.textSecondary,
         )
         Spacer(Modifier.height(32.dp))
         HedvigButton(
@@ -602,7 +607,7 @@ private fun ToggleableAddons(
           onClick = {
             alreadyActiveAddonBottomSheetState.dismiss()
           },
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -621,7 +626,7 @@ private fun ToggleableAddons(
         onCheckboxSelected = {},
         onBadgeClick = {
           alreadyActiveAddonBottomSheetState.show(Unit)
-        }
+        },
       )
       if (index != currentlyActiveAddons.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -637,7 +642,7 @@ private fun AddonCheckbox(
   enabled: Boolean,
   onCheckboxSelected: () -> Unit,
   onBadgeClick: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Checkbox(
     modifier = modifier,
@@ -658,7 +663,7 @@ private fun AddonCheckbox(
             color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.MEDIUM),
             modifier = Modifier
               .clip(HedvigTheme.shapes.cornerXSmall)
-              .clickable(enabled = true, onClick = onBadgeClick)
+              .clickable(enabled = true, onClick = onBadgeClick),
           )
         }
 
@@ -703,7 +708,7 @@ private fun HeaderInfoWithCurrentPrice(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxWidth()) {
-    val pricePerMonth = chosenOptionPremiumExtra.getPerMonthDescription()
+    val pricePerMonth = "${stringResource(Res.string.TIER_FLOW_TOTAL)}: ${chosenOptionPremiumExtra.getPerMonthDescription()}"
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(exposureName)
@@ -719,6 +724,7 @@ private fun HeaderInfoWithCurrentPrice(
                 .wrapContentSize(Alignment.TopEnd)
                 .clearAndSetSemantics {
                   contentDescription = pricePerMonth
+                  liveRegion = LiveRegionMode.Polite
                 },
             )
           }
@@ -935,7 +941,7 @@ internal class CustomizeTravelAddonPreviewProvider :
         "You have decomissioned car",
         AddonOfferDeflectType.GENERAL_CLOSE,
         "contractId",
-      )
+      ),
     ),
   )
 
