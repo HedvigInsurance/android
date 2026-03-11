@@ -29,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -115,6 +117,7 @@ import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
@@ -705,7 +708,7 @@ private fun HeaderInfoWithCurrentPrice(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxWidth()) {
-    val pricePerMonth = chosenOptionPremiumExtra.getPerMonthDescription()
+    val pricePerMonth = "${stringResource(Res.string.TIER_FLOW_TOTAL)}: ${chosenOptionPremiumExtra.getPerMonthDescription()}"
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(exposureName)
@@ -721,6 +724,7 @@ private fun HeaderInfoWithCurrentPrice(
                 .wrapContentSize(Alignment.TopEnd)
                 .clearAndSetSemantics {
                   contentDescription = pricePerMonth
+                  liveRegion = LiveRegionMode.Polite
                 },
             )
           }

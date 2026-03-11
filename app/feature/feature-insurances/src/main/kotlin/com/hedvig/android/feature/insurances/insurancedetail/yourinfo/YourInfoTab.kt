@@ -389,6 +389,7 @@ private fun AddonsSection(
     ) {
       Column {
         existingAddons.forEachIndexed { index, existingAddon ->
+          val isRemovingDisabled =existingAddon.status is ContractAddon.Status.EndsAt
           AddonRow(
             title = existingAddon.displayName,
             description = when (val status = existingAddon.status) {
@@ -407,10 +408,14 @@ private fun AddonsSection(
             showTopDivider = index != 0,
             isAlreadyAdded = true,
             modifier = Modifier.clickable(
-              enabled = existingAddon.isUpgradable || existingAddon.isRemovable,
+              enabled = !isRemovingDisabled && (existingAddon.isUpgradable || existingAddon.isRemovable),
             ) {
               removeAddonBottomSheetState.show(existingAddon)
             },
+            isRemovingDisabled = isRemovingDisabled,
+            onLabelClick = {
+              removeAddonBottomSheetState.show(existingAddon)
+            }
           )
         }
         availableAddons.forEachIndexed { index, availableAddon ->
@@ -420,6 +425,8 @@ private fun AddonsSection(
             showTopDivider = index != 0 || existingAddons.isNotEmpty(),
             isAlreadyAdded = false,
             modifier = Modifier.clickable(onClick = dropUnlessResumed { navigateToAddAddon(availableAddon) }),
+            isRemovingDisabled = false,
+            onLabelClick = dropUnlessResumed { navigateToAddAddon(availableAddon) }
           )
         }
       }
@@ -531,6 +538,8 @@ private fun AddonRow(
   description: String,
   showTopDivider: Boolean,
   isAlreadyAdded: Boolean,
+  isRemovingDisabled: Boolean,
+  onLabelClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HorizontalItemsWithMaximumSpaceTaken(
@@ -545,20 +554,31 @@ private fun AddonRow(
       }
     },
     {
-      HighlightLabel(
-        labelText = if (isAlreadyAdded) {
-          stringResource(Res.string.ADDON_ADDED_COVERAGE)
-        } else {
-          stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ADD)
-        },
-        size = HighlightLabelDefaults.HighLightSize.Medium,
-        color = if (isAlreadyAdded) {
-          HighlightLabelDefaults.HighlightColor.Grey(MEDIUM)
-        } else {
-          HighlightLabelDefaults.HighlightColor.Green(MEDIUM)
-        },
-        Modifier.wrapContentSize(Alignment.TopEnd),
-      )
+      if (isRemovingDisabled) {
+        Row(horizontalArrangement = Arrangement.End) {
+          HedvigButton(
+            onClick = {},
+            enabled = false,
+            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+            buttonSize =  ButtonDefaults.ButtonSize.Small,
+            text = stringResource(Res.string.ADDON_ADDED_COVERAGE)
+          )
+        }
+      } else {
+        HedvigButton(
+          onClick = onLabelClick,
+          enabled = true,
+          buttonStyle = if (isAlreadyAdded) ButtonDefaults.ButtonStyle.Secondary
+            else ButtonDefaults.ButtonStyle.PrimaryAlt,
+          buttonSize =  ButtonDefaults.ButtonSize.Small,
+          text = if (isAlreadyAdded) {
+            stringResource(Res.string.ADDON_ADDED_COVERAGE)
+          } else {
+            stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ADD)
+          },
+          modifier =Modifier.wrapContentSize(Alignment.TopEnd),
+        )
+      }
     },
     4.dp,
     modifier
@@ -912,6 +932,21 @@ private fun PreviewYourInfoTab() {
             displayName = "DisplayName",
             description = "Description",
             status = ContractAddon.Status.ActiveFrom(LocalDate.fromEpochDays(100)),
+            isUpgradable = false,
+            isRemovable = false,
+          ),
+          ContractAddon(
+            relatedContractId = ContractId(""),
+            addonVariant = AddonVariant(
+              termsVersion = "1",
+              displayName = "displayName",
+              product = "product",
+              documents = emptyList(),
+              perils = emptyList(),
+            ),
+            displayName = "DisplayName",
+            description = "Description",
+            status = ContractAddon.Status.EndsAt(LocalDate(2026,10,1)),
             isUpgradable = false,
             isRemovable = false,
           ),
