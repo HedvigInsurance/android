@@ -21,10 +21,10 @@ internal data class MemberChargeShortInfo(
   val id: String?,
   val status: MemberCharge.MemberChargeStatus,
   val failedCharge: MemberCharge.FailedCharge?,
-  val chargeMethod: MemberPaymentChargeMethod
 )
 
-internal enum class MemberPaymentChargeMethod {
+enum class MemberPaymentChargeMethod {
   TRUSTLY,
-  KIVRA
+  KIVRA,
+  UNKNOWN
 }

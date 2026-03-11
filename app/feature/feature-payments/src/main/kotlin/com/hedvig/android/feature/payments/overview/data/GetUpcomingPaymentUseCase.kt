@@ -102,8 +102,7 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
     MemberChargeStatus.PENDING -> MemberCharge.MemberChargeStatus.PENDING
     MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
     MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
-  },
-  chargeMethod = MemberPaymentChargeMethod.TRUSTLY //TODO!
+  }
 )
 
 internal class GetUpcomingPaymentUseCaseDemo(
@@ -116,8 +115,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
         id = "id",
         status = MemberCharge.MemberChargeStatus.SUCCESS,
         dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,
-        failedCharge = null,
-        chargeMethod = MemberPaymentChargeMethod.TRUSTLY
+        failedCharge = null
       ),
       emptyList(),
       PaymentConnection.Unknown,
