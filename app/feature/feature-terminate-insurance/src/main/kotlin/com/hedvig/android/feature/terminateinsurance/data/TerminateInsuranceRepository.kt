@@ -25,6 +25,16 @@ import octopus.type.FlowTerminationSurveyDataInput
 import octopus.type.FlowTerminationSurveyInput
 
 internal interface TerminateInsuranceRepository {
+  // --- New flow methods ---
+  suspend fun fetchTerminationInfo(contractId: String): Either<ErrorMessage, TerminationInfo>
+  suspend fun terminateContract(
+    contractId: String,
+    terminationDate: LocalDate?,
+    terminationReason: String,
+    terminationComment: String?,
+  ): Either<ErrorMessage, TerminateContractResult>
+
+  // --- Old flow methods (kept for backward compatibility until migration complete) ---
   suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep>
 
   suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep>
@@ -41,11 +51,50 @@ internal interface TerminateInsuranceRepository {
   suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep>
 }
 
+internal data class TerminateContractResult(
+  val terminationDate: LocalDate?,
+  val userError: String?,
+)
+
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
   private val terminationFlowContextStorage: TerminationFlowContextStorage,
 ) : TerminateInsuranceRepository {
+  override suspend fun fetchTerminationInfo(contractId: String): Either<ErrorMessage, TerminationInfo> {
+    // TODO: Replace with real TerminationInfoQuery when schema is updated
+    return Either.Right(
+      TerminationInfo(
+        contractId = contractId,
+        masterInceptionDate = LocalDate(2024, 1, 1),
+        terminationDate = null,
+        existingAddons = emptyList(),
+        supportsBetterPrice = false,
+        supportsBetterCoverage = false,
+        typeOfContract = "SE_APARTMENT_BRF",
+        commencementDate = null,
+      ),
+    )
+  }
+
+  override suspend fun terminateContract(
+    contractId: String,
+    terminationDate: LocalDate?,
+    terminationReason: String,
+    terminationComment: String?,
+  ): Either<ErrorMessage, TerminateContractResult> {
+    // TODO: Replace with real TerminateContractMutation when it exists in product-pricing
+    logcat {
+      "MOCK: terminateContract called with contractId=$contractId, date=$terminationDate, reason=$terminationReason, comment=$terminationComment"
+    }
+    return Either.Right(
+      TerminateContractResult(
+        terminationDate = terminationDate,
+        userError = null,
+      ),
+    )
+  }
+
   override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
     return either {
       val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
