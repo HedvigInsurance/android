@@ -12,9 +12,14 @@ import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATIO
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.IntentOutput
+import com.hedvig.android.feature.terminateinsurance.data.CarDecomEligibility
+import com.hedvig.android.feature.terminateinsurance.data.CarDeflectionRoute
+import com.hedvig.android.feature.terminateinsurance.data.CarDeflectionRouter
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowComputations
+import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.step.survey.SurveyNavigationStep.NavigateToSubOptions
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearEmptyQuotesDialog
@@ -31,17 +36,22 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 
 internal class TerminationSurveyViewModel(
   options: List<TerminationSurveyOption>,
   terminateInsuranceRepository: TerminateInsuranceRepository,
   changeTierRepository: ChangeTierRepository,
+  terminationInfo: TerminationInfo? = null,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
     initialState = TerminationSurveyState(options),
     presenter = TerminationSurveyPresenter(
       options,
       terminateInsuranceRepository,
       changeTierRepository,
+      terminationInfo,
     ),
   )
 
@@ -49,6 +59,7 @@ internal class TerminationSurveyPresenter(
   private val options: List<TerminationSurveyOption>,
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
   private val changeTierRepository: ChangeTierRepository,
+  private val terminationInfo: TerminationInfo? = null,
 ) : MoleculePresenter<TerminationSurveyEvent, TerminationSurveyState> {
   @Composable
   override fun MoleculePresenterScope<TerminationSurveyEvent>.present(
@@ -185,31 +196,83 @@ internal class TerminationSurveyPresenter(
 
     if (loadNextStep) {
       LaunchedEffect(Unit) {
-        val reasonToSubmit = currentState.selectedOption ?: return@LaunchedEffect
+        val selectedOption = currentState.selectedOption ?: return@LaunchedEffect
         currentState = currentState.copy(navigationStepLoading = true)
-        currentState = terminateInsuranceRepository
-          .submitReasonForCancelling(reasonToSubmit, feedbackText)
-          .fold(
-            ifLeft = {
-              logcat(LogPriority.WARN) { "Received error on submitting reason for termination" }
-              loadNextStep = false
-              currentState.copy(
-                navigationStepLoading = false,
-                errorWhileLoadingNextStep = true,
-              )
-            },
-            ifRight = { step ->
-              logcat(priority = LogPriority.INFO) {
-                "Successfully submitted reason for termination: $reasonToSubmit and received next step: $step"
-              }
-              loadNextStep = false
-              currentState.copy(
-                navigationStepLoading = false,
-                errorWhileLoadingNextStep = false,
-                nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(step),
-              )
-            },
+        val info = terminationInfo
+        if (info != null) {
+          val deflection = CarDeflectionRouter.route(
+            typeOfContract = info.typeOfContract,
+            selectedOptionId = selectedOption.id,
+            decomEligible = CarDecomEligibility.isEligible(info.typeOfContract, info.commencementDate),
           )
+          val nextStep: TerminateInsuranceStep = when (deflection) {
+            CarDeflectionRoute.AutoCancel -> TerminateInsuranceStep.DeflectAutoCancelStep(
+              title = "Your insurance will be cancelled automatically",
+              message = when (selectedOption.id) {
+                "CAR_SOLD" -> "When the new owner registers the car, your insurance will be cancelled automatically."
+                "CAR_SCRAPPED" -> "When the car is scrapped, your insurance will be cancelled automatically."
+                else -> "When the car is decommissioned, your insurance will be cancelled automatically."
+              },
+              extraMessage = "You don't need to do anything. We'll handle it.",
+            )
+            CarDeflectionRoute.AutoDecommission -> TerminateInsuranceStep.DeflectAutoDecommissionStep(
+              title = if (selectedOption.id == "CAR_RECOMMISSIONED") "Your car has been recommissioned"
+              else "Your car is decommissioned",
+              message = if (selectedOption.id == "CAR_RECOMMISSIONED") {
+                "Your insurance will be automatically updated to match your car's new status."
+              } else {
+                "Your insurance will be automatically adjusted while your car is decommissioned."
+              },
+              info = if (selectedOption.id == "CAR_RECOMMISSIONED") null
+              else "You'll be notified when the changes take effect.",
+              explanations = if (selectedOption.id == "CAR_RECOMMISSIONED") emptyList()
+              else listOf(
+                "What's covered" to "Your car is still covered against theft and damage while decommissioned.",
+                "What it costs" to "You'll pay a reduced premium while your car is decommissioned.",
+              ),
+            )
+            null -> {
+              val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+              if (TerminationFlowComputations.shouldDelete(info.masterInceptionDate, today)) {
+                TerminateInsuranceStep.InsuranceDeletion(info.existingAddons)
+              } else {
+                val minDate = TerminationFlowComputations.minDate(info.masterInceptionDate, today)
+                TerminateInsuranceStep.TerminateInsuranceDate(
+                  minDate = minDate,
+                  maxDate = TerminationFlowComputations.maxDate(minDate),
+                  extraCoverageItems = info.existingAddons,
+                )
+              }
+            }
+          }
+          loadNextStep = false
+          currentState = currentState.copy(
+            navigationStepLoading = false,
+            nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(nextStep),
+          )
+        } else {
+          // Fallback to old server-driven flow
+          currentState = terminateInsuranceRepository
+            .submitReasonForCancelling(selectedOption, feedbackText)
+            .fold(
+              ifLeft = {
+                logcat(LogPriority.WARN) { "Received error on submitting reason for termination" }
+                loadNextStep = false
+                currentState.copy(
+                  navigationStepLoading = false,
+                  errorWhileLoadingNextStep = true,
+                )
+              },
+              ifRight = { step ->
+                loadNextStep = false
+                currentState.copy(
+                  navigationStepLoading = false,
+                  errorWhileLoadingNextStep = false,
+                  nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(step),
+                )
+              },
+            )
+        }
       }
     }
 

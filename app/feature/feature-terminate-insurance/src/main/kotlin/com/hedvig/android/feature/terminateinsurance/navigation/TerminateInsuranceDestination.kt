@@ -2,6 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
+import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
 import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.common.Destination
@@ -57,6 +58,8 @@ internal sealed interface TerminateInsuranceDestination {
     val maxDate: LocalDate,
     val extraCoverageItems: List<ExtraCoverageItem>,
     val commonParams: TerminationGraphParameters,
+    val selectedOptionId: String? = null,
+    val feedbackText: String? = null,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
@@ -76,6 +79,8 @@ internal sealed interface TerminateInsuranceDestination {
     val terminationType: TerminationType,
     val extraCoverageItems: List<ExtraCoverageItem>,
     val commonParams: TerminationGraphParameters,
+    val selectedOptionId: String? = null,
+    val feedbackText: String? = null,
   ) : TerminateInsuranceDestination, Destination {
     @Serializable
     sealed interface TerminationType {
@@ -109,6 +114,8 @@ internal sealed interface TerminateInsuranceDestination {
   data class InsuranceDeletion(
     val commonParams: TerminationGraphParameters,
     val extraCoverageItems: List<ExtraCoverageItem>,
+    val selectedOptionId: String? = null,
+    val feedbackText: String? = null,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
@@ -171,6 +178,11 @@ internal data class TerminationGraphParameters(
   val insuranceDisplayName: String,
   val exposureName: String,
   val contractGroup: ContractGroup,
+  val typeOfContract: String? = null,
+  val masterInceptionDate: LocalDate? = null,
+  val supportsBetterPrice: Boolean = false,
+  val supportsBetterCoverage: Boolean = false,
+  val commencementDate: LocalDate? = null,
 )
 
 @Serializable
@@ -187,3 +199,18 @@ internal data class AutoDecommissionDeflectStepParameters(
   val info: String?,
   val explanations: List<Pair<String?, String>>,
 )
+
+internal fun TerminationGraphParameters.toTerminationInfo(): TerminationInfo? {
+  val type = typeOfContract ?: return null
+  val inception = masterInceptionDate ?: return null
+  return TerminationInfo(
+    contractId = contractId,
+    masterInceptionDate = inception,
+    terminationDate = null,
+    existingAddons = emptyList(),
+    supportsBetterPrice = supportsBetterPrice,
+    supportsBetterCoverage = supportsBetterCoverage,
+    typeOfContract = type,
+    commencementDate = commencementDate,
+  )
+}

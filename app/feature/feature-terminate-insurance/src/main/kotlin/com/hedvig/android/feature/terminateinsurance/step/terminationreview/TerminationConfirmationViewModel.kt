@@ -11,6 +11,7 @@ import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotifica
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
+import com.hedvig.android.feature.terminateinsurance.data.TerminationReasonMapper
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
@@ -30,6 +31,8 @@ internal class TerminationConfirmationViewModel(
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
   private val getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
   private val clock: Clock,
+  private val selectedOptionId: String? = null,
+  private val feedbackText: String? = null,
 ) : MoleculeViewModel<TerminationConfirmationEvent, OverviewUiState>(
     OverviewUiState(
       terminationType = terminationType,
@@ -46,6 +49,8 @@ internal class TerminationConfirmationViewModel(
       terminateInsuranceRepository,
       getTerminationNotificationUseCase,
       clock,
+      selectedOptionId,
+      feedbackText,
     ),
   )
 
@@ -61,6 +66,8 @@ private class TerminationConfirmationPresenter(
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
   private val getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
   private val clock: Clock,
+  private val selectedOptionId: String?,
+  private val feedbackText: String?,
 ) : MoleculePresenter<TerminationConfirmationEvent, OverviewUiState> {
   @Composable
   override fun MoleculePresenterScope<TerminationConfirmationEvent>.present(
@@ -88,28 +95,57 @@ private class TerminationConfirmationPresenter(
         TerminationConfirmationEvent.Submit -> {
           uiState = uiState.copy(isSubmittingContractTermination = true)
           launch {
-            when (terminationType) {
-              Deletion -> {
-                terminateInsuranceRepository.confirmDeletion()
+            if (selectedOptionId != null) {
+              val terminationDate = when (terminationType) {
+                is Termination -> terminationType.terminationDate
+                Deletion -> null
               }
-
-              is Termination -> {
-                terminateInsuranceRepository.setTerminationDate(terminationType.terminationDate)
-              }
-            }.fold(
-              ifLeft = { errorMessage ->
-                uiState = uiState.copy(
-                  isSubmittingContractTermination = false,
-                  errorMessage = errorMessage.message,
-                )
-              },
-              ifRight = { terminateInsuranceFlowStep ->
-                uiState = uiState.copy(
-                  isSubmittingContractTermination = false,
-                  nextStep = terminateInsuranceFlowStep,
-                )
-              },
-            )
+              terminateInsuranceRepository.terminateContract(
+                contractId = insuranceInfo.contractId,
+                terminationDate = terminationDate,
+                terminationReason = TerminationReasonMapper.toReason(selectedOptionId),
+                terminationComment = feedbackText,
+              ).fold(
+                ifLeft = { errorMessage ->
+                  uiState = uiState.copy(
+                    isSubmittingContractTermination = false,
+                    errorMessage = errorMessage.message,
+                  )
+                },
+                ifRight = { result ->
+                  if (result.userError != null) {
+                    uiState = uiState.copy(
+                      isSubmittingContractTermination = false,
+                      errorMessage = result.userError,
+                    )
+                  } else {
+                    uiState = uiState.copy(
+                      isSubmittingContractTermination = false,
+                      nextStep = TerminateInsuranceStep.TerminateInsuranceSuccess(result.terminationDate),
+                    )
+                  }
+                },
+              )
+            } else {
+              // Fallback to old server-driven flow
+              when (terminationType) {
+                Deletion -> terminateInsuranceRepository.confirmDeletion()
+                is Termination -> terminateInsuranceRepository.setTerminationDate(terminationType.terminationDate)
+              }.fold(
+                ifLeft = { errorMessage ->
+                  uiState = uiState.copy(
+                    isSubmittingContractTermination = false,
+                    errorMessage = errorMessage.message,
+                  )
+                },
+                ifRight = { terminateInsuranceFlowStep ->
+                  uiState = uiState.copy(
+                    isSubmittingContractTermination = false,
+                    nextStep = terminateInsuranceFlowStep,
+                  )
+                },
+              )
+            }
           }
         }
       }

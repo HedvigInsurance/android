@@ -9,9 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
 import com.hedvig.android.data.termination.data.TerminatableInsurance
-import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
+import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOptionBuilder
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -86,13 +87,11 @@ private class ChooseInsuranceToTerminatePresenter(
 
     LaunchedEffect(terminatableInsuranceToFetchNextStepFor) {
       val currentStateValue = currentState as? ChooseInsuranceToTerminateStepUiState.Success ?: return@LaunchedEffect
-      currentState = currentStateValue.copy(
-        navigationStepFailedToLoad = false,
-      )
+      currentState = currentStateValue.copy(navigationStepFailedToLoad = false)
       val terminatableInsurance = terminatableInsuranceToFetchNextStepFor ?: return@LaunchedEffect
       currentState = currentStateValue.copy(isNavigationStepLoading = true)
       currentState = terminateInsuranceRepository
-        .startTerminationFlow(InsuranceId(terminatableInsurance.id))
+        .fetchTerminationInfo(terminatableInsurance.id)
         .fold(
           ifLeft = {
             currentStateValue.copy(
@@ -100,12 +99,18 @@ private class ChooseInsuranceToTerminatePresenter(
               isNavigationStepLoading = false,
             )
           },
-          ifRight = { step ->
-            val terminationStepWithInsurance = Pair(step, terminatableInsurance)
+          ifRight = { info ->
+            val options = TerminationSurveyOptionBuilder.build(
+              typeOfContract = info.typeOfContract,
+              supportsBetterPrice = info.supportsBetterPrice,
+              supportsBetterCoverage = info.supportsBetterCoverage,
+              memberId = terminatableInsurance.id,
+            )
             currentStateValue.copy(
-              nextStepWithInsurance = terminationStepWithInsurance,
+              nextStepWithInsurance = Pair(TerminateInsuranceStep.Survey(options), terminatableInsurance),
               navigationStepFailedToLoad = false,
               isNavigationStepLoading = true,
+              terminationInfo = info,
             )
           },
         )
@@ -169,6 +174,7 @@ internal sealed interface ChooseInsuranceToTerminateStepUiState {
     val nextStepWithInsurance: Pair<TerminateInsuranceStep, TerminatableInsurance>?,
     val isNavigationStepLoading: Boolean,
     val navigationStepFailedToLoad: Boolean,
+    val terminationInfo: TerminationInfo? = null,
   ) : ChooseInsuranceToTerminateStepUiState
 
   data object Failure : ChooseInsuranceToTerminateStepUiState

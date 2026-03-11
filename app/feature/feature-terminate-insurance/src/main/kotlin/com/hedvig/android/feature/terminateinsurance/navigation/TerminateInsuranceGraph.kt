@@ -8,7 +8,9 @@ import androidx.navigation.NavOptionsBuilder
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.termination.data.TerminatableInsurance
+import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
+import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateStepUiState
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.DeflectAutoCancelStepDestination
@@ -101,11 +103,18 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         closeTerminationFlow = closeTerminationFlow,
         navigateToNextStep = { step, insuranceForCancellation: TerminatableInsurance ->
+          val uiState = viewModel.uiState.value as? ChooseInsuranceToTerminateStepUiState.Success
+          val terminationInfo = uiState?.terminationInfo
           val commonParams = TerminationGraphParameters(
-            insuranceForCancellation.id,
-            insuranceForCancellation.displayName,
-            insuranceForCancellation.contractExposure,
-            insuranceForCancellation.contractGroup,
+            contractId = insuranceForCancellation.id,
+            insuranceDisplayName = insuranceForCancellation.displayName,
+            exposureName = insuranceForCancellation.contractExposure,
+            contractGroup = insuranceForCancellation.contractGroup,
+            typeOfContract = terminationInfo?.typeOfContract,
+            masterInceptionDate = terminationInfo?.masterInceptionDate,
+            supportsBetterPrice = terminationInfo?.supportsBetterPrice ?: false,
+            supportsBetterCoverage = terminationInfo?.supportsBetterCoverage ?: false,
+            commencementDate = terminationInfo?.commencementDate,
           )
           navController.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
@@ -118,7 +127,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       TerminateInsuranceDestination.TerminationSurveyFirstStep,
     ) {
       val viewModel: TerminationSurveyViewModel = koinViewModel {
-        parametersOf(options)
+        parametersOf(options, commonParams.toTerminationInfo())
       }
       TerminationSurveyDestination(
         viewModel,
@@ -130,8 +139,13 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           )
         },
         navigateToNextStep = { step ->
+          val surveyState = viewModel.uiState.value
           navController.navigateToTerminateFlowDestination(
-            destination = step.toTerminateInsuranceDestination(commonParams),
+            destination = step.toTerminateInsuranceDestination(
+              commonParams = commonParams,
+              selectedOptionId = surveyState.selectedOptionId,
+              feedbackText = surveyState.feedbackText,
+            ),
           )
         },
         navigateToMovingFlow = navigateToMovingFlow,
@@ -146,7 +160,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       TerminateInsuranceDestination.TerminationSurveySecondStep,
     ) {
       val viewModel: TerminationSurveyViewModel = koinViewModel {
-        parametersOf(subOptions)
+        parametersOf(subOptions, commonParams.toTerminationInfo())
       }
       TerminationSurveyDestination(
         viewModel,
@@ -154,8 +168,13 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         closeTerminationFlow = closeTerminationFlow,
         navigateToSubOptions = null,
         navigateToNextStep = { step ->
+          val surveyState = viewModel.uiState.value
           navController.navigateToTerminateFlowDestination(
-            destination = step.toTerminateInsuranceDestination(commonParams),
+            destination = step.toTerminateInsuranceDestination(
+              commonParams = commonParams,
+              selectedOptionId = surveyState.selectedOptionId,
+              feedbackText = surveyState.feedbackText,
+            ),
           )
         },
         navigateToMovingFlow = navigateToMovingFlow,
@@ -188,6 +207,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
               ),
               extraCoverageItems = extraCoverageItems,
               commonParams = commonParams,
+              selectedOptionId = selectedOptionId,
+              feedbackText = feedbackText,
             ),
           )
         },
@@ -208,6 +229,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
               terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
               extraCoverageItems = extraCoverageItems,
               commonParams = commonParams,
+              selectedOptionId = selectedOptionId,
+              feedbackText = feedbackText,
             ),
           )
         },
@@ -224,6 +247,8 @@ fun NavGraphBuilder.terminateInsuranceGraph(
           terminationType,
           commonParams,
           extraCoverageItems,
+          selectedOptionId,
+          feedbackText,
         )
       }
       TerminationConfirmationDestination(
@@ -259,6 +284,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       val viewModel: DeflectAutoDecommissionStepViewModel = koinViewModel {
         parametersOf(
           deflectParameters,
+          commonParams.toTerminationInfo(),
         )
       }
       DeflectAutoDecomStepDestination(

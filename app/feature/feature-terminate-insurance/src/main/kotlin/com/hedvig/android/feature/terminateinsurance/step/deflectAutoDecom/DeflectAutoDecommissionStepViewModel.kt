@@ -9,14 +9,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowComputations
+import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
 import com.hedvig.android.feature.terminateinsurance.navigation.AutoDecommissionDeflectStepParameters
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlin.time.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 
 internal class DeflectAutoDecommissionStepViewModel(
   deflectParameters: AutoDecommissionDeflectStepParameters,
   terminateInsuranceRepository: TerminateInsuranceRepository,
+  terminationInfo: TerminationInfo? = null,
 ) : MoleculeViewModel<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState>(
     initialState = DeflectAutoDecommissionUiState.Success(
       title = deflectParameters.title,
@@ -24,12 +30,13 @@ internal class DeflectAutoDecommissionStepViewModel(
       info = deflectParameters.info,
       explanations = deflectParameters.explanations,
     ),
-    presenter = DeflectAutoDecomStepPresenter(terminateInsuranceRepository, deflectParameters),
+    presenter = DeflectAutoDecomStepPresenter(terminateInsuranceRepository, deflectParameters, terminationInfo),
   )
 
 private class DeflectAutoDecomStepPresenter(
   private val terminateInsuranceRepository: TerminateInsuranceRepository,
   private val deflectParameters: AutoDecommissionDeflectStepParameters,
+  private val terminationInfo: TerminationInfo? = null,
 ) : MoleculePresenter<DeflectAutoDecommissionEvent, DeflectAutoDecommissionUiState> {
   @Composable
   override fun MoleculePresenterScope<DeflectAutoDecommissionEvent>.present(
@@ -60,21 +67,45 @@ private class DeflectAutoDecomStepPresenter(
           DeflectAutoDecommissionUiState.Loading -> return@LaunchedEffect
           is DeflectAutoDecommissionUiState.Success -> state.copy(buttonLoading = true)
         }
-        currentState = terminateInsuranceRepository.continueAfterAutoDecomDeflect().fold(
-          ifLeft = {
-            DeflectAutoDecommissionUiState.Failure
-          },
-          ifRight = { result ->
-            DeflectAutoDecommissionUiState.Success(
-              buttonLoading = true,
-              nextStep = result,
-              title = deflectParameters.title,
-              message = deflectParameters.message,
-              info = deflectParameters.info,
-              explanations = deflectParameters.explanations,
+        val info = terminationInfo
+        if (info != null) {
+          val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+          val nextStep = if (TerminationFlowComputations.shouldDelete(info.masterInceptionDate, today)) {
+            TerminateInsuranceStep.InsuranceDeletion(info.existingAddons)
+          } else {
+            val minDate = TerminationFlowComputations.minDate(info.masterInceptionDate, today)
+            TerminateInsuranceStep.TerminateInsuranceDate(
+              minDate = minDate,
+              maxDate = TerminationFlowComputations.maxDate(minDate),
+              extraCoverageItems = info.existingAddons,
             )
-          },
-        )
+          }
+          currentState = DeflectAutoDecommissionUiState.Success(
+            buttonLoading = true,
+            nextStep = nextStep,
+            title = deflectParameters.title,
+            message = deflectParameters.message,
+            info = deflectParameters.info,
+            explanations = deflectParameters.explanations,
+          )
+        } else {
+          // Fallback to old server-driven flow
+          currentState = terminateInsuranceRepository.continueAfterAutoDecomDeflect().fold(
+            ifLeft = {
+              DeflectAutoDecommissionUiState.Failure
+            },
+            ifRight = { result ->
+              DeflectAutoDecommissionUiState.Success(
+                buttonLoading = true,
+                nextStep = result,
+                title = deflectParameters.title,
+                message = deflectParameters.message,
+                info = deflectParameters.info,
+                explanations = deflectParameters.explanations,
+              )
+            },
+          )
+        }
       }
     }
     return currentState

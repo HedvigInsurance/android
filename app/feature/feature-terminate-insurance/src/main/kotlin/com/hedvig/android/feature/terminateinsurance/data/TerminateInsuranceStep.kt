@@ -252,6 +252,8 @@ private fun FlowTerminationSurveyOptionSuggestionInfoType.toInfoType(): InfoType
 
 internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
   commonParams: TerminationGraphParameters,
+  selectedOptionId: String? = null,
+  feedbackText: String? = null,
 ): Destination {
   return when (this) {
     is TerminateInsuranceStep.Failure -> {
@@ -264,6 +266,8 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
         maxDate = maxDate,
         extraCoverageItems = extraCoverageItems,
         commonParams = commonParams,
+        selectedOptionId = selectedOptionId,
+        feedbackText = feedbackText,
       )
     }
 
@@ -271,6 +275,8 @@ internal fun TerminateInsuranceStep.toTerminateInsuranceDestination(
       InsuranceDeletion(
         commonParams = commonParams,
         extraCoverageItems = extraCoverageItems,
+        selectedOptionId = selectedOptionId,
+        feedbackText = feedbackText,
       )
     }
 

@@ -10,6 +10,7 @@ import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotifica
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepositoryImpl
 import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
+import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.navigation.AutoDecommissionDeflectStepParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
@@ -34,11 +35,14 @@ val terminateInsuranceModule = module {
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }
-  viewModel<TerminationSurveyViewModel> { (options: List<TerminationSurveyOption>) ->
+  viewModel<TerminationSurveyViewModel> { params ->
+    val options = params.get<List<TerminationSurveyOption>>()
+    val terminationInfo = params.getOrNull<TerminationInfo>()
     TerminationSurveyViewModel(
       options = options,
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
       changeTierRepository = get<ChangeTierRepository>(),
+      terminationInfo = terminationInfo,
     )
   }
   viewModel<TerminationDateViewModel> { (parameters: TerminationDateParameters) ->
@@ -48,24 +52,25 @@ val terminateInsuranceModule = module {
     )
   }
   viewModel<TerminationConfirmationViewModel> { params ->
-    val terminationType = params.get<TerminateInsuranceDestination.TerminationConfirmation.TerminationType>()
-    val insuranceInfo: TerminationGraphParameters = params.get<TerminationGraphParameters>()
-    val extraCoverageItems: List<ExtraCoverageItem> = params.get<List<ExtraCoverageItem>>()
     TerminationConfirmationViewModel(
-      terminationType = terminationType,
-      insuranceInfo = insuranceInfo,
-      extraCoverageItems = extraCoverageItems,
+      terminationType = params.component1(),
+      insuranceInfo = params.component2(),
+      extraCoverageItems = params.component3(),
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
       getTerminationNotificationUseCase = get<GetTerminationNotificationUseCase>(),
       clock = get<Clock>(),
+      selectedOptionId = params.component4(),
+      feedbackText = params.component5(),
     )
   }
 
   viewModel<DeflectAutoDecommissionStepViewModel> { params ->
     val deflectParams = params.get<AutoDecommissionDeflectStepParameters>()
+    val terminationInfo = params.getOrNull<TerminationInfo>()
     DeflectAutoDecommissionStepViewModel(
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
       deflectParameters = deflectParams,
+      terminationInfo = terminationInfo,
     )
   }
 
