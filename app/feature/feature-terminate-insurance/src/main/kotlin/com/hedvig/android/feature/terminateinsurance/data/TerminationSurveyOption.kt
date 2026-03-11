@@ -11,6 +11,7 @@ internal data class TerminationSurveyOption(
   val suggestion: SurveyOptionSuggestion?,
   val subOptions: List<TerminationSurveyOption>,
   val isDisabled: Boolean = false,
+  val shuffleSubOptions: Boolean = true,
 )
 
 @Serializable
