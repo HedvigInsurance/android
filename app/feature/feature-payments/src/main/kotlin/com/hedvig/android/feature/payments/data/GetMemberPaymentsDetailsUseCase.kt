@@ -38,12 +38,12 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
       }
       with(chargeMethod) {
         MemberPaymentsDetails(
-          chargingDayInTheMonth = chargingDayInTheMonth,
+          chargingDayInTheMonth = dueDate,
           descriptor = descriptor,
           displayName = displayName,
           mandate = mandate,
           paymentMethod = paymentMethod,
-          chargeMethod = MemberPaymentChargeMethod.TRUSTLY //todo!!! wait for the backend
+          chargeMethod = paymentProvider.toChargeMethod()
         )
       }
     }

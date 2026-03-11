@@ -19,10 +19,10 @@ query UpcomingPayment {
       chargeMethod {
         displayName
         descriptor
-        chargingDayInTheMonth
+        dueDate
         mandate
         paymentMethod
-        #chargeMethod
+        paymentProvider
       }
     }
   }

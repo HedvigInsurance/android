@@ -2753,7 +2753,16 @@ type MemberPaymentChargeMethodInfo {
   """
   A date of the month when the charge will happen
   """
-  chargingDayInTheMonth: Int
+  chargingDayInTheMonth: Int @deprecated(reason: "Use dueDate instead.")
+  """
+  Due date
+  """
+  dueDate: Int
+  """
+  Payment provider used for charging the member, eg Trustly or Kivra.
+  This is used to determine the charge schedule and mandate provider.
+  """
+  paymentProvider: String!
 }
 type MemberPaymentConnection {
   """
@@ -3908,6 +3917,20 @@ type ProductOfferAddon {
   """
   isSelected: Boolean!
 }
+type ProductOfferAddonCost {
+  """
+  The ID of the addon
+  """
+  addonId: UUID!
+  """
+  Gross cost of the addon.
+  """
+  grossCost: Money!
+  """
+  Net cost of the addon.
+  """
+  netCost: Money!
+}
 """
 Bundle discount information for a product offer
 """
@@ -3943,6 +3966,10 @@ type ProductOfferCost {
   """
   discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
   discountsV2: [ExtendedItemDiscount!]!
+  """
+  Collection of costs for addons that affect an item.
+  """
+  addonCosts: [ProductOfferAddonCost!]!
 }
 type ProductOfferDeductible {
   displayName: String!
