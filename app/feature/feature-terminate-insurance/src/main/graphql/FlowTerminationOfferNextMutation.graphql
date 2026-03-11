@@ -1,5 +1,8 @@
-mutation FlowTerminationOfferNext($context: String!, $addonsEnabled: Boolean!) {
-  flowTerminationOfferNext(context: $context) {
+mutation FlowTerminationOfferNext($context: FlowContext!,
+  $input: FlowTerminationOfferInput!,
+  $addonsEnabled: Boolean!) {
+  flowTerminationOfferNext(context: $context, input: $input) {
+    id
     context
     ...TerminationFlowStepFragment
   }

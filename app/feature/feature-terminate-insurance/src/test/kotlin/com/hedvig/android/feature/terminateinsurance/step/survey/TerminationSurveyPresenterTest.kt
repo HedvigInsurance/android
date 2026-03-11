@@ -238,7 +238,7 @@ class TerminationSurveyPresenterTest {
   }
 
   @Test
-  fun `when chosen option contain suggestion to change tier disable continue`() = runTest {
+  fun `when chosen option contain suggestion to change tier allow continue`() = runTest {
     val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
@@ -253,7 +253,7 @@ class TerminationSurveyPresenterTest {
       val currentSuggestion = current.selectedOption?.suggestion
       val currentContinueEnabled = current.continueAllowed
       assertThat(currentSuggestion).isSameInstanceAs(downgradeSuggestion)
-      assertThat(currentContinueEnabled).isFalse()
+      assertThat(currentContinueEnabled).isTrue()
     }
   }
 
@@ -520,6 +520,10 @@ private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
   }
 
   override suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep> {
+    return terminationFlowTurbine.awaitItem()
+  }
+
+  override suspend fun skipOfferStep(): Either<ErrorMessage, TerminateInsuranceStep> {
     return terminationFlowTurbine.awaitItem()
   }
 }

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.onClick
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -410,7 +408,6 @@ private fun InsuranceCardWrapper(
       .hedvigDropShadow()
       .clip(HedvigTheme.shapes.cornerXLarge),
   ) {
-    val description = stringResource(Res.string.A11Y_VIEW_DETAILS)
     InsuranceCard(
       chips = contract.createChips(),
       topText = contract.topText(),
@@ -419,12 +416,10 @@ private fun InsuranceCardWrapper(
       isLoading = false,
       fallbackPainter = contract.createPainter(),
       imageContentScale = contract.imageContentScale(),
-      modifier = Modifier.semantics {
-        role = Role.Button
-        onClick(label = description) {
-          onInsuranceCardClick(contract.id)
-          true
-        }
+      modifier = Modifier.clickable(
+        onClickLabel = stringResource(Res.string.A11Y_VIEW_DETAILS),
+      ) {
+        onInsuranceCardClick(contract.id)
       },
     )
   }

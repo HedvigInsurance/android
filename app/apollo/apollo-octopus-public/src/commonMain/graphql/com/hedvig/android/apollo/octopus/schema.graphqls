@@ -1319,7 +1319,7 @@ type Contract {
   If current agreement doesn't support co-owners, this is null
   Reuses ContractCoInsured type, for now.
   """
-  coOwners: [ContractCoInsured!]
+  coOwners: [ContractCoOwner!]
   """
   User messages to show due to self change is blocked.
   """
@@ -1371,6 +1371,43 @@ type ContractAddon {
 A co-insured on contract.
 """
 type ContractCoInsured {
+  """
+  firstName + lastName + birthDate if all are present, otherwise null
+  """
+  id: ID
+  """
+  First name.
+  """
+  firstName: String
+  """
+  Last name.
+  """
+  lastName: String
+  """
+  National identification number if any.
+  """
+  ssn: String
+  """
+  Co-insured birthdate.
+  """
+  birthdate: Date
+  """
+  The date this co-insured will be removed.
+  """
+  terminatesOn: Date
+  """
+  The date this co-insured will be added.
+  """
+  activatesOn: Date
+  """
+  Whether or not any of firstName, lastName, ssn or birthdate is missing and needs to be added.
+  """
+  hasMissingInfo: Boolean!
+}
+"""
+A co-insured on contract.
+"""
+type ContractCoOwner {
   """
   firstName + lastName + birthDate if all are present, otherwise null
   """
@@ -1482,6 +1519,12 @@ input ConversationStartInput {
   The to-be `Conversation.id` of the returned Conversation. Should be a UUID v4.
   """
   id: UUID!
+}
+input CoOwnersInput {
+  firstName: String
+  lastName: String
+  ssn: String
+  birthdate: Date
 }
 enum CountryCode {
   """
@@ -2149,6 +2192,24 @@ enum FlowTerminationNotificationType {
   INFO
   WARNING
 }
+enum FlowTerminationOfferAction {
+  UPDATE_ADDRESS
+  CHANGE_TIER
+}
+input FlowTerminationOfferInput {
+  """
+  This has no significance and is ignored by the backend. It exists to satisfy some codegen limitations
+  """
+  confirmed: Boolean!
+}
+type FlowTerminationOfferStep implements FlowStep {
+  id: ID!
+  title: String!
+  description: String!
+  buttonTitle: String!
+  skipButtonTitle: String!
+  action: FlowTerminationOfferAction!
+}
 input FlowTerminationStartInput {
   contractId: ID!
   supportedSteps: [String!]
@@ -2184,9 +2245,9 @@ interface FlowTerminationSurveyOptionSuggestion {
 }
 type FlowTerminationSurveyOptionSuggestionAction implements FlowTerminationSurveyOptionSuggestion {
   id: ID!
-  action: FlowTerminationSurveyRedirectAction!
-  description: String!
-  buttonTitle: String!
+  action: FlowTerminationSurveyRedirectAction! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  description: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  buttonTitle: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
   infoType: FlowTerminationSurveyOptionSuggestionInfoType!
 }
 type FlowTerminationSurveyOptionSuggestionInfo implements FlowTerminationSurveyOptionSuggestion {
@@ -2530,6 +2591,14 @@ type MemberCharge {
   """
   date: Date!
   """
+  URL to the invoice of a past charge, null if no invoice generated
+  """
+  paymentInvoiceUrl: String
+  """
+  The provider that was or will be used to charge the member, null if unknown
+  """
+  paymentProvider: String
+  """
   Breakdown of the upcoming charge by items
   """
   chargeBreakdown: [MemberChargeBreakdownItem!]!
@@ -2826,6 +2895,11 @@ input MidtermChangeIntentCreateInput {
   This list contains "null" entries for co-insured not yet defined.
   """
   coInsuredInputs: [CoInsuredInput!]
+  """
+  The list of all co-owners to set on the agreement.
+  This list contains "null" entries for co-owners not yet defined.
+  """
+  coOwnersInputs: [CoOwnersInput!]
 }
 type MidtermChangeIntentMutationOutput {
   intent: MidtermChangeIntent
@@ -3321,6 +3395,7 @@ type Mutation {
   flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
   flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
   flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
+  flowTerminationOfferNext(input: FlowTerminationOfferInput!, context: FlowContext!): Flow!
   """
   Tokenize payment details per member in order to be used in future and returns the status
   """
@@ -3833,6 +3908,20 @@ type ProductOfferAddon {
   """
   isSelected: Boolean!
 }
+type ProductOfferAddonCost {
+  """
+  The ID of the addon
+  """
+  addonId: UUID!
+  """
+  Gross cost of the addon.
+  """
+  grossCost: Money!
+  """
+  Net cost of the addon.
+  """
+  netCost: Money!
+}
 """
 Bundle discount information for a product offer
 """
@@ -3868,6 +3957,10 @@ type ProductOfferCost {
   """
   discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
   discountsV2: [ExtendedItemDiscount!]!
+  """
+  Collection of costs for addons that affect an item.
+  """
+  addonCosts: [ProductOfferAddonCost!]!
 }
 type ProductOfferDeductible {
   displayName: String!

@@ -72,6 +72,7 @@ class TerminateInsuranceRepositoryImplTest {
                 "FlowTerminationFailedStep",
                 "FlowTerminationCarDeflectAutoCancelStep",
                 "FlowTerminationCarAutoDecomStep",
+                "FlowTerminationOfferStep",
               ),
             ),
           ),

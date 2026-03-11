@@ -137,7 +137,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
-        navigateToMovingFlow = navigateToMovingFlow,
         openUrl = openUrl,
         redirectToChangeTierFlow = { intent ->
           redirectToChangeTierFlow(intent)
@@ -161,7 +160,6 @@ fun NavGraphBuilder.terminateInsuranceGraph(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
         },
-        navigateToMovingFlow = navigateToMovingFlow,
         openUrl = openUrl,
         redirectToChangeTierFlow = { intent ->
           redirectToChangeTierFlow(intent)
@@ -295,23 +293,22 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
-        onCtaClick = dropUnlessResumed { offerAction ->
+        onCtaClick = { offerAction ->
           when (offerAction) {
             OfferAction.UPDATE_ADDRESS -> {
               navigateToMovingFlow()
             }
 
-            OfferAction.CHANGE_TIER -> {
-              // TODO: Fetch ChangeTierIntent similar to TryToDowngradePrice in TerminationSurveyViewModel
-              // For now, navigate to moving flow as a placeholder
-              // This needs to be updated when integrating with the change tier flow
-            }
+            OfferAction.CHANGE_TIER -> {}
           }
         },
         onNavigateToNextStep = { step ->
           navController.navigateToTerminateFlowDestination(
             destination = step.toTerminateInsuranceDestination(commonParams),
           )
+        },
+        redirectToChangeTierFlow = { intent ->
+          redirectToChangeTierFlow(intent)
         },
       )
     }

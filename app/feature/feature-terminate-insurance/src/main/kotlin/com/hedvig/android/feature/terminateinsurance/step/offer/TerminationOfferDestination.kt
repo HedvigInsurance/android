@@ -1,26 +1,40 @@
 package com.hedvig.android.feature.terminateinsurance.step.offer
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.changetier.data.IntentOutput
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
+import com.hedvig.android.design.system.hedvig.icon.Campaign
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.terminateinsurance.data.OfferAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
@@ -32,6 +46,7 @@ internal fun TerminationOfferDestination(
   closeTerminationFlow: () -> Unit,
   onCtaClick: (OfferAction) -> Unit,
   onNavigateToNextStep: (TerminateInsuranceStep) -> Unit,
+  redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState) {
@@ -40,12 +55,21 @@ internal fun TerminationOfferDestination(
       viewModel.emit(TerminationOfferEvent.ClearNextStep)
       onNavigateToNextStep(state.nextStep)
     }
+    if (state.changeTierIntent != null) {
+      viewModel.emit(TerminationOfferEvent.ClearNextStep)
+      redirectToChangeTierFlow(state.changeTierIntent)
+    }
   }
   TerminationOfferScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
-    onCtaClick = onCtaClick,
+    onCtaClick = { action ->
+      when (action) {
+        OfferAction.CHANGE_TIER -> viewModel.emit(TerminationOfferEvent.FetchChangeTierIntent)
+        OfferAction.UPDATE_ADDRESS -> onCtaClick(action)
+      }
+    },
     onSkipClick = { viewModel.emit(TerminationOfferEvent.Skip) },
     onRetry = { viewModel.emit(TerminationOfferEvent.Skip) },
   )
@@ -90,27 +114,59 @@ private fun TerminationOfferContentScreen(
   onCtaClick: () -> Unit,
   onSkipClick: () -> Unit,
 ) {
+  val cardShape = HedvigTheme.shapes.cornerLarge
   TerminationScaffold(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
   ) { _ ->
-    FlowHeading(
-      title = uiState.title,
-      description = null,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
     Spacer(Modifier.weight(1f))
-    HedvigNotificationCard(
-      message = uiState.description,
-      priority = NotificationDefaults.NotificationPriority.Campaign,
-      withIcon = true,
-      style = NotificationDefaults.InfoCardStyle.Button(
-        buttonText = uiState.buttonTitle,
-        onButtonClick = onCtaClick,
-      ),
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(16.dp))
+    Surface(
+      shape = cardShape,
+      color = HedvigTheme.colorScheme.signalGreenFill,
+      modifier = Modifier
+        .padding(horizontal = 16.dp)
+        .fillMaxWidth(),
+    ) {
+      Column(Modifier.padding(24.dp)) {
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .background(HedvigTheme.colorScheme.signalGreenElement.copy(alpha = 0.15f)),
+        ) {
+          Icon(
+            HedvigIcons.Campaign,
+            contentDescription = null,
+            tint = HedvigTheme.colorScheme.signalGreenElement,
+            modifier = Modifier.size(24.dp),
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+        HedvigText(
+          text = uiState.title,
+          style = HedvigTheme.typography.headlineMedium,
+          color = HedvigTheme.colorScheme.signalGreenText,
+        )
+        Spacer(Modifier.height(8.dp))
+        HedvigText(
+          text = uiState.description,
+          style = HedvigTheme.typography.bodyMedium.copy(lineBreak = LineBreak.Heading),
+          color = HedvigTheme.colorScheme.signalGreenText,
+        )
+        Spacer(Modifier.height(24.dp))
+        HedvigButton(
+          text = uiState.buttonTitle,
+          onClick = onCtaClick,
+          enabled = true,
+          isLoading = uiState.ctaLoading,
+          buttonStyle = ButtonDefaults.ButtonStyle.Primary,
+          buttonSize = ButtonDefaults.ButtonSize.Large,
+          modifier = Modifier.fillMaxWidth(),
+        )
+      }
+    }
+    Spacer(Modifier.weight(1f))
     HedvigTextButton(
       text = uiState.skipButtonTitle,
       isLoading = uiState.skipLoading,

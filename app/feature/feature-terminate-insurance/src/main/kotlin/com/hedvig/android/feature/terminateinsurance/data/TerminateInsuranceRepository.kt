@@ -21,6 +21,7 @@ import octopus.FlowTerminationStartMutation
 import octopus.FlowTerminationSurveyNextMutation
 import octopus.type.FlowTerminationCarAutoDecomInput
 import octopus.type.FlowTerminationDateInput
+import octopus.type.FlowTerminationOfferInput
 import octopus.type.FlowTerminationStartInput
 import octopus.type.FlowTerminationSurveyDataInput
 import octopus.type.FlowTerminationSurveyInput
@@ -161,6 +162,7 @@ internal class TerminateInsuranceRepositoryImpl(
         .mutation(
           FlowTerminationOfferNextMutation(
             context = terminationFlowContextStorage.getContext(),
+            input = FlowTerminationOfferInput(confirmed = true),
             addonsEnabled = isAddonsEnabled,
           ),
         )

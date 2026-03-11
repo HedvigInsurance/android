@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.compose.dropUnlessResumed
 import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -74,7 +73,6 @@ import org.jetbrains.compose.resources.stringResource
 internal fun TerminationSurveyDestination(
   viewModel: TerminationSurveyViewModel,
   navigateUp: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
@@ -110,7 +108,6 @@ internal fun TerminationSurveyDestination(
   TerminationSurveyScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    navigateToMovingFlow = navigateToMovingFlow,
     closeTerminationFlow = closeTerminationFlow,
     onContinueClick = { viewModel.emit(TerminationSurveyEvent.Continue) },
     selectOption = { option ->
@@ -126,12 +123,6 @@ internal fun TerminationSurveyDestination(
       viewModel.emit(TerminationSurveyEvent.ShowFullScreenEditText)
     },
     openUrl = openUrl,
-    tryToDowngradePrice = {
-      viewModel.emit(TerminationSurveyEvent.TryToDowngradePrice)
-    },
-    tryToUpgradeCoverage = {
-      viewModel.emit(TerminationSurveyEvent.TryToUpgradeCoverage)
-    },
     closeEmptyQuotesDialog = {
       viewModel.emit(TerminationSurveyEvent.ClearEmptyQuotesDialog)
     },
@@ -143,15 +134,12 @@ private fun TerminationSurveyScreen(
   uiState: TerminationSurveyState,
   selectOption: (TerminationSurveyOption) -> Unit,
   navigateUp: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
   openUrl: (String) -> Unit,
   onCloseFullScreenEditText: () -> Unit,
   onLaunchFullScreenEditText: () -> Unit,
   changeFeedbackForSelectedReason: (feedback: String?) -> Unit,
   onContinueClick: () -> Unit,
-  tryToUpgradeCoverage: () -> Unit,
-  tryToDowngradePrice: () -> Unit,
   closeEmptyQuotesDialog: () -> Unit,
 ) {
   FreeTextOverlay(
@@ -236,10 +224,7 @@ private fun TerminationSurveyScreen(
         SelectedSurveyInfoBox(
           selectedOption = uiState.selectedOption,
           actionButtonLoading = uiState.actionButtonLoading,
-          navigateToMovingFlow = navigateToMovingFlow,
           openUrl = openUrl,
-          tryToDowngradePrice = tryToDowngradePrice,
-          tryToUpgradeCoverage = tryToUpgradeCoverage,
           modifier = Modifier.fillMaxWidth(),
         )
         SelectedSurveyTextDisplay(
@@ -273,10 +258,7 @@ private fun TerminationSurveyScreen(
 private fun SelectedSurveyInfoBox(
   selectedOption: TerminationSurveyOption?,
   actionButtonLoading: Boolean,
-  navigateToMovingFlow: () -> Unit,
   openUrl: (String) -> Unit,
-  tryToDowngradePrice: () -> Unit,
-  tryToUpgradeCoverage: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AnimatedContent(
@@ -284,14 +266,17 @@ private fun SelectedSurveyInfoBox(
     transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically() },
     modifier = modifier,
   ) { selectedReason ->
+    val suggestion = selectedReason?.suggestion
     if (
       selectedReason != null &&
-      selectedReason.suggestion != null &&
+      suggestion != null &&
       !selectedReason.isDisabled &&
-      selectedReason.suggestion is SurveyOptionSuggestion.Known
+      suggestion is SurveyOptionSuggestion.Known &&
+      suggestion !is SurveyOptionSuggestion.Known.Action.UpdateAddress &&
+      suggestion !is SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier &&
+      suggestion !is SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
     ) {
       Column {
-        val suggestion = selectedReason.suggestion
         Spacer(Modifier.height(4.dp))
         HedvigNotificationCard(
           buttonLoading = actionButtonLoading,
@@ -315,28 +300,14 @@ private fun SelectedSurveyInfoBox(
             InfoType.UNKNOWN -> NotificationPriority.InfoInline
           },
           style = when (suggestion) {
-            is SurveyOptionSuggestion.Known.Action -> InfoCardStyle.Button(
+            is SurveyOptionSuggestion.Known.Action.Redirect -> InfoCardStyle.Button(
               buttonText = suggestion.buttonTitle,
-              onButtonClick = when (suggestion) {
-                is DowngradePriceByChangingTier -> {
-                  tryToDowngradePrice
-                }
-
-                is UpdateAddress -> {
-                  dropUnlessResumed { navigateToMovingFlow() }
-                }
-
-                is UpgradeCoverageByChangingTier -> {
-                  tryToUpgradeCoverage
-                }
-
-                is Redirect -> {
-                  { openUrl(suggestion.url) }
-                }
-              },
+              onButtonClick = { openUrl(suggestion.url) },
             )
 
             is SurveyOptionSuggestion.Known.Info -> InfoCardStyle.Default
+
+            else -> InfoCardStyle.Default
           },
         )
         Spacer(modifier = (Modifier.height(4.dp)))
@@ -414,15 +385,12 @@ private fun PreviewTerminationSurveyScreen(
         uiState = uiState,
         selectOption = {},
         navigateUp = {},
-        navigateToMovingFlow = {},
         closeTerminationFlow = {},
         changeFeedbackForSelectedReason = {},
         onContinueClick = {},
         onCloseFullScreenEditText = {},
         onLaunchFullScreenEditText = {},
         openUrl = {},
-        tryToDowngradePrice = {},
-        tryToUpgradeCoverage = {},
         closeEmptyQuotesDialog = {},
       )
     }

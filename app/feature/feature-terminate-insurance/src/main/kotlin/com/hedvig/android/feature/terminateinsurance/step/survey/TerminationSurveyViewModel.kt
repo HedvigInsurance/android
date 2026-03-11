@@ -261,7 +261,7 @@ internal data class TerminationSurveyState(
 ) {
   val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }
   val continueAllowed: Boolean = selectedOption != null &&
-    (selectedOption.suggestion == null || selectedOption.suggestion !is SurveyOptionSuggestion.Known.Action)
+    (selectedOption.suggestion == null || selectedOption.suggestion !is SurveyOptionSuggestion.Known.Action.Redirect)
 
   constructor(reasons: List<TerminationSurveyOption>) : this(
     reasons = reasons,

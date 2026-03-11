@@ -79,6 +79,7 @@ val terminateInsuranceModule = module {
       skipButtonTitle = destination.skipButtonTitle,
       action = destination.action,
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
+      changeTierRepository = get<ChangeTierRepository>(),
     )
   }
 
