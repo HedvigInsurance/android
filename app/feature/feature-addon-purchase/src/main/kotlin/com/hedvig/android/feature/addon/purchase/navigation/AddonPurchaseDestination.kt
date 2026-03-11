@@ -30,7 +30,10 @@ internal sealed interface AddonPurchaseDestination {
   data object ChooseInsuranceToAddAddonDestination : AddonPurchaseDestination, Destination
 
   @Serializable
-  data class CustomizeAddon(val insuranceId: String, val preselectedAddonDisplayNames: List<String>) : AddonPurchaseDestination, Destination
+  data class CustomizeAddon(
+    val insuranceId: String,
+    val preselectedAddonDisplayNames: List<String>,
+  ) : AddonPurchaseDestination, Destination
 
   @Serializable
   data class TravelInsurancePlusExplanation(

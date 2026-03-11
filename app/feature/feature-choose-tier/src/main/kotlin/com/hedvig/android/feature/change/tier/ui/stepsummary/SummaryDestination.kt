@@ -473,7 +473,7 @@ private class SummaryUiStateProvider :
             CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
             CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
           ),
-          info = "Some important info"
+          info = "Some important info",
         ),
       ),
       Failure,

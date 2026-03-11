@@ -264,7 +264,9 @@ private fun FailureScreen(
           stringResource(Res.string.something_went_wrong)
         }
 
-        is Failure.SpecificDeflect -> uiState.title
+        is Failure.SpecificDeflect -> {
+          uiState.title
+        }
       }
 
       val subTitle = when (uiState) {
@@ -572,7 +574,7 @@ private fun ToggleableAddons(
         enabled = true,
         onBadgeClick = {
           onToggleOption(addonQuote)
-        }
+        },
       )
       if (index != addonOptions.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -588,11 +590,11 @@ private fun ToggleableAddons(
         FlowHeading(
           title = stringResource(Res.string.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE),
           description = null,
-          baseStyle = HedvigTheme.typography.bodySmall
+          baseStyle = HedvigTheme.typography.bodySmall,
         )
         HedvigText(
           stringResource(Res.string.ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE),
-          color = HedvigTheme.colorScheme.textSecondary
+          color = HedvigTheme.colorScheme.textSecondary,
         )
         Spacer(Modifier.height(32.dp))
         HedvigButton(
@@ -602,7 +604,7 @@ private fun ToggleableAddons(
           onClick = {
             alreadyActiveAddonBottomSheetState.dismiss()
           },
-          modifier = Modifier.fillMaxWidth()
+          modifier = Modifier.fillMaxWidth(),
         )
         Spacer(Modifier.height(16.dp))
       }
@@ -621,7 +623,7 @@ private fun ToggleableAddons(
         onCheckboxSelected = {},
         onBadgeClick = {
           alreadyActiveAddonBottomSheetState.show(Unit)
-        }
+        },
       )
       if (index != currentlyActiveAddons.lastIndex) {
         Spacer(Modifier.height(4.dp))
@@ -637,7 +639,7 @@ private fun AddonCheckbox(
   enabled: Boolean,
   onCheckboxSelected: () -> Unit,
   onBadgeClick: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Checkbox(
     modifier = modifier,
@@ -658,7 +660,7 @@ private fun AddonCheckbox(
             color = HighlightLabelDefaults.HighlightColor.Green(HighlightLabelDefaults.HighlightShade.MEDIUM),
             modifier = Modifier
               .clip(HedvigTheme.shapes.cornerXSmall)
-              .clickable(enabled = true, onClick = onBadgeClick)
+              .clickable(enabled = true, onClick = onBadgeClick),
           )
         }
 
@@ -935,7 +937,7 @@ internal class CustomizeTravelAddonPreviewProvider :
         "You have decomissioned car",
         AddonOfferDeflectType.GENERAL_CLOSE,
         "contractId",
-      )
+      ),
     ),
   )
 

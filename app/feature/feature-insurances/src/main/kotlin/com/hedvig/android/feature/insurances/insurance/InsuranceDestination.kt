@@ -163,8 +163,8 @@ private fun InsuranceScreen(
             HedvigErrorSection(
               onButtonClick = reload,
               modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             )
             Spacer(Modifier.weight(1f))
             Spacer(Modifier.height(16.dp))
@@ -210,21 +210,21 @@ private fun InsuranceScreenContent(
 ) {
   Column(
     modifier = modifier
-        .fillMaxSize()
-        .pullRefresh(pullRefreshState)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
-        .verticalScroll(rememberScrollState()),
+      .fillMaxSize()
+      .pullRefresh(pullRefreshState)
+      .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
+      .verticalScroll(rememberScrollState()),
   ) {
     Spacer(Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-          .height(64.dp)
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp)
-          .semantics(mergeDescendants = true) {
-              heading()
-          },
+        .height(64.dp)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+        .semantics(mergeDescendants = true) {
+          heading()
+        },
     ) {
       HedvigText(
         text = stringResource(Res.string.DASHBOARD_SCREEN_TITLE),
@@ -265,9 +265,9 @@ private fun InsuranceScreenContent(
             Spacer(Modifier.height(24.dp))
             Row(
               modifier = modifier
-                  .fillMaxWidth()
-                  .padding(horizontal = 16.dp)
-                  .semantics { heading() },
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .semantics { heading() },
               verticalAlignment = Alignment.CenterVertically,
             ) {
               HedvigText(text = stringResource(Res.string.INSURANCE_ADDONS_SUBHEADING))
@@ -280,8 +280,8 @@ private fun InsuranceScreenContent(
                   onNavigateToAddonPurchaseFlow(bannerInfo.eligibleInsurancesIds.map(::ContractId))
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                  .fillMaxWidth()
+                  .padding(horizontal = 16.dp),
               )
               if (index != uiState.addonBannerInfoList.lastIndex) {
                 Spacer(Modifier.height(16.dp))
@@ -364,7 +364,6 @@ private fun InsuranceCardsPile(
       }.first().measure(constraints).height
     }
 
-
     val cardPlaceables = contracts.mapIndexed { idx, contract ->
       subcompose("card_$idx") {
         InsuranceCardWrapper(
@@ -374,7 +373,6 @@ private fun InsuranceCardsPile(
         )
       }.first().measure(constraints)
     }
-
 
     val firstCardHeight = cardPlaceables[0].height
     val totalHeight = firstCardHeight + peekHeights.sum()
@@ -406,10 +404,10 @@ private fun InsuranceCardWrapper(
 ) {
   Box(
     modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .hedvigDropShadow()
-        .clip(HedvigTheme.shapes.cornerXLarge),
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp)
+      .hedvigDropShadow()
+      .clip(HedvigTheme.shapes.cornerXLarge),
   ) {
     val description = stringResource(Res.string.A11Y_VIEW_DETAILS)
     InsuranceCard(
@@ -421,12 +419,12 @@ private fun InsuranceCardWrapper(
       fallbackPainter = contract.createPainter(),
       imageContentScale = contract.imageContentScale(),
       modifier = Modifier
-          .clickable(
-              role = Role.Button,
-              onClickLabel = description,
-          ) {
-              onInsuranceCardClick(contract.id)
-          }
+        .clickable(
+          role = Role.Button,
+          onClickLabel = description,
+        ) {
+          onInsuranceCardClick(contract.id)
+        },
     )
   }
 }

@@ -456,7 +456,7 @@ private fun ManageAddonBottomSheetContent(
       baseStyle = HedvigTheme.typography.headlineSmall,
       modifier = Modifier.fillMaxWidth(),
     )
-    val description =when {
+    val description = when {
       addon.isUpgradable && addon.isRemovable -> stringResource(Res.string.ADDON_FLOW_UPDATE_ADDON_DESCRIPTION)
       addon.isUpgradable -> stringResource(Res.string.ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION)
       addon.isRemovable -> stringResource(Res.string.REMOVE_ADDON_DESCRIPTION)
