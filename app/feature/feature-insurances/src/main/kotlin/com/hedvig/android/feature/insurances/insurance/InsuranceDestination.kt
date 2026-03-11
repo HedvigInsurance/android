@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -408,7 +409,10 @@ private fun InsuranceCardWrapper(
       .fillMaxWidth()
       .padding(horizontal = 16.dp)
       .hedvigDropShadow()
-      .clip(HedvigTheme.shapes.cornerXLarge),
+      .clip(HedvigTheme.shapes.cornerXLarge)
+      .clickable{
+        onInsuranceCardClick(contract.id)
+      },
   ) {
     val description = stringResource(Res.string.A11Y_VIEW_DETAILS)
     InsuranceCard(
