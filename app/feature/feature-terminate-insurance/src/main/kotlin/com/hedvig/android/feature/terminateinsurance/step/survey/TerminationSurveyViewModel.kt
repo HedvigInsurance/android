@@ -206,31 +206,46 @@ internal class TerminationSurveyPresenter(
             decomEligible = CarDecomEligibility.isEligible(info.typeOfContract, info.commencementDate),
           )
           val nextStep: TerminateInsuranceStep = when (deflection) {
-            CarDeflectionRoute.AutoCancel -> TerminateInsuranceStep.DeflectAutoCancelStep(
-              title = "Your insurance will be cancelled automatically",
-              message = when (selectedOption.id) {
-                "CAR_SOLD" -> "When the new owner registers the car, your insurance will be cancelled automatically."
-                "CAR_SCRAPPED" -> "When the car is scrapped, your insurance will be cancelled automatically."
-                else -> "When the car is decommissioned, your insurance will be cancelled automatically."
-              },
-              extraMessage = "You don't need to do anything. We'll handle it.",
-            )
-            CarDeflectionRoute.AutoDecommission -> TerminateInsuranceStep.DeflectAutoDecommissionStep(
-              title = if (selectedOption.id == "CAR_RECOMMISSIONED") "Your car has been recommissioned"
-              else "Your car is decommissioned",
-              message = if (selectedOption.id == "CAR_RECOMMISSIONED") {
-                "Your insurance will be automatically updated to match your car's new status."
-              } else {
-                "Your insurance will be automatically adjusted while your car is decommissioned."
-              },
-              info = if (selectedOption.id == "CAR_RECOMMISSIONED") null
-              else "You'll be notified when the changes take effect.",
-              explanations = if (selectedOption.id == "CAR_RECOMMISSIONED") emptyList()
-              else listOf(
-                "What's covered" to "Your car is still covered against theft and damage while decommissioned.",
-                "What it costs" to "You'll pay a reduced premium while your car is decommissioned.",
-              ),
-            )
+            CarDeflectionRoute.AutoCancel -> {
+              TerminateInsuranceStep.DeflectAutoCancelStep(
+                title = "Your insurance will be cancelled automatically",
+                message = when (selectedOption.id) {
+                  "CAR_SOLD" -> "When the new owner registers the car, your insurance will be cancelled automatically."
+                  "CAR_SCRAPPED" -> "When the car is scrapped, your insurance will be cancelled automatically."
+                  else -> "When the car is decommissioned, your insurance will be cancelled automatically."
+                },
+                extraMessage = "You don't need to do anything. We'll handle it.",
+              )
+            }
+
+            CarDeflectionRoute.AutoDecommission -> {
+              TerminateInsuranceStep.DeflectAutoDecommissionStep(
+                title = if (selectedOption.id == "CAR_RECOMMISSIONED") {
+                  "Your car has been recommissioned"
+                } else {
+                  "Your car is decommissioned"
+                },
+                message = if (selectedOption.id == "CAR_RECOMMISSIONED") {
+                  "Your insurance will be automatically updated to match your car's new status."
+                } else {
+                  "Your insurance will be automatically adjusted while your car is decommissioned."
+                },
+                info = if (selectedOption.id == "CAR_RECOMMISSIONED") {
+                  null
+                } else {
+                  "You'll be notified when the changes take effect."
+                },
+                explanations = if (selectedOption.id == "CAR_RECOMMISSIONED") {
+                  emptyList()
+                } else {
+                  listOf(
+                    "What's covered" to "Your car is still covered against theft and damage while decommissioned.",
+                    "What it costs" to "You'll pay a reduced premium while your car is decommissioned.",
+                  )
+                },
+              )
+            }
+
             null -> {
               val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
               if (TerminationFlowComputations.shouldDelete(info.masterInceptionDate, today)) {

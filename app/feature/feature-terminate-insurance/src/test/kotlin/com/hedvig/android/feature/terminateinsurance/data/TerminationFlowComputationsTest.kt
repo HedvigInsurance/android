@@ -9,7 +9,6 @@ import kotlinx.datetime.LocalDate
 import org.junit.Test
 
 class TerminationFlowComputationsTest {
-
   @Test
   fun `shouldDelete is true when masterInceptionDate is in the future`() {
     assertThat(

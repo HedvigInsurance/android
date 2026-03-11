@@ -5,7 +5,6 @@ import assertk.assertions.isEqualTo
 import org.junit.Test
 
 class TerminationReasonMapperTest {
-
   @Test
   fun `moving options map correctly`() {
     assertThat(TerminationReasonMapper.toReason("MOVED_IN_WITH_SOMEONE")).isEqualTo("MOVED_IN_WITH_SOMEONE")
@@ -15,7 +14,9 @@ class TerminationReasonMapperTest {
     assertThat(TerminationReasonMapper.toReason("MOVED_OTHER")).isEqualTo("HOME_NO_LONGER_NEED_OTHER")
     assertThat(TerminationReasonMapper.toReason("MOVING")).isEqualTo("MOVED")
     assertThat(TerminationReasonMapper.toReason("MOVING_NEW_ADDRESS")).isEqualTo("MOVED")
-    assertThat(TerminationReasonMapper.toReason("MOVING_CANCEL_WITHOUT_NEW_QUOTE")).isEqualTo("MOVING_CANCEL_WITHOUT_NEW_QUOTE")
+    assertThat(
+      TerminationReasonMapper.toReason("MOVING_CANCEL_WITHOUT_NEW_QUOTE"),
+    ).isEqualTo("MOVING_CANCEL_WITHOUT_NEW_QUOTE")
   }
 
   @Test
@@ -37,16 +38,24 @@ class TerminationReasonMapperTest {
   @Test
   fun `better price options map to GOT_BETTER_OFFER`() {
     assertThat(TerminationReasonMapper.toReason("BETTER_PRICE")).isEqualTo("GOT_BETTER_OFFER_FROM_OTHER_INSURER")
-    assertThat(TerminationReasonMapper.toReason("BETTER_PRICE_CANCEL_WITHOUT_NEW_QUOTE")).isEqualTo("GOT_BETTER_OFFER_FROM_OTHER_INSURER")
+    assertThat(
+      TerminationReasonMapper.toReason("BETTER_PRICE_CANCEL_WITHOUT_NEW_QUOTE"),
+    ).isEqualTo("GOT_BETTER_OFFER_FROM_OTHER_INSURER")
     assertThat(TerminationReasonMapper.toReason("BETTER_OFFER")).isEqualTo("GOT_BETTER_OFFER_FROM_OTHER_INSURER")
   }
 
   @Test
   fun `coverage options map to DISSATISFIED_WITH_COVERAGE`() {
     assertThat(TerminationReasonMapper.toReason("MISSING_COVERAGE_OR_TERMS")).isEqualTo("DISSATISFIED_WITH_COVERAGE")
-    assertThat(TerminationReasonMapper.toReason("MISSING_COVERAGE_OR_TERMS_CANCEL_WITHOUT_NEW_QUOTE")).isEqualTo("DISSATISFIED_WITH_COVERAGE")
-    assertThat(TerminationReasonMapper.toReason("MISSING_COVERAGE_OR_TERMS_CHANGE_COVERAGE_LEVEL")).isEqualTo("DISSATISFIED_WITH_COVERAGE")
-    assertThat(TerminationReasonMapper.toReason("BETTER_PRICE_CHANGE_COVERAGE_LEVEL")).isEqualTo("DISSATISFIED_WITH_COVERAGE")
+    assertThat(
+      TerminationReasonMapper.toReason("MISSING_COVERAGE_OR_TERMS_CANCEL_WITHOUT_NEW_QUOTE"),
+    ).isEqualTo("DISSATISFIED_WITH_COVERAGE")
+    assertThat(
+      TerminationReasonMapper.toReason("MISSING_COVERAGE_OR_TERMS_CHANGE_COVERAGE_LEVEL"),
+    ).isEqualTo("DISSATISFIED_WITH_COVERAGE")
+    assertThat(
+      TerminationReasonMapper.toReason("BETTER_PRICE_CHANGE_COVERAGE_LEVEL"),
+    ).isEqualTo("DISSATISFIED_WITH_COVERAGE")
     assertThat(TerminationReasonMapper.toReason("DISSATISFIED_COVERAGE")).isEqualTo("DISSATISFIED_WITH_COVERAGE")
   }
 

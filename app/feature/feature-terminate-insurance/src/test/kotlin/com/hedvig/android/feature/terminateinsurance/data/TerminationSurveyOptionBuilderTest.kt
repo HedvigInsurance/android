@@ -8,7 +8,6 @@ import assertk.assertions.isEqualTo
 import org.junit.Test
 
 class TerminationSurveyOptionBuilderTest {
-
   @Test
   fun `swedish apartment BRF builds correct base and home options without tier support`() {
     val options = TerminationSurveyOptionBuilder.build(

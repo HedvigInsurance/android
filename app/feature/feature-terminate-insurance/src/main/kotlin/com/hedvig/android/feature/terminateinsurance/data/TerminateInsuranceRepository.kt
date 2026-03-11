@@ -27,6 +27,7 @@ import octopus.type.FlowTerminationSurveyInput
 internal interface TerminateInsuranceRepository {
   // --- New flow methods ---
   suspend fun fetchTerminationInfo(contractId: String): Either<ErrorMessage, TerminationInfo>
+
   suspend fun terminateContract(
     contractId: String,
     terminationDate: LocalDate?,

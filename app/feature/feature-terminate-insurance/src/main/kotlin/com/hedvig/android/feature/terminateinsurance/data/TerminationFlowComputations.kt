@@ -5,14 +5,12 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 
 internal object TerminationFlowComputations {
-  fun shouldDelete(masterInceptionDate: LocalDate, today: LocalDate): Boolean =
-    masterInceptionDate > today
+  fun shouldDelete(masterInceptionDate: LocalDate, today: LocalDate): Boolean = masterInceptionDate > today
 
   fun minDate(masterInceptionDate: LocalDate, today: LocalDate): LocalDate =
     maxOf(masterInceptionDate.plus(1, DateTimeUnit.DAY), today)
 
-  fun maxDate(minDate: LocalDate): LocalDate =
-    minDate.plus(1, DateTimeUnit.YEAR)
+  fun maxDate(minDate: LocalDate): LocalDate = minDate.plus(1, DateTimeUnit.YEAR)
 }
 
 internal enum class CarDeflectionRoute {
@@ -56,7 +54,9 @@ internal object CarDeflectionRouter {
         }
       }
 
-      else -> null
+      else -> {
+        null
+      }
     }
   }
 }

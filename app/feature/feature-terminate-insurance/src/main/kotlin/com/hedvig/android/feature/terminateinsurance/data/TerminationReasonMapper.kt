@@ -5,7 +5,6 @@ package com.hedvig.android.feature.terminateinsurance.data
  * Direct port of Odyssey's SurveyOption.toTerminationReason().
  */
 internal object TerminationReasonMapper {
-
   fun toReason(optionId: String): String = MAPPING[optionId] ?: "UNKNOWN"
 
   private val MAPPING = mapOf(

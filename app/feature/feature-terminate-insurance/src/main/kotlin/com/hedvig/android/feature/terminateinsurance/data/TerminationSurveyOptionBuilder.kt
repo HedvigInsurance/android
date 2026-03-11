@@ -17,7 +17,6 @@ import kotlin.random.Random
  * replace DISPLAY_NAMES values with stringResource() calls or a resolver.
  */
 internal object TerminationSurveyOptionBuilder {
-
   fun build(
     typeOfContract: String,
     supportsBetterPrice: Boolean,
@@ -37,11 +36,14 @@ internal object TerminationSurveyOptionBuilder {
       .mutateIf(
         supportsBetterPrice,
         option("BETTER_PRICE").withSubs(
-          option("BETTER_PRICE_CHANGE_COVERAGE_LEVEL", suggestion = SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier(
-            description = "You can lower your price by changing your coverage level",
-            buttonTitle = "Change coverage level",
-            infoType = InfoType.INFO,
-          )),
+          option(
+            "BETTER_PRICE_CHANGE_COVERAGE_LEVEL",
+            suggestion = SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier(
+              description = "You can lower your price by changing your coverage level",
+              buttonTitle = "Change coverage level",
+              infoType = InfoType.INFO,
+            ),
+          ),
           option("BETTER_PRICE_CANCEL_WITHOUT_NEW_QUOTE", feedBackRequired = true),
           shuffle = false,
         ),
@@ -49,11 +51,14 @@ internal object TerminationSurveyOptionBuilder {
       .mutateIf(
         supportsBetterCoverage,
         option("MISSING_COVERAGE_OR_TERMS").withSubs(
-          option("MISSING_COVERAGE_OR_TERMS_CHANGE_COVERAGE_LEVEL", suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
-            description = "You can upgrade your coverage level",
-            buttonTitle = "Change coverage level",
-            infoType = InfoType.INFO,
-          )),
+          option(
+            "MISSING_COVERAGE_OR_TERMS_CHANGE_COVERAGE_LEVEL",
+            suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
+              description = "You can upgrade your coverage level",
+              buttonTitle = "Change coverage level",
+              infoType = InfoType.INFO,
+            ),
+          ),
           option("MISSING_COVERAGE_OR_TERMS_CANCEL_WITHOUT_NEW_QUOTE", feedBackRequired = true),
           shuffle = false,
         ),
@@ -72,11 +77,14 @@ internal object TerminationSurveyOptionBuilder {
           supportsBetterCoverage,
           option("NO_LONGER_NEEDED").withSubs(
             option("MOVED_IN_WITH_SOMEONE"),
-            option("MOVED_ABROAD_CHANGE_TIER", suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
-              description = "You can change your coverage level before moving abroad",
-              buttonTitle = "SURVEY_CHANGE_COVERAGE_LEVEL",
-              infoType = InfoType.INFO,
-            )),
+            option(
+              "MOVED_ABROAD_CHANGE_TIER",
+              suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
+                description = "You can change your coverage level before moving abroad",
+                buttonTitle = "SURVEY_CHANGE_COVERAGE_LEVEL",
+                infoType = InfoType.INFO,
+              ),
+            ),
             option("MOVED_OTHER", feedBackRequired = true),
             shuffle = false,
           ),
@@ -107,15 +115,21 @@ internal object TerminationSurveyOptionBuilder {
         .mutateIf(
           supportsBetterCoverage,
           option("NO_LONGER_NEEDED").withSubs(
-            option("MOVED_IN_WITH_SOMEONE_STUDENT", suggestion = SurveyOptionSuggestion.Known.Info(
-              description = "SURVEY_INFO_DESCRIPTION_STUDENT_MOVED_IN_WITH_SOMEONE",
-              infoType = InfoType.INFO,
-            )),
-            option("MOVED_ABROAD_CHANGE_TIER", suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
-              description = "You can change your coverage level before moving abroad",
-              buttonTitle = "SURVEY_CHANGE_COVERAGE_LEVEL",
-              infoType = InfoType.INFO,
-            )),
+            option(
+              "MOVED_IN_WITH_SOMEONE_STUDENT",
+              suggestion = SurveyOptionSuggestion.Known.Info(
+                description = "SURVEY_INFO_DESCRIPTION_STUDENT_MOVED_IN_WITH_SOMEONE",
+                infoType = InfoType.INFO,
+              ),
+            ),
+            option(
+              "MOVED_ABROAD_CHANGE_TIER",
+              suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
+                description = "You can change your coverage level before moving abroad",
+                buttonTitle = "SURVEY_CHANGE_COVERAGE_LEVEL",
+                infoType = InfoType.INFO,
+              ),
+            ),
             option("MOVED_OTHER", feedBackRequired = true),
             shuffle = false,
           ),
@@ -123,10 +137,13 @@ internal object TerminationSurveyOptionBuilder {
         .mutateIf(
           !supportsBetterCoverage,
           option("NO_LONGER_NEEDED").withSubs(
-            option("MOVED_IN_WITH_SOMEONE_STUDENT", suggestion = SurveyOptionSuggestion.Known.Info(
-              description = "SURVEY_INFO_DESCRIPTION_STUDENT_MOVED_IN_WITH_SOMEONE",
-              infoType = InfoType.INFO,
-            )),
+            option(
+              "MOVED_IN_WITH_SOMEONE_STUDENT",
+              suggestion = SurveyOptionSuggestion.Known.Info(
+                description = "SURVEY_INFO_DESCRIPTION_STUDENT_MOVED_IN_WITH_SOMEONE",
+                infoType = InfoType.INFO,
+              ),
+            ),
             option("MOVED_ABROAD"),
             option("MOVED_OTHER", feedBackRequired = true),
           ),
@@ -163,11 +180,14 @@ internal object TerminationSurveyOptionBuilder {
           shuffle = false,
         ),
         option("MISSING_COVERAGE_OR_TERMS").withSubs(
-          option("MISSING_COVERAGE_OR_TERMS_CHANGE_COVERAGE_LEVEL", suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
-            description = "You can upgrade your coverage level",
-            buttonTitle = "Change coverage level",
-            infoType = InfoType.INFO,
-          )),
+          option(
+            "MISSING_COVERAGE_OR_TERMS_CHANGE_COVERAGE_LEVEL",
+            suggestion = SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier(
+              description = "You can upgrade your coverage level",
+              buttonTitle = "Change coverage level",
+              infoType = InfoType.INFO,
+            ),
+          ),
           option("MISSING_COVERAGE_OR_TERMS_CANCEL_WITHOUT_NEW_QUOTE", feedBackRequired = true),
           shuffle = false,
         ),
@@ -202,19 +222,25 @@ internal object TerminationSurveyOptionBuilder {
 
   private fun homeMovingOption(studentVariant: Boolean): TerminationSurveyOption {
     val movedInOption = if (studentVariant) {
-      option("MOVED_IN_WITH_SOMEONE_STUDENT", suggestion = SurveyOptionSuggestion.Known.Info(
-        description = "SURVEY_INFO_DESCRIPTION_STUDENT_MOVED_IN_WITH_SOMEONE",
-        infoType = InfoType.INFO,
-      ))
+      option(
+        "MOVED_IN_WITH_SOMEONE_STUDENT",
+        suggestion = SurveyOptionSuggestion.Known.Info(
+          description = "SURVEY_INFO_DESCRIPTION_STUDENT_MOVED_IN_WITH_SOMEONE",
+          infoType = InfoType.INFO,
+        ),
+      )
     } else {
       option("MOVED_IN_WITH_SOMEONE")
     }
     return option("MOVING").withSubs(
-      option("MOVING_NEW_ADDRESS", suggestion = SurveyOptionSuggestion.Known.Action.UpdateAddress(
-        description = "You can update your address instead of cancelling",
-        buttonTitle = "Update address",
-        infoType = InfoType.OFFER,
-      )),
+      option(
+        "MOVING_NEW_ADDRESS",
+        suggestion = SurveyOptionSuggestion.Known.Action.UpdateAddress(
+          description = "You can update your address instead of cancelling",
+          buttonTitle = "Update address",
+          infoType = InfoType.OFFER,
+        ),
+      ),
       movedInOption,
       option("MOVING_CANCEL_WITHOUT_NEW_QUOTE", feedBackRequired = true),
       shuffle = false,
@@ -267,10 +293,7 @@ internal object TerminationSurveyOptionBuilder {
     vararg updates: TerminationSurveyOption,
   ): List<TerminationSurveyOption> = if (condition) mutate(*updates) else this
 
-  private fun shuffleOptions(
-    options: List<TerminationSurveyOption>,
-    memberId: String,
-  ): List<TerminationSurveyOption> {
+  private fun shuffleOptions(options: List<TerminationSurveyOption>, memberId: String): List<TerminationSurveyOption> {
     val seed = memberId.hashCode().toLong()
     val random = Random(seed)
     val shuffled = options.shuffled(random)

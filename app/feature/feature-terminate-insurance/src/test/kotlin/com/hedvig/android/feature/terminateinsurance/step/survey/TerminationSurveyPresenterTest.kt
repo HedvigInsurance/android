@@ -32,8 +32,10 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.terminateinsurance.InsuranceId
 import com.hedvig.android.feature.terminateinsurance.data.InfoType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
+import com.hedvig.android.feature.terminateinsurance.data.TerminateContractResult
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -521,6 +523,30 @@ private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
 
   override suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep> {
     return terminationFlowTurbine.awaitItem()
+  }
+
+  override suspend fun fetchTerminationInfo(contractId: String): Either<ErrorMessage, TerminationInfo> {
+    return Either.Right(
+      TerminationInfo(
+        contractId = contractId,
+        masterInceptionDate = kotlinx.datetime.LocalDate(2024, 1, 1),
+        terminationDate = null,
+        existingAddons = emptyList(),
+        supportsBetterPrice = false,
+        supportsBetterCoverage = false,
+        typeOfContract = "SE_APARTMENT_BRF",
+        commencementDate = null,
+      ),
+    )
+  }
+
+  override suspend fun terminateContract(
+    contractId: String,
+    terminationDate: kotlinx.datetime.LocalDate?,
+    terminationReason: String,
+    terminationComment: String?,
+  ): Either<ErrorMessage, TerminateContractResult> {
+    return Either.Right(TerminateContractResult(terminationDate = terminationDate, userError = null))
   }
 }
 

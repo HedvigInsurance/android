@@ -10,8 +10,8 @@ import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.termination.data.TerminatableInsurance
 import com.hedvig.android.feature.terminateinsurance.data.TerminationInfo
 import com.hedvig.android.feature.terminateinsurance.data.toTerminateInsuranceDestination
-import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateStepUiState
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
+import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateStepUiState
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoCancel.DeflectAutoCancelStepDestination
 import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecomStepDestination
