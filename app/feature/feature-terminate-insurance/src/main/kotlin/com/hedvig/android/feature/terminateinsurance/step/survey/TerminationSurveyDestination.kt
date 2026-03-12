@@ -311,22 +311,22 @@ private fun SelectedSurveyInfoBox(
           },
           style = when (suggestion.type) {
             SuggestionType.UPDATE_ADDRESS -> InfoCardStyle.Button(
-              buttonText = suggestion.description,
+              buttonText = stringResource(Res.string.general_continue_button),
               onButtonClick = dropUnlessResumed { navigateToMovingFlow() },
             )
 
             SuggestionType.DOWNGRADE_PRICE -> InfoCardStyle.Button(
-              buttonText = suggestion.description,
+              buttonText = stringResource(Res.string.general_continue_button),
               onButtonClick = tryToDowngradePrice,
             )
 
             SuggestionType.UPGRADE_COVERAGE -> InfoCardStyle.Button(
-              buttonText = suggestion.description,
+              buttonText = stringResource(Res.string.general_continue_button),
               onButtonClick = tryToUpgradeCoverage,
             )
 
             SuggestionType.REDIRECT -> InfoCardStyle.Button(
-              buttonText = suggestion.description,
+              buttonText = stringResource(Res.string.general_continue_button),
               onButtonClick = { suggestion.url?.let { openUrl(it) } },
             )
 

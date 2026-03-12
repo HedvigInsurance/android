@@ -80,9 +80,9 @@ internal fun TerminationConfirmationDestination(
   closeTerminationFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState.terminationDate) {
-    val terminationDate = uiState.terminationDate ?: return@LaunchedEffect
-    navigateToSuccess(terminationDate)
+  LaunchedEffect(uiState.terminationSuccess) {
+    val success = uiState.terminationSuccess ?: return@LaunchedEffect
+    navigateToSuccess(success.terminationDate)
   }
 
   TerminationConfirmationScreen(
@@ -101,7 +101,7 @@ private fun TerminationConfirmationScreen(
   closeTerminationFlow: () -> Unit,
 ) {
   val isSubmittingTerminationOrNavigatingForward =
-    uiState.isSubmittingContractTermination || uiState.terminationDate != null
+    uiState.isSubmittingContractTermination || uiState.terminationSuccess != null
   if (isSubmittingTerminationOrNavigatingForward) {
     HedvigFullScreenCenterAlignedLinearProgress(
       title = stringResource(Res.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
@@ -112,6 +112,7 @@ private fun TerminationConfirmationScreen(
       insuranceInfo = uiState.insuranceInfo,
       extraCoverageItems = uiState.extraCoverageItems,
       notificationMessage = uiState.notificationMessage,
+      userError = uiState.userError,
       navigateUp = navigateBack,
       closeTerminationFlow = closeTerminationFlow,
       onContinue = onContinue,
@@ -126,6 +127,7 @@ private fun AreYouSureScreen(
   insuranceInfo: TerminationGraphParameters,
   extraCoverageItems: List<ExtraCoverageItem>,
   notificationMessage: String?,
+  userError: String?,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   onContinue: () -> Unit,
@@ -144,6 +146,14 @@ private fun AreYouSureScreen(
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f).heightIn(min = 8.dp))
+    if (userError != null) {
+      HedvigNotificationCard(
+        message = userError,
+        priority = NotificationDefaults.NotificationPriority.Attention,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
     if (notificationMessage != null) {
       HedvigNotificationCard(
         message = notificationMessage,
@@ -315,7 +325,7 @@ private fun PreviewTerminationConfirmationScreen(
             ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
           },
           notificationMessage = "Your insurance will be deactivated when you no longer have two insurances with us",
-          terminationDate = null,
+          terminationSuccess = null,
           userError = null,
           isSubmittingContractTermination = isLoading,
         ),

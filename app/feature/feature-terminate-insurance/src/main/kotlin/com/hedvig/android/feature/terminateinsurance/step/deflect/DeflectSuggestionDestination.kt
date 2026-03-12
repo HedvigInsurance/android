@@ -20,6 +20,7 @@ import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_BUTTON
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
+import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -66,7 +67,7 @@ private fun DeflectSuggestionScreen(
     Spacer(Modifier.height(16.dp))
     if (url != null) {
       HedvigButton(
-        text = description,
+        text = stringResource(Res.string.general_continue_button),
         enabled = true,
         modifier = Modifier
           .fillMaxWidth()

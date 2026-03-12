@@ -38,7 +38,7 @@ internal class TerminationConfirmationViewModel(
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
       notificationMessage = null,
-      terminationDate = null,
+      terminationSuccess = null,
       userError = null,
       isSubmittingContractTermination = false,
     ),
@@ -90,7 +90,7 @@ private class TerminationConfirmationPresenter(
     CollectEvents { event ->
       when (event) {
         TerminationConfirmationEvent.HandledNavigation -> {
-          uiState = uiState.copy(terminationDate = null, userError = null)
+          uiState = uiState.copy(terminationSuccess = null, userError = null)
         }
 
         TerminationConfirmationEvent.Submit -> {
@@ -121,7 +121,7 @@ private class TerminationConfirmationPresenter(
                 } else {
                   uiState = uiState.copy(
                     isSubmittingContractTermination = false,
-                    terminationDate = result.terminationDate,
+                    terminationSuccess = TerminationSuccessResult(result.terminationDate),
                   )
                 }
               },
@@ -135,12 +135,14 @@ private class TerminationConfirmationPresenter(
   }
 }
 
+internal data class TerminationSuccessResult(val terminationDate: LocalDate?)
+
 internal data class OverviewUiState(
   val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
   val insuranceInfo: TerminationGraphParameters,
   val extraCoverageItems: List<ExtraCoverageItem>,
   val notificationMessage: String?,
-  val terminationDate: LocalDate?,
+  val terminationSuccess: TerminationSuccessResult?,
   val userError: String?,
   val isSubmittingContractTermination: Boolean,
 )
