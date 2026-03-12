@@ -1,0 +1,5 @@
+query TerminationBundleDiscountNotification($contractId: ID!, $terminationDate: Date!) {
+  contract(id: $contractId) {
+    terminationBundleDiscountNotification(terminationDate: $terminationDate)
+  }
+}
