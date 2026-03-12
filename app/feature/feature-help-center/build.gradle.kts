@@ -18,7 +18,12 @@ kotlin {
       implementation(libs.arrow.core)
       implementation(libs.arrow.fx)
       implementation(libs.coroutines.core)
+      implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.lifecycle.runtime.compose)
+      implementation(libs.jetbrains.navigation.common)
+      implementation(libs.jetbrains.navigation.compose)
+      implementation(libs.jetbrains.navigationevent.compose)
+      implementation(libs.koin.composeViewModel)
       implementation(libs.koin.core)
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.apolloCore)
@@ -40,13 +45,9 @@ kotlin {
       implementation(projects.uiEmergency)
     }
     androidMain.dependencies {
-      implementation(libs.androidx.activity.compose)
-      implementation(libs.androidx.navigation.common)
-      implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.compose.richtext)
       implementation(libs.compose.richtextCommonmark)
-      implementation(libs.koin.composeViewModel)
     }
     jvmMain.dependencies {
       implementation(libs.compose.richtext)
