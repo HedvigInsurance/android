@@ -9,6 +9,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
+import com.hedvig.android.feature.terminateinsurance.step.deflect.DeflectSuggestionDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
@@ -248,8 +249,41 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     navdestination<TerminateInsuranceDestination.DeflectSuggestion>(
       TerminateInsuranceDestination.DeflectSuggestion,
     ) {
-      // TODO: Create DeflectSuggestionDestination composable (Task 15)
-      // For now, this is a placeholder that will be implemented in Task 15
+      DeflectSuggestionDestination(
+        description = description,
+        url = url,
+        suggestionType = suggestionType,
+        navigateUp = navController::navigateUp,
+        closeTerminationFlow = closeTerminationFlow,
+        openUrl = openUrl,
+        onContinueTermination = {
+          when (val terminationAction = action) {
+            is TerminationAction.TerminateWithDate -> {
+              navController.navigate(
+                TerminateInsuranceDestination.TerminationDate(
+                  minDate = terminationAction.minDate,
+                  maxDate = terminationAction.maxDate,
+                  extraCoverageItems = terminationAction.extraCoverageItems,
+                  commonParams = commonParams,
+                  selectedReasonId = selectedReasonId,
+                  feedbackComment = feedbackComment,
+                ),
+              )
+            }
+
+            is TerminationAction.DeleteInsurance -> {
+              navController.navigate(
+                TerminateInsuranceDestination.InsuranceDeletion(
+                  commonParams = commonParams,
+                  extraCoverageItems = terminationAction.extraCoverageItems,
+                  selectedReasonId = selectedReasonId,
+                  feedbackComment = feedbackComment,
+                ),
+              )
+            }
+          }
+        },
+      )
     }
   }
 }
