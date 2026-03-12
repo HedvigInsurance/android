@@ -15,7 +15,6 @@ kotlin {
   val xcf = XCFramework(frameworkName)
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
     projects.authlib,
-    projects.featureClaimChat,
     projects.featureHelpCenter,
     projects.shareddi,
   )
@@ -29,6 +28,7 @@ kotlin {
       for (projectToExport in projectsToExport) {
         export(projectToExport)
       }
+      binaryOption("bundleId", frameworkName)
       baseName = frameworkName
       xcf.add(this)
     }
