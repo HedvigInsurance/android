@@ -539,9 +539,21 @@ internal fun SearchForm(
                 LazyColumn(
                   modifier = Modifier
                     .fillMaxWidth(),
-                  verticalArrangement = Arrangement.spacedBy(4.dp),
+                  verticalArrangement = Arrangement.spacedBy(6.dp),
                   state = lazyListState,
                 ) {
+                  item {
+                    if (animatedState.suggestedFixedQuery != null) {
+                      Row(horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()) {
+                        FixQuerySuggestion(animatedState.suggestedFixedQuery) {
+                          onQueryChange(animatedState.suggestedFixedQuery)
+                          searchQuery = animatedState.suggestedFixedQuery
+                        }
+                      }
+                      Spacer(Modifier.height(26.dp))
+                    }
+                  }
                   items(queryResult) { item ->
                     ItemCard(
                       itemTitle = item.text,
@@ -556,19 +568,6 @@ internal fun SearchForm(
                   }
                   item {
                     Spacer(Modifier.height(8.dp)) //to allow space for shadow
-                  }
-                  item {
-                    if (animatedState.suggestedFixedQuery != null) {
-                      Spacer(Modifier.height(8.dp))
-                      Row(horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()) {
-                        FixQuerySuggestion(animatedState.suggestedFixedQuery) {
-                          onQueryChange(animatedState.suggestedFixedQuery)
-                          searchQuery = animatedState.suggestedFixedQuery
-                        }
-                      }
-
-                    }
                   }
                 }
               }
