@@ -28,10 +28,12 @@ fun FeatureAddonBanner(
   onButtonClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val containerColor = HedvigTheme.colorScheme.surfacePrimary
-  val borderColor = HedvigTheme.colorScheme.surfacePrimary
+  val containerColor = HedvigTheme.colorScheme.fillNegative
+  val borderColor = HedvigTheme.colorScheme.borderPrimary
   Surface(
-    modifier = modifier.semantics(mergeDescendants = true) {},
+    modifier = modifier
+      .semantics(mergeDescendants = true) {}
+      .hedvigDropShadow(),
     shape = HedvigTheme.shapes.cornerLarge,
     color = containerColor,
     border = borderColor,
@@ -44,8 +46,10 @@ fun FeatureAddonBanner(
     ) {
       Row {
         HedvigText(title)
-        Spacer(Modifier.width(8.dp))
-        LabelRow(labels)
+        if (labels.isNotEmpty()) {
+          Spacer(Modifier.width(8.dp))
+          LabelRow(labels)
+        }
       }
       Spacer(Modifier.height(8.dp))
       HedvigText(

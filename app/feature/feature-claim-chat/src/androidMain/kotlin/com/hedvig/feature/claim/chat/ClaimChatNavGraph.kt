@@ -1,13 +1,15 @@
 package com.hedvig.feature.claim.chat
 
-import androidx.navigation.NavBackStackEntry
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -20,8 +22,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ClaimChatDestination(
-  val isDevelopmentFlow: Boolean,
-  val messageId: String?,
+  val isDevelopmentFlow: Boolean = false,
+  val messageId: String? = null,
 ) : Destination
 
 @Serializable
@@ -47,6 +49,7 @@ internal data object UpdateAppDestination : Destination
 
 fun NavGraphBuilder.claimChatGraph(
   navController: NavController,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -56,9 +59,11 @@ fun NavGraphBuilder.claimChatGraph(
   tryToDialPhone: (String) -> Unit,
   appPackageId: String,
   imageLoader: ImageLoader,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
-  navdestination<ClaimChatDestination> {
+  navdestination<ClaimChatDestination>(
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimFlow),
+  ) {
     ClaimChatDestination(
       isDevelopmentFlow = isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -83,16 +88,14 @@ fun NavGraphBuilder.claimChatGraph(
       navigateUp = navController::navigateUp,
     )
   }
-  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) { backStackEntry ->
+  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
     ClaimOutcomeDeflectDestination(
       deflect = deflect,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
       openUrl = openUrl,
       tryToDialPhone = tryToDialPhone,
-      onNavigateToNewConversation = {
-        onNavigateToNewConversation(backStackEntry)
-      },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
   navdestination<ClaimOutcomeNewClaimDestination>(ClaimOutcomeNewClaimDestination) {

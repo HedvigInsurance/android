@@ -1,0 +1,87 @@
+mutation AddonGenerateOffer($contractId: ID!) {
+  addonGenerateOffer(contractId: $contractId) {
+    ... on UserError {
+      message
+    }
+    ... on AddonOffer {
+      pageTitle
+      pageDescription
+      currentTotalCost {
+        ...ItemCostFragment
+      }
+      quote {
+        ...AddonContractQuoteFragment
+      }
+      whatsIncludedPageTitle
+      whatsIncludedPageDescription
+      infoMessage
+    }
+    ... on AddonOfferDeflect {
+      pageDescription
+      pageTitle
+      type
+    }
+  }
+}
+
+fragment AddonContractQuoteFragment on AddonContractQuote {
+  quoteId
+  displayTitle
+  displayDescription
+  activationDate
+  addonOffer {
+    ...AddonOfferContentFragment
+  }
+  activeAddons {
+    ...ActiveAddonFragment
+  }
+  baseQuoteCost {
+    ...ItemCostFragment
+  }
+  productVariant {
+    ...ProductVariantFragment
+  }
+}
+
+fragment AddonOfferContentFragment on AddonOfferContent {
+  ... on AddonOfferSelectable {
+    fieldTitle
+    selectionTitle
+    selectionDescription
+    quotes {
+      ...AddonOfferQuoteFragment
+    }
+  }
+  ... on AddonOfferToggleable {
+    quotes {
+      ...AddonOfferQuoteFragment
+    }
+  }
+}
+
+fragment ActiveAddonFragment on ActiveAddon {
+  id
+  cost {
+    ...ItemCostFragment
+  }
+  displayDescription
+  displayTitle
+
+}
+
+fragment AddonOfferQuoteFragment on AddonOfferQuote {
+  id
+  displayTitle
+  displayDescription
+  displayItems {
+    displayTitle
+    displayValue
+  }
+  cost {
+    ...ItemCostFragment
+  }
+  addonVariant {
+    ...AddonVariantFragment
+  }
+  subtype
+}

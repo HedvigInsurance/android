@@ -5,10 +5,13 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.permission.Permission
+import com.hedvig.android.permission.PermissionManager
 import octopus.MemberLogDeviceMutation
 
 internal class DeviceNameLoggingAuthListener(
   private val apolloClient: ApolloClient,
+  private val permissionManager: PermissionManager,
 ) : AuthEventListener {
   override suspend fun loggedIn(accessToken: String) {
     val androidInfoProvider = AndroidInfoProvider()
@@ -16,6 +19,7 @@ internal class DeviceNameLoggingAuthListener(
       MemberLogDeviceMutation(
         brand = androidInfoProvider.deviceBrand,
         model = androidInfoProvider.deviceName,
+        pushNotificationEnabled = permissionManager.isPermissionGranted(Permission.PostNotifications),
       ),
     ).safeExecute().fold(
       ifLeft = {

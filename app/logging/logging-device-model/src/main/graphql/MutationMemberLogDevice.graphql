@@ -1,5 +1,5 @@
-mutation MemberLogDevice($brand: String!, $model: String!) {
-  memberLogDevice(input: {os: "Android", brand: $brand, model: $model}) {
+mutation MemberLogDevice($brand: String!, $model: String!, $pushNotificationEnabled: Boolean!) {
+  memberLogDevice(input: {os: "Android", brand: $brand, model: $model, pushNotificationEnabled: $pushNotificationEnabled}) {
     message
   }
 }

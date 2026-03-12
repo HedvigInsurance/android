@@ -20,8 +20,8 @@ import com.hedvig.android.feature.addon.purchase.data.SubmitAddonPurchaseUseCase
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import octopus.UpsellTravelAddonActivateMutation
-import octopus.type.buildUpsellTravelAddonActivationOutput
+import octopus.AddonActivateOfferMutation
+import octopus.type.buildAddonActivationOutput
 import octopus.type.buildUserError
 import org.junit.Rule
 import org.junit.Test
@@ -39,9 +39,9 @@ class SubmitAddonPurchaseUseCaseImplTest {
   private val apolloClientWithGoodResponseNullError: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = UpsellTravelAddonActivateMutation(testId, testId),
-        data = UpsellTravelAddonActivateMutation.Data(OctopusFakeResolver) {
-          upsellTravelAddonActivate = buildUpsellTravelAddonActivationOutput {
+        operation = AddonActivateOfferMutation(addonIds = listOf(testId), quoteId = testId),
+        data = AddonActivateOfferMutation.Data(OctopusFakeResolver) {
+          addonActivateOffer = buildAddonActivationOutput {
             userError = null
           }
         },
@@ -52,9 +52,9 @@ class SubmitAddonPurchaseUseCaseImplTest {
   private val apolloClientWithUserError: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = UpsellTravelAddonActivateMutation(testId, testId),
-        data = UpsellTravelAddonActivateMutation.Data(OctopusFakeResolver) {
-          upsellTravelAddonActivate = buildUpsellTravelAddonActivationOutput {
+        operation = AddonActivateOfferMutation(addonIds = listOf(testId), quoteId = testId),
+        data = AddonActivateOfferMutation.Data(OctopusFakeResolver) {
+          addonActivateOffer = buildAddonActivationOutput {
             userError = buildUserError {
               message = "Bad message"
             }
@@ -67,7 +67,7 @@ class SubmitAddonPurchaseUseCaseImplTest {
   private val apolloClientWithBadResponse: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = UpsellTravelAddonActivateMutation(testId, testId),
+        operation = AddonActivateOfferMutation(addonIds = listOf(testId), quoteId = testId),
         data = null,
         errors = listOf(Error.Builder(message = "Bad message").build()),
       )
@@ -78,7 +78,7 @@ class SubmitAddonPurchaseUseCaseImplTest {
     val crossSellAfterFlowRepository = CrossSellAfterFlowRepositoryImpl()
     val sut = SubmitAddonPurchaseUseCaseImpl(apolloClientWithGoodResponseNullError, crossSellAfterFlowRepository)
     assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first()).isNull()
-    val result = sut.invoke(testId, testId)
+    val result = sut.invoke(testId, listOf(testId))
     assertThat(result).isRight().isEqualTo(Unit)
     assertThat(crossSellAfterFlowRepository.shouldShowCrossSellSheetWithInfo().first())
       .isEqualTo(CrossSellInfoType.Addon)
@@ -87,7 +87,7 @@ class SubmitAddonPurchaseUseCaseImplTest {
   @Test
   fun `if BE response is UserError return ErrorMessage with the msg from BE`() = runTest {
     val sut = SubmitAddonPurchaseUseCaseImpl(apolloClientWithUserError, CrossSellAfterFlowRepositoryImpl())
-    val result = sut.invoke(testId, testId)
+    val result = sut.invoke(testId, listOf(testId))
     assertThat(result)
       .isLeft().prop(ErrorMessage::message).isEqualTo("Bad message")
   }
@@ -95,7 +95,7 @@ class SubmitAddonPurchaseUseCaseImplTest {
   @Test
   fun `if BE response is error return ErrorMessage with null message`() = runTest {
     val sut = SubmitAddonPurchaseUseCaseImpl(apolloClientWithBadResponse, CrossSellAfterFlowRepositoryImpl())
-    val result = sut.invoke(testId, testId)
+    val result = sut.invoke(testId, listOf(testId))
     assertThat(result)
       .isLeft().prop(ErrorMessage::message).isEqualTo(null)
   }

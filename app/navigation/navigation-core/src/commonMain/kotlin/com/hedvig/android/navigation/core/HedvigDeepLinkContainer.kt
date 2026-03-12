@@ -48,6 +48,9 @@ interface HedvigDeepLinkContainer {
   val conversation: List<String> // Hedvig specific CBM conversation
 
   val travelAddon: List<String> // Travel addon purchase flow
+  val travelAddonWithContractId: List<String>
+  val carAddon: List<String> // Travel addon purchase flow
+  val carAddonWithContractId: List<String>
   val travelCertificate: List<String> // The screen which shows existing and allows creating new travel certificates
 
   // The screen where member can choose insurance to change tier and deductible
@@ -135,6 +138,17 @@ internal class HedvigDeepLinkContainerImpl(
   override val travelAddon: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/travel-addon"
   }
+  override val carAddon: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/car-plus-addon"
+  }
+
+  override val travelAddonWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/travel-addon?contractId={contractId}"
+  }
+  override val carAddonWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/car-plus-addon?contractId={contractId}"
+  }
+
   override val travelCertificate: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/travelCertificate"
   }

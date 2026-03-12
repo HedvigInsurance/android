@@ -27,7 +27,9 @@ internal class LoggingInterceptor : ApolloInterceptor {
   ): Flow<ApolloResponse<D>> {
     logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
-      logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}" }
+      logcat(LogPriority.DEBUG) {
+        "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+      }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
       if (errors.isNotEmpty() && !errors.isUnauthenticated()) {

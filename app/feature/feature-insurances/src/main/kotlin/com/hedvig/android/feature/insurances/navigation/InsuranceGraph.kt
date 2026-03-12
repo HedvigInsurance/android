@@ -1,9 +1,14 @@
 package com.hedvig.android.feature.insurances.navigation
 
-import androidx.navigation.NavBackStackEntry
+import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
+import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
@@ -15,23 +20,24 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
-  navigator: Navigator,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
+  navController: NavController,
+  onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   startMovingFlow: () -> Unit,
-  onNavigateToStartChangeTier: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
-  startTerminationFlow: (backStackEntry: NavBackStackEntry, cancelInsuranceData: CancelInsuranceData) -> Unit,
-  startEditCoInsured: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
-  startEditCoInsuredAddMissingInfo: (backStackEntry: NavBackStackEntry, contractId: String) -> Unit,
+  onNavigateToStartChangeTier: (contractId: String) -> Unit,
+  startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
+  startEditCoInsured: (contractId: String) -> Unit,
+  startEditCoInsuredAddMissingInfo: (contractId: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
-  onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
+  onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
+  onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -44,56 +50,60 @@ fun NavGraphBuilder.insuranceGraph(
       ),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) { backStackEntry ->
+    ) {
       val viewModel: InsuranceViewModel = koinViewModel()
       InsuranceDestination(
         viewModel = viewModel,
-        onInsuranceCardClick = { contractId: String ->
-          with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
+        onInsuranceCardClick = dropUnlessResumed { contractId: String ->
+          navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        onCrossSellClick = openUrl,
-        navigateToCancelledInsurances = {
-          with(navigator) { backStackEntry.navigate(InsurancesDestinations.TerminatedInsurances) }
+        onCrossSellClick = dropUnlessResumed { url: String -> openUrl(url) },
+        navigateToCancelledInsurances = dropUnlessResumed {
+          navController.navigate(InsurancesDestinations.TerminatedInsurances)
         },
-        onNavigateToMovingFlow = startMovingFlow,
+        onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
         imageLoader = imageLoader,
-        onNavigateToAddonPurchaseFlow = onNavigateToAddonPurchaseFlow,
+        onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<ContractId> ->
+          onNavigateToAddonPurchaseFlow(ids, null)
+        },
       )
     }
     navdestination<InsurancesDestinations.InsuranceContractDetail>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.contract),
-    ) { backStackEntry ->
+    ) {
       val contractDetail = this
       val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
       ContractDetailDestination(
         viewModel = viewModel,
-        onEditCoInsuredClick = { contractId: String -> startEditCoInsured(backStackEntry, contractId) },
-        onMissingInfoClick = { contractId -> startEditCoInsuredAddMissingInfo(backStackEntry, contractId) },
-        onChangeAddressClick = startMovingFlow,
-        onCancelInsuranceClick = { cancelInsuranceData: CancelInsuranceData ->
-          startTerminationFlow(
-            backStackEntry,
-            cancelInsuranceData,
-          )
+        onEditCoInsuredClick = dropUnlessResumed { contractId: String -> startEditCoInsured(contractId) },
+        onMissingInfoClick = dropUnlessResumed { contractId: String -> startEditCoInsuredAddMissingInfo(contractId) },
+        onChangeAddressClick = dropUnlessResumed { startMovingFlow() },
+        onCancelInsuranceClick = dropUnlessResumed { cancelInsuranceData: CancelInsuranceData ->
+          startTerminationFlow(cancelInsuranceData)
         },
-        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         openUrl = openUrl,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = navController::navigateUp,
+        navigateBack = navController::popBackStack,
         imageLoader = imageLoader,
-        onChangeTierClick = { contractId: String ->
-          onNavigateToStartChangeTier(backStackEntry, contractId)
+        onChangeTierClick = dropUnlessResumed { contractId: String ->
+          onNavigateToStartChangeTier(contractId)
+        },
+        navigateToRemoveAddon = onNavigateToRemoveAddon,
+        navigateToUpgradeAddon = navigateToUpgradeAddon,
+        navigateToAddAddon = { availableAddon ->
+          onNavigateToAddonPurchaseFlow(listOf(availableAddon.relatedContractId), availableAddon)
         },
       )
     }
-    navdestination<InsurancesDestinations.TerminatedInsurances> { backStackEntry ->
+    navdestination<InsurancesDestinations.TerminatedInsurances> {
       val viewModel: TerminatedContractsViewModel = koinViewModel()
       TerminatedContractsDestination(
         viewModel = viewModel,
-        navigateToContractDetail = { contractId: String ->
-          with(navigator) { backStackEntry.navigate(InsurancesDestinations.InsuranceContractDetail(contractId)) }
+        navigateToContractDetail = dropUnlessResumed { contractId: String ->
+          navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         imageLoader = imageLoader,
       )
     }

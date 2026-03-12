@@ -18,10 +18,14 @@
     <item quantity="other">Inskickade värden</item>
   </plurals>
   <string name="A11Y_VIEW_DETAILS">Visa detaljer</string>
+  <string name="ADDON_ADDED_COVERAGE">Tillagd</string>
   <string name="ADDON_ADD_COVERAGE">Lägg till skydd</string>
   <string name="ADDON_BADGE">Populär</string>
   <string name="ADDON_BADGE_ACTIVE">Aktiv</string>
+  <string name="ADDON_CAR_PLUS_DISPLAY_NAME">Bil Plus</string>
   <string name="ADDON_FLOW_ADD_TO_INSURANCE_BUTTON">Fortsätt</string>
+  <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE">Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring.\n\nVill du ta bort den behöver du göra det från försäkringen den är kopplad till.</string>
+  <string name="ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE">Tillägget är aktivt</string>
   <string name="ADDON_FLOW_CONFIRMATION_BUTTON">Ja, uppgradera mitt skydd</string>
   <string name="ADDON_FLOW_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
   <string name="ADDON_FLOW_CONFIRMATION_TITLE">Bekräfta uppgraderat skydd</string>
@@ -32,6 +36,7 @@
   <string name="ADDON_FLOW_SELECT_BUTTON">Välj</string>
   <string name="ADDON_FLOW_SELECT_DAYS_PLACEHOLDER">Antal resdagar</string>
   <string name="ADDON_FLOW_SELECT_INSURANCE_SUBTITLE">Välj den försäkring du vill lägga till extra skydd för</string>
+  <string name="ADDON_FLOW_SELECT_INSURANCE_TITLE">Utöka ditt skydd</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE">Välj antalet resdagar som täcks</string>
   <string name="ADDON_FLOW_SELECT_SUBOPTION_TITLE">Välj antal resdagar</string>
   <string name="ADDON_FLOW_SUBTITLE">För extra trygghet när du reser utomlands</string>
@@ -42,9 +47,13 @@
   <string name="ADDON_FLOW_SUMMARY_INFO_TEXT">Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
   <string name="ADDON_FLOW_SUMMARY_PRICE_SUBTITLE">Läggs på ditt totala månadspris</string>
   <string name="ADDON_FLOW_TITLE">Utöka ditt reseskydd</string>
+  <string name="ADDON_FLOW_TITLE_GENERIC">Utöka ditt skydd</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT">Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION">Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.</string>
   <string name="ADDON_FLOW_TRAVEL_INFORMATION_TITLE">Vad är Reseskydd Plus?</string>
+  <string name="ADDON_FLOW_UPDATE_ADDON_DESCRIPTION">Välj ett alternativ</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON">Utöka skydd</string>
+  <string name="ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION">Du kan utöka skyddet för det här tillägget. Det kan tas bort vid förnyelse eller uppsägning av försäkringen.</string>
   <string name="ADDON_LEARN_MORE_LABEL">Se vad som ingår</string>
   <string name="ADDON_REMOVE_CANCEL_BUTTON">Behåll nuvarande skydd</string>
   <string name="ADDON_REMOVE_CONFIRM_BUTTON">Avsluta %1$s</string>
@@ -133,6 +142,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Ange byggår</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Byggår</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">Du + %1$d</string>
+  <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Chatta med en specialist</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">Om det inte fungerar eller om du har några andra frågor, vänligen meddela oss så hjälper en av våra specialister till inom kort!</string>
   <string name="CHAT_CONVERSATION_CLAIM_TITLE">Skadeärende</string>
@@ -213,6 +223,11 @@
   <string name="CLAIM_CHAT_FORM_TEXT_MIN_CHAR">Värdet måste vara minst %d tecken</string>
   <string name="CLAIM_CHAT_FREE_TEXT_LABEL">Textbeskrivning</string>
   <string name="CLAIM_CHAT_GET_NOTIFIED">Bli meddelad</string>
+  <string name="CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL">På resa</string>
+  <string name="CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME">Utanför mitt hem</string>
+  <string name="CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME">I bostaden eller på tillhörande tomt</string>
+  <string name="CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL">I Sverige eller utomlands</string>
+  <string name="CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME">T.ex. i förråd, tvättstuga eller på stan</string>
   <string name="CLAIM_CHAT_OTHER_TITLE">Övrig information</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_MISSING">Vänligen ange telefonnummer ifall vi behöver kontakta dig</string>
   <string name="CLAIM_CHAT_PHONE_NUMBER_UPDATE">Se till att vi har rätt telefonnummer ifall vi behöver kontakta dig</string>
@@ -271,6 +286,10 @@
   <string name="CONTRACT_FIRST_NAME">Förnamn</string>
   <string name="CONTRACT_LAST_NAME">Efternamn</string>
   <string name="CONTRACT_NO_INFORMATION">Ingen information tillgänglig</string>
+  <string name="CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE">Aktiveras %1$s</string>
+  <string name="CONTRACT_OVERVIEW_ADDON_ADD">Lägg till</string>
+  <string name="CONTRACT_OVERVIEW_ADDON_ENDS_DATE">Avslutas %1$s</string>
+  <string name="CONTRACT_OVERVIEW_ADDON_IS_ADDED">Tillagd</string>
   <string name="CONTRACT_PERSONAL_IDENTITY">Personnummer</string>
   <string name="CONTRACT_REMOVE_COINSURED_CONFIRMATION">Är du säker på att du vill\nta bort medförsäkrade?</string>
   <string name="CONTRACT_SSN_FETCH_INFO">Hämta information</string>
@@ -289,8 +308,10 @@
   <string name="DASHBOARD_OPEN_CHAT">Kontakta oss</string>
   <string name="DASHBOARD_RENEWAL_PROMPTER_BODY">Om %1$d dagar kommer din försäkring förnyas. Läs ditt uppdaterade försäkringsbrev här.</string>
   <string name="DASHBOARD_SCREEN_TITLE">Försäkringar</string>
-  <string name="DATA_TABLE_MULTIPLE_OWNERS"></string>
-  <string name="DATA_TABLE_WATER_CONNECTED"></string>
+  <string name="DATA_TABLE_MULTIPLE_OWNERS">Flera ägare</string>
+  <string name="DATA_TABLE_VALUE_FALSE">Nej</string>
+  <string name="DATA_TABLE_VALUE_TRUE">Ja</string>
+  <string name="DATA_TABLE_WATER_CONNECTED">Vatten anslutet</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION">Som försäkringsbolag är Hedvig skyldig att spara försäkringsavtalet och relaterad information så länge det är möjligt att göra anspråk på försäkringsersättning. Denna period kan variera beroende på vilken typ av försäkring det gäller men är minst 10 år efter försäkringens utgång baserat på preskriptionstider.\n\nOm du vill ta bort den information som vi enligt lag inte måste lagra, gör du det genom knappen nedan.\n\n[Här](https://www.hedvig.com/se/hedvig/personuppgifter) kan du läsa mer om hur dina personuppgifter hanteras hos Hedvig.</string>
   <string name="DELETE_ACCOUNT_DELETE_ACCOUNT_TITLE">Viktig information</string>
   <string name="DELETE_ACCOUNT_PROCESSED_DESCRIPTION">Du kommer få ett bekräftelsemail från oss inom 30 dagar som bekräftar att ditt konto har raderats</string>
@@ -326,7 +347,7 @@
   <string name="FIELD_EXTRA_BUIDLINGS_CARPORT_LABEL">Carport</string>
   <string name="FIELD_EXTRA_BUIDLINGS_FRIGGEBOD_LABEL">Friggebod</string>
   <string name="FIELD_EXTRA_BUIDLINGS_GARAGE_LABEL">Garage</string>
-  <string name="FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL">Gazebo</string>
+  <string name="FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL">Lusthus</string>
   <string name="FIELD_EXTRA_BUIDLINGS_GREENHOUSE_LABEL">Växthus</string>
   <string name="FIELD_EXTRA_BUIDLINGS_GUESTHOUSE_LABEL">Gästhus</string>
   <string name="FIELD_EXTRA_BUIDLINGS_OTHER_LABEL">Annat</string>
@@ -428,6 +449,7 @@
   <string name="HC_QUICK_ACTIONS_FIRSTVET_TITLE">FirstVet</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE">Ändra bank eller bankkonto</string>
   <string name="HC_QUICK_ACTIONS_PAYMENTS_TITLE">Betalning</string>
+  <string name="HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE">Ändra eller ta bort aktiva tillägg</string>
   <string name="HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE">Få akut hjälp på din resa</string>
   <string name="HC_QUICK_ACTIONS_SICK_ABROAD_TITLE">Sjuk utomlands</string>
   <string name="HC_QUICK_ACTIONS_TITLE">Snabbval</string>
@@ -449,6 +471,7 @@
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Erbjudanden</string>
   <string name="INSURANCES_NO_ACTIVE">Du har ingen aktiv försäkring</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Tillägg</string>
+  <string name="INSURANCE_ADDON_SUBHEADING">Tillägg</string>
   <string name="INSURANCE_DETAILS_DECOMMISSION_INFO">Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.</string>
   <string name="INSURANCE_DETAILS_TERMINATION_INFO">Skador som inträffar under en 30-dagarsperiod efter utflyttningsdatumet berättigar till ersättning.</string>
   <string name="INSURANCE_EVIDENCE_DOCUMENT_TITLE">Giltighetsintyg</string>
@@ -609,9 +632,12 @@
   <string name="REFERRAL_SMS_MESSAGE">Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$s rabatt på månadskostnaden. Följ länken: %2$s</string>
   <string name="REFERRAL_TERMINATED_STATUS_LABEL">Inaktiv</string>
   <string name="REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES">Inga av dina försäkringar har tillägg som kan tas bort.</string>
+  <string name="REMOVE_ADDON_BUTTON_TITLE">Ta bort tillägg</string>
   <string name="REMOVE_ADDON_CONFIRMATION_BUTTON">Ja, ta bort</string>
   <string name="REMOVE_ADDON_CONFIRMATION_DESCRIPTION">Den här uppgraderingen börjar gälla %1$s.</string>
   <string name="REMOVE_ADDON_CONFIRMATION_TITLE">Confirm removing selected addons</string>
+  <string name="REMOVE_ADDON_DESCRIPTION">Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring</string>
+  <string name="REMOVE_ADDON_DESCRIPTION_RENEWAL">Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.</string>
   <string name="REMOVE_ADDON_OFFER_PAGE_TITLE">Ta bort tillägg</string>
   <string name="REMOVE_ADDON_SUCCESS_SUBTITLE">Den här ändringar börjar gälla %s.</string>
   <string name="REMOVE_ADDON_SUCCESS_TITLE">Tillägg avslutade</string>
@@ -702,7 +728,7 @@
   <string name="SUBMIT_CLAIM_TOWING_A2">Så länge skadan täcks av försäkringsvillkoren så betalar du endast självrisken på 1750 kr direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_A3">Du får såklart använda den bärgningstjänst som passar dig bäst. Men förloppet blir oftast snabbare och enklare om du vänder dig direkt till Assistancekåren.</string>
   <string name="SUBMIT_CLAIM_TOWING_BUTTON_TITLE">Läs mer</string>
-  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till +46 020 912 912. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
+  <string name="SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL">Du kontaktar själv Assistancekåren på telefon genom knappen här ovan eller ringer direkt till +46 20 912 912. Självrisken som är på 1750 kr betalar du direkt till Assistancekåren. \n\nOm du skulle vilja använda dig av annan bilbärgning kan du självklart välja den du föredrar. \n\nVid akuta skador och behov av sjukvård ring istället 112.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_BUTTON_TEXT">Vi samarbetar med Assistancekåren för att du ska kunna få hjälp så snabbt som möjligt.</string>
   <string name="SUBMIT_CLAIM_TOWING_INFO_LABEL">Du behöver kontakta Assistancekåren direkt för att få hjälp med din bärgning</string>
   <string name="SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON">Ring nu</string>

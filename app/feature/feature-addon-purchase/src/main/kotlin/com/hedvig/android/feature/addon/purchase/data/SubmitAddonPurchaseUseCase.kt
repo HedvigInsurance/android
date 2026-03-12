@@ -9,26 +9,26 @@ import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepositor
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import octopus.UpsellTravelAddonActivateMutation
+import octopus.AddonActivateOfferMutation
 
 internal interface SubmitAddonPurchaseUseCase {
-  suspend fun invoke(quoteId: String, addonId: String): Either<ErrorMessage, Unit>
+  suspend fun invoke(quoteId: String, addonIds: List<String>): Either<ErrorMessage, Unit>
 }
 
 internal class SubmitAddonPurchaseUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : SubmitAddonPurchaseUseCase {
-  override suspend fun invoke(quoteId: String, addonId: String): Either<ErrorMessage, Unit> {
+  override suspend fun invoke(quoteId: String, addonIds: List<String>): Either<ErrorMessage, Unit> {
     return either {
-      apolloClient.mutation(UpsellTravelAddonActivateMutation(addonId = addonId, quoteId = quoteId)).safeExecute().fold(
+      apolloClient.mutation(AddonActivateOfferMutation(addonIds = addonIds, quoteId = quoteId)).safeExecute().fold(
         ifLeft = { error ->
-          logcat(LogPriority.ERROR) { "Tried to do UpsellTravelAddonActivateMutation but got error: $error" }
+          logcat(LogPriority.ERROR) { "Tried to do AddonActivateOfferMutation but got error: $error" }
           raise(ErrorMessage())
         },
         ifRight = { result ->
-          if (result.upsellTravelAddonActivate.userError != null) {
-            raise(ErrorMessage(result.upsellTravelAddonActivate.userError.message))
+          if (result.addonActivateOffer.userError != null) {
+            raise(ErrorMessage(result.addonActivateOffer.userError.message))
           }
           crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(CrossSellInfoType.Addon)
         },

@@ -86,8 +86,8 @@ import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.NoOptions
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.DeductibleOptions.OneOption
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
-import com.hedvig.android.tiersandaddons.DiscountCostBreakdown
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.DiscountCostBreakdown
 import hedvig.resources.CHANGE_ADDRESS_PRICE_PER_MONTH_LABEL
 import hedvig.resources.CHANGE_ADDRESS_TOTAL
 import hedvig.resources.GENERAL_CONFIRM

@@ -19,12 +19,12 @@ actual object HedvigDateTimeFormatterDefaults {
   /**
    * Example output: "2021.07.01"
    */
-  actual fun isoLocalDateWithDots(locale: CommonLocale): DateFormatter {
+  actual fun isoLocalDateWithDashes(locale: CommonLocale): DateFormatter {
     val formatter = DateTimeFormatterBuilder()
       .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
-      .appendLiteral('.')
+      .appendLiteral('-')
       .appendValue(ChronoField.MONTH_OF_YEAR, 2)
-      .appendLiteral('.')
+      .appendLiteral('-')
       .appendValue(ChronoField.DAY_OF_MONTH, 2)
       .toFormatter(locale)
     return JavaDateFormatter(formatter)

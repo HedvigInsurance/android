@@ -2,7 +2,7 @@ package com.hedvig.android.feature.travelcertificate.di
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.feature.travelcertificate.data.CheckTravelCertificateAvailabilityForCurrentContractsUseCase
 import com.hedvig.android.feature.travelcertificate.data.CheckTravelCertificateAvailabilityForCurrentContractsUseCaseImpl
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
@@ -33,7 +33,7 @@ val travelCertificateModule = module {
       get<DownloadPdfUseCase>(),
       get<CheckTravelCertificateAvailabilityForCurrentContractsUseCase>(),
       get<GetEligibleContractsWithAddressUseCase>(),
-      get<GetTravelAddonBannerInfoUseCase>(),
+      get<GetAddonBannerInfoUseCase>(),
     )
   }
   viewModel<ChooseContractForCertificateViewModel> {

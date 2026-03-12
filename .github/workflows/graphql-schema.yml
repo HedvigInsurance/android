@@ -28,8 +28,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.ANDROID_REPO_PAT }}
+          token: ${{ secrets.ANDROID_REPO_BOT_PAT }}
           commit-message: "Update GQL Schema"
           branch: "chore/update-schema"
           title: "Maintenance: Update GQL Schema"
+          author: "hedvig-ops-bot <infra@hedvig.com>"
           body: ""

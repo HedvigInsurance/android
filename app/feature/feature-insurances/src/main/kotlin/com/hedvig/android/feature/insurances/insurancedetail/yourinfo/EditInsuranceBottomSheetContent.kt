@@ -34,7 +34,9 @@ import hedvig.resources.CONTRACT_EDIT_COINSURED
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
+import hedvig.resources.REMOVE_ADDON_BUTTON_TITLE
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
@@ -47,9 +49,11 @@ internal fun EditInsuranceBottomSheetContent(
   allowEditCoInsured: Boolean,
   allowChangeTier: Boolean,
   allowTerminatingInsurance: Boolean,
+  allowRemovingAddon: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onChangeTierClick: () -> Unit,
   onCancelInsuranceClick: () -> Unit,
+  onRemoveAddonClick: () -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -79,6 +83,15 @@ internal fun EditInsuranceBottomSheetContent(
           RadioOptionId("2"),
           stringResource(Res.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE),
           stringResource(Res.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE),
+        ),
+      )
+    }
+    if (allowRemovingAddon) {
+      add(
+        RadioOption(
+          RadioOptionId("3"),
+          stringResource(Res.string.REMOVE_ADDON_BUTTON_TITLE),
+          stringResource(Res.string.HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE),
         ),
       )
     }
@@ -118,6 +131,10 @@ internal fun EditInsuranceBottomSheetContent(
             onCancelInsuranceClick()
           }
 
+          "3" if allowRemovingAddon -> {
+            onRemoveAddonClick()
+          }
+
           else -> {}
         }
       },
@@ -144,11 +161,13 @@ private fun PreviewEditInsuranceBottomSheetContent() {
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
         allowChangeTier = true,
+        allowRemovingAddon = true,
         onChangeTierClick = {},
         onEditCoInsuredClick = {},
         onDismiss = {},
-        modifier = Modifier.padding(horizontal = 16.dp),
         onCancelInsuranceClick = {},
+        onRemoveAddonClick = {},
+        modifier = Modifier.padding(horizontal = 16.dp),
       )
     }
   }

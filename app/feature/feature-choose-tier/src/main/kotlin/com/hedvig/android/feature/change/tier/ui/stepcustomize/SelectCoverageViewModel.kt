@@ -156,7 +156,7 @@ internal class SelectCoveragePresenter(
                 chosenQuoteInDialog = current
                 currentPartialState = PartialUiState.Success(
                   contractData = ContractData(
-                    activeDisplayPremium = current.premium,
+                    activeDisplayPremium = current.newTotalCost.monthlyNet,
                     contractGroup = current.productVariant.contractGroup,
                     contractDisplayName = current.productVariant.displayName,
                     contractDisplaySubtitle = currentContractData.currentExposureName,
@@ -219,7 +219,7 @@ private fun buildListOfTiersAndPremiums(map: Map<Tier, List<TierDeductibleQuote>
   return buildList {
     map.keys.forEach { tier ->
       // show the lowest premium for this coverage (with From... added later)
-      val premium = map[tier]!!.minBy { it.premium.amount }.premium
+      val premium = map[tier]!!.minBy { it.newTotalCost.monthlyNet.amount }.newTotalCost.monthlyNet
       add(tier to premium)
     }
   }.sortedBy { pair ->
@@ -234,7 +234,7 @@ private fun mapQuotesToTiersAndQuotes(quotes: List<TierDeductibleQuote>): Map<Ti
     }
     .map { entry ->
       entry.key to entry.value.sortedBy {
-        it.deductible?.deductibleAmount?.amount ?: it.premium.amount
+        it.deductible?.deductibleAmount?.amount ?: it.newTotalCost.monthlyNet.amount
       }
     }
   val result = mapOf(*grouped.toTypedArray())

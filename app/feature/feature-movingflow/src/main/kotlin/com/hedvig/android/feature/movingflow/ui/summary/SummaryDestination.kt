@@ -87,8 +87,8 @@ import com.hedvig.android.feature.movingflow.ui.MovingFlowTopAppBar
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.Generic
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.SubmitError.WithMessage
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.tiersandaddons.QuoteCard
-import com.hedvig.android.tiersandaddons.QuoteDisplayItem
+import com.hedvig.ui.tiersandaddons.QuoteCard
+import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
 import hedvig.resources.CHANGE_ADDRESS_ACCEPT_OFFER
 import hedvig.resources.CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT
 import hedvig.resources.CHANGE_ADDRESS_SUMMARY_TITLE

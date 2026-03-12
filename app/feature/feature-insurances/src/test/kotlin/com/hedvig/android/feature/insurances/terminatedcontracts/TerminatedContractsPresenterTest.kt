@@ -155,7 +155,7 @@ class TerminatedContractsPresenterTest {
     }
   }
 
-  internal class FakeGetInsuranceContractsUseCase() : GetInsuranceContractsUseCase {
+  internal class FakeGetInsuranceContractsUseCase : GetInsuranceContractsUseCase {
     private val responseTurbine = Turbine<Either<ErrorMessage, List<EstablishedInsuranceContract>>>()
 
     override fun invoke(): Flow<Either<ErrorMessage, List<EstablishedInsuranceContract>>> {
@@ -229,6 +229,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
       EstablishedInsuranceContract(
         "contractId2",
@@ -272,6 +274,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
     )
 
@@ -317,6 +321,8 @@ class TerminatedContractsPresenterTest {
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     )
 
     private val activeInsurances = listOf(
@@ -362,6 +368,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
       EstablishedInsuranceContract(
         "contractId4",
@@ -405,6 +413,8 @@ class TerminatedContractsPresenterTest {
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
     )
   }

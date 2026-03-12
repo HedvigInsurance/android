@@ -25,6 +25,7 @@ kotlin {
       implementation(projects.featureHelpCenter)
       implementation(projects.languageCore)
       implementation(projects.networkClients)
+      implementation(projects.permissionCore)
     }
   }
 }

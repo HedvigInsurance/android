@@ -1,12 +1,12 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="512"
-    android:viewportHeight="512">
-    <path
-        android:fillColor="@color/ic_launcher_foreground_tint"
-        android:pathData="M256 384c-70.751 0-128-57.249-128-128s57.249-128 128-128 128 57.249 128 128-57.249 128-128 128zm0-238.717c-61.03 0-110.717 49.688-110.717 110.717 0 61.03 49.687 110.717 110.717 110.717 61.029 0 110.717-49.687 110.717-110.717 0-61.029-49.688-110.717-110.717-110.717z" />
-    <path
-        android:fillColor="@color/ic_launcher_foreground_tint"
-        android:pathData="M293.808 264.642h-75.612v61.03h-17.822V186.33h17.822v61.03h75.612v-61.03h17.283v139.342h-17.283v-61.03z" />
+  android:width="108dp"
+  android:height="108dp"
+  android:viewportWidth="108"
+  android:viewportHeight="108">
+  <path
+    android:fillColor="@color/ic_launcher_foreground_tint"
+    android:pathData="M61.13,51.87H46.87V39.74H42.6V51.87V56.15V68.26H46.87V56.15H61.13V68.26H65.4V56.15V51.87V39.74H61.13V51.87Z" />
+  <path
+    android:fillColor="@color/ic_launcher_foreground_tint"
+    android:pathData="M54,27C39.09,27 27,39.09 27,54C27,68.91 39.09,81 54,81C68.91,81 81,68.91 81,54C81,39.09 68.91,27 54,27ZM54,77.18C41.2,77.18 30.82,66.8 30.82,54C30.82,41.2 41.2,30.82 54,30.82C66.8,30.82 77.18,41.2 77.18,54C77.18,66.8 66.8,77.18 54,77.18Z" />
 </vector>
