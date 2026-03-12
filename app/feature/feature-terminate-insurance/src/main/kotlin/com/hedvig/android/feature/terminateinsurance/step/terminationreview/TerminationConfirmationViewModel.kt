@@ -55,6 +55,7 @@ internal class TerminationConfirmationViewModel(
 
 sealed interface TerminationConfirmationEvent {
   data object Submit : TerminationConfirmationEvent
+
   data object HandledNavigation : TerminationConfirmationEvent
 }
 

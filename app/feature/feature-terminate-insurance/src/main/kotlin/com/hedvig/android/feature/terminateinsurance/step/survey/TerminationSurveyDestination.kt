@@ -283,7 +283,8 @@ private fun SelectedSurveyInfoBox(
       selectedReason != null &&
       selectedReason.suggestion != null &&
       !selectedReason.isDisabled &&
-      selectedReason.suggestion.type !in setOf(SuggestionType.AUTO_DECOMMISSION, SuggestionType.AUTO_CANCEL, SuggestionType.UNKNOWN)
+      selectedReason.suggestion.type !in
+      setOf(SuggestionType.AUTO_DECOMMISSION, SuggestionType.AUTO_CANCEL, SuggestionType.UNKNOWN)
     ) {
       Column {
         val suggestion = selectedReason.suggestion
@@ -489,7 +490,7 @@ private val previewReason1 = TerminationSurveyOption(
   ),
   suggestion = SurveyOptionSuggestion(
     type = SuggestionType.INFO,
-    description = "Why don't you try this: go to [Move to a new address](https://hedvig.page.link/home) here in the app",
+    description = "Why don't you try this: go to Move to a new address here in the app",
     url = null,
   ),
   feedbackRequired = true,

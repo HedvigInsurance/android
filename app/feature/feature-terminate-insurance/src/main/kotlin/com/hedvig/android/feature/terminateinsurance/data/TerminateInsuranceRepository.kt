@@ -27,9 +27,7 @@ internal interface TerminateInsuranceRepository {
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : TerminateInsuranceRepository {
-  override suspend fun getTerminationSurvey(
-    contractId: String,
-  ): Either<ErrorMessage, TerminationSurveyData> {
+  override suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData> {
     return either {
       val result = apolloClient
         .query(TerminationSurveyQuery(contractId))

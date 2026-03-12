@@ -29,7 +29,13 @@ val terminateInsuranceModule = module {
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }
-  viewModel<TerminationSurveyViewModel> { (options: List<TerminationSurveyOption>, action: TerminationAction, contractId: String) ->
+  viewModel<TerminationSurveyViewModel> {
+    (
+      options: List<TerminationSurveyOption>,
+      action: TerminationAction,
+      contractId: String,
+    ),
+    ->
     TerminationSurveyViewModel(
       options = options,
       action = action,

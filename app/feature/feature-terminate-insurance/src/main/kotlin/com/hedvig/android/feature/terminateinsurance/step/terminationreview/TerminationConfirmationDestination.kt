@@ -100,7 +100,8 @@ private fun TerminationConfirmationScreen(
   navigateBack: () -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
-  val isSubmittingTerminationOrNavigatingForward = uiState.isSubmittingContractTermination || uiState.terminationDate != null
+  val isSubmittingTerminationOrNavigatingForward =
+    uiState.isSubmittingContractTermination || uiState.terminationDate != null
   if (isSubmittingTerminationOrNavigatingForward) {
     HedvigFullScreenCenterAlignedLinearProgress(
       title = stringResource(Res.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
