@@ -46,18 +46,11 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.uiTiersAndAddons)
 
-  testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)
   testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
-  testImplementation(projects.apolloOctopusTest)
-  testImplementation(projects.apolloTest)
   testImplementation(projects.coreCommonTest)
-  testImplementation(projects.featureFlagsTest)
-  testImplementation(projects.languageTest)
   testImplementation(projects.loggingTest)
-  testImplementation(projects.memberRemindersTest)
   testImplementation(projects.moleculeTest)
-  testImplementation(projects.testClock)
 }
