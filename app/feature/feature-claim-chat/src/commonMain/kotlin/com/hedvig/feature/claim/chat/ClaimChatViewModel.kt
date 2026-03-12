@@ -402,7 +402,7 @@ internal class ClaimChatPresenter(
                       logcat { "ClaimChatEvent.AudioRecording.SubmitAudioFile error: $it" }
                     },
                     ifRight = { claimIntent ->
-                      audioRecordingManager.cleanup()
+                      audioRecordingManager.reset()
                       currentContinueButtonLoading = false
                       handleNext(
                         steps,
@@ -427,6 +427,7 @@ internal class ClaimChatPresenter(
                       logcat { "ClaimChatEvent.AudioRecording.SubmitTextInput error: $it" }
                     },
                     ifRight = { claimIntent ->
+                      audioRecordingManager.reset()
                       currentContinueButtonLoading = false
                       handleNext(
                         steps,
