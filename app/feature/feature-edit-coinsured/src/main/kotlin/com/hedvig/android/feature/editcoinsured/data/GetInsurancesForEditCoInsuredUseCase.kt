@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.EligibleContractsForEditCoInsuredQuery
@@ -26,21 +27,39 @@ internal class GetInsurancesForEditCoInsuredUseCaseImpl(
         .bind()
         .currentMember
         .activeContracts
-      val filtered = contracts
+      val coInsuredContracts = contracts
         .filter { it.supportsCoInsured }
-      filtered.map { contract ->
-        val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-          EditCoInsuredDestination.MISSING_INFO
-        } else {
-          EditCoInsuredDestination.ADD_OR_REMOVE
+        .map { contract ->
+          val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+            EditCoInsuredDestination.MISSING_INFO
+          } else {
+            EditCoInsuredDestination.ADD_OR_REMOVE
+          }
+          InsuranceForEditOrAddCoInsured(
+            destination = destination,
+            displayName = contract.currentAgreement.productVariant.displayName,
+            exposureName = contract.exposureDisplayName,
+            id = contract.id,
+            type = CoInsuredFlowType.CoInsured,
+          )
         }
-        InsuranceForEditOrAddCoInsured(
-          destination = destination,
-          displayName = contract.currentAgreement.productVariant.displayName,
-          exposureName = contract.exposureDisplayName,
-          id = contract.id,
-        )
-      }
+      val coOwnerContracts = contracts
+        .filter { it.supportsCoOwners }
+        .map { contract ->
+          val destination = if (contract.coOwners?.any { it.hasMissingInfo } == true) {
+            EditCoInsuredDestination.MISSING_INFO
+          } else {
+            EditCoInsuredDestination.ADD_OR_REMOVE
+          }
+          InsuranceForEditOrAddCoInsured(
+            destination = destination,
+            displayName = contract.currentAgreement.productVariant.displayName,
+            exposureName = contract.exposureDisplayName,
+            id = contract.id,
+            type = CoInsuredFlowType.CoOwners,
+          )
+        }
+      coInsuredContracts + coOwnerContracts
     }
   }
 }
@@ -50,6 +69,7 @@ internal data class InsuranceForEditOrAddCoInsured(
   val destination: EditCoInsuredDestination,
   val displayName: String,
   val exposureName: String,
+  val type: CoInsuredFlowType,
 )
 
 internal enum class EditCoInsuredDestination {
