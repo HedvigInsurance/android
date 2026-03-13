@@ -12,7 +12,6 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
@@ -41,11 +40,14 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
           .safeFlow(::ErrorMessage)
           .mapLatest { result: Either<ErrorMessage, NeedsCoInsuredInfoReminderQuery.Data> ->
             either {
-              val coInsuredReminderInfoList = result.mapLeft(CoInsuredInfoReminderError::NetworkError)
+              val contracts = result.mapLeft(CoInsuredInfoReminderError::NetworkError)
                 .bind()
                 .currentMember
                 .activeContracts
-                .toCoInsuredInfoList()
+
+              val coInsuredReminderInfoList = contracts
+                .filter { it.hasMissingInfoAndIsNotTerminating() }
+                .map { MemberReminder.CoInsuredInfo(it.id) }
                 .toNonEmptyListOrNull()
 
               ensureNotNull(coInsuredReminderInfoList) {
@@ -57,29 +59,11 @@ internal class GetNeedsCoInsuredInfoRemindersUseCaseImpl(
     }
   }
 
-  private fun List<NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract>.toCoInsuredInfoList():
-    List<MemberReminder.CoInsuredInfo> {
-    return mapNotNull {
-      val coInsuredHasMissingInfo = it.supportsCoInsured && it.coInsured?.any {
-        it.hasMissingInfo && it.terminatesOn == null
-      } == true
-      val coOwnerHasMissingInfo = it.supportsCoOwners && it.coOwners?.any {
-        it.hasMissingInfo && it.terminatesOn == null
-      } == true
-      when {
-        coInsuredHasMissingInfo -> {
-          MemberReminder.CoInsuredInfo(it.id, CoInsuredFlowType.CoInsured)
-        }
-
-        coOwnerHasMissingInfo -> {
-          MemberReminder.CoInsuredInfo(it.id, CoInsuredFlowType.CoOwners)
-        }
-
-        else -> {
-          null
-        }
-      }
-    }
+  private fun NeedsCoInsuredInfoReminderQuery.Data.CurrentMember.ActiveContract.hasMissingInfoAndIsNotTerminating():
+    Boolean {
+    return coInsured?.any {
+      it.hasMissingInfo && it.terminatesOn == null && supportsCoInsured
+    } == true
   }
 }
 

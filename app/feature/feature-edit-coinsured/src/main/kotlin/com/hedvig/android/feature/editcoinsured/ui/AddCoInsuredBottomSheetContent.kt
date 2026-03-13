@@ -39,7 +39,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -69,7 +68,6 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.Add
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.COINSURED_WITHOUT_SSN_INFO
-import hedvig.resources.CONTRACT_ADD_ADDITIONAL_COOWNER
 import hedvig.resources.CONTRACT_ADD_COINSURED
 import hedvig.resources.CONTRACT_ADD_COINSURED_NO_SSN
 import hedvig.resources.CONTRACT_BIRTH_DATE
@@ -94,7 +92,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun AddCoInsuredBottomSheetContent(
   bottomSheetState: AddBottomSheetContentState,
-  type: CoInsuredFlowType,
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
   onDismiss: () -> Unit,
@@ -110,14 +107,11 @@ internal fun AddCoInsuredBottomSheetContent(
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = when (type) {
-        CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED)
-        CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
-      },
+      text = stringResource(Res.string.CONTRACT_ADD_COINSURED),
       textAlign = TextAlign.Center,
       modifier = Modifier
-          .fillMaxWidth()
-          .semantics { heading() },
+        .fillMaxWidth()
+        .semantics { heading() },
     )
     Spacer(Modifier.height(24.dp))
     if (bottomSheetState.canPickExistingCoInsured() && bottomSheetState.selectableCoInsured != null) {
@@ -354,8 +348,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-            .weight(1f)
-            .defaultMinSize(minHeight = 64.dp),
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
       Spacer(Modifier.width(4.dp))
       HedvigTextField(
@@ -371,8 +365,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-            .weight(1f)
-            .defaultMinSize(minHeight = 64.dp),
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
     }
     AnimatedVisibility(
@@ -509,7 +503,6 @@ private fun AddCoInsuredBottomSheetContentPreview() {
             ),
           ),
         ),
-        type = CoInsuredFlowType.CoInsured,
         onSsnChanged = {},
         onContinue = {},
         onDismiss = {},
@@ -540,7 +533,6 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
             // birthDate = LocalDate(2016, 7, 28),
           ),
         ),
-        type = CoInsuredFlowType.CoInsured,
         onSsnChanged = {},
         onContinue = {},
         onDismiss = {},

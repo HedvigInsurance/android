@@ -5,7 +5,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredResult
 import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
@@ -32,7 +31,6 @@ internal class EditCoInsuredPresenterTest {
 
     val presenter = EditCoInsuredPresenter(
       contractId = testContractId,
-      type = CoInsuredFlowType.CoInsured,
       getCoInsuredUseCase = testGetCoInsuredUseCase,
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
@@ -68,7 +66,6 @@ internal class EditCoInsuredPresenterTest {
 
     val presenter = EditCoInsuredPresenter(
       contractId = testContractId,
-      type = CoInsuredFlowType.CoInsured,
       getCoInsuredUseCase = testGetCoInsuredUseCase,
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
@@ -77,7 +74,6 @@ internal class EditCoInsuredPresenterTest {
 
     presenter.test(
       EditCoInsuredState.Loaded(
-        type = CoInsuredFlowType.CoInsured,
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,
@@ -114,7 +110,6 @@ internal class EditCoInsuredPresenterTest {
 
     val presenter = EditCoInsuredPresenter(
       contractId = testContractId,
-      type = CoInsuredFlowType.CoInsured,
       getCoInsuredUseCase = testGetCoInsuredUseCase,
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
@@ -123,7 +118,6 @@ internal class EditCoInsuredPresenterTest {
 
     presenter.test(
       initialState = EditCoInsuredState.Loaded(
-        type = CoInsuredFlowType.CoInsured,
         listState = EditCoInsuredState.Loaded.CoInsuredListState(
           originalCoInsured = coInsuredTestList,
           member = testMember,

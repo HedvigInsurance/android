@@ -30,39 +30,24 @@ internal class GetInsuranceForEditCoInsuredUseCaseImpl(
         .bind()
         .currentMember
         .activeContracts
+      val filtered = contracts
+        .filter { it.supportsCoInsured }
+        .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
       buildList {
-        val isEditCoInsuredEnabled = featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()
-        if (isEditCoInsuredEnabled) {
-          contracts.filter { it.supportsCoInsured }.forEach { contract ->
-            val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-              QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(contract.id)
-            } else {
-              QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(contract.id)
-            }
-            add(
-              InsuranceForEditOrAddCoInsured(
-                quickLinkDestination = destination,
-                displayName = contract.currentAgreement.productVariant.displayName,
-                exposureName = contract.exposureDisplayName,
-                id = contract.id,
-              ),
-            )
+        filtered?.forEach { contract ->
+          val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+            QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(contract.id)
+          } else {
+            QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(contract.id)
           }
-          contracts.filter { it.supportsCoOwners }.forEach { contract ->
-            val destination = if (contract.coOwners?.any { it.hasMissingInfo } == true) {
-              QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo(contract.id)
-            } else {
-              QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove(contract.id)
-            }
-            add(
-              InsuranceForEditOrAddCoInsured(
-                quickLinkDestination = destination,
-                displayName = contract.currentAgreement.productVariant.displayName,
-                exposureName = contract.exposureDisplayName,
-                id = contract.id,
-              ),
-            )
-          }
+          add(
+            InsuranceForEditOrAddCoInsured(
+              quickLinkDestination = destination,
+              displayName = contract.currentAgreement.productVariant.displayName,
+              exposureName = contract.exposureDisplayName,
+              id = contract.id,
+            ),
+          )
         }
       }
     }

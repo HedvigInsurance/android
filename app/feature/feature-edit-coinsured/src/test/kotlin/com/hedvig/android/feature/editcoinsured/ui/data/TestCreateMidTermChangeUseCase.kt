@@ -4,7 +4,6 @@ import app.cash.turbine.Turbine
 import arrow.core.Either
 import arrow.fx.coroutines.raceN
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeResult
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
@@ -37,7 +36,6 @@ internal class TestCreateMidTermChangeUseCase : CreateMidtermChangeUseCase {
   override suspend fun invoke(
     contractId: String,
     coInsured: List<CoInsured>,
-    type: CoInsuredFlowType,
   ): Either<ErrorMessage, CreateMidtermChangeResult> {
     return raceN(
       { errorMessages.awaitItem() },

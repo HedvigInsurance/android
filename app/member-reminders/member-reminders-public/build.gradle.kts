@@ -9,7 +9,6 @@ hedvig {
 
 dependencies {
   api(libs.kotlinx.datetime)
-  api(projects.dataCoinsured)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)

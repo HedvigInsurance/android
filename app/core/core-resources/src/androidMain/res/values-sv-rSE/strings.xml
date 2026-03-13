@@ -213,12 +213,6 @@
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.</string>
   <string name="CLAIM_CHAT_EDIT_TITLE">Tidigare svar kommer att rensas</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Dubbelkolla att du fyllt i alla obligatoriska fält</string>
-  <string name="CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE">Start searching for the item relevant to your claim</string>
-  <string name="CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE">Fill in more details about your item</string>
-  <string name="CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND">Inga resultat</string>
-  <string name="CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER">Search for your item...</string>
-  <string name="CLAIM_CHAT_FIELD_SEARCH_SUGGESTION">Menade du </string>
-  <string name="CLAIM_CHAT_FIELD_SEARCH_TITLE">Search for your item</string>
   <string name="CLAIM_CHAT_FILE_TITLE">Uppladdade filer</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_HINT">Du kan ladda upp bilder, PDF:er eller andra filer. Ladda bara upp filer som är relevanta för din skadeanmälan.</string>
   <string name="CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON">Ladda upp filer</string>
@@ -264,7 +258,6 @@
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Giltigt till %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Giltigt till imorgon</string>
-  <string name="CONTRACT_ADD_ADDITIONAL_COOWNER">Lägg till delägare</string>
   <string name="CONTRACT_ADD_COINSURED">Lägg till medförsäkrad</string>
   <string name="CONTRACT_ADD_COINSURED_ACTIVE_FROM">Aktiveras %1$s</string>
   <string name="CONTRACT_ADD_COINSURED_ACTIVE_UNTIL">Aktiv till %1$s</string>
@@ -276,8 +269,6 @@
   <string name="CONTRACT_ADD_COINSURED_TOTAL">Totalt</string>
   <string name="CONTRACT_ADD_COINSURED_UPDATED_LABEL">Din försäkring kommer att uppdateras den %1$s.</string>
   <string name="CONTRACT_ADD_COINSURED_UPDATED_TITLE">Medförsäkrade uppdaterade</string>
-  <string name="CONTRACT_ADD_COOWNER_REVIEW_INFO">Du behöver lägga till information för alla delägare för att gå vidare.</string>
-  <string name="CONTRACT_ADD_COOWNER_UPDATED_TITLE">Delägarinformation uppdaterad</string>
   <string name="CONTRACT_BIRTHDATE">ÅÅMMDD</string>
   <string name="CONTRACT_BIRTH_DATE">Födelsedatum</string>
   <string name="CONTRACT_CHANGE_INFORMATION_TITLE">Vad vill du ändra?</string>
@@ -287,13 +278,9 @@
   <string name="CONTRACT_COINSURED_MISSING_ADD_INFO">Lägg till information</string>
   <string name="CONTRACT_COINSURED_MISSING_INFO_TEXT">Lägg till mer information om dina medförsäkrade för bättre hjälp</string>
   <string name="CONTRACT_COINSURED_REMOVED">Medförsäkrad borttagen</string>
-  <string name="CONTRACT_COOWNER">Delägare</string>
-  <string name="CONTRACT_COOWNERS_ADD_PERSONAL_INFO">Du behöver lägga till information om dina delägare</string>
-  <string name="CONTRACT_COOWNERS_MISSING_INFO_TEXT">Lägg till information om delägare för ditt fritidshus</string>
   <string name="CONTRACT_COVERAGE_MORE_INFO">Mer information</string>
   <string name="CONTRACT_DETAILS_ERROR">Vi kunde inte hitta din försäkring</string>
   <string name="CONTRACT_EDIT_COINSURED">Ändra medförsäkrade</string>
-  <string name="CONTRACT_EDIT_COINSURED_DESCRIPTION">Ändra information om medförsäkrade</string>
   <string name="CONTRACT_EDIT_INFO">Ändra</string>
   <string name="CONTRACT_EDIT_INFO_LABEL">Ändra din försäkring</string>
   <string name="CONTRACT_FIRST_NAME">Förnamn</string>
@@ -305,7 +292,6 @@
   <string name="CONTRACT_OVERVIEW_ADDON_IS_ADDED">Tillagd</string>
   <string name="CONTRACT_PERSONAL_IDENTITY">Personnummer</string>
   <string name="CONTRACT_REMOVE_COINSURED_CONFIRMATION">Är du säker på att du vill\nta bort medförsäkrade?</string>
-  <string name="CONTRACT_REMOVE_COOWNER_CONFIRMATION">Är du säker på att du vill\nta bort delägare?</string>
   <string name="CONTRACT_SSN_FETCH_INFO">Hämta information</string>
   <string name="CONTRACT_STATUS_ACTIVE_IN_FUTURE">Aktiveras %1$s</string>
   <string name="CONTRACT_STATUS_PENDING">Väntar på startdatum</string>
@@ -341,8 +327,6 @@
   <string name="DISCOUNTS_LABEL_ACTIVE">Aktiv</string>
   <string name="DISCOUNTS_LABEL_PENDING">Aktiveras senare</string>
   <string name="DURATION_TITLE">Giltighetstid</string>
-  <string name="EDIT_COOWNER_SUBTITLE">Ändra information om delägare</string>
-  <string name="EDIT_COOWNER_TITLE">Ändra delägare</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Adress</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">Jag hittar inte min adress</string>
   <string name="EMBARK_RECORD_AGAIN">Spela in igen</string>
@@ -498,8 +482,6 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>
-  <string name="KIVRA_NOTIFICATION_BOX_TEXT">You can\'t change the payment method at the moment. Please contact us to get help.</string>
-  <string name="KIVRA_PAYMENT_INFO">The invoice is sent out 14 days before due date each month to your Kivra inbox.</string>
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>

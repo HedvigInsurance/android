@@ -9,7 +9,6 @@ import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -26,7 +25,7 @@ fun NavGraphBuilder.homeGraph(
   navigateToClaimDetails: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: () -> Unit,
-  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
@@ -54,7 +53,7 @@ fun NavGraphBuilder.homeGraph(
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
         navigateToOldClaimFlow = dropUnlessResumed { navigateToOldClaimFlow() },
-        navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
+        navigateToMissingInfo = dropUnlessResumed { contractId -> navigateToMissingInfo(contractId) },
         navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
         openUrl = openUrl,
         openAppSettings = openAppSettings,
