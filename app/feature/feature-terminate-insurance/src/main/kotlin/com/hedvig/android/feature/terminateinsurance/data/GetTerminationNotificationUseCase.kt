@@ -9,18 +9,26 @@ import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
-import octopus.TerminationBundleDiscountNotificationQuery
+import octopus.TerminationFlowNotificationQuery
+import octopus.type.TerminationFlowNotificationInput
 
 internal class GetTerminationNotificationUseCase(
   private val apolloClient: ApolloClient,
 ) {
   fun invoke(contractId: String, terminationDate: LocalDate): Flow<Either<ErrorMessage, String?>> {
     return apolloClient
-      .query(TerminationBundleDiscountNotificationQuery(contractId, terminationDate))
+      .query(
+        TerminationFlowNotificationQuery(
+          TerminationFlowNotificationInput(
+            contractId = contractId,
+            terminationDate = terminationDate,
+          ),
+        ),
+      )
       .safeFlow(::ErrorMessage)
       .map { response ->
         either {
-          response.bind().contract.terminationBundleDiscountNotification
+          response.bind().currentMember.terminationFlowNotification?.message
         }
       }
   }

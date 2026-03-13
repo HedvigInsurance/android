@@ -11,7 +11,6 @@ import kotlinx.datetime.LocalDate
 import octopus.TerminateContractMutation
 import octopus.TerminationSurveyQuery
 import octopus.type.TerminateContractInput
-import octopus.type.TerminationReason
 
 internal interface TerminateInsuranceRepository {
   suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData>
@@ -19,7 +18,7 @@ internal interface TerminateInsuranceRepository {
   suspend fun terminateContract(
     contractId: String,
     terminationDate: LocalDate?,
-    reason: TerminationReason,
+    surveyOptionId: String,
     comment: String?,
   ): Either<ErrorMessage, TerminationResult>
 }
@@ -41,7 +40,7 @@ internal class TerminateInsuranceRepositoryImpl(
   override suspend fun terminateContract(
     contractId: String,
     terminationDate: LocalDate?,
-    reason: TerminationReason,
+    surveyOptionId: String,
     comment: String?,
   ): Either<ErrorMessage, TerminationResult> {
     return either {
@@ -51,7 +50,7 @@ internal class TerminateInsuranceRepositoryImpl(
             TerminateContractInput(
               contractId = contractId,
               terminationDate = Optional.presentIfNotNull(terminationDate),
-              terminationReason = reason,
+              terminationSurveyOptionId = surveyOptionId,
               terminationComment = Optional.presentIfNotNull(comment),
             ),
           ),

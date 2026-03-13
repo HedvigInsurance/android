@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import octopus.type.TerminationReason
 
 internal class TerminationConfirmationViewModel(
   terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
@@ -103,7 +102,7 @@ private class TerminationConfirmationPresenter(
             terminateInsuranceRepository.terminateContract(
               contractId = insuranceInfo.contractId,
               terminationDate = terminationDate,
-              reason = TerminationReason.safeValueOf(selectedReasonId),
+              surveyOptionId = selectedReasonId,
               comment = feedbackComment,
             ).fold(
               ifLeft = { errorMessage ->
