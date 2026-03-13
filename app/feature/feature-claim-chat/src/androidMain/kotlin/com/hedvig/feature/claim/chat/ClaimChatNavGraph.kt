@@ -60,6 +60,7 @@ fun NavGraphBuilder.claimChatGraph(
   appPackageId: String,
   imageLoader: ImageLoader,
   onNavigateToNewConversation: () -> Unit,
+  openPlayStore: () -> Unit,
 ) {
   navdestination<ClaimChatDestination> {
     ClaimChatDestination(
@@ -84,6 +85,7 @@ fun NavGraphBuilder.claimChatGraph(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
+      openPlayStore = openPlayStore
     )
   }
   navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {

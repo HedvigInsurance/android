@@ -389,7 +389,7 @@ private fun AddonsSection(
     ) {
       Column {
         existingAddons.forEachIndexed { index, existingAddon ->
-          val isRemovingDisabled =existingAddon.status is ContractAddon.Status.EndsAt
+          val isRemovingDisabled = existingAddon.status is ContractAddon.Status.EndsAt
           AddonRow(
             title = existingAddon.displayName,
             description = when (val status = existingAddon.status) {
@@ -415,7 +415,7 @@ private fun AddonsSection(
             isRemovingDisabled = isRemovingDisabled,
             onLabelClick = {
               removeAddonBottomSheetState.show(existingAddon)
-            }
+            },
           )
         }
         availableAddons.forEachIndexed { index, availableAddon ->
@@ -426,7 +426,7 @@ private fun AddonsSection(
             isAlreadyAdded = false,
             modifier = Modifier.clickable(onClick = dropUnlessResumed { navigateToAddAddon(availableAddon) }),
             isRemovingDisabled = false,
-            onLabelClick = dropUnlessResumed { navigateToAddAddon(availableAddon) }
+            onLabelClick = dropUnlessResumed { navigateToAddAddon(availableAddon) },
           )
         }
       }
@@ -560,23 +560,26 @@ private fun AddonRow(
             onClick = {},
             enabled = false,
             buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            buttonSize =  ButtonDefaults.ButtonSize.Small,
-            text = stringResource(Res.string.ADDON_ADDED_COVERAGE)
+            buttonSize = ButtonDefaults.ButtonSize.Small,
+            text = stringResource(Res.string.ADDON_ADDED_COVERAGE),
           )
         }
       } else {
         HedvigButton(
           onClick = onLabelClick,
           enabled = true,
-          buttonStyle = if (isAlreadyAdded) ButtonDefaults.ButtonStyle.Secondary
-            else ButtonDefaults.ButtonStyle.PrimaryAlt,
-          buttonSize =  ButtonDefaults.ButtonSize.Small,
+          buttonStyle = if (isAlreadyAdded) {
+            ButtonDefaults.ButtonStyle.Secondary
+          } else {
+            ButtonDefaults.ButtonStyle.PrimaryAlt
+          },
+          buttonSize = ButtonDefaults.ButtonSize.Small,
           text = if (isAlreadyAdded) {
             stringResource(Res.string.ADDON_ADDED_COVERAGE)
           } else {
             stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ADD)
           },
-          modifier =Modifier.wrapContentSize(Alignment.TopEnd),
+          modifier = Modifier.wrapContentSize(Alignment.TopEnd),
         )
       }
     },
@@ -946,7 +949,7 @@ private fun PreviewYourInfoTab() {
             ),
             displayName = "DisplayName",
             description = "Description",
-            status = ContractAddon.Status.EndsAt(LocalDate(2026,10,1)),
+            status = ContractAddon.Status.EndsAt(LocalDate(2026, 10, 1)),
             isUpgradable = false,
             isRemovable = false,
           ),

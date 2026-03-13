@@ -239,12 +239,10 @@ internal fun HedvigNavHost(
             }
           },
           closeTerminationFlow = {
-            /**
-             * If we fail to pop the backstack including TerminateInsuranceGraphDestination here it means we were deep
-             * linked into this screen only, and they do not wish to continue with the flow they were deep linked to.
-             * The right way to handle this is to simply finish the app as per the docs:
-             * https://developer.android.com/guide/navigation/backstack#handle-failure
-             */
+            // If we fail to pop the backstack including TerminateInsuranceGraphDestination here it means we were deep
+            //  linked into this screen only, and they do not wish to continue with the flow they were deep linked to.
+            //  The right way to handle this is to simply finish the app as per the docs:
+            //  https://developer.android.com/guide/navigation/backstack#handle-failure
             if (!navController.typedPopBackStack<TerminateInsuranceGraphDestination>(inclusive = true)) {
               finishApp()
             }
@@ -500,6 +498,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     onNavigateToNewConversation = {
       navigateToNewConversation(null)
     },
+    openPlayStore = externalNavigator::tryOpenPlayStore,
   )
   claimDetailsGraph(
     navController = navController,

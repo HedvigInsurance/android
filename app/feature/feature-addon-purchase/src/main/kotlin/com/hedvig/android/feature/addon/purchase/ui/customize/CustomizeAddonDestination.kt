@@ -708,7 +708,9 @@ private fun HeaderInfoWithCurrentPrice(
   modifier: Modifier = Modifier,
 ) {
   Column(modifier.fillMaxWidth()) {
-    val pricePerMonth = "${stringResource(Res.string.TIER_FLOW_TOTAL)}: ${chosenOptionPremiumExtra.getPerMonthDescription()}"
+    val pricePerMonth = "${stringResource(
+      Res.string.TIER_FLOW_TOTAL,
+    )}: ${chosenOptionPremiumExtra.getPerMonthDescription()}"
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(exposureName)
