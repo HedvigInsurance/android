@@ -28,6 +28,7 @@ internal data class MemberCharge(
   val referralDiscount: Discount?,
   private val carriedAdjustment: UiMoney?,
   private val settlementAdjustment: UiMoney?,
+  val chargeMethod: MemberPaymentChargeMethod
 ) {
   fun carriedAdjustmentIfAboveZero(): UiMoney? = if (carriedAdjustment != null && carriedAdjustment.amount > 0) {
     carriedAdjustment
@@ -164,7 +165,16 @@ internal fun MemberChargeFragment.toMemberCharge(
       statusDescription = null,
     )
   },
+  chargeMethod = paymentProvider.toChargeMethod()
 )
+
+internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
+  return when {
+    this?.startsWith("kivra", ignoreCase = true) == true -> MemberPaymentChargeMethod.KIVRA
+    this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
+    else -> MemberPaymentChargeMethod.UNKNOWN
+  }
+}
 
 internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   val previousChargesPeriods = chargeBreakdown
