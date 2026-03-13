@@ -2550,6 +2550,7 @@ type MemberActions {
   isMovingEnabled: Boolean!
   isConnectPaymentEnabled: Boolean!
   isEditCoInsuredEnabled: Boolean!
+  isEditCoOwnersEnabled: Boolean!
   isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
   isChangeTierEnabled: Boolean!

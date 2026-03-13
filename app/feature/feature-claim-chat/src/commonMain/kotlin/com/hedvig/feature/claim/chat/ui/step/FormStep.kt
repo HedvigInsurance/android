@@ -373,7 +373,7 @@ private fun FormContent(
                 RoundCornersPill(
                   onClick = null,
                 ) {
-                  HedvigText(textValue)
+                  HedvigText(textValue, textAlign = TextAlign.End)
                 }
               } else {
                 SkippedLabel()
