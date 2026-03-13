@@ -1,0 +1,42 @@
+query TerminationSurvey($contractId: ID!) {
+  terminationSurvey(contractId: $contractId) {
+    options {
+      id
+      title
+      feedbackRequired
+      subOptions {
+        id
+        title
+        feedbackRequired
+        suggestion {
+          ...TerminationSurveyOptionSuggestionFragment
+        }
+      }
+      suggestion {
+        ...TerminationSurveyOptionSuggestionFragment
+      }
+    }
+    action {
+      ... on TerminateWithDate {
+        minDate
+        maxDate
+        extraCoverage {
+          displayName
+          displayValue
+        }
+      }
+      ... on DeleteInsurance {
+        extraCoverage {
+          displayName
+          displayValue
+        }
+      }
+    }
+  }
+}
+
+fragment TerminationSurveyOptionSuggestionFragment on TerminationSurveyOptionSuggestion {
+  type
+  description
+  url
+}

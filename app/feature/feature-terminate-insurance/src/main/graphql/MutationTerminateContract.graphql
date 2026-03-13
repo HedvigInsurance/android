@@ -1,0 +1,8 @@
+mutation TerminateContract($input: TerminateContractInput!) {
+  terminateContract(input: $input) {
+    terminationDate
+    userError {
+      message
+    }
+  }
+}

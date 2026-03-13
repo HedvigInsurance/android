@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.di
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.termination.data.GetTerminatableContractsUseCase
@@ -9,18 +7,15 @@ import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepositoryImpl
-import com.hedvig.android.feature.terminateinsurance.data.TerminationFlowContextStorage
+import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.hedvig.android.feature.terminateinsurance.navigation.AutoDecommissionDeflectStepParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateParameters
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
-import com.hedvig.android.feature.terminateinsurance.step.deflectAutoDecom.DeflectAutoDecommissionStepViewModel
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
@@ -34,11 +29,18 @@ val terminateInsuranceModule = module {
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
     )
   }
-  viewModel<TerminationSurveyViewModel> { (options: List<TerminationSurveyOption>) ->
+  viewModel<TerminationSurveyViewModel> {
+    (
+      options: List<TerminationSurveyOption>,
+      action: TerminationAction,
+      contractId: String,
+    ),
+    ->
     TerminationSurveyViewModel(
       options = options,
-      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
+      action = action,
       changeTierRepository = get<ChangeTierRepository>(),
+      contractId = contractId,
     )
   }
   viewModel<TerminationDateViewModel> { (parameters: TerminationDateParameters) ->
@@ -48,38 +50,24 @@ val terminateInsuranceModule = module {
     )
   }
   viewModel<TerminationConfirmationViewModel> { params ->
-    val terminationType = params.get<TerminateInsuranceDestination.TerminationConfirmation.TerminationType>()
-    val insuranceInfo: TerminationGraphParameters = params.get<TerminationGraphParameters>()
-    val extraCoverageItems: List<ExtraCoverageItem> = params.get<List<ExtraCoverageItem>>()
     TerminationConfirmationViewModel(
-      terminationType = terminationType,
-      insuranceInfo = insuranceInfo,
-      extraCoverageItems = extraCoverageItems,
+      terminationType = params.get<TerminateInsuranceDestination.TerminationConfirmation.TerminationType>(),
+      insuranceInfo = params.get<TerminationGraphParameters>(),
+      extraCoverageItems = params.get<List<ExtraCoverageItem>>(),
+      selectedReasonId = params.get<String>(),
+      feedbackComment = params.getOrNull<String?>(),
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
       getTerminationNotificationUseCase = get<GetTerminationNotificationUseCase>(),
       clock = get<Clock>(),
     )
   }
 
-  viewModel<DeflectAutoDecommissionStepViewModel> { params ->
-    val deflectParams = params.get<AutoDecommissionDeflectStepParameters>()
-    DeflectAutoDecommissionStepViewModel(
-      terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
-      deflectParameters = deflectParams,
-    )
-  }
-
   single<TerminateInsuranceRepository> {
     TerminateInsuranceRepositoryImpl(
       apolloClient = get<ApolloClient>(),
-      featureManager = get<FeatureManager>(),
-      terminationFlowContextStorage = get<TerminationFlowContextStorage>(),
     )
   }
   single<GetTerminationNotificationUseCase> {
     GetTerminationNotificationUseCase(get<ApolloClient>())
-  }
-  single<TerminationFlowContextStorage> {
-    TerminationFlowContextStorage(datastore = get<DataStore<Preferences>>())
   }
 }

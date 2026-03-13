@@ -7,159 +7,131 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.terminateinsurance.InsuranceId
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature.TRAVEL_ADDON
-import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate
-import octopus.FlowTerminationAutoDecomNextMutation
-import octopus.FlowTerminationDateNextMutation
-import octopus.FlowTerminationDeletionNextMutation
-import octopus.FlowTerminationStartMutation
-import octopus.FlowTerminationSurveyNextMutation
-import octopus.type.FlowTerminationCarAutoDecomInput
-import octopus.type.FlowTerminationDateInput
-import octopus.type.FlowTerminationStartInput
-import octopus.type.FlowTerminationSurveyDataInput
-import octopus.type.FlowTerminationSurveyInput
+import octopus.TerminateContractMutation
+import octopus.TerminationSurveyQuery
+import octopus.type.TerminateContractInput
 
 internal interface TerminateInsuranceRepository {
-  suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep>
+  suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData>
 
-  suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep>
-
-  suspend fun submitReasonForCancelling(
-    reason: TerminationSurveyOption,
-    feedback: String?,
-  ): Either<ErrorMessage, TerminateInsuranceStep>
-
-  suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep>
-
-  suspend fun getContractId(): String
-
-  suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep>
+  suspend fun terminateContract(
+    contractId: String,
+    terminationDate: LocalDate?,
+    surveyOptionId: String,
+    comment: String?,
+  ): Either<ErrorMessage, TerminationResult>
 }
 
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
-  private val terminationFlowContextStorage: TerminationFlowContextStorage,
 ) : TerminateInsuranceRepository {
-  override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> {
+  override suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData> {
     return either {
-      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
+      val result = apolloClient
+        .query(TerminationSurveyQuery(contractId))
+        .safeExecute(::ErrorMessage)
+        .bind()
+        .terminationSurvey
+      result.toTerminationSurveyData()
+    }
+  }
+
+  override suspend fun terminateContract(
+    contractId: String,
+    terminationDate: LocalDate?,
+    surveyOptionId: String,
+    comment: String?,
+  ): Either<ErrorMessage, TerminationResult> {
+    return either {
       val result = apolloClient
         .mutation(
-          FlowTerminationStartMutation(
-            FlowTerminationStartInput(
-              insuranceId.id,
-              supportedSteps = SUPPORTED_STEPS,
+          TerminateContractMutation(
+            TerminateContractInput(
+              contractId = contractId,
+              terminationDate = Optional.presentIfNotNull(terminationDate),
+              terminationSurveyOptionId = surveyOptionId,
+              terminationComment = Optional.presentIfNotNull(comment),
             ),
-            isAddonsEnabled,
           ),
         )
         .safeExecute(::ErrorMessage)
         .bind()
-        .flowTerminationStart
-      terminationFlowContextStorage.saveContext(result.context)
-      terminationFlowContextStorage.saveContractId(insuranceId.id)
-      result.currentStep.toTerminateInsuranceStep()
+        .terminateContract
+      TerminationResult(
+        terminationDate = result.terminationDate,
+        userError = result.userError?.message,
+      )
     }
   }
+}
 
-  override suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> {
-    return either {
-      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
-      val result = apolloClient
-        .mutation(
-          FlowTerminationDateNextMutation(
-            context = terminationFlowContextStorage.getContext(),
-            input = FlowTerminationDateInput(terminationDate),
-            addonsEnabled = isAddonsEnabled,
-          ),
-        )
-        .safeExecute(::ErrorMessage)
-        .bind()
-        .flowTerminationDateNext
-      terminationFlowContextStorage.saveContext(result.context)
-      result.currentStep.toTerminateInsuranceStep()
+private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData(): TerminationSurveyData {
+  return TerminationSurveyData(
+    options = options.mapIndexed { index, option -> option.toTerminationSurveyOption(index) },
+    action = action.toTerminationAction(),
+  )
+}
+
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSurveyOption(
+  index: Int,
+): TerminationSurveyOption {
+  return TerminationSurveyOption(
+    id = id,
+    title = title,
+    listIndex = index,
+    feedbackRequired = feedbackRequired,
+    suggestion = suggestion?.toSuggestion(),
+    subOptions = subOptions.mapIndexed { subIndex, subOption ->
+      TerminationSurveyOption(
+        id = subOption.id,
+        title = subOption.title,
+        listIndex = subIndex,
+        feedbackRequired = subOption.feedbackRequired,
+        suggestion = subOption.suggestion?.toSuggestion(),
+        subOptions = emptyList(),
+      )
+    },
+  )
+}
+
+// Note: The exact Apollo-generated class names depend on the schema.
+// These will need adjusting once the real schema is available and codegen runs.
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): TerminationAction {
+  return when (this) {
+    is TerminationSurveyQuery.Data.TerminationSurvey.TerminateWithDateAction -> {
+      TerminationAction.TerminateWithDate(
+        minDate = minDate,
+        maxDate = maxDate,
+        extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
+      )
+    }
+
+    is TerminationSurveyQuery.Data.TerminationSurvey.DeleteInsuranceAction -> {
+      TerminationAction.DeleteInsurance(
+        extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
+      )
+    }
+
+    else -> {
+      TerminationAction.DeleteInsurance(extraCoverageItems = emptyList())
     }
   }
+}
 
-  override suspend fun submitReasonForCancelling(
-    reason: TerminationSurveyOption,
-    feedback: String?,
-  ): Either<ErrorMessage, TerminateInsuranceStep> {
-    return either {
-      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
-      val result = apolloClient
-        .mutation(
-          FlowTerminationSurveyNextMutation(
-            context = terminationFlowContextStorage.getContext(),
-            input = FlowTerminationSurveyInput(
-              data = FlowTerminationSurveyDataInput(
-                optionId = reason.id,
-                text = Optional.presentIfNotNull(feedback),
-              ),
-            ),
-            addonsEnabled = isAddonsEnabled,
-          ),
-        )
-        .safeExecute(::ErrorMessage)
-        .bind()
-        .flowTerminationSurveyNext
-      terminationFlowContextStorage.saveContext(result.context)
-      logcat { "After: after submitReasonForCancelling we get step: ${result.currentStep}" }
-      result.currentStep.toTerminateInsuranceStep()
-    }
-  }
-
-  override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> {
-    return either {
-      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
-      val result = apolloClient
-        .mutation(FlowTerminationDeletionNextMutation(terminationFlowContextStorage.getContext(), isAddonsEnabled))
-        .safeExecute(::ErrorMessage)
-        .bind()
-        .flowTerminationDeletionNext
-      terminationFlowContextStorage.saveContext(result.context)
-      result.currentStep.toTerminateInsuranceStep()
-    }
-  }
-
-  override suspend fun getContractId(): String {
-    return terminationFlowContextStorage.getContractId()
-  }
-
-  override suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep> {
-    return either {
-      val isAddonsEnabled = featureManager.isFeatureEnabled(TRAVEL_ADDON).first()
-      val result = apolloClient
-        .mutation(
-          FlowTerminationAutoDecomNextMutation(
-            context = terminationFlowContextStorage.getContext(),
-            addonsEnabled = isAddonsEnabled,
-            input = FlowTerminationCarAutoDecomInput(true),
-          ),
-        )
-        .safeExecute(::ErrorMessage)
-        .bind()
-        .flowTerminationCarAutoDecomNext
-      terminationFlowContextStorage.saveContext(result.context)
-      result.currentStep.toTerminateInsuranceStep()
-    }
-  }
-
-  private val SUPPORTED_STEPS = Optional.present(
-    listOf(
-      "FlowTerminationSurveyStep",
-      "FlowTerminationDateStep",
-      "FlowTerminationDeletionStep",
-      "FlowTerminationSuccessStep",
-      "FlowTerminationFailedStep",
-      "FlowTerminationCarDeflectAutoCancelStep",
-      "FlowTerminationCarAutoDecomStep",
-    ),
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.Suggestion.toSuggestion(): SurveyOptionSuggestion {
+  return SurveyOptionSuggestion(
+    type = when (type) {
+      octopus.type.TerminationSurveyOptionSuggestionType.UPDATE_ADDRESS -> SuggestionType.UPDATE_ADDRESS
+      octopus.type.TerminationSurveyOptionSuggestionType.UPGRADE_COVERAGE -> SuggestionType.UPGRADE_COVERAGE
+      octopus.type.TerminationSurveyOptionSuggestionType.DOWNGRADE_PRICE -> SuggestionType.DOWNGRADE_PRICE
+      octopus.type.TerminationSurveyOptionSuggestionType.REDIRECT -> SuggestionType.REDIRECT
+      octopus.type.TerminationSurveyOptionSuggestionType.INFO -> SuggestionType.INFO
+      octopus.type.TerminationSurveyOptionSuggestionType.AUTO_DECOMMISSION -> SuggestionType.AUTO_DECOMMISSION
+      octopus.type.TerminationSurveyOptionSuggestionType.AUTO_CANCEL -> SuggestionType.AUTO_CANCEL
+      else -> SuggestionType.UNKNOWN
+    },
+    description = description,
+    url = url,
   )
 }
