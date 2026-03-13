@@ -22,9 +22,3 @@ internal data class MemberChargeShortInfo(
   val status: MemberCharge.MemberChargeStatus,
   val failedCharge: MemberCharge.FailedCharge?,
 )
-
-enum class MemberPaymentChargeMethod {
-  TRUSTLY,
-  KIVRA,
-  UNKNOWN
-}

@@ -330,7 +330,6 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
-      onOpenChat = ::navigateToNewConversation
     )
     profileGraph(
       nestedGraphs = {

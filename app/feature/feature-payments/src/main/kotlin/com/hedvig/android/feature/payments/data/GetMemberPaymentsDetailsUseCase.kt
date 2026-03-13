@@ -10,7 +10,6 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.MemberPaymentDetailsQuery
@@ -38,12 +37,11 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
       }
       with(chargeMethod) {
         MemberPaymentsDetails(
-          chargingDayInTheMonth = dueDate,
+          chargingDayInTheMonth = chargingDayInTheMonth,
           descriptor = descriptor,
           displayName = displayName,
           mandate = mandate,
           paymentMethod = paymentMethod,
-          chargeMethod = paymentProvider.toChargeMethod()
         )
       }
     }
@@ -56,5 +54,4 @@ data class MemberPaymentsDetails(
   val displayName: String?,
   val mandate: String?,
   val paymentMethod: String,
-  val chargeMethod: MemberPaymentChargeMethod
 )
