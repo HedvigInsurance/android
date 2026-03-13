@@ -1,6 +1,7 @@
 package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.Raise
+import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
@@ -20,19 +21,26 @@ import octopus.fragment.TaskFragment
 import octopus.type.ClaimIntentStepContentFormFieldType
 import octopus.type.ClaimIntentStepContentSelectStyle
 
-context(raise: Raise<ErrorMessage>)
+context(raise: Raise<ClaimChatErrorMessage>)
 internal fun ClaimIntentMutationOutputFragment.toClaimIntent(locale: CommonLocale): ClaimIntent {
   val userError = userError
   val intent = intent
   return with(raise) {
     when {
-      userError != null -> raise(ErrorMessage(userError.message))
+      userError != null -> {
+        logcat {"toClaimIntent: user error: ${userError.message}"}
+        raise(ClaimChatErrorMessage.GeneralError)
+      }
       intent != null -> intent.toClaimIntent(locale)
-      else -> raise(ErrorMessage("No data"))
+      else -> {
+        logcat {"toClaimIntent: no data"}
+        raise(ClaimChatErrorMessage.GeneralError)
+      }
     }
   }
 }
 
+context(raise: Raise<ClaimChatErrorMessage>)
 internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimIntent {
   return ClaimIntent(
     id = ClaimIntentId(id),
@@ -45,6 +53,7 @@ internal fun ClaimIntentFragment.toClaimIntent(locale: CommonLocale): ClaimInten
   )
 }
 
+context(raise: Raise<ClaimChatErrorMessage>)
 private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLocale): ClaimIntentStep {
   return ClaimIntentStep(
     id = StepId(id),
@@ -55,6 +64,7 @@ private fun ClaimIntentFragment.CurrentStep.toClaimIntentStep(locale: CommonLoca
   )
 }
 
+context(raise: Raise<ClaimChatErrorMessage>)
 private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): StepContent {
   return when (this) {
     is FormFragment -> {
@@ -164,7 +174,8 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     }
 
     else -> {
-      StepContent.Unknown
+      logcat { "ClaimIntentStepContentFragment: Unknown step" }
+      raise(ClaimChatErrorMessage.NeedsUpdate)
     }
   }
 }
@@ -178,6 +189,7 @@ private fun List<ContentSelectFragment.Option>.toOptions(): List<StepContent.Con
   }
 }
 
+context(raise: Raise<ClaimChatErrorMessage>)
 private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepContent.Form.Field> {
   return this.map { field ->
     StepContent.Form.Field(
@@ -196,8 +208,14 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
         ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
         ClaimIntentStepContentFormFieldType.PHONE_NUMBER -> StepContent.Form.FieldType.NUMBER
-        ClaimIntentStepContentFormFieldType.SEARCH -> null
-        ClaimIntentStepContentFormFieldType.UNKNOWN__ -> null
+        ClaimIntentStepContentFormFieldType.SEARCH -> {
+          logcat { "FormFragment.Field: Unknown field type" }
+          raise(ClaimChatErrorMessage.NeedsUpdate)
+        }
+        ClaimIntentStepContentFormFieldType.UNKNOWN__ -> {
+          logcat { "FormFragment.Field: Unknown field type" }
+          raise(ClaimChatErrorMessage.NeedsUpdate)
+        }
       },
       options = field.options?.map {
         StepContent.Form.FieldOption(
@@ -247,4 +265,16 @@ private fun ClaimIntentFragment.CreatedClaim.toClaimIntentOutcome(): ClaimIntent
     id,
     submittedAt,
   )
+}
+
+internal sealed interface ClaimChatErrorMessage: ErrorMessage {
+  data object GeneralError: ClaimChatErrorMessage {
+    override val message = null
+    override val throwable = null
+  }
+
+  data object NeedsUpdate: ClaimChatErrorMessage {
+    override val message = null
+    override val throwable = null
+  }
 }

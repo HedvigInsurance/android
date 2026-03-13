@@ -11,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
@@ -21,6 +20,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.AudioRecording
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.FreeTextDescription
+import com.hedvig.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
@@ -131,7 +131,7 @@ internal sealed interface ClaimChatUiState {
     val currentStep: ClaimIntentStep?,
     val freeText: String?,
     val outcome: ClaimIntentOutcome?,
-    val errorSubmittingStep: ErrorMessage?,
+    val errorSubmittingStep: ClaimChatErrorMessage?,
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
@@ -210,7 +210,7 @@ internal class ClaimChatPresenter(
     var showFreeTextOverlay by remember { mutableStateOf<FreeTextRestrictions?>(null) }
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
-    var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
+    var errorSubmittingStep by remember { mutableStateOf<ClaimChatErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
     var progress by remember {
@@ -555,7 +555,7 @@ internal class ClaimChatPresenter(
             }
           } catch (e: Exception) {
             logcat { "ClaimChatEvent.AddFile error: $e" }
-            errorSubmittingStep = ErrorMessage()
+            errorSubmittingStep = ClaimChatErrorMessage.GeneralError
           }
         }
 
@@ -861,7 +861,7 @@ private fun ObserveIncompleteTaskEffect(
   getClaimIntentUseCase: GetClaimIntentUseCase,
   currentStep: ClaimIntentStep?,
   claimIntentId: () -> ClaimIntentId?,
-  onFailure: (StepId, ErrorMessage) -> Unit,
+  onFailure: (StepId, ClaimChatErrorMessage) -> Unit,
   steps: SnapshotStateList<ClaimIntentStep>,
 ) {
   val stepContent = currentStep?.stepContent as? StepContent.Task
@@ -899,7 +899,7 @@ private fun ObserveIncompleteTaskEffect(
 private fun SubmitCompleteTaskEffect(
   submitTaskUseCase: SubmitTaskUseCase,
   currentStep: ClaimIntentStep?,
-  onFailure: (StepId, ErrorMessage) -> Unit,
+  onFailure: (StepId, ClaimChatErrorMessage) -> Unit,
   onSuccess: (ClaimIntent) -> Unit,
 ) {
   val isCompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted == true
@@ -1003,9 +1003,9 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
 
 private fun onTaskSubmissionFailed(
   failedStepId: StepId,
-  errorMessage: ErrorMessage,
+  errorMessage: ClaimChatErrorMessage,
   steps: SnapshotStateList<ClaimIntentStep>,
-  setErrorMessage: (ErrorMessage) -> Unit,
+  setErrorMessage: (ClaimChatErrorMessage) -> Unit,
 ) {
   steps.updateStepWithSuccess<StepContent.Task>(failedStepId) { step, content ->
     step.copy(stepContent = content.copy(failedToSubmit = true))

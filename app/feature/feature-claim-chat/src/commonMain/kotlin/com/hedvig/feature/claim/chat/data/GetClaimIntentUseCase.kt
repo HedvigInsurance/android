@@ -23,7 +23,7 @@ internal class GetClaimIntentUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
-  fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ErrorMessage, TaskStepContent>> {
+  fun invoke(claimIntentId: ClaimIntentId): Flow<Either<ClaimChatErrorMessage, TaskStepContent>> {
     return flow {
       var retries = 0
       while (currentCoroutineContext().isActive) {
@@ -34,7 +34,7 @@ internal class GetClaimIntentUseCase(
             .safeExecute()
             .mapLeft {
               logcat { "GetClaimIntentUseCase error: $it" }
-              ErrorMessage()
+              ClaimChatErrorMessage.GeneralError
             }
             .bind()
             .claimIntent
@@ -56,7 +56,7 @@ internal class GetClaimIntentUseCase(
             if (step == null || stepContent !is StepContent.Task) {
               val errorMessage = "getClaimIntentUseCase returned a non-step result after observing an incomplete task"
               logcat(LogPriority.WARN) { errorMessage }
-              emit(ErrorMessage(errorMessage).left())
+              emit(ClaimChatErrorMessage.GeneralError.left())
               break
             }
             emit(TaskStepContent(step.claimIntentStep, stepContent).right())
