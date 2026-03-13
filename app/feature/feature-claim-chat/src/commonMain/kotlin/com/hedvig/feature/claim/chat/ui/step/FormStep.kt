@@ -363,7 +363,8 @@ private fun FormContent(
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         if (content.fields.flatMap { it.selectedOptions }.isNotEmpty()) {
           content.fields.forEach { field ->
-            val textValue = field.selectedOptions.joinToString { it.text }
+            val suffix = field.suffix?.let {" $it"} ?: ""
+            val textValue = "${field.selectedOptions.joinToString { it.text }} $suffix"
             Column(
               Modifier.fillMaxWidth(),
               horizontalAlignment = Alignment.End,
