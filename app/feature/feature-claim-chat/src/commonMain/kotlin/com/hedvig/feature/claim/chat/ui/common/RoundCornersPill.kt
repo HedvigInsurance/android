@@ -18,7 +18,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 
 @Composable
 internal fun RoundCornersPill(
-  modifier: Modifier = Modifier.Companion,
+  modifier: Modifier = Modifier,
   isSelected: Boolean = false,
   onClick: (() -> Unit)?,
   content: @Composable () -> Unit,
@@ -42,11 +42,11 @@ internal fun RoundCornersPill(
       .clip(HedvigTheme.shapes.cornerXXLarge)
       .then(
         if (onClick != null) {
-          Modifier.Companion.clickable(
+          Modifier.clickable(
             onClick = onClick,
           )
         } else {
-          Modifier.Companion
+          Modifier
         },
       ),
     shape = HedvigTheme.shapes.cornerXXLarge,

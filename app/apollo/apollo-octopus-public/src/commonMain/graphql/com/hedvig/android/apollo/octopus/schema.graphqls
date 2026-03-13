@@ -2192,6 +2192,24 @@ enum FlowTerminationNotificationType {
   INFO
   WARNING
 }
+enum FlowTerminationOfferAction {
+  UPDATE_ADDRESS
+  CHANGE_TIER
+}
+input FlowTerminationOfferInput {
+  """
+  This has no significance and is ignored by the backend. It exists to satisfy some codegen limitations
+  """
+  confirmed: Boolean!
+}
+type FlowTerminationOfferStep implements FlowStep {
+  id: ID!
+  title: String!
+  description: String!
+  buttonTitle: String!
+  skipButtonTitle: String!
+  action: FlowTerminationOfferAction!
+}
 input FlowTerminationStartInput {
   contractId: ID!
   supportedSteps: [String!]
@@ -2227,9 +2245,9 @@ interface FlowTerminationSurveyOptionSuggestion {
 }
 type FlowTerminationSurveyOptionSuggestionAction implements FlowTerminationSurveyOptionSuggestion {
   id: ID!
-  action: FlowTerminationSurveyRedirectAction!
-  description: String!
-  buttonTitle: String!
+  action: FlowTerminationSurveyRedirectAction! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  description: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  buttonTitle: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
   infoType: FlowTerminationSurveyOptionSuggestionInfoType!
 }
 type FlowTerminationSurveyOptionSuggestionInfo implements FlowTerminationSurveyOptionSuggestion {
@@ -2532,6 +2550,7 @@ type MemberActions {
   isMovingEnabled: Boolean!
   isConnectPaymentEnabled: Boolean!
   isEditCoInsuredEnabled: Boolean!
+  isEditCoOwnersEnabled: Boolean!
   isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
   isChangeTierEnabled: Boolean!
@@ -2735,7 +2754,16 @@ type MemberPaymentChargeMethodInfo {
   """
   A date of the month when the charge will happen
   """
-  chargingDayInTheMonth: Int
+  chargingDayInTheMonth: Int @deprecated(reason: "Use dueDate instead.")
+  """
+  Due date
+  """
+  dueDate: Int
+  """
+  Payment provider used for charging the member, eg Trustly or Kivra.
+  This is used to determine the charge schedule and mandate provider.
+  """
+  paymentProvider: String!
 }
 type MemberPaymentConnection {
   """
@@ -3377,6 +3405,7 @@ type Mutation {
   flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
   flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
   flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
+  flowTerminationOfferNext(input: FlowTerminationOfferInput!, context: FlowContext!): Flow!
   """
   Tokenize payment details per member in order to be used in future and returns the status
   """
@@ -3889,6 +3918,20 @@ type ProductOfferAddon {
   """
   isSelected: Boolean!
 }
+type ProductOfferAddonCost {
+  """
+  The ID of the addon
+  """
+  addonId: UUID!
+  """
+  Gross cost of the addon.
+  """
+  grossCost: Money!
+  """
+  Net cost of the addon.
+  """
+  netCost: Money!
+}
 """
 Bundle discount information for a product offer
 """
@@ -3924,6 +3967,10 @@ type ProductOfferCost {
   """
   discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
   discountsV2: [ExtendedItemDiscount!]!
+  """
+  Collection of costs for addons that affect an item.
+  """
+  addonCosts: [ProductOfferAddonCost!]!
 }
 type ProductOfferDeductible {
   displayName: String!
