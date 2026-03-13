@@ -24,7 +24,7 @@ internal class SubmitFileUploadUseCase(
   private val fileService: FileService,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(stepId: StepId, fileUris: List<Uri>, uploadUrl: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId, fileUris: List<Uri>, uploadUrl: String): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       val commonFiles = fileUris.map { fileUri ->
         fileService.convertToCommonFile(fileUri)
@@ -32,12 +32,11 @@ internal class SubmitFileUploadUseCase(
       val fileIds = buildList {
         // todo!!!
         commonFiles.forEach {
-          add(
-            uploadFileUseCase.invoke(
-              it,
-              uploadUrl,
-            ).fileId,
-          )
+          val uploadResult = either {
+            uploadFileUseCase.invoke(it, uploadUrl)
+          }.mapLeft { ClaimChatErrorMessage.GeneralError }
+            .bind()
+          add(uploadResult.fileId)
         }
       }
       logcat { "SubmitFileUploadUseCase uploaded file with Uris:$fileUris got back fileIds:$fileIds" }
@@ -45,7 +44,7 @@ internal class SubmitFileUploadUseCase(
     }
   }
 
-  context(_: Raise<ErrorMessage>)
+  context(_: Raise<ClaimChatErrorMessage>)
   private suspend fun invoke(stepId: StepId, commonFileIds: List<CommonFileId>): ClaimIntent {
     return apolloClient
       .mutation(
@@ -61,7 +60,7 @@ internal class SubmitFileUploadUseCase(
       .safeExecute()
       .mapLeft {
         logcat { "SubmitFileUploadUseCase error: $it" }
-        ErrorMessage()
+        ClaimChatErrorMessage.GeneralError
       }
       .bind()
       .claimIntentSubmitFileUpload

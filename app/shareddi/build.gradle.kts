@@ -23,6 +23,7 @@ kotlin {
       implementation(projects.featureClaimChat)
       implementation(projects.languageCore)
       implementation(projects.networkClients)
+      implementation(projects.permissionCore)
     }
   }
 }

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.home.home.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
@@ -12,7 +13,6 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
@@ -37,7 +37,7 @@ fun NavGraphBuilder.homeGraph(
     startDestination = HomeDestination.Home::class,
   ) {
     navdestination<HomeDestination.Home>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home,hedvigDeepLinkContainer.claimFlow),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {

@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import octopus.InsurancesForTravelAddonQuery
 
-interface GetInsuranceForTravelAddonUseCase {
+internal interface GetInsuranceForTravelAddonUseCase {
   suspend fun invoke(ids: List<String>): Flow<Either<ErrorMessage, List<InsuranceForAddon>>>
 }
 
@@ -71,7 +71,7 @@ private fun InsurancesForTravelAddonQuery.Data.CurrentMember.toInsurancesForAddo
         id = it.id,
         displayName = it.currentAgreement.productVariant.displayName,
         contractGroup = it.currentAgreement.productVariant.typeOfContract.toContractGroup(),
-        contractExposure = it.exposureDisplayName,
+        contractExposure = it.exposureDisplayNameShort,
       )
     }
 }

@@ -120,7 +120,7 @@ private class SummaryPresenter(
               } else {
                 val currentContract = ContractData(
                   contractGroup = currentQuoteToChange.productVariant.contractGroup,
-                  activeDisplayPremium = currentQuoteToChange.premium,
+                  activeDisplayPremium = currentQuoteToChange.currentTotalCost.monthlyNet,
                   contractDisplayName = currentQuoteToChange.productVariant.displayName,
                   contractDisplaySubtitle = currentContractData.currentExposureName,
                 )

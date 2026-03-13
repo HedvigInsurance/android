@@ -17,10 +17,12 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import com.hedvig.android.permission.PermissionManager
 import hedvig.resources.R
 
 class ClaimClosedNotificationSender(
   private val context: Context,
+  private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
@@ -55,6 +57,7 @@ class ClaimClosedNotificationSender(
       .build()
     sendHedvigNotification(
       context = context,
+      permissionManager = permissionManager,
       notificationId = CLAIM_CLOSED_NOTIFICATION_ID,
       notification = notification,
       notificationChannel = notificationChannel,

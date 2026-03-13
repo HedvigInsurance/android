@@ -9,6 +9,7 @@ import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 
 internal val oldTestQuote = TierDeductibleQuote(
   id = "oldQuote",
@@ -24,7 +25,6 @@ internal val oldTestQuote = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(199.0, SEK),
   tier = Tier(
     "BAS",
     tierLevel = 0,
@@ -53,9 +53,10 @@ internal val oldTestQuote = TierDeductibleQuote(
     monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
+    CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
+    CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
+  info = null,
 )
 
 internal val testQuote = TierDeductibleQuote(
@@ -72,7 +73,6 @@ internal val testQuote = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(199.0, SEK),
   tier = Tier(
     "BAS",
     tierLevel = 0,
@@ -101,7 +101,8 @@ internal val testQuote = TierDeductibleQuote(
     monthlyNet = UiMoney(304.0, SEK),
   ),
   costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
+    CostBreakdownEntry("Home Insurance Max", "300 kr/mo"),
+    CostBreakdownEntry("Bundle discount 20%", "76 kr/mo"),
   ),
+  info = null,
 )

@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -34,7 +35,9 @@ import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsura
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonState.Success
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
+import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_TITLE
 import hedvig.resources.ADDON_FLOW_TITLE
+import hedvig.resources.ADDON_FLOW_TITLE_GENERIC
 import hedvig.resources.Res
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
@@ -44,12 +47,14 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectInsuranceForAddonDestination(
   viewModel: SelectInsuranceForAddonViewModel,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
   navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   val uiState: SelectInsuranceForAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceForAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
+    popBackStack = popBackStack,
     navigateToCustomizeAddon = { id ->
       navigateToCustomizeAddon(id)
       viewModel.emit(SelectInsuranceForAddonEvent.ClearNavigation)
@@ -70,6 +75,7 @@ internal fun SelectInsuranceForAddonDestination(
 private fun SelectInsuranceForAddonScreen(
   uiState: SelectInsuranceForAddonState,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
   reload: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
@@ -96,6 +102,7 @@ private fun SelectInsuranceForAddonScreen(
       }
       SelectInsuranceForAddonContentScreen(
         uiState = uiState,
+        popBackStack = popBackStack,
         navigateUp = navigateUp,
         selectInsurance = selectInsurance,
         submitSelected = submitSelected,
@@ -108,6 +115,7 @@ private fun SelectInsuranceForAddonScreen(
 private fun SelectInsuranceForAddonContentScreen(
   uiState: Success,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
 ) {
@@ -117,7 +125,7 @@ private fun SelectInsuranceForAddonContentScreen(
     topAppBarActions = {
       IconButton(
         modifier = Modifier.size(24.dp),
-        onClick = { navigateUp() },
+        onClick = dropUnlessResumed { popBackStack() },
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
@@ -129,7 +137,7 @@ private fun SelectInsuranceForAddonContentScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     FlowHeading(
-      stringResource(Res.string.ADDON_FLOW_TITLE),
+      stringResource(Res.string.ADDON_FLOW_SELECT_INSURANCE_TITLE),
       stringResource(Res.string.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE),
       Modifier.padding(horizontal = 16.dp),
     )
@@ -176,6 +184,7 @@ private fun PreviewChooseInsuranceToTerminateScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SelectInsuranceForAddonScreen(
         uiState,
+        {},
         {},
         {},
         {},

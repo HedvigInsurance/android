@@ -219,7 +219,7 @@ type AddonOfferDeflect {
   """
   Deflect type for clients so clients know which action to take
   """
-  type: AddonDeflectType!
+  type: AddonDeflectType
 }
 """
 Output type for AddonOffer mutation.
@@ -721,6 +721,10 @@ type ChangeTierDeductibleQuote {
   insurance base premium, addons premiums, campaigns and bundle discounts
   """
   costBreakdown: [ChangeTierPriceDetailItem!]!
+  """
+  Info message we want to show for selected quote
+  """
+  info: String
 }
 enum ChangeTierDeductibleSource {
   SELF_SERVICE
@@ -734,6 +738,7 @@ type ChangeTierDeflectOutput {
 type ChangeTierPriceDetailItem {
   displayName: String!
   displayValue: String!
+  isCrossed: Boolean!
 }
 interface ChatMessage {
   id: ID!
@@ -908,6 +913,19 @@ type ClaimIntent {
 The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
 """
 scalar Float
+input ClaimIntentFormFieldSearchInput {
+  stepId: ID!
+  fieldId: ID!
+  query: String!
+}
+type ClaimIntentFormFieldSearchOutput {
+  options: [ClaimIntentStepContentFormFieldOption!]!
+  """
+  If present, this suggests a different query to use.
+  Typically when there are no options, this could contain a fix for a possible query typo.
+  """
+  suggestedQuery: String
+}
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
   """
@@ -1043,6 +1061,10 @@ type ClaimIntentStepContentFormField {
   """
   defaultValues: [ClaimIntentStepContentFormFieldValue!]!
   """
+  If type is SEARCH, then this will be present.
+  """
+  searchData: ClaimIntentStepContentFormFieldSearchData
+  """
   If present - the minimal value this field can hold.
   """
   minValue: ClaimIntentStepContentFormFieldValue
@@ -1054,7 +1076,22 @@ type ClaimIntentStepContentFormField {
 type ClaimIntentStepContentFormFieldOption {
   title: String!
   subtitle: String
+  imageUrl: String
   value: ClaimIntentStepContentFormFieldValue!
+}
+type ClaimIntentStepContentFormFieldSearchData {
+  """
+  Can be auto-inserted into the search bar.
+  """
+  suggestedQuery: String
+  """
+  Title of the search modal.
+  """
+  modalTitle: String!
+  """
+  Subtitle of the search modal.
+  """
+  modalSubtitle: String!
 }
 enum ClaimIntentStepContentFormFieldType {
   TEXT
@@ -1064,6 +1101,7 @@ enum ClaimIntentStepContentFormFieldType {
   SINGLE_SELECT
   MULTI_SELECT
   BINARY
+  SEARCH
 }
 """
 A scalar representing client-server agreed upon submittable form values.
@@ -1260,6 +1298,10 @@ type Contract {
   """
   supportsCoInsured: Boolean!
   """
+  Whether or not this co-insured for contract can be changed through the 'MidtermChange' API.
+  """
+  supportsCoOwners: Boolean!
+  """
   Whether or not travel certificate can be created for the contract
   """
   supportsTravelCertificate: Boolean!
@@ -1272,6 +1314,12 @@ type Contract {
   If current agreement doesn't support co-insured, this is null
   """
   coInsured: [ContractCoInsured!]
+  """
+  Current state of co-owners including upcoming changes.
+  If current agreement doesn't support co-owners, this is null
+  Reuses ContractCoInsured type, for now.
+  """
+  coOwners: [ContractCoOwner!]
   """
   User messages to show due to self change is blocked.
   """
@@ -1323,6 +1371,43 @@ type ContractAddon {
 A co-insured on contract.
 """
 type ContractCoInsured {
+  """
+  firstName + lastName + birthDate if all are present, otherwise null
+  """
+  id: ID
+  """
+  First name.
+  """
+  firstName: String
+  """
+  Last name.
+  """
+  lastName: String
+  """
+  National identification number if any.
+  """
+  ssn: String
+  """
+  Co-insured birthdate.
+  """
+  birthdate: Date
+  """
+  The date this co-insured will be removed.
+  """
+  terminatesOn: Date
+  """
+  The date this co-insured will be added.
+  """
+  activatesOn: Date
+  """
+  Whether or not any of firstName, lastName, ssn or birthdate is missing and needs to be added.
+  """
+  hasMissingInfo: Boolean!
+}
+"""
+A co-insured on contract.
+"""
+type ContractCoOwner {
   """
   firstName + lastName + birthDate if all are present, otherwise null
   """
@@ -1435,6 +1520,12 @@ input ConversationStartInput {
   """
   id: UUID!
 }
+input CoOwnersInput {
+  firstName: String
+  lastName: String
+  ssn: String
+  birthdate: Date
+}
 enum CountryCode {
   """
   Sweden
@@ -1458,7 +1549,6 @@ type CrossSell {
   Product page URL for completing the purchase
   """
   storeUrl: String!
-  type: CrossSellType! @deprecated(reason: "Use pillowImage$size for images, you don't need to know cross-sell type on the client")
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
 }
@@ -1487,17 +1577,6 @@ enum CrossSellSource {
   ADDON
   EDIT_COINSURED
   MOVING_FLOW
-}
-enum CrossSellType {
-  CAR
-  HOME
-  ACCIDENT
-  PET
-  PET_CAT
-  PET_DOG
-  APARTMENT_BRF
-  APARTMENT_RENT
-  HOUSE
 }
 type CrossSellV2 {
   """
@@ -1546,6 +1625,7 @@ type DirectDebitResponse2 {
 }
 input DisplayItemOptions {
   hidePrice: Boolean! = false
+  hideAddons: Boolean! = false
 }
 type EmailMessage {
   id: ID!
@@ -2112,6 +2192,24 @@ enum FlowTerminationNotificationType {
   INFO
   WARNING
 }
+enum FlowTerminationOfferAction {
+  UPDATE_ADDRESS
+  CHANGE_TIER
+}
+input FlowTerminationOfferInput {
+  """
+  This has no significance and is ignored by the backend. It exists to satisfy some codegen limitations
+  """
+  confirmed: Boolean!
+}
+type FlowTerminationOfferStep implements FlowStep {
+  id: ID!
+  title: String!
+  description: String!
+  buttonTitle: String!
+  skipButtonTitle: String!
+  action: FlowTerminationOfferAction!
+}
 input FlowTerminationStartInput {
   contractId: ID!
   supportedSteps: [String!]
@@ -2147,9 +2245,9 @@ interface FlowTerminationSurveyOptionSuggestion {
 }
 type FlowTerminationSurveyOptionSuggestionAction implements FlowTerminationSurveyOptionSuggestion {
   id: ID!
-  action: FlowTerminationSurveyRedirectAction!
-  description: String!
-  buttonTitle: String!
+  action: FlowTerminationSurveyRedirectAction! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  description: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  buttonTitle: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
   infoType: FlowTerminationSurveyOptionSuggestionInfoType!
 }
 type FlowTerminationSurveyOptionSuggestionInfo implements FlowTerminationSurveyOptionSuggestion {
@@ -2452,6 +2550,7 @@ type MemberActions {
   isMovingEnabled: Boolean!
   isConnectPaymentEnabled: Boolean!
   isEditCoInsuredEnabled: Boolean!
+  isEditCoOwnersEnabled: Boolean!
   isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
   isChangeTierEnabled: Boolean!
@@ -2492,6 +2591,14 @@ type MemberCharge {
   Due date of the upcoming charge
   """
   date: Date!
+  """
+  URL to the invoice of a past charge, null if no invoice generated
+  """
+  paymentInvoiceUrl: String
+  """
+  The provider that was or will be used to charge the member, null if unknown
+  """
+  paymentProvider: String
   """
   Breakdown of the upcoming charge by items
   """
@@ -2647,7 +2754,16 @@ type MemberPaymentChargeMethodInfo {
   """
   A date of the month when the charge will happen
   """
-  chargingDayInTheMonth: Int
+  chargingDayInTheMonth: Int @deprecated(reason: "Use dueDate instead.")
+  """
+  Due date
+  """
+  dueDate: Int
+  """
+  Payment provider used for charging the member, eg Trustly or Kivra.
+  This is used to determine the charge schedule and mandate provider.
+  """
+  paymentProvider: String!
 }
 type MemberPaymentConnection {
   """
@@ -2789,6 +2905,11 @@ input MidtermChangeIntentCreateInput {
   This list contains "null" entries for co-insured not yet defined.
   """
   coInsuredInputs: [CoInsuredInput!]
+  """
+  The list of all co-owners to set on the agreement.
+  This list contains "null" entries for co-owners not yet defined.
+  """
+  coOwnersInputs: [CoOwnersInput!]
 }
 type MidtermChangeIntentMutationOutput {
   intent: MidtermChangeIntent
@@ -3284,6 +3405,7 @@ type Mutation {
   flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
   flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
   flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
+  flowTerminationOfferNext(input: FlowTerminationOfferInput!, context: FlowContext!): Flow!
   """
   Tokenize payment details per member in order to be used in future and returns the status
   """
@@ -3440,7 +3562,7 @@ type Mutation {
   """
   Call this to accept an addon offer and activate selected addon(s).
   """
-  addonActivateOffer(quoteId: ID!, addonIds: [ID!]!): AddonActivationOutput!
+  addonActivateOffer(quoteId: ID!, selectedAddonIds: [ID!]!): AddonActivationOutput!
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when member clicks on the "See price" button in the Travel Addon Upsell banner.
@@ -3648,6 +3770,10 @@ type Product {
   """
   variants: [ProductVariant!]!
   """
+  Return all the possible `AddonVariants` available for this Product
+  """
+  addonVariants: [AddonVariant!]!
+  """
   Localized name of the product in short form.
   """
   displayNameShort: String!
@@ -3792,6 +3918,20 @@ type ProductOfferAddon {
   """
   isSelected: Boolean!
 }
+type ProductOfferAddonCost {
+  """
+  The ID of the addon
+  """
+  addonId: UUID!
+  """
+  Gross cost of the addon.
+  """
+  grossCost: Money!
+  """
+  Net cost of the addon.
+  """
+  netCost: Money!
+}
 """
 Bundle discount information for a product offer
 """
@@ -3811,6 +3951,10 @@ type ProductOfferCost {
   """
   baseInsuranceGross: Money!
   """
+  The net price of the base insurance after discounts, without selected addons.
+  """
+  baseInsuranceNet: Money!
+  """
   Price you will pay after discount for the entire offer, including selected addons.
   """
   net: Money!
@@ -3823,6 +3967,10 @@ type ProductOfferCost {
   """
   discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
   discountsV2: [ExtendedItemDiscount!]!
+  """
+  Collection of costs for addons that affect an item.
+  """
+  addonCosts: [ProductOfferAddonCost!]!
 }
 type ProductOfferDeductible {
   displayName: String!
@@ -3961,6 +4109,7 @@ type Query {
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
   claimIntent(id: ID!): ClaimIntent!
+  claimIntentFormFieldSearch(input: ClaimIntentFormFieldSearchInput!): ClaimIntentFormFieldSearchOutput!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
   Gets the currently authenticated member. This is the only valid way to query a `Member` type, and it is based
@@ -4018,9 +4167,9 @@ type Query {
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
   """
-  Cost for selected configuration of addon offer
+  Call this to get the cost of an addon offer for selected addon(s).
   """
-  addonOfferCost(quoteId: ID!, addonIds: [ID!]!): ItemCost!
+  addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!

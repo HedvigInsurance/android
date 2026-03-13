@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.0.6"
+    versionName = "14.0.7"
 
     vectorDrawables.useSupportLibrary = true
 
@@ -173,6 +173,7 @@ dependencies {
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataPayingMember)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
   implementation(projects.databaseAndroid)
@@ -204,6 +205,7 @@ dependencies {
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
   implementation(projects.featureOdyssey)
+  implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
@@ -215,6 +217,7 @@ dependencies {
   implementation(projects.languageMigration)
   implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
+  implementation(projects.permissionCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)

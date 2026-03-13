@@ -15,9 +15,9 @@ internal class SubmitSelectUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(id: StepId, selectedId: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(id: StepId, selectedId: String): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
-      val data = apolloClient
+      apolloClient
         .mutation(
           ClaimIntentSubmitSelectMutation(
             input = ClaimIntentSubmitSelectInput(
@@ -29,16 +29,11 @@ internal class SubmitSelectUseCase(
         .safeExecute()
         .mapLeft {
           logcat { "SubmitSelectUseCase error: $it" }
-          ErrorMessage()
+          ClaimChatErrorMessage.GeneralError
         }
         .bind()
         .claimIntentSubmitSelect
-
-      when {
-        data.userError != null -> raise(ErrorMessage(data.userError.message))
-        data.intent != null -> data.intent.toClaimIntent(languageService.getLocale())
-        else -> raise(ErrorMessage())
-      }
+        .toClaimIntent(languageService.getLocale())
     }
   }
 }
