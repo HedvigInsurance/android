@@ -123,12 +123,12 @@ internal sealed interface ClaimChatEvent {
   data class UpdateFormFieldSearchQuery(
     val query: String,
     val stepId: StepId,
-    val fieldId: FieldId
+    val fieldId: FieldId,
   ) : ClaimChatEvent
 
   data class ClearQuery(
     val stepId: StepId,
-    val fieldId: FieldId
+    val fieldId: FieldId,
   ) : ClaimChatEvent
 }
 
@@ -185,10 +185,9 @@ internal class ClaimChatViewModel(
       audioRecordingManager,
       fileService,
       regretStepUseCase,
-      formFieldSearchUseCase
+      formFieldSearchUseCase,
     ),
   ) {
-
   override fun onCleared() {
     super.onCleared()
     audioRecordingManager.reset()
@@ -304,24 +303,27 @@ internal class ClaimChatPresenter(
 
     LaunchedEffect(searchQuery) {
       val query = searchQuery
-      if (query!=null) {
+      if (query != null) {
         val searchResult = formFieldSearchUseCase.invoke(
           stepId = query.stepId.value,
           fieldId = query.fieldId,
-          query = query.query
+          query = query.query,
         ).getOrNull()
         steps.updateStepWithSuccess<StepContent.Form>(query.stepId) { step, content ->
           val newFields = content.fields.map { field ->
             if (field.id.value == query.fieldId) {
               when (field.type) {
-                FieldType.SEARCH
-                  -> {
+                FieldType.SEARCH,
+                -> {
                   field.copy(
                     foundOptionsInSearch = searchResult?.options ?: emptyList(),
                     suggestedFixedQuery = searchResult?.suggestedFixedQuery,
                   )
                 }
-                else -> field //shouldn't happen
+
+                else -> {
+                  field
+                } // shouldn't happen
               }
             } else {
               field
@@ -774,7 +776,7 @@ internal class ClaimChatPresenter(
                       } ?: emptyList(),
                       hasError = null,
                       searchData = field.searchData?.copy(suggestedQuery = searchQuery?.query),
-                      suggestedFixedQuery = null
+                      suggestedFixedQuery = null,
                     )
                   }
 
@@ -782,7 +784,6 @@ internal class ClaimChatPresenter(
                   FieldType.DATE -> {
                     field.copy(hasError = null)
                   }
-
 
                   FieldType.MULTI_SELECT -> {
                     field.copy(
@@ -1149,9 +1150,8 @@ private fun validateField(field: Field): Field {
   return field.copy(hasError = null)
 }
 
-
 internal data class SearchObject(
   val fieldId: String,
   val stepId: StepId,
-  val query: String
+  val query: String,
 )

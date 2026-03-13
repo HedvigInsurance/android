@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -38,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -85,7 +87,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
-import com.hedvig.feature.claim.chat.ui.common.BlinkingAiDot
+import com.hedvig.feature.claim.chat.ui.common.AiRiveAnimation
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
@@ -152,7 +154,7 @@ internal fun ClaimChatDestination(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = navigateUp,
-      openPlayStore =  openPlayStore
+      openPlayStore = openPlayStore,
     )
   }
 }
@@ -200,7 +202,7 @@ internal fun ClaimChatScreenContent(
           appPackageId = appPackageId,
           imageLoader = imageLoader,
           navigateUp = navigateUp,
-          openPlayStore = openPlayStore
+          openPlayStore = openPlayStore,
         )
       }
     }
@@ -244,7 +246,7 @@ private fun ClaimChatScreen(
         appPackageId = appPackageId,
         imageLoader = imageLoader,
         navigateUp = navigateUp,
-        openPlayStore = openPlayStore
+        openPlayStore = openPlayStore,
       )
     },
   )
@@ -291,7 +293,7 @@ private fun ClaimChatScreenContent(
       onButtonClick = when (uiState.errorSubmittingStep) {
         ClaimChatErrorMessage.NeedsUpdate -> openPlayStore
         ClaimChatErrorMessage.GeneralError -> null
-      }
+      },
     )
   }
   if (uiState.showConfirmEditDialogForStep != null) {
@@ -541,15 +543,11 @@ private fun StepContentSection(
   onResponseHeightChanged: (IntSize) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  // AnimationSequence has 3 stages one after another:
-  // 1) fake ai dot
-  // 2) top part of content
-  // 3) bottom part of content
+  // AnimationSequence has 2 stages one after another:
+  // 1) Rive animation alongside text reveal
+  // 2) bottom part of content
 
   var isAnimationInProcess by rememberSaveable(stepItem.id) {
-    mutableStateOf(showAnimationSequence)
-  }
-  var showAiDot by rememberSaveable(stepItem.id) {
     mutableStateOf(showAnimationSequence)
   }
   var showTopContent by rememberSaveable(stepItem.id) {
@@ -563,9 +561,6 @@ private fun StepContentSection(
 
   LaunchedEffect(stepItem.id) {
     if (isAnimationInProcess) {
-      delay(1000)
-      showAiDot = false
-      delay(100)
       showTopContent = true
     }
   }
@@ -582,14 +577,11 @@ private fun StepContentSection(
     modifier = modifier,
     verticalArrangement = Arrangement.SpaceBetween,
   ) {
-    if (showAiDot) {
-      CommonPaddingWrapper {
-        BlinkingAiDot()
-      }
-    } else if (showTopContent) {
+    if (showTopContent) {
       StepTopContent(
         stepItem = stepItem,
         hasAnimation = isAnimationInProcess,
+        isAnimationComplete = !isAnimationInProcess,
         onAnimationFinished = {
           showBottomContent = true
         },
@@ -598,7 +590,7 @@ private fun StepContentSection(
       )
     }
 
-    if (showAiDot || showTopContent) {
+    if (showTopContent) {
       Spacer(Modifier.height(32.dp))
     }
 
@@ -632,6 +624,7 @@ private fun StepContentSection(
 private fun StepTopContent(
   stepItem: ClaimIntentStep,
   hasAnimation: Boolean,
+  isAnimationComplete: Boolean,
   onAnimationFinished: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
@@ -651,16 +644,23 @@ private fun StepTopContent(
     if (hasAnimation) {
       if (stepItemText != null) {
         CommonPaddingWrapper {
-          AnimatedRevealText(
-            text = stepItemText,
-            visibleState = remember(stepItem.id) {
-              MutableTransitionState(false).apply { targetState = true }
-            },
-            onAnimationFinished = onAnimationFinished,
-            modifier = Modifier.semantics {
-              heading()
-            },
-          )
+          Row(verticalAlignment = Alignment.Top) {
+            AiRiveAnimation(
+              isAnimationComplete = isAnimationComplete,
+              modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(8.dp))
+            AnimatedRevealText(
+              text = stepItemText,
+              visibleState = remember(stepItem.id) {
+                MutableTransitionState(false).apply { targetState = true }
+              },
+              onAnimationFinished = onAnimationFinished,
+              modifier = Modifier
+                .semantics { heading() }
+                .weight(1f),
+            )
+          }
         }
       } else {
         LaunchedEffect(stepItem.id) {

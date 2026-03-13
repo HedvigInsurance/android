@@ -51,6 +51,8 @@ kotlin {
       implementation(projects.uiForceUpgrade)
     }
     androidMain.dependencies {
+      implementation("dev.muazkadan:rive-cmp:0.3.2")
+
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)

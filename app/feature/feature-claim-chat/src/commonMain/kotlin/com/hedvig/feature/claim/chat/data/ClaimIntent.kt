@@ -85,7 +85,6 @@ internal sealed interface StepContent {
       val options: List<FieldOption>,
       val selectedOptions: List<FieldOption>,
       val datePickerUiState: DatePickerUiState?,
-
       val searchData: SearchData?,
       val hasError: FieldError? = null,
       val foundOptionsInSearch: List<FieldOption> = emptyList(),
@@ -95,7 +94,7 @@ internal sealed interface StepContent {
     data class SearchData(
       val suggestedQuery: String?,
       val modalTitle: String,
-      val modalSubtitle: String
+      val modalSubtitle: String,
     )
 
     sealed interface FieldError {
@@ -110,7 +109,7 @@ internal sealed interface StepContent {
       val value: String,
       val text: String,
       val subtitle: String?,
-      val imageUrl: String? = null
+      val imageUrl: String? = null,
     )
 
     enum class FieldType {
@@ -121,7 +120,7 @@ internal sealed interface StepContent {
       MULTI_SELECT,
       BINARY,
 
-      SEARCH
+      SEARCH,
     }
   }
 

@@ -2,7 +2,7 @@
 # androidSdkVersions
 compileSdkVersion = "36"
 targetSdkVersion = "35"
-minSdkVersion = "23"
+minSdkVersion = "24"
 
 # lint versions
 lintApi = "32.0.0"
