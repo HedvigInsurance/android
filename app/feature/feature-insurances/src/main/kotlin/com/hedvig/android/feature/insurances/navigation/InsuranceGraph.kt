@@ -32,7 +32,9 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToStartChangeTier: (contractId: String) -> Unit,
   startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
   startEditCoInsured: (contractId: String) -> Unit,
+  startEditCoOwners: (contractId: String) -> Unit,
   startEditCoInsuredAddMissingInfo: (contractId: String) -> Unit,
+  startEditCoOwnersAddMissingInfo: (contractId: String) -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
@@ -76,7 +78,9 @@ fun NavGraphBuilder.insuranceGraph(
       ContractDetailDestination(
         viewModel = viewModel,
         onEditCoInsuredClick = dropUnlessResumed { contractId: String -> startEditCoInsured(contractId) },
-        onMissingInfoClick = dropUnlessResumed { contractId: String -> startEditCoInsuredAddMissingInfo(contractId) },
+        onEditCoOwnersClick = dropUnlessResumed { contractId: String -> startEditCoOwners(contractId) },
+        onMissingCoInsuredInfoClick = dropUnlessResumed { contractId: String -> startEditCoInsuredAddMissingInfo(contractId) },
+        onMissingCoOwnersInfoClick = dropUnlessResumed { contractId: String -> startEditCoOwnersAddMissingInfo(contractId) },
         onChangeAddressClick = dropUnlessResumed { startMovingFlow() },
         onCancelInsuranceClick = dropUnlessResumed { cancelInsuranceData: CancelInsuranceData ->
           startTerminationFlow(cancelInsuranceData)

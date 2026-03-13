@@ -54,13 +54,13 @@ internal class GetQuickLinksUseCase(
             .bind()
             .currentMember
             .activeContracts
-          contracts
-            .filter { it.supportsCoInsured }
-            .takeIf { featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first() }
-            ?.createCoInsuredQuickLink()
-            ?.let { quickAction ->
+          if (featureManager.isFeatureEnabled(Feature.EDIT_COINSURED).first()) {
+            val coInsuredContracts = contracts.filter { it.supportsCoInsured }
+            val coOwnerContracts = contracts.filter { it.supportsCoOwners }
+            createEditCoInsuredQuickLink(coInsuredContracts, coOwnerContracts)?.let { quickAction ->
               add(quickAction)
             }
+          }
         }
         if (memberActionOptions.isTierChangeEnabled) {
           add(
@@ -146,31 +146,50 @@ internal class GetQuickLinksUseCase(
   }
 }
 
-private fun List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>.createCoInsuredQuickLink():
-  StandaloneQuickLink? {
-  if (this.size > 1) {
-    return StandaloneQuickLink(
+private fun createEditCoInsuredQuickLink(
+  coInsuredContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
+  coOwnerContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
+): StandaloneQuickLink? {
+  val totalCount = coInsuredContracts.size + coOwnerContracts.size
+  return when {
+    totalCount == 0 -> null
+    totalCount > 1 -> StandaloneQuickLink(
       titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
       hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
       quickLinkDestination = ChooseInsuranceForEditCoInsured,
     )
-  } else if (this.size == 1) {
-    val contract = this.first()
-    return if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-      StandaloneQuickLink(
-        quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(this.first().id),
-        titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-        hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-      )
-    } else {
-      StandaloneQuickLink(
-        quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(this.first().id),
-        titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
-        hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-      )
+    coInsuredContracts.size == 1 -> {
+      val contract = coInsuredContracts.first()
+      if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+        StandaloneQuickLink(
+          quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo(contract.id),
+          titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+          hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        )
+      } else {
+        StandaloneQuickLink(
+          quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove(contract.id),
+          titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+          hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        )
+      }
     }
-  } else {
-    return null
+    else -> {
+      val contract = coOwnerContracts.first()
+      if (contract.coOwners?.any { it.hasMissingInfo } == true) {
+        StandaloneQuickLink(
+          quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo(contract.id),
+          titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+          hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        )
+      } else {
+        StandaloneQuickLink(
+          quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove(contract.id),
+          titleRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_TITLE,
+          hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        )
+      }
+    }
   }
 }
 
@@ -179,6 +198,10 @@ sealed interface QuickLinkDestination {
     data class QuickLinkCoInsuredAddInfo(val contractId: String) : OuterDestination
 
     data class QuickLinkCoInsuredAddOrRemove(val contractId: String) : OuterDestination
+
+    data class QuickLinkCoOwnerAddInfo(val contractId: String) : OuterDestination
+
+    data class QuickLinkCoOwnerAddOrRemove(val contractId: String) : OuterDestination
 
     data object QuickLinkTermination : OuterDestination
 

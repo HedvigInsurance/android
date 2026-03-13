@@ -52,11 +52,11 @@ internal class EditCoInsuredTriagePresenter(
           selected?.let {
             currentState = when (it.destination) {
               EditCoInsuredDestination.MISSING_INFO -> currentStateValue.copy(
-                idToNavigateToAddMissingInfo = it.id,
+                insuranceToNavigateToAddMissingInfo = it,
               )
 
               EditCoInsuredDestination.ADD_OR_REMOVE -> currentStateValue.copy(
-                idToNavigateToAddOrRemoveCoInsured = it.id,
+                insuranceToNavigateToAddOrRemoveCoInsured = it,
               )
             }
           }
@@ -69,8 +69,8 @@ internal class EditCoInsuredTriagePresenter(
         EditCoInsuredTriageEvent.ClearNavigation -> {
           val currentStateValue = currentState as? Success ?: return@CollectEvents
           currentState = currentStateValue.copy(
-            idToNavigateToAddMissingInfo = null,
-            idToNavigateToAddOrRemoveCoInsured = null,
+            insuranceToNavigateToAddMissingInfo = null,
+            insuranceToNavigateToAddOrRemoveCoInsured = null,
           )
         }
 
@@ -98,10 +98,10 @@ internal class EditCoInsuredTriagePresenter(
           val success = Success(
             list = data,
             selected = preselected,
-            idToNavigateToAddMissingInfo =
-              if (preselected?.destination == EditCoInsuredDestination.MISSING_INFO) preselected.id else null,
-            idToNavigateToAddOrRemoveCoInsured =
-              if (preselected?.destination == EditCoInsuredDestination.ADD_OR_REMOVE) preselected.id else null,
+            insuranceToNavigateToAddMissingInfo =
+              if (preselected?.destination == EditCoInsuredDestination.MISSING_INFO) preselected else null,
+            insuranceToNavigateToAddOrRemoveCoInsured =
+              if (preselected?.destination == EditCoInsuredDestination.ADD_OR_REMOVE) preselected else null,
           )
           currentState = success
         },
@@ -133,7 +133,7 @@ internal sealed interface EditCoInsuredTriageUiState {
   data class Success(
     val list: List<InsuranceForEditOrAddCoInsured>,
     val selected: InsuranceForEditOrAddCoInsured?,
-    val idToNavigateToAddMissingInfo: String? = null,
-    val idToNavigateToAddOrRemoveCoInsured: String? = null,
+    val insuranceToNavigateToAddMissingInfo: InsuranceForEditOrAddCoInsured? = null,
+    val insuranceToNavigateToAddOrRemoveCoInsured: InsuranceForEditOrAddCoInsured? = null,
   ) : EditCoInsuredTriageUiState
 }
