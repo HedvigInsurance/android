@@ -209,13 +209,14 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
+  <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">If you don't know the exact date, enter an approximate date.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Edit answer</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.</string>
   <string name="CLAIM_CHAT_EDIT_TITLE">Previous answers will be reset</string>
   <string name="CLAIM_CHAT_ERROR_MESSAGE">Make sure you fill in all the required fields</string>
   <string name="CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE">Start searching for the item relevant to your claim</string>
   <string name="CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE">Fill in more details about your item</string>
-  <string name="CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND">Nothing found</string>
+  <string name="CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND">No results</string>
   <string name="CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER">Search for your item...</string>
   <string name="CLAIM_CHAT_FIELD_SEARCH_SUGGESTION">Did you mean </string>
   <string name="CLAIM_CHAT_FIELD_SEARCH_TITLE">Search for your item</string>
@@ -247,9 +248,8 @@
   <string name="CLAIM_CHAT_TASK_CONTENT_DESCRIPTION">Processing information, please wait.</string>
   <string name="CLAIM_CHAT_TITLE">Claim</string>
   <string name="CLAIM_CHAT_UNKNOWN_STEP">Unknown step</string>
-  <string name="CLAIM_CHAT_USE_AUDIO">Start voice recording</string>
-  <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe with text</string>
-  <string name="CLAIM_DATE_AND_LOCATION_HINT">If you don't know the exact date, enter an approximate date.</string>
+  <string name="CLAIM_CHAT_USE_AUDIO">Record with voice</string>
+  <string name="CLAIM_CHAT_USE_TEXT_INPUT">Describe using text</string>
   <string name="CLAIM_DETAILS_DATE_OF_ACCIDENT">Date of occurrence</string>
   <string name="CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON">Submit your claim</string>
   <string name="CLAIM_TRIAGING_ABOUT_TITILE">What insurance is it about?</string>
@@ -265,6 +265,7 @@
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>
   <string name="CONTRACT_ADD_ADDITIONAL_COOWNER">Add co-owner</string>
+  <string name="CONTRACT_ADD_ADDITIONAL_COOWNER_INFO">You can add more co-owners for your vacation home</string>
   <string name="CONTRACT_ADD_COINSURED">Add co-insured</string>
   <string name="CONTRACT_ADD_COINSURED_ACTIVE_FROM">Activates %1$s</string>
   <string name="CONTRACT_ADD_COINSURED_ACTIVE_UNTIL">Active until %1$s</string>
@@ -276,7 +277,7 @@
   <string name="CONTRACT_ADD_COINSURED_TOTAL">Total</string>
   <string name="CONTRACT_ADD_COINSURED_UPDATED_LABEL">Your insurance will be updated starting from %1$s</string>
   <string name="CONTRACT_ADD_COINSURED_UPDATED_TITLE">Co-insured updated</string>
-  <string name="CONTRACT_ADD_COOWNER_REVIEW_INFO">Please add information for all co-owners in order to proceed.</string>
+  <string name="CONTRACT_ADD_COOWNER_REVIEW_INFO">Please add co-owner information to proceed</string>
   <string name="CONTRACT_ADD_COOWNER_UPDATED_TITLE">Co-owner information updated</string>
   <string name="CONTRACT_BIRTHDATE">YYMMDD</string>
   <string name="CONTRACT_BIRTH_DATE">Date of birth</string>
@@ -293,6 +294,7 @@
   <string name="CONTRACT_COVERAGE_MORE_INFO">More information</string>
   <string name="CONTRACT_DETAILS_ERROR">We couldn't load this contract</string>
   <string name="CONTRACT_EDIT_COINSURED">Edit co-insured</string>
+  <string name="CONTRACT_EDIT_COINSURED_DESCRIPTION">Change information about co-insured</string>
   <string name="CONTRACT_EDIT_INFO">Edit info</string>
   <string name="CONTRACT_EDIT_INFO_LABEL">Edit your insurance</string>
   <string name="CONTRACT_FIRST_NAME">First name</string>
@@ -340,7 +342,7 @@
   <string name="DISCOUNTS_LABEL_ACTIVE">Active</string>
   <string name="DISCOUNTS_LABEL_PENDING">Pending</string>
   <string name="DURATION_TITLE">Duration</string>
-  <string name="EDIT_COOWNER_SUBTITLE">Add or update co-owner information</string>
+  <string name="EDIT_COOWNER_SUBTITLE">Edit co-owners for your vacation home</string>
   <string name="EDIT_COOWNER_TITLE">Edit co-owners</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS">Address</string>
   <string name="EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS">I can’t find my address</string>
@@ -497,6 +499,8 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
+  <string name="KIVRA_NOTIFICATION_BOX_TEXT">You can’t change the payment method right now. Contact us for help.</string>
+  <string name="KIVRA_PAYMENT_INFO">The invoice is sent to your Kivra inbox 14 days before the due date each month.</string>
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
@@ -572,7 +576,9 @@
   <string name="PAYMENTS_DUE_DESCRIPTION">%1$s each month</string>
   <string name="PAYMENTS_EXPIRED_DATE">Expired %1$s</string>
   <string name="PAYMENTS_HISTORY_INFO">For information about payments older than 12 months, please send us a message here in the app.</string>
+  <string name="PAYMENTS_INVOICE">Invoice</string>
   <string name="PAYMENTS_IN_PROGRESS">The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account</string>
+  <string name="PAYMENTS_IN_PROGRESS_KIVRA">Your invoice is visible in Kivra. If you can't see it there or have problems with paying it, please contact us in the chat.</string>
   <string name="PAYMENTS_MANDATE">Mandate</string>
   <string name="PAYMENTS_MISSED_PAYMENT">Your payment for the period %1$s – %2$s didn't process as expected. The amount has been added to this payment.</string>
   <string name="PAYMENTS_NO_HISTORY_DATA">There is no record of your payment history</string>
@@ -870,6 +876,12 @@
   <string name="TERMINATION_NOT_SUCCESSFUL_TITLE">Cancellation unsuccessful</string>
   <string name="TERMINATION_NO_TIER_QUOTES_SUBTITLE">You already have the best coverage and price for this insurance</string>
   <string name="TERMINATION_NO_TIER_QUOTES_TITLE">Unable to improve</string>
+  <string name="TERMINATION_OFFER_BUTTON_CHANGE_TIER">Change coverage level</string>
+  <string name="TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS">Update my address</string>
+  <string name="TERMINATION_OFFER_DESCRIPTION_CHANGE_TIER">You can adjust your coverage level to better fit your needs instead of cancelling.</string>
+  <string name="TERMINATION_OFFER_DESCRIPTION_UPDATE_ADDRESS">Moving? You can update your address and keep your insurance instead of cancelling.</string>
+  <string name="TERMINATION_OFFER_SKIP">No thanks, continue cancellation</string>
+  <string name="TERMINATION_OFFER_TITLE">Before you cancel</string>
   <string name="TERMINATION_Q_01">When will the last payment be charged?</string>
   <string name="TERMINATION_Q_02">Can I still file a claim after I cancel my insurance?</string>
   <string name="TERMINATION_Q_03">How do I join Hedvig in the future?</string>
