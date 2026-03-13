@@ -28,13 +28,11 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
-import hedvig.resources.CONTRACT_COOWNERS_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
 import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
 import hedvig.resources.MISSING_CONTACT_INFO_CARD_BUTTON
@@ -56,7 +54,7 @@ fun MemberReminderCardsWithoutNotification(
   memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToAddMissingInfo: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   contentPadding: PaddingValues,
   navigateToContactInfo: () -> Unit,
@@ -81,7 +79,7 @@ fun MemberReminderCards(
   memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToAddMissingInfo: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
@@ -144,7 +142,7 @@ fun MemberReminderCards(
 @Composable
 private fun ColumnScope.MemberReminderCard(
   memberReminder: MemberReminder,
-  navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToAddMissingInfo: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: () -> Unit,
   openUrl: (String) -> Unit,
@@ -156,9 +154,8 @@ private fun ColumnScope.MemberReminderCard(
   when (memberReminder) {
     is MemberReminder.CoInsuredInfo -> {
       ReminderCoInsuredInfo(
-        coInsuredType = memberReminder.coInsuredType,
-        navigateToAddMissingInfo = {
-          navigateToAddMissingInfo(memberReminder.contractId, memberReminder.coInsuredType)
+        navigateToContractDetail = {
+          navigateToAddMissingInfo(memberReminder.contractId)
         },
         modifier = modifier,
       )
@@ -308,21 +305,14 @@ private fun ReminderCardUpcomingRenewals(
 }
 
 @Composable
-private fun ReminderCoInsuredInfo(
-  coInsuredType: CoInsuredFlowType,
-  navigateToAddMissingInfo: () -> Unit,
-  modifier: Modifier = Modifier
-) {
+private fun ReminderCoInsuredInfo(navigateToContractDetail: () -> Unit, modifier: Modifier = Modifier) {
   HedvigNotificationCard(
-    message = when (coInsuredType) {
-      CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_COINSURED_MISSING_INFO_TEXT)
-      CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_COOWNERS_MISSING_INFO_TEXT)
-    },
+    message = stringResource(Res.string.CONTRACT_COINSURED_MISSING_INFO_TEXT),
     modifier = modifier,
     priority = NotificationPriority.Attention,
     style = InfoCardStyle.Button(
       buttonText = stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-      onButtonClick = navigateToAddMissingInfo,
+      onButtonClick = navigateToContractDetail,
     ),
   )
 }
@@ -365,7 +355,9 @@ private fun PreviewReminderCardUpcomingRenewals() {
 private fun PreviewReminderCardCoInsuredInfo() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ReminderCoInsuredInfo(CoInsuredFlowType.CoInsured, {})
+      ReminderCoInsuredInfo(
+        {},
+      )
     }
   }
 }

@@ -9,11 +9,7 @@ query EligibleContractsForEditCoInsured {
         }
       }
       supportsCoInsured
-      supportsCoOwners
       coInsured {
-        hasMissingInfo
-      }
-      coOwners {
         hasMissingInfo
       }
     }

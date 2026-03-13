@@ -9,11 +9,7 @@ query AvailableSelfServiceOnContracts {
         }
       }
       supportsCoInsured
-      supportsCoOwners
       coInsured {
-        hasMissingInfo
-      }
-      coOwners {
         hasMissingInfo
       }
     }

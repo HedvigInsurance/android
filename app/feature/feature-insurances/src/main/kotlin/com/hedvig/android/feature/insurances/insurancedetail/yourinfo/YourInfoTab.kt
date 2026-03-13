@@ -95,8 +95,6 @@ import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
 import hedvig.resources.CONTRACT_COINSURED
 import hedvig.resources.CONTRACT_COINSURED_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
-import hedvig.resources.CONTRACT_COOWNER
-import hedvig.resources.CONTRACT_COOWNERS_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_EDIT_INFO_LABEL
 import hedvig.resources.CONTRACT_NO_INFORMATION
 import hedvig.resources.CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE
@@ -127,20 +125,16 @@ internal fun YourInfoTab(
   contractId: String,
   coverageItems: List<DisplayItem>,
   coInsured: List<CoInsured>,
-  coOwners: List<CoInsured>,
   allowChangeAddress: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
-  allowEditCoOwners: Boolean,
   allowChangeTier: Boolean,
   allowRemovingAddon: Boolean,
   onChangeTierClick: () -> Unit,
   isDecommissioned: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
-  onEditCoOwnersClick: () -> Unit,
-  onMissingCoInsuredInfoClick: () -> Unit,
-  onMissingCoOwnersInfoClick: () -> Unit,
+  onMissingInfoClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
@@ -164,7 +158,6 @@ internal fun YourInfoTab(
     EditInsuranceBottomSheetContent(
       allowTerminatingInsurance = allowTerminatingInsurance,
       allowEditCoInsured = allowEditCoInsured,
-      allowEditCoOwners = allowEditCoOwners,
       allowChangeTier = allowChangeTier,
       allowRemovingAddon = allowRemovingAddon,
       onChangeTierClick = {
@@ -174,10 +167,6 @@ internal fun YourInfoTab(
       onEditCoInsuredClick = {
         editYourInfoBottomSheet.dismiss()
         onEditCoInsuredClick()
-      },
-      onEditCoOwnersClick = {
-        editYourInfoBottomSheet.dismiss()
-        onEditCoOwnersClick()
       },
       onDismiss = {
         editYourInfoBottomSheet.dismiss()
@@ -207,9 +196,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              addon.premium.toString(),
-            ),
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                addon.premium.toString(),
+              ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -300,52 +289,26 @@ internal fun YourInfoTab(
           onInfoIconClick,
           Modifier.padding(horizontal = 16.dp),
         )
-        if (allowEditCoInsured && coInsured.isNotEmpty()) {
+        if (allowEditCoInsured) {
           HorizontalDivider(Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
           CoInsuredSection(
             coInsuredList = coInsured,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
-            isCoOwner = false,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-        }
-        if (allowEditCoOwners && coOwners.isNotEmpty()) {
-          HorizontalDivider(Modifier.padding(horizontal = 16.dp))
-          Spacer(Modifier.height(16.dp))
-          CoInsuredSection(
-            coInsuredList = coOwners,
-            contractHolderDisplayName = contractHolderDisplayName,
-            contractHolderSSN = contractHolderSSN,
-            isCoOwner = true,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
       }
     }
-    val hasMissingCoInsuredInfoAndIsNotTerminating = coInsured.any { it.hasMissingInfo && it.terminatesOn == null }
-    if (hasMissingCoInsuredInfoAndIsNotTerminating) {
+    val hasMissingInfoAndIsNotTerminating = coInsured.any { it.hasMissingInfo && it.terminatesOn == null }
+    if (hasMissingInfoAndIsNotTerminating) {
       HedvigNotificationCard(
         message = stringResource(Res.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
         priority = Attention,
         style = Button(
           stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-          onMissingCoInsuredInfoClick,
-        ),
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-    }
-    val hasMissingCoOwnerInfoAndIsNotTerminating = coOwners.any { it.hasMissingInfo && it.terminatesOn == null }
-    if (hasMissingCoOwnerInfoAndIsNotTerminating) {
-      HedvigNotificationCard(
-        message = stringResource(Res.string.CONTRACT_COOWNERS_ADD_PERSONAL_INFO),
-        priority = Attention,
-        style = Button(
-          stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-          onMissingCoOwnersInfoClick,
+          onMissingInfoClick,
         ),
         modifier = Modifier
           .fillMaxWidth()
@@ -362,7 +325,7 @@ internal fun YourInfoTab(
     )
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (allowEditCoInsured || allowEditCoOwners || allowChangeTier || allowTerminatingInsurance) {
+        if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
             enabled = true,
@@ -720,7 +683,6 @@ internal fun CoInsuredSection(
   coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
-  isCoOwner: Boolean,
   modifier: Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -800,11 +762,7 @@ internal fun CoInsuredSection(
             Column {
               HedvigText(
                 text = coInsured.getDisplayName().ifBlank {
-                  if (isCoOwner) {
-                    stringResource(Res.string.CONTRACT_COOWNER)
-                  } else {
-                    stringResource(Res.string.CONTRACT_COINSURED)
-                  }
+                  stringResource(Res.string.CONTRACT_COINSURED)
                 },
               )
 
@@ -894,11 +852,9 @@ private fun PreviewYourInfoTab() {
             hasMissingInfo = true,
           ),
         ),
-        coOwners = listOf(),
         allowChangeAddress = true,
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
-        allowEditCoOwners = false,
         allowChangeTier = true,
         allowRemovingAddon = true,
         onChangeTierClick = {},
@@ -945,7 +901,6 @@ private fun PreviewYourInfoTab() {
               hasMissingInfo = false,
             ),
           ),
-          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.RENEWAL,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -956,9 +911,7 @@ private fun PreviewYourInfoTab() {
           ),
         ),
         onEditCoInsuredClick = {},
-        onEditCoOwnersClick = {},
-        onMissingCoInsuredInfoClick = {},
-        onMissingCoOwnersInfoClick = {},
+        onMissingInfoClick = {},
         onChangeAddressClick = {},
         onNavigateToNewConversation = {},
         openUrl = {},

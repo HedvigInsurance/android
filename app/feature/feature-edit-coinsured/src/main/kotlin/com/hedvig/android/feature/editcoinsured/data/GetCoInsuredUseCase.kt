@@ -7,8 +7,6 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import octopus.CoInsuredQuery
-import octopus.fragment.CoInsuredFragment
-import octopus.fragment.CoOwnerFragment
 
 internal interface GetCoInsuredUseCase {
   suspend fun invoke(contractId: String): Either<CoInsuredError, CoInsuredResult>
@@ -29,18 +27,17 @@ internal class GetCoInsuredUseCaseImpl(
       CoInsuredError.ContractNotFound
     }
 
-    val coInsuredOnContract = (
-      contract.coInsured.orEmpty().map { it.toCoInsured() } +
-        contract.coOwners.orEmpty().map { it.toCoInsured() }
-    ).filter { it.terminatesOn == null }
-
-    val allCoInsured = result.currentMember.activeContracts.flatMap {
-      val coInsureds = it.coInsured?.map { it.toCoInsured() }.orEmpty()
-      val coOwners = it.coOwners?.map { it.toCoInsured() }.orEmpty()
-      coInsureds + coOwners
+    val coInsuredOnContract = contract.let {
+      it.coInsured
+        ?.filter { it.terminatesOn == null }
+        ?.map { it.toCoInsured() }
+        ?: listOf()
     }
-      .filter { !it.hasMissingInfo }
-      .filter { coinsured -> coInsuredOnContract.any { it.id == coinsured.id} }
+
+    val allCoInsured = result.currentMember.activeContracts
+      .mapNotNull { it.coInsured?.map { it.toCoInsured() } }
+      .flatten()
+      .filterNot { coinsured -> coinsured.hasMissingInfo || coInsuredOnContract.any { it.id == coinsured.id } }
 
     CoInsuredResult(
       member = Member(
@@ -53,17 +50,7 @@ internal class GetCoInsuredUseCaseImpl(
     )
   }
 
-  private fun CoInsuredFragment.toCoInsured() = CoInsured(
-    firstName = firstName,
-    lastName = lastName,
-    birthDate = birthdate,
-    ssn = ssn,
-    hasMissingInfo = hasMissingInfo,
-    activatesOn = activatesOn,
-    terminatesOn = terminatesOn,
-  )
-
-  private fun CoOwnerFragment.toCoInsured() = CoInsured(
+  private fun CoInsuredQuery.Data.CurrentMember.ActiveContract.CoInsured.toCoInsured() = CoInsured(
     firstName = firstName,
     lastName = lastName,
     birthDate = birthdate,
