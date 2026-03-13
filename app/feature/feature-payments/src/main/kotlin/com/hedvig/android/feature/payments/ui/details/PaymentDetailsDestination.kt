@@ -53,13 +53,12 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import com.hedvig.android.feature.payments.ui.discounts.ForeverExplanationBottomSheet
-import hedvig.resources.KIVRA_PAYMENT_INFO
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYMENTS_AUTOGIRO_LABEL
 import hedvig.resources.PAYMENTS_BANK_LABEL
 import hedvig.resources.PAYMENTS_IN_PROGRESS
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION
@@ -77,6 +76,7 @@ import hedvig.resources.payments_carried_adjustment
 import hedvig.resources.payments_carried_adjustment_info
 import hedvig.resources.payments_settlement_adjustment
 import hedvig.resources.payments_settlement_adjustment_info
+import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -123,8 +123,8 @@ private fun MemberChargeDetailsScreen(
     is PaymentDetailsUiState.Success -> {
       val foreverInfoBottomSheetState = rememberHedvigBottomSheetState<Unit>()
       ForeverExplanationBottomSheet(foreverInfoBottomSheetState)
-      val paymentDetailsExplanationBottomSheetState = rememberHedvigBottomSheetState<String>()
-      PaymentDetailsExplanationBottomSheet(paymentDetailsExplanationBottomSheetState)
+      val paymentdetailsExplanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+      PaymentdetailsExplanationBottomSheet(paymentdetailsExplanationBottomSheetState)
 
       val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       HedvigScaffold(
@@ -269,29 +269,17 @@ private fun MemberChargeDetailsScreen(
               HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
             },
             endSlot = {
-              when (uiState.paymentDetails.memberCharge.chargeMethod) {
-                MemberPaymentChargeMethod.TRUSTLY,
-                MemberPaymentChargeMethod.KIVRA,
-                  -> {
-                  val textToShow: String =
-                    if (uiState.paymentDetails.memberCharge.chargeMethod == MemberPaymentChargeMethod.TRUSTLY)
-                      stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION) else
-                      stringResource(Res.string.KIVRA_PAYMENT_INFO)
-                  Icon(
-                    imageVector = HedvigIcons.InfoFilled,
-                    tint = HedvigTheme.colorScheme.fillSecondary,
-                    contentDescription = "Info icon",
-                    modifier = Modifier
-                      .wrapContentSize(Alignment.CenterEnd)
-                      .size(24.dp)
-                      .clip(HedvigTheme.shapes.cornerXLarge)
-                      .clickable { paymentDetailsExplanationBottomSheetState.show(textToShow) }
-                      .minimumInteractiveComponentSize(),
-                  )
-                }
-
-                MemberPaymentChargeMethod.UNKNOWN -> {}
-              }
+              Icon(
+                imageVector = HedvigIcons.InfoFilled,
+                tint = HedvigTheme.colorScheme.fillSecondary,
+                contentDescription = "Info icon",
+                modifier = Modifier
+                  .wrapContentSize(Alignment.CenterEnd)
+                  .size(24.dp)
+                  .clip(HedvigTheme.shapes.cornerXLarge)
+                  .clickable { paymentdetailsExplanationBottomSheetState.show() }
+                  .minimumInteractiveComponentSize(),
+              )
             },
             modifier = Modifier.padding(vertical = 16.dp),
             spaceBetween = 8.dp,
@@ -345,59 +333,53 @@ private fun MemberChargeDetailsScreen(
             PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
 
             is PaymentDetails.PaymentsInfo.Active -> {
-              if (paymentsInfo.paymentMethod != null) {
-                HorizontalItemsWithMaximumSpaceTaken(
-                  startSlot = {
-                    HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
-                  },
-                  endSlot = {
-                    HedvigText(
-                      text = paymentsInfo.paymentMethod,
-                      textAlign = TextAlign.End,
-                      modifier = Modifier.fillMaxWidth(),
-                      color = HedvigTheme.colorScheme.textSecondary,
-                    )
-                  },
-                  modifier = Modifier.padding(vertical = 16.dp),
-                  spaceBetween = 8.dp,
-                )
-                HorizontalDivider()
-              }
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = {
+                  HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
+                },
+                endSlot = {
+                  HedvigText(
+                    text = stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL),
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                },
+                modifier = Modifier.padding(vertical = 16.dp),
+                spaceBetween = 8.dp,
+              )
+              HorizontalDivider()
 
-              if (paymentsInfo.displayValue != null) {
-                HorizontalItemsWithMaximumSpaceTaken(
-                  startSlot = {
-                    HedvigText(stringResource(Res.string.PAYMENTS_ACCOUNT))
-                  },
-                  endSlot = {
-                    HedvigText(
-                      text = paymentsInfo.displayValue,
-                      textAlign = TextAlign.End,
-                      modifier = Modifier.fillMaxWidth(),
-                      color = HedvigTheme.colorScheme.textSecondary,
-                    )
-                  },
-                  modifier = Modifier.padding(vertical = 16.dp),
-                  spaceBetween = 8.dp,
-                )
-                HorizontalDivider()
-              }
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = {
+                  HedvigText(stringResource(Res.string.PAYMENTS_ACCOUNT))
+                },
+                endSlot = {
+                  HedvigText(
+                    text = paymentsInfo.displayValue,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                },
+                modifier = Modifier.padding(vertical = 16.dp),
+                spaceBetween = 8.dp,
+              )
+              HorizontalDivider()
 
-              if (paymentsInfo.displayName!=null) {
-                HorizontalItemsWithMaximumSpaceTaken(
-                  startSlot = { HedvigText(stringResource(Res.string.PAYMENTS_BANK_LABEL)) },
-                  endSlot = {
-                    HedvigText(
-                      text = paymentsInfo.displayName,
-                      textAlign = TextAlign.End,
-                      modifier = Modifier.fillMaxWidth(),
-                      color = HedvigTheme.colorScheme.textSecondary,
-                    )
-                  },
-                  spaceBetween = 8.dp,
-                  modifier = Modifier.padding(vertical = 16.dp),
-                )
-              }
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = { HedvigText(stringResource(Res.string.PAYMENTS_BANK_LABEL)) },
+                endSlot = {
+                  HedvigText(
+                    text = paymentsInfo.displayName,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                },
+                spaceBetween = 8.dp,
+                modifier = Modifier.padding(vertical = 16.dp),
+              )
             }
           }
         }
@@ -407,15 +389,15 @@ private fun MemberChargeDetailsScreen(
 }
 
 @Composable
-private fun PaymentDetailsExplanationBottomSheet(
-  paymentDetailsExplanationBottomSheetState: HedvigBottomSheetState<String>,
+private fun PaymentdetailsExplanationBottomSheet(
+  paymentdetailsExplanationBottomSheetState: HedvigBottomSheetState<Unit>,
 ) {
   HedvigBottomSheet(
-    hedvigBottomSheetState = paymentDetailsExplanationBottomSheetState,
-  ) { data ->
+    hedvigBottomSheetState = paymentdetailsExplanationBottomSheetState,
+  ) {
     HedvigText(text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE))
     HedvigText(
-      text = data,
+      text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION),
       color = HedvigTheme.colorScheme.textSecondary,
     )
     Spacer(Modifier.height(8.dp))
@@ -423,7 +405,7 @@ private fun PaymentDetailsExplanationBottomSheet(
       text = stringResource(Res.string.general_close_button),
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
-      onClick = paymentDetailsExplanationBottomSheetState::dismiss,
+      onClick = paymentdetailsExplanationBottomSheetState::dismiss,
     )
     Spacer(Modifier.height(8.dp))
     Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
@@ -456,12 +438,7 @@ private fun PaymentDetailsScreenPreview(
             memberCharge = paymentDetailsPreviewData,
             pastCharges = chargeHistoryPreviewData,
             paymentsInfo = when (withPaymentInfo) {
-              true -> PaymentDetails.PaymentsInfo.Active(
-                "displayName",
-                "displayValue",
-                "Direct debit",
-              )
-
+              true -> PaymentDetails.PaymentsInfo.Active("displayName", "displayValue")
               false -> PaymentDetails.PaymentsInfo.NoPresentableInfo
             },
             upComingCharge = paymentDetailsPreviewData,
