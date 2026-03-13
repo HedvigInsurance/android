@@ -499,6 +499,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     onNavigateToNewConversation = {
       navigateToNewConversation(null)
     },
+    openPlayStore = externalNavigator::tryOpenPlayStore,
   )
   claimDetailsGraph(
     navController = navController,

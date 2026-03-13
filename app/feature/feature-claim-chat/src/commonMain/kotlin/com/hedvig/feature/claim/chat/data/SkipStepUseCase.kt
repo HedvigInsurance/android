@@ -11,14 +11,14 @@ import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentSkipStepMutation
 
 internal interface SkipStepUseCase {
-  suspend fun invoke(id: StepId): Either<ErrorMessage, ClaimIntent>
+  suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent>
 }
 
 internal class SkipStepUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) : SkipStepUseCase {
-  override suspend fun invoke(id: StepId): Either<ErrorMessage, ClaimIntent> = either {
+  override suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent> = either {
     val data = apolloClient
       .mutation(
         ClaimIntentSkipStepMutation(
@@ -28,14 +28,14 @@ internal class SkipStepUseCaseImpl(
       .safeExecute()
       .mapLeft {
         logcat { "SkipStepUseCase error: $it" }
-        ErrorMessage()
+        ClaimChatErrorMessage.GeneralError
       }
       .bind()
       .claimIntentSkipStep
     when {
-      data.userError != null -> raise(ErrorMessage(data.userError.message))
+      data.userError != null -> raise(ClaimChatErrorMessage.GeneralError)
       data.intent != null -> data.intent.toClaimIntent(languageService.getLocale())
-      else -> raise(ErrorMessage("No data"))
+      else -> raise(ClaimChatErrorMessage.GeneralError)
     }
   }
 }
