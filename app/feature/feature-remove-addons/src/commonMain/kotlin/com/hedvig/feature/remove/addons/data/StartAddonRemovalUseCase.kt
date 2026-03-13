@@ -50,6 +50,7 @@ internal class StartAddonRemovalUseCaseImpl(
       }
       apolloClient
         .query(StartAddonRemovalQuery(contractId.id))
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .fold(
           ifLeft = {
