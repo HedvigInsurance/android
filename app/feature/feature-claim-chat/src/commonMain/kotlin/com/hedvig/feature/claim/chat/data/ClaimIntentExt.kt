@@ -208,10 +208,7 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
         ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
         ClaimIntentStepContentFormFieldType.PHONE_NUMBER -> StepContent.Form.FieldType.NUMBER
-        ClaimIntentStepContentFormFieldType.SEARCH -> {
-          logcat { "FormFragment.Field: Unknown field type" }
-          raise(ClaimChatErrorMessage.NeedsUpdate)
-        }
+        ClaimIntentStepContentFormFieldType.SEARCH -> null
         ClaimIntentStepContentFormFieldType.UNKNOWN__ -> {
           logcat { "FormFragment.Field: Unknown field type" }
           raise(ClaimChatErrorMessage.NeedsUpdate)
