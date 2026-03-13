@@ -164,7 +164,7 @@ internal class ClaimChatViewModel(
   submitFormUseCase: SubmitFormUseCase,
   submitSelectUseCase: SubmitSelectUseCase,
   submitSummaryUseCase: SubmitSummaryUseCase,
-  audioRecordingManager: AudioRecordingManager,
+  private val audioRecordingManager: AudioRecordingManager,
   skipStepUseCase: SkipStepUseCase,
   regretStepUseCase: RegretStepUseCase,
   formFieldSearchUseCase: FormFieldSearchUseCase,
@@ -187,7 +187,13 @@ internal class ClaimChatViewModel(
       regretStepUseCase,
       formFieldSearchUseCase
     ),
-  )
+  ) {
+
+  override fun onCleared() {
+    super.onCleared()
+    audioRecordingManager.reset()
+  }
+}
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
