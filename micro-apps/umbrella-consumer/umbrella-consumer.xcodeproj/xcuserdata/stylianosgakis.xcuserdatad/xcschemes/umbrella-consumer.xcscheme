@@ -48,12 +48,6 @@
             ReferencedContainer = "container:umbrella-consumer.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-Xbinary=HedvigShared"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
       <LocationScenarioReference
          identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
          referenceType = "1">
