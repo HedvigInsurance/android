@@ -5,6 +5,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
+import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
@@ -119,6 +120,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
   ),
   MemberCharge(
     grossAmount = UiMoney(500.0, UiCurrencyCode.SEK),
@@ -151,6 +153,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.KIVRA,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -183,6 +186,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.UNKNOWN,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -215,6 +219,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = null,
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -247,6 +252,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
+    chargeMethod = MemberPaymentChargeMethod.KIVRA,
   ),
 )
 
@@ -266,8 +272,8 @@ internal val paymentOverViewPreviewData: PaymentOverview
       memberChargeShortInfo = memberChargeShortInfo,
       ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
       paymentConnection = PaymentConnection.Active(
-        displayName = "Nordea",
-        displayValue = "31489*****",
+          displayName = "Nordea",
+          displayValue = "31489*****",
       ),
     )
   }
@@ -303,4 +309,5 @@ internal val paymentDetailsPreviewData = MemberCharge(
   referralDiscount = referralDiscountPreviewData,
   carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
   settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+  chargeMethod = MemberPaymentChargeMethod.KIVRA,
 )
