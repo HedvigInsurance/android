@@ -104,7 +104,6 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -162,7 +161,7 @@ internal fun HomeDestination(
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   imageLoader: ImageLoader,
@@ -211,7 +210,7 @@ private fun HomeScreen(
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
@@ -428,7 +427,7 @@ private fun HomeScreenSuccess(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
-  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToMissingInfo: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   modifier: Modifier = Modifier,
@@ -808,7 +807,7 @@ private fun PreviewHomeScreen(
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = { _, _ -> },
+        navigateToMissingInfo = {},
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
@@ -839,7 +838,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = { _, _ -> },
+        navigateToMissingInfo = {},
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
@@ -892,7 +891,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = { _, _ -> },
+        navigateToMissingInfo = {},
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},

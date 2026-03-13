@@ -54,12 +54,14 @@ fragment ContractFragment on Contract {
   supportsMoving
   supportsCoInsured
   supportsChangeTier
-  supportsCoOwners
   coInsured {
-    ...ContractCoInsuredFragment
-  }
-  coOwners {
-    ...ContractCoOwnerFragment
+    firstName
+    lastName
+    ssn
+    birthdate
+    hasMissingInfo
+    activatesOn
+    terminatesOn
   }
   currentAgreement {
     ...AgreementFragment
@@ -129,24 +131,4 @@ fragment MonthlyCostFragment on ItemCost {
     explanation
     campaignCode
   }
-}
-
-fragment ContractCoInsuredFragment on ContractCoInsured {
-  firstName
-  lastName
-  ssn
-  birthdate
-  hasMissingInfo
-  activatesOn
-  terminatesOn
-}
-
-fragment ContractCoOwnerFragment on ContractCoOwner {
-  firstName
-  lastName
-  ssn
-  birthdate
-  hasMissingInfo
-  activatesOn
-  terminatesOn
 }

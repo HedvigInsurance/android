@@ -52,7 +52,6 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -103,7 +102,7 @@ internal fun ProfileDestination(
   navigateToSettings: () -> Unit,
   navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
+  navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -142,7 +141,7 @@ private fun ProfileScreen(
   navigateToSettings: () -> Unit,
   navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
+  navigateToAddMissingInfo: (contractId: String) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,

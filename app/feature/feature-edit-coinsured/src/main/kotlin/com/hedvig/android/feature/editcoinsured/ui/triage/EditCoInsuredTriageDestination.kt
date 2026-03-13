@@ -27,7 +27,6 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
@@ -44,8 +43,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun EditCoInsuredTriageDestination(
   viewModel: EditCoInsuredTriageViewModel,
   navigateUp: () -> Unit,
-  navigateToAddMissingInfo: (InsuranceForEditOrAddCoInsured) -> Unit,
-  navigateToAddOrRemoveCoInsured: (InsuranceForEditOrAddCoInsured) -> Unit,
+  navigateToAddMissingInfo: (String) -> Unit,
+  navigateToAddOrRemoveCoInsured: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   EditCoInsuredTriageScreen(
@@ -73,8 +72,8 @@ private fun EditCoInsuredTriageScreen(
   uiState: EditCoInsuredTriageUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
-  navigateToAddMissingInfo: (InsuranceForEditOrAddCoInsured) -> Unit,
-  navigateToAddOrRemoveCoInsured: (InsuranceForEditOrAddCoInsured) -> Unit,
+  navigateToAddMissingInfo: (String) -> Unit,
+  navigateToAddOrRemoveCoInsured: (String) -> Unit,
   submitSelectedInsurance: () -> Unit,
   selectInsurance: (id: String) -> Unit,
   clearNavigation: () -> Unit,
@@ -93,21 +92,19 @@ private fun EditCoInsuredTriageScreen(
     }
 
     is Success -> {
-      LaunchedEffect(uiState.insuranceToNavigateToAddOrRemoveCoInsured) {
-        if (uiState.insuranceToNavigateToAddOrRemoveCoInsured != null) {
+      LaunchedEffect(uiState.idToNavigateToAddOrRemoveCoInsured) {
+        if (uiState.idToNavigateToAddOrRemoveCoInsured != null) {
           clearNavigation()
-          navigateToAddOrRemoveCoInsured(uiState.insuranceToNavigateToAddOrRemoveCoInsured)
+          navigateToAddOrRemoveCoInsured(uiState.idToNavigateToAddOrRemoveCoInsured)
         }
       }
-      LaunchedEffect(uiState.insuranceToNavigateToAddMissingInfo) {
-        if (uiState.insuranceToNavigateToAddMissingInfo != null) {
+      LaunchedEffect(uiState.idToNavigateToAddMissingInfo) {
+        if (uiState.idToNavigateToAddMissingInfo != null) {
           clearNavigation()
-          navigateToAddMissingInfo(uiState.insuranceToNavigateToAddMissingInfo)
+          navigateToAddMissingInfo(uiState.idToNavigateToAddMissingInfo)
         }
       }
-      if (uiState.insuranceToNavigateToAddMissingInfo == null &&
-        uiState.insuranceToNavigateToAddOrRemoveCoInsured == null
-      ) {
+      if (uiState.idToNavigateToAddMissingInfo == null && uiState.idToNavigateToAddOrRemoveCoInsured == null) {
         SuccessScreen(
           uiState = uiState,
           navigateUp = navigateUp,
@@ -201,14 +198,12 @@ private fun PreviewEditCoInsuredTriageScreen() {
               displayName = "Home insurance",
               exposureName = "Lulanden 85H, 71220",
               destination = EditCoInsuredDestination.MISSING_INFO,
-              type = CoInsuredFlowType.CoInsured,
             ),
             InsuranceForEditOrAddCoInsured(
               id = "2",
               displayName = "Home insurance",
               exposureName = "Drottninggatan 1, 11111",
               destination = EditCoInsuredDestination.MISSING_INFO,
-              type = CoInsuredFlowType.CoInsured,
             ),
           ),
           selected = null,

@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -27,7 +26,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import hedvig.resources.CONTRACT_REMOVE_COINSURED_CONFIRMATION
-import hedvig.resources.CONTRACT_REMOVE_COOWNER_CONFIRMATION
 import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
 import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
@@ -37,7 +35,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun RemoveCoInsuredBottomSheetContent(
-  type: CoInsuredFlowType,
   onDismiss: () -> Unit,
   onRemove: (CoInsured) -> Unit,
   isLoading: Boolean,
@@ -49,10 +46,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      when (type) {
-        CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION)
-        CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_REMOVE_COOWNER_CONFIRMATION)
-      },
+      stringResource(Res.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION),
       textAlign = TextAlign.Center,
     )
     AnimatedVisibility(
@@ -100,7 +94,6 @@ private fun RemoveCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       RemoveCoInsuredBottomSheetContent(
-        type = CoInsuredFlowType.CoInsured,
         onDismiss = {},
         onRemove = {},
         isLoading = false,
@@ -125,7 +118,6 @@ private fun RemoveCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       RemoveCoInsuredBottomSheetContent(
-        type = CoInsuredFlowType.CoInsured,
         onDismiss = {},
         onRemove = {},
         isLoading = false,

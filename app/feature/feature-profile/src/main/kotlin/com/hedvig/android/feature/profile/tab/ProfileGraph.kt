@@ -5,7 +5,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
@@ -35,7 +34,7 @@ fun NavGraphBuilder.profileGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
-  navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
+  navigateToAddMissingInfo: (contractId: String) -> Unit,
   navigateToDeleteAccountFeature: () -> Unit,
   navigateToClaimHistory: () -> Unit,
   openAppSettings: () -> Unit,
@@ -71,8 +70,8 @@ fun NavGraphBuilder.profileGraph(
           navController.navigate(Certificates)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
-        navigateToAddMissingInfo = dropUnlessResumed { contractId: String, type: CoInsuredFlowType ->
-          navigateToAddMissingInfo(contractId, type)
+        navigateToAddMissingInfo = dropUnlessResumed { contractId: String ->
+          navigateToAddMissingInfo(contractId)
         },
         openAppSettings = openAppSettings,
         openUrl = openUrl,

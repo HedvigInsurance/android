@@ -2,16 +2,11 @@ query NeedsCoInsuredInfoReminder {
   currentMember {
     activeContracts {
       id
-      supportsCoInsured
-      supportsCoOwners
       coInsured {
         hasMissingInfo
         terminatesOn
       }
-      coOwners {
-        hasMissingInfo
-        terminatesOn
-      }
+      supportsCoInsured
     }
   }
 }

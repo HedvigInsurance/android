@@ -41,7 +41,6 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
             ),
             certificateUrl = null,
             creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
-            coOwners = listOf(),
             coInsured = listOf(
               InsuranceAgreement.CoInsured(
                 ssn = "123",
@@ -83,7 +82,6 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           renewalDate = LocalDate.fromEpochDays(500),
           supportsAddressChange = false,
           supportsEditCoInsured = true,
-          supportsEditCoOwners = false,
           isTerminated = false,
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",

@@ -97,9 +97,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   onEditCoInsuredClick: (String) -> Unit,
-  onEditCoOwnersClick: (String) -> Unit,
-  onMissingCoInsuredInfoClick: (String) -> Unit,
-  onMissingCoOwnersInfoClick: (String) -> Unit,
+  onMissingInfoClick: (String) -> Unit,
   onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -118,9 +116,7 @@ internal fun ContractDetailDestination(
     imageLoader = imageLoader,
     retry = { viewModel.emit(ContractDetailsEvent.RetryLoadingContract) },
     onEditCoInsuredClick = onEditCoInsuredClick,
-    onEditCoOwnersClick = onEditCoOwnersClick,
-    onMissingCoInsuredInfoClick = onMissingCoInsuredInfoClick,
-    onMissingCoOwnersInfoClick = onMissingCoOwnersInfoClick,
+    onMissingInfoClick = onMissingInfoClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
     onNavigateToNewConversation = onNavigateToNewConversation,
@@ -141,9 +137,7 @@ private fun ContractDetailScreen(
   imageLoader: ImageLoader,
   retry: () -> Unit,
   onEditCoInsuredClick: (String) -> Unit,
-  onEditCoOwnersClick: (String) -> Unit,
-  onMissingCoInsuredInfoClick: (String) -> Unit,
-  onMissingCoOwnersInfoClick: (String) -> Unit,
+  onMissingInfoClick: (String) -> Unit,
   onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -310,11 +304,9 @@ private fun ContractDetailScreen(
                       contractId = contract.id,
                       coverageItems = contract.displayItems,
                       coInsured = contract.coInsured,
-                      coOwners = contract.coOwners,
                       allowChangeAddress = contract.supportsAddressChange,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
                       allowEditCoInsured = contract.supportsEditCoInsured,
-                      allowEditCoOwners = contract.supportsEditCoOwners,
                       allowChangeTier = contract.supportsTierChange,
                       allowRemovingAddon = contract.supportsRemovingAddon,
                       onChangeTierClick = {
@@ -325,14 +317,8 @@ private fun ContractDetailScreen(
                       onEditCoInsuredClick = {
                         onEditCoInsuredClick(contract.id)
                       },
-                      onEditCoOwnersClick = {
-                        onEditCoOwnersClick(contract.id)
-                      },
-                      onMissingCoInsuredInfoClick = {
-                        onMissingCoInsuredInfoClick(contract.id)
-                      },
-                      onMissingCoOwnersInfoClick = {
-                        onMissingCoOwnersInfoClick(contract.id)
+                      onMissingInfoClick = {
+                        onMissingInfoClick(contract.id)
                       },
                       onChangeAddressClick = onChangeAddressClick,
                       onNavigateToNewConversation = onNavigateToNewConversation,
@@ -457,7 +443,6 @@ private fun PreviewContractDetailScreen() {
               ),
               certificateUrl = null,
               coInsured = listOf(),
-              coOwners = listOf(),
               creationCause = NEW_CONTRACT,
               addons = listOf(
                 Addon(
@@ -488,7 +473,6 @@ private fun PreviewContractDetailScreen() {
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             supportsEditCoInsured = true,
-            supportsEditCoOwners = false,
             isTerminated = false,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
@@ -501,15 +485,13 @@ private fun PreviewContractDetailScreen() {
         imageLoader = rememberPreviewImageLoader(),
         retry = {},
         onEditCoInsuredClick = {},
-        onEditCoOwnersClick = {},
         onChangeAddressClick = {},
         onCancelInsuranceClick = {
         },
         navigateUp = {},
         navigateBack = {},
         onNavigateToNewConversation = {},
-        onMissingCoInsuredInfoClick = {},
-        onMissingCoOwnersInfoClick = {},
+        onMissingInfoClick = {},
         openUrl = {},
         onChangeTierClick = {},
         navigateToAddAddon = {},
@@ -530,15 +512,13 @@ private fun PreviewContractDetailScreenFailure() {
         imageLoader = rememberPreviewImageLoader(),
         retry = {},
         onEditCoInsuredClick = {},
-        onEditCoOwnersClick = {},
         onChangeAddressClick = {},
         onCancelInsuranceClick = {
         },
         navigateUp = {},
         navigateBack = {},
         onNavigateToNewConversation = {},
-        onMissingCoInsuredInfoClick = {},
-        onMissingCoOwnersInfoClick = {},
+        onMissingInfoClick = {},
         openUrl = {},
         onChangeTierClick = {},
         navigateToAddAddon = {},

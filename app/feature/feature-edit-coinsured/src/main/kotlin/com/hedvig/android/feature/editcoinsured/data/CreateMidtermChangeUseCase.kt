@@ -3,25 +3,18 @@ package com.hedvig.android.feature.editcoinsured.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Optional.Companion.absent
 import com.apollographql.apollo.api.Optional.Companion.presentIfNotNull
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import kotlinx.datetime.LocalDate
 import octopus.CreateMidtermChangeMutation
 import octopus.type.CoInsuredInput
-import octopus.type.CoOwnersInput
 import octopus.type.MidtermChangeIntentCreateInput
 
 internal interface CreateMidtermChangeUseCase {
-  suspend fun invoke(
-    contractId: String,
-    coInsured: List<CoInsured>,
-    type: CoInsuredFlowType,
-  ): Either<ErrorMessage, CreateMidtermChangeResult>
+  suspend fun invoke(contractId: String, coInsured: List<CoInsured>): Either<ErrorMessage, CreateMidtermChangeResult>
 }
 
 internal class CreateMidtermChangeUseCaseImpl(
@@ -30,39 +23,21 @@ internal class CreateMidtermChangeUseCaseImpl(
   override suspend fun invoke(
     contractId: String,
     coInsured: List<CoInsured>,
-    type: CoInsuredFlowType,
   ): Either<ErrorMessage, CreateMidtermChangeResult> = either {
     val mutation = CreateMidtermChangeMutation(
       contractId,
-      when (type) {
-        CoInsuredFlowType.CoInsured -> MidtermChangeIntentCreateInput(
-          coInsuredInputs = presentIfNotNull(
-            coInsured.map {
-              CoInsuredInput(
-                firstName = presentIfNotNull(it.firstName),
-                lastName = presentIfNotNull(it.lastName),
-                ssn = presentIfNotNull(it.ssn),
-                birthdate = presentIfNotNull(it.birthDate),
-              )
-            },
-          ),
-          coOwnersInputs = absent(),
-        )
-
-        CoInsuredFlowType.CoOwners -> MidtermChangeIntentCreateInput(
-          coInsuredInputs = absent(),
-          coOwnersInputs = presentIfNotNull(
-            coInsured.map {
-              CoOwnersInput(
-                firstName = presentIfNotNull(it.firstName),
-                lastName = presentIfNotNull(it.lastName),
-                ssn = presentIfNotNull(it.ssn),
-                birthdate = presentIfNotNull(it.birthDate),
-              )
-            },
-          ),
-        )
-      },
+      MidtermChangeIntentCreateInput(
+        coInsuredInputs = presentIfNotNull(
+          coInsured.map {
+            CoInsuredInput(
+              firstName = presentIfNotNull(it.firstName),
+              lastName = presentIfNotNull(it.lastName),
+              ssn = presentIfNotNull(it.ssn),
+              birthdate = presentIfNotNull(it.birthDate),
+            )
+          },
+        ),
+      ),
     )
 
     val result = apolloClient.mutation(mutation)
