@@ -32,7 +32,6 @@ hedvig {
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")
     mapScalarToKotlinString("ClaimIntentStepContentFormFieldValue")
-    mapScalarToKotlinString("TerminationSurveyOptionId")
   }
 }
 
