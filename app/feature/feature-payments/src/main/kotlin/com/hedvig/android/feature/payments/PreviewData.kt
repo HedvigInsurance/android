@@ -309,5 +309,36 @@ internal val paymentDetailsPreviewData = MemberCharge(
   referralDiscount = referralDiscountPreviewData,
   carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
   settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+  chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
+)
+
+internal val paymentDetailsKivraPreviewData = MemberCharge(
+  grossAmount = UiMoney(280.0, UiCurrencyCode.SEK),
+  netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
+  id = "123",
+  status = MemberCharge.MemberChargeStatus.PENDING,
+  dueDate = LocalDate.fromEpochDays(400),
+  failedCharge = null,
+  chargeBreakdowns = listOf(
+    MemberCharge.ChargeBreakdown(
+      contractDisplayName = "Bilforsakring",
+      contractDetails = "ABH 234",
+      grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
+      netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
+      periods = periodsPreviewData,
+      priceBreakdown = chargeBreakdownPreviewData,
+    ),
+    MemberCharge.ChargeBreakdown(
+      contractDisplayName = "Hemforsakring Bostad",
+      contractDetails = "Bellmansgatan 19A",
+      grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
+      netAmount = UiMoney(180.0, UiCurrencyCode.SEK),
+      periods = periodsPreviewData,
+      priceBreakdown = chargeBreakdownPreviewData,
+    ),
+  ),
+  referralDiscount = referralDiscountPreviewData,
+  carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
+  settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
   chargeMethod = MemberPaymentChargeMethod.KIVRA,
 )

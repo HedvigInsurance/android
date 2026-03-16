@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -55,6 +57,7 @@ import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentDetails
+import com.hedvig.android.feature.payments.paymentDetailsKivraPreviewData
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import com.hedvig.android.feature.payments.ui.discounts.ForeverExplanationBottomSheet
@@ -62,6 +65,7 @@ import hedvig.resources.KIVRA_PAYMENT_INFO
 import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.PAYMENTS_BANK_LABEL
 import hedvig.resources.PAYMENTS_IN_PROGRESS
+import hedvig.resources.PAYMENTS_IN_PROGRESS_KIVRA
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
 import hedvig.resources.PAYMENTS_PAYMENT_DUE
@@ -234,13 +238,20 @@ private fun MemberChargeDetailsScreen(
             }
 
             MemberCharge.MemberChargeStatus.PENDING -> {
-              HedvigNotificationCard(
-                message = stringResource(Res.string.PAYMENTS_IN_PROGRESS),
-                style = NotificationDefaults.InfoCardStyle.Default,
-                priority = NotificationDefaults.NotificationPriority.Info,
-                withIcon = true,
-                modifier = Modifier.fillMaxWidth(),
-              )
+              val message = when (uiState.paymentDetails.memberCharge.chargeMethod) {
+                MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_IN_PROGRESS)
+                MemberPaymentChargeMethod.KIVRA -> stringResource(Res.string.PAYMENTS_IN_PROGRESS_KIVRA)
+                MemberPaymentChargeMethod.UNKNOWN -> null
+              }
+              if (message!=null) {
+                HedvigNotificationCard(
+                  message = message,
+                  style = NotificationDefaults.InfoCardStyle.Default,
+                  priority = NotificationDefaults.NotificationPriority.Info,
+                  withIcon = true,
+                  modifier = Modifier.fillMaxWidth(),
+                )
+              }
             }
 
             MemberCharge.MemberChargeStatus.FAILED -> {
@@ -446,23 +457,35 @@ private fun MemberCharge.topAppBarColors(): TopAppBarColors? {
 @Preview(device = "spec:width=1080px,height=3500px,dpi=440")
 @HedvigPreview
 private fun PaymentDetailsScreenPreview(
-  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) withPaymentInfo: Boolean,
+  @PreviewParameter(TripleBooleanCollectionPreviewParameterProvider::class) withPaymentInfo: TripleCase,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       MemberChargeDetailsScreen(
         uiState = PaymentDetailsUiState.Success(
           PaymentDetails(
-            memberCharge = paymentDetailsPreviewData,
+            memberCharge =  when (withPaymentInfo) {
+              TripleCase.FIRST -> paymentDetailsPreviewData
+
+              TripleCase.SECOND -> paymentDetailsKivraPreviewData
+
+              TripleCase.THIRD -> paymentDetailsPreviewData
+            } ,
             pastCharges = chargeHistoryPreviewData,
             paymentsInfo = when (withPaymentInfo) {
-              true -> PaymentDetails.PaymentsInfo.Active(
+              TripleCase.FIRST -> PaymentDetails.PaymentsInfo.Active(
                 "displayName",
                 "displayValue",
                 "Direct debit",
               )
 
-              false -> PaymentDetails.PaymentsInfo.NoPresentableInfo
+              TripleCase.SECOND -> PaymentDetails.PaymentsInfo.Active(
+                "displayName",
+                "displayValue",
+                "Faktura",
+              )
+
+              TripleCase.THIRD -> PaymentDetails.PaymentsInfo.NoPresentableInfo
             },
             upComingCharge = paymentDetailsPreviewData,
           ),
