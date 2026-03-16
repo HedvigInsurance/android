@@ -36,6 +36,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -647,7 +648,7 @@ private fun StepTopContent(
           Row(verticalAlignment = Alignment.Top) {
             AiRiveAnimation(
               isAnimationComplete = isAnimationComplete,
-              modifier = Modifier.size(20.dp),
+              modifier = Modifier.size(36.dp),
             )
             Spacer(Modifier.width(8.dp))
             AnimatedRevealText(
