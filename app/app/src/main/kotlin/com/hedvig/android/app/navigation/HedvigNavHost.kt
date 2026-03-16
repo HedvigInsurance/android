@@ -463,6 +463,10 @@ internal fun HedvigNavHost(
           QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured -> {
             EditCoInsuredTriage()
           }
+
+          QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners -> {
+            EditCoInsuredTriage(type = CoInsuredFlowType.CoOwners)
+          }
         }
         navController.navigate(destination)
       },
