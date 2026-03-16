@@ -31,6 +31,12 @@ sealed interface EditCoInsuredDestination : Destination {
   ) : Destination
 
   @Serializable
+  data class EditCoOwnersTriageDeepLink(
+    @SerialName("contractId")
+    val contractId: String? = null,
+  ) : Destination
+
+  @Serializable
   data class Success(val date: LocalDate, val type: CoInsuredFlowType) : Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(typeOf<LocalDate>())
