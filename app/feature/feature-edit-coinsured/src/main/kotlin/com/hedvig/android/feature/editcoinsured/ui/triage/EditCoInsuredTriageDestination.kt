@@ -33,6 +33,8 @@ import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsu
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
+import hedvig.resources.EDIT_COOWNER_SUBTITLE
+import hedvig.resources.EDIT_COOWNER_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_COINSURED
 import hedvig.resources.Res
@@ -146,7 +148,10 @@ private fun SuccessScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED),
+      text = when (uiState.type) {
+        CoInsuredFlowType.CoInsured -> stringResource(Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.EDIT_COOWNER_TITLE)
+      },
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -156,7 +161,10 @@ private fun SuccessScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
+      text = when (uiState.type) {
+        CoInsuredFlowType.CoInsured -> stringResource(Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.EDIT_COOWNER_SUBTITLE)
+      },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -172,16 +180,16 @@ private fun SuccessScreen(
       selectedOption = uiState.selected?.id?.let { RadioOptionId(it) },
       onRadioOptionSelected = { selectInsurance(it.id) },
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       stringResource(Res.string.general_continue_button),
       enabled = uiState.selected != null,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       onClick = submitSelectedInsurance,
     )
     Spacer(Modifier.height(16.dp))
@@ -212,6 +220,7 @@ private fun PreviewEditCoInsuredTriageScreen() {
             ),
           ),
           selected = null,
+          type = CoInsuredFlowType.CoInsured,
           null,
           null,
         ),

@@ -286,7 +286,7 @@ internal fun HedvigNavHost(
         navController.navigate(CoInsuredAddOrRemove(contractId, CoInsuredFlowType.CoInsured))
       },
       startEditCoOwners = { contractId: String ->
-        navController.navigate(EditCoInsuredTriage(contractId, CoInsuredFlowType.CoInsured))
+        navController.navigate(EditCoInsuredTriage(contractId, CoInsuredFlowType.CoOwners))
       },
       onNavigateToStartChangeTier = { contractId: String ->
         navController.navigate(

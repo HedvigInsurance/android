@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
@@ -21,17 +22,19 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class EditCoInsuredTriageViewModel(
   getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
   insuranceId: String?,
+  type: CoInsuredFlowType,
 ) : MoleculeViewModel<
     EditCoInsuredTriageEvent,
     EditCoInsuredTriageUiState,
   >(
     initialState = Loading,
-    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, insuranceId),
+    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, insuranceId, type),
   )
 
 internal class EditCoInsuredTriagePresenter(
   private val getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
   private val insuranceId: String?,
+  private val type: CoInsuredFlowType,
 ) : MoleculePresenter<
     EditCoInsuredTriageEvent,
     EditCoInsuredTriageUiState,
@@ -83,7 +86,7 @@ internal class EditCoInsuredTriagePresenter(
     }
     LaunchedEffect(loadIteration) {
       currentState = Loading
-      getInsuranceForEditCoInsuredUseCase.invoke().fold(
+      getInsuranceForEditCoInsuredUseCase.invoke(type).fold(
         ifLeft = {
           currentState = Failure
         },
@@ -98,6 +101,7 @@ internal class EditCoInsuredTriagePresenter(
           val success = Success(
             list = data,
             selected = preselected,
+            type = type,
             insuranceToNavigateToAddMissingInfo =
               if (preselected?.destination == EditCoInsuredDestination.MISSING_INFO) preselected else null,
             insuranceToNavigateToAddOrRemoveCoInsured =
@@ -133,6 +137,7 @@ internal sealed interface EditCoInsuredTriageUiState {
   data class Success(
     val list: List<InsuranceForEditOrAddCoInsured>,
     val selected: InsuranceForEditOrAddCoInsured?,
+    val type: CoInsuredFlowType,
     val insuranceToNavigateToAddMissingInfo: InsuranceForEditOrAddCoInsured? = null,
     val insuranceToNavigateToAddOrRemoveCoInsured: InsuranceForEditOrAddCoInsured? = null,
   ) : EditCoInsuredTriageUiState

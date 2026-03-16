@@ -63,10 +63,11 @@ val editCoInsuredModule = module {
     )
   }
 
-  viewModel<EditCoInsuredTriageViewModel> { (contractId: String?) ->
+  viewModel<EditCoInsuredTriageViewModel> { (contractId: String?, type: CoInsuredFlowType) ->
     EditCoInsuredTriageViewModel(
       get<GetInsurancesForEditCoInsuredUseCase>(),
       contractId,
+      type,
     )
   }
 }

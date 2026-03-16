@@ -12,14 +12,14 @@ import com.hedvig.android.logger.logcat
 import octopus.EligibleContractsForEditCoInsuredQuery
 
 internal interface GetInsurancesForEditCoInsuredUseCase {
-  suspend fun invoke(): Either<ErrorMessage, List<InsuranceForEditOrAddCoInsured>>
+  suspend fun invoke(type: CoInsuredFlowType): Either<ErrorMessage, List<InsuranceForEditOrAddCoInsured>>
 }
 
 internal class GetInsurancesForEditCoInsuredUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) :
   GetInsurancesForEditCoInsuredUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, List<InsuranceForEditOrAddCoInsured>> {
+  override suspend fun invoke(type: CoInsuredFlowType): Either<ErrorMessage, List<InsuranceForEditOrAddCoInsured>> {
     return either {
       val contracts = apolloClient.query(EligibleContractsForEditCoInsuredQuery())
         .safeExecute(::ErrorMessage)
@@ -27,39 +27,45 @@ internal class GetInsurancesForEditCoInsuredUseCaseImpl(
         .bind()
         .currentMember
         .activeContracts
-      val coInsuredContracts = contracts
-        .filter { it.supportsCoInsured }
-        .map { contract ->
-          val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
-            EditCoInsuredDestination.MISSING_INFO
-          } else {
-            EditCoInsuredDestination.ADD_OR_REMOVE
-          }
-          InsuranceForEditOrAddCoInsured(
-            destination = destination,
-            displayName = contract.currentAgreement.productVariant.displayName,
-            exposureName = contract.exposureDisplayName,
-            id = contract.id,
-            type = CoInsuredFlowType.CoInsured,
-          )
+      when (type) {
+        CoInsuredFlowType.CoInsured -> {
+          contracts
+            .filter { it.supportsCoInsured }
+            .map { contract ->
+              val destination = if (contract.coInsured?.any { it.hasMissingInfo } == true) {
+                EditCoInsuredDestination.MISSING_INFO
+              } else {
+                EditCoInsuredDestination.ADD_OR_REMOVE
+              }
+              InsuranceForEditOrAddCoInsured(
+                destination = destination,
+                displayName = contract.currentAgreement.productVariant.displayName,
+                exposureName = contract.exposureDisplayName,
+                id = contract.id,
+                type = CoInsuredFlowType.CoInsured,
+              )
+            }
         }
-      val coOwnerContracts = contracts
-        .filter { it.supportsCoOwners }
-        .map { contract ->
-          val destination = if (contract.coOwners?.any { it.hasMissingInfo } == true) {
-            EditCoInsuredDestination.MISSING_INFO
-          } else {
-            EditCoInsuredDestination.ADD_OR_REMOVE
-          }
-          InsuranceForEditOrAddCoInsured(
-            destination = destination,
-            displayName = contract.currentAgreement.productVariant.displayName,
-            exposureName = contract.exposureDisplayName,
-            id = contract.id,
-            type = CoInsuredFlowType.CoOwners,
-          )
+
+        CoInsuredFlowType.CoOwners -> {
+          contracts
+            .filter { it.supportsCoOwners }
+            .map { contract ->
+              val destination = if (contract.coOwners?.any { it.hasMissingInfo } == true) {
+                EditCoInsuredDestination.MISSING_INFO
+              } else {
+                EditCoInsuredDestination.ADD_OR_REMOVE
+              }
+              InsuranceForEditOrAddCoInsured(
+                destination = destination,
+                displayName = contract.currentAgreement.productVariant.displayName,
+                exposureName = contract.exposureDisplayName,
+                id = contract.id,
+                type = CoInsuredFlowType.CoOwners,
+              )
+            }
         }
-      coInsuredContracts + coOwnerContracts
+      }
     }
   }
 }
