@@ -9,7 +9,6 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.payments.data.PaymentDetails.PaymentsInfo
-import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.PaymentHistoryWithDetailsQuery
 import octopus.type.MemberPaymentConnectionStatus
@@ -32,41 +31,43 @@ internal class GetChargeDetailsUseCaseImpl(
       it.toMemberCharge(currentMember.referralInformation)
     }.reversed()
     val futureMemberCharge = currentMember.futureCharge?.toMemberCharge(currentMember.referralInformation)
-    val ongoingCharge = currentMember
+    val ongoingChargeWithThisId = currentMember
       .ongoingCharges
       .firstOrNull { it.id == id }
       ?.toMemberCharge(currentMember.referralInformation)
     val futureMemberChargeWithThisId = futureMemberCharge.takeIf { it?.id == id }
+    val pastMemberChargeWithThisId = pastCharges.firstOrNull { it.id == id }
+    val charge = futureMemberChargeWithThisId ?: pastMemberChargeWithThisId
+    ?: ongoingChargeWithThisId ?: raise(ErrorMessage())
+    val paymentsInfo = run {
+      if (futureMemberChargeWithThisId == null && ongoingChargeWithThisId == null ) {
+        // Only show payment connection information if the charge is a future charge or ongoing charge.
+        // Otherwise, the payment connection info we get is not reliably correct.
+        return@run PaymentsInfo.NoPresentableInfo
+      }
+      val paymentInformation = currentMember.paymentInformation
+      when (paymentInformation.status) {
+        MemberPaymentConnectionStatus.ACTIVE -> {
+          PaymentsInfo.Active(
+            displayName = paymentInformation.chargeMethod?.displayName,
+            displayValue = paymentInformation.chargeMethod?.descriptor,
+            paymentMethod = charge.chargeMethod,
+          )
+        }
 
-    val pastMemberCharge = pastCharges.firstOrNull { it.id == id }
+        MemberPaymentConnectionStatus.PENDING,
+        MemberPaymentConnectionStatus.NEEDS_SETUP,
+        MemberPaymentConnectionStatus.UNKNOWN__,
+          -> {
+          PaymentsInfo.NoPresentableInfo
+        }
+      }
+    }
     PaymentDetails(
-      memberCharge = futureMemberChargeWithThisId ?: pastMemberCharge ?: ongoingCharge ?: raise(ErrorMessage()),
+      memberCharge = charge,
       pastCharges = pastCharges,
       upComingCharge = futureMemberCharge,
-      paymentsInfo = run {
-        if (futureMemberChargeWithThisId == null) {
-          // Only show payment connection information if the charge is a future charge. Otherwise the payment
-          // connection info we get is not reliably correct
-          return@run PaymentsInfo.NoPresentableInfo
-        }
-        val paymentInformation = currentMember.paymentInformation
-        when (paymentInformation.status) {
-          MemberPaymentConnectionStatus.ACTIVE -> {
-              PaymentsInfo.Active(
-                displayName = paymentInformation.chargeMethod?.displayName,
-                displayValue = paymentInformation.chargeMethod?.descriptor,
-                paymentMethod = paymentInformation.chargeMethod?.paymentMethod,
-              )
-          }
-
-          MemberPaymentConnectionStatus.PENDING,
-          MemberPaymentConnectionStatus.NEEDS_SETUP,
-          MemberPaymentConnectionStatus.UNKNOWN__,
-          -> {
-            PaymentsInfo.NoPresentableInfo
-          }
-        }
-      },
+      paymentsInfo = paymentsInfo,
     )
   }
 }
@@ -90,7 +91,7 @@ internal data class PaymentDetails(
     data class Active(
       val displayName: String?,
       val displayValue: String?,
-      val paymentMethod: String?
+      val paymentMethod:  MemberPaymentChargeMethod?
     ) : PaymentsInfo
 
     data object NoPresentableInfo : PaymentsInfo

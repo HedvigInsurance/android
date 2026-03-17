@@ -61,9 +61,12 @@ import com.hedvig.android.feature.payments.paymentDetailsKivraPreviewData
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import com.hedvig.android.feature.payments.ui.discounts.ForeverExplanationBottomSheet
+import com.hedvig.android.logger.logcat
 import hedvig.resources.KIVRA_PAYMENT_INFO
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYMENTS_AUTOGIRO_LABEL
 import hedvig.resources.PAYMENTS_BANK_LABEL
+import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYMENTS_IN_PROGRESS
 import hedvig.resources.PAYMENTS_IN_PROGRESS_KIVRA
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION
@@ -353,17 +356,24 @@ private fun MemberChargeDetailsScreen(
           )
           HorizontalDivider()
           when (val paymentsInfo = uiState.paymentDetails.paymentsInfo) {
-            PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
+            is PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
 
             is PaymentDetails.PaymentsInfo.Active -> {
-              if (paymentsInfo.paymentMethod != null) {
+              if (paymentsInfo.paymentMethod != null
+                && paymentsInfo.paymentMethod != MemberPaymentChargeMethod.UNKNOWN
+              ) {
                 HorizontalItemsWithMaximumSpaceTaken(
                   startSlot = {
                     HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
                   },
                   endSlot = {
+                    val text = when (paymentsInfo.paymentMethod) {
+                      MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL)
+                      MemberPaymentChargeMethod.KIVRA -> stringResource(Res.string.PAYMENTS_INVOICE)
+                      else -> ""
+                    }
                     HedvigText(
-                      text = paymentsInfo.paymentMethod,
+                      text = text,
                       textAlign = TextAlign.End,
                       modifier = Modifier.fillMaxWidth(),
                       color = HedvigTheme.colorScheme.textSecondary,
@@ -476,13 +486,13 @@ private fun PaymentDetailsScreenPreview(
               TripleCase.FIRST -> PaymentDetails.PaymentsInfo.Active(
                 "displayName",
                 "displayValue",
-                "Direct debit",
+                MemberPaymentChargeMethod.TRUSTLY,
               )
 
               TripleCase.SECOND -> PaymentDetails.PaymentsInfo.Active(
                 "displayName",
                 "displayValue",
-                "Faktura",
+                MemberPaymentChargeMethod.KIVRA,
               )
 
               TripleCase.THIRD -> PaymentDetails.PaymentsInfo.NoPresentableInfo
