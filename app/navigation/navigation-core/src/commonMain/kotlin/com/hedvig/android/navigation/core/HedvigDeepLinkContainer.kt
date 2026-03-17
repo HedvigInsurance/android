@@ -27,6 +27,11 @@ interface HedvigDeepLinkContainer {
   // A specific destination  for editing co-insured with a contractId. If none match, an error screen is shown
   val editCoInsured: List<String>
 
+  /**
+   * Same as [editCoInsured] but only allows to edit co-owner related contracts instead
+   */
+  val editCoOwners: List<String>
+
   val terminateInsurance: List<String> // The screen with a list of insurances eligible for self-service cancellation
 
   val forever: List<String> // The forever/referrals destination, showing the existing discount and the unique code
@@ -105,6 +110,9 @@ internal class HedvigDeepLinkContainerImpl(
 
   override val editCoInsured: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/edit-coinsured?contractId={contractId}"
+  }
+  override val editCoOwners: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/edit-coowners"
   }
   override val terminateInsurance: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/terminate-contract?contractId={contractId}"

@@ -578,7 +578,7 @@
   <string name="PAYMENTS_HISTORY_INFO">For information about payments older than 12 months, please send us a message here in the app.</string>
   <string name="PAYMENTS_INVOICE">Invoice</string>
   <string name="PAYMENTS_IN_PROGRESS">The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account</string>
-  <string name="PAYMENTS_IN_PROGRESS_KIVRA">Your invoice is visible in Kivra. If you can\'t see it there or have problems with paying it, please contact us in the chat.</string>
+  <string name="PAYMENTS_IN_PROGRESS_KIVRA">You can find your invoice in the Kivra app</string>
   <string name="PAYMENTS_MANDATE">Mandate</string>
   <string name="PAYMENTS_MISSED_PAYMENT">Your payment for the period %1$s – %2$s didn\'t process as expected. The amount has been added to this payment.</string>
   <string name="PAYMENTS_NO_HISTORY_DATA">There is no record of your payment history</string>
