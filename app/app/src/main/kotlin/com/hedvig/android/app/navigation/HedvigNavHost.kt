@@ -339,7 +339,6 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
-      onOpenChat = ::navigateToNewConversation
     )
     profileGraph(
       nestedGraphs = {
@@ -520,6 +519,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     onNavigateToNewConversation = {
       navigateToNewConversation(null)
     },
+    openPlayStore = externalNavigator::tryOpenPlayStore,
   )
   claimDetailsGraph(
     navController = navController,

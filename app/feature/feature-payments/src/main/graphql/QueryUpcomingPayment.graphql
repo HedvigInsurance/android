@@ -19,10 +19,9 @@ query UpcomingPayment {
       chargeMethod {
         displayName
         descriptor
-        dueDate
+        chargingDayInTheMonth
         mandate
         paymentMethod
-        paymentProvider
       }
     }
   }
@@ -71,7 +70,6 @@ fragment MemberChargeFragment on MemberCharge {
   referralDiscount {
     ...MoneyFragment
   }
-  paymentProvider
 }
 
 fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {

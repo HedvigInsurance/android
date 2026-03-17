@@ -15,7 +15,7 @@ internal class SubmitFormUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(formData: FormSubmissionData): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(formData: FormSubmissionData): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(
@@ -34,7 +34,7 @@ internal class SubmitFormUseCase(
         .safeExecute()
         .mapLeft {
           logcat { "SubmitFormUseCase error: $it" }
-          ErrorMessage()
+          ClaimChatErrorMessage.GeneralError
         }
         .bind()
         .claimIntentSubmitForm

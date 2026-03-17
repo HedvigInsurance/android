@@ -17,7 +17,7 @@ internal class StartClaimIntentUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(developmentFlow: Boolean): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(developmentFlow: Boolean): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(
@@ -29,7 +29,7 @@ internal class StartClaimIntentUseCase(
         .safeExecute()
         .mapLeft {
           logcat { "StartClaimIntentUseCase error: $it" }
-          ErrorMessage()
+          ClaimChatErrorMessage.GeneralError
         }
         .bind()
         .claimIntentStart

@@ -39,10 +39,9 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigInformationSection
@@ -92,8 +91,8 @@ import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
 import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
+import hedvig.resources.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
-import hedvig.resources.R
 import hedvig.resources.Res
 import hedvig.resources.TAB_PAYMENTS_TITLE
 import hedvig.resources.info_card_missing_payment_body
@@ -102,6 +101,7 @@ import kotlin.time.Clock.System
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 
@@ -291,23 +291,12 @@ private fun PaymentsContent(
               .padding(horizontal = 16.dp)
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
           )
-          HedvigButton(
-            text = androidx.compose.ui.res.stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-            onClick = onChangeBankAccount,
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
         }
 
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
-        is ConnectedPaymentInfo.Active,
-          -> {
-        }
+        is ConnectedPaymentInfo.Connected,
+        -> {}
       }
     }
   }
@@ -414,7 +403,7 @@ private fun PaymentsListItems(
         .fillMaxWidth(),
     )
     if (uiState is Content) {
-      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Active) {
+      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Connected) {
         HorizontalDivider(listItemsSideSpacingModifier)
         PaymentsListItem(
           text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
@@ -607,7 +596,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = NoUpcomingPayment,
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, SEK))),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
         ),
@@ -623,7 +612,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
         ),
@@ -639,7 +628,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = InProgress,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
         ),
@@ -658,7 +647,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
+        connectedPaymentInfo = ConnectedPaymentInfo.Connected(
           "Card",
           "****1234",
         ),

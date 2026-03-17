@@ -38,7 +38,7 @@ fun NavGraphBuilder.homeGraph(
     startDestination = HomeDestination.Home::class,
   ) {
     navdestination<HomeDestination.Home>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home,hedvigDeepLinkContainer.claimFlow),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {

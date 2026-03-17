@@ -5,10 +5,9 @@ query MemberPaymentDetails {
       chargeMethod {
         displayName
         descriptor
-        dueDate
+        chargingDayInTheMonth
         mandate
         paymentMethod
-        paymentProvider
       }
     }
   }
