@@ -1,6 +1,6 @@
 package com.hedvig.android.data.coinsured
 
-@Keep
+@KeepKmp
 enum class CoInsuredFlowType {
   CoInsured,
   CoOwners,
