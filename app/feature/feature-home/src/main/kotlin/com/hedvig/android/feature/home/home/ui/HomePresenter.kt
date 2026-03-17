@@ -11,10 +11,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import com.hedvig.android.apollo.ApolloOperationError
-import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -144,7 +143,7 @@ internal class HomePresenter(
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
-          travelAddonBannerInfo = successData.travelAddonBannerInfo,
+          addonBannerInfo = successData.addonBannerInfo,
           isExperimentalClaimChatEnabled = isExperimentalClaimChatEnabled,
           isProduction = isProduction,
         )
@@ -182,7 +181,7 @@ internal sealed interface HomeUiState {
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
-    val travelAddonBannerInfo: TravelAddonBannerInfo?,
+    val addonBannerInfo: AddonBannerInfo?,
     val isExperimentalClaimChatEnabled: Boolean,
     val isProduction: Boolean,
     override val isHelpCenterEnabled: Boolean,
@@ -204,7 +203,7 @@ private data class SuccessData(
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
-  val travelAddonBannerInfo: TravelAddonBannerInfo?,
+  val addonBannerInfo: AddonBannerInfo?,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -219,7 +218,7 @@ private data class SuccessData(
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
-        travelAddonBannerInfo = lastState.travelAddonBannerInfo,
+        addonBannerInfo = lastState.addonBannerInfo,
       )
     }
 
@@ -265,7 +264,7 @@ private data class SuccessData(
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
-        travelAddonBannerInfo = homeData.travelBannerInfo,
+        addonBannerInfo = homeData.travelBannerInfo,
       )
     }
   }

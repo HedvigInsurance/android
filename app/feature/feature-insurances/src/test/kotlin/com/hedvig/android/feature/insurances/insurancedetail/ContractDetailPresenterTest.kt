@@ -268,6 +268,7 @@ class ContractDetailPresenterTest {
         ),
         certificateUrl = null,
         coInsured = listOf(),
+        coOwners = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -281,11 +282,14 @@ class ContractDetailPresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     )
 
     private val insuranceWithTerminationDate = EstablishedInsuranceContract(
@@ -312,6 +316,7 @@ class ContractDetailPresenterTest {
         ),
         certificateUrl = null,
         coInsured = listOf(),
+        coOwners = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -325,11 +330,14 @@ class ContractDetailPresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     )
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, EstablishedInsuranceContract>>()

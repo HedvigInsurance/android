@@ -6,5 +6,5 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val loggingDeviceModelModule = module {
-  single<DeviceNameLoggingAuthListener> { DeviceNameLoggingAuthListener(get()) } bind AuthEventListener::class
+  single<DeviceNameLoggingAuthListener> { DeviceNameLoggingAuthListener(get(), get()) } bind AuthEventListener::class
 }

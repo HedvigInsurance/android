@@ -14,7 +14,6 @@ import assertk.assertions.isNull
 import assertk.assertions.isSameInstanceAs
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
@@ -22,6 +21,7 @@ import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
+import com.hedvig.android.data.changetier.data.DeflectOutput
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
@@ -361,7 +361,7 @@ class TerminationSurveyPresenterTest {
       changeTierRepository.changeTierIntentTurbine.add(
         ChangeTierDeductibleIntent(
           intentOutput = null,
-          deflectOutput = com.hedvig.android.data.changetier.data.DeflectOutput(
+          deflectOutput = DeflectOutput(
             title = "Deflect title",
             message = "Deflect msg",
           ),
@@ -398,7 +398,7 @@ class TerminationSurveyPresenterTest {
             LocalDate(2024, 11, 15),
             listOf(testQuote),
           ),
-          deflectOutput = com.hedvig.android.data.changetier.data.DeflectOutput(
+          deflectOutput = DeflectOutput(
             title = "Deflect title",
             message = "Deflect message",
           ),
@@ -430,7 +430,6 @@ private val testQuote = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(199.0, SEK),
   tier = Tier(
     "BAS",
     tierLevel = 0,
@@ -458,11 +457,8 @@ private val testQuote = TierDeductibleQuote(
     monthlyGross = UiMoney(380.0, SEK),
     monthlyNet = UiMoney(304.0, SEK),
   ),
-  costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Travel Plus" to "80 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
-  ),
+  costBreakdown = emptyList(),
+  info = null,
 )
 
 private class FakeChangeTierRepository() : ChangeTierRepository {

@@ -155,7 +155,7 @@ class TerminatedContractsPresenterTest {
     }
   }
 
-  internal class FakeGetInsuranceContractsUseCase() : GetInsuranceContractsUseCase {
+  internal class FakeGetInsuranceContractsUseCase : GetInsuranceContractsUseCase {
     private val responseTurbine = Turbine<Either<ErrorMessage, List<EstablishedInsuranceContract>>>()
 
     override fun invoke(): Flow<Either<ErrorMessage, List<EstablishedInsuranceContract>>> {
@@ -211,6 +211,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -224,11 +225,14 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
       EstablishedInsuranceContract(
         "contractId2",
@@ -254,6 +258,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -267,11 +272,14 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
     )
 
@@ -299,6 +307,7 @@ class TerminatedContractsPresenterTest {
         ),
         certificateUrl = null,
         coInsured = listOf(),
+        coOwners = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -312,11 +321,14 @@ class TerminatedContractsPresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
       supportsTierChange = true,
       tierName = "STANDARD",
+      existingAddons = emptyList(),
+      availableAddons = emptyList(),
     )
 
     private val activeInsurances = listOf(
@@ -344,6 +356,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -357,11 +370,14 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
       EstablishedInsuranceContract(
         "contractId4",
@@ -387,6 +403,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -400,11 +417,14 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
         supportsTierChange = true,
         tierName = "STANDARD",
+        existingAddons = emptyList(),
+        availableAddons = emptyList(),
       ),
     )
   }

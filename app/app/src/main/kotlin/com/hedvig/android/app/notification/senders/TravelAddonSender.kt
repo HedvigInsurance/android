@@ -12,10 +12,12 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import com.hedvig.android.permission.PermissionManager
 import hedvig.resources.R
 
 class TravelAddonSender(
   private val context: Context,
+  private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val deepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
@@ -42,6 +44,7 @@ class TravelAddonSender(
 
     sendHedvigNotification(
       context = context,
+      permissionManager = permissionManager,
       notificationId = NotificationId,
       notification = notification,
       notificationChannel = notificationChannel,

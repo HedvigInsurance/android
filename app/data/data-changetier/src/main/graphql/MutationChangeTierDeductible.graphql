@@ -30,6 +30,7 @@ $addonsFlagOn: Boolean!) {
         costBreakdown {
           displayName
           displayValue
+          isCrossed
         }
 
         deductible {
@@ -52,6 +53,7 @@ $addonsFlagOn: Boolean!) {
             ...AddonVariantFragment
           }
         }
+        info
       }
     }
     deflectOutput {

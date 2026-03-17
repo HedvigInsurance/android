@@ -1,12 +1,12 @@
 package com.hedvig.android.feature.deleteaccount.navigation
 
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.chat.DeleteAccountViewModel
 import com.hedvig.android.feature.deleteaccount.DeleteAccountDestination
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.deleteAccountGraph(hedvigDeepLinkContainer: HedvigDeepLinkContainer, navController: NavController) {

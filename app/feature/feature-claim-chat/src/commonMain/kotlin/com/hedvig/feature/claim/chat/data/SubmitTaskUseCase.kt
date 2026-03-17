@@ -18,7 +18,7 @@ internal class SubmitTaskUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(stepId: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: String): Either<ClaimChatErrorMessage, ClaimIntent> {
     val maxAttempts = 6
     repeat(maxAttempts) { attempt ->
       val result = either {
@@ -27,7 +27,7 @@ internal class SubmitTaskUseCase(
           .safeExecute()
           .mapLeft {
             logcat(LogPriority.WARN) { "SubmitTaskUseCase error (attempt ${attempt + 1}/$maxAttempts): $it" }
-            ErrorMessage()
+            ClaimChatErrorMessage.GeneralError
           }
           .bind()
           .claimIntentSubmitTask
@@ -42,6 +42,6 @@ internal class SubmitTaskUseCase(
     }
 
     logcat(LogPriority.ERROR) { "SubmitTaskUseCase failed after $maxAttempts attempts" }
-    return ErrorMessage().left()
+    return ClaimChatErrorMessage.GeneralError.left()
   }
 }

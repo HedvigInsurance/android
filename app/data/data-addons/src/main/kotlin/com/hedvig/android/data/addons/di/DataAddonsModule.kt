@@ -2,16 +2,16 @@ package com.hedvig.android.data.addons.di
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.data.addons.data.DemoGetTravelAddonBannerInfoUseCase
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseImpl
+import com.hedvig.android.data.addons.data.DemoGetAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCaseImpl
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.featureflags.FeatureManager
 import org.koin.dsl.module
 
 val dataAddonsModule = module {
-  single<GetTravelAddonBannerInfoUseCase> {
-    GetTravelAddonBannerInfoUseCaseImpl(
+  single<GetAddonBannerInfoUseCase> {
+    GetAddonBannerInfoUseCaseImpl(
       apolloClient = get<ApolloClient>(),
       featureManager = get<FeatureManager>(),
     )
@@ -19,8 +19,8 @@ val dataAddonsModule = module {
   single<GetTravelAddonBannerInfoUseCaseProvider> {
     GetTravelAddonBannerInfoUseCaseProvider(
       demoManager = get<DemoManager>(),
-      demoImpl = DemoGetTravelAddonBannerInfoUseCase(),
-      prodImpl = get<GetTravelAddonBannerInfoUseCase>(),
+      demoImpl = DemoGetAddonBannerInfoUseCase(),
+      prodImpl = get<GetAddonBannerInfoUseCase>(),
     )
   }
 }

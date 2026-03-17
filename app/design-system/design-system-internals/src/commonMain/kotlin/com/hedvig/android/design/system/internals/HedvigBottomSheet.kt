@@ -94,8 +94,11 @@ private class HedvigBottomSheetStateImpl<T>(
 
   override fun dismiss(onDismissed: () -> Unit) {
     scope.launch {
-      materialState.hide()
-      onDismissed()
+      try {
+        materialState.hide()
+      } finally {
+        onDismissed()
+      }
     }
   }
 

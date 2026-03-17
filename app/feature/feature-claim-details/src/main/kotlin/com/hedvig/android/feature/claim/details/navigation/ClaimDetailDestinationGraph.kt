@@ -2,6 +2,7 @@ package com.hedvig.android.feature.claim.details.navigation
 
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
@@ -12,7 +13,6 @@ import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import com.hedvig.core.common.android.sharePDF
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf

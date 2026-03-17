@@ -12,12 +12,12 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toJavaLocalDateTime
 
 actual object HedvigDateTimeFormatterDefaults {
-  actual fun isoLocalDateWithDots(locale: CommonLocale): DateFormatter {
+  actual fun isoLocalDateWithDashes(locale: CommonLocale): DateFormatter {
     val formatter = DateTimeFormatterBuilder()
       .appendValue(ChronoField.YEAR, 4, 10, SignStyle.EXCEEDS_PAD)
-      .appendLiteral('.')
+      .appendLiteral('-')
       .appendValue(ChronoField.MONTH_OF_YEAR, 2)
-      .appendLiteral('.')
+      .appendLiteral('-')
       .appendValue(ChronoField.DAY_OF_MONTH, 2)
       .toFormatter(locale)
     return JavaDateFormatter(formatter)

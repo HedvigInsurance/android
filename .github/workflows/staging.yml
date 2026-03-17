@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - cmp/ds
+      - feat/claim-chat-search
   workflow_dispatch:
 
 concurrency:

@@ -27,9 +27,9 @@ fun rememberHedvigBirthDateDateTimeFormatter(): DateFormatter {
 
 expect object HedvigDateTimeFormatterDefaults {
   /**
-   * Example output: "2021.07.01"
+   * Example output: "2021-07-01"
    */
-  fun isoLocalDateWithDots(locale: CommonLocale): DateFormatter
+  fun isoLocalDateWithDashes(locale: CommonLocale): DateFormatter
 
   /**
    * Example output: "12:34"

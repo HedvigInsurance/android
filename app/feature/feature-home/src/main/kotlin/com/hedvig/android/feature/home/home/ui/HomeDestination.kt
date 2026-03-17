@@ -68,7 +68,8 @@ import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -103,6 +104,7 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -160,7 +162,7 @@ internal fun HomeDestination(
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   imageLoader: ImageLoader,
@@ -209,7 +211,7 @@ private fun HomeScreen(
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
@@ -426,7 +428,7 @@ private fun HomeScreenSuccess(
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   modifier: Modifier = Modifier,
@@ -785,11 +787,12 @@ private fun PreviewHomeScreen(
             ),
           ),
           chatAction = ChatAction,
-          travelAddonBannerInfo = TravelAddonBannerInfo(
+          addonBannerInfo = AddonBannerInfo(
             title = "Title",
             description = "description",
             labels = listOf("Label"),
             eligibleInsurancesIds = nonEmptyListOf("id"),
+            flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
           isExperimentalClaimChatEnabled = true,
           isProduction = true,
@@ -805,7 +808,7 @@ private fun PreviewHomeScreen(
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
@@ -836,7 +839,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
@@ -874,7 +877,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           crossSellsAction = null,
           firstVetAction = null,
           chatAction = null,
-          travelAddonBannerInfo = null,
+          addonBannerInfo = null,
           isExperimentalClaimChatEnabled = true,
           isProduction = true,
         ),
@@ -889,7 +892,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},

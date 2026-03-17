@@ -91,6 +91,7 @@ fun Checkbox(
   style: RadioGroupStyle = RadioGroupStyle.Vertical,
   colors: RadioGroupColors = RadioGroupDefaults.colors,
   enabled: Boolean = true,
+  textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   val id = RadioOptionId("1")
   CheckboxGroup(
@@ -102,6 +103,7 @@ fun Checkbox(
     style = style,
     colors = colors,
     enabled = enabled,
+    textEndContent = textEndContent,
   )
 }
 
@@ -116,6 +118,7 @@ fun CheckboxGroup(
   colors: RadioGroupColors = RadioGroupDefaults.colors,
   disabledOptions: List<RadioOptionId> = emptyList(),
   enabled: Boolean = true,
+  textEndContent: @Composable ((RadioOptionId) -> Unit)? = null,
 ) {
   val spacings = RadioGroupDefaults.style(size, style)
   RadioGroup(
@@ -127,6 +130,7 @@ fun CheckboxGroup(
     disabledOptions = disabledOptions,
     enabled = enabled,
     role = Role.Checkbox,
+    textEndContent = textEndContent,
     selectIndicator = { selected, enabled, colors, interactionSource ->
       CheckboxSelectIndicator(
         selected = selected,
@@ -274,7 +278,7 @@ private fun RadioGroup(
           HedvigText(
             text = style.style.label,
             style = style.textStyleLabel,
-            color = colors.labelTextColor,
+            color = if (enabled) colors.labelTextColor else colors.disabledLabelTextColor,
             modifier = Modifier
               .padding(horizontal = style.labelHorizontalPadding)
               .padding(top = style.labelTopPadding),
@@ -467,7 +471,12 @@ private fun RadioOption(
       }
       Column {
         val textComposable: @Composable () -> Unit = {
-          HedvigText(option.text, style = style.textStyle, color = colors.textColor)
+          HedvigText(
+            option.text,
+            style = style.textStyle,
+            color =
+              if (enabled) colors.textColor else colors.disabledTextColor,
+          )
         }
         if (textEndContent != null) {
           HorizontalItemsWithMaximumSpaceTaken(
@@ -480,7 +489,12 @@ private fun RadioOption(
         }
         if (option.label != null) {
           Spacer(Modifier.height(style.textToLabelSpacing))
-          HedvigText(option.label, style = style.textStyleLabel, color = colors.labelTextColor)
+          HedvigText(
+            option.label,
+            style = style.textStyleLabel,
+            color =
+              if (enabled) colors.labelTextColor else colors.disabledLabelTextColor,
+          )
         }
       }
     }

@@ -1,9 +1,10 @@
 package com.hedvig.android.feature.chat.navigation
 
 import androidx.media3.datasource.cache.SimpleCache
-import com.hedvig.android.compose.ui.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.CbmChatDestination
 import com.hedvig.android.feature.chat.CbmChatViewModel
@@ -13,7 +14,6 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import androidx.navigation.NavController
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

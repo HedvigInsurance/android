@@ -49,7 +49,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
               add(
                 buildContract {
                   id = testIds[0]
-                  exposureDisplayName = "exposureDisplayName"
+                  exposureDisplayNameShort = "exposureDisplayNameShort"
                   currentAgreement = buildAgreement {
                     productVariant = buildProductVariant {
                       displayName = "displayName"
@@ -61,7 +61,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
               add(
                 buildContract {
                   id = "anotherId"
-                  exposureDisplayName = "exposureDisplayName"
+                  exposureDisplayNameShort = "exposureDisplayNameShort"
                   currentAgreement = buildAgreement {
                     productVariant = buildProductVariant {
                       displayName = "displayName"
@@ -146,7 +146,7 @@ class GetInsuranceForTravelAddonUseCaseImplTest {
           InsuranceForAddon(
             id = testIds[0],
             displayName = "displayName",
-            contractExposure = "exposureDisplayName",
+            contractExposure = "exposureDisplayNameShort",
             contractGroup = ContractGroup.HOUSE,
           ),
         ),

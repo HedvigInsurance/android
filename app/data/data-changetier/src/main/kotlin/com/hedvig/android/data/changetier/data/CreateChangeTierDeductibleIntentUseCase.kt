@@ -14,6 +14,7 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import kotlinx.coroutines.flow.first
 import octopus.ChangeTierDeductibleCreateIntentMutation
 import octopus.fragment.DeductibleFragment
@@ -93,7 +94,6 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
         TierDeductibleQuote(
           id = TierConstants.CURRENT_ID,
           deductible = deductible?.toDeductible(),
-          premium = UiMoney.fromMoneyFragment(basePremium),
           productVariant = productVariant.toProductVariant(),
           tier = Tier(
             tierName = tierName,
@@ -106,6 +106,7 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           currentTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
           newTotalCost = intent.quotes.first().currentTotalCost.toTotalCost(),
           costBreakdown = emptyList(),
+          info = null,
         )
       }
       val quotesToOffer = intent.quotes.map {
@@ -119,7 +120,6 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           id = it.id,
           deductible = it.deductible?.toDeductible(),
           displayItems = it.displayItems.toDisplayItems(),
-          premium = UiMoney.fromMoneyFragment(it.premium),
           productVariant = it.productVariant.toProductVariant(),
           tier = Tier(
             tierName = it.tierName,
@@ -134,9 +134,14 @@ internal class CreateChangeTierDeductibleIntentUseCaseImpl(
           } ?: emptyList(),
           currentTotalCost = it.currentTotalCost.toTotalCost(),
           newTotalCost = it.newTotalCost.toTotalCost(),
-          costBreakdown = it.costBreakdown.map { (displayName, displayValue) ->
-            displayName to displayValue
+          costBreakdown = it.costBreakdown.map { entry ->
+            CostBreakdownEntry(
+              hasStrikethrough = entry.isCrossed,
+              displayName = entry.displayName,
+              displayValue = entry.displayValue,
+            )
           },
+          info = it.info,
         )
       }
       val intentResult = ChangeTierDeductibleIntent(
