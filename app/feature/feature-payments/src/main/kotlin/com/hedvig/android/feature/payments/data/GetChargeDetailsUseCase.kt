@@ -51,7 +51,6 @@ internal class GetChargeDetailsUseCaseImpl(
           PaymentsInfo.Active(
             displayName = paymentInformation.chargeMethod?.displayName,
             displayValue = paymentInformation.chargeMethod?.descriptor,
-            paymentMethod = charge.chargeMethod,
           )
         }
 
@@ -91,7 +90,6 @@ internal data class PaymentDetails(
     data class Active(
       val displayName: String?,
       val displayValue: String?,
-      val paymentMethod:  MemberPaymentChargeMethod?
     ) : PaymentsInfo
 
     data object NoPresentableInfo : PaymentsInfo

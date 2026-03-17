@@ -355,36 +355,41 @@ private fun MemberChargeDetailsScreen(
             spaceBetween = 8.dp,
           )
           HorizontalDivider()
+
+          when (val chargeMethod = uiState.paymentDetails.memberCharge.chargeMethod) {
+            MemberPaymentChargeMethod.TRUSTLY,
+            MemberPaymentChargeMethod.KIVRA,
+              -> {
+              HorizontalItemsWithMaximumSpaceTaken(
+                startSlot = {
+                  HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
+                },
+                endSlot = {
+                  val text = when (chargeMethod) {
+                    MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL)
+                    MemberPaymentChargeMethod.KIVRA -> stringResource(Res.string.PAYMENTS_INVOICE)
+                    else -> ""
+                  }
+                  HedvigText(
+                    text = text,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = HedvigTheme.colorScheme.textSecondary,
+                  )
+                },
+                modifier = Modifier.padding(vertical = 16.dp),
+                spaceBetween = 8.dp,
+              )
+              HorizontalDivider()
+            }
+
+            MemberPaymentChargeMethod.UNKNOWN -> {}
+          }
+
           when (val paymentsInfo = uiState.paymentDetails.paymentsInfo) {
             is PaymentDetails.PaymentsInfo.NoPresentableInfo -> {}
 
             is PaymentDetails.PaymentsInfo.Active -> {
-              if (paymentsInfo.paymentMethod != null
-                && paymentsInfo.paymentMethod != MemberPaymentChargeMethod.UNKNOWN
-              ) {
-                HorizontalItemsWithMaximumSpaceTaken(
-                  startSlot = {
-                    HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
-                  },
-                  endSlot = {
-                    val text = when (paymentsInfo.paymentMethod) {
-                      MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL)
-                      MemberPaymentChargeMethod.KIVRA -> stringResource(Res.string.PAYMENTS_INVOICE)
-                      else -> ""
-                    }
-                    HedvigText(
-                      text = text,
-                      textAlign = TextAlign.End,
-                      modifier = Modifier.fillMaxWidth(),
-                      color = HedvigTheme.colorScheme.textSecondary,
-                    )
-                  },
-                  modifier = Modifier.padding(vertical = 16.dp),
-                  spaceBetween = 8.dp,
-                )
-                HorizontalDivider()
-              }
-
               if (paymentsInfo.displayValue != null) {
                 HorizontalItemsWithMaximumSpaceTaken(
                   startSlot = {
@@ -486,13 +491,11 @@ private fun PaymentDetailsScreenPreview(
               TripleCase.FIRST -> PaymentDetails.PaymentsInfo.Active(
                 "displayName",
                 "displayValue",
-                MemberPaymentChargeMethod.TRUSTLY,
               )
 
               TripleCase.SECOND -> PaymentDetails.PaymentsInfo.Active(
                 "displayName",
                 "displayValue",
-                MemberPaymentChargeMethod.KIVRA,
               )
 
               TripleCase.THIRD -> PaymentDetails.PaymentsInfo.NoPresentableInfo
