@@ -62,9 +62,7 @@ fun NavGraphBuilder.claimChatGraph(
   onNavigateToNewConversation: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  navdestination<ClaimChatDestination>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimFlow),
-  ) {
+  navdestination<ClaimChatDestination> {
     ClaimChatDestination(
       isDevelopmentFlow = isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,

@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - chore/fix-app-icon
+      - feat/claim-chat-search
   workflow_dispatch:
 
 concurrency:

@@ -46,6 +46,7 @@ internal class GetMemberActionsUseCaseImpl(
           isConnectPaymentEnabled =
             isConnectPaymentFeatureOn && memberActions?.isConnectPaymentEnabled ?: false,
           isEditCoInsuredEnabled = isCoInsuredFeatureOn && memberActions?.isEditCoInsuredEnabled ?: false,
+          isEditCoOwnersEnabled = isCoInsuredFeatureOn && memberActions?.isEditCoOwnersEnabled ?: false,
           isMovingEnabled = isMovingFeatureOn && memberActions?.isMovingEnabled ?: false,
           isTravelCertificateEnabled = memberActions?.isTravelCertificateEnabled ?: false,
           sickAbroadAction = memberActions?.sickAbroadAction.toSickAbroadAction(),
@@ -61,6 +62,7 @@ internal data class MemberAction(
   val isCancelInsuranceEnabled: Boolean,
   val isConnectPaymentEnabled: Boolean,
   val isEditCoInsuredEnabled: Boolean,
+  val isEditCoOwnersEnabled: Boolean,
   val isMovingEnabled: Boolean,
   val isTravelCertificateEnabled: Boolean,
   val isTierChangeEnabled: Boolean,
