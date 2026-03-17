@@ -32,6 +32,7 @@ fun NavGraphBuilder.paymentsGraph(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
+  onOpenChat: () -> Unit
 ) {
   navgraph<PaymentsDestination.Graph>(
     startDestination = PaymentsDestination.Payments::class,
@@ -111,6 +112,7 @@ fun NavGraphBuilder.paymentsGraph(
         viewModel,
         onChangeBankAccount = navigateToConnectPayment,
         navigateUp = navController::navigateUp,
+        onOpenChat = onOpenChat
       )
     }
   }

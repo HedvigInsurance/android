@@ -75,7 +75,7 @@ internal class PaymentsPresenter(
             ongoingCharges = paymentOverview.ongoingCharges,
             connectedPaymentInfo = when (val paymentConnection = paymentOverview.paymentConnection) {
               is Active -> {
-                PaymentsUiState.Content.ConnectedPaymentInfo.Connected(
+                PaymentsUiState.Content.ConnectedPaymentInfo.Active(
                   displayName = paymentConnection.displayName,
                   maskedAccountNumber = paymentConnection.displayValue,
                 )
@@ -149,9 +149,9 @@ internal sealed interface PaymentsUiState {
 
       data object Pending : ConnectedPaymentInfo
 
-      data class Connected(
-        val displayName: String,
-        val maskedAccountNumber: String,
+      data class Active(
+        val displayName: String?,
+        val maskedAccountNumber: String?,
       ) : ConnectedPaymentInfo
     }
   }
