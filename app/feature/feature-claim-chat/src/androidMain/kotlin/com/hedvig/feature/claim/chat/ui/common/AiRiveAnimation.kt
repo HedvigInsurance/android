@@ -16,7 +16,7 @@ import app.rive.runtime.kotlin.core.Rive
 @Composable
 internal actual fun AiRiveAnimation(isAnimationComplete: Boolean, modifier: Modifier) {
   val context = LocalContext.current
-  Rive.init(context)
+  Rive.init(context) //todo: move to other place
 
   val isDark = isSystemInDarkTheme()
   val resourceName = if (isDark) "hedvig_loader_dark" else "hedvig_loader_light"
@@ -48,9 +48,9 @@ internal actual fun AiRiveAnimation(isAnimationComplete: Boolean, modifier: Modi
         Rive(
           file = file,
           modifier = modifier,
-          artboard = artboard,
-          stateMachine = stateMachine,
-          playing = true,
+//          artboard = artboard,
+//          stateMachine = stateMachine,
+ //         playing = true,
         )
       }
 

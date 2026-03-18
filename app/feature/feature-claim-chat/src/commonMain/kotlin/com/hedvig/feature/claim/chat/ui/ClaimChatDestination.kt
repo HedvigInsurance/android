@@ -643,25 +643,23 @@ private fun StepTopContent(
 
   Column(modifier) {
     if (hasAnimation) {
+      AiRiveAnimation(
+        isAnimationComplete = isAnimationComplete,
+        modifier = Modifier.size(24.dp),
+      )
+      Spacer(Modifier.height(4.dp))
       if (stepItemText != null) {
         CommonPaddingWrapper {
-          Row(verticalAlignment = Alignment.Top) {
-            AiRiveAnimation(
-              isAnimationComplete = isAnimationComplete,
-              modifier = Modifier.size(36.dp),
-            )
-            Spacer(Modifier.width(8.dp))
-            AnimatedRevealText(
-              text = stepItemText,
-              visibleState = remember(stepItem.id) {
-                MutableTransitionState(false).apply { targetState = true }
-              },
-              onAnimationFinished = onAnimationFinished,
-              modifier = Modifier
-                .semantics { heading() }
-                .weight(1f),
-            )
-          }
+          AnimatedRevealText(
+            text = stepItemText,
+            visibleState = remember(stepItem.id) {
+              MutableTransitionState(false).apply { targetState = true }
+            },
+            onAnimationFinished = onAnimationFinished,
+            modifier = Modifier
+              .semantics { heading() }
+              .weight(1f),
+          )
         }
       } else {
         LaunchedEffect(stepItem.id) {
