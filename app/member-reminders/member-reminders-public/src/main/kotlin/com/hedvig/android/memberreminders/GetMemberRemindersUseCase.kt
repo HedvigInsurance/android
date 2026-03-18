@@ -3,6 +3,7 @@ package com.hedvig.android.memberreminders
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.merge
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
@@ -131,6 +132,7 @@ sealed interface MemberReminder {
 
   data class CoInsuredInfo(
     val contractId: String,
+    val coInsuredType: CoInsuredFlowType,
     override val id: String = UUID.randomUUID().toString(),
   ) : MemberReminder
 
