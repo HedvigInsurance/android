@@ -39,6 +39,7 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddOrRemove
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
@@ -94,6 +95,7 @@ import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
+  globalSnackBarState: GlobalSnackBarState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
