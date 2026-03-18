@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,7 +18,9 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.ui.common.AiRiveAnimation
 import com.hedvig.feature.claim.chat.ui.common.BlinkingAiDot
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
@@ -46,7 +49,10 @@ internal fun TaskStepTopContent(taskContent: StepContent.Task, modifier: Modifie
           val showPill = lastDescription != null
           AnimatedContent(showBlinkingAiDot) { show ->
             if (show) {
-              BlinkingAiDot()
+              AiRiveAnimation(
+                bottomAnimationFinished = false,
+                modifier = Modifier.size(36.dp),
+              )
             }
           }
           AnimatedContent(showBlinkingAiDot && showPill) {
@@ -54,11 +60,7 @@ internal fun TaskStepTopContent(taskContent: StepContent.Task, modifier: Modifie
           }
           AnimatedContent(lastDescription) { description ->
             if (description != null) {
-              RoundCornersPill(
-                onClick = null,
-              ) {
-                HedvigText(description)
-              }
+              HedvigText(description, color = HedvigTheme.colorScheme.textSecondaryTranslucent)
             }
           }
         }

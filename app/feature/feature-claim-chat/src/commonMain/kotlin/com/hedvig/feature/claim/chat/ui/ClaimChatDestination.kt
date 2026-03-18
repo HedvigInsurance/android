@@ -642,12 +642,14 @@ private fun StepTopContent(
   }
 
   Column(modifier) {
-    if (hasAnimation) {
+    if (stepItem.stepContent !is StepContent.Task) {
       AiRiveAnimation(
-        isAnimationComplete = isAnimationComplete,
-        modifier = Modifier.size(24.dp),
+        bottomAnimationFinished = isAnimationComplete,
+        modifier = Modifier.size(36.dp),
       )
       Spacer(Modifier.height(4.dp))
+    }
+    if (hasAnimation) {
       if (stepItemText != null) {
         CommonPaddingWrapper {
           AnimatedRevealText(
@@ -658,7 +660,6 @@ private fun StepTopContent(
             onAnimationFinished = onAnimationFinished,
             modifier = Modifier
               .semantics { heading() }
-              .weight(1f),
           )
         }
       } else {

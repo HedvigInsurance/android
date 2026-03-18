@@ -5,4 +5,4 @@ import androidx.compose.ui.Modifier
 
 // Expect declaration for platform-specific implementation
 @Composable
-internal expect fun AiRiveAnimation(isAnimationComplete: Boolean, modifier: Modifier = Modifier)
+internal expect fun AiRiveAnimation(modifier: Modifier = Modifier,bottomAnimationFinished: Boolean)
