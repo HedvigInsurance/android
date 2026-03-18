@@ -344,6 +344,11 @@ internal fun HedvigNavHost(
       onOpenChat = ::navigateToNewConversation
     )
     profileGraph(
+      settingsDestinationNestedGraphs = {
+        deleteAccountGraph(hedvigDeepLinkContainer, navController)
+      },
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
       nestedGraphs = {
         claimHistoryGraph(
           navigateUp = navController::navigateUp,
@@ -352,10 +357,6 @@ internal fun HedvigNavHost(
           },
         )
       },
-      settingsDestinationNestedGraphs = {
-        deleteAccountGraph(hedvigDeepLinkContainer, navController)
-      },
-      navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
@@ -369,7 +370,6 @@ internal fun HedvigNavHost(
         navController.navigate(ClaimHistoryDestination)
       },
       openAppSettings = externalNavigator::openAppSettings,
-      openUrl = openUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
@@ -379,6 +379,7 @@ internal fun HedvigNavHost(
       onNavigateToInsuranceEvidence = {
         navController.navigate(InsuranceEvidenceGraphDestination)
       },
+      openUrl = openUrl,
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

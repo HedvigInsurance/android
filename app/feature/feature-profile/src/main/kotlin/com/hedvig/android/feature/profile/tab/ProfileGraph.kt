@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
@@ -29,8 +30,9 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.profileGraph(
-  nestedGraphs: NavGraphBuilder.() -> Unit,
   settingsDestinationNestedGraphs: NavGraphBuilder.() -> Unit,
+  nestedGraphs: NavGraphBuilder.() -> Unit,
+  globalSnackBarState: GlobalSnackBarState,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -97,6 +99,7 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: ContactInfoViewModel = koinViewModel()
       ContactInfoDestination(
         viewModel = viewModel,
+        globalSnackBarState = globalSnackBarState,
         navigateUp = navController::navigateUp,
       )
     }
