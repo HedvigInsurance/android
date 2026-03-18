@@ -20,9 +20,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.feature.claim.chat.data.StepContent
-import com.hedvig.feature.claim.chat.ui.common.AiRiveAnimation
-import com.hedvig.feature.claim.chat.ui.common.BlinkingAiDot
-import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.feature.claim.chat.ui.common.HelipadRiveAnimation
 import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.Res
@@ -49,7 +47,7 @@ internal fun TaskStepTopContent(taskContent: StepContent.Task, modifier: Modifie
           val showPill = lastDescription != null
           AnimatedContent(showBlinkingAiDot) { show ->
             if (show) {
-              AiRiveAnimation(
+              HelipadRiveAnimation(
                 bottomAnimationFinished = false,
                 modifier = Modifier.size(36.dp),
               )
@@ -60,7 +58,10 @@ internal fun TaskStepTopContent(taskContent: StepContent.Task, modifier: Modifie
           }
           AnimatedContent(lastDescription) { description ->
             if (description != null) {
-              HedvigText(description, color = HedvigTheme.colorScheme.textSecondaryTranslucent)
+              HedvigText(
+                description,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
             }
           }
         }

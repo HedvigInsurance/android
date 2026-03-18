@@ -51,8 +51,7 @@ kotlin {
       implementation(projects.uiForceUpgrade)
     }
     androidMain.dependencies {
-      implementation("app.rive:rive-android:11.2.1")
-
+      implementation(libs.rive.android)
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)

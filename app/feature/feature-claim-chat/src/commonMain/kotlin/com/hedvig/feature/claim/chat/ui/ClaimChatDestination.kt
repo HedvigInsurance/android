@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -36,11 +35,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -88,7 +85,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
-import com.hedvig.feature.claim.chat.ui.common.AiRiveAnimation
+import com.hedvig.feature.claim.chat.ui.common.HelipadRiveAnimation
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
@@ -643,7 +640,7 @@ private fun StepTopContent(
 
   Column(modifier) {
     if (stepItem.stepContent !is StepContent.Task) {
-      AiRiveAnimation(
+      HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
         modifier = Modifier.size(36.dp),
       )

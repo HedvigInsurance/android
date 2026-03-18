@@ -11,16 +11,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Loop
-import app.rive.runtime.kotlin.core.Rive
 import kotlinx.coroutines.delay
 
 @Composable
-internal actual fun AiRiveAnimation(
+internal actual fun HelipadRiveAnimation(
   modifier: Modifier,
   bottomAnimationFinished: Boolean,
 ) {
   val context = LocalContext.current
-  Rive.init(context)
   val isDark = isSystemInDarkTheme()
   val resourceName = if (isDark) "hedvig_loader_dark" else "hedvig_loader_light"
   val resourceId = context.resources.getIdentifier(resourceName, "raw", context.packageName)
