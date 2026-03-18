@@ -45,7 +45,12 @@ internal actual fun HelipadRiveAnimation(
     },
   )
 
-  LaunchedEffect(bottomAnimationFinished) {
+  LaunchedEffect(bottomAnimationFinished, isDark) {
+    riveViewRef.value?.setRiveResource(
+      resId = resourceId,
+      animationName = "Idle",
+      autoplay = false,
+    )
     if (!bottomAnimationFinished && !initialAnimationDone.value) {
       delay(100L)
       riveViewRef.value?.play(
