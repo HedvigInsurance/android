@@ -51,6 +51,7 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoUiState.Content
+import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.PHONE_NUMBER_ROW_TITLE
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
 import hedvig.resources.PROFILE_MY_INFO_REVIEW_INFO_CARD
@@ -147,7 +148,7 @@ private fun ColumnScope.SuccessState(
     is ErrorSnackBarText.WithMessage -> err.message
     null -> null
   }
-  val travelCertificateReadyText = stringResource(Res.string.travel_certificate_travel_certificate_ready)
+  val travelCertificateReadyText = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
     if (!uiState.showSuccessSnackBar) return@LaunchedEffect
     globalSnackBarState.show(travelCertificateReadyText)
