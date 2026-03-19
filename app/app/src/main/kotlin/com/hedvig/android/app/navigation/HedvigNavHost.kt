@@ -357,6 +357,7 @@ internal fun HedvigNavHost(
           },
         )
       },
+      popBackStackOrFinish = popBackStackOrFinish,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,

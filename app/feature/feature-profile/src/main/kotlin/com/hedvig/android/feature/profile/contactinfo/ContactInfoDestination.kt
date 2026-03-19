@@ -69,6 +69,7 @@ internal fun ContactInfoDestination(
   viewModel: ContactInfoViewModel,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
+  popBackStack: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContactInfoScreen(
@@ -83,6 +84,7 @@ internal fun ContactInfoDestination(
     navigateUp = navigateUp,
     showedSnackBar = {
       viewModel.emit(ContactInfoEvent.ShowedMessage)
+      popBackStack()
     },
   )
 }

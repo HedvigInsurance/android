@@ -34,6 +34,7 @@ fun NavGraphBuilder.profileGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   globalSnackBarState: GlobalSnackBarState,
   navController: NavController,
+  popBackStackOrFinish: () -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
@@ -101,6 +102,7 @@ fun NavGraphBuilder.profileGraph(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
         navigateUp = navController::navigateUp,
+        popBackStack = popBackStackOrFinish,
       )
     }
     navdestination<ProfileDestinations.AboutApp> {
