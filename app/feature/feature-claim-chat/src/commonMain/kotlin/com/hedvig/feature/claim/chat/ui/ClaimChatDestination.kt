@@ -684,14 +684,15 @@ private fun StepTopContent(
 
     if (stepItem.stepContent is StepContent.Task) {
       AnimatedVisibility(isCurrentStep,
-      exit = fadeOut()) {
+        enter = EnterTransition.None,
+      exit = ExitTransition.None,
+      ) {
         TaskStepTopContent(
           taskContent = stepItem.stepContent,
           stepId = stepItem.id.value,
           isLastStep = isCurrentStep
         )
       }
-
     }
 
     AnimatedVisibility(
