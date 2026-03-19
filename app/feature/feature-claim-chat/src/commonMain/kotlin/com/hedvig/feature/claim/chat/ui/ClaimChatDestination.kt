@@ -8,6 +8,7 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -585,6 +586,7 @@ private fun StepContentSection(
         },
         onNavigateToImageViewer = onNavigateToImageViewer,
         imageLoader = imageLoader,
+        isCurrentStep = isCurrentStep
       )
     }
 
@@ -626,6 +628,7 @@ private fun StepTopContent(
   onAnimationFinished: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
+  isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val hint = stepItem.hint?.let {
@@ -680,10 +683,15 @@ private fun StepTopContent(
     }
 
     if (stepItem.stepContent is StepContent.Task) {
-      TaskStepTopContent(
-        taskContent = stepItem.stepContent,
-        stepId = stepItem.id.value
-      )
+      AnimatedVisibility(isCurrentStep,
+      exit = fadeOut()) {
+        TaskStepTopContent(
+          taskContent = stepItem.stepContent,
+          stepId = stepItem.id.value,
+          isLastStep = isCurrentStep
+        )
+      }
+
     }
 
     AnimatedVisibility(

@@ -27,9 +27,12 @@ import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun TaskStepTopContent(taskContent: StepContent.Task,
-                                stepId: String,
-                                modifier: Modifier = Modifier) {
+internal fun TaskStepTopContent(
+  taskContent: StepContent.Task,
+  stepId: String,
+  isLastStep: Boolean,
+  modifier: Modifier = Modifier,
+) {
   val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
   Column(
     modifier.clearAndSetSemantics {
@@ -39,24 +42,25 @@ internal fun TaskStepTopContent(taskContent: StepContent.Task,
       }
     },
   ) {
-    if (taskContent.descriptions.isNotEmpty()) {
-      Column {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          val showBlinkingAiDot = !taskContent.failedToSubmit
-          val lastDescription = taskContent.descriptions.lastOrNull()
-          val showPill = lastDescription != null
-          AnimatedContent(showBlinkingAiDot) { show ->
-            if (show) {
-              HelipadRiveAnimation(
-                bottomAnimationFinished = false,
-                modifier = Modifier.size(32.dp),
-                withFinalSpin = false,
-                stepId = stepId
-              )
-            }
+
+    Column {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        val showBlinkingAiDot = !taskContent.failedToSubmit
+        val lastDescription = taskContent.descriptions.lastOrNull()
+        val showPill = lastDescription != null
+        AnimatedContent(showBlinkingAiDot) { show ->
+          if (show) {
+            HelipadRiveAnimation(
+              bottomAnimationFinished = false,
+              modifier = Modifier.size(32.dp),
+              withFinalSpin = false,
+              stepId = stepId,
+            )
           }
+        }
+        if (taskContent.descriptions.isNotEmpty() && isLastStep) {
           AnimatedContent(showBlinkingAiDot && showPill) {
             Spacer(Modifier.width(8.dp))
           }
