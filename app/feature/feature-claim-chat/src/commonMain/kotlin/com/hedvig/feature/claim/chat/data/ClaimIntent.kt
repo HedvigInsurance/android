@@ -33,6 +33,7 @@ internal data class ClaimIntentStep(
   val stepContent: StepContent,
   val isRegrettable: Boolean,
   val hint: String?,
+  val continuePreviousAnimation: Boolean = false
 )
 
 @Serializable

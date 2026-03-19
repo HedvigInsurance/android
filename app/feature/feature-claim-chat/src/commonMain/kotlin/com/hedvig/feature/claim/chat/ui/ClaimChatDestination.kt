@@ -38,6 +38,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -443,6 +444,18 @@ private fun ClaimChatScrollableContent(
     steps = uiState.steps,
   )
 
+  var finishHelipadAnimation by remember { mutableStateOf(false) }
+
+  val movableContent = remember {
+    movableContentOf(
+      {
+        HelipadRiveAnimation(
+          bottomAnimationFinished = finishHelipadAnimation,
+          modifier = Modifier.size(32.dp))
+      },
+    )
+  }
+
   Box(modifier, propagateMinConstraints = true) {
     Box(
       Modifier
@@ -488,6 +501,10 @@ private fun ClaimChatScrollableContent(
             Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
           } else {
             Modifier
+          },
+          movableAnimation = movableContent,
+          onBottomAnimationFinished = {
+            finishHelipadAnimation = true
           },
         )
       }
@@ -539,6 +556,8 @@ private fun StepContentSection(
   imageLoader: ImageLoader,
   openAppSettings: () -> Unit,
   onResponseHeightChanged: (IntSize) -> Unit,
+  movableAnimation: @Composable () -> Unit,
+  onBottomAnimationFinished: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   // AnimationSequence has 2 stages one after another:
@@ -582,9 +601,11 @@ private fun StepContentSection(
         isAnimationComplete = !isAnimationInProcess,
         onAnimationFinished = {
           showBottomContent = true
+          onBottomAnimationFinished()
         },
         onNavigateToImageViewer = onNavigateToImageViewer,
         imageLoader = imageLoader,
+        movableAnimation = movableAnimation
       )
     }
 
@@ -626,6 +647,7 @@ private fun StepTopContent(
   onAnimationFinished: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
+  movableAnimation: @Composable () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val hint = stepItem.hint?.let {
@@ -640,10 +662,14 @@ private fun StepTopContent(
 
   Column(modifier) {
     if (stepItem.stepContent !is StepContent.Task) {
-      HelipadRiveAnimation(
-        bottomAnimationFinished = isAnimationComplete,
-        modifier = Modifier.size(32.dp),
-      )
+      if (stepItem.continuePreviousAnimation) {
+        movableAnimation()
+      } else {
+        HelipadRiveAnimation(
+          bottomAnimationFinished = isAnimationComplete,
+          modifier = Modifier.size(32.dp),
+        )
+      }
       Spacer(Modifier.height(4.dp))
     }
     if (hasAnimation) {
@@ -656,7 +682,7 @@ private fun StepTopContent(
             },
             onAnimationFinished = onAnimationFinished,
             modifier = Modifier
-              .semantics { heading() }
+              .semantics { heading() },
           )
         }
       } else {
@@ -680,6 +706,7 @@ private fun StepTopContent(
     if (stepItem.stepContent is StepContent.Task) {
       TaskStepTopContent(
         taskContent = stepItem.stepContent,
+        movableAnimation = movableAnimation
       )
     }
 

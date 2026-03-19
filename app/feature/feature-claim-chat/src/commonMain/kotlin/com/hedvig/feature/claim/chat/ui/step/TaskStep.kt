@@ -27,7 +27,9 @@ import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun TaskStepTopContent(taskContent: StepContent.Task, modifier: Modifier = Modifier) {
+internal fun TaskStepTopContent(taskContent: StepContent.Task,
+                                movableAnimation: @Composable () -> Unit,
+                                modifier: Modifier = Modifier) {
   val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
   Column(
     modifier.clearAndSetSemantics {
@@ -47,10 +49,7 @@ internal fun TaskStepTopContent(taskContent: StepContent.Task, modifier: Modifie
           val showPill = lastDescription != null
           AnimatedContent(showBlinkingAiDot) { show ->
             if (show) {
-              HelipadRiveAnimation(
-                bottomAnimationFinished = false,
-                modifier = Modifier.size(32.dp),
-              )
+              movableAnimation()
             }
           }
           AnimatedContent(showBlinkingAiDot && showPill) {
