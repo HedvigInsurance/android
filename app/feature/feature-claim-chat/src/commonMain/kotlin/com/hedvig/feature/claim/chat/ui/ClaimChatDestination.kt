@@ -643,6 +643,8 @@ private fun StepTopContent(
       HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
         modifier = Modifier.size(32.dp),
+        withInitialSpin = stepItem.showInitialSpinForThisStep,
+        stepId = stepItem.id.value
       )
       Spacer(Modifier.height(4.dp))
     }
@@ -680,6 +682,7 @@ private fun StepTopContent(
     if (stepItem.stepContent is StepContent.Task) {
       TaskStepTopContent(
         taskContent = stepItem.stepContent,
+        stepId = stepItem.id.value
       )
     }
 
