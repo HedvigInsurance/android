@@ -261,6 +261,7 @@
   <string name="CONFIRM_AND_PROCEED_BUTTON">Confirm and proceed</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your changes will be effective on %1$s.</string>
   <string name="CONFIRM_CHANGES_TITLE">Confirm changes</string>
+  <string name="CONTACT_INFO_CHANGES_SAVED">Changes saved!</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>

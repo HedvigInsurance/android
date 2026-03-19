@@ -261,6 +261,7 @@
   <string name="CONFIRM_AND_PROCEED_BUTTON">Bekräfta och fortsätt</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Notera att dina ändringar börjar gälla från och med %s.</string>
   <string name="CONFIRM_CHANGES_TITLE">Godkänn ändringar</string>
+  <string name="CONTACT_INFO_CHANGES_SAVED">Ändringar sparade!</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Giltigt till %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Giltigt till imorgon</string>
