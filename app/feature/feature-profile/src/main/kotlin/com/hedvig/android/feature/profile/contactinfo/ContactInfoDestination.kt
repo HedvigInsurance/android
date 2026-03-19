@@ -1,5 +1,12 @@
 package com.hedvig.android.feature.profile.contactinfo
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Column
@@ -135,15 +142,10 @@ private fun ColumnScope.SuccessState(
   showedSnackBar: () -> Unit,
   focusManager: FocusManager,
 ) {
-  val somethingWentWrongText = stringResource(Res.string.something_went_wrong)
-  LaunchedEffect(uiState.errorSnackBarText) {
-    val errorText = when (val text = uiState.errorSnackBarText) {
-      ErrorSnackBarText.General -> somethingWentWrongText
-      is ErrorSnackBarText.WithMessage -> text.message
-      null -> return@LaunchedEffect
-    }
-    globalSnackBarState.show(errorText, NotificationPriority.Error)
-    showedSnackBar()
+  val errorCardText: String? = when (val err = uiState.errorSnackBarText) {
+    ErrorSnackBarText.General -> stringResource(Res.string.something_went_wrong)
+    is ErrorSnackBarText.WithMessage -> err.message
+    null -> null
   }
   val travelCertificateReadyText = stringResource(Res.string.travel_certificate_travel_certificate_ready)
   LaunchedEffect(uiState.showSuccessSnackBar) {
@@ -190,6 +192,19 @@ private fun ColumnScope.SuccessState(
       inputTransformation = uiState.phoneNumberInputTransformation,
       keyboardActionHandler = null,
     )
+  }
+  AnimatedContent(
+    targetState = errorCardText,
+    transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically() },
+    modifier = Modifier.padding(top = 4.dp),
+  ) { text ->
+    if (text != null) {
+      HedvigNotificationCard(
+        message = text,
+        priority = NotificationPriority.Error,
+        modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
+      )
+    }
   }
   Spacer(Modifier.height(16.dp))
   HedvigButton(
