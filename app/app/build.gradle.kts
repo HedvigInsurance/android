@@ -28,8 +28,6 @@ android {
     versionCode = 43
     versionName = "14.0.8"
 
-    vectorDrawables.useSupportLibrary = true
-
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
 
