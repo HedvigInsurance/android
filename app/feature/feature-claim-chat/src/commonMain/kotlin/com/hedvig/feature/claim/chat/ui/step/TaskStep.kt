@@ -49,7 +49,7 @@ internal fun TaskStepTopContent(taskContent: StepContent.Task, modifier: Modifie
             if (show) {
               HelipadRiveAnimation(
                 bottomAnimationFinished = false,
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(32.dp),
               )
             }
           }

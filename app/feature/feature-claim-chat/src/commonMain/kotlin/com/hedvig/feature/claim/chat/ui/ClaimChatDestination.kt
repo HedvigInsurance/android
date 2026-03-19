@@ -642,7 +642,7 @@ private fun StepTopContent(
     if (stepItem.stepContent !is StepContent.Task) {
       HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
-        modifier = Modifier.size(36.dp),
+        modifier = Modifier.size(32.dp),
       )
       Spacer(Modifier.height(4.dp))
     }
