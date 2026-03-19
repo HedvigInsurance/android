@@ -1034,8 +1034,9 @@ private fun handleNext(
 
 private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
   Snapshot.withMutableSnapshot {
+    val lastStepIsTask = this.lastOrNull()?.stepContent is StepContent.Task
     removeLastIf { it.stepContent is StepContent.Task }
-    add(step.copy(showInitialSpinForThisStep = false))
+    add(step.copy(showInitialSpinForThisStep = !lastStepIsTask))
   }
 }
 
