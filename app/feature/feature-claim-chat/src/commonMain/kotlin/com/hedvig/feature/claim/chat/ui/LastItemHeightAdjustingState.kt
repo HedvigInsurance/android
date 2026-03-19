@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
+import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
 
 @Composable
@@ -59,7 +60,8 @@ internal class LastItemHeightAdjustingState(
     minHeightForFullScreenItem - spaceBetweenItems - if (steps().size < 2) {
       0.dp
     } else {
-      val stepId = steps().dropLast(1).last().id
+      val stepId = steps().filter { it.stepContent !is StepContent.Task }
+        .dropLast(1).last().id
       with(density) {
         heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
       }
