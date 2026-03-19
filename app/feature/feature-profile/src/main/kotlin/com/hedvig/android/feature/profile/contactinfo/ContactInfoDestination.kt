@@ -153,7 +153,7 @@ private fun ColumnScope.SuccessState(
   val travelCertificateReadyText = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
     if (!uiState.showSuccessSnackBar) return@LaunchedEffect
-    globalSnackBarState.show(travelCertificateReadyText)
+    globalSnackBarState.show(travelCertificateReadyText, NotificationPriority.Campaign)
     showedSnackBar()
   }
   Spacer(Modifier.weight(1f))
