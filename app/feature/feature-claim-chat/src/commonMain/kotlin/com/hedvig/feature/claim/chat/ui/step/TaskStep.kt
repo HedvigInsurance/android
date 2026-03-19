@@ -53,9 +53,8 @@ internal fun TaskStepTopContent(
         AnimatedContent(showBlinkingAiDot) { show ->
           if (show) {
             HelipadRiveAnimation(
-              bottomAnimationFinished = false,
+              bottomAnimationFinished = taskContent.isAnimationFinished,
               modifier = Modifier.size(32.dp),
-              withFinalSpin = false,
               stepId = stepId,
             )
           }

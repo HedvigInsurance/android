@@ -17,9 +17,8 @@ import kotlinx.coroutines.delay
 internal actual fun HelipadRiveAnimation(
   modifier: Modifier,
   bottomAnimationFinished: Boolean,
-  withFinalSpin: Boolean,
-  withInitialSpin: Boolean,
-  stepId: String
+  isVisible: Boolean,
+  stepId: String,
 ) {
   val context = LocalContext.current
   val isDark = isSystemInDarkTheme()
@@ -33,51 +32,48 @@ internal actual fun HelipadRiveAnimation(
 
   val riveViewRef = remember { mutableStateOf<RiveAnimationView?>(null) }
   val initialAnimationDone = remember { mutableStateOf(false) }
-
-  AndroidView(
-    modifier = modifier,
-    factory = { ctx ->
-      RiveAnimationView(ctx).also { view ->
-        view.setRiveResource(
-          resId = resourceId,
-          animationName = if (withInitialSpin) "Idle" else "Loading",
-          autoplay = false,
-        )
-        riveViewRef.value = view
-      }
-    },
-  )
-
-  LaunchedEffect(bottomAnimationFinished, isDark,stepId) {
-    riveViewRef.value?.setRiveResource(
-      resId = resourceId,
-      animationName = "Idle",
-      autoplay = false,
+  if (isVisible) {
+    AndroidView(
+      modifier = modifier,
+      factory = { ctx ->
+        RiveAnimationView(ctx).also { view ->
+          view.setRiveResource(
+            resId = resourceId,
+            animationName = if (isVisible) "Idle" else "Loading",
+            autoplay = false,
+          )
+          riveViewRef.value = view
+        }
+      },
     )
-    if (!bottomAnimationFinished && !initialAnimationDone.value) {
-
-      if (withInitialSpin){
+    LaunchedEffect(bottomAnimationFinished, isDark, stepId) {
+      riveViewRef.value?.setRiveResource(
+        resId = resourceId,
+        animationName = "Idle",
+        autoplay = false,
+      )
+      if (!bottomAnimationFinished && !initialAnimationDone.value) {
         delay(100L)
         riveViewRef.value?.play(
           animationName = "Loading intro", loop = Loop.ONESHOT,
         )
         delay(1000L)
-      }
-      riveViewRef.value?.play(animationName = "Loading", loop = Loop.LOOP)
-      initialAnimationDone.value = true
-    } else if (bottomAnimationFinished && initialAnimationDone.value) {
-      if (withFinalSpin) {
+        riveViewRef.value?.play(animationName = "Loading", loop = Loop.LOOP)
+        initialAnimationDone.value = true
+      } else if (bottomAnimationFinished && initialAnimationDone.value) {
         riveViewRef.value?.stop()
         riveViewRef.value?.play(
           animationName = "Loading outro", loop = Loop.ONESHOT,
         )
+      } else {
+        riveViewRef.value?.stop()
+        riveViewRef.value?.play(
+          animationName = "Idle", loop = Loop.ONESHOT,
+        )
+        initialAnimationDone.value = false
       }
-    } else {
-      riveViewRef.value?.stop()
-      riveViewRef.value?.play(
-        animationName = "Idle", loop = Loop.ONESHOT,
-      )
-      initialAnimationDone.value = false
     }
   }
+
+
 }
