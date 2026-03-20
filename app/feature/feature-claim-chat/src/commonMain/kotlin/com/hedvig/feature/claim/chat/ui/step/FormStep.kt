@@ -375,7 +375,7 @@ private fun FormContent(
                     SentItemCard(
                       imageLoader = imageLoader,
                       itemTitle = selected.text,
-                      itemSubtitle = selected.subtitle, //todo
+                      itemSubtitle = selected.subtitle,
                       itemImageUrl = selected.imageUrl,
                     )
                   }
