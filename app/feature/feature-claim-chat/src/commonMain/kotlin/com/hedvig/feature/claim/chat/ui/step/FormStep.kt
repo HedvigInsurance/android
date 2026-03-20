@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -454,7 +455,8 @@ internal fun SearchForm(
             onQueryChange(suggestedQuery)
           }
         },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 78.dp),
+        showSubtitle = !selectedOption.text.isCustomItem()
       )
     }
   }
@@ -606,6 +608,7 @@ internal fun SearchForm(
                       imageLoader = imageLoader,
                       itemImageUrl = item.imageUrl,
                       modifier = Modifier.fillMaxWidth(),
+                      showSubtitle = true
                     )
                   }
                 }
@@ -669,6 +672,7 @@ private fun SearchItemCard(
   itemSubtitle: String?,
   itemImageUrl: String?,
   onClick: () -> Unit,
+  showSubtitle: Boolean,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
@@ -718,12 +722,14 @@ private fun SearchItemCard(
               textAlign = TextAlign.Start,
             )
             itemSubtitle?.let {
-              HedvigText(
-                text = itemSubtitle,
-                textAlign = TextAlign.Start,
-                color = HedvigTheme.colorScheme.textSecondary,
-                style = HedvigTheme.typography.finePrint,
-              )
+              if (showSubtitle) {
+                HedvigText(
+                  text = itemSubtitle,
+                  textAlign = TextAlign.Start,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                  style = HedvigTheme.typography.finePrint,
+                )
+              }
             }
           }
         }
@@ -801,18 +807,23 @@ private fun SentItemCard(
           textAlign = TextAlign.Start,
         )
         itemSubtitle?.let {
-          HedvigText(
-            text = itemSubtitle,
-            textAlign = TextAlign.Start,
-            color = HedvigTheme.colorScheme.textSecondary,
-            style = HedvigTheme.typography.finePrint,
-          )
+          if (!itemTitle.isCustomItem()) {
+            HedvigText(
+              text = itemSubtitle,
+              textAlign = TextAlign.Start,
+              color = HedvigTheme.colorScheme.textSecondary,
+              style = HedvigTheme.typography.finePrint,
+            )
+          }
         }
       }
     }
   }
 }
 
+internal fun String.isCustomItem(): Boolean {
+  return length >= 2 && startsWith("\"") && endsWith("\"")
+}
 
 @Composable
 internal fun TextInputBubble(
