@@ -150,7 +150,7 @@ private fun ColumnScope.SuccessState(
     is ErrorSnackBarText.WithMessage -> err.message
     null -> null
   }
-  val travelCertificateReadyText = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
+  val travelCertificateReadyText = stringResource(Res.string.PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY)
   LaunchedEffect(uiState.showSuccessSnackBar) {
     if (!uiState.showSuccessSnackBar) return@LaunchedEffect
     globalSnackBarState.show(travelCertificateReadyText, NotificationPriority.Campaign)

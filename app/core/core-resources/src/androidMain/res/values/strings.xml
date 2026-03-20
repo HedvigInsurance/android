@@ -627,6 +627,7 @@
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Invalid email</string>
   <string name="PROFILE_MY_INFO_REVIEW_INFO_CARD">Make sure your contact info is up to date, so we can reach you if needed.</string>
   <string name="PROFILE_MY_INFO_ROW_TITLE">Contact</string>
+  <string name="PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY">Changes saved</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL">That does not appear to be a valid email</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER">That does not appear to be a valid phone number</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_OFF">Turned off</string>
