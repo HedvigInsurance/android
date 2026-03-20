@@ -446,7 +446,7 @@ internal fun SearchForm(
       SearchItemCard(
         imageLoader = imageLoader,
         itemTitle = selectedOption.text,
-        itemSubtitle = selectedOption.subtitle, //todo
+        itemSubtitle = selectedOption.subtitle,
         itemImageUrl = selectedOption.imageUrl,
         onClick = {
           focusManager.clearFocus()
@@ -455,7 +455,7 @@ internal fun SearchForm(
             onQueryChange(suggestedQuery)
           }
         },
-        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 78.dp),
+        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 64.dp),
         showSubtitle = !selectedOption.text.isCustomItem()
       )
     }
