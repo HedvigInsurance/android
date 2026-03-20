@@ -56,6 +56,7 @@ import hedvig.resources.PHONE_NUMBER_ROW_TITLE
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
 import hedvig.resources.PROFILE_MY_INFO_REVIEW_INFO_CARD
 import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
+import hedvig.resources.PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY
 import hedvig.resources.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL
 import hedvig.resources.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER
 import hedvig.resources.Res
