@@ -43,11 +43,9 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.InfoInline
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.NeutralToast
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.defaultSnackbarPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.defaultStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.paddingNoIcon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.paddingWithIcon
-import com.hedvig.android.design.system.hedvig.NotificationDefaults.snackBarShape
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.textStyle
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -74,11 +72,8 @@ import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.Surfa
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextBlackTranslucent
 import com.hedvig.android.design.system.hedvig.tokens.ColorSchemeKeyTokens.TextSecondaryTranslucent
 import com.hedvig.android.design.system.hedvig.tokens.NotificationsTokens
-import com.hedvig.android.design.system.internals.InternalSnackBar
-import com.hedvig.android.design.system.internals.SnackBarColors
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_NOTIFICATION_CARD
-import kotlin.collections.listOf
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -212,43 +207,6 @@ fun HedvigNotificationCard(
       }
     }
   }
-}
-
-@Composable
-fun HedvigSnackbar(
-  snackbarText: String,
-  showSnackbar: Boolean,
-  showedSnackbar: () -> Unit,
-  modifier: Modifier = Modifier,
-  priority: NotificationPriority = defaultSnackbarPriority,
-  action: (() -> Unit)? = null,
-  actionLabel: String? = null,
-) {
-  InternalSnackBar(
-    colors = priority.colors.let { notificationColors ->
-      SnackBarColors(
-        containerColor = notificationColors.containerColor,
-        textColor = notificationColors.textColor,
-        iconColor = notificationColors.iconColor,
-      )
-    },
-    shape = snackBarShape,
-    snackbarText = snackbarText,
-    showSnackbar = showSnackbar,
-    showedSnackbar = showedSnackbar,
-    modifier = modifier,
-    action = action,
-    actionLabel = actionLabel,
-    textStyle = textStyle,
-    icon = {
-      Icon(
-        imageVector = priority.icon,
-        contentDescription = EmptyContentDescription,
-        tint = priority.colors.iconColor,
-        modifier = Modifier.size(18.dp),
-      )
-    },
-  )
 }
 
 object NotificationDefaults {
