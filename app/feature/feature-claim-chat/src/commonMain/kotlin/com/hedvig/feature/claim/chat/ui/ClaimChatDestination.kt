@@ -880,3 +880,5 @@ private fun StepBottomContent(
     }
   }
 }
+
+internal val sentAnswersStartPadding = 45.dp

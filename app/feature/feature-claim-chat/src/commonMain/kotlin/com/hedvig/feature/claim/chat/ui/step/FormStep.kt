@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,6 +51,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
+import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.BottomSheetStyle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
@@ -64,6 +64,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.MultiSelectDialog
@@ -71,7 +72,7 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.SearchField
 import com.hedvig.android.design.system.hedvig.SingleSelectDialog
-import com.hedvig.android.design.system.hedvig.hedvigDropShadow
+import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
@@ -88,12 +89,9 @@ import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.feature.claim.chat.ui.common.YesNoBubble
-import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE
-import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE
+import com.hedvig.feature.claim.chat.ui.sentAnswersStartPadding
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND
-import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION
-import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_TITLE
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
@@ -329,7 +327,7 @@ private fun FormContent(
                   onSearchClear(field.id)
                 },
                 imageLoader = imageLoader,
-                fieldTitle = field.title
+                fieldTitle = field.title,
               )
             }
           }
@@ -363,21 +361,44 @@ private fun FormContent(
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         if (content.fields.flatMap { it.selectedOptions }.isNotEmpty()) {
           content.fields.forEach { field ->
-            val initialTextValue = field.selectedOptions.joinToString { it.text }
-            val suffix = if (initialTextValue.isNotEmpty() && field.suffix!=null) " ${field.suffix}" else ""
-            val textValue = "$initialTextValue$suffix"
-            Column(
-              Modifier.fillMaxWidth(),
-              horizontalAlignment = Alignment.End,
-            ) {
-              if (textValue.isNotEmpty()) {
-                RoundCornersPill(
-                  onClick = null,
+            when (field.type) {
+              FieldType.SEARCH -> {
+                val selected = field.selectedOptions.firstOrNull()
+                Column(
+                  Modifier.fillMaxWidth().padding(start = sentAnswersStartPadding),
+                  horizontalAlignment = Alignment.End,
                 ) {
-                  HedvigText(textValue, textAlign = TextAlign.End)
+                  if (selected == null) {
+                    SkippedLabel()
+                  } else {
+                    SentItemCard(
+                      imageLoader = imageLoader,
+                      itemTitle = selected.text,
+                      itemSubtitle = selected.subtitle, //todo
+                      itemImageUrl = selected.imageUrl,
+                    )
+                  }
                 }
-              } else {
-                SkippedLabel()
+              }
+
+              else -> {
+                val initialTextValue = field.selectedOptions.joinToString { it.text }
+                val suffix = if (initialTextValue.isNotEmpty() && field.suffix != null) " ${field.suffix}" else ""
+                val textValue = "$initialTextValue$suffix"
+                Column(
+                  Modifier.fillMaxWidth().padding(start = sentAnswersStartPadding),
+                  horizontalAlignment = Alignment.End,
+                ) {
+                  if (textValue.isNotEmpty()) {
+                    RoundCornersPill(
+                      onClick = null,
+                    ) {
+                      HedvigText(textValue, textAlign = TextAlign.End)
+                    }
+                  } else {
+                    SkippedLabel()
+                  }
+                }
               }
             }
           }
@@ -406,20 +427,36 @@ internal fun SearchForm(
   val searchBottomSheetState = rememberHedvigBottomSheetState<String?>()
   val focusManager = LocalFocusManager.current
   Column(modifier) {
-    HedvigBigCard(
-      onClick = {
-        focusManager.clearFocus()
-        searchBottomSheetState.show(searchData?.suggestedQuery ?: "")
-        searchData?.suggestedQuery?.let { suggestedQuery ->
-          onQueryChange(suggestedQuery)
-        }
-
-      },
-      labelText = fieldTitle,
-      inputText = selectedOption?.text,
-      modifier = Modifier.fillMaxWidth(),
-      enabled = true,
-    )
+    if (selectedOption == null) {
+      HedvigBigCard(
+        onClick = {
+          focusManager.clearFocus()
+          searchBottomSheetState.show(searchData?.suggestedQuery ?: "")
+          searchData?.suggestedQuery?.let { suggestedQuery ->
+            onQueryChange(suggestedQuery)
+          }
+        },
+        labelText = fieldTitle,
+        inputText = null,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = true,
+      )
+    } else {
+      SearchItemCard(
+        imageLoader = imageLoader,
+        itemTitle = selectedOption.text,
+        itemSubtitle = selectedOption.subtitle, //todo
+        itemImageUrl = selectedOption.imageUrl,
+        onClick = {
+          focusManager.clearFocus()
+          searchBottomSheetState.show(searchData?.suggestedQuery ?: "")
+          searchData?.suggestedQuery?.let { suggestedQuery ->
+            onQueryChange(suggestedQuery)
+          }
+        },
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
   }
 
   HedvigBottomSheet(
@@ -520,7 +557,7 @@ internal fun SearchForm(
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center,
                 ) {
-                  if (searchData!=null) {
+                  if (searchData != null) {
                     HedvigText(searchData.modalTitle, textAlign = TextAlign.Center)
                     HedvigText(
                       searchData.modalSubtitle,
@@ -546,8 +583,10 @@ internal fun SearchForm(
                 ) {
                   item {
                     if (animatedState.suggestedFixedQuery != null) {
-                      Row(horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()) {
+                      Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                      ) {
                         FixQuerySuggestion(animatedState.suggestedFixedQuery) {
                           onQueryChange(animatedState.suggestedFixedQuery)
                           searchQuery = animatedState.suggestedFixedQuery
@@ -557,7 +596,7 @@ internal fun SearchForm(
                     }
                   }
                   items(queryResult) { item ->
-                    ItemCard(
+                    SearchItemCard(
                       itemTitle = item.text,
                       itemSubtitle = item.subtitle,
                       onClick = {
@@ -566,10 +605,8 @@ internal fun SearchForm(
                       },
                       imageLoader = imageLoader,
                       itemImageUrl = item.imageUrl,
+                      modifier = Modifier.fillMaxWidth(),
                     )
-                  }
-                  item {
-                    Spacer(Modifier.height(8.dp)) //to allow space for shadow
                   }
                 }
               }
@@ -626,7 +663,7 @@ private sealed interface SearchState {
 }
 
 @Composable
-private fun ItemCard(
+private fun SearchItemCard(
   imageLoader: ImageLoader,
   itemTitle: String,
   itemSubtitle: String?,
@@ -636,28 +673,112 @@ private fun ItemCard(
 ) {
   HedvigCard(
     onClick = onClick,
-    modifier = modifier
-      .fillMaxWidth()
-      .hedvigDropShadow(HedvigTheme.shapes.cornerLarge),
-    color = HedvigTheme.colorScheme.fillNegative,
+    modifier = modifier,
+    color = HedvigTheme.colorScheme.surfacePrimary,
     shape = HedvigTheme.shapes.cornerLarge,
-    borderColor = HedvigTheme.colorScheme.borderPrimary,
+  ) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      modifier = Modifier.padding(horizontal = 16.dp),
+      startSlot = {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          if (itemImageUrl != null) {
+            Box(
+              contentAlignment = Alignment.Center,
+              modifier = Modifier
+                .size(46.dp)
+                .background(Color(0xFFFFFFFF), HedvigTheme.shapes.cornerSmall)
+                .border(
+                  1.dp,
+                  HedvigTheme.colorScheme.borderPrimary,
+                  HedvigTheme.shapes.cornerSmall,
+                )
+                .clip(HedvigTheme.shapes.cornerSmall),
+            ) {
+              AsyncImage(
+                model = itemImageUrl,
+                contentDescription = itemTitle,
+                placeholder = crossSellPainterFallback(),
+                error = crossSellPainterFallback(),
+                fallback = crossSellPainterFallback(),
+                imageLoader = imageLoader,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.padding(2.dp),
+              )
+            }
+            Spacer(Modifier.width(16.dp))
+          }
+          Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.padding(bottom = 14.dp, top = 12.dp),
+          ) {
+            HedvigText(
+              text = itemTitle,
+              textAlign = TextAlign.Start,
+            )
+            itemSubtitle?.let {
+              HedvigText(
+                text = itemSubtitle,
+                textAlign = TextAlign.Start,
+                color = HedvigTheme.colorScheme.textSecondary,
+                style = HedvigTheme.typography.finePrint,
+              )
+            }
+          }
+        }
+      },
+      endSlot = {
+        Row(
+          horizontalArrangement = Arrangement.End,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Icon(
+            imageVector = HedvigIcons.ChevronRight,
+            contentDescription = EmptyContentDescription, //todo: not sure
+            tint = HedvigTheme.colorScheme.fillPrimary,
+            modifier = Modifier.size(24.dp),
+          )
+
+        }
+
+      },
+      spaceBetween = 6.dp,
+    )
+  }
+}
+
+@Composable
+private fun SentItemCard(
+  imageLoader: ImageLoader,
+  itemTitle: String,
+  itemSubtitle: String?,
+  itemImageUrl: String?,
+  modifier: Modifier = Modifier,
+) {
+  HedvigCard(
+    onClick = null,
+    modifier = modifier,
+    color = HedvigTheme.colorScheme.surfacePrimary,
+    shape = HedvigTheme.shapes.cornerXLarge,
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.padding(horizontal = 16.dp)
     ) {
       if (itemImageUrl != null) {
-        Box (
+        Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier
             .size(46.dp)
             .background(Color(0xFFFFFFFF), HedvigTheme.shapes.cornerSmall)
-            .border(1.dp,
+            .border(
+              1.dp,
               HedvigTheme.colorScheme.borderPrimary,
-              HedvigTheme.shapes.cornerSmall)
-            .clip(HedvigTheme.shapes.cornerSmall)
-        ){
+              HedvigTheme.shapes.cornerSmall,
+            )
+            .clip(HedvigTheme.shapes.cornerSmall),
+        ) {
           AsyncImage(
             model = itemImageUrl,
             contentDescription = itemTitle,
@@ -666,13 +787,14 @@ private fun ItemCard(
             fallback = crossSellPainterFallback(),
             imageLoader = imageLoader,
             contentScale = ContentScale.Fit,
-            modifier = Modifier.padding(2.dp)
+            modifier = Modifier.padding(2.dp),
           )
         }
+        Spacer(Modifier.width(16.dp))
       }
       Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp),
+        modifier = Modifier.padding(bottom = 14.dp, top = 12.dp),
       ) {
         HedvigText(
           text = itemTitle,
@@ -688,9 +810,9 @@ private fun ItemCard(
         }
       }
     }
-
   }
 }
+
 
 @Composable
 internal fun TextInputBubble(

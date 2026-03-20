@@ -99,6 +99,7 @@ import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
+import com.hedvig.feature.claim.chat.ui.sentAnswersStartPadding
 import hedvig.resources.AUDIO_RECORDER_LISTEN
 import hedvig.resources.AUDIO_RECORDER_SEND
 import hedvig.resources.AUDIO_RECORDER_START
@@ -278,7 +279,7 @@ internal fun AudioRecorderBubble(
                 )
                 HedvigAudioPlayer(
                   audioPlayer = audioPlayer,
-                  Modifier.padding(start = 45.dp),
+                  Modifier.padding(start = sentAnswersStartPadding),
                 )
               } else {
                 SkippedLabel()
