@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -639,10 +640,15 @@ private fun StepTopContent(
   }
 
   Column(modifier) {
+    val density = LocalDensity.current
     if (stepItem.stepContent !is StepContent.Task && stepItem.showSpinForThisStep) {
       HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
-        modifier = Modifier.size(animationSize),
+        modifier = Modifier.size(
+          with (density) {
+            animationSize.toDp()
+          }
+          ),
         isVisible = true,
         stepId = stepItem.id.value,
       )
@@ -874,4 +880,4 @@ private fun StepBottomContent(
 }
 
 
-internal val animationSize = 32.dp
+internal val animationSize = 32.sp

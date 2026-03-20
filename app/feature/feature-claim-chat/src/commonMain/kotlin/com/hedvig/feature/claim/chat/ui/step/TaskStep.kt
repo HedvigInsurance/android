@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -53,10 +54,15 @@ internal fun TaskStepTopContent(
         val lastDescription = taskContent.descriptions.lastOrNull()
         val showPill = lastDescription != null
         AnimatedContent(showBlinkingAiDot) { show ->
+          val density = LocalDensity.current
           if (show) {
             HelipadRiveAnimation(
               bottomAnimationFinished = taskContent.isAnimationFinished,
-              modifier = Modifier.size(animationSize),
+              modifier = Modifier.size(
+                with (density) {
+                  animationSize.toDp()
+                }
+              ),
               stepId = stepId,
             )
           }

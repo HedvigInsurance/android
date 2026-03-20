@@ -61,12 +61,12 @@ internal class LastItemHeightAdjustingState(
       0.dp
     } else {
       val isPreviousStepTask = steps().dropLast(1).last().stepContent is StepContent.Task
-
-      val stepId = steps().filter { it.stepContent !is StepContent.Task }
+      val stepId = steps()
+        .filter { if (isPreviousStepTask) it.stepContent !is StepContent.Task else true }
         .dropLast(1).last().id
       with(density) {
         val adjustmentForTask =
-          if (isPreviousStepTask) 23.dp //todo!
+          if (isPreviousStepTask) animationSize.toDp() + 12.dp
           else 0.dp
         (heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp) + adjustmentForTask
       }
