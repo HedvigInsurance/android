@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.feature.claim.chat.data.StepContent
+import com.hedvig.feature.claim.chat.ui.animationSize
 import com.hedvig.feature.claim.chat.ui.common.HelipadRiveAnimation
 import hedvig.resources.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION
 import hedvig.resources.GENERAL_RETRY
@@ -54,7 +56,7 @@ internal fun TaskStepTopContent(
           if (show) {
             HelipadRiveAnimation(
               bottomAnimationFinished = taskContent.isAnimationFinished,
-              modifier = Modifier.size(32.dp),
+              modifier = Modifier.size(animationSize),
               stepId = stepId,
             )
           }

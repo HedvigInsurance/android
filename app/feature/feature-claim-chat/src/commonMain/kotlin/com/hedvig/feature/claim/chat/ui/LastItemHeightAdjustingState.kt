@@ -60,10 +60,15 @@ internal class LastItemHeightAdjustingState(
     minHeightForFullScreenItem - spaceBetweenItems - if (steps().size < 2) {
       0.dp
     } else {
+      val isPreviousStepTask = steps().dropLast(1).last().stepContent is StepContent.Task
+
       val stepId = steps().filter { it.stepContent !is StepContent.Task }
         .dropLast(1).last().id
       with(density) {
-        heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp
+        val adjustmentForTask =
+          if (isPreviousStepTask) 23.dp //todo!
+          else 0.dp
+        (heightOfItemBottomContentMap[stepId]?.height?.toDp() ?: 0.dp) + adjustmentForTask
       }
     }
   }

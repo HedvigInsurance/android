@@ -642,7 +642,7 @@ private fun StepTopContent(
     if (stepItem.stepContent !is StepContent.Task && stepItem.showSpinForThisStep) {
       HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
-        modifier = Modifier.size(32.dp),
+        modifier = Modifier.size(animationSize),
         isVisible = true,
         stepId = stepItem.id.value,
       )
@@ -872,3 +872,6 @@ private fun StepBottomContent(
     }
   }
 }
+
+
+internal val animationSize = 32.dp
