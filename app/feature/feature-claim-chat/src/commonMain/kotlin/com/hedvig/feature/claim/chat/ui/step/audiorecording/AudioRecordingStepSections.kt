@@ -368,7 +368,7 @@ private fun AudioRecordingBottomSheet(
         textAlign = TextAlign.Center,
       )
       DynamicClock(audioRecordingState, clock, audioPlayer)
-      Spacer(Modifier.height(24.dp))
+      Spacer(Modifier.height(16.dp))
 
       AnimatedContent(
         targetState = audioRecordingState,
