@@ -48,10 +48,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -618,14 +620,14 @@ private fun ControlButton(
     is AudioRecordingStepState.AudioRecording.Playback -> stringResource(Res.string.AUDIO_RECORDER_LISTEN)
     is AudioRecordingStepState.AudioRecording.Recording -> stringResource(Res.string.AUDIO_RECORDER_STOP)
   }
-
-  val recordingStateDescription = when (audioRecordingState) {
-    is AudioRecordingStepState.AudioRecording.Recording -> stringResource(Res.string.TALKBACK_RECORDING_NOW)
-    else -> ""
-  }
-
   var countDownText by remember { mutableStateOf("3") }
   var startRecordingCountdown by remember { mutableStateOf(false) }
+  val recordingStateDescription = when (audioRecordingState) {
+    is AudioRecordingStepState.AudioRecording.Recording -> stringResource(Res.string.TALKBACK_RECORDING_NOW)
+    else if (startRecordingCountdown) -> countDownText
+      else -> ""
+  }
+
   val scale = remember { Animatable(1f) }
   val hapticFeedback = LocalHapticFeedback.current
   val lifecycleOwner = LocalLifecycleOwner.current
@@ -751,18 +753,21 @@ private fun ControlButton(
             }
           },
         )
-        if (startRecordingCountdown) {
-          HedvigText(
-            text = countDownText,
-            color = when (audioRecordingState) {
-              AudioRecordingStepState.AudioRecording.NotRecording,
-              is AudioRecordingStepState.AudioRecording.Recording,
-              -> HedvigTheme.colorScheme.fillWhite
+        HedvigText(
+          text = if (startRecordingCountdown) countDownText else "",
+          color = when (audioRecordingState) {
+            AudioRecordingStepState.AudioRecording.NotRecording,
+            is AudioRecordingStepState.AudioRecording.Recording,
+            -> HedvigTheme.colorScheme.fillWhite
 
-              is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
-            },
-          )
-        }
+            is AudioRecordingStepState.AudioRecording.Playback -> HedvigTheme.colorScheme.fillNegative
+          },
+          modifier = Modifier
+            .semantics {
+              liveRegion = LiveRegionMode.Assertive
+            }
+            .then(if (!startRecordingCountdown) Modifier.withoutPlacement() else Modifier),
+        )
       }
       Spacer(Modifier.height(4.dp))
       HedvigText(
