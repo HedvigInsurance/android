@@ -24,7 +24,11 @@ internal class SubmitFileUploadUseCase(
   private val fileService: FileService,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(stepId: StepId, fileUris: List<Uri>, uploadUrl: String): Either<ClaimChatErrorMessage, ClaimIntent> {
+  suspend fun invoke(
+    stepId: StepId,
+    fileUris: List<Uri>,
+    uploadUrl: String,
+  ): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       val commonFiles = fileUris.map { fileUri ->
         fileService.convertToCommonFile(fileUri)

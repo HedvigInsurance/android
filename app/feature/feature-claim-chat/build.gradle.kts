@@ -51,6 +51,7 @@ kotlin {
       implementation(projects.uiForceUpgrade)
     }
     androidMain.dependencies {
+      implementation(libs.rive.android)
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)

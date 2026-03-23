@@ -23,7 +23,11 @@ internal class SubmitAudioRecordingUseCase(
     return either { invoke(stepId, null, freeText) }
   }
 
-  suspend fun invoke(stepId: StepId, commonFile: CommonFile, uploadUrl: String): Either<ClaimChatErrorMessage, ClaimIntent> {
+  suspend fun invoke(
+    stepId: StepId,
+    commonFile: CommonFile,
+    uploadUrl: String,
+  ): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       val uploadResult = either {
         uploadFileUseCase.invoke(commonFile, uploadUrl)
