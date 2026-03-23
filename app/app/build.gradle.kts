@@ -187,7 +187,6 @@ dependencies {
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
-  implementation(projects.featureClaimTriaging)
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)

@@ -68,7 +68,6 @@ import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimhistory.di.claimHistoryModule
-import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.cross.sell.sheet.di.featureCrossSellSheetModule
 import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
@@ -302,7 +301,6 @@ val applicationModule = module {
       claimDetailsModule,
       claimFlowDataModule,
       claimHistoryModule,
-      claimTriagingModule,
       clockModule,
       coilModule,
       comparisonModule,
