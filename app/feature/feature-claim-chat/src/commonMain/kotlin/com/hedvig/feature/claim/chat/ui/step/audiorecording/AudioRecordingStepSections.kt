@@ -1,6 +1,8 @@
 package com.hedvig.feature.claim.chat.ui.step.audiorecording
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
@@ -37,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
@@ -373,7 +376,7 @@ private fun AudioRecordingBottomSheet(
       AnimatedContent(
         targetState = audioRecordingState,
         transitionSpec = {
-          fadeIn(animationSpec = tween(300)).togetherWith(fadeOut(animationSpec = tween(300)))
+          EnterTransition.None.togetherWith(ExitTransition.None)
         },
         contentKey = { state ->
           when (state) {
@@ -914,7 +917,7 @@ private fun AudioWaves(
 ) {
   val playedColor = LocalContentColor.current
   val notPlayedColor = LocalContentColor.current.copy(0.38f).compositeOver(HedvigTheme.colorScheme.surfacePrimary)
-  val fixedColor = HedvigTheme.colorScheme.fillPrimary.copy(alpha = 0.6f)
+  val fixedColor = fixedRestingColor
   val density = LocalDensity.current
   val strokeWidthPx = with(density) { WAVE_WIDTH.toPx() }
   val updatedAmplitudes by rememberUpdatedState(amplitudes)
@@ -996,6 +999,11 @@ private fun AudioWaves(
   }
 }
 
+
+private val fixedRestingColor: Color
+  @Composable
+  get() = HedvigTheme.colorScheme.fillPrimary.copy(alpha = 0.6f)
+
 private fun getCurrentAmplitudePercentage(amplitudes: List<Int>): Float {
   if (amplitudes.size <= 10) return 0f
   val lowerCap = 80
@@ -1032,7 +1040,7 @@ private fun getCurrentAmplitudePercentage(amplitudes: List<Int>): Float {
 
 @Composable
 fun RestingAudioPlayer(modifier: Modifier = Modifier) {
-  val color = HedvigTheme.colorScheme.fillPrimary
+  val color = fixedRestingColor
   val density = LocalDensity.current
   val strokeWidthPx = with(density) { WAVE_WIDTH.toPx() }
 
