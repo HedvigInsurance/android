@@ -40,11 +40,15 @@ internal actual fun HelipadRiveAnimation(
         RiveAnimationView(ctx).also { view ->
           view.setRiveResource(
             resId = resourceId,
-            animationName = if (isVisible) "Idle" else "Loading",
+            animationName = "Idle",
             autoplay = false,
           )
           riveViewRef.value = view
         }
+      },
+      onRelease = { view ->
+        view.stop()
+        riveViewRef.value = null
       },
     )
     LaunchedEffect(bottomAnimationFinished, isDark, stepId) {
