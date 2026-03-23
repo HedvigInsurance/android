@@ -8,15 +8,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Loop
 import kotlinx.coroutines.delay
-
-private class ViewHolder<T> {
-  var value: T? = null
-}
 
 private enum class HelipadAnimation(val animationName: String) {
   IDLE("Idle"),
@@ -41,7 +36,7 @@ internal actual fun HelipadRiveAnimation(
     return
   }
 
-  val riveViewRef = remember { ViewHolder<RiveAnimationView>() }
+  val riveViewRef = remember { mutableStateOf<RiveAnimationView?>(null) }
   val initialAnimationDone = remember { mutableStateOf(false) }
   AndroidView(
     modifier = modifier,
@@ -60,7 +55,7 @@ internal actual fun HelipadRiveAnimation(
       riveViewRef.value = null
     },
   )
-  LaunchedEffect(bottomAnimationFinished, isDark, stepId) {
+  LaunchedEffect(bottomAnimationFinished, isDark, stepId, riveViewRef) {
     riveViewRef.value?.setRiveResource(
       resId = resourceId,
       animationName = HelipadAnimation.IDLE.animationName,
