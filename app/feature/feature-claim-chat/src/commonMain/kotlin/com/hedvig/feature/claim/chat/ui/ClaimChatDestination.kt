@@ -641,14 +641,17 @@ private fun StepTopContent(
 
   Column(modifier) {
     val density = LocalDensity.current
-    if (stepItem.stepContent !is StepContent.Task && stepItem.showSpinForThisStep) {
+    if (stepItem.stepContent !is StepContent.Task
+      && stepItem.stepContent !is StepContent.Summary
+      && stepItem.showSpinForThisStep
+    ) {
       HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
         modifier = Modifier.size(
-          with (density) {
+          with(density) {
             animationSize.toDp()
-          }
-          ),
+          },
+        ),
         stepId = stepItem.id.value,
       )
       Spacer(Modifier.height(4.dp))
@@ -699,9 +702,7 @@ private fun StepTopContent(
       exit = ExitTransition.None,
     ) {
       Column {
-        stepItemText?.let {
-          Spacer(Modifier.height(16.dp))
-        }
+        Spacer(Modifier.height(16.dp))
         if (stepItem.stepContent is StepContent.Summary) {
           ChatClaimSummaryTopContent(
             recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
