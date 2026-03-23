@@ -968,6 +968,7 @@ private fun AudioWaves(
     }
 
     val centerY = size.height / 2f
+    val spacing = size.width / (numberOfWaves - 1)
 
     waveStates.forEachIndexed { waveIndex, waveState ->
       val heightPercentage = waveState.animatable.value
@@ -980,7 +981,7 @@ private fun AudioWaves(
       }
 
       val lineHeight = WAVE_MAX_HEIGHT.toPx() * heightPercentage
-      val x = waveIndex * (WAVE_WIDTH + WAVE_SPACING).toPx()
+      val x = waveIndex * spacing
       val startY = centerY - lineHeight / 2f
       val endY = centerY + lineHeight / 2f
 
