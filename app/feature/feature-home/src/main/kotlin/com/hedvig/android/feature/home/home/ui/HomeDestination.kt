@@ -158,7 +158,6 @@ internal fun HomeDestination(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
@@ -179,7 +178,6 @@ internal fun HomeDestination(
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    navigateToOldClaimFlow = navigateToOldClaimFlow,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
@@ -206,7 +204,6 @@ private fun HomeScreen(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -236,10 +233,8 @@ private fun HomeScreen(
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
-    navigateToOldClaimFlow = navigateToOldClaimFlow,
     navigateToClaimChat = navigateToClaimChat,
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
-    isExperimentalClaimChatEnabled = (uiState as? Success)?.isExperimentalClaimChatEnabled ?: false,
     isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
   Box(Modifier.fillMaxSize()) {
@@ -276,7 +271,6 @@ private fun HomeScreen(
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToHelpCenter = navigateToHelpCenter,
-            navigateToOldClaimFlow = navigateToOldClaimFlow,
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
@@ -423,7 +417,6 @@ private fun HomeScreenSuccess(
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -516,11 +509,7 @@ private fun HomeScreenSuccess(
           HedvigButton(
             text = stringResource(Res.string.home_tab_claim_button_text),
             onClick = {
-              if (!uiState.isExperimentalClaimChatEnabled && uiState.isProduction) {
-                navigateToOldClaimFlow()
-              } else {
-                openClaimFlowSheet()
-              }
+              openClaimFlowSheet()
             },
             enabled = true,
             modifier = Modifier
@@ -804,7 +793,6 @@ private fun PreviewHomeScreen(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
@@ -835,7 +823,6 @@ private fun PreviewHomeScreenWithError() {
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
@@ -888,7 +875,6 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
