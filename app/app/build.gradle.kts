@@ -146,6 +146,7 @@ dependencies {
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
+  implementation(libs.rive.android)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)

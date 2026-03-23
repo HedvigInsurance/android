@@ -33,6 +33,7 @@ internal data class ClaimIntentStep(
   val stepContent: StepContent,
   val isRegrettable: Boolean,
   val hint: String?,
+  val showSpinForThisStep: Boolean = true
 )
 
 @Serializable
@@ -65,6 +66,7 @@ internal sealed interface StepContent {
     val descriptions: List<String>,
     val isCompleted: Boolean,
     val failedToSubmit: Boolean,
+    val isAnimationFinished: Boolean = false
   ) : StepContent {
     override val isSkippable: Boolean = false
   }
@@ -109,6 +111,7 @@ internal sealed interface StepContent {
       val value: String,
       val text: String,
       val subtitle: String?,
+      val isCustomSearchEntry: Boolean = false,
       val imageUrl: String? = null,
     )
 
@@ -119,7 +122,6 @@ internal sealed interface StepContent {
       SINGLE_SELECT,
       MULTI_SELECT,
       BINARY,
-
       SEARCH,
     }
   }

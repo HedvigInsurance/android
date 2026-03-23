@@ -209,6 +209,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
+  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Custom item</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">If you don't know the exact date, enter an approximate date.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Edit answer</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.</string>
@@ -261,7 +262,7 @@
   <string name="CONFIRM_AND_PROCEED_BUTTON">Confirm and proceed</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your changes will be effective on %1$s.</string>
   <string name="CONFIRM_CHANGES_TITLE">Confirm changes</string>
-  <string name="CONTACT_INFO_CHANGES_SAVED">Changes saved!</string>
+  <string name="CONTACT_INFO_CHANGES_SAVED">Changes saved</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>
