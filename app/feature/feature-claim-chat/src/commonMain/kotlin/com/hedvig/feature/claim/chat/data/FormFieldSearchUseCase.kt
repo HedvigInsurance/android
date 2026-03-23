@@ -17,13 +17,8 @@ internal data class FormFieldSearchResult(
 )
 
 internal interface FormFieldSearchUseCase {
-  suspend fun invoke(
-    stepId: String,
-    fieldId: String,
-    query: String,
-  ): Either<ErrorMessage, FormFieldSearchResult>
+  suspend fun invoke(stepId: String, fieldId: String, query: String): Either<ErrorMessage, FormFieldSearchResult>
 }
-
 
 internal class FormFieldSearchUseCaseImpl(
   private val apolloClient: ApolloClient,

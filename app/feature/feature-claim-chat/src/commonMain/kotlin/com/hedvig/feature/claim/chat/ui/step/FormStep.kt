@@ -508,10 +508,14 @@ internal fun SearchForm(
         Spacer(Modifier.height(16.dp))
         val searchState = when (queryResult.isEmpty()) {
           true -> {
-            if (searchQuery.isNullOrEmpty()) SearchState.SearchNotStarted else SearchState.NothingFound(
-              query = searchQuery,
-              suggestedFixedQuery = suggestedFixedQuery,
-            )
+            if (searchQuery.isNullOrEmpty()) {
+              SearchState.SearchNotStarted
+            } else {
+              SearchState.NothingFound(
+                query = searchQuery,
+                suggestedFixedQuery = suggestedFixedQuery,
+              )
+            }
           }
 
           false -> {
@@ -527,7 +531,6 @@ internal fun SearchForm(
               is SearchState.NothingFound -> "nothing_found"
               SearchState.SearchNotStarted -> "not_started"
             }
-
           },
           modifier = Modifier.weight(1f),
         ) { animatedState ->
@@ -635,10 +638,7 @@ internal fun SearchForm(
 }
 
 @Composable
-private fun FixQuerySuggestion(
-  suggestedFixedQuery: String,
-  onClick: () -> Unit,
-) {
+private fun FixQuerySuggestion(suggestedFixedQuery: String, onClick: () -> Unit) {
   val annotatedString = buildAnnotatedString {
     append(stringResource(Res.string.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION))
     withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
@@ -654,12 +654,13 @@ private fun FixQuerySuggestion(
       onClick()
     },
   )
-
 }
 
 private sealed interface SearchState {
   data object SearchNotStarted : SearchState
+
   data class NothingFound(val query: String?, val suggestedFixedQuery: String?) : SearchState
+
   data class ResultsFound(
     val query: String?,
     val results: List<FieldOption>,
@@ -771,21 +772,19 @@ private fun SentItemCard(
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(horizontal = 16.dp),
+      modifier = Modifier.padding(horizontal = 16.dp)
     ) {
       if (itemImageUrl != null) {
-        Box(
+        Box (
           contentAlignment = Alignment.Center,
           modifier = Modifier
             .size(46.dp)
             .background(Color(0xFFFFFFFF), HedvigTheme.shapes.cornerSmall)
-            .border(
-              1.dp,
+            .border(1.dp,
               HedvigTheme.colorScheme.borderPrimary,
-              HedvigTheme.shapes.cornerSmall,
-            )
-            .clip(HedvigTheme.shapes.cornerSmall),
-        ) {
+              HedvigTheme.shapes.cornerSmall)
+            .clip(HedvigTheme.shapes.cornerSmall)
+        ){
           AsyncImage(
             model = itemImageUrl,
             contentDescription = itemTitle,

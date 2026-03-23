@@ -120,15 +120,17 @@ internal sealed interface ClaimChatEvent {
 
   data class RetrySubmittingTaskStep(val stepId: StepId) : ClaimChatEvent
 
+  data object FinishTaskAnimation : ClaimChatEvent
+
   data class UpdateFormFieldSearchQuery(
     val query: String,
     val stepId: StepId,
-    val fieldId: FieldId
+    val fieldId: FieldId,
   ) : ClaimChatEvent
 
   data class ClearQuery(
     val stepId: StepId,
-    val fieldId: FieldId
+    val fieldId: FieldId,
   ) : ClaimChatEvent
 }
 
@@ -185,10 +187,9 @@ internal class ClaimChatViewModel(
       audioRecordingManager,
       fileService,
       regretStepUseCase,
-      formFieldSearchUseCase
+      formFieldSearchUseCase,
     ),
   ) {
-
   override fun onCleared() {
     super.onCleared()
     audioRecordingManager.reset()
@@ -304,24 +305,27 @@ internal class ClaimChatPresenter(
 
     LaunchedEffect(searchQuery) {
       val query = searchQuery
-      if (query!=null) {
+      if (query != null) {
         val searchResult = formFieldSearchUseCase.invoke(
           stepId = query.stepId.value,
           fieldId = query.fieldId,
-          query = query.query
+          query = query.query,
         ).getOrNull()
         steps.updateStepWithSuccess<StepContent.Form>(query.stepId) { step, content ->
           val newFields = content.fields.map { field ->
             if (field.id.value == query.fieldId) {
               when (field.type) {
-                FieldType.SEARCH
-                  -> {
+                FieldType.SEARCH,
+                -> {
                   field.copy(
                     foundOptionsInSearch = searchResult?.options ?: emptyList(),
                     suggestedFixedQuery = searchResult?.suggestedFixedQuery,
                   )
                 }
-                else -> field //shouldn't happen
+
+                else -> {
+                  field
+                } // shouldn't happen
               }
             } else {
               field
@@ -774,7 +778,7 @@ internal class ClaimChatPresenter(
                       } ?: emptyList(),
                       hasError = null,
                       searchData = field.searchData?.copy(suggestedQuery = searchQuery?.query),
-                      suggestedFixedQuery = null
+                      suggestedFixedQuery = null,
                     )
                   }
 
@@ -782,7 +786,6 @@ internal class ClaimChatPresenter(
                   FieldType.DATE -> {
                     field.copy(hasError = null)
                   }
-
 
                   FieldType.MULTI_SELECT -> {
                     field.copy(
@@ -918,6 +921,15 @@ internal class ClaimChatPresenter(
             )
           }
         }
+
+        ClaimChatEvent.FinishTaskAnimation -> {
+          val step = steps.lastOrNull { it.stepContent is StepContent.Task } ?: return@CollectEvents
+          steps.updateStepWithSuccess<StepContent.Task>(step.id) { step, content ->
+            step.copy(
+              stepContent = content.copy(isAnimationFinished = true),
+            )
+          }
+        }
       }
     }
 
@@ -1033,8 +1045,9 @@ private fun handleNext(
 
 private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
   Snapshot.withMutableSnapshot {
-    removeLastIf { it.stepContent is StepContent.Task }
-    add(step)
+    val lastStepIsTask = this.lastOrNull()?.stepContent is StepContent.Task
+    //removeLastIf { it.stepContent is StepContent.Task }
+    add(step.copy(showSpinForThisStep = !lastStepIsTask))
   }
 }
 
@@ -1149,9 +1162,8 @@ private fun validateField(field: Field): Field {
   return field.copy(hasError = null)
 }
 
-
 internal data class SearchObject(
   val fieldId: String,
   val stepId: StepId,
-  val query: String
+  val query: String,
 )
