@@ -5,6 +5,7 @@ query FormFieldSearch($input: ClaimIntentFormFieldSearchInput!) {
       subtitle
       title
       value
+      isCustomSearchEntry
     }
     suggestedQuery
   }
