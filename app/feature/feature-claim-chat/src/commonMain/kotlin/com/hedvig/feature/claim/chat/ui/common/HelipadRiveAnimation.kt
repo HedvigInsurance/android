@@ -8,6 +8,5 @@ import androidx.compose.ui.Modifier
 internal expect fun HelipadRiveAnimation(
   modifier: Modifier = Modifier,
   bottomAnimationFinished: Boolean,
-  isVisible: Boolean = true,
   stepId: String
 )

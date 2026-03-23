@@ -649,7 +649,6 @@ private fun StepTopContent(
             animationSize.toDp()
           }
           ),
-        isVisible = true,
         stepId = stepItem.id.value,
       )
       Spacer(Modifier.height(4.dp))

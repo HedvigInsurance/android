@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 internal actual fun HelipadRiveAnimation(
   modifier: Modifier,
   bottomAnimationFinished: Boolean,
-  isVisible: Boolean,
   stepId: String
 ) {
 }
