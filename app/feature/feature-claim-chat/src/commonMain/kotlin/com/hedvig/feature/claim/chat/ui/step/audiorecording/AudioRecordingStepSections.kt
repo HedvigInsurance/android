@@ -544,6 +544,11 @@ private fun DynamicClock(
         color = HedvigTheme.colorScheme.textSecondary,
       )
     }
+  } else {
+    HedvigText(
+      text = "",
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
   }
 }
 
