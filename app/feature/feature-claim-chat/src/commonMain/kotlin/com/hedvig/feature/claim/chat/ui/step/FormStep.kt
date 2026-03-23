@@ -91,6 +91,7 @@ import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
 import com.hedvig.feature.claim.chat.ui.common.YesNoBubble
 import com.hedvig.feature.claim.chat.ui.sentAnswersStartPadding
+import hedvig.resources.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND
 import hedvig.resources.CLAIM_CHAT_FIELD_SEARCH_SUGGESTION
 import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MAX_CHAR
@@ -375,7 +376,8 @@ private fun FormContent(
                     SentItemCard(
                       imageLoader = imageLoader,
                       itemTitle = selected.text,
-                      itemSubtitle = selected.subtitle,
+                      itemSubtitle = if (!selected.isCustomSearchEntry) selected.subtitle else
+                        stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE),
                       itemImageUrl = selected.imageUrl,
                     )
                   }
@@ -443,10 +445,12 @@ internal fun SearchForm(
         enabled = true,
       )
     } else {
+      val subtitle = if (!selectedOption.isCustomSearchEntry) selectedOption.subtitle else
+        stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE)
       SearchItemCard(
         imageLoader = imageLoader,
         itemTitle = selectedOption.text,
-        itemSubtitle = selectedOption.subtitle,
+        itemSubtitle = subtitle,
         itemImageUrl = selectedOption.imageUrl,
         onClick = {
           focusManager.clearFocus()
@@ -456,7 +460,6 @@ internal fun SearchForm(
           }
         },
         modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = 64.dp),
-        showSubtitle = !selectedOption.text.isCustomItem()
       )
     }
   }
@@ -608,7 +611,6 @@ internal fun SearchForm(
                       imageLoader = imageLoader,
                       itemImageUrl = item.imageUrl,
                       modifier = Modifier.fillMaxWidth(),
-                      showSubtitle = true
                     )
                   }
                 }
@@ -672,7 +674,6 @@ private fun SearchItemCard(
   itemSubtitle: String?,
   itemImageUrl: String?,
   onClick: () -> Unit,
-  showSubtitle: Boolean,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
@@ -722,14 +723,14 @@ private fun SearchItemCard(
               textAlign = TextAlign.Start,
             )
             itemSubtitle?.let {
-              if (showSubtitle) {
-                HedvigText(
-                  text = itemSubtitle,
-                  textAlign = TextAlign.Start,
-                  color = HedvigTheme.colorScheme.textSecondary,
-                  style = HedvigTheme.typography.finePrint,
-                )
-              }
+
+              HedvigText(
+                text = itemSubtitle,
+                textAlign = TextAlign.Start,
+                color = HedvigTheme.colorScheme.textSecondary,
+                style = HedvigTheme.typography.finePrint,
+              )
+
             }
           }
         }
@@ -770,7 +771,7 @@ private fun SentItemCard(
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(horizontal = 16.dp)
+      modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       if (itemImageUrl != null) {
         Box(
@@ -807,22 +808,17 @@ private fun SentItemCard(
           textAlign = TextAlign.Start,
         )
         itemSubtitle?.let {
-          if (!itemTitle.isCustomItem()) {
-            HedvigText(
-              text = itemSubtitle,
-              textAlign = TextAlign.Start,
-              color = HedvigTheme.colorScheme.textSecondary,
-              style = HedvigTheme.typography.finePrint,
-            )
-          }
+          HedvigText(
+            text = itemSubtitle,
+            textAlign = TextAlign.Start,
+            color = HedvigTheme.colorScheme.textSecondary,
+            style = HedvigTheme.typography.finePrint,
+          )
+
         }
       }
     }
   }
-}
-
-internal fun String.isCustomItem(): Boolean {
-  return length >= 2 && startsWith("\"") && endsWith("\"")
 }
 
 @Composable

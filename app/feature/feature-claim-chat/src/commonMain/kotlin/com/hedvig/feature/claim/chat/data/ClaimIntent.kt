@@ -110,7 +110,10 @@ internal sealed interface StepContent {
       val value: String,
       val text: String,
       val subtitle: String?,
-      val imageUrl: String? = null
+
+      val isCustomSearchEntry: Boolean = false,
+      val imageUrl: String? = null,
+
     )
 
     enum class FieldType {
