@@ -261,6 +261,7 @@
   <string name="CONFIRM_AND_PROCEED_BUTTON">Bekräfta och fortsätt</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Notera att dina ändringar börjar gälla från och med %1$s.</string>
   <string name="CONFIRM_CHANGES_TITLE">Godkänn ändringar</string>
+  <string name="CONTACT_INFO_CHANGES_SAVED">Ändringar sparade!</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Giltigt till %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Giltigt till imorgon</string>
@@ -626,6 +627,7 @@
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Inkorrekt epostadress</string>
   <string name="PROFILE_MY_INFO_REVIEW_INFO_CARD">Se till att dina kontaktuppgifter är uppdaterade, så att vi kan nå dig om vi behöver.</string>
   <string name="PROFILE_MY_INFO_ROW_TITLE">Kontaktinfo</string>
+  <string name="PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY">Ändringar sparade</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL">Det där verkar inte vara en giltig e-postadress</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER">Det där verkar inte vara ett giltigt telefonnummer</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_OFF">Avaktiverad</string>

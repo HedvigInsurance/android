@@ -39,6 +39,7 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddOrRemove
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
@@ -94,6 +95,7 @@ import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
+  globalSnackBarState: GlobalSnackBarState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
@@ -342,6 +344,11 @@ internal fun HedvigNavHost(
       onOpenChat = ::navigateToNewConversation
     )
     profileGraph(
+      settingsDestinationNestedGraphs = {
+        deleteAccountGraph(hedvigDeepLinkContainer, navController)
+      },
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
       nestedGraphs = {
         claimHistoryGraph(
           navigateUp = navController::navigateUp,
@@ -350,10 +357,7 @@ internal fun HedvigNavHost(
           },
         )
       },
-      settingsDestinationNestedGraphs = {
-        deleteAccountGraph(hedvigDeepLinkContainer, navController)
-      },
-      navController = navController,
+      popBackStackOrFinish = popBackStackOrFinish,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
@@ -367,7 +371,6 @@ internal fun HedvigNavHost(
         navController.navigate(ClaimHistoryDestination)
       },
       openAppSettings = externalNavigator::openAppSettings,
-      openUrl = openUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
@@ -377,6 +380,7 @@ internal fun HedvigNavHost(
       onNavigateToInsuranceEvidence = {
         navController.navigate(InsuranceEvidenceGraphDestination)
       },
+      openUrl = openUrl,
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
