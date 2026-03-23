@@ -120,6 +120,8 @@ internal sealed interface ClaimChatEvent {
 
   data class RetrySubmittingTaskStep(val stepId: StepId) : ClaimChatEvent
 
+  data object FinishTaskAnimation : ClaimChatEvent
+
   data class UpdateFormFieldSearchQuery(
     val query: String,
     val stepId: StepId,
@@ -919,6 +921,15 @@ internal class ClaimChatPresenter(
             )
           }
         }
+
+        ClaimChatEvent.FinishTaskAnimation -> {
+          val step = steps.lastOrNull { it.stepContent is StepContent.Task } ?: return@CollectEvents
+          steps.updateStepWithSuccess<StepContent.Task>(step.id) { step, content ->
+            step.copy(
+              stepContent = content.copy(isAnimationFinished = true),
+            )
+          }
+        }
       }
     }
 
@@ -1034,8 +1045,9 @@ private fun handleNext(
 
 private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
   Snapshot.withMutableSnapshot {
-    removeLastIf { it.stepContent is StepContent.Task }
-    add(step)
+    val lastStepIsTask = this.lastOrNull()?.stepContent is StepContent.Task
+    //removeLastIf { it.stepContent is StepContent.Task }
+    add(step.copy(showSpinForThisStep = !lastStepIsTask))
   }
 }
 

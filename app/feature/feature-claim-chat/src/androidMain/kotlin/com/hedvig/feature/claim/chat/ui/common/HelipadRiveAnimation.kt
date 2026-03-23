@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Loop
@@ -17,6 +18,8 @@ import kotlinx.coroutines.delay
 internal actual fun HelipadRiveAnimation(
   modifier: Modifier,
   bottomAnimationFinished: Boolean,
+  isVisible: Boolean,
+  stepId: String,
 ) {
   val context = LocalContext.current
   val isDark = isSystemInDarkTheme()
@@ -30,46 +33,48 @@ internal actual fun HelipadRiveAnimation(
 
   val riveViewRef = remember { mutableStateOf<RiveAnimationView?>(null) }
   val initialAnimationDone = remember { mutableStateOf(false) }
-
-  AndroidView(
-    modifier = modifier,
-    factory = { ctx ->
-      RiveAnimationView(ctx).also { view ->
-        view.setRiveResource(
-          resId = resourceId,
-          animationName = "Idle",
-          autoplay = false,
-        )
-        riveViewRef.value = view
-      }
-    },
-  )
-
-  LaunchedEffect(bottomAnimationFinished, isDark) {
-    riveViewRef.value?.setRiveResource(
-      resId = resourceId,
-      animationName = "Idle",
-      autoplay = false,
+  if (isVisible) {
+    AndroidView(
+      modifier = modifier,
+      factory = { ctx ->
+        RiveAnimationView(ctx).also { view ->
+          view.setRiveResource(
+            resId = resourceId,
+            animationName = if (isVisible) "Idle" else "Loading",
+            autoplay = false,
+          )
+          riveViewRef.value = view
+        }
+      },
     )
-    if (!bottomAnimationFinished && !initialAnimationDone.value) {
-      delay(100L)
-      riveViewRef.value?.play(
-        animationName = "Loading intro", loop = Loop.ONESHOT,
+    LaunchedEffect(bottomAnimationFinished, isDark, stepId) {
+      riveViewRef.value?.setRiveResource(
+        resId = resourceId,
+        animationName = "Idle",
+        autoplay = false,
       )
-      delay(1000L)
-      riveViewRef.value?.play(animationName = "Loading", loop = Loop.LOOP)
-      initialAnimationDone.value = true
-    } else if (bottomAnimationFinished && initialAnimationDone.value) {
-      riveViewRef.value?.stop()
-      riveViewRef.value?.play(
-        animationName = "Loading outro", loop = Loop.ONESHOT,
-      )
-    } else {
-      riveViewRef.value?.stop()
-      riveViewRef.value?.play(
-        animationName = "Idle", loop = Loop.ONESHOT,
-      )
-      initialAnimationDone.value = false
+      if (!bottomAnimationFinished && !initialAnimationDone.value) {
+        delay(100L)
+        riveViewRef.value?.play(
+          animationName = "Loading intro", loop = Loop.ONESHOT,
+        )
+        delay(1000L)
+        riveViewRef.value?.play(animationName = "Loading", loop = Loop.LOOP)
+        initialAnimationDone.value = true
+      } else if (bottomAnimationFinished && initialAnimationDone.value) {
+        riveViewRef.value?.stop()
+        riveViewRef.value?.play(
+          animationName = "Loading outro", loop = Loop.ONESHOT,
+        )
+      } else {
+        riveViewRef.value?.stop()
+        riveViewRef.value?.play(
+          animationName = "Idle", loop = Loop.ONESHOT,
+        )
+        initialAnimationDone.value = false
+      }
     }
   }
+
+
 }

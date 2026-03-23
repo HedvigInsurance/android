@@ -5,4 +5,9 @@ import androidx.compose.ui.Modifier
 
 // Expect declaration for platform-specific implementation
 @Composable
-internal expect fun HelipadRiveAnimation(modifier: Modifier = Modifier, bottomAnimationFinished: Boolean)
+internal expect fun HelipadRiveAnimation(
+  modifier: Modifier = Modifier,
+  bottomAnimationFinished: Boolean,
+  isVisible: Boolean = true,
+  stepId: String
+)
