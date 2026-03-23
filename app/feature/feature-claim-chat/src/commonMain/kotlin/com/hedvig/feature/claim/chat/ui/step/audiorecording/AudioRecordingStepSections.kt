@@ -624,8 +624,10 @@ private fun ControlButton(
   var startRecordingCountdown by remember { mutableStateOf(false) }
   val recordingStateDescription = when (audioRecordingState) {
     is AudioRecordingStepState.AudioRecording.Recording -> stringResource(Res.string.TALKBACK_RECORDING_NOW)
-    else if (startRecordingCountdown) -> countDownText
-      else -> ""
+    is AudioRecordingStepState.AudioRecording.Playback ->
+      //stringResource(Res.string.AUDIO_RECORDER_LISTEN)
+    TODO()
+    is AudioRecordingStepState.AudioRecording.NotRecording -> if (startRecordingCountdown) countDownText else ""
   }
 
   val scale = remember { Animatable(1f) }
