@@ -14,6 +14,10 @@ import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Loop
 import kotlinx.coroutines.delay
 
+private class ViewHolder<T> {
+  var value: T? = null
+}
+
 @Composable
 internal actual fun HelipadRiveAnimation(
   modifier: Modifier,
@@ -31,7 +35,7 @@ internal actual fun HelipadRiveAnimation(
     return
   }
 
-  val riveViewRef = remember { mutableStateOf<RiveAnimationView?>(null) }
+  val riveViewRef = remember { ViewHolder<RiveAnimationView>() }
   val initialAnimationDone = remember { mutableStateOf(false) }
   if (isVisible) {
     AndroidView(
