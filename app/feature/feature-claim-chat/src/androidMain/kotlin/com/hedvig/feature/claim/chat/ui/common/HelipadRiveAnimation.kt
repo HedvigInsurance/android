@@ -18,6 +18,13 @@ private class ViewHolder<T> {
   var value: T? = null
 }
 
+private enum class HelipadAnimation(val animationName: String) {
+  IDLE("Idle"),
+  LOADING_INTRO("Loading intro"),
+  LOADING("Loading"),
+  LOADING_OUTRO("Loading outro"),
+}
+
 @Composable
 internal actual fun HelipadRiveAnimation(
   modifier: Modifier,
@@ -42,7 +49,7 @@ internal actual fun HelipadRiveAnimation(
       RiveAnimationView(ctx).also { view ->
         view.setRiveResource(
           resId = resourceId,
-          animationName = "Idle",
+          animationName = HelipadAnimation.IDLE.animationName,
           autoplay = false,
         )
         riveViewRef.value = view
@@ -56,26 +63,32 @@ internal actual fun HelipadRiveAnimation(
   LaunchedEffect(bottomAnimationFinished, isDark, stepId) {
     riveViewRef.value?.setRiveResource(
       resId = resourceId,
-      animationName = "Idle",
+      animationName = HelipadAnimation.IDLE.animationName,
       autoplay = false,
     )
     if (!bottomAnimationFinished && !initialAnimationDone.value) {
       delay(100L)
       riveViewRef.value?.play(
-        animationName = "Loading intro", loop = Loop.ONESHOT,
+        animationName = HelipadAnimation.LOADING_INTRO.animationName,
+        loop = Loop.ONESHOT,
       )
       delay(1000L)
-      riveViewRef.value?.play(animationName = "Loading", loop = Loop.LOOP)
+      riveViewRef.value?.play(
+        animationName = HelipadAnimation.LOADING.animationName,
+        loop = Loop.LOOP,
+      )
       initialAnimationDone.value = true
     } else if (bottomAnimationFinished && initialAnimationDone.value) {
       riveViewRef.value?.stop()
       riveViewRef.value?.play(
-        animationName = "Loading outro", loop = Loop.ONESHOT,
+        animationName = HelipadAnimation.LOADING_OUTRO.animationName,
+        loop = Loop.ONESHOT,
       )
     } else {
       riveViewRef.value?.stop()
       riveViewRef.value?.play(
-        animationName = "Idle", loop = Loop.ONESHOT,
+        animationName = HelipadAnimation.IDLE.animationName,
+        loop = Loop.ONESHOT,
       )
       initialAnimationDone.value = false
     }
@@ -83,3 +96,4 @@ internal actual fun HelipadRiveAnimation(
 
 
 }
+
