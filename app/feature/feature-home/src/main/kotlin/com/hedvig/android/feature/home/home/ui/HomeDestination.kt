@@ -70,6 +70,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -104,7 +105,6 @@ import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.ChatAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.CrossSellsAction
 import com.hedvig.android.feature.home.home.ui.HomeTopBarAction.FirstVetAction
 import com.hedvig.android.feature.home.home.ui.HomeUiState.Success
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder.PaymentReminder.ConnectPayment
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.memberreminders.ui.MemberReminderCardsWithoutNotification
@@ -158,7 +158,6 @@ internal fun HomeDestination(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
@@ -179,7 +178,6 @@ internal fun HomeDestination(
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    navigateToOldClaimFlow = navigateToOldClaimFlow,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
     openAppSettings = openAppSettings,
@@ -206,7 +204,6 @@ private fun HomeScreen(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
@@ -236,10 +233,8 @@ private fun HomeScreen(
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
-    navigateToOldClaimFlow = navigateToOldClaimFlow,
     navigateToClaimChat = navigateToClaimChat,
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
-    isExperimentalClaimChatEnabled = (uiState as? Success)?.isExperimentalClaimChatEnabled ?: false,
     isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
   Box(Modifier.fillMaxSize()) {
@@ -276,7 +271,6 @@ private fun HomeScreen(
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToHelpCenter = navigateToHelpCenter,
-            navigateToOldClaimFlow = navigateToOldClaimFlow,
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
@@ -423,7 +417,6 @@ private fun HomeScreenSuccess(
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
@@ -516,11 +509,7 @@ private fun HomeScreenSuccess(
           HedvigButton(
             text = stringResource(Res.string.home_tab_claim_button_text),
             onClick = {
-              if (!uiState.isExperimentalClaimChatEnabled && uiState.isProduction) {
-                navigateToOldClaimFlow()
-              } else {
-                openClaimFlowSheet()
-              }
+              openClaimFlowSheet()
             },
             enabled = true,
             modifier = Modifier
@@ -794,7 +783,6 @@ private fun PreviewHomeScreen(
             eligibleInsurancesIds = nonEmptyListOf("id"),
             flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
-          isExperimentalClaimChatEnabled = true,
           isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
@@ -804,7 +792,6 @@ private fun PreviewHomeScreen(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
@@ -835,7 +822,6 @@ private fun PreviewHomeScreenWithError() {
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},
@@ -878,7 +864,6 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           firstVetAction = null,
           chatAction = null,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = true,
           isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
@@ -888,7 +873,6 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
         openAppSettings = {},

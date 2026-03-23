@@ -38,9 +38,9 @@ internal class GetChargeDetailsUseCaseImpl(
     val futureMemberChargeWithThisId = futureMemberCharge.takeIf { it?.id == id }
     val pastMemberChargeWithThisId = pastCharges.firstOrNull { it.id == id }
     val charge = futureMemberChargeWithThisId ?: pastMemberChargeWithThisId
-    ?: ongoingChargeWithThisId ?: raise(ErrorMessage())
+      ?: ongoingChargeWithThisId ?: raise(ErrorMessage())
     val paymentsInfo = run {
-      if (futureMemberChargeWithThisId == null && ongoingChargeWithThisId == null ) {
+      if (futureMemberChargeWithThisId == null && ongoingChargeWithThisId == null) {
         // Only show payment connection information if the charge is a future charge or ongoing charge.
         // Otherwise, the payment connection info we get is not reliably correct.
         return@run PaymentsInfo.NoPresentableInfo
@@ -57,7 +57,7 @@ internal class GetChargeDetailsUseCaseImpl(
         MemberPaymentConnectionStatus.PENDING,
         MemberPaymentConnectionStatus.NEEDS_SETUP,
         MemberPaymentConnectionStatus.UNKNOWN__,
-          -> {
+        -> {
           PaymentsInfo.NoPresentableInfo
         }
       }

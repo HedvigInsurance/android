@@ -77,7 +77,7 @@ internal fun MemberPaymentDetailsDestination(
     },
     navigateUp = navigateUp,
     onChangeBankAccount = onChangeBankAccount,
-    onOpenChat = onOpenChat
+    onOpenChat = onOpenChat,
   )
 }
 
@@ -111,7 +111,7 @@ private fun MemberPaymentDetailsScreen(
           uiState,
           onChangeBankAccount,
           modifier = Modifier.weight(1f),
-          onOpenChat = onOpenChat
+          onOpenChat = onOpenChat,
         )
       }
     }
@@ -254,15 +254,18 @@ private fun MemberPaymentDetailsSuccessScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         )
       }
+
       MemberPaymentChargeMethod.KIVRA -> {
         HedvigNotificationCard(
           message = stringResource(Res.string.KIVRA_NOTIFICATION_BOX_TEXT),
           priority = NotificationDefaults.NotificationPriority.Info,
           style = NotificationDefaults.InfoCardStyle.Button(
             buttonText = stringResource(Res.string.DASHBOARD_OPEN_CHAT),
-            onButtonClick = onOpenChat
-          ))
+            onButtonClick = onOpenChat,
+          ),
+        )
       }
+
       MemberPaymentChargeMethod.UNKNOWN -> {}
     }
 
@@ -271,10 +274,11 @@ private fun MemberPaymentDetailsSuccessScreen(
 }
 
 private sealed interface PaymentExplanationData {
-  data object Kivra: PaymentExplanationData
-  data class Trustly(val dueDate: String): PaymentExplanationData
+  data object Kivra : PaymentExplanationData
 
-  data object UnKnown: PaymentExplanationData
+  data class Trustly(val dueDate: String) : PaymentExplanationData
+
+  data object UnKnown : PaymentExplanationData
 }
 
 @Composable
@@ -351,7 +355,7 @@ internal fun MemberPaymentDetailsScreenPreview(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }
@@ -369,7 +373,7 @@ private class MemberPaymentDetailsUiStatePreviewParameterProvider() :
           displayName = "displayName",
           mandate = "hedvig mandate",
           paymentMethod = "bankgiro",
-          chargeMethod = MemberPaymentChargeMethod.TRUSTLY
+          chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
         ),
       ),
       MemberPaymentDetailsUiState.Success(
@@ -379,7 +383,7 @@ private class MemberPaymentDetailsUiStatePreviewParameterProvider() :
           displayName = "displayName",
           mandate = "hedvig mandate",
           paymentMethod = "Faktura",
-          chargeMethod = MemberPaymentChargeMethod.KIVRA
+          chargeMethod = MemberPaymentChargeMethod.KIVRA,
         ),
       ),
       MemberPaymentDetailsUiState.Success(
@@ -389,7 +393,7 @@ private class MemberPaymentDetailsUiStatePreviewParameterProvider() :
           displayName = "displayName",
           mandate = "hedvig mandate",
           paymentMethod = "bankgiro",
-          chargeMethod = MemberPaymentChargeMethod.UNKNOWN
+          chargeMethod = MemberPaymentChargeMethod.UNKNOWN,
         ),
       ),
     ),

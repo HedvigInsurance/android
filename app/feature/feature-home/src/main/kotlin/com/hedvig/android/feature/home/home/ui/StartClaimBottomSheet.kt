@@ -37,7 +37,6 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
 import com.hedvig.android.design.system.hedvig.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -57,10 +56,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun StartClaimBottomSheet(
   state: HedvigBottomSheetState<Unit>,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
-  isExperimentalClaimChatEnabled: Boolean,
   isStagingEnvironment: Boolean,
 ) {
   HedvigBottomSheet(
@@ -68,9 +65,7 @@ internal fun StartClaimBottomSheet(
     content = {
       StartClaimBottomSheetContent(
         state,
-        isExperimentalClaimChatEnabled,
         navigateToClaimChat,
-        navigateToOldClaimFlow,
         isStagingEnvironment,
         navigateToClaimChatInDevMode,
       )
@@ -81,9 +76,7 @@ internal fun StartClaimBottomSheet(
 @Composable
 private fun StartClaimBottomSheetContent(
   state: HedvigBottomSheetState<Unit>,
-  isExperimentalClaimChatEnabled: Boolean,
   navigateToClaimChat: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   isStagingEnvironment: Boolean,
   navigateToClaimChatInDevMode: () -> Unit,
 ) {
@@ -110,21 +103,14 @@ private fun StartClaimBottomSheetContent(
       enabled = isChecked,
       onClick = dropUnlessResumed {
         state.dismiss {
-          if (isExperimentalClaimChatEnabled) {
-            navigateToClaimChat()
-          } else {
-            navigateToOldClaimFlow()
-          }
+          navigateToClaimChat()
         }
       },
       modifier = Modifier.fillMaxWidth(),
     )
     if (isStagingEnvironment) {
       StagingButtons(
-        isExperimentalClaimChatEnabled,
         state,
-        navigateToOldClaimFlow,
-        navigateToClaimChat,
         navigateToClaimChatInDevMode,
       )
     }
@@ -144,39 +130,13 @@ private fun StartClaimBottomSheetContent(
 }
 
 @Composable
-private fun StagingButtons(
-  isExperimentalClaimChatEnabled: Boolean,
-  state: HedvigBottomSheetState<Unit>,
-  navigateToOldClaimFlow: () -> Unit,
-  navigateToClaimChat: () -> Unit,
-  navigateToClaimChatInDevMode: () -> Unit,
-) {
+private fun StagingButtons(state: HedvigBottomSheetState<Unit>, navigateToClaimChatInDevMode: () -> Unit) {
   Column {
     Spacer(Modifier.height(16.dp))
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier.fillMaxWidth(),
     ) {
-      HedvigButton(
-        text = if (isExperimentalClaimChatEnabled) {
-          "Old claim flow"
-        } else {
-          "New claim chat"
-        },
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        buttonSize = ButtonDefaults.ButtonSize.Small,
-        onClick = dropUnlessResumed {
-          state.dismiss {
-            if (isExperimentalClaimChatEnabled) {
-              navigateToOldClaimFlow()
-            } else {
-              navigateToClaimChat()
-            }
-          }
-        },
-        modifier = Modifier.weight(1f),
-      )
       HedvigButton(
         text = "Claim Chat (Dev)",
         enabled = true,
@@ -261,9 +221,7 @@ private fun PreviewStartClaimBottomSheetContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       StartClaimBottomSheetContent(
         state = rememberHedvigBottomSheetState(),
-        isExperimentalClaimChatEnabled = true,
         navigateToClaimChat = {},
-        navigateToOldClaimFlow = {},
         isStagingEnvironment = true,
         navigateToClaimChatInDevMode = {},
       )

@@ -152,7 +152,7 @@ internal fun ClaimChatDestination(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = navigateUp,
-      openPlayStore =  openPlayStore
+      openPlayStore = openPlayStore,
     )
   }
 }
@@ -200,7 +200,7 @@ internal fun ClaimChatScreenContent(
           appPackageId = appPackageId,
           imageLoader = imageLoader,
           navigateUp = navigateUp,
-          openPlayStore = openPlayStore
+          openPlayStore = openPlayStore,
         )
       }
     }
@@ -244,7 +244,7 @@ private fun ClaimChatScreen(
         appPackageId = appPackageId,
         imageLoader = imageLoader,
         navigateUp = navigateUp,
-        openPlayStore = openPlayStore
+        openPlayStore = openPlayStore,
       )
     },
   )
@@ -291,7 +291,7 @@ private fun ClaimChatScreenContent(
       onButtonClick = when (uiState.errorSubmittingStep) {
         ClaimChatErrorMessage.NeedsUpdate -> openPlayStore
         ClaimChatErrorMessage.GeneralError -> null
-      }
+      },
     )
   }
   if (uiState.showConfirmEditDialogForStep != null) {
