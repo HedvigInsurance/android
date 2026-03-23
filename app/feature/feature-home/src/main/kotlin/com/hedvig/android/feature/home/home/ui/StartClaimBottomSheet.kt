@@ -37,7 +37,6 @@ import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
 import com.hedvig.android.design.system.hedvig.RadioGroupSize
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -87,7 +86,9 @@ private fun StartClaimBottomSheetContent(
     HedvigText(
       text = stringResource(Res.string.HONESTY_PLEDGE_HEADER),
       textAlign = TextAlign.Center,
-      modifier = Modifier.fillMaxWidth().semantics { heading() },
+      modifier = Modifier
+        .fillMaxWidth()
+        .semantics { heading() },
     )
     Spacer(Modifier.height(16.dp))
     PledgeNotes()
