@@ -10,6 +10,7 @@
     <item quantity="one">Du har %d berättigad försäkring.</item>
     <item quantity="other">Du har %d berättigade försäkringar.</item>
   </plurals>
+  <string name="A11Y_OF">av</string>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
   <string name="A11Y_SCROLL_DOWN">Skrolla längst ner på sidan</string>
@@ -209,7 +210,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
-  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Anpassad artikel</string>
+  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Anpassat objekt</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Ändra svar</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.</string>
@@ -809,6 +810,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%s per månad</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Nyp för att zooma</string>
+  <string name="TALKBACK_PLAYBACK_BUTTON_STATE">Spela upp inspelning. Knapp.</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Öka</string>
   <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>

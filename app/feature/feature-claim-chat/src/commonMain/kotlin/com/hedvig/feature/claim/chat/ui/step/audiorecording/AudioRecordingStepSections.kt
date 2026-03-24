@@ -6,8 +6,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -53,6 +51,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -119,10 +118,10 @@ import hedvig.resources.CLAIM_TRIAGING_TITLE
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
+import hedvig.resources.TALKBACK_PLAYBACK_BUTTON_STATE
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
 import hedvig.resources.claims_skip_button
-import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -624,9 +623,7 @@ private fun ControlButton(
   var startRecordingCountdown by remember { mutableStateOf(false) }
   val recordingStateDescription = when (audioRecordingState) {
     is AudioRecordingStepState.AudioRecording.Recording -> stringResource(Res.string.TALKBACK_RECORDING_NOW)
-    is AudioRecordingStepState.AudioRecording.Playback ->
-      //stringResource(Res.string.AUDIO_RECORDER_LISTEN)
-    TODO()
+    is AudioRecordingStepState.AudioRecording.Playback -> stringResource(Res.string.TALKBACK_PLAYBACK_BUTTON_STATE)
     is AudioRecordingStepState.AudioRecording.NotRecording -> if (startRecordingCountdown) countDownText else ""
   }
 
@@ -662,15 +659,18 @@ private fun ControlButton(
     countDownText = "3"
     scale.snapTo(1f)
   }
-
+  //custom description for button's "play" state includes its role and click label. Needed
+  // because when the recording is stopped but the focus is still on the same button,
+  // only the state updates, the role and label are not announced.
+  val hideFromA11y = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback
   Surface(
     shape = HedvigTheme.shapes.cornerLarge,
     modifier = modifier.clip(HedvigTheme.shapes.cornerLarge).semantics {
       stateDescription = recordingStateDescription
     }.clickable(
       enabled = isEnabled,
-      onClickLabel = onClickLabel,
-      role = Role.Button,
+      onClickLabel = if (hideFromA11y) null else onClickLabel,
+      role = if (hideFromA11y) null else Role.Button,
       onClick = {
         when (audioRecordingState) {
           AudioRecordingStepState.AudioRecording.NotRecording -> {
@@ -777,6 +777,9 @@ private fun ControlButton(
         fontSize = HedvigTheme.typography.label.fontSize,
         fontStyle = HedvigTheme.typography.label.fontStyle,
         color = if (isEnabled) HedvigTheme.colorScheme.textPrimary else HedvigTheme.colorScheme.textTertiary,
+        modifier = Modifier.semantics{
+          if (hideFromA11y) hideFromAccessibility()
+        }
       )
     }
   }
