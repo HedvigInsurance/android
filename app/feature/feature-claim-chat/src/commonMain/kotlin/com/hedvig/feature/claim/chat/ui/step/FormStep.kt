@@ -389,7 +389,9 @@ private fun FormContent(
                 val suffix = if (initialTextValue.isNotEmpty() && field.suffix != null) " ${field.suffix}" else ""
                 val textValue = "$initialTextValue$suffix"
                 Column(
-                  Modifier.fillMaxWidth().padding(start = sentAnswersStartPadding),
+                  Modifier.fillMaxWidth()
+                    .padding(start = sentAnswersStartPadding)
+                    .semantics(true) {},
                   horizontalAlignment = Alignment.End,
                 ) {
                   if (textValue.isNotEmpty()) {
