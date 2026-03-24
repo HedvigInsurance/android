@@ -11,7 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.eygraber.uri.Uri
-import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.logger.logcat
@@ -21,11 +20,13 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.AudioRecording
 import com.hedvig.feature.claim.chat.data.AudioRecordingStepState.FreeTextDescription
+import com.hedvig.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.feature.claim.chat.data.ClaimIntent
 import com.hedvig.feature.claim.chat.data.ClaimIntentId
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.FieldId
+import com.hedvig.feature.claim.chat.data.FormFieldSearchUseCase
 import com.hedvig.feature.claim.chat.data.FormSubmissionData
 import com.hedvig.feature.claim.chat.data.FormSubmissionData.FieldToSubmit
 import com.hedvig.feature.claim.chat.data.FreeTextErrorType.TooShort
@@ -118,6 +119,19 @@ internal sealed interface ClaimChatEvent {
   data class AddToShownAnimations(val stepId: StepId) : ClaimChatEvent
 
   data class RetrySubmittingTaskStep(val stepId: StepId) : ClaimChatEvent
+
+  data object FinishTaskAnimation : ClaimChatEvent
+
+  data class UpdateFormFieldSearchQuery(
+    val query: String,
+    val stepId: StepId,
+    val fieldId: FieldId,
+  ) : ClaimChatEvent
+
+  data class ClearQuery(
+    val stepId: StepId,
+    val fieldId: FieldId,
+  ) : ClaimChatEvent
 }
 
 internal sealed interface ClaimChatUiState {
@@ -131,13 +145,14 @@ internal sealed interface ClaimChatUiState {
     val currentStep: ClaimIntentStep?,
     val freeText: String?,
     val outcome: ClaimIntentOutcome?,
-    val errorSubmittingStep: ErrorMessage?,
+    val errorSubmittingStep: ClaimChatErrorMessage?,
     val currentContinueButtonLoading: Boolean = false,
     val currentSkipButtonLoading: Boolean = false,
     val showFreeTextOverlay: FreeTextRestrictions?,
     val showConfirmEditDialogForStep: StepId?,
     val stepsWithShownAnimations: List<StepId>,
     val progress: Float?,
+    val searchQuery: SearchObject?,
   ) : ClaimChatUiState
 }
 
@@ -151,9 +166,10 @@ internal class ClaimChatViewModel(
   submitFormUseCase: SubmitFormUseCase,
   submitSelectUseCase: SubmitSelectUseCase,
   submitSummaryUseCase: SubmitSummaryUseCase,
-  audioRecordingManager: AudioRecordingManager,
+  private val audioRecordingManager: AudioRecordingManager,
   skipStepUseCase: SkipStepUseCase,
   regretStepUseCase: RegretStepUseCase,
+  formFieldSearchUseCase: FormFieldSearchUseCase,
   fileService: FileService,
 ) : MoleculeViewModel<ClaimChatEvent, ClaimChatUiState>(
     ClaimChatUiState.Initializing,
@@ -171,8 +187,14 @@ internal class ClaimChatViewModel(
       audioRecordingManager,
       fileService,
       regretStepUseCase,
+      formFieldSearchUseCase,
     ),
-  )
+  ) {
+  override fun onCleared() {
+    super.onCleared()
+    audioRecordingManager.reset()
+  }
+}
 
 internal class ClaimChatPresenter(
   private val developmentFlow: Boolean,
@@ -188,6 +210,7 @@ internal class ClaimChatPresenter(
   private val audioRecordingManager: AudioRecordingManager,
   private val fileService: FileService,
   private val regretStepUseCase: RegretStepUseCase,
+  private val formFieldSearchUseCase: FormFieldSearchUseCase,
 ) : MoleculePresenter<ClaimChatEvent, ClaimChatUiState> {
   @Composable
   override fun MoleculePresenterScope<ClaimChatEvent>.present(lastState: ClaimChatUiState): ClaimChatUiState {
@@ -210,7 +233,7 @@ internal class ClaimChatPresenter(
     var showFreeTextOverlay by remember { mutableStateOf<FreeTextRestrictions?>(null) }
     var currentContinueButtonLoading by remember { mutableStateOf(false) }
     var currentSkipButtonLoading by remember { mutableStateOf(false) }
-    var errorSubmittingStep by remember { mutableStateOf<ErrorMessage?>(null) }
+    var errorSubmittingStep by remember { mutableStateOf<ClaimChatErrorMessage?>(null) }
     var freeText by remember { mutableStateOf<String?>(null) }
     var showConfirmEditDialogForStep by remember { mutableStateOf<StepId?>(null) }
     var progress by remember {
@@ -222,6 +245,8 @@ internal class ClaimChatPresenter(
     val stepsWithShownAnimations = remember { mutableStateListOf<StepId>() }
 
     val setOutcome: (ClaimIntentOutcome) -> Unit = { outcome = it }
+
+    var searchQuery by remember { mutableStateOf<SearchObject?>(null) }
 
     if (initializing) {
       LaunchedEffect(Unit) {
@@ -277,6 +302,44 @@ internal class ClaimChatPresenter(
         ) { progress = it }
       },
     )
+
+    LaunchedEffect(searchQuery) {
+      val query = searchQuery
+      if (query != null) {
+        val searchResult = formFieldSearchUseCase.invoke(
+          stepId = query.stepId.value,
+          fieldId = query.fieldId,
+          query = query.query,
+        ).getOrNull()
+        steps.updateStepWithSuccess<StepContent.Form>(query.stepId) { step, content ->
+          val newFields = content.fields.map { field ->
+            if (field.id.value == query.fieldId) {
+              when (field.type) {
+                FieldType.SEARCH,
+                -> {
+                  field.copy(
+                    foundOptionsInSearch = searchResult?.options ?: emptyList(),
+                    suggestedFixedQuery = searchResult?.suggestedFixedQuery,
+                  )
+                }
+
+                else -> {
+                  field
+                } // shouldn't happen
+              }
+            } else {
+              field
+            }
+          }
+
+          step.copy(
+            stepContent = content.copy(
+              fields = newFields,
+            ),
+          )
+        }
+      }
+    }
 
     CollectEvents { event ->
       when (event) {
@@ -349,7 +412,7 @@ internal class ClaimChatPresenter(
                       logcat { "ClaimChatEvent.AudioRecording.SubmitAudioFile error: $it" }
                     },
                     ifRight = { claimIntent ->
-                      audioRecordingManager.cleanup()
+                      audioRecordingManager.reset()
                       currentContinueButtonLoading = false
                       handleNext(
                         steps,
@@ -374,6 +437,7 @@ internal class ClaimChatPresenter(
                       logcat { "ClaimChatEvent.AudioRecording.SubmitTextInput error: $it" }
                     },
                     ifRight = { claimIntent ->
+                      audioRecordingManager.reset()
                       currentContinueButtonLoading = false
                       handleNext(
                         steps,
@@ -555,7 +619,7 @@ internal class ClaimChatPresenter(
             }
           } catch (e: Exception) {
             logcat { "ClaimChatEvent.AddFile error: $e" }
-            errorSubmittingStep = ErrorMessage()
+            errorSubmittingStep = ClaimChatErrorMessage.GeneralError
           }
         }
 
@@ -707,11 +771,21 @@ internal class ClaimChatPresenter(
                     )
                   }
 
-                  FieldType.DATE -> {
-                    field.copy(hasError = null)
+                  FieldType.SEARCH -> {
+                    field.copy(
+                      selectedOptions = event.answer?.let {
+                        listOf(it)
+                      } ?: emptyList(),
+                      hasError = null,
+                      searchData = field.searchData?.copy(suggestedQuery = searchQuery?.query),
+                      suggestedFixedQuery = null,
+                    )
                   }
 
                   // Date gets selected date from DatePickerState, not from Event
+                  FieldType.DATE -> {
+                    field.copy(hasError = null)
+                  }
 
                   FieldType.MULTI_SELECT -> {
                     field.copy(
@@ -733,7 +807,7 @@ internal class ClaimChatPresenter(
                 field
               }
             }
-
+            searchQuery = null
             step.copy(
               stepContent = content.copy(
                 fields = newFields,
@@ -823,6 +897,39 @@ internal class ClaimChatPresenter(
             )
           }
         }
+
+        is ClaimChatEvent.UpdateFormFieldSearchQuery -> {
+          searchQuery = SearchObject(
+            fieldId = event.fieldId.value,
+            stepId = event.stepId,
+            query = event.query,
+          )
+        }
+
+        is ClaimChatEvent.ClearQuery -> {
+          searchQuery = null
+          steps.updateStepWithSuccess<StepContent.Form>(event.stepId) { step, content ->
+            val newFields = content.fields.map { field ->
+              if (field.id == event.fieldId) {
+                field.copy(foundOptionsInSearch = emptyList())
+              } else {
+                field
+              }
+            }
+            step.copy(
+              stepContent = content.copy(fields = newFields),
+            )
+          }
+        }
+
+        ClaimChatEvent.FinishTaskAnimation -> {
+          val step = steps.lastOrNull { it.stepContent is StepContent.Task } ?: return@CollectEvents
+          steps.updateStepWithSuccess<StepContent.Task>(step.id) { step, content ->
+            step.copy(
+              stepContent = content.copy(isAnimationFinished = true),
+            )
+          }
+        }
       }
     }
 
@@ -844,6 +951,7 @@ internal class ClaimChatPresenter(
         showConfirmEditDialogForStep = showConfirmEditDialogForStep,
         stepsWithShownAnimations = stepsWithShownAnimations,
         progress = progress,
+        searchQuery = searchQuery,
       )
 
       else -> error("")
@@ -861,7 +969,7 @@ private fun ObserveIncompleteTaskEffect(
   getClaimIntentUseCase: GetClaimIntentUseCase,
   currentStep: ClaimIntentStep?,
   claimIntentId: () -> ClaimIntentId?,
-  onFailure: (StepId, ErrorMessage) -> Unit,
+  onFailure: (StepId, ClaimChatErrorMessage) -> Unit,
   steps: SnapshotStateList<ClaimIntentStep>,
 ) {
   val stepContent = currentStep?.stepContent as? StepContent.Task
@@ -899,7 +1007,7 @@ private fun ObserveIncompleteTaskEffect(
 private fun SubmitCompleteTaskEffect(
   submitTaskUseCase: SubmitTaskUseCase,
   currentStep: ClaimIntentStep?,
-  onFailure: (StepId, ErrorMessage) -> Unit,
+  onFailure: (StepId, ClaimChatErrorMessage) -> Unit,
   onSuccess: (ClaimIntent) -> Unit,
 ) {
   val isCompleteTask = (currentStep?.stepContent as? StepContent.Task)?.isCompleted == true
@@ -937,8 +1045,8 @@ private fun handleNext(
 
 private fun SnapshotStateList<ClaimIntentStep>.replaceTaskWithNextStep(step: ClaimIntentStep) {
   Snapshot.withMutableSnapshot {
-    removeLastIf { it.stepContent is StepContent.Task }
-    add(step)
+    val lastStepIsTask = this.lastOrNull()?.stepContent is StepContent.Task
+    add(step.copy(showSpinForThisStep = !lastStepIsTask))
   }
 }
 
@@ -1003,9 +1111,9 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
 
 private fun onTaskSubmissionFailed(
   failedStepId: StepId,
-  errorMessage: ErrorMessage,
+  errorMessage: ClaimChatErrorMessage,
   steps: SnapshotStateList<ClaimIntentStep>,
-  setErrorMessage: (ErrorMessage) -> Unit,
+  setErrorMessage: (ClaimChatErrorMessage) -> Unit,
 ) {
   steps.updateStepWithSuccess<StepContent.Task>(failedStepId) { step, content ->
     step.copy(stepContent = content.copy(failedToSubmit = true))
@@ -1052,3 +1160,9 @@ private fun validateField(field: Field): Field {
 
   return field.copy(hasError = null)
 }
+
+internal data class SearchObject(
+  val fieldId: String,
+  val stepId: StepId,
+  val query: String,
+)

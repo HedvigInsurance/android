@@ -26,9 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.0.6"
-
-    vectorDrawables.useSupportLibrary = true
+    versionName = "14.0.8"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -148,6 +146,7 @@ dependencies {
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
+  implementation(libs.rive.android)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)

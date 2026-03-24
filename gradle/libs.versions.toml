@@ -22,7 +22,7 @@ googleServices = "4.4.4"
 gradleDevelocity = "4.3.2"
 kmpNativeCoroutines = "1.0.1"
 kotlin = "2.3.10"
-kotlinter = "5.4.0"
+kotlinter = "5.4.2"
 ksp = "2.3.2"
 ktor = "3.4.0"
 license = "0.9.8"
@@ -32,6 +32,7 @@ squareSortDependencies = "0.16"
 
 # Other versions sorted alphabetically
 accompanist = "0.37.3"
+rive = "11.2.1"
 androidx-activity-compose = "1.12.3"
 androidx-activity-core = "1.12.3"
 androidx-annotation = "1.9.1"
@@ -227,6 +228,7 @@ room-ksp = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+rive-android = { module = "app.rive:rive-android", version.ref = "rive" }
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 testParameterInjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "testParameterInjector" }

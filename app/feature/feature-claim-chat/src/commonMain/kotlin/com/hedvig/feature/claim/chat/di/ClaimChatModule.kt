@@ -7,6 +7,8 @@ import com.hedvig.android.core.fileupload.FileUploadService
 import com.hedvig.android.language.LanguageService
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
 import com.hedvig.feature.claim.chat.data.AudioRecordingManager
+import com.hedvig.feature.claim.chat.data.FormFieldSearchUseCase
+import com.hedvig.feature.claim.chat.data.FormFieldSearchUseCaseImpl
 import com.hedvig.feature.claim.chat.data.GetClaimIntentUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCase
 import com.hedvig.feature.claim.chat.data.RegretStepUseCaseImpl
@@ -40,12 +42,19 @@ val claimChatModule = module {
       get<AudioRecordingManager>(),
       get<SkipStepUseCase>(),
       get<RegretStepUseCase>(),
-      get<FileService>(),
+      fileService = get<FileService>(),
+      formFieldSearchUseCase = get<FormFieldSearchUseCase>(),
     )
   }
 
   single<SkipStepUseCase> {
     SkipStepUseCaseImpl(get<ApolloClient>(), get<LanguageService>())
+  }
+
+  single<FormFieldSearchUseCase> {
+    FormFieldSearchUseCaseImpl(
+      get<ApolloClient>(),
+    )
   }
 
   single<StartClaimIntentUseCase> {

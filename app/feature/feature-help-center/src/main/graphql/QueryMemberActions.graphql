@@ -12,6 +12,7 @@ query MemberActions {
       isCancelInsuranceEnabled
       isConnectPaymentEnabled
       isEditCoInsuredEnabled
+      isEditCoOwnersEnabled
       isMovingEnabled
       isTravelCertificateEnabled
       isChangeTierEnabled

@@ -5,6 +5,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
@@ -28,13 +30,15 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.profileGraph(
-  nestedGraphs: NavGraphBuilder.() -> Unit,
   settingsDestinationNestedGraphs: NavGraphBuilder.() -> Unit,
+  nestedGraphs: NavGraphBuilder.() -> Unit,
+  globalSnackBarState: GlobalSnackBarState,
   navController: NavController,
+  popBackStackOrFinish: () -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
-  navigateToAddMissingInfo: (contractId: String) -> Unit,
+  navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
   navigateToDeleteAccountFeature: () -> Unit,
   navigateToClaimHistory: () -> Unit,
   openAppSettings: () -> Unit,
@@ -70,8 +74,8 @@ fun NavGraphBuilder.profileGraph(
           navController.navigate(Certificates)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
-        navigateToAddMissingInfo = dropUnlessResumed { contractId: String ->
-          navigateToAddMissingInfo(contractId)
+        navigateToAddMissingInfo = dropUnlessResumed { contractId: String, type: CoInsuredFlowType ->
+          navigateToAddMissingInfo(contractId, type)
         },
         openAppSettings = openAppSettings,
         openUrl = openUrl,
@@ -96,7 +100,9 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: ContactInfoViewModel = koinViewModel()
       ContactInfoDestination(
         viewModel = viewModel,
+        globalSnackBarState = globalSnackBarState,
         navigateUp = navController::navigateUp,
+        popBackStack = popBackStackOrFinish,
       )
     }
     navdestination<ProfileDestinations.AboutApp> {

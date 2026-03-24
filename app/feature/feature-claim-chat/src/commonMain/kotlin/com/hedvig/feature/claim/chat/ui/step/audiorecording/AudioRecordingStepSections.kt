@@ -99,6 +99,7 @@ import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.common.EditButton
 import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
+import com.hedvig.feature.claim.chat.ui.sentAnswersStartPadding
 import hedvig.resources.AUDIO_RECORDER_LISTEN
 import hedvig.resources.AUDIO_RECORDER_SEND
 import hedvig.resources.AUDIO_RECORDER_START
@@ -278,7 +279,7 @@ internal fun AudioRecorderBubble(
                 )
                 HedvigAudioPlayer(
                   audioPlayer = audioPlayer,
-                  Modifier.padding(start = 45.dp),
+                  Modifier.padding(start = sentAnswersStartPadding),
                 )
               } else {
                 SkippedLabel()
@@ -367,7 +368,7 @@ private fun AudioRecordingBottomSheet(
         textAlign = TextAlign.Center,
       )
       DynamicClock(audioRecordingState, clock, audioPlayer)
-      Spacer(Modifier.height(24.dp))
+      Spacer(Modifier.height(16.dp))
 
       AnimatedContent(
         targetState = audioRecordingState,
@@ -543,6 +544,11 @@ private fun DynamicClock(
         color = HedvigTheme.colorScheme.textSecondary,
       )
     }
+  } else {
+    HedvigText(
+      text = "",
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
   }
 }
 
@@ -962,6 +968,7 @@ private fun AudioWaves(
     }
 
     val centerY = size.height / 2f
+    val spacing = size.width / (numberOfWaves - 1)
 
     waveStates.forEachIndexed { waveIndex, waveState ->
       val heightPercentage = waveState.animatable.value
@@ -974,7 +981,7 @@ private fun AudioWaves(
       }
 
       val lineHeight = WAVE_MAX_HEIGHT.toPx() * heightPercentage
-      val x = waveIndex * (WAVE_WIDTH + WAVE_SPACING).toPx()
+      val x = waveIndex * spacing
       val startY = centerY - lineHeight / 2f
       val endY = centerY + lineHeight / 2f
 

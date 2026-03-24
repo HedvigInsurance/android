@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.TopAppBarDefaults.windowInsets
@@ -210,12 +211,14 @@ enum class TopAppBarActionType {
   CLOSE,
 }
 
-internal object TopAppBarDefaults {
+object TopAppBarDefaults {
   val windowInsets: WindowInsets
     @Composable
     get() = WindowInsets.systemBars
       .union(WindowInsets.displayCutout)
       .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+
+  val containerHeight: Dp = TopAppBarTokens.ContainerHeight
 }
 
 data class TopAppBarColors(

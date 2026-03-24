@@ -41,6 +41,11 @@ fragment FormFragment on ClaimIntentStepContentForm {
     defaultValues
     minValue
     maxValue
+    searchData {
+      suggestedQuery
+      modalTitle
+      modalSubtitle
+    }
   }
   isSkippable
 }

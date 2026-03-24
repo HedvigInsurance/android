@@ -95,6 +95,8 @@ import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
 import hedvig.resources.CONTRACT_COINSURED
 import hedvig.resources.CONTRACT_COINSURED_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
+import hedvig.resources.CONTRACT_COOWNER
+import hedvig.resources.CONTRACT_COOWNERS_ADD_PERSONAL_INFO
 import hedvig.resources.CONTRACT_EDIT_INFO_LABEL
 import hedvig.resources.CONTRACT_NO_INFORMATION
 import hedvig.resources.CONTRACT_OVERVIEW_ADDON_ACTIVATES_DATE
@@ -125,16 +127,20 @@ internal fun YourInfoTab(
   contractId: String,
   coverageItems: List<DisplayItem>,
   coInsured: List<CoInsured>,
+  coOwners: List<CoInsured>,
   allowChangeAddress: Boolean,
   allowTerminatingInsurance: Boolean,
   allowEditCoInsured: Boolean,
+  allowEditCoOwners: Boolean,
   allowChangeTier: Boolean,
   allowRemovingAddon: Boolean,
   onChangeTierClick: () -> Unit,
   isDecommissioned: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
   onEditCoInsuredClick: () -> Unit,
-  onMissingInfoClick: () -> Unit,
+  onEditCoOwnersClick: () -> Unit,
+  onMissingCoInsuredInfoClick: () -> Unit,
+  onMissingCoOwnersInfoClick: () -> Unit,
   onChangeAddressClick: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
@@ -158,6 +164,7 @@ internal fun YourInfoTab(
     EditInsuranceBottomSheetContent(
       allowTerminatingInsurance = allowTerminatingInsurance,
       allowEditCoInsured = allowEditCoInsured,
+      allowEditCoOwners = allowEditCoOwners,
       allowChangeTier = allowChangeTier,
       allowRemovingAddon = allowRemovingAddon,
       onChangeTierClick = {
@@ -167,6 +174,10 @@ internal fun YourInfoTab(
       onEditCoInsuredClick = {
         editYourInfoBottomSheet.dismiss()
         onEditCoInsuredClick()
+      },
+      onEditCoOwnersClick = {
+        editYourInfoBottomSheet.dismiss()
+        onEditCoOwnersClick()
       },
       onDismiss = {
         editYourInfoBottomSheet.dismiss()
@@ -196,9 +207,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                addon.premium.toString(),
-              ),
+              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+              addon.premium.toString(),
+            ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -289,26 +300,52 @@ internal fun YourInfoTab(
           onInfoIconClick,
           Modifier.padding(horizontal = 16.dp),
         )
-        if (allowEditCoInsured) {
+        if (allowEditCoInsured && coInsured.isNotEmpty()) {
           HorizontalDivider(Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
           CoInsuredSection(
             coInsuredList = coInsured,
             contractHolderDisplayName = contractHolderDisplayName,
             contractHolderSSN = contractHolderSSN,
+            isCoOwner = false,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+        }
+        if (allowEditCoOwners && coOwners.isNotEmpty()) {
+          HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+          Spacer(Modifier.height(16.dp))
+          CoInsuredSection(
+            coInsuredList = coOwners,
+            contractHolderDisplayName = contractHolderDisplayName,
+            contractHolderSSN = contractHolderSSN,
+            isCoOwner = true,
             modifier = Modifier.padding(horizontal = 16.dp),
           )
         }
       }
     }
-    val hasMissingInfoAndIsNotTerminating = coInsured.any { it.hasMissingInfo && it.terminatesOn == null }
-    if (hasMissingInfoAndIsNotTerminating) {
+    val hasMissingCoInsuredInfoAndIsNotTerminating = coInsured.any { it.hasMissingInfo && it.terminatesOn == null }
+    if (hasMissingCoInsuredInfoAndIsNotTerminating) {
       HedvigNotificationCard(
         message = stringResource(Res.string.CONTRACT_COINSURED_ADD_PERSONAL_INFO),
         priority = Attention,
         style = Button(
           stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
-          onMissingInfoClick,
+          onMissingCoInsuredInfoClick,
+        ),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    }
+    val hasMissingCoOwnerInfoAndIsNotTerminating = coOwners.any { it.hasMissingInfo && it.terminatesOn == null }
+    if (hasMissingCoOwnerInfoAndIsNotTerminating) {
+      HedvigNotificationCard(
+        message = stringResource(Res.string.CONTRACT_COOWNERS_ADD_PERSONAL_INFO),
+        priority = Attention,
+        style = Button(
+          stringResource(Res.string.CONTRACT_COINSURED_MISSING_ADD_INFO),
+          onMissingCoOwnersInfoClick,
         ),
         modifier = Modifier
           .fillMaxWidth()
@@ -325,7 +362,7 @@ internal fun YourInfoTab(
     )
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (allowEditCoInsured || allowChangeTier || allowTerminatingInsurance) {
+        if (allowEditCoInsured || allowEditCoOwners || allowChangeTier || allowTerminatingInsurance) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
             enabled = true,
@@ -389,7 +426,7 @@ private fun AddonsSection(
     ) {
       Column {
         existingAddons.forEachIndexed { index, existingAddon ->
-          val isRemovingDisabled =existingAddon.status is ContractAddon.Status.EndsAt
+          val isRemovingDisabled = existingAddon.status is ContractAddon.Status.EndsAt
           AddonRow(
             title = existingAddon.displayName,
             description = when (val status = existingAddon.status) {
@@ -415,7 +452,7 @@ private fun AddonsSection(
             isRemovingDisabled = isRemovingDisabled,
             onLabelClick = {
               removeAddonBottomSheetState.show(existingAddon)
-            }
+            },
           )
         }
         availableAddons.forEachIndexed { index, availableAddon ->
@@ -426,7 +463,7 @@ private fun AddonsSection(
             isAlreadyAdded = false,
             modifier = Modifier.clickable(onClick = dropUnlessResumed { navigateToAddAddon(availableAddon) }),
             isRemovingDisabled = false,
-            onLabelClick = dropUnlessResumed { navigateToAddAddon(availableAddon) }
+            onLabelClick = dropUnlessResumed { navigateToAddAddon(availableAddon) },
           )
         }
       }
@@ -560,23 +597,26 @@ private fun AddonRow(
             onClick = {},
             enabled = false,
             buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            buttonSize =  ButtonDefaults.ButtonSize.Small,
-            text = stringResource(Res.string.ADDON_ADDED_COVERAGE)
+            buttonSize = ButtonDefaults.ButtonSize.Small,
+            text = stringResource(Res.string.ADDON_ADDED_COVERAGE),
           )
         }
       } else {
         HedvigButton(
           onClick = onLabelClick,
           enabled = true,
-          buttonStyle = if (isAlreadyAdded) ButtonDefaults.ButtonStyle.Secondary
-            else ButtonDefaults.ButtonStyle.PrimaryAlt,
-          buttonSize =  ButtonDefaults.ButtonSize.Small,
+          buttonStyle = if (isAlreadyAdded) {
+            ButtonDefaults.ButtonStyle.Secondary
+          } else {
+            ButtonDefaults.ButtonStyle.PrimaryAlt
+          },
+          buttonSize = ButtonDefaults.ButtonSize.Small,
           text = if (isAlreadyAdded) {
             stringResource(Res.string.ADDON_ADDED_COVERAGE)
           } else {
             stringResource(Res.string.CONTRACT_OVERVIEW_ADDON_ADD)
           },
-          modifier =Modifier.wrapContentSize(Alignment.TopEnd),
+          modifier = Modifier.wrapContentSize(Alignment.TopEnd),
         )
       }
     },
@@ -680,6 +720,7 @@ internal fun CoInsuredSection(
   coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
+  isCoOwner: Boolean,
   modifier: Modifier,
 ) {
   val dateTimeFormatter = rememberHedvigDateTimeFormatter()
@@ -759,7 +800,11 @@ internal fun CoInsuredSection(
             Column {
               HedvigText(
                 text = coInsured.getDisplayName().ifBlank {
-                  stringResource(Res.string.CONTRACT_COINSURED)
+                  if (isCoOwner) {
+                    stringResource(Res.string.CONTRACT_COOWNER)
+                  } else {
+                    stringResource(Res.string.CONTRACT_COINSURED)
+                  }
                 },
               )
 
@@ -849,9 +894,11 @@ private fun PreviewYourInfoTab() {
             hasMissingInfo = true,
           ),
         ),
+        coOwners = listOf(),
         allowChangeAddress = true,
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
+        allowEditCoOwners = false,
         allowChangeTier = true,
         allowRemovingAddon = true,
         onChangeTierClick = {},
@@ -898,6 +945,7 @@ private fun PreviewYourInfoTab() {
               hasMissingInfo = false,
             ),
           ),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.RENEWAL,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -908,7 +956,9 @@ private fun PreviewYourInfoTab() {
           ),
         ),
         onEditCoInsuredClick = {},
-        onMissingInfoClick = {},
+        onEditCoOwnersClick = {},
+        onMissingCoInsuredInfoClick = {},
+        onMissingCoOwnersInfoClick = {},
         onChangeAddressClick = {},
         onNavigateToNewConversation = {},
         openUrl = {},
@@ -946,7 +996,7 @@ private fun PreviewYourInfoTab() {
             ),
             displayName = "DisplayName",
             description = "Description",
-            status = ContractAddon.Status.EndsAt(LocalDate(2026,10,1)),
+            status = ContractAddon.Status.EndsAt(LocalDate(2026, 10, 1)),
             isUpgradable = false,
             isRemovable = false,
           ),

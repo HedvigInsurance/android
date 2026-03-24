@@ -19,19 +19,27 @@ internal class SubmitAudioRecordingUseCase(
   private val uploadFileUseCase: UploadFileUseCase,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(stepId: StepId, freeText: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId, freeText: String): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either { invoke(stepId, null, freeText) }
   }
 
-  suspend fun invoke(stepId: StepId, commonFile: CommonFile, uploadUrl: String): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(
+    stepId: StepId,
+    commonFile: CommonFile,
+    uploadUrl: String,
+  ): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
-      val fileId = uploadFileUseCase.invoke(commonFile, uploadUrl).fileId
+      val uploadResult = either {
+        uploadFileUseCase.invoke(commonFile, uploadUrl)
+      }.mapLeft { ClaimChatErrorMessage.GeneralError }
+        .bind()
+      val fileId = uploadResult.fileId
       logcat { "SubmitFileUploadUseCase uploaded file with Uri:${commonFile.fileName} got back fileId:$fileId" }
       invoke(stepId, fileId, null)
     }
   }
 
-  context(_: Raise<ErrorMessage>)
+  context(_: Raise<ClaimChatErrorMessage>)
   private suspend fun invoke(stepId: StepId, commonFileId: CommonFileId?, freeText: String?): ClaimIntent {
     return apolloClient
       .mutation(
@@ -46,7 +54,7 @@ internal class SubmitAudioRecordingUseCase(
       .safeExecute()
       .mapLeft {
         logcat { "SubmitAudioRecordingUseCase error: $it" }
-        ErrorMessage()
+        ClaimChatErrorMessage.GeneralError
       }
       .bind()
       .claimIntentSubmitAudio
