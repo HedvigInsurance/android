@@ -39,7 +39,9 @@ internal fun TaskStepTopContent(
   val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
   Column(
     modifier.clearAndSetSemantics {
-      contentDescription = taskContentDescription
+      if (isLastStep) {
+        contentDescription = taskContentDescription
+      }
       if (taskContent.failedToSubmit) {
         hideFromAccessibility()
       }
