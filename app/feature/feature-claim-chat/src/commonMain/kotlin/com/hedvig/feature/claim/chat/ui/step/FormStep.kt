@@ -704,7 +704,7 @@ private fun SearchItemCard(
             ) {
               AsyncImage(
                 model = itemImageUrl,
-                contentDescription = itemTitle,
+                contentDescription = EmptyContentDescription,
                 placeholder = crossSellPainterFallback(),
                 error = crossSellPainterFallback(),
                 fallback = crossSellPainterFallback(),
@@ -787,7 +787,7 @@ private fun SentItemCard(
         ){
           AsyncImage(
             model = itemImageUrl,
-            contentDescription = itemTitle,
+            contentDescription = EmptyContentDescription,
             placeholder = crossSellPainterFallback(),
             error = crossSellPainterFallback(),
             fallback = crossSellPainterFallback(),
