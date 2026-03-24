@@ -284,7 +284,12 @@ private fun SelectedSurveyInfoBox(
       selectedReason.suggestion != null &&
       !selectedReason.isDisabled &&
       selectedReason.suggestion.type !in
-      setOf(SuggestionType.AUTO_DECOMMISSION, SuggestionType.AUTO_CANCEL, SuggestionType.UNKNOWN)
+      setOf(
+        SuggestionType.AUTO_DECOMMISSION,
+        SuggestionType.AUTO_CANCEL_SOLD,
+        SuggestionType.AUTO_CANCEL_SCRAPPED,
+        SuggestionType.UNKNOWN,
+      )
     ) {
       Column {
         val suggestion = selectedReason.suggestion

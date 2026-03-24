@@ -455,19 +455,6 @@ type AvailableAddon {
   """
   description: String!
 }
-type AvailablePaymentMethodsResponse {
-  paymentMethodsResponse: PaymentMethodsResponse!
-}
-input BrowserInfo {
-  userAgent: String!
-  acceptHeader: String!
-  language: String!
-  colorDepth: Int!
-  screenHeight: Int!
-  screenWidth: Int!
-  timeZoneOffset: Int!
-  javaEnabled: Boolean!
-}
 """
 Yearly savings from bundle discount
 """
@@ -820,7 +807,6 @@ type ChatMessageTextAction {
   url: Url!
   title: String!
 }
-scalar CheckoutPaymentsAction
 type Claim {
   id: ID!
   """
@@ -1077,6 +1063,7 @@ type ClaimIntentStepContentFormFieldOption {
   title: String!
   subtitle: String
   imageUrl: String
+  isCustomSearchEntry: Boolean!
   value: ClaimIntentStepContentFormFieldValue!
 }
 type ClaimIntentStepContentFormFieldSearchData {
@@ -2445,7 +2432,6 @@ type Member {
    Get contract info during termination flow. Null if no message to display. 
   """
   terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
-  hasActivePaymentConnection: Boolean! @deprecated(reason: "Use `paymentInformation.status` instead")
   """
   Current bundle discount information for this member's non terminated contracts (active, future or pending).
   Returns null for members that have a contract configuration that don't enable bundle discount.
@@ -2504,6 +2490,10 @@ type Member {
   isEligibleToMakeClaim: Boolean!
   memberActions: MemberActions
   """
+   Get contract info during termination flow. Null if no message to display. 
+  """
+  terminationNotification(input: TerminationFlowNotificationInput!): TerminationFlowNotification
+  """
   Call this to get the info to show banner.
   If empty list is returned then member is not eligible for the addon.
   """
@@ -2532,6 +2522,7 @@ type MemberActions {
   isMovingEnabled: Boolean!
   isConnectPaymentEnabled: Boolean!
   isEditCoInsuredEnabled: Boolean!
+  isEditCoOwnersEnabled: Boolean!
   isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
   isChangeTierEnabled: Boolean!
@@ -2638,7 +2629,7 @@ enum MemberChargeStatus {
   """
   SUCCESS
   """
-  The charge is pending that means either has been send to payment-service or to the payment provider
+  The charge is pending that means either has been send to the payment provider
   """
   PENDING
   """
@@ -2735,7 +2726,16 @@ type MemberPaymentChargeMethodInfo {
   """
   A date of the month when the charge will happen
   """
-  chargingDayInTheMonth: Int
+  chargingDayInTheMonth: Int @deprecated(reason: "Use dueDate instead.")
+  """
+  Due date
+  """
+  dueDate: Int
+  """
+  Payment provider used for charging the member, eg Trustly or Kivra.
+  This is used to determine the charge schedule and mandate provider.
+  """
+  paymentProvider: String!
 }
 type MemberPaymentConnection {
   """
@@ -3377,14 +3377,6 @@ type Mutation {
   flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
   flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
   flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
-  """
-  Tokenize payment details per member in order to be used in future and returns the status
-  """
-  tokenizePaymentDetails2(req: TokenizationRequest): TokenizationResponse
-  """
-  Handle payment redirection, required for 3D Secure verification on cards
-  """
-  submitAdyenRedirection2(req: SubmitAdyenRedirectionRequest): SubmitAdyenRedirectionResponse!
   travelCertificateCreate(input: TravelCertificateCreateInput!): TravelCertificate!
   """
   The document includes details of the member’s home insurance,
@@ -3525,6 +3517,8 @@ type Mutation {
   Call this to confirm removal of selected addon(s).
   """
   addonRemoveConfirm(contractId: ID!, addonIds: [ID!]!): UserError
+  terminateContract(input: TerminationFlowTerminateContractInput!): TerminationFlowContractMutationOutput!
+  deleteContract(input: TerminationFlowDeleteContractInput!): TerminationFlowContractMutationOutput!
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when starting the add/upgrade addon flow.
@@ -3550,8 +3544,6 @@ type PartnerData {
 type PartnerWidgetTrial {
   trialContract: TrialContract!
 }
-scalar PaymentMethodDetails
-scalar PaymentMethodsResponse
 """
 A pending contract is a proto-contract that has yet to become a fully fledged insurance. It usually means it is meant
 to be activated when an existing external insurance has been cancelled (switching).
@@ -3975,6 +3967,10 @@ type ProductOfferPriceMatch {
   externalPrice: Money!
   externalInsurer: ExternalInsurer!
   priceReduction: Money!
+  """
+  Renewal date of the external insurer's policy. Null when not provided by the external insurer.
+  """
+  renewalDate: Date
 }
 type ProductOffersMutationOutput {
   productOffers: [ProductOffer!]!
@@ -4071,10 +4067,6 @@ type Query {
   currentMember: Member!
   entrypointGroups(type: EntrypointType!): [EntrypointGroup!]!
   entrypointSearch(input: EntrypointSearchInput): [Entrypoint!]!
-  """
-  Returns all the available payments methods before the client requests a tokenization
-  """
-  availablePaymentMethods2: AvailablePaymentMethodsResponse!
   shopSession(id: UUID!): ShopSession!
   carTrial(contractId: UUID!): TrialExtension
   """
@@ -4119,6 +4111,7 @@ type Query {
   Cost for selected configuration of removed addon offer
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
+  terminationSurvey(contractId: ID!): TerminationFlowSurvey!
   """
   Call this to get the cost of an addon offer for selected addon(s).
   """
@@ -4464,13 +4457,6 @@ type StoryblokImageAsset {
   src: String!
   alt: String
 }
-input SubmitAdyenRedirectionRequest {
-  md: String!
-  pares: String!
-}
-type SubmitAdyenRedirectionResponse {
-  resultCode: String!
-}
 """
 Represents a case of switching, pointing towards a soon-to-be insurance Contract on our platform.
 If it is not completed, it can be by calling `Mutation.switcherCaseComplete`.
@@ -4486,33 +4472,73 @@ type SwitcherCaseMutationOutput {
   switcherCase: SwitcherCase
   userError: UserError
 }
+union TerminationFlowAction = TerminationFlowActionTerminateWithDate|TerminationFlowActionDeleteInsurance
+type TerminationFlowActionDeleteInsurance {
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowActionTerminateWithDate {
+  minDate: Date!
+  maxDate: Date!
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowContractMutationOutput {
+  contract: Contract
+  userError: UserError
+}
+input TerminationFlowDeleteContractInput {
+  contractId: ID!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
+}
+type TerminationFlowExtraCoverageItem {
+  displayName: String!
+  displayValue: String
+}
+type TerminationFlowNotification {
+  message: String!
+  type: TerminationFlowNotificationType!
+}
 input TerminationFlowNotificationInput {
   contractId: ID!
   terminationDate: Date!
 }
-enum TokenizationChannel {
-  ANDROID
-  IOS
-  WEB
+enum TerminationFlowNotificationType {
+  INFO
+  WARNING
 }
-input TokenizationRequest {
-  paymentMethodDetails: PaymentMethodDetails!
-  channel: TokenizationChannel!
-  browserInfo: BrowserInfo
-  returnUrl: String!
+type TerminationFlowSurvey {
+  options: [TerminationFlowSurveyOption!]!
+  action: TerminationFlowAction!
 }
-union TokenizationResponse = TokenizationResponseFinished|TokenizationResponseAction
-type TokenizationResponseAction {
-  action: CheckoutPaymentsAction!
+type TerminationFlowSurveyOption {
+  id: ID!
+  title: String!
+  subOptions: [TerminationFlowSurveyOption!]!
+  feedbackRequired: Boolean!
+  suggestion: TerminationFlowSurveyOptionSuggestion
 }
-type TokenizationResponseFinished {
-  resultCode: String!
-  tokenizationResult: TokenizationResultType!
+type TerminationFlowSurveyOptionSuggestion {
+  type: TerminationFlowSurveyOptionSuggestionType!
+  description: String!
+  url: String
 }
-enum TokenizationResultType {
-  COMPLETED
-  PENDING
-  FAILED
+enum TerminationFlowSurveyOptionSuggestionType {
+  UPDATE_ADDRESS
+  UPGRADE_COVERAGE
+  DOWNGRADE_PRICE
+  REDIRECT
+  INFO
+  AUTO_CANCEL_SOLD
+  AUTO_CANCEL_SCRAPPED
+  AUTO_DECOMMISSION
+  CAR_DECOMMISSION_INFO
+  CAR_ALREADY_DECOMMISSION
+}
+input TerminationFlowTerminateContractInput {
+  contractId: ID!
+  terminationDate: Date!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
 }
 type TotalCost {
   monthlyGross: Money!

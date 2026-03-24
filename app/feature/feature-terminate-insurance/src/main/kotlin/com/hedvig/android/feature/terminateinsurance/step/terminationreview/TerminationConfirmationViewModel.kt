@@ -95,16 +95,21 @@ private class TerminationConfirmationPresenter(
         TerminationConfirmationEvent.Submit -> {
           uiState = uiState.copy(isSubmittingContractTermination = true, userError = null)
           launch {
-            val terminationDate = when (terminationType) {
-              Deletion -> null
-              is Termination -> terminationType.terminationDate
+            val result = when (terminationType) {
+              Deletion -> terminateInsuranceRepository.deleteContract(
+                contractId = insuranceInfo.contractId,
+                surveyOptionId = selectedReasonId,
+                comment = feedbackComment,
+              )
+
+              is Termination -> terminateInsuranceRepository.terminateContract(
+                contractId = insuranceInfo.contractId,
+                terminationDate = terminationType.terminationDate,
+                surveyOptionId = selectedReasonId,
+                comment = feedbackComment,
+              )
             }
-            terminateInsuranceRepository.terminateContract(
-              contractId = insuranceInfo.contractId,
-              terminationDate = terminationDate,
-              surveyOptionId = selectedReasonId,
-              comment = feedbackComment,
-            ).fold(
+            result.fold(
               ifLeft = { errorMessage ->
                 uiState = uiState.copy(
                   isSubmittingContractTermination = false,

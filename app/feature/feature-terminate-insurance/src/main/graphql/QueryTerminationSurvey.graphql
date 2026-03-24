@@ -17,7 +17,7 @@ query TerminationSurvey($contractId: ID!) {
       }
     }
     action {
-      ... on TerminateWithDate {
+      ... on TerminationFlowActionTerminateWithDate {
         minDate
         maxDate
         extraCoverage {
@@ -25,7 +25,7 @@ query TerminationSurvey($contractId: ID!) {
           displayValue
         }
       }
-      ... on DeleteInsurance {
+      ... on TerminationFlowActionDeleteInsurance {
         extraCoverage {
           displayName
           displayValue
@@ -35,7 +35,7 @@ query TerminationSurvey($contractId: ID!) {
   }
 }
 
-fragment TerminationSurveyOptionSuggestionFragment on TerminationSurveyOptionSuggestion {
+fragment TerminationSurveyOptionSuggestionFragment on TerminationFlowSurveyOptionSuggestion {
   type
   description
   url

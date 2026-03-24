@@ -298,7 +298,10 @@ private fun navigateFromSurvey(
 
   // Handle deflection suggestions as full-screen destinations
   if (suggestion != null &&
-    (suggestion.type == SuggestionType.AUTO_DECOMMISSION || suggestion.type == SuggestionType.AUTO_CANCEL)
+    (
+      suggestion.type == SuggestionType.AUTO_DECOMMISSION || suggestion.type == SuggestionType.AUTO_CANCEL_SOLD ||
+        suggestion.type == SuggestionType.AUTO_CANCEL_SCRAPPED
+    )
   ) {
     navController.navigate(
       TerminateInsuranceDestination.DeflectSuggestion(

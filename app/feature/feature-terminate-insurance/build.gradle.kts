@@ -51,6 +51,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.turbine)
   testImplementation(projects.coreCommonTest)
+  testImplementation(projects.dataProductVariantPublic)
   testImplementation(projects.loggingTest)
   testImplementation(projects.moleculeTest)
 }

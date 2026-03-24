@@ -8,16 +8,26 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
+import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
 import octopus.TerminationSurveyQuery
-import octopus.type.TerminateContractInput
+import octopus.fragment.TerminationSurveyOptionSuggestionFragment
+import octopus.type.TerminationFlowDeleteContractInput
+import octopus.type.TerminationFlowSurveyOptionSuggestionType
+import octopus.type.TerminationFlowTerminateContractInput
 
 internal interface TerminateInsuranceRepository {
   suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData>
 
   suspend fun terminateContract(
     contractId: String,
-    terminationDate: LocalDate?,
+    terminationDate: LocalDate,
+    surveyOptionId: String,
+    comment: String?,
+  ): Either<ErrorMessage, TerminationResult>
+
+  suspend fun deleteContract(
+    contractId: String,
     surveyOptionId: String,
     comment: String?,
   ): Either<ErrorMessage, TerminationResult>
@@ -39,7 +49,7 @@ internal class TerminateInsuranceRepositoryImpl(
 
   override suspend fun terminateContract(
     contractId: String,
-    terminationDate: LocalDate?,
+    terminationDate: LocalDate,
     surveyOptionId: String,
     comment: String?,
   ): Either<ErrorMessage, TerminationResult> {
@@ -47,9 +57,9 @@ internal class TerminateInsuranceRepositoryImpl(
       val result = apolloClient
         .mutation(
           TerminateContractMutation(
-            TerminateContractInput(
+            TerminationFlowTerminateContractInput(
               contractId = contractId,
-              terminationDate = Optional.presentIfNotNull(terminationDate),
+              terminationDate = terminationDate,
               terminationSurveyOptionId = surveyOptionId,
               terminationComment = Optional.presentIfNotNull(comment),
             ),
@@ -59,7 +69,33 @@ internal class TerminateInsuranceRepositoryImpl(
         .bind()
         .terminateContract
       TerminationResult(
-        terminationDate = result.terminationDate,
+        terminationDate = result.contract?.terminationDate,
+        userError = result.userError?.message,
+      )
+    }
+  }
+
+  override suspend fun deleteContract(
+    contractId: String,
+    surveyOptionId: String,
+    comment: String?,
+  ): Either<ErrorMessage, TerminationResult> {
+    return either {
+      val result = apolloClient
+        .mutation(
+          DeleteContractMutation(
+            TerminationFlowDeleteContractInput(
+              contractId = contractId,
+              terminationSurveyOptionId = surveyOptionId,
+              terminationComment = Optional.presentIfNotNull(comment),
+            ),
+          ),
+        )
+        .safeExecute(::ErrorMessage)
+        .bind()
+        .deleteContract
+      TerminationResult(
+        terminationDate = null,
         userError = result.userError?.message,
       )
     }
@@ -95,11 +131,9 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSu
   )
 }
 
-// Note: The exact Apollo-generated class names depend on the schema.
-// These will need adjusting once the real schema is available and codegen runs.
 private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): TerminationAction {
   return when (this) {
-    is TerminationSurveyQuery.Data.TerminationSurvey.TerminateWithDateAction -> {
+    is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionTerminateWithDateAction -> {
       TerminationAction.TerminateWithDate(
         minDate = minDate,
         maxDate = maxDate,
@@ -107,7 +141,7 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
       )
     }
 
-    is TerminationSurveyQuery.Data.TerminationSurvey.DeleteInsuranceAction -> {
+    is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionDeleteInsuranceAction -> {
       TerminationAction.DeleteInsurance(
         extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
       )
@@ -119,16 +153,19 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
   }
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.Suggestion.toSuggestion(): SurveyOptionSuggestion {
+private fun TerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion {
   return SurveyOptionSuggestion(
     type = when (type) {
-      octopus.type.TerminationSurveyOptionSuggestionType.UPDATE_ADDRESS -> SuggestionType.UPDATE_ADDRESS
-      octopus.type.TerminationSurveyOptionSuggestionType.UPGRADE_COVERAGE -> SuggestionType.UPGRADE_COVERAGE
-      octopus.type.TerminationSurveyOptionSuggestionType.DOWNGRADE_PRICE -> SuggestionType.DOWNGRADE_PRICE
-      octopus.type.TerminationSurveyOptionSuggestionType.REDIRECT -> SuggestionType.REDIRECT
-      octopus.type.TerminationSurveyOptionSuggestionType.INFO -> SuggestionType.INFO
-      octopus.type.TerminationSurveyOptionSuggestionType.AUTO_DECOMMISSION -> SuggestionType.AUTO_DECOMMISSION
-      octopus.type.TerminationSurveyOptionSuggestionType.AUTO_CANCEL -> SuggestionType.AUTO_CANCEL
+      TerminationFlowSurveyOptionSuggestionType.UPDATE_ADDRESS -> SuggestionType.UPDATE_ADDRESS
+      TerminationFlowSurveyOptionSuggestionType.UPGRADE_COVERAGE -> SuggestionType.UPGRADE_COVERAGE
+      TerminationFlowSurveyOptionSuggestionType.DOWNGRADE_PRICE -> SuggestionType.DOWNGRADE_PRICE
+      TerminationFlowSurveyOptionSuggestionType.REDIRECT -> SuggestionType.REDIRECT
+      TerminationFlowSurveyOptionSuggestionType.INFO -> SuggestionType.INFO
+      TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SOLD -> SuggestionType.AUTO_CANCEL_SOLD
+      TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SCRAPPED -> SuggestionType.AUTO_CANCEL_SCRAPPED
+      TerminationFlowSurveyOptionSuggestionType.AUTO_DECOMMISSION -> SuggestionType.AUTO_DECOMMISSION
+      TerminationFlowSurveyOptionSuggestionType.CAR_DECOMMISSION_INFO -> SuggestionType.CAR_DECOMMISSION_INFO
+      TerminationFlowSurveyOptionSuggestionType.CAR_ALREADY_DECOMMISSION -> SuggestionType.CAR_ALREADY_DECOMMISSION
       else -> SuggestionType.UNKNOWN
     },
     description = description,

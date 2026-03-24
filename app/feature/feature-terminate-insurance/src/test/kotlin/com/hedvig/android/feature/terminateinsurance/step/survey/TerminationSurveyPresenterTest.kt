@@ -190,7 +190,7 @@ class TerminationSurveyPresenterTest {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
       val result = awaitItem()
-      assertThat(result.nextNavigationStep)
+      assertThat(result.nextNavigationStep).isNotNull()
         .isInstanceOf<SurveyNavigationStep.NavigateToNextTerminationStep>()
       val navStep = result.nextNavigationStep as SurveyNavigationStep.NavigateToNextTerminationStep
       assertThat(navStep.selectedOption).isEqualTo(listOfOptionsForHome[2])
