@@ -298,9 +298,12 @@ private fun navigateFromSurvey(
 
   // Handle deflection suggestions as full-screen destinations
   if (suggestion != null &&
-    (
-      suggestion.type == SuggestionType.AUTO_DECOMMISSION || suggestion.type == SuggestionType.AUTO_CANCEL_SOLD ||
-        suggestion.type == SuggestionType.AUTO_CANCEL_SCRAPPED
+    suggestion.type in setOf(
+      SuggestionType.AUTO_DECOMMISSION,
+      SuggestionType.AUTO_CANCEL_SOLD,
+      SuggestionType.AUTO_CANCEL_SCRAPPED,
+      SuggestionType.CAR_DECOMMISSION_INFO,
+      SuggestionType.CAR_ALREADY_DECOMMISSION,
     )
   ) {
     navController.navigate(

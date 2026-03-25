@@ -76,7 +76,13 @@ private fun DeflectSuggestionScreen(
       )
       Spacer(Modifier.height(8.dp))
     }
-    if (suggestionType == SuggestionType.AUTO_DECOMMISSION) {
+    if (suggestionType in
+      setOf(
+        SuggestionType.AUTO_DECOMMISSION,
+        SuggestionType.CAR_DECOMMISSION_INFO,
+        SuggestionType.CAR_ALREADY_DECOMMISSION,
+      )
+    ) {
       HedvigButton(
         text = stringResource(Res.string.TERMINATION_BUTTON),
         enabled = true,

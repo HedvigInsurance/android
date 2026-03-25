@@ -288,6 +288,8 @@ private fun SelectedSurveyInfoBox(
         SuggestionType.AUTO_DECOMMISSION,
         SuggestionType.AUTO_CANCEL_SOLD,
         SuggestionType.AUTO_CANCEL_SCRAPPED,
+        SuggestionType.CAR_DECOMMISSION_INFO,
+        SuggestionType.CAR_ALREADY_DECOMMISSION,
         SuggestionType.UNKNOWN,
       )
     ) {
