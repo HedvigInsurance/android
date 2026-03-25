@@ -457,9 +457,6 @@ private fun ClaimChatScrollableContent(
       state = lazyListState,
       contentPadding = contentPadding,
       verticalArrangement = Arrangement.spacedBy(spaceBetweenItems, Alignment.Top),
-      modifier = Modifier.semantics{
-        isTraversalGroup = true
-      }
     ) {
       items(
         items = uiState.steps,
@@ -494,14 +491,6 @@ private fun ClaimChatScrollableContent(
           } else {
             Modifier
           }
-            .then(
-              Modifier.semantics{
-                val isBeforeCurrent = item.id == uiState.steps.dropLast(1).lastOrNull()?.id
-                traversalIndex = if (isBeforeCurrent) {
-                  0f
-                } else 1f
-              }
-            ),
         )
       }
     }
