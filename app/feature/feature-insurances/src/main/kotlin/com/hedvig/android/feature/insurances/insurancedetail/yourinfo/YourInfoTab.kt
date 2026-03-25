@@ -79,6 +79,7 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.insurances.data.AvailableAddon
+import com.hedvig.android.feature.insurances.data.ChipIdState
 import com.hedvig.android.feature.insurances.data.ContractAddon
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CoInsured
@@ -137,6 +138,7 @@ internal fun YourInfoTab(
   onChangeTierClick: () -> Unit,
   isDecommissioned: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
+  chipIdState: ChipIdState,
   onEditCoInsuredClick: () -> Unit,
   onEditCoOwnersClick: () -> Unit,
   onMissingCoInsuredInfoClick: () -> Unit,
@@ -145,6 +147,7 @@ internal fun YourInfoTab(
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   onCancelInsuranceClick: () -> Unit,
+  onFillChipId: () -> Unit,
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
@@ -300,6 +303,12 @@ internal fun YourInfoTab(
           onInfoIconClick,
           Modifier.padding(horizontal = 16.dp),
         )
+        if (chipIdState is ChipIdState.Present) {
+          ChipIdRow(
+            chipIdState.value,
+            Modifier.padding(horizontal = 16.dp),
+          )
+        }
         if (allowEditCoInsured && coInsured.isNotEmpty()) {
           HorizontalDivider(Modifier.padding(horizontal = 16.dp))
           Spacer(Modifier.height(16.dp))
@@ -379,6 +388,17 @@ internal fun YourInfoTab(
             buttonStyle = Ghost,
             enabled = true,
             onClick = { onChangeAddressClick() },
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .fillMaxWidth(),
+          )
+        }
+        if (chipIdState is ChipIdState.Missing) {
+          HedvigButton(
+            text = "Fill missing chipId", //todo!!!
+            buttonStyle = Ghost,
+            enabled = true,
+            onClick = { onFillChipId() },
             modifier = Modifier
               .padding(horizontal = 16.dp)
               .fillMaxWidth(),
@@ -716,6 +736,40 @@ internal fun PriceRow(
 }
 
 @Composable
+internal fun ChipIdRow(
+  chipId: String,
+  modifier: Modifier = Modifier,
+) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    modifier = modifier.horizontalDivider(DividerPosition.Top),
+    startSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 16.dp),
+      ) {
+        HedvigText(
+          "Pet Chip-ID" //todo!!!
+        )
+      }
+    },
+    endSlot = {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.padding(vertical = 16.dp),
+      ) {
+        HedvigText(
+          text = chipId,
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.End,
+        )
+      }
+    },
+    spaceBetween = 8.dp,
+  )
+}
+
+@Composable
 internal fun CoInsuredSection(
   coInsuredList: List<CoInsured>,
   contractHolderDisplayName: String,
@@ -1007,6 +1061,8 @@ private fun PreviewYourInfoTab() {
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
         navigateToAddAddon = {},
+        chipIdState = ChipIdState.Present("12345678903456"),
+        onFillChipId = {}
       )
     }
   }

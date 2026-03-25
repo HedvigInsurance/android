@@ -69,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.insurances.data.Addon
 import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.data.ChipIdState
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceAgreement.CreationCause.NEW_CONTRACT
 import com.hedvig.android.feature.insurances.data.InsuranceContract
@@ -111,6 +112,7 @@ internal fun ContractDetailDestination(
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
+  navigateToChipIdScreen: (contractId: String) -> Unit,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -131,6 +133,7 @@ internal fun ContractDetailDestination(
     navigateToAddAddon = navigateToAddAddon,
     navigateToRemoveAddon = navigateToRemoveAddon,
     navigateToUpgradeAddon = navigateToUpgradeAddon,
+    navigateToChipIdScreen = navigateToChipIdScreen
   )
 }
 
@@ -153,6 +156,7 @@ private fun ContractDetailScreen(
   openUrl: (String) -> Unit,
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToChipIdScreen: (String) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
@@ -358,6 +362,10 @@ private fun ContractDetailScreen(
                       navigateToAddAddon = navigateToAddAddon,
                       navigateToRemoveAddon = navigateToRemoveAddon,
                       navigateToUpgradeAddon = navigateToUpgradeAddon,
+                      chipIdState = contract.chipId,
+                      onFillChipId = {
+                        navigateToChipIdScreen(contract.id)
+                      }
                     )
                   }
 
@@ -495,6 +503,7 @@ private fun PreviewContractDetailScreen() {
             supportsTierChange = true,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
+            chipId = ChipIdState.Missing
           ),
           true,
         ),
@@ -515,6 +524,7 @@ private fun PreviewContractDetailScreen() {
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
+        navigateToChipIdScreen = {}
       )
     }
   }
@@ -544,6 +554,7 @@ private fun PreviewContractDetailScreenFailure() {
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
+        navigateToChipIdScreen = {}
       )
     }
   }

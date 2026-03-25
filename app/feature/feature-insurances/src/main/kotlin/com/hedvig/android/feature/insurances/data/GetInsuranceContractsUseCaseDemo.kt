@@ -91,6 +91,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           tierName = "STANDARD",
           existingAddons = emptyList(),
           availableAddons = emptyList(),
+          chipId = ChipIdState.NotRequired
         ),
       ).right(),
     )
