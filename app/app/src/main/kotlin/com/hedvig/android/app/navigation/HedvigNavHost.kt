@@ -25,6 +25,8 @@ import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationP
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceDestination
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowDestination
 import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
+import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
+import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
@@ -329,7 +331,9 @@ internal fun HedvigNavHost(
           ),
         )
       },
-      navigateToChipIdScreen = TODO(),
+      navigateToChipIdScreen = { contractId: String ->
+        navController.navigate(ChipIdGraphDestination(contractId))
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -412,6 +416,9 @@ internal fun HedvigNavHost(
       navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onNavigateToNewConversation = ::navigateToNewConversation,
+    )
+    chipIdGraph(
+      navigateUp = navController::navigateUp,
     )
     movingFlowGraph(
       navController = navController,
