@@ -10,6 +10,7 @@
     <item quantity="one">You have %d eligible insurance.</item>
     <item quantity="other">You have %d eligible insurances.</item>
   </plurals>
+  <string name="A11Y_OF">of</string>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="A11Y_SCROLL_DOWN">Scroll to bottom</string>
@@ -782,6 +783,7 @@
   <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">At %s, %s sent a file with type: %s, double tap to open.</string>
   <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">At %s, %s sent a GIF picture.</string>
   <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">At %s, %s said: %s</string>
+  <string name="TALKBACK_CLAIM_CHAT_YOUR_ANSWER">Your answer: </string>
   <string name="TALKBACK_CLAIM_STATUS">Claim status: %s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information about your claim</string>
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %s. Last message at %s.</string>
@@ -809,6 +811,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%s per month</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Pinch to zoom</string>
+  <string name="TALKBACK_PLAYBACK_BUTTON_STATE">Play recording. Button.</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Increase</string>
   <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
