@@ -881,3 +881,5 @@ private fun StepBottomContent(
 
 
 internal val animationSize = 32.sp
+
+internal val sentAnswersStartPadding = 45.dp
