@@ -67,7 +67,7 @@ internal actual fun HelipadRiveAnimation(
         animationName = HelipadAnimation.LOADING_INTRO.animationName,
         loop = Loop.ONESHOT,
       )
-      delay(1000L)
+      delay(900L)
       riveViewRef.value?.play(
         animationName = HelipadAnimation.LOADING.animationName,
         loop = Loop.LOOP,
