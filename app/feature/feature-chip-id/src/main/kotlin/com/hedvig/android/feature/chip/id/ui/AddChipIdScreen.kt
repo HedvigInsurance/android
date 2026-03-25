@@ -3,11 +3,13 @@ package com.hedvig.android.feature.chip.id.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -39,20 +41,33 @@ private fun AddChipIdScreen(
     }
 
     AddChipIdUiState.Content -> {
-      HedvigScaffold(navigateUp = navigateUp) {
-        Column(Modifier.fillMaxSize(),
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.Center
-          ) {
-          HedvigText( "Chip id content")
-        }
-      }
+      AddChipIdContent(navigateUp)
     }
 
     is AddChipIdUiState.Failure -> {
-      HedvigScaffold(navigateUp = navigateUp) {
-        // TODO: Add error UI here
+      HedvigScaffold(navigateUp = navigateUp,
+        Modifier.fillMaxSize()) {
+        HedvigErrorSection(
+          onButtonClick = reload,
+          modifier = Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
       }
+    }
+  }
+}
+
+@Composable
+internal fun AddChipIdContent(
+  navigateUp: () -> Unit,
+) {
+  HedvigScaffold(navigateUp = navigateUp) {
+    Column(Modifier.fillMaxSize(),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center
+    ) {
+      TODO()
     }
   }
 }
