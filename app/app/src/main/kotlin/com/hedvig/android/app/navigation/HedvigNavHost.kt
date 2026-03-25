@@ -418,6 +418,8 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = ::navigateToNewConversation,
     )
     chipIdGraph(
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
       navigateUp = navController::navigateUp,
     )
     movingFlowGraph(

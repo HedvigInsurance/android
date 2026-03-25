@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.chip.id.ui
 
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -7,45 +9,120 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.ui.text.TextRange
+import com.hedvig.android.feature.chip.id.data.UpdateChipIdUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
-internal class AddChipIdViewModel : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
+internal class AddChipIdViewModel(
+  private val updateChipIdUseCase: UpdateChipIdUseCase,
+  insuranceId: String,
+) : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
   initialState = AddChipIdUiState.Loading,
-  presenter = AddChipIdPresenter(),
+  presenter = AddChipIdPresenter(
+    updateChipIdUseCase = updateChipIdUseCase,
+    insuranceId = insuranceId,
+  ),
 )
 
-internal class AddChipIdPresenter : MoleculePresenter<AddChipIdEvent, AddChipIdUiState> {
+internal class AddChipIdPresenter(
+  private val updateChipIdUseCase: UpdateChipIdUseCase,
+  private val insuranceId: String,
+) : MoleculePresenter<AddChipIdEvent, AddChipIdUiState> {
   @Composable
   override fun MoleculePresenterScope<AddChipIdEvent>.present(
     lastState: AddChipIdUiState,
   ): AddChipIdUiState {
-    var currentState by remember { mutableStateOf(lastState) }
-    var loadIteration by remember { mutableIntStateOf(0) }
+    val chipIdState = remember {
+      val lastChipIdState = lastState.content?.chipIdState
+      TextFieldState(lastChipIdState?.text?.toString() ?: "", lastChipIdState?.selection ?: TextRange(0))
+    }
+    var submittingData by remember { mutableStateOf(false) }
+    var showSuccessSnackBar by remember { mutableStateOf(false) }
+    var errorSnackBarText by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(loadIteration) {
-      currentState = AddChipIdUiState.Loading
-      // TODO: Load chip ID data here
-      currentState = AddChipIdUiState.Content
+    var submitIteration by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(submitIteration) {
+      if (submitIteration == 0) return@LaunchedEffect
+
+      submittingData = true
+      errorSnackBarText = null
+
+      updateChipIdUseCase.invoke(insuranceId).fold(
+        ifLeft = { error ->
+          Snapshot.withMutableSnapshot {
+            submittingData = false
+            errorSnackBarText = error.message ?: "Something went wrong"
+          }
+        },
+        ifRight = {
+          Snapshot.withMutableSnapshot {
+            showSuccessSnackBar = true
+            submittingData = false
+          }
+        },
+      )
     }
 
     CollectEvents { event ->
       when (event) {
-        AddChipIdEvent.Reload -> loadIteration++
+        AddChipIdEvent.RetryLoadData -> {
+          // Retry by resetting state
+          chipIdState.setTextAndPlaceCursorAtEnd("")
+        }
+
+        AddChipIdEvent.SubmitData -> {
+          if (!chipIdState.text.toString().all { it.isDigit() } || chipIdState.text.toString().length != 15) {
+            Snapshot.withMutableSnapshot {
+              errorSnackBarText = "Must be 15 digits"
+            }
+          } else {
+            submitIteration++
+          }
+        }
+
+        AddChipIdEvent.ShowedMessage -> {
+          Snapshot.withMutableSnapshot {
+            showSuccessSnackBar = false
+            errorSnackBarText = null
+          }
+        }
       }
     }
 
-    return currentState
+    return AddChipIdUiState.Content(
+      chipIdState = chipIdState,
+      showSuccessSnackBar = showSuccessSnackBar,
+      submittingData = submittingData,
+      errorSnackBarText = errorSnackBarText,
+    )
   }
 }
 
 internal sealed interface AddChipIdUiState {
+  val content: Content?
+    get() = this as? Content
+
   data object Loading : AddChipIdUiState
-  data object Content : AddChipIdUiState
-  data class Failure(val message: String) : AddChipIdUiState
+
+  data object Error : AddChipIdUiState
+
+  data class Content(
+    val chipIdState: TextFieldState,
+    val showSuccessSnackBar: Boolean = false,
+    val submittingData: Boolean = false,
+    val errorSnackBarText: String? = null,
+  ) : AddChipIdUiState {
+    val isChipIdValid: Boolean
+      get() = chipIdState.text.toString().length == 15 && chipIdState.text.toString().all { it.isDigit() }
+  }
 }
 
 internal sealed interface AddChipIdEvent {
-  data object Reload : AddChipIdEvent
+  data object RetryLoadData : AddChipIdEvent
+  data object SubmitData : AddChipIdEvent
+  data object ShowedMessage : AddChipIdEvent
 }
