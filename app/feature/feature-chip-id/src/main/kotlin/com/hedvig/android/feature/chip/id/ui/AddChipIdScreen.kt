@@ -158,7 +158,7 @@ private fun ColumnScope.AddChipIdContent(
   ) { errorType ->
     if (errorType != null) {
       val errorMessage = when (errorType) {
-        ChipIdErrorType.WrongInput -> "Must be 15 digits only" //todo
+        ChipIdErrorType.WrongInput -> "Must be 15 digits" //todo
         ChipIdErrorType.GeneralError -> "Something went wrong" //todo
       }
       HedvigNotificationCard(
