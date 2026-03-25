@@ -41,7 +41,7 @@ internal class AddChipIdPresenter(
     }
     var submittingData by remember { mutableStateOf(false) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
-    var errorSnackBarText by remember { mutableStateOf<String?>(null) }
+    var errorType by remember { mutableStateOf<ChipIdErrorType?>(null) }
 
     var submitIteration by remember { mutableIntStateOf(0) }
 
@@ -49,13 +49,13 @@ internal class AddChipIdPresenter(
       if (submitIteration == 0) return@LaunchedEffect
 
       submittingData = true
-      errorSnackBarText = null
+      errorType = null
 
       updateChipIdUseCase.invoke(insuranceId).fold(
         ifLeft = { error ->
           Snapshot.withMutableSnapshot {
             submittingData = false
-            errorSnackBarText = error.message ?: "Something went wrong"
+            errorType = ChipIdErrorType.GeneralError
           }
         },
         ifRight = {
@@ -77,7 +77,7 @@ internal class AddChipIdPresenter(
         AddChipIdEvent.SubmitData -> {
           if (!chipIdState.text.toString().all { it.isDigit() } || chipIdState.text.toString().length != 15) {
             Snapshot.withMutableSnapshot {
-              errorSnackBarText = "Must be 15 digits"
+              errorType = ChipIdErrorType.WrongInput
             }
           } else {
             submitIteration++
@@ -87,7 +87,7 @@ internal class AddChipIdPresenter(
         AddChipIdEvent.ShowedMessage -> {
           Snapshot.withMutableSnapshot {
             showSuccessSnackBar = false
-            errorSnackBarText = null
+            errorType = null
           }
         }
       }
@@ -97,7 +97,7 @@ internal class AddChipIdPresenter(
       chipIdState = chipIdState,
       showSuccessSnackBar = showSuccessSnackBar,
       submittingData = submittingData,
-      errorSnackBarText = errorSnackBarText,
+      errorType = errorType,
     )
   }
 }
@@ -114,11 +114,16 @@ internal sealed interface AddChipIdUiState {
     val chipIdState: TextFieldState,
     val showSuccessSnackBar: Boolean = false,
     val submittingData: Boolean = false,
-    val errorSnackBarText: String? = null,
+    val errorType: ChipIdErrorType? = null,
   ) : AddChipIdUiState {
     val isChipIdValid: Boolean
       get() = chipIdState.text.toString().length == 15 && chipIdState.text.toString().all { it.isDigit() }
   }
+}
+
+internal sealed interface ChipIdErrorType {
+  data object WrongInput : ChipIdErrorType
+  data object GeneralError : ChipIdErrorType
 }
 
 internal sealed interface AddChipIdEvent {

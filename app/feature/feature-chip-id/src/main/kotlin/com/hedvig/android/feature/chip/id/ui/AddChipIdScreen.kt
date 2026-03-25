@@ -144,7 +144,7 @@ private fun ColumnScope.AddChipIdContent(
 
   ChipIdTextField(
     textFieldState = uiState.chipIdState,
-    labelText = "Chip ID",
+    labelText = "Chip ID", //todo
     keyboardActionHandler = KeyboardActionHandler {
       submitChipId()
       focusManager.clearFocus()
@@ -152,13 +152,17 @@ private fun ColumnScope.AddChipIdContent(
   )
 
   AnimatedContent(
-    targetState = uiState.errorSnackBarText,
+    targetState = uiState.errorType,
     transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically() },
     modifier = Modifier.padding(top = 4.dp),
-  ) { errorText ->
-    if (errorText != null) {
+  ) { errorType ->
+    if (errorType != null) {
+      val errorMessage = when (errorType) {
+        ChipIdErrorType.WrongInput -> "Must be 15 digits only" //todo
+        ChipIdErrorType.GeneralError -> "Something went wrong" //todo
+      }
       HedvigNotificationCard(
-        message = errorText,
+        message = errorMessage,
         priority = NotificationPriority.Error,
         modifier = Modifier
           .padding(horizontal = 16.dp)
