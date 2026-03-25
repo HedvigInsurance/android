@@ -10,6 +10,7 @@ import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -22,8 +23,8 @@ class GenericNotificationSender(
   private val context: Context,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
-  private val notificationChannel: HedvigNotificationChannel,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   private val id = AtomicInteger(100)
 
@@ -34,11 +35,12 @@ class GenericNotificationSender(
     val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
     val link = remoteMessage.linkFromCustomerIoData()
+    logcat(tag = "GenericNotificationSender") { "Generic notification got data:${remoteMessage.data}" }
     val pendingIntent = PendingIntentCompat.getActivity(
       context,
       0,
       buildConstants.intentForNotification(
-        deepLinkUri = link?.let { hedvigDeepLinkContainer.buildDeepLink(link).toUri() }
+        deepLinkUri = link?.let { hedvigDeepLinkContainer.buildDeepLink(link).toUri() },
       ),
       PendingIntent.FLAG_UPDATE_CURRENT,
       false,
