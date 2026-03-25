@@ -783,6 +783,7 @@
   <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">At %1$s, %2$s sent a file with type: %3$s, double tap to open.</string>
   <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">At %1$s, %2$s sent a GIF picture.</string>
   <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">At %1$s, %2$s said: %3$s</string>
+  <string name="TALKBACK_CLAIM_CHAT_YOUR_ANSWER">Your answer: </string>
   <string name="TALKBACK_CLAIM_STATUS">Claim status: %1$s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information about your claim</string>
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %1$s. Last message at %2$s.</string>

@@ -783,6 +783,7 @@
   <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">Vid %s skickade %s en fil av typen: %s, dubbeltryck för att öppna.</string>
   <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">Vid %s skickade %s en GIF-bild.</string>
   <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">Vid %s sa %s: %s</string>
+  <string name="TALKBACK_CLAIM_CHAT_YOUR_ANSWER">Ditt svar: </string>
   <string name="TALKBACK_CLAIM_STATUS">Status på skadeanmälan: %s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information om din skadeanmalän</string>
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Konversation om %s. Senaste meddelandet den %s.</string>

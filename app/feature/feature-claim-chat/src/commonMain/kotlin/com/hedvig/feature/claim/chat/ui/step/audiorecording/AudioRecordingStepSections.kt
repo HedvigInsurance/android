@@ -118,6 +118,7 @@ import hedvig.resources.CLAIM_TRIAGING_TITLE
 import hedvig.resources.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE
 import hedvig.resources.Res
 import hedvig.resources.SAVE_AND_CONTINUE_BUTTON_LABEL
+import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.TALKBACK_PLAYBACK_BUTTON_STATE
 import hedvig.resources.TALKBACK_RECORDING_DURATION
 import hedvig.resources.TALKBACK_RECORDING_NOW
@@ -885,10 +886,17 @@ private fun FreeTextInputSection(
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
       )
     } else {
+      val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + freeText
+
       if (freeText != null) {
         RoundCornersPill(
           onClick = null,
-          modifier = Modifier.fillMaxWidth().padding(start = 48.dp).wrapContentWidth(Alignment.End),
+          modifier = Modifier.fillMaxWidth()
+            .padding(start = 48.dp)
+            .wrapContentWidth(Alignment.End)
+            .clearAndSetSemantics {
+             contentDescription = description
+            },
         ) {
           HedvigText(freeText, textAlign = TextAlign.End)
         }

@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
@@ -99,6 +100,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
@@ -361,6 +363,7 @@ private fun FormContent(
       }
     } else {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+
         if (content.fields.flatMap { it.selectedOptions }.isNotEmpty()) {
           content.fields.forEach { field ->
             when (field.type) {
@@ -390,13 +393,16 @@ private fun FormContent(
                 val textValue = "$initialTextValue$suffix"
                 Column(
                   Modifier.fillMaxWidth()
-                    .padding(start = sentAnswersStartPadding)
-                    .semantics(true) {},
+                    .padding(start = sentAnswersStartPadding),
                   horizontalAlignment = Alignment.End,
                 ) {
                   if (textValue.isNotEmpty()) {
+                    val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + textValue
                     RoundCornersPill(
                       onClick = null,
+                      modifier = Modifier.clearAndSetSemantics {
+                        contentDescription = description
+                      }
                     ) {
                       HedvigText(textValue, textAlign = TextAlign.End)
                     }
@@ -766,9 +772,12 @@ private fun SentItemCard(
   itemImageUrl: String?,
   modifier: Modifier = Modifier,
 ) {
+  val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + "$itemTitle, $itemSubtitle"
   HedvigCard(
     onClick = null,
-    modifier = modifier,
+    modifier = modifier.clearAndSetSemantics {
+      contentDescription = description
+    },
     color = HedvigTheme.colorScheme.surfacePrimary,
     shape = HedvigTheme.shapes.cornerXLarge,
   ) {
