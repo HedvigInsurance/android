@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
@@ -19,7 +20,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_LABEL
 import hedvig.resources.CONTRACT_ADD_COINSURED_UPDATED_TITLE
 import hedvig.resources.CONTRACT_ADD_COOWNER_UPDATED_TITLE

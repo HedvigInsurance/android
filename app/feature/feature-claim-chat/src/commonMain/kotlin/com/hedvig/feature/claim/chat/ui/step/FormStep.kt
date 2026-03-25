@@ -783,19 +783,21 @@ private fun SentItemCard(
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(horizontal = 16.dp)
+      modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       if (itemImageUrl != null) {
-        Box (
+        Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier
             .size(46.dp)
             .background(Color(0xFFFFFFFF), HedvigTheme.shapes.cornerSmall)
-            .border(1.dp,
+            .border(
+              1.dp,
               HedvigTheme.colorScheme.borderPrimary,
-              HedvigTheme.shapes.cornerSmall)
-            .clip(HedvigTheme.shapes.cornerSmall)
-        ){
+              HedvigTheme.shapes.cornerSmall,
+            )
+            .clip(HedvigTheme.shapes.cornerSmall),
+        ) {
           AsyncImage(
             model = itemImageUrl,
             contentDescription = EmptyContentDescription,

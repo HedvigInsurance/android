@@ -40,7 +40,7 @@ internal class GetCoInsuredUseCaseImpl(
       coInsureds + coOwners
     }
       .filter { !it.hasMissingInfo }
-      .filter { coinsured -> coInsuredOnContract.any { it.id == coinsured.id} }
+      .filter { coinsured -> coInsuredOnContract.any { it.id == coinsured.id } }
 
     CoInsuredResult(
       member = Member(

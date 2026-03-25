@@ -111,10 +111,8 @@ internal sealed interface StepContent {
       val value: String,
       val text: String,
       val subtitle: String?,
-
       val isCustomSearchEntry: Boolean = false,
       val imageUrl: String? = null,
-
     )
 
     enum class FieldType {
@@ -124,7 +122,6 @@ internal sealed interface StepContent {
       SINGLE_SELECT,
       MULTI_SELECT,
       BINARY,
-
       SEARCH,
     }
   }

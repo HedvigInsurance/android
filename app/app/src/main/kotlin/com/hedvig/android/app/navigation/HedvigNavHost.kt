@@ -14,9 +14,9 @@ import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.data.claimflow.toClaimFlowDestination
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
@@ -32,14 +32,10 @@ import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinatio
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
-import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
-import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
-import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddOrRemove
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
@@ -69,10 +65,6 @@ import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.SelectContractForMoving
 import com.hedvig.android.feature.movingflow.movingFlowGraph
-import com.hedvig.android.feature.odyssey.navigation.ClaimsFlowGraphDestination
-import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
-import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
-import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
@@ -184,9 +176,6 @@ internal fun HedvigNavHost(
       },
       onNavigateToNewConversation = {
         navigateToNewConversation()
-      },
-      navigateToOldClaimFlow = {
-        navController.navigate(ClaimsFlowGraphDestination)
       },
       navigateToClaimDetails = { claimId ->
         navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
@@ -341,7 +330,7 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
-      onOpenChat = ::navigateToNewConversation
+      onOpenChat = ::navigateToNewConversation,
     )
     profileGraph(
       settingsDestinationNestedGraphs = {
@@ -560,50 +549,5 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navController = navController,
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-  )
-  claimFlowGraph(
-    windowSizeClass = hedvigAppState.windowSizeClass,
-    navController = navController,
-    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-    navigateToTriaging = {
-      navController.navigate(ClaimTriagingDestination.ClaimGroups)
-    },
-    onNavigateToImageViewer = onNavigateToImageViewer,
-    openAppSettings = externalNavigator::openAppSettings,
-    closeClaimFlow = {
-      navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
-    },
-    nestedGraphs = {
-      claimTriagingDestinations(
-        navController = navController,
-        windowSizeClass = hedvigAppState.windowSizeClass,
-        startClaimFlow = { claimFlowStep: ClaimFlowStep ->
-          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
-        },
-        closeClaimFlow = {
-          navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
-        },
-      )
-    },
-    openUrl = openUrl,
-    tryToDialPhone = externalNavigator::tryToDialPhone,
-    onNavigateToNewConversation = {
-      navigateToNewConversation(null)
-    },
-    imageLoader = imageLoader,
-    appPackageId = hedvigBuildConstants.appPackageId,
-  )
-  terminalClaimFlowStepDestinations(
-    navController = navController,
-    openPlayStore = {
-      navController.popBackStack()
-      externalNavigator.tryOpenPlayStore()
-    },
-    onNavigateToNewConversation = {
-      navigateToNewConversation {
-        typedPopUpTo<HomeDestination.Home>()
-      }
-    },
   )
 }
