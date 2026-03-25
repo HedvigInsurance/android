@@ -193,6 +193,11 @@ internal fun YourInfoTab(
         editYourInfoBottomSheet.dismiss()
         navigateToRemoveAddon(ContractId(contractId), null)
       },
+      missingChipId = chipIdState is ChipIdState.Missing,
+      onNavigateToChipId = {
+        editYourInfoBottomSheet.dismiss()
+        onFillChipId()
+      },
     )
   }
 
@@ -371,7 +376,12 @@ internal fun YourInfoTab(
     )
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (allowEditCoInsured || allowEditCoOwners || allowChangeTier || allowTerminatingInsurance) {
+        if (allowEditCoInsured ||
+          allowEditCoOwners ||
+          allowChangeTier ||
+          allowTerminatingInsurance ||
+          chipIdState is ChipIdState.Missing
+        ) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
             enabled = true,
@@ -388,17 +398,6 @@ internal fun YourInfoTab(
             buttonStyle = Ghost,
             enabled = true,
             onClick = { onChangeAddressClick() },
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth(),
-          )
-        }
-        if (chipIdState is ChipIdState.Missing) {
-          HedvigButton(
-            text = "Fill missing chipId", //todo!!!
-            buttonStyle = Ghost,
-            enabled = true,
-            onClick = { onFillChipId() },
             modifier = Modifier
               .padding(horizontal = 16.dp)
               .fillMaxWidth(),
@@ -748,7 +747,7 @@ internal fun ChipIdRow(
         modifier = Modifier.padding(vertical = 16.dp),
       ) {
         HedvigText(
-          "Pet Chip-ID" //todo!!!
+          "Pet Chip-ID", //todo!!!
         )
       }
     },
@@ -1062,7 +1061,7 @@ private fun PreviewYourInfoTab() {
         navigateToUpgradeAddon = { _, _ -> },
         navigateToAddAddon = {},
         chipIdState = ChipIdState.Present("12345678903456"),
-        onFillChipId = {}
+        onFillChipId = {},
       )
     }
   }
