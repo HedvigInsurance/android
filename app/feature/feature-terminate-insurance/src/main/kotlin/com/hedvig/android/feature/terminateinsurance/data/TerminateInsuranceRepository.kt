@@ -5,9 +5,9 @@ import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import com.hedvig.android.apollo.ErrorMessage as ApolloErrorMessage
+import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.core.common.ErrorMessage as CoreErrorMessage
+import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.datetime.LocalDate
 import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
@@ -18,30 +18,30 @@ import octopus.type.TerminationFlowSurveyOptionSuggestionType
 import octopus.type.TerminationFlowTerminateContractInput
 
 internal interface TerminateInsuranceRepository {
-  suspend fun getTerminationSurvey(contractId: String): Either<CoreErrorMessage, TerminationSurveyData>
+  suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData>
 
   suspend fun terminateContract(
     contractId: String,
     terminationDate: LocalDate,
     surveyOptionId: String,
     comment: String?,
-  ): Either<CoreErrorMessage, TerminationResult>
+  ): Either<ErrorMessage, TerminationResult>
 
   suspend fun deleteContract(
     contractId: String,
     surveyOptionId: String,
     comment: String?,
-  ): Either<CoreErrorMessage, TerminationResult>
+  ): Either<ErrorMessage, TerminationResult>
 }
 
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : TerminateInsuranceRepository {
-  override suspend fun getTerminationSurvey(contractId: String): Either<CoreErrorMessage, TerminationSurveyData> {
+  override suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData> {
     return either {
       val result = apolloClient
         .query(TerminationSurveyQuery(contractId))
-        .safeExecute(::ApolloErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .terminationSurvey
       result.toTerminationSurveyData().bind()
@@ -53,7 +53,7 @@ internal class TerminateInsuranceRepositoryImpl(
     terminationDate: LocalDate,
     surveyOptionId: String,
     comment: String?,
-  ): Either<CoreErrorMessage, TerminationResult> {
+  ): Either<ErrorMessage, TerminationResult> {
     return either {
       val result = apolloClient
         .mutation(
@@ -66,7 +66,7 @@ internal class TerminateInsuranceRepositoryImpl(
             ),
           ),
         )
-        .safeExecute(::ApolloErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .terminateContract
       val userError = result.userError?.message
@@ -82,7 +82,7 @@ internal class TerminateInsuranceRepositoryImpl(
     contractId: String,
     surveyOptionId: String,
     comment: String?,
-  ): Either<CoreErrorMessage, TerminationResult> {
+  ): Either<ErrorMessage, TerminationResult> {
     return either {
       val result = apolloClient
         .mutation(
@@ -94,7 +94,7 @@ internal class TerminateInsuranceRepositoryImpl(
             ),
           ),
         )
-        .safeExecute(::ApolloErrorMessage)
+        .safeExecute(::ErrorMessage)
         .bind()
         .deleteContract
       val userError = result.userError?.message
@@ -107,7 +107,7 @@ internal class TerminateInsuranceRepositoryImpl(
   }
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData(): Either<CoreErrorMessage, TerminationSurveyData> {
+private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData(): Either<ErrorMessage, TerminationSurveyData> {
   return either {
     TerminationSurveyData(
       options = options.mapIndexed { index, option -> option.toTerminationSurveyOption(index) },
@@ -156,7 +156,7 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSu
   )
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): Either<CoreErrorMessage, TerminationAction> {
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): Either<ErrorMessage, TerminationAction> {
   return when (this) {
     is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionTerminateWithDateAction -> {
       Either.Right(
@@ -177,7 +177,7 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
     }
 
     else -> {
-      CoreErrorMessage("Unknown termination action type: ${this::class.simpleName}").left()
+      ErrorMessage("Unknown termination action type: ${this::class.simpleName}").left()
     }
   }
 }
