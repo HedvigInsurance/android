@@ -8,6 +8,22 @@ query TerminationSurvey($contractId: ID!) {
         id
         title
         feedbackRequired
+        subOptions {
+          id
+          title
+          feedbackRequired
+          subOptions {
+            id
+            title
+            feedbackRequired
+            suggestion {
+              ...TerminationSurveyOptionSuggestionFragment
+            }
+          }
+          suggestion {
+            ...TerminationSurveyOptionSuggestionFragment
+          }
+        }
         suggestion {
           ...TerminationSurveyOptionSuggestionFragment
         }

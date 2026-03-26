@@ -840,6 +840,7 @@
   <string name="TERMINATION_BUTTON">Säg upp försäkring</string>
   <string name="TERMINATION_DATE_TEXT">Välj slutdatum</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">Vi skickar en bekräftelse på uppsägningen inom några dagar. Hör gärna av dig om du inte fått den efter 5 dagar.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Eftersom du har ställt av din bil kommer din försäkring att sägas upp automatiskt.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Eftersom din bil har skrotats kommer din försäkring att sägas upp automatiskt.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE">Eftersom du har sålt din bil kommer din försäkring att sägas upp automatiskt.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">Vi avslutar din försäkring automatiskt</string>

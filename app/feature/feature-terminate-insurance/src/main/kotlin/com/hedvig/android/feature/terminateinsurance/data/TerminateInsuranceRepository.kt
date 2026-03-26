@@ -1,13 +1,13 @@
 package com.hedvig.android.feature.terminateinsurance.data
 
 import arrow.core.Either
+import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
-import com.hedvig.android.apollo.ErrorMessage
+import com.hedvig.android.apollo.ErrorMessage as ApolloErrorMessage
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.logger.logcat
+import com.hedvig.android.core.common.ErrorMessage as CoreErrorMessage
 import kotlinx.datetime.LocalDate
 import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
@@ -18,33 +18,33 @@ import octopus.type.TerminationFlowSurveyOptionSuggestionType
 import octopus.type.TerminationFlowTerminateContractInput
 
 internal interface TerminateInsuranceRepository {
-  suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData>
+  suspend fun getTerminationSurvey(contractId: String): Either<CoreErrorMessage, TerminationSurveyData>
 
   suspend fun terminateContract(
     contractId: String,
     terminationDate: LocalDate,
     surveyOptionId: String,
     comment: String?,
-  ): Either<ErrorMessage, TerminationResult>
+  ): Either<CoreErrorMessage, TerminationResult>
 
   suspend fun deleteContract(
     contractId: String,
     surveyOptionId: String,
     comment: String?,
-  ): Either<ErrorMessage, TerminationResult>
+  ): Either<CoreErrorMessage, TerminationResult>
 }
 
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : TerminateInsuranceRepository {
-  override suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData> {
+  override suspend fun getTerminationSurvey(contractId: String): Either<CoreErrorMessage, TerminationSurveyData> {
     return either {
       val result = apolloClient
         .query(TerminationSurveyQuery(contractId))
-        .safeExecute(::ErrorMessage)
+        .safeExecute(::ApolloErrorMessage)
         .bind()
         .terminationSurvey
-      result.toTerminationSurveyData()
+      result.toTerminationSurveyData().bind()
     }
   }
 
@@ -53,7 +53,7 @@ internal class TerminateInsuranceRepositoryImpl(
     terminationDate: LocalDate,
     surveyOptionId: String,
     comment: String?,
-  ): Either<ErrorMessage, TerminationResult> {
+  ): Either<CoreErrorMessage, TerminationResult> {
     return either {
       val result = apolloClient
         .mutation(
@@ -66,7 +66,7 @@ internal class TerminateInsuranceRepositoryImpl(
             ),
           ),
         )
-        .safeExecute(::ErrorMessage)
+        .safeExecute(::ApolloErrorMessage)
         .bind()
         .terminateContract
       val userError = result.userError?.message
@@ -82,7 +82,7 @@ internal class TerminateInsuranceRepositoryImpl(
     contractId: String,
     surveyOptionId: String,
     comment: String?,
-  ): Either<ErrorMessage, TerminationResult> {
+  ): Either<CoreErrorMessage, TerminationResult> {
     return either {
       val result = apolloClient
         .mutation(
@@ -94,7 +94,7 @@ internal class TerminateInsuranceRepositoryImpl(
             ),
           ),
         )
-        .safeExecute(::ErrorMessage)
+        .safeExecute(::ApolloErrorMessage)
         .bind()
         .deleteContract
       val userError = result.userError?.message
@@ -107,11 +107,13 @@ internal class TerminateInsuranceRepositoryImpl(
   }
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData(): TerminationSurveyData {
-  return TerminationSurveyData(
-    options = options.mapIndexed { index, option -> option.toTerminationSurveyOption(index) },
-    action = action.toTerminationAction(),
-  )
+private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData(): Either<CoreErrorMessage, TerminationSurveyData> {
+  return either {
+    TerminationSurveyData(
+      options = options.mapIndexed { index, option -> option.toTerminationSurveyOption(index) },
+      action = action.toTerminationAction().bind(),
+    )
+  }
 }
 
 private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSurveyOption(
@@ -130,31 +132,52 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSu
         listIndex = subIndex,
         feedbackRequired = subOption.feedbackRequired,
         suggestion = subOption.suggestion?.toSuggestion(),
-        subOptions = emptyList(),
+        subOptions = subOption.subOptions.mapIndexed { subSubIndex, subSubOption ->
+          TerminationSurveyOption(
+            id = subSubOption.id,
+            title = subSubOption.title,
+            listIndex = subSubIndex,
+            feedbackRequired = subSubOption.feedbackRequired,
+            suggestion = subSubOption.suggestion?.toSuggestion(),
+            subOptions = subSubOption.subOptions.mapIndexed { leafIndex, leaf ->
+              TerminationSurveyOption(
+                id = leaf.id,
+                title = leaf.title,
+                listIndex = leafIndex,
+                feedbackRequired = leaf.feedbackRequired,
+                suggestion = leaf.suggestion?.toSuggestion(),
+                subOptions = emptyList(),
+              )
+            },
+          )
+        },
       )
     },
   )
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): TerminationAction {
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): Either<CoreErrorMessage, TerminationAction> {
   return when (this) {
     is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionTerminateWithDateAction -> {
-      TerminationAction.TerminateWithDate(
+      Either.Right(
+        TerminationAction.TerminateWithDate(
         minDate = minDate,
         maxDate = maxDate,
         extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
+        ),
       )
     }
 
     is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionDeleteInsuranceAction -> {
-      TerminationAction.DeleteInsurance(
+      Either.Right(
+        TerminationAction.DeleteInsurance(
         extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
+        ),
       )
     }
 
     else -> {
-      logcat { "Unknown TerminationAction type: ${this::class.simpleName}, falling back to DeleteInsurance" }
-      TerminationAction.DeleteInsurance(extraCoverageItems = emptyList())
+      CoreErrorMessage("Unknown termination action type: ${this::class.simpleName}").left()
     }
   }
 }
@@ -169,6 +192,9 @@ private fun TerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOpti
       TerminationFlowSurveyOptionSuggestionType.INFO -> SuggestionType.INFO
       TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SOLD -> SuggestionType.AUTO_CANCEL_SOLD
       TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SCRAPPED -> SuggestionType.AUTO_CANCEL_SCRAPPED
+      TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_DECOMMISSION -> {
+        SuggestionType.AUTO_CANCEL_DECOMMISSION
+      }
       TerminationFlowSurveyOptionSuggestionType.AUTO_DECOMMISSION -> SuggestionType.AUTO_DECOMMISSION
       TerminationFlowSurveyOptionSuggestionType.CAR_ALREADY_DECOMMISSION -> SuggestionType.CAR_ALREADY_DECOMMISSION
       else -> SuggestionType.UNKNOWN

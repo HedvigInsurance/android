@@ -152,7 +152,15 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         viewModel,
         navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
-        navigateToSubOptions = null,
+        navigateToSubOptions = { nestedSubOptions ->
+          navController.navigate(
+            TerminateInsuranceDestination.TerminationSurveySecondStep(
+              nestedSubOptions,
+              action,
+              commonParams,
+            ),
+          )
+        },
         navigateToNextStep = { navStep ->
           navigateFromSurvey(navController, navStep, commonParams)
         },

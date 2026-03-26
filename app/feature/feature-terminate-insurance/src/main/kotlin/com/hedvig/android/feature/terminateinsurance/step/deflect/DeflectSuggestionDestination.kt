@@ -24,6 +24,7 @@ import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_BUTTON
 import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_ABOUT
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE
 import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE
 import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE
 import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_TITLE
@@ -152,6 +153,7 @@ private fun rememberDeflectScreenContent(
 ): DeflectScreenContent {
   val autoCancelTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_TITLE)
   val autoCancelAbout = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_ABOUT)
+  val decommissionMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE)
   val soldMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE)
   val scrappedMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE)
   val decomTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_TITLE)
@@ -169,6 +171,12 @@ private fun rememberDeflectScreenContent(
       SuggestionType.AUTO_CANCEL_SOLD -> autoCancel(autoCancelTitle, soldMessage, autoCancelAbout)
 
       SuggestionType.AUTO_CANCEL_SCRAPPED -> autoCancel(autoCancelTitle, scrappedMessage, autoCancelAbout)
+
+      SuggestionType.AUTO_CANCEL_DECOMMISSION -> autoCancel(
+        autoCancelTitle,
+        decommissionMessage,
+        autoCancelAbout,
+      )
 
       SuggestionType.AUTO_DECOMMISSION -> DeflectScreenContent(
         title = decomTitle,
