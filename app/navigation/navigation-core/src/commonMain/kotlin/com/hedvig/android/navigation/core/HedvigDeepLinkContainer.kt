@@ -69,6 +69,12 @@ interface HedvigDeepLinkContainer {
   // the screen where member can start moving flow to change address
   // for their home insurance
   val moveContract: List<String>
+
+  /**
+   * Builds a deep link with the right prefix for the current app flavor, being provided a [suffix] which is everything
+   * that comes after `/` which follows the base deeplink domain
+   */
+  fun buildDeepLink(suffix: String): String
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -174,6 +180,10 @@ internal class HedvigDeepLinkContainerImpl(
   }
   override val moveContract: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/move-contract"
+  }
+
+  override fun buildDeepLink(suffix: String): String {
+    return "${baseDeepLinkDomains.first()}/$suffix"
   }
 }
 

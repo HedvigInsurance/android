@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - feat/claim-chat-search
+      - feature/cio-backed-deep-links
   workflow_dispatch:
 
 concurrency:

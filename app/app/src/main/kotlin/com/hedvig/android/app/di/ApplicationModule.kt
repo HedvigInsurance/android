@@ -166,6 +166,7 @@ private val notificationModule = module {
       get<Context>(),
       get<PermissionManager>(),
       get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Other,
     )
   } bind NotificationSender::class
