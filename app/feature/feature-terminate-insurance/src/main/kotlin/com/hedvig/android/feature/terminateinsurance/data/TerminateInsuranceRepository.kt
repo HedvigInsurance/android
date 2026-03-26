@@ -170,7 +170,6 @@ private fun TerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOpti
       TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SOLD -> SuggestionType.AUTO_CANCEL_SOLD
       TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SCRAPPED -> SuggestionType.AUTO_CANCEL_SCRAPPED
       TerminationFlowSurveyOptionSuggestionType.AUTO_DECOMMISSION -> SuggestionType.AUTO_DECOMMISSION
-      TerminationFlowSurveyOptionSuggestionType.CAR_DECOMMISSION_INFO -> SuggestionType.CAR_DECOMMISSION_INFO
       TerminationFlowSurveyOptionSuggestionType.CAR_ALREADY_DECOMMISSION -> SuggestionType.CAR_ALREADY_DECOMMISSION
       else -> SuggestionType.UNKNOWN
     },

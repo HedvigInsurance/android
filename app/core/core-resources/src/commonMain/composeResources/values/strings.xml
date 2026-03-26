@@ -840,7 +840,6 @@
   <string name="TERMINATION_BUTTON">Cancel insurance</string>
   <string name="TERMINATION_DATE_TEXT">Select termination date</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">We’ll send a cancellation confirmation within a few days. If you don’t get it after 5 days, feel free to contact us.</string>
-  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Since your car has been decommissioned, your insurance will be automatically cancelled.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Since your car has been scrapped, your insurance will be automatically cancelled.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE">Since you\’ve sold your car, your insurance will be automatically cancelled.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">We’ll cancel your insurance automatically</string>

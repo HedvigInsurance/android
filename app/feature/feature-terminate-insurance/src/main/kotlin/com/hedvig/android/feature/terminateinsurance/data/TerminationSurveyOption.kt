@@ -30,7 +30,6 @@ internal enum class SuggestionType {
   AUTO_CANCEL_SOLD,
   AUTO_CANCEL_SCRAPPED,
   AUTO_DECOMMISSION,
-  CAR_DECOMMISSION_INFO,
   CAR_ALREADY_DECOMMISSION,
   UNKNOWN,
   ;
@@ -40,7 +39,6 @@ internal enum class SuggestionType {
       AUTO_DECOMMISSION,
       AUTO_CANCEL_SOLD,
       AUTO_CANCEL_SCRAPPED,
-      CAR_DECOMMISSION_INFO,
       CAR_ALREADY_DECOMMISSION,
     )
   }
