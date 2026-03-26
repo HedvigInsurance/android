@@ -76,6 +76,7 @@ data class MemberReminders(
   val enableNotifications: MemberReminder.EnableNotifications? = null,
   val coInsuredInfo: List<MemberReminder.CoInsuredInfo>? = null,
   val updateContactInfo: ContactInfoUpdateNeeded? = null,
+  val missingChipId: MemberReminder.MissingChipId? = null,
 ) {
   /**
    * In some cases a reminder may be present but may not be applicable in our current app state.
@@ -99,6 +100,9 @@ data class MemberReminders(
         addAll(it)
       }
       updateContactInfo?.let {
+        add(it)
+      }
+      missingChipId?.let {
         add(it)
       }
     }
@@ -139,4 +143,9 @@ sealed interface MemberReminder {
   data object ContactInfoUpdateNeeded : MemberReminder {
     override val id: String = UUID.randomUUID().toString()
   }
+
+  data class MissingChipId(
+    val contractId: String,
+    override val id: String = UUID.randomUUID().toString(),
+  ) : MemberReminder
 }

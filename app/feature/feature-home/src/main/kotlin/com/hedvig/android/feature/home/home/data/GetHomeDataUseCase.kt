@@ -17,8 +17,10 @@ import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -165,6 +167,8 @@ internal class GetHomeDataUseCaseImpl(
             )
           } ?: emptyList()
         val travelBannerInfo = travelBannerInfo.getOrNull()
+        val hasMissingChipId = homeQueryData.currentMember.hasMissingChipId()
+        val missingChipIdContractId = homeQueryData.currentMember.getMissingChipIdContractId()
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
@@ -176,6 +180,8 @@ internal class GetHomeDataUseCaseImpl(
           firstVetSections = firstVetActions,
           crossSells = crossSells,
           travelBannerInfo = travelBannerInfo?.firstOrNull(), // todo: check for CAR_ADDON LATER!
+          hasMissingChipId = hasMissingChipId,
+          missingChipIdContractId = missingChipIdContractId,
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
@@ -263,6 +269,19 @@ internal class GetHomeDataUseCaseImpl(
   private fun HomeQuery.Data.CurrentMember.areAllNonTerminatedContractsPending(): Boolean {
     return activeContracts.isEmpty() && pendingContracts.isNotEmpty()
   }
+
+  private fun HomeQuery.Data.CurrentMember.hasMissingChipId(): Boolean {
+    return getMissingChipIdContractId() != null
+  }
+
+  private fun HomeQuery.Data.CurrentMember.getMissingChipIdContractId(): String? {
+    activeContracts.firstOrNull { contract ->
+      val contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup()
+      contractGroup == ContractGroup.CAT || contractGroup == ContractGroup.DOG
+    }?.let { return it.id }
+
+    return null
+  }
 }
 
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
@@ -284,6 +303,8 @@ internal data class HomeData(
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val travelBannerInfo: AddonBannerInfo?,
+  val hasMissingChipId: Boolean = false,
+  val missingChipIdContractId: String? = null,
 ) {
   @Immutable
   data class ClaimStatusCardsData(

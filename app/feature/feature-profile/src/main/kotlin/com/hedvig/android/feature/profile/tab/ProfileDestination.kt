@@ -226,6 +226,7 @@ private fun ProfileScreen(
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           onNavigateToNewConversation = onNavigateToNewConversation,
           navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = {}, //todo
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))

@@ -60,6 +60,7 @@ fun MemberReminderCardsWithoutNotification(
   onNavigateToNewConversation: () -> Unit,
   contentPadding: PaddingValues,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   MemberReminderCards(
@@ -72,6 +73,7 @@ fun MemberReminderCardsWithoutNotification(
     notificationPermissionState = null,
     contentPadding = contentPadding,
     navigateToContactInfo = navigateToContactInfo,
+    navigateToChipId = navigateToChipId,
     modifier = modifier,
   )
 }
@@ -85,6 +87,7 @@ fun MemberReminderCards(
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: (String) -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -99,8 +102,9 @@ fun MemberReminderCards(
         onNavigateToNewConversation = onNavigateToNewConversation,
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         notificationPermissionState = notificationPermissionState,
-        modifier = modifier.padding(contentPadding),
         navigateToContactInfo = navigateToContactInfo,
+        navigateToChipId = navigateToChipId,
+        modifier = modifier.padding(contentPadding),
       )
     } else if (memberReminders.isNotEmpty()) {
       val pagerState = rememberPagerState(pageCount = { memberReminders.size })
@@ -123,6 +127,7 @@ fun MemberReminderCards(
           snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
           notificationPermissionState = notificationPermissionState,
           navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipId,
           modifier = modifier.fillMaxWidth(),
         )
       }
@@ -147,6 +152,7 @@ private fun ColumnScope.MemberReminderCard(
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: (String) -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -210,6 +216,14 @@ private fun ColumnScope.MemberReminderCard(
         modifier = modifier,
       )
     }
+
+    is MemberReminder.MissingChipId -> {
+      ReminderMissingChipId(
+        contractId = memberReminder.contractId,
+        navigateToChipId = { navigateToChipId(memberReminder.contractId) },
+        modifier = modifier,
+      )
+    }
   }
 }
 
@@ -250,6 +264,23 @@ fun ReminderCardUpdateContactInfo(navigateToContactInfo: () -> Unit, modifier: M
     style = InfoCardStyle.Button(
       buttonText = stringResource(Res.string.MISSING_CONTACT_INFO_CARD_BUTTON),
       onButtonClick = navigateToContactInfo,
+    ),
+  )
+}
+
+@Composable
+internal fun ReminderMissingChipId(
+  contractId: String,
+  navigateToChipId: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  HedvigNotificationCard(
+    message = "Chip ID for your pet is missing", //todo
+    modifier = modifier,
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = "Add ID", //todo
+      onButtonClick = navigateToChipId,
     ),
   )
 }

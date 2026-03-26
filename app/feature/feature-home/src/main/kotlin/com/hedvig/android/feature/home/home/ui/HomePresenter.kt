@@ -19,6 +19,7 @@ import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -146,6 +147,8 @@ internal class HomePresenter(
           addonBannerInfo = successData.addonBannerInfo,
           isExperimentalClaimChatEnabled = isExperimentalClaimChatEnabled,
           isProduction = isProduction,
+          hasMissingChipId = successData.hasMissingChipId,
+          missingChipIdContractId = successData.missingChipIdContractId,
         )
       }
     }
@@ -186,6 +189,8 @@ internal sealed interface HomeUiState {
     val isProduction: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
+    val hasMissingChipId: Boolean = false,
+    val missingChipIdContractId: String? = null,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState
@@ -204,6 +209,8 @@ private data class SuccessData(
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
   val addonBannerInfo: AddonBannerInfo?,
+  val hasMissingChipId: Boolean = false,
+  val missingChipIdContractId: String? = null,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -219,6 +226,8 @@ private data class SuccessData(
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
         addonBannerInfo = lastState.addonBannerInfo,
+        hasMissingChipId = lastState.hasMissingChipId,
+        missingChipIdContractId = lastState.missingChipIdContractId,
       )
     }
 
@@ -258,13 +267,18 @@ private data class SuccessData(
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
         veryImportantMessages = homeData.veryImportantMessages,
-        memberReminders = homeData.memberReminders.copy(enableNotifications = null),
+        memberReminders = homeData.memberReminders.copy(
+          enableNotifications = null,
+          missingChipId = homeData.missingChipIdContractId?.let { MemberReminder.MissingChipId(it) },
+        ),
         showHelpCenter = homeData.showHelpCenter,
         chatAction = chatAction,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
         addonBannerInfo = homeData.travelBannerInfo,
+        hasMissingChipId = homeData.hasMissingChipId,
+        missingChipIdContractId = homeData.missingChipIdContractId,
       )
     }
   }

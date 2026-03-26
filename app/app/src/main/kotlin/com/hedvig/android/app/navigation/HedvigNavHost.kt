@@ -223,6 +223,9 @@ internal fun HedvigNavHost(
         navController.navigate(ProfileDestination.ContactInfo)
       },
       imageLoader = imageLoader,
+      navigateToChipIdScreen = { contractId: String ->
+        navController.navigate(ChipIdGraphDestination(contractId))
+      },
     )
     insuranceGraph(
       nestedGraphs = {
