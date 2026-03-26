@@ -10,6 +10,7 @@
     <item quantity="one">You have %1$d eligible insurance.</item>
     <item quantity="other">You have %1$d eligible insurances.</item>
   </plurals>
+  <string name="A11Y_OF">of</string>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="A11Y_SCROLL_DOWN">Scroll to bottom</string>
@@ -209,6 +210,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
+  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Custom item</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">If you don't know the exact date, enter an approximate date.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Edit answer</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.</string>
@@ -261,6 +263,7 @@
   <string name="CONFIRM_AND_PROCEED_BUTTON">Confirm and proceed</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your changes will be effective on %1$s.</string>
   <string name="CONFIRM_CHANGES_TITLE">Confirm changes</string>
+  <string name="CONTACT_INFO_CHANGES_SAVED">Changes saved</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>
@@ -626,6 +629,7 @@
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Invalid email</string>
   <string name="PROFILE_MY_INFO_REVIEW_INFO_CARD">Make sure your contact info is up to date, so we can reach you if needed.</string>
   <string name="PROFILE_MY_INFO_ROW_TITLE">Contact</string>
+  <string name="PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY">Changes saved</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL">That does not appear to be a valid email</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER">That does not appear to be a valid phone number</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_OFF">Turned off</string>
@@ -779,6 +783,7 @@
   <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">At %1$s, %2$s sent a file with type: %3$s, double tap to open.</string>
   <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">At %1$s, %2$s sent a GIF picture.</string>
   <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">At %1$s, %2$s said: %3$s</string>
+  <string name="TALKBACK_CLAIM_CHAT_YOUR_ANSWER">Your answer: </string>
   <string name="TALKBACK_CLAIM_STATUS">Claim status: %1$s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information about your claim</string>
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %1$s. Last message at %2$s.</string>
@@ -806,6 +811,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%1$s per month</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Pinch to zoom</string>
+  <string name="TALKBACK_PLAYBACK_BUTTON_STATE">Play recording. Button.</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Increase</string>
   <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>

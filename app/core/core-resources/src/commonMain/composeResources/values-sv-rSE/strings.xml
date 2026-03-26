@@ -10,6 +10,7 @@
     <item quantity="one">Du har %1$d berättigad försäkring.</item>
     <item quantity="other">Du har %1$d berättigade försäkringar.</item>
   </plurals>
+  <string name="A11Y_OF">av</string>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
   <string name="A11Y_SCROLL_DOWN">Skrolla längst ner på sidan</string>
@@ -209,6 +210,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
+  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Anpassat objekt</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Ändra svar</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.</string>
@@ -261,6 +263,7 @@
   <string name="CONFIRM_AND_PROCEED_BUTTON">Bekräfta och fortsätt</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Notera att dina ändringar börjar gälla från och med %1$s.</string>
   <string name="CONFIRM_CHANGES_TITLE">Godkänn ändringar</string>
+  <string name="CONTACT_INFO_CHANGES_SAVED">Ändringar sparade</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Giltigt till %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Giltigt till imorgon</string>
@@ -626,6 +629,7 @@
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Inkorrekt epostadress</string>
   <string name="PROFILE_MY_INFO_REVIEW_INFO_CARD">Se till att dina kontaktuppgifter är uppdaterade, så att vi kan nå dig om vi behöver.</string>
   <string name="PROFILE_MY_INFO_ROW_TITLE">Kontaktinfo</string>
+  <string name="PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY">Ändringar sparade</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL">Det där verkar inte vara en giltig e-postadress</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER">Det där verkar inte vara ett giltigt telefonnummer</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_OFF">Avaktiverad</string>
@@ -779,6 +783,7 @@
   <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">Vid %1$s skickade %2$s en fil av typen: %3$s, dubbeltryck för att öppna.</string>
   <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">Vid %1$s skickade %2$s en GIF-bild.</string>
   <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">Vid %1$s sa %2$s: %3$s</string>
+  <string name="TALKBACK_CLAIM_CHAT_YOUR_ANSWER">Ditt svar: </string>
   <string name="TALKBACK_CLAIM_STATUS">Status på skadeanmälan: %1$s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information om din skadeanmalän</string>
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Konversation om %1$s. Senaste meddelandet den %2$s.</string>
@@ -806,6 +811,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Alternativ valt</string>
   <string name="TALKBACK_PER_MONTH">%1$s per månad</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Nyp för att zooma</string>
+  <string name="TALKBACK_PLAYBACK_BUTTON_STATE">Spela upp inspelning. Knapp.</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Öka</string>
   <string name="TALKBACK_PREVIOUSLY">Tidigare %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Tidigare: %1$s</string>

@@ -28,7 +28,7 @@ internal data class MemberCharge(
   val referralDiscount: Discount?,
   private val carriedAdjustment: UiMoney?,
   private val settlementAdjustment: UiMoney?,
-  val chargeMethod: MemberPaymentChargeMethod
+  val chargeMethod: MemberPaymentChargeMethod,
 ) {
   fun carriedAdjustmentIfAboveZero(): UiMoney? = if (carriedAdjustment != null && carriedAdjustment.amount > 0) {
     carriedAdjustment
@@ -165,7 +165,7 @@ internal fun MemberChargeFragment.toMemberCharge(
       statusDescription = null,
     )
   },
-  chargeMethod = paymentProvider.toChargeMethod()
+  chargeMethod = paymentProvider.toChargeMethod(),
 )
 
 internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {

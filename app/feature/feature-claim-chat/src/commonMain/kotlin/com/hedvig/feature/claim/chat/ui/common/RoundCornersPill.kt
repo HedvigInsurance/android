@@ -63,7 +63,7 @@ internal fun RoundCornersPill(
         end = 14.dp,
         bottom = 9.dp,
       ),
-      horizontalAlignment =  Alignment.CenterHorizontally
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       ProvideTextStyle(LocalTextStyle.current.copy(color = contentColor)) {
         if (onClick != null) {

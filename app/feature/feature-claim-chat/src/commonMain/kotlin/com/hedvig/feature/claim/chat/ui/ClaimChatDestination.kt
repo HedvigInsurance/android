@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -50,15 +49,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
-import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
@@ -85,8 +87,7 @@ import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
 import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.data.StepId
-import com.hedvig.feature.claim.chat.ui.common.BlinkingAiDot
-import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
+import com.hedvig.feature.claim.chat.ui.common.HelipadRiveAnimation
 import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryBottomContent
 import com.hedvig.feature.claim.chat.ui.step.ChatClaimSummaryTopContent
 import com.hedvig.feature.claim.chat.ui.step.ContentSelectStep
@@ -152,7 +153,7 @@ internal fun ClaimChatDestination(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = navigateUp,
-      openPlayStore =  openPlayStore
+      openPlayStore = openPlayStore,
     )
   }
 }
@@ -200,7 +201,7 @@ internal fun ClaimChatScreenContent(
           appPackageId = appPackageId,
           imageLoader = imageLoader,
           navigateUp = navigateUp,
-          openPlayStore = openPlayStore
+          openPlayStore = openPlayStore,
         )
       }
     }
@@ -244,7 +245,7 @@ private fun ClaimChatScreen(
         appPackageId = appPackageId,
         imageLoader = imageLoader,
         navigateUp = navigateUp,
-        openPlayStore = openPlayStore
+        openPlayStore = openPlayStore,
       )
     },
   )
@@ -291,7 +292,7 @@ private fun ClaimChatScreenContent(
       onButtonClick = when (uiState.errorSubmittingStep) {
         ClaimChatErrorMessage.NeedsUpdate -> openPlayStore
         ClaimChatErrorMessage.GeneralError -> null
-      }
+      },
     )
   }
   if (uiState.showConfirmEditDialogForStep != null) {
@@ -343,8 +344,9 @@ private fun ClaimChatScreenContent(
 
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
+      val title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
       TopAppBar(
-        title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
+        title = title,
         actionType = TopAppBarActionType.BACK,
         onActionClick = {
           if (uiState.steps.size > 1) {
@@ -431,7 +433,7 @@ private fun ClaimChatScrollableContent(
   modifier: Modifier = Modifier,
 ) {
   val density = LocalDensity.current
-  val spaceBetweenItems = 16.dp
+  val spaceBetweenItems = 8.dp
   val contentPadding = WindowInsets.safeDrawing
     .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
     .asPaddingValues()
@@ -488,7 +490,7 @@ private fun ClaimChatScrollableContent(
             Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
           } else {
             Modifier
-          },
+          }
         )
       }
     }
@@ -541,15 +543,11 @@ private fun StepContentSection(
   onResponseHeightChanged: (IntSize) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  // AnimationSequence has 3 stages one after another:
-  // 1) fake ai dot
-  // 2) top part of content
-  // 3) bottom part of content
+  // AnimationSequence has 2 stages one after another:
+  // 1) Rive animation alongside text reveal
+  // 2) bottom part of content
 
   var isAnimationInProcess by rememberSaveable(stepItem.id) {
-    mutableStateOf(showAnimationSequence)
-  }
-  var showAiDot by rememberSaveable(stepItem.id) {
     mutableStateOf(showAnimationSequence)
   }
   var showTopContent by rememberSaveable(stepItem.id) {
@@ -563,9 +561,6 @@ private fun StepContentSection(
 
   LaunchedEffect(stepItem.id) {
     if (isAnimationInProcess) {
-      delay(1000)
-      showAiDot = false
-      delay(100)
       showTopContent = true
     }
   }
@@ -582,23 +577,22 @@ private fun StepContentSection(
     modifier = modifier,
     verticalArrangement = Arrangement.SpaceBetween,
   ) {
-    if (showAiDot) {
-      CommonPaddingWrapper {
-        BlinkingAiDot()
-      }
-    } else if (showTopContent) {
+    if (showTopContent) {
       StepTopContent(
         stepItem = stepItem,
         hasAnimation = isAnimationInProcess,
+        isAnimationComplete = !isAnimationInProcess,
         onAnimationFinished = {
           showBottomContent = true
+          onEvent(ClaimChatEvent.FinishTaskAnimation)
         },
         onNavigateToImageViewer = onNavigateToImageViewer,
         imageLoader = imageLoader,
+        isCurrentStep = isCurrentStep,
       )
     }
 
-    if (showAiDot || showTopContent) {
+    if (showTopContent && stepItem.stepContent !is StepContent.Task) {
       Spacer(Modifier.height(32.dp))
     }
 
@@ -632,9 +626,11 @@ private fun StepContentSection(
 private fun StepTopContent(
   stepItem: ClaimIntentStep,
   hasAnimation: Boolean,
+  isAnimationComplete: Boolean,
   onAnimationFinished: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   imageLoader: ImageLoader,
+  isCurrentStep: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val hint = stepItem.hint?.let {
@@ -648,6 +644,22 @@ private fun StepTopContent(
   }
 
   Column(modifier) {
+    val density = LocalDensity.current
+    if (stepItem.stepContent !is StepContent.Task
+      && stepItem.stepContent !is StepContent.Summary
+      && stepItem.showSpinForThisStep
+    ) {
+      HelipadRiveAnimation(
+        bottomAnimationFinished = isAnimationComplete,
+        modifier = Modifier.size(
+          with(density) {
+            animationSize.toDp()
+          },
+        ),
+        stepId = stepItem.id.value,
+      )
+      Spacer(Modifier.height(4.dp))
+    }
     if (hasAnimation) {
       if (stepItemText != null) {
         CommonPaddingWrapper {
@@ -657,9 +669,8 @@ private fun StepTopContent(
               MutableTransitionState(false).apply { targetState = true }
             },
             onAnimationFinished = onAnimationFinished,
-            modifier = Modifier.semantics {
-              heading()
-            },
+            modifier = Modifier
+              .semantics { heading() },
           )
         }
       } else {
@@ -683,7 +694,10 @@ private fun StepTopContent(
     if (stepItem.stepContent is StepContent.Task) {
       TaskStepTopContent(
         taskContent = stepItem.stepContent,
+        stepId = stepItem.id.value,
+        isLastStep = isCurrentStep,
       )
+      Spacer(Modifier.height(4.dp))
     }
 
     AnimatedVisibility(
@@ -692,9 +706,7 @@ private fun StepTopContent(
       exit = ExitTransition.None,
     ) {
       Column {
-        stepItemText?.let {
-          Spacer(Modifier.height(16.dp))
-        }
+        Spacer(Modifier.height(16.dp))
         if (stepItem.stepContent is StepContent.Summary) {
           ChatClaimSummaryTopContent(
             recordingUrls = stepItem.stepContent.audioRecordings.map { it.url },
@@ -721,17 +733,7 @@ private fun StepTopContent(
 // to align blinking dot, task step and animated and not-animated questions to appear in the same place vertically
 @Composable
 private fun CommonPaddingWrapper(content: @Composable () -> Unit) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    content()
-    RoundCornersPill(
-      onClick = null,
-      modifier = Modifier.withoutPlacement(),
-    ) {
-      HedvigText("C")
-    }
-  }
+  content()
 }
 
 @Composable
@@ -880,3 +882,8 @@ private fun StepBottomContent(
     }
   }
 }
+
+
+internal val animationSize = 32.sp
+
+internal val sentAnswersStartPadding = 45.dp

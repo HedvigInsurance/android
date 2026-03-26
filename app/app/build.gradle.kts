@@ -26,9 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.0.8"
-
-    vectorDrawables.useSupportLibrary = true
+    versionName = "14.0.9"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -148,6 +146,7 @@ dependencies {
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
+  implementation(libs.rive.android)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
@@ -167,7 +166,7 @@ dependencies {
   implementation(projects.dataAddons)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
-  implementation(projects.dataClaimFlow)
+
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
@@ -189,7 +188,7 @@ dependencies {
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
-  implementation(projects.featureClaimTriaging)
+
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
@@ -204,7 +203,7 @@ dependencies {
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
-  implementation(projects.featureOdyssey)
+
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
