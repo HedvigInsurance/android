@@ -12,10 +12,10 @@ import kotlinx.datetime.LocalDate
 import octopus.TerminationFlowNotificationQuery
 import octopus.type.TerminationFlowNotificationInput
 
-internal class GetTerminationNotificationUseCase(
+internal open class GetTerminationNotificationUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  fun invoke(contractId: String, terminationDate: LocalDate): Flow<Either<ErrorMessage, String?>> {
+  open fun invoke(contractId: String, terminationDate: LocalDate): Flow<Either<ErrorMessage, String?>> {
     return apolloClient
       .query(
         TerminationFlowNotificationQuery(

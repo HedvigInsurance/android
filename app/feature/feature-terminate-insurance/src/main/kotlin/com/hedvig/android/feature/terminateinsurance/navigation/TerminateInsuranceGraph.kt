@@ -251,11 +251,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     ) {
       DeflectSuggestionDestination(
         description = description,
-        url = url,
         suggestionType = suggestionType,
         navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
-        openUrl = openUrl,
         onContinueTermination = {
           when (val terminationAction = action) {
             is TerminationAction.TerminateWithDate -> {
@@ -298,13 +296,7 @@ private fun navigateFromSurvey(
 
   // Handle deflection suggestions as full-screen destinations
   if (suggestion != null &&
-    suggestion.type in setOf(
-      SuggestionType.AUTO_DECOMMISSION,
-      SuggestionType.AUTO_CANCEL_SOLD,
-      SuggestionType.AUTO_CANCEL_SCRAPPED,
-      SuggestionType.CAR_DECOMMISSION_INFO,
-      SuggestionType.CAR_ALREADY_DECOMMISSION,
-    )
+    suggestion.type in SuggestionType.DEFLECT_TYPES
   ) {
     navController.navigate(
       TerminateInsuranceDestination.DeflectSuggestion(

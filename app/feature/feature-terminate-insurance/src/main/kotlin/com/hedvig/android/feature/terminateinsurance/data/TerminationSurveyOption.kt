@@ -33,4 +33,15 @@ internal enum class SuggestionType {
   CAR_DECOMMISSION_INFO,
   CAR_ALREADY_DECOMMISSION,
   UNKNOWN,
+  ;
+
+  companion object {
+    val DEFLECT_TYPES = setOf(
+      AUTO_DECOMMISSION,
+      AUTO_CANCEL_SOLD,
+      AUTO_CANCEL_SCRAPPED,
+      CAR_DECOMMISSION_INFO,
+      CAR_ALREADY_DECOMMISSION,
+    )
+  }
 }

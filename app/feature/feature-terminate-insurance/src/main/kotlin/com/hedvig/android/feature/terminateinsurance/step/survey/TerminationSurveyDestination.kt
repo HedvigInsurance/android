@@ -54,9 +54,12 @@ import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
+import hedvig.resources.CHANGE_TIER_BUTTON_TITLE
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.Res
+import hedvig.resources.SUMMARY_SCREEN_LEARN_MORE_BUTTON
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
+import hedvig.resources.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_HINT
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT
 import hedvig.resources.TERMINATION_SURVEY_SUBTITLE
@@ -283,15 +286,7 @@ private fun SelectedSurveyInfoBox(
       selectedReason != null &&
       selectedReason.suggestion != null &&
       !selectedReason.isDisabled &&
-      selectedReason.suggestion.type !in
-      setOf(
-        SuggestionType.AUTO_DECOMMISSION,
-        SuggestionType.AUTO_CANCEL_SOLD,
-        SuggestionType.AUTO_CANCEL_SCRAPPED,
-        SuggestionType.CAR_DECOMMISSION_INFO,
-        SuggestionType.CAR_ALREADY_DECOMMISSION,
-        SuggestionType.UNKNOWN,
-      )
+      selectedReason.suggestion.type !in SuggestionType.DEFLECT_TYPES + SuggestionType.UNKNOWN
     ) {
       Column {
         val suggestion = selectedReason.suggestion
@@ -318,22 +313,22 @@ private fun SelectedSurveyInfoBox(
           },
           style = when (suggestion.type) {
             SuggestionType.UPDATE_ADDRESS -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.general_continue_button),
+              buttonText = stringResource(Res.string.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS),
               onButtonClick = dropUnlessResumed { navigateToMovingFlow() },
             )
 
             SuggestionType.DOWNGRADE_PRICE -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.general_continue_button),
+              buttonText = stringResource(Res.string.CHANGE_TIER_BUTTON_TITLE),
               onButtonClick = tryToDowngradePrice,
             )
 
             SuggestionType.UPGRADE_COVERAGE -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.general_continue_button),
+              buttonText = stringResource(Res.string.CHANGE_TIER_BUTTON_TITLE),
               onButtonClick = tryToUpgradeCoverage,
             )
 
             SuggestionType.REDIRECT -> InfoCardStyle.Button(
-              buttonText = stringResource(Res.string.general_continue_button),
+              buttonText = stringResource(Res.string.SUMMARY_SCREEN_LEARN_MORE_BUTTON),
               onButtonClick = { suggestion.url?.let { openUrl(it) } },
             )
 

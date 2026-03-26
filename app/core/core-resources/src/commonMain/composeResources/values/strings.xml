@@ -840,6 +840,9 @@
   <string name="TERMINATION_BUTTON">Cancel insurance</string>
   <string name="TERMINATION_DATE_TEXT">Select termination date</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">We’ll send a cancellation confirmation within a few days. If you don’t get it after 5 days, feel free to contact us.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Since your car has been decommissioned, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Since your car has been scrapped, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE">Since you\’ve sold your car, your insurance will be automatically cancelled.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">We’ll cancel your insurance automatically</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">You’ll receive a confirmation email within a few days, where you can see your new price.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">What it costs</string>
@@ -848,6 +851,8 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">If you’ve decommissioned your car through Transportstyrelsen, your insurance will automatically switch to decommission insurance.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">If you don’t want to keep your decommission insurance, you can cancel it below.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Your insurance will switch to decommission insurance</string>
+  <string name="TERMINATION_FLOW_CAR_BACK_MESSAGE">Since your car is registered again, your insurance will automatically switch back to your regular coverage.</string>
+  <string name="TERMINATION_FLOW_CAR_BACK_TITLE">Your car is back on the road</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Cancel insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab "Payments" here in the app.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Cancelling your insurance</string>

@@ -49,13 +49,21 @@ val terminateInsuranceModule = module {
       languageService = get<LanguageService>(),
     )
   }
-  viewModel<TerminationConfirmationViewModel> { params ->
+  viewModel<TerminationConfirmationViewModel> {
+    (
+      terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+      insuranceInfo: TerminationGraphParameters,
+      extraCoverageItems: List<ExtraCoverageItem>,
+      selectedReasonId: String,
+      feedbackComment: String?,
+    ),
+    ->
     TerminationConfirmationViewModel(
-      terminationType = params.get<TerminateInsuranceDestination.TerminationConfirmation.TerminationType>(),
-      insuranceInfo = params.get<TerminationGraphParameters>(),
-      extraCoverageItems = params.get<List<ExtraCoverageItem>>(),
-      selectedReasonId = params.get<String>(),
-      feedbackComment = params.getOrNull<String>(),
+      terminationType = terminationType,
+      insuranceInfo = insuranceInfo,
+      extraCoverageItems = extraCoverageItems,
+      selectedReasonId = selectedReasonId,
+      feedbackComment = feedbackComment,
       terminateInsuranceRepository = get<TerminateInsuranceRepository>(),
       getTerminationNotificationUseCase = get<GetTerminationNotificationUseCase>(),
       clock = get<Clock>(),

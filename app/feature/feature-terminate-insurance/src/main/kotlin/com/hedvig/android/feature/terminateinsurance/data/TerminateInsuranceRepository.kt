@@ -7,6 +7,7 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
@@ -68,10 +69,12 @@ internal class TerminateInsuranceRepositoryImpl(
         .safeExecute(::ErrorMessage)
         .bind()
         .terminateContract
-      TerminationResult(
-        terminationDate = result.contract?.terminationDate,
-        userError = result.userError?.message,
-      )
+      val userError = result.userError?.message
+      if (userError != null) {
+        TerminationResult.UserError(userError)
+      } else {
+        TerminationResult.Success(result.contract?.terminationDate)
+      }
     }
   }
 
@@ -94,10 +97,12 @@ internal class TerminateInsuranceRepositoryImpl(
         .safeExecute(::ErrorMessage)
         .bind()
         .deleteContract
-      TerminationResult(
-        terminationDate = null,
-        userError = result.userError?.message,
-      )
+      val userError = result.userError?.message
+      if (userError != null) {
+        TerminationResult.UserError(userError)
+      } else {
+        TerminationResult.Success(terminationDate = null)
+      }
     }
   }
 }
@@ -148,6 +153,7 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
     }
 
     else -> {
+      logcat { "Unknown TerminationAction type: ${this::class.simpleName}, falling back to DeleteInsurance" }
       TerminationAction.DeleteInsurance(extraCoverageItems = emptyList())
     }
   }

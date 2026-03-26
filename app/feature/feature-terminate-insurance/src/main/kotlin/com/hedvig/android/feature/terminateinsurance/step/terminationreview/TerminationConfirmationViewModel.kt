@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
+import com.hedvig.android.feature.terminateinsurance.data.TerminationResult
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
@@ -58,7 +59,7 @@ sealed interface TerminationConfirmationEvent {
   data object HandledNavigation : TerminationConfirmationEvent
 }
 
-private class TerminationConfirmationPresenter(
+internal class TerminationConfirmationPresenter(
   private val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
   private val insuranceInfo: TerminationGraphParameters,
   private val selectedReasonId: String,
@@ -116,16 +117,16 @@ private class TerminationConfirmationPresenter(
                   userError = errorMessage.message,
                 )
               },
-              ifRight = { result ->
-                if (result.userError != null) {
-                  uiState = uiState.copy(
+              ifRight = { terminationResult ->
+                when (terminationResult) {
+                  is TerminationResult.UserError -> uiState = uiState.copy(
                     isSubmittingContractTermination = false,
-                    userError = result.userError,
+                    userError = terminationResult.message,
                   )
-                } else {
-                  uiState = uiState.copy(
+
+                  is TerminationResult.Success -> uiState = uiState.copy(
                     isSubmittingContractTermination = false,
-                    terminationSuccess = TerminationSuccessResult(result.terminationDate),
+                    terminationSuccess = TerminationSuccessResult(terminationResult.terminationDate),
                   )
                 }
               },

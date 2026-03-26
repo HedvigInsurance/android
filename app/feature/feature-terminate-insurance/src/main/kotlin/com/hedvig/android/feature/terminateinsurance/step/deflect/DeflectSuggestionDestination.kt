@@ -1,57 +1,68 @@
 package com.hedvig.android.feature.terminateinsurance.step.deflect
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
-import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_BUTTON
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_ABOUT
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_TITLE
+import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO
+import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE
+import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO
+import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE
+import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_INFO
+import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION
+import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_TITLE
+import hedvig.resources.TERMINATION_FLOW_CAR_BACK_MESSAGE
+import hedvig.resources.TERMINATION_FLOW_CAR_BACK_TITLE
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
-import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DeflectSuggestionDestination(
   description: String,
-  url: String?,
   suggestionType: SuggestionType,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
-  openUrl: (String) -> Unit,
   onContinueTermination: () -> Unit,
 ) {
+  val content = rememberDeflectScreenContent(suggestionType, apiDescription = description)
   DeflectSuggestionScreen(
-    description = description,
-    url = url,
-    suggestionType = suggestionType,
+    content = content,
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
-    openUrl = openUrl,
     onContinueTermination = onContinueTermination,
   )
 }
 
 @Composable
 private fun DeflectSuggestionScreen(
-  description: String,
-  url: String?,
-  suggestionType: SuggestionType,
+  content: DeflectScreenContent,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
-  openUrl: (String) -> Unit,
   onContinueTermination: () -> Unit,
 ) {
   TerminationScaffold(
@@ -59,63 +70,220 @@ private fun DeflectSuggestionScreen(
     closeTerminationFlow = closeTerminationFlow,
   ) { _ ->
     FlowHeading(
-      title = description,
+      title = content.title,
       description = null,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    if (url != null) {
-      HedvigButton(
-        text = stringResource(Res.string.general_continue_button),
-        enabled = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-        onClick = { openUrl(url) },
+    HedvigText(
+      content.message,
+      color = HedvigTheme.colorScheme.textSecondary,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    if (content.extraMessage != null) {
+      Spacer(Modifier.height(16.dp))
+      HedvigText(
+        content.extraMessage,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Spacer(Modifier.height(8.dp))
     }
-    if (suggestionType in
-      setOf(
-        SuggestionType.AUTO_DECOMMISSION,
-        SuggestionType.CAR_DECOMMISSION_INFO,
-        SuggestionType.CAR_ALREADY_DECOMMISSION,
+    for (explanation in content.explanations) {
+      Spacer(Modifier.height(16.dp))
+      HedvigText(
+        explanation.title,
+        modifier = Modifier.padding(horizontal = 16.dp),
       )
-    ) {
+      Spacer(Modifier.height(4.dp))
+      HedvigText(
+        explanation.text,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
+    Spacer(Modifier.weight(1f).heightIn(min = 16.dp))
+    if (content.info != null) {
+      HedvigNotificationCard(
+        message = content.info,
+        priority = NotificationDefaults.NotificationPriority.Info,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
+    HedvigButton(
+      text = stringResource(Res.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
+      enabled = true,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+      onClick = closeTerminationFlow,
+    )
+    if (content.canContinueTermination) {
+      Spacer(Modifier.height(8.dp))
       HedvigButton(
         text = stringResource(Res.string.TERMINATION_BUTTON),
         enabled = true,
+        buttonStyle = Ghost,
+        buttonSize = Large,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
         onClick = onContinueTermination,
       )
-      Spacer(Modifier.height(8.dp))
     }
-    HedvigTextButton(
-      text = stringResource(Res.string.TERMINATION_FLOW_I_UNDERSTAND_TEXT),
-      onClick = closeTerminationFlow,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+private data class DeflectScreenContent(
+  val title: String,
+  val message: String,
+  val extraMessage: String?,
+  val explanations: List<ExplanationItem>,
+  val info: String?,
+  val canContinueTermination: Boolean,
+)
+
+private data class ExplanationItem(
+  val title: String,
+  val text: String,
+)
+
+@Composable
+private fun rememberDeflectScreenContent(
+  suggestionType: SuggestionType,
+  apiDescription: String,
+): DeflectScreenContent {
+  val autoCancelTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_TITLE)
+  val autoCancelAbout = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_ABOUT)
+  val soldMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE)
+  val scrappedMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE)
+  val decommissionMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE)
+  val decomTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_TITLE)
+  val decomInfo = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_INFO)
+  val decomCoveredTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE)
+  val decomCoveredInfo = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO)
+  val decomCostsTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE)
+  val decomCostsInfo = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO)
+  val decomNotification = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION)
+  val carBackTitle = stringResource(Res.string.TERMINATION_FLOW_CAR_BACK_TITLE)
+  val carBackMessage = stringResource(Res.string.TERMINATION_FLOW_CAR_BACK_MESSAGE)
+
+  return remember(suggestionType, apiDescription) {
+    when (suggestionType) {
+      SuggestionType.AUTO_CANCEL_SOLD -> autoCancel(autoCancelTitle, soldMessage, autoCancelAbout)
+
+      SuggestionType.AUTO_CANCEL_SCRAPPED -> autoCancel(autoCancelTitle, scrappedMessage, autoCancelAbout)
+
+      SuggestionType.CAR_DECOMMISSION_INFO -> autoCancel(autoCancelTitle, decommissionMessage, autoCancelAbout)
+
+      SuggestionType.AUTO_DECOMMISSION -> DeflectScreenContent(
+        title = decomTitle,
+        message = decomInfo,
+        extraMessage = null,
+        explanations = listOf(
+          ExplanationItem(title = decomCoveredTitle, text = decomCoveredInfo),
+          ExplanationItem(title = decomCostsTitle, text = decomCostsInfo),
+        ),
+        info = decomNotification,
+        canContinueTermination = true,
+      )
+
+      SuggestionType.CAR_ALREADY_DECOMMISSION -> DeflectScreenContent(
+        title = carBackTitle,
+        message = carBackMessage,
+        extraMessage = null,
+        explanations = emptyList(),
+        info = null,
+        canContinueTermination = true,
+      )
+
+      else -> DeflectScreenContent(
+        title = apiDescription,
+        message = "",
+        extraMessage = null,
+        explanations = emptyList(),
+        info = null,
+        canContinueTermination = false,
+      )
+    }
+  }
+}
+
+private fun autoCancel(title: String, message: String, extraMessage: String): DeflectScreenContent {
+  return DeflectScreenContent(
+    title = title,
+    message = message,
+    extraMessage = extraMessage,
+    explanations = emptyList(),
+    info = null,
+    canContinueTermination = true,
+  )
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewDeflectAutoCancel() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DeflectSuggestionScreen(
+        content = DeflectScreenContent(
+          title = "We'll cancel your insurance automatically",
+          message = "Since you've sold your car, your insurance will be automatically cancelled.",
+          extraMessage = "We'll send a cancellation confirmation within a few days.",
+          explanations = emptyList(),
+          info = null,
+          canContinueTermination = true,
+        ),
+        navigateUp = {},
+        closeTerminationFlow = {},
+        onContinueTermination = {},
+      )
+    }
   }
 }
 
 @HedvigPreview
 @Composable
-private fun PreviewDeflectSuggestionScreen() {
+private fun PreviewDeflectAutoDecom() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       DeflectSuggestionScreen(
-        description = "Your car insurance will be automatically cancelled when the car is deregistered.",
-        url = null,
-        suggestionType = SuggestionType.AUTO_DECOMMISSION,
+        content = DeflectScreenContent(
+          title = "Your insurance will switch to decommission insurance",
+          message = "If you've decommissioned your car, your insurance will automatically switch.",
+          extraMessage = null,
+          explanations = listOf(
+            ExplanationItem("What's covered", "Theft, fire, vandalism, and body damage."),
+            ExplanationItem("What it costs", "You'll receive a confirmation email."),
+          ),
+          info = "If you don't want to keep your decommission insurance, you can cancel it below.",
+          canContinueTermination = true,
+        ),
         navigateUp = {},
         closeTerminationFlow = {},
-        openUrl = {},
+        onContinueTermination = {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewDeflectCarAlreadyDecom() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      DeflectSuggestionScreen(
+        content = DeflectScreenContent(
+          title = "Your car is back on the road",
+          message = "Since your car is registered again, your insurance will switch back.",
+          extraMessage = null,
+          explanations = emptyList(),
+          info = null,
+          canContinueTermination = true,
+        ),
+        navigateUp = {},
+        closeTerminationFlow = {},
         onContinueTermination = {},
       )
     }

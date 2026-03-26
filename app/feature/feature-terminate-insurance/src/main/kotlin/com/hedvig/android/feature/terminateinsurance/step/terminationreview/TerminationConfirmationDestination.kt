@@ -64,6 +64,7 @@ import hedvig.resources.TERMINATION_BUTTON
 import hedvig.resources.TERMINATION_FLOW_CONFIRMATION
 import hedvig.resources.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION
 import hedvig.resources.TERMINATION_FLOW_CONFIRM_BUTTON
+import hedvig.resources.TERMINATION_FLOW_DATE_FIELD_TEXT
 import hedvig.resources.TERMINATION_FLOW_SUMMARY_SUBTITLE
 import hedvig.resources.TERMINATION_KEEP_INSURANCE_BUTTON
 import hedvig.resources.general_close_button
@@ -154,19 +155,32 @@ private fun AreYouSureScreen(
       )
       Spacer(Modifier.height(16.dp))
     }
-    if (notificationMessage != null) {
-      HedvigNotificationCard(
-        message = notificationMessage,
-        priority = NotificationDefaults.NotificationPriority.Attention,
-        modifier = Modifier.padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
-    }
     InsuranceInfoCard(
       insuranceInfo = insuranceInfo,
       extraCoverageItems = extraCoverageItems,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
+    if (type is Termination) {
+      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+      Spacer(Modifier.height(4.dp))
+      HedvigCard(Modifier.padding(horizontal = 16.dp)) {
+        Column(Modifier.padding(16.dp)) {
+          HedvigText(
+            stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+          HedvigText(dateTimeFormatter.format(type.terminationDate))
+        }
+      }
+    }
+    if (notificationMessage != null) {
+      Spacer(Modifier.height(4.dp))
+      HedvigNotificationCard(
+        message = notificationMessage,
+        priority = NotificationDefaults.NotificationPriority.Info,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(Res.string.TERMINATION_BUTTON),
