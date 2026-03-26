@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.terminateinsurance.step.deflect
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,11 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
@@ -68,10 +67,10 @@ private fun DeflectSuggestionScreen(
   TerminationScaffold(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
-  ) { _ ->
+  ) { title ->
     FlowHeading(
-      title = content.title,
-      description = null,
+      title = title,
+      description = content.title,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
@@ -120,15 +119,13 @@ private fun DeflectSuggestionScreen(
     )
     if (content.canContinueTermination) {
       Spacer(Modifier.height(8.dp))
-      HedvigButton(
+      HedvigTextButton(
         text = stringResource(Res.string.TERMINATION_BUTTON),
-        enabled = true,
-        buttonStyle = Ghost,
         buttonSize = Large,
+        onClick = onContinueTermination,
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        onClick = onContinueTermination,
       )
     }
     Spacer(Modifier.height(16.dp))
