@@ -52,7 +52,7 @@ class TerminationConfirmationPresenterTest {
   @Test
   fun `submit termination calls terminateContract and navigates to success`() = runTest {
     val repository = FakeTerminateInsuranceRepository(
-      terminateResult = TerminationResult.Success(terminationDate).right(),
+      terminateResult = TerminationResult.Terminated(terminationDate).right(),
     )
     val presenter = createPresenter(
       terminationType = TerminationType.Termination(terminationDate),
@@ -72,7 +72,7 @@ class TerminationConfirmationPresenterTest {
   @Test
   fun `submit deletion calls deleteContract and navigates to success`() = runTest {
     val repository = FakeTerminateInsuranceRepository(
-      deleteResult = TerminationResult.Success(terminationDate = null).right(),
+      deleteResult = TerminationResult.Deleted.right(),
     )
     val presenter = createPresenter(
       terminationType = TerminationType.Deletion,
@@ -141,9 +141,9 @@ class TerminationConfirmationPresenterTest {
 
 private class FakeTerminateInsuranceRepository(
   private val terminateResult: Either<ErrorMessage, TerminationResult> =
-    TerminationResult.Success(null).right(),
+    TerminationResult.Deleted.right(),
   private val deleteResult: Either<ErrorMessage, TerminationResult> =
-    TerminationResult.Success(null).right(),
+    TerminationResult.Deleted.right(),
 ) : TerminateInsuranceRepository {
   override suspend fun getTerminationSurvey(contractId: String): Either<ErrorMessage, TerminationSurveyData> {
     error("Not used in this test")

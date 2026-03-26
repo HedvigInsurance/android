@@ -73,7 +73,7 @@ internal class TerminateInsuranceRepositoryImpl(
       if (userError != null) {
         TerminationResult.UserError(userError)
       } else {
-        TerminationResult.Success(result.contract?.terminationDate)
+        TerminationResult.Terminated(result.contract!!.terminationDate!!)
       }
     }
   }
@@ -101,7 +101,7 @@ internal class TerminateInsuranceRepositoryImpl(
       if (userError != null) {
         TerminationResult.UserError(userError)
       } else {
-        TerminationResult.Success(terminationDate = null)
+        TerminationResult.Deleted
       }
     }
   }

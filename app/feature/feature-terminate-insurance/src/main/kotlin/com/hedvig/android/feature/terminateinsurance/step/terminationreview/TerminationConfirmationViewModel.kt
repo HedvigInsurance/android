@@ -124,9 +124,14 @@ internal class TerminationConfirmationPresenter(
                     userError = terminationResult.message,
                   )
 
-                  is TerminationResult.Success -> uiState = uiState.copy(
+                  is TerminationResult.Terminated -> uiState = uiState.copy(
                     isSubmittingContractTermination = false,
                     terminationSuccess = TerminationSuccessResult(terminationResult.terminationDate),
+                  )
+
+                  TerminationResult.Deleted -> uiState = uiState.copy(
+                    isSubmittingContractTermination = false,
+                    terminationSuccess = TerminationSuccessResult(terminationDate = null),
                   )
                 }
               },

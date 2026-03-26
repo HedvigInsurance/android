@@ -33,7 +33,9 @@ internal data class ExtraCoverageItem(
 )
 
 internal sealed interface TerminationResult {
-  data class Success(val terminationDate: LocalDate?) : TerminationResult
+  data class Terminated(val terminationDate: LocalDate) : TerminationResult
+
+  data object Deleted : TerminationResult
 
   data class UserError(val message: String) : TerminationResult
 }
