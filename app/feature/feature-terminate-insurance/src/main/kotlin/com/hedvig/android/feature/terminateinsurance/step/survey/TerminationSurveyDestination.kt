@@ -62,7 +62,7 @@ import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
 import hedvig.resources.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_HINT
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT
-import hedvig.resources.TERMINATION_SURVEY_SUBTITLE
+import hedvig.resources.TERMINATION_OFFER_TITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong
@@ -189,7 +189,7 @@ private fun TerminationSurveyScreen(
         }
         FlowHeading(
           title,
-          stringResource(Res.string.TERMINATION_SURVEY_SUBTITLE),
+          stringResource(Res.string.TERMINATION_OFFER_TITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
@@ -290,7 +290,7 @@ private fun SelectedSurveyInfoBox(
     ) {
       Column {
         val suggestion = selectedReason.suggestion
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
           buttonLoading = actionButtonLoading,
           modifier = Modifier

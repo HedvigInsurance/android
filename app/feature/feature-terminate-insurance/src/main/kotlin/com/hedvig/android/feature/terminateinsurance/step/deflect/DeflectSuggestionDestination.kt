@@ -21,6 +21,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
+import hedvig.resources.GENERAL_CONTACT_US_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_BUTTON
 import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_ABOUT
@@ -47,6 +48,7 @@ internal fun DeflectSuggestionDestination(
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   onContinueTermination: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   val content = rememberDeflectScreenContent(suggestionType, apiDescription = description)
   DeflectSuggestionScreen(
@@ -54,6 +56,7 @@ internal fun DeflectSuggestionDestination(
     navigateUp = navigateUp,
     closeTerminationFlow = closeTerminationFlow,
     onContinueTermination = onContinueTermination,
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }
 
@@ -63,6 +66,7 @@ private fun DeflectSuggestionScreen(
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   onContinueTermination: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   TerminationScaffold(
     navigateUp = navigateUp,
@@ -128,6 +132,17 @@ private fun DeflectSuggestionScreen(
           .padding(horizontal = 16.dp),
       )
     }
+    if (content.showContactUs) {
+      Spacer(Modifier.height(8.dp))
+      HedvigTextButton(
+        text = stringResource(Res.string.GENERAL_CONTACT_US_TITLE),
+        buttonSize = Large,
+        onClick = onNavigateToNewConversation,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
   }
 }
@@ -139,6 +154,7 @@ private data class DeflectScreenContent(
   val explanations: List<ExplanationItem>,
   val info: String?,
   val canContinueTermination: Boolean,
+  val showContactUs: Boolean = false,
 )
 
 private data class ExplanationItem(
@@ -168,14 +184,28 @@ private fun rememberDeflectScreenContent(
 
   return remember(suggestionType, apiDescription) {
     when (suggestionType) {
-      SuggestionType.AUTO_CANCEL_SOLD -> autoCancel(autoCancelTitle, soldMessage, autoCancelAbout)
+      SuggestionType.AUTO_CANCEL_SOLD -> autoCancel(
+        title = autoCancelTitle,
+        message = soldMessage,
+        extraMessage = autoCancelAbout,
+        canContinueTermination = false,
+        showContactUs = true,
+      )
 
-      SuggestionType.AUTO_CANCEL_SCRAPPED -> autoCancel(autoCancelTitle, scrappedMessage, autoCancelAbout)
+      SuggestionType.AUTO_CANCEL_SCRAPPED -> autoCancel(
+        title = autoCancelTitle,
+        message = scrappedMessage,
+        extraMessage = autoCancelAbout,
+        canContinueTermination = false,
+        showContactUs = true,
+      )
 
       SuggestionType.AUTO_CANCEL_DECOMMISSION -> autoCancel(
-        autoCancelTitle,
-        decommissionMessage,
-        autoCancelAbout,
+        title = autoCancelTitle,
+        message = decommissionMessage,
+        extraMessage = autoCancelAbout,
+        canContinueTermination = true,
+        showContactUs = false,
       )
 
       SuggestionType.AUTO_DECOMMISSION -> DeflectScreenContent(
@@ -211,14 +241,21 @@ private fun rememberDeflectScreenContent(
   }
 }
 
-private fun autoCancel(title: String, message: String, extraMessage: String): DeflectScreenContent {
+private fun autoCancel(
+  title: String,
+  message: String,
+  extraMessage: String,
+  canContinueTermination: Boolean,
+  showContactUs: Boolean,
+): DeflectScreenContent {
   return DeflectScreenContent(
     title = title,
     message = message,
     extraMessage = extraMessage,
     explanations = emptyList(),
     info = null,
-    canContinueTermination = true,
+    canContinueTermination = canContinueTermination,
+    showContactUs = showContactUs,
   )
 }
 
@@ -234,11 +271,13 @@ private fun PreviewDeflectAutoCancel() {
           extraMessage = "We'll send a cancellation confirmation within a few days.",
           explanations = emptyList(),
           info = null,
-          canContinueTermination = true,
+          canContinueTermination = false,
+          showContactUs = true,
         ),
         navigateUp = {},
         closeTerminationFlow = {},
         onContinueTermination = {},
+        onNavigateToNewConversation = {},
       )
     }
   }
@@ -264,6 +303,7 @@ private fun PreviewDeflectAutoDecom() {
         navigateUp = {},
         closeTerminationFlow = {},
         onContinueTermination = {},
+        onNavigateToNewConversation = {},
       )
     }
   }
@@ -286,6 +326,7 @@ private fun PreviewDeflectCarAlreadyDecom() {
         navigateUp = {},
         closeTerminationFlow = {},
         onContinueTermination = {},
+        onNavigateToNewConversation = {},
       )
     }
   }
