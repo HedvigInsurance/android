@@ -46,9 +46,14 @@ import com.hedvig.android.design.system.hedvig.clearFocusOnTap
 import com.hedvig.android.feature.chip.id.ui.AddChipIdEvent.RetryLoadData
 import com.hedvig.android.feature.chip.id.ui.AddChipIdEvent.SubmitData
 import com.hedvig.android.feature.chip.id.ui.AddChipIdUiState.Content
+import hedvig.resources.CHIP_ID_LABEL
+import hedvig.resources.CHIP_ID_TOP_TITLE
+import hedvig.resources.CHIP_ID_WRONG_INPUT
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.Res
+import hedvig.resources.general_error
 import hedvig.resources.general_save_button
+import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -87,7 +92,7 @@ private fun AddChipIdScreen(
 ) {
   val focusManager = LocalFocusManager.current
   HedvigScaffold(
-    topAppBarText = "Update pet Chip-ID", //todo
+    topAppBarText = stringResource(Res.string.CHIP_ID_TOP_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier
       .fillMaxSize()
@@ -144,7 +149,7 @@ private fun ColumnScope.AddChipIdContent(
 
   ChipIdTextField(
     textFieldState = uiState.chipIdState,
-    labelText = "Chip ID", //todo
+    labelText = stringResource(Res.string.CHIP_ID_LABEL),
     keyboardActionHandler = KeyboardActionHandler {
       submitChipId()
       focusManager.clearFocus()
@@ -158,8 +163,8 @@ private fun ColumnScope.AddChipIdContent(
   ) { errorType ->
     if (errorType != null) {
       val errorMessage = when (errorType) {
-        ChipIdErrorType.WrongInput -> "Must be 15 digits" //todo
-        ChipIdErrorType.GeneralError -> "Something went wrong" //todo
+        ChipIdErrorType.WrongInput -> stringResource(Res.string.CHIP_ID_WRONG_INPUT)
+        ChipIdErrorType.GeneralError -> stringResource(Res.string.something_went_wrong)
       }
       HedvigNotificationCard(
         message = errorMessage,

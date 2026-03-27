@@ -32,6 +32,8 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
+import hedvig.resources.CHIP_ID_MISSING_BUTTON
+import hedvig.resources.CHIP_ID_MISSING_MESSAGE
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_COOWNERS_MISSING_INFO_TEXT
@@ -275,11 +277,11 @@ internal fun ReminderMissingChipId(
   modifier: Modifier = Modifier,
 ) {
   HedvigNotificationCard(
-    message = "Chip ID for your pet is missing", //todo
+    message = stringResource(Res.string.CHIP_ID_MISSING_MESSAGE),
     modifier = modifier,
     priority = NotificationPriority.Attention,
     style = InfoCardStyle.Button(
-      buttonText = "Add ID", //todo
+      buttonText = stringResource(Res.string.CHIP_ID_MISSING_BUTTON),
       onButtonClick = navigateToChipId,
     ),
   )

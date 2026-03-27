@@ -179,7 +179,7 @@ internal class GetHomeDataUseCaseImpl(
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
-          travelBannerInfo = travelBannerInfo?.firstOrNull(), // todo: check for CAR_ADDON LATER!
+          travelBannerInfo = travelBannerInfo?.firstOrNull(),
           hasMissingChipId = hasMissingChipId,
           missingChipIdContractId = missingChipIdContractId,
         )

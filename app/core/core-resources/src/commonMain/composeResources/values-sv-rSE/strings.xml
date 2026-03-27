@@ -168,6 +168,11 @@
   <string name="CHAT_TITLE">Meddelanden</string>
   <string name="CHAT_UPLOAD_PRESS_SEND_LABEL">Skicka</string>
   <string name="CHECKOUT_TITLE">Checkout</string>
+  <string name="CHIP_ID_LABEL">Chip-ID</string>
+  <string name="CHIP_ID_MISSING_BUTTON">Lägg till Chip-ID</string>
+  <string name="CHIP_ID_MISSING_MESSAGE">Chip-ID för ditt husdjur saknas</string>
+  <string name="CHIP_ID_TOP_TITLE">Uppdatera husdjurets chip-ID</string>
+  <string name="CHIP_ID_WRONG_INPUT">Måste vara 15 siffror</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_BODY">Aktivera pushnotiser så vi kan hålla dig uppdaterad om ditt ärende.</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_CTA">Aktivera</string>
   <string name="CLAIMS_CASE">Ärende</string>
@@ -210,7 +215,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Beskriv i text</string>
   <string name="CLAIMS_YOUR_CLAIM">Din skadeanmälan</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Röstinspelning</string>
-  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Anpassat objekt</string>
+  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Annat föremål</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Ändra svar</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.</string>
@@ -843,6 +848,9 @@
   <string name="TERMINATION_BUTTON">Säg upp försäkring</string>
   <string name="TERMINATION_DATE_TEXT">Välj slutdatum</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">Vi skickar en bekräftelse på uppsägningen inom några dagar. Hör gärna av dig om du inte fått den efter 5 dagar.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Eftersom din bil har avställts kommer din försäkring att sägas upp automatiskt.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Eftersom din bil har skrotats kommer din försäkring att sägas upp automatiskt.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE">Eftersom du har sålt din bil kommer din försäkring att sägas upp automatiskt.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">Vi avslutar din försäkring automatiskt</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">Du kommer att få ett bekräftelsemail på din avställningsförsäkring inom några dagar, där du kommer att se ditt nya pris.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">Vad kostar det</string>
@@ -855,6 +863,8 @@
   <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken "Betalningar" här i appen.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Avsluta din försäkring</string>
   <string name="TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON">Avsluta försäkring</string>
+  <string name="TERMINATION_FLOW_CAR_BACK_MESSAGE">Eftersom din bil är påställd igen kommer din försäkring automatiskt att ändras tillbaka till ditt ordinarie skydd.</string>
+  <string name="TERMINATION_FLOW_CAR_BACK_TITLE">Din bil är tillbaka på vägen</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_INFO">Observera att du bara kan säga upp en försäkring åt gången</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE">Välj den försäkring du vill säga upp</string>
   <string name="TERMINATION_FLOW_CONFIRMATION">Din försäkring kommer avlutas direkt</string>
