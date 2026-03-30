@@ -1,7 +1,6 @@
 package com.hedvig.feature.claim.chat.ui.common
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +32,10 @@ internal actual fun HelipadRiveAnimation(
   val resourceId = context.resources.getIdentifier(resourceName, "raw", context.packageName)
 
   if (resourceId == 0 || !RiveInitializer.isAvailable()) {
-    Box(modifier = modifier)
+    BlinkingAiDotWithTimeout(
+      modifier = modifier,
+      isAnimating = !bottomAnimationFinished,
+    )
     return
   }
 

@@ -41,3 +41,31 @@ internal fun BlinkingAiDot(modifier: Modifier = Modifier, durationMillis: Int = 
       .background(color, CircleShape),
   )
 }
+
+@Composable
+internal fun BlinkingAiDotWithTimeout(
+  modifier: Modifier = Modifier,
+  isAnimating: Boolean = true,
+  blinkDurationMillis: Int = 800,
+) {
+  val infiniteTransition = rememberInfiniteTransition(label = "blink")
+
+  val alpha by infiniteTransition.animateFloat(
+    initialValue = 1f,
+    targetValue = 0f,
+    animationSpec = infiniteRepeatable(
+      animation = tween(blinkDurationMillis),
+      repeatMode = RepeatMode.Reverse,
+    ),
+    label = "alpha",
+  )
+  val color = HedvigTheme.colorScheme.signalGreenElement
+  Spacer(
+    modifier
+      .wrapContentSize(Alignment.Center)
+      .size(20.dp)
+      .padding(1.dp)
+      .alpha(if (isAnimating) alpha else 1f)
+      .background(color, CircleShape),
+  )
+}
