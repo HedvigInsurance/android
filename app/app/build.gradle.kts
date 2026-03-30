@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.0.9"
+    versionName = "14.0.10"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -146,7 +146,6 @@ dependencies {
   implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
-  implementation(libs.rive.android)
   implementation(libs.timber)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
@@ -158,6 +157,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.coreRive)
   implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
