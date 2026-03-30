@@ -18,18 +18,18 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class AddChipIdViewModel(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
-  insuranceId: String,
+  contractId: String,
 ) : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
   initialState = AddChipIdUiState.Loading,
   presenter = AddChipIdPresenter(
     updateChipIdUseCase = updateChipIdUseCase,
-    insuranceId = insuranceId,
+    contractId = contractId,
   ),
 )
 
 internal class AddChipIdPresenter(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
-  private val insuranceId: String,
+  private val contractId: String,
 ) : MoleculePresenter<AddChipIdEvent, AddChipIdUiState> {
   @Composable
   override fun MoleculePresenterScope<AddChipIdEvent>.present(
@@ -51,7 +51,7 @@ internal class AddChipIdPresenter(
       submittingData = true
       errorType = null
 
-      updateChipIdUseCase.invoke(insuranceId = insuranceId, petId = chipIdState.text.toString()).fold(
+      updateChipIdUseCase.invoke(insuranceId = contractId, petId = chipIdState.text.toString()).fold(
         ifLeft = { error ->
           Snapshot.withMutableSnapshot {
             submittingData = false

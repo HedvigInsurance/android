@@ -13,6 +13,7 @@ dependencies {
   api(libs.androidx.navigation.common)
 
   implementation(libs.androidx.navigation.compose)
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
@@ -26,6 +27,7 @@ dependencies {
   implementation(projects.coreCommonPublic)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
+  implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)

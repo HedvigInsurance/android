@@ -1,14 +1,12 @@
 package com.hedvig.android.feature.chip.id.ui
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,7 +19,6 @@ import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.byValue
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,7 +48,6 @@ import hedvig.resources.CHIP_ID_TOP_TITLE
 import hedvig.resources.CHIP_ID_WRONG_INPUT
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.Res
-import hedvig.resources.general_error
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
@@ -61,7 +57,7 @@ internal fun AddChipIdDestination(
   viewModel: AddChipIdViewModel,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popFlowOnSuccess: () -> Unit,
 ) {
   val uiState: AddChipIdUiState by viewModel.uiState.collectAsStateWithLifecycle()
   AddChipIdScreen(
@@ -76,7 +72,7 @@ internal fun AddChipIdDestination(
     navigateUp = navigateUp,
     showedSnackBar = {
       viewModel.emit(AddChipIdEvent.ShowedMessage)
-      popBackStack()
+      popFlowOnSuccess()
     },
   )
 }

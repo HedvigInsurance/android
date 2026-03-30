@@ -1,0 +1,14 @@
+query GetPetContractsForChipId {
+  currentMember {
+    activeContracts {
+      id
+      exposureDisplayNameShort
+      currentAgreement {
+        productVariant {
+          displayName
+          typeOfContract
+        }
+      }
+    }
+  }
+}
