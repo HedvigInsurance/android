@@ -43,6 +43,7 @@ import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
@@ -66,7 +67,6 @@ import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigTabRowState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.feature.insurances.data.Addon
 import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
@@ -133,7 +133,7 @@ internal fun ContractDetailDestination(
     navigateToAddAddon = navigateToAddAddon,
     navigateToRemoveAddon = navigateToRemoveAddon,
     navigateToUpgradeAddon = navigateToUpgradeAddon,
-    navigateToChipIdScreen = navigateToChipIdScreen
+    navigateToChipIdScreen = navigateToChipIdScreen,
   )
 }
 
@@ -365,7 +365,7 @@ private fun ContractDetailScreen(
                       chipIdState = contract.chipId,
                       onFillChipId = {
                         navigateToChipIdScreen()
-                      }
+                      },
                     )
                   }
 
@@ -503,7 +503,7 @@ private fun PreviewContractDetailScreen() {
             supportsTierChange = true,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
-            chipId = ChipIdState.Missing
+            chipId = ChipIdState.Missing,
           ),
           true,
         ),
@@ -524,7 +524,7 @@ private fun PreviewContractDetailScreen() {
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
-        navigateToChipIdScreen = {}
+        navigateToChipIdScreen = {},
       )
     }
   }
@@ -554,7 +554,7 @@ private fun PreviewContractDetailScreenFailure() {
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
-        navigateToChipIdScreen = {}
+        navigateToChipIdScreen = {},
       )
     }
   }

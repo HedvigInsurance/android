@@ -15,14 +15,14 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
+import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
-import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -87,8 +87,10 @@ private fun SelectInsuranceForChipIdScreen(
     is SelectInsuranceForChipIdState.Success -> {
       LaunchedEffect(uiState.contractIdToContinue) {
         if (uiState.contractIdToContinue != null) {
-          navigateToAddChipId(uiState.contractIdToContinue,
-            uiState.contracts.size == 1)
+          navigateToAddChipId(
+            uiState.contractIdToContinue,
+            uiState.contracts.size == 1,
+          )
         }
       }
       if (uiState.contractIdToContinue == null) {

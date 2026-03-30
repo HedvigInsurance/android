@@ -163,7 +163,10 @@ private fun createEditCoInsuredQuickLink(
   coInsuredContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
 ): StandaloneQuickLink? {
   return when {
-    coInsuredContracts.isEmpty() -> null
+    coInsuredContracts.isEmpty() -> {
+      null
+    }
+
     coInsuredContracts.size == 1 -> {
       val contract = coInsuredContracts.first()
       if (contract.coInsured?.any { it.hasMissingInfo } == true) {
@@ -180,11 +183,14 @@ private fun createEditCoInsuredQuickLink(
         )
       }
     }
-    else -> StandaloneQuickLink(
-      titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
-      hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-      quickLinkDestination = ChooseInsuranceForEditCoInsured,
-    )
+
+    else -> {
+      StandaloneQuickLink(
+        titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+        hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        quickLinkDestination = ChooseInsuranceForEditCoInsured,
+      )
+    }
   }
 }
 
@@ -192,7 +198,10 @@ private fun createEditCoOwnersQuickLink(
   coOwnerContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
 ): StandaloneQuickLink? {
   return when {
-    coOwnerContracts.isEmpty() -> null
+    coOwnerContracts.isEmpty() -> {
+      null
+    }
+
     coOwnerContracts.size == 1 -> {
       val contract = coOwnerContracts.first()
       if (contract.coOwners?.any { it.hasMissingInfo } == true) {
@@ -209,11 +218,14 @@ private fun createEditCoOwnersQuickLink(
         )
       }
     }
-    else -> StandaloneQuickLink(
-      titleRes = Res.string.EDIT_COOWNER_TITLE,
-      hintTextRes = Res.string.EDIT_COOWNER_SUBTITLE,
-      quickLinkDestination = ChooseInsuranceForEditCoOwners,
-    )
+
+    else -> {
+      StandaloneQuickLink(
+        titleRes = Res.string.EDIT_COOWNER_TITLE,
+        hintTextRes = Res.string.EDIT_COOWNER_SUBTITLE,
+        quickLinkDestination = ChooseInsuranceForEditCoOwners,
+      )
+    }
   }
 }
 

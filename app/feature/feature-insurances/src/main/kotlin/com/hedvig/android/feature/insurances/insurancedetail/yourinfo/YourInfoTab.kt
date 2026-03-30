@@ -28,6 +28,7 @@ import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParam
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
@@ -74,7 +75,6 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
-import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.design.system.hedvig.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
@@ -194,7 +194,7 @@ internal fun YourInfoTab(
       onRemoveAddonClick = {
         editYourInfoBottomSheet.dismiss()
         navigateToRemoveAddon(ContractId(contractId), null)
-      }
+      },
     )
   }
 
@@ -212,9 +212,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              addon.premium.toString(),
-            ),
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                addon.premium.toString(),
+              ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->
@@ -364,7 +364,7 @@ internal fun YourInfoTab(
         priority = Attention,
         style = Button(
           stringResource(Res.string.CHIP_ID_MISSING_BUTTON),
-          onFillChipId
+          onFillChipId,
         ),
         modifier = Modifier
           .fillMaxWidth()

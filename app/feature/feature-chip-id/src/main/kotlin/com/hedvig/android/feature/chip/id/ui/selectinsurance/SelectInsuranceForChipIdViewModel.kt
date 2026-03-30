@@ -18,9 +18,9 @@ internal class SelectInsuranceForChipIdViewModel(
   private val preselectedContractId: String?,
   private val getPetContractsForChipIdUseCase: GetPetContractsForChipIdUseCase,
 ) : MoleculeViewModel<SelectInsuranceForChipIdEvent, SelectInsuranceForChipIdState>(
-  initialState = SelectInsuranceForChipIdState.Loading,
-  presenter = SelectInsuranceForChipIdPresenter(preselectedContractId, getPetContractsForChipIdUseCase),
-)
+    initialState = SelectInsuranceForChipIdState.Loading,
+    presenter = SelectInsuranceForChipIdPresenter(preselectedContractId, getPetContractsForChipIdUseCase),
+  )
 
 internal class SelectInsuranceForChipIdPresenter(
   private val preselectedContractId: String?,
@@ -86,7 +86,10 @@ internal class SelectInsuranceForChipIdPresenter(
           contractIdToContinue = contractIdToContinue,
         )
       }
-      else -> state
+
+      else -> {
+        state
+      }
     }
   }
 }

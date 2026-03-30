@@ -30,7 +30,9 @@ internal class GetPetContractsForChipIdUseCaseImpl(
                 displayName = contract.currentAgreement.productVariant.displayName,
                 contractExposure = contract.exposureDisplayNameShort,
               )
-              logcat { "GetPetContractsForChipIdUseCaseImpl: result: $result contract.missingPetId: ${contract.missingPetId}" }
+              logcat {
+                "GetPetContractsForChipIdUseCaseImpl: result: $result contract.missingPetId: ${contract.missingPetId}"
+              }
               result
             } else {
               null

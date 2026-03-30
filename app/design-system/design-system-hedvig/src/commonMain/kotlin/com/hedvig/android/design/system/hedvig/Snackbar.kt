@@ -52,10 +52,7 @@ fun HedvigSnackbar(
 }
 
 @Composable
-fun HedvigSnackBar(
-  globalSnackBarState: GlobalSnackBarState,
-  modifier: Modifier = Modifier,
-) {
+fun HedvigSnackBar(globalSnackBarState: GlobalSnackBarState, modifier: Modifier = Modifier) {
   val priority: NotificationPriority = globalSnackBarState.prio
   InternalSnackBar(
     colors = priority.colors.let { notificationColors ->

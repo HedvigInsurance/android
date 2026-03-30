@@ -43,7 +43,7 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
           displayName = displayName,
           mandate = mandate,
           paymentMethod = paymentMethod,
-          chargeMethod = paymentProvider.toChargeMethod()
+          chargeMethod = paymentProvider.toChargeMethod(),
         )
       }
     }
@@ -56,5 +56,5 @@ data class MemberPaymentsDetails(
   val displayName: String?,
   val mandate: String?,
   val paymentMethod: String,
-  val chargeMethod: MemberPaymentChargeMethod
+  val chargeMethod: MemberPaymentChargeMethod,
 )

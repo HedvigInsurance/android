@@ -10,9 +10,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
 import com.hedvig.android.feature.editcoinsured.data.CommitMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
@@ -498,6 +498,7 @@ internal sealed interface EditCoInsuredState {
         originalCoInsured != updatedCoInsured
 
       fun anyUpdatedCoInsuredHasMissingInfo() = updatedCoInsured?.any { it.hasMissingInfo } == true
+
       fun noCoInsuredHaveMissingInfo() = coInsured.all { !it.hasMissingInfo }
     }
 

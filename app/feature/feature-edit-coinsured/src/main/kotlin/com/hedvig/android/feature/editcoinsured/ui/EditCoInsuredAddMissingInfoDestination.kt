@@ -197,7 +197,7 @@ private fun EditCoInsuredScreen(
 
           if (uiState.listState.anyUpdatedCoInsuredHasMissingInfo() && uiState.listState.hasMadeChanges()) {
             HedvigNotificationCard(
-              message = when(uiState.type) {
+              message = when (uiState.type) {
                 CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_REVIEW_INFO)
                 CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_COOWNER_REVIEW_INFO)
               },

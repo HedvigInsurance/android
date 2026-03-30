@@ -142,7 +142,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     },
     cost = this.cost.toMonthlyCost(),
     basePremium = UiMoney.fromMoneyFragment(this.basePremium),
-    chipId = ChipIdState.NotRequired
+    chipId = ChipIdState.NotRequired,
   )
 }
 
@@ -233,7 +233,7 @@ private fun ContractFragment.toContract(
     chipId = when (missingPetId) {
       true -> ChipIdState.Missing
       false -> ChipIdState.NotRequired
-    }
+    },
   )
 }
 

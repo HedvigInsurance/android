@@ -490,7 +490,7 @@ private fun ClaimChatScrollableContent(
             Modifier.requiredHeightIn(lastItemHeightAdjustingState.preferredMinHeightForFullScreenItem)
           } else {
             Modifier
-          }
+          },
         )
       }
     }
@@ -645,9 +645,9 @@ private fun StepTopContent(
 
   Column(modifier) {
     val density = LocalDensity.current
-    if (stepItem.stepContent !is StepContent.Task
-      && stepItem.stepContent !is StepContent.Summary
-      && stepItem.showSpinForThisStep
+    if (stepItem.stepContent !is StepContent.Task &&
+      stepItem.stepContent !is StepContent.Summary &&
+      stepItem.showSpinForThisStep
     ) {
       HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
@@ -882,7 +882,6 @@ private fun StepBottomContent(
     }
   }
 }
-
 
 internal val animationSize = 32.sp
 

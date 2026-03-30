@@ -20,21 +20,19 @@ internal class AddChipIdViewModel(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
   contractId: String,
 ) : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
-  initialState = AddChipIdUiState.Loading,
-  presenter = AddChipIdPresenter(
-    updateChipIdUseCase = updateChipIdUseCase,
-    contractId = contractId,
-  ),
-)
+    initialState = AddChipIdUiState.Loading,
+    presenter = AddChipIdPresenter(
+      updateChipIdUseCase = updateChipIdUseCase,
+      contractId = contractId,
+    ),
+  )
 
 internal class AddChipIdPresenter(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
   private val contractId: String,
 ) : MoleculePresenter<AddChipIdEvent, AddChipIdUiState> {
   @Composable
-  override fun MoleculePresenterScope<AddChipIdEvent>.present(
-    lastState: AddChipIdUiState,
-  ): AddChipIdUiState {
+  override fun MoleculePresenterScope<AddChipIdEvent>.present(lastState: AddChipIdUiState): AddChipIdUiState {
     val chipIdState = remember {
       val lastChipIdState = lastState.content?.chipIdState
       TextFieldState(lastChipIdState?.text?.toString() ?: "", lastChipIdState?.selection ?: TextRange(0))
@@ -123,11 +121,14 @@ internal sealed interface AddChipIdUiState {
 
 internal sealed interface ChipIdErrorType {
   data object WrongInput : ChipIdErrorType
+
   data object GeneralError : ChipIdErrorType
 }
 
 internal sealed interface AddChipIdEvent {
   data object RetryLoadData : AddChipIdEvent
+
   data object SubmitData : AddChipIdEvent
+
   data object ShowedMessage : AddChipIdEvent
 }

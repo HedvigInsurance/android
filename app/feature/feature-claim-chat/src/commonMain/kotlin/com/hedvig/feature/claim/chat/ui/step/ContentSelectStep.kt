@@ -113,7 +113,7 @@ internal fun ContentSelectStep(
                 .fillMaxWidth()
                 .wrapContentWidth(Alignment.End)
                 .clearAndSetSemantics {
-                 contentDescription = description
+                  contentDescription = description
                 },
             ) {
               HedvigText(selected.title)

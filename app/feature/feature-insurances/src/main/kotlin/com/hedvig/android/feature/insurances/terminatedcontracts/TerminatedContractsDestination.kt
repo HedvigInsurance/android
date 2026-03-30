@@ -179,7 +179,7 @@ private class PreviewTerminatedContractsUiStateProvider :
             supportsTierChange = false,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
-            chipId = ChipIdState.Missing
+            chipId = ChipIdState.Missing,
           ),
         ),
       ),

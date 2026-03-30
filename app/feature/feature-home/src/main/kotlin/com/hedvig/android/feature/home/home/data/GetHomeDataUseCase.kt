@@ -265,7 +265,6 @@ internal class GetHomeDataUseCaseImpl(
   private fun HomeQuery.Data.CurrentMember.areAllNonTerminatedContractsPending(): Boolean {
     return activeContracts.isEmpty() && pendingContracts.isNotEmpty()
   }
-
 }
 
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {

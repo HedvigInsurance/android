@@ -55,7 +55,7 @@ internal class FormFieldSearchUseCaseImpl(
             text = option.title,
             subtitle = option.subtitle,
             imageUrl = option.imageUrl,
-            isCustomSearchEntry = option.isCustomSearchEntry
+            isCustomSearchEntry = option.isCustomSearchEntry,
           )
         },
         suggestedFixedQuery = response.suggestedQuery,

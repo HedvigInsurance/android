@@ -151,7 +151,6 @@ internal fun EditInsuranceBottomSheetContent(
             onRemoveAddonClick()
           }
 
-
           else -> {}
         }
       },

@@ -5,11 +5,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -66,7 +66,7 @@ fun NavGraphBuilder.homeGraph(
           navigateToContactInfo()
         },
         imageLoader = imageLoader,
-        navigateToChipId = navigateToChipIdScreen
+        navigateToChipId = navigateToChipIdScreen,
       )
     }
     navdestination<HomeDestination.FirstVet>(

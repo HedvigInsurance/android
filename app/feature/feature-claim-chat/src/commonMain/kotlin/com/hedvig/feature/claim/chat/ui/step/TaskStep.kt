@@ -47,7 +47,6 @@ internal fun TaskStepTopContent(
       }
     },
   ) {
-
     Column {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -61,9 +60,9 @@ internal fun TaskStepTopContent(
             HelipadRiveAnimation(
               bottomAnimationFinished = taskContent.isAnimationFinished,
               modifier = Modifier.size(
-                with (density) {
+                with(density) {
                   animationSize.toDp()
-                }
+                },
               ),
               stepId = stepId,
             )

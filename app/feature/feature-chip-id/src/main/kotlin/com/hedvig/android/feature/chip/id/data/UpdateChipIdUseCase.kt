@@ -21,10 +21,13 @@ internal class UpdateChipIdUseCaseImpl(
   override suspend fun invoke(petId: String, insuranceId: String): Either<ErrorMessage, Unit> {
     return either {
       logcat { "UpdateChipIdNumberMutation start" }
-      val result = apolloClient.mutation(UpdateChipIdNumberMutation(
-        petId = petId,
-        contractId = insuranceId,))
-        .safeExecute{
+      val result = apolloClient.mutation(
+        UpdateChipIdNumberMutation(
+          petId = petId,
+          contractId = insuranceId,
+        ),
+      )
+        .safeExecute {
           logcat { "UpdateChipIdNumberMutation error: $it" }
           ErrorMessage()
         }
@@ -34,7 +37,7 @@ internal class UpdateChipIdUseCaseImpl(
       if (userError != null) {
         raise(ErrorMessage(userError.message))
       }
-      if (result.midtermChangePetId?.activationDate!=null) {
+      if (result.midtermChangePetId?.activationDate != null) {
         Unit
       } else {
         raise(ErrorMessage())

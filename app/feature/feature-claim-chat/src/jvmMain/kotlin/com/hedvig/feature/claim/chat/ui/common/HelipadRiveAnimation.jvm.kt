@@ -4,9 +4,5 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal actual fun HelipadRiveAnimation(
-  modifier: Modifier,
-  bottomAnimationFinished: Boolean,
-  stepId: String
-) {
+internal actual fun HelipadRiveAnimation(modifier: Modifier, bottomAnimationFinished: Boolean, stepId: String) {
 }

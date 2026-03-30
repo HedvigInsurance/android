@@ -21,11 +21,7 @@ private enum class HelipadAnimation(val animationName: String) {
 }
 
 @Composable
-internal actual fun HelipadRiveAnimation(
-  modifier: Modifier,
-  bottomAnimationFinished: Boolean,
-  stepId: String,
-) {
+internal actual fun HelipadRiveAnimation(modifier: Modifier, bottomAnimationFinished: Boolean, stepId: String) {
   val context = LocalContext.current
   val isDark = isSystemInDarkTheme()
   val resourceName = if (isDark) "hedvig_loader_dark" else "hedvig_loader_light"
@@ -88,7 +84,4 @@ internal actual fun HelipadRiveAnimation(
       initialAnimationDone.value = false
     }
   }
-
-
 }
-

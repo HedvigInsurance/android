@@ -101,7 +101,6 @@ sealed interface InsuranceContract {
   }
 }
 
-
 data class Addon(
   val addonVariant: AddonVariant,
   val premium: UiMoney,
