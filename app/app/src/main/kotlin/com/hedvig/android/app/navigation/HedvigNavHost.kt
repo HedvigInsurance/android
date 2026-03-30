@@ -223,8 +223,8 @@ internal fun HedvigNavHost(
         navController.navigate(ProfileDestination.ContactInfo)
       },
       imageLoader = imageLoader,
-      navigateToChipIdScreen = { contractId: String ->
-        navController.navigate(ChipIdGraphDestination(contractId))
+      navigateToChipIdScreen = {
+        navController.navigate(ChipIdGraphDestination())
       },
     )
     insuranceGraph(
@@ -334,8 +334,8 @@ internal fun HedvigNavHost(
           ),
         )
       },
-      navigateToChipIdScreen = { contractId: String ->
-        navController.navigate(ChipIdGraphDestination(contractId))
+      navigateToChipIdScreen = {
+        navController.navigate(ChipIdGraphDestination())
       },
     )
     foreverGraph(
@@ -389,8 +389,8 @@ internal fun HedvigNavHost(
         navController.navigate(InsuranceEvidenceGraphDestination)
       },
       openUrl = openUrl,
-      navigateToChipId = { contractId ->
-        navController.navigate(ChipIdGraphDestination(contractId))
+      navigateToChipId = {
+        navController.navigate(ChipIdGraphDestination())
       },
     )
     cbmChatGraph(

@@ -6,5 +6,4 @@ data class PetContractForChipId(
   val id: String,
   val displayName: String,
   val contractExposure: String,
-  val contractGroup: ContractGroup,
 )

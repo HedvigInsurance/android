@@ -43,7 +43,6 @@ import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_change_coverage
-import kotlin.collections.buildList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -53,14 +52,12 @@ internal fun EditInsuranceBottomSheetContent(
   allowChangeTier: Boolean,
   allowTerminatingInsurance: Boolean,
   allowRemovingAddon: Boolean,
-  missingChipId: Boolean,
   onEditCoInsuredClick: () -> Unit,
   onEditCoOwnersClick: () -> Unit,
   onChangeTierClick: () -> Unit,
   onCancelInsuranceClick: () -> Unit,
   onRemoveAddonClick: () -> Unit,
   onDismiss: () -> Unit,
-  onNavigateToChipId: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var selectedItemId: String? by rememberSaveable { mutableStateOf(null) }
@@ -110,15 +107,6 @@ internal fun EditInsuranceBottomSheetContent(
         ),
       )
     }
-    if (missingChipId) {
-      add(
-        RadioOption(
-          RadioOptionId("5"),
-          "Add missing chip id for your pet", //todo!
-          "Speed up any potential claims", //todo
-        ),
-      )
-    }
   }
   Column(
     modifier = modifier,
@@ -162,10 +150,7 @@ internal fun EditInsuranceBottomSheetContent(
           "4" if allowRemovingAddon -> {
             onRemoveAddonClick()
           }
-          
-          "5" if missingChipId -> {
-            onNavigateToChipId()
-          }
+
 
           else -> {}
         }
@@ -202,8 +187,6 @@ private fun PreviewEditInsuranceBottomSheetContent() {
         onCancelInsuranceClick = {},
         onRemoveAddonClick = {},
         modifier = Modifier.padding(horizontal = 16.dp),
-        missingChipId = true,
-        onNavigateToChipId = {},
       )
     }
   }

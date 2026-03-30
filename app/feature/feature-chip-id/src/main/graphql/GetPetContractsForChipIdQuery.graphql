@@ -3,10 +3,10 @@ query GetPetContractsForChipId {
     activeContracts {
       id
       exposureDisplayNameShort
+      missingPetId
       currentAgreement {
         productVariant {
-          displayName
-          typeOfContract
+        displayName
         }
       }
     }

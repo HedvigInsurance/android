@@ -112,7 +112,7 @@ internal fun ContractDetailDestination(
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
-  navigateToChipIdScreen: (contractId: String) -> Unit,
+  navigateToChipIdScreen: () -> Unit,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -156,7 +156,7 @@ private fun ContractDetailScreen(
   openUrl: (String) -> Unit,
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
-  navigateToChipIdScreen: (String) -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
@@ -364,7 +364,7 @@ private fun ContractDetailScreen(
                       navigateToUpgradeAddon = navigateToUpgradeAddon,
                       chipIdState = contract.chipId,
                       onFillChipId = {
-                        navigateToChipIdScreen(contract.id)
+                        navigateToChipIdScreen()
                       }
                     )
                   }

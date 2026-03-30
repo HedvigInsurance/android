@@ -149,7 +149,6 @@ sealed interface MemberReminder {
   }
 
   data class MissingChipId(
-    val contractId: String,
     override val id: String = UUID.randomUUID().toString(),
   ) : MemberReminder
 }

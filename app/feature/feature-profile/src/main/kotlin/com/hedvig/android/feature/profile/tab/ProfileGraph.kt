@@ -46,7 +46,7 @@ fun NavGraphBuilder.profileGraph(
   onNavigateToTravelCertificate: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToChipId: (contractId: String) -> Unit,
+  navigateToChipId: () -> Unit,
 ) {
   navgraph<ProfileDestination.Graph>(
     startDestination = ProfileDestination.Profile::class,

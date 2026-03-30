@@ -62,7 +62,7 @@ fun MemberReminderCardsWithoutNotification(
   onNavigateToNewConversation: () -> Unit,
   contentPadding: PaddingValues,
   navigateToContactInfo: () -> Unit,
-  navigateToChipId: (String) -> Unit,
+  navigateToChipId: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   MemberReminderCards(
@@ -89,7 +89,7 @@ fun MemberReminderCards(
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
-  navigateToChipId: (String) -> Unit,
+  navigateToChipId: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -154,7 +154,7 @@ private fun ColumnScope.MemberReminderCard(
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: () -> Unit,
-  navigateToChipId: (String) -> Unit,
+  navigateToChipId: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -221,8 +221,7 @@ private fun ColumnScope.MemberReminderCard(
 
     is MemberReminder.MissingChipId -> {
       ReminderMissingChipId(
-        contractId = memberReminder.contractId,
-        navigateToChipId = { navigateToChipId(memberReminder.contractId) },
+        navigateToChipId = navigateToChipId,
         modifier = modifier,
       )
     }
@@ -272,7 +271,6 @@ fun ReminderCardUpdateContactInfo(navigateToContactInfo: () -> Unit, modifier: M
 
 @Composable
 internal fun ReminderMissingChipId(
-  contractId: String,
   navigateToChipId: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

@@ -25,11 +25,8 @@ internal class GetMissingChipIdReminderUseCaseImpl(
         result.fold(
           ifRight = { data ->
             data.currentMember.activeContracts
-              .firstOrNull { contract ->
-                val contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup()
-                contractGroup == ContractGroup.CAT || contractGroup == ContractGroup.DOG
-              }
-              ?.let { MemberReminder.MissingChipId(it.id) }
+              .firstOrNull { it.missingPetId }
+              ?.let { MemberReminder.MissingChipId() }
           },
           ifLeft = { null },
         )

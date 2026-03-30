@@ -108,7 +108,7 @@ internal fun ProfileDestination(
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
-  navigateToChipId: (contractId: String) -> Unit,
+  navigateToChipId: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -150,7 +150,7 @@ private fun ProfileScreen(
   onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
-  navigateToChipId: (contractId: String) -> Unit,
+  navigateToChipId: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()

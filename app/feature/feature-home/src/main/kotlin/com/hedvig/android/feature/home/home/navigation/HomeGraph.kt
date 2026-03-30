@@ -30,7 +30,7 @@ fun NavGraphBuilder.homeGraph(
   navigateToHelpCenter: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
-  navigateToChipIdScreen: (String) -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   imageLoader: ImageLoader,

@@ -230,9 +230,9 @@ private fun ContractFragment.toContract(
         description = it.description,
       )
     }.orEmpty(),
-    chipId = when (currentAgreement.productVariant.typeOfContract.toContractGroup()) {
-      ContractGroup.CAT, ContractGroup.DOG -> ChipIdState.Missing //todo!!!
-      else -> ChipIdState.NotRequired
+    chipId = when (missingPetId) {
+      true -> ChipIdState.Missing
+      false -> ChipIdState.NotRequired
     }
   )
 }

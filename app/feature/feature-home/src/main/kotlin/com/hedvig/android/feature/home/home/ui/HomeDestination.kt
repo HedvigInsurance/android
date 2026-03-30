@@ -165,7 +165,7 @@ internal fun HomeDestination(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
-  navigateToChipId: (String) -> Unit,
+  navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -216,7 +216,7 @@ private fun HomeScreen(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
-  navigateToChipIdScreen: (String) -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -435,7 +435,7 @@ private fun HomeScreenSuccess(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
-  navigateToChipIdScreen: (String) -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val isInPreview = LocalInspectionMode.current

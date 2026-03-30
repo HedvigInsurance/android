@@ -82,6 +82,7 @@ fragment ContractFragment on Contract {
     displayName
     description
   }
+  missingPetId
 }
 
 fragment AgreementFragment on Agreement {
