@@ -1,0 +1,8 @@
+mutation UpdateChipIdNumber($petId: String!, $contractId: ID!) {
+  midtermChangePetId(petId: $petId, contractId: $contractId) {
+    userError {
+      message
+    }
+    activationDate
+  }
+}

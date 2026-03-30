@@ -51,7 +51,7 @@ internal class AddChipIdPresenter(
       submittingData = true
       errorType = null
 
-      updateChipIdUseCase.invoke(insuranceId).fold(
+      updateChipIdUseCase.invoke(insuranceId = insuranceId, petId = chipIdState.text.toString()).fold(
         ifLeft = { error ->
           Snapshot.withMutableSnapshot {
             submittingData = false
