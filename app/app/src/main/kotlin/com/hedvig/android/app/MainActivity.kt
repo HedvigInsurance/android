@@ -27,7 +27,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
-import com.hedvig.android.core.rive.RiveInitializer
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
@@ -37,6 +36,7 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager

@@ -20,11 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Composable
-internal fun BlinkingAiDot(
-  modifier: Modifier = Modifier,
-  isAnimating: Boolean = true,
-  durationMillis: Int = 800,
-) {
+internal fun BlinkingAiDot(modifier: Modifier = Modifier, isAnimating: Boolean = true, durationMillis: Int = 800) {
   val infiniteTransition = rememberInfiniteTransition(label = "blink")
 
   val alpha by infiniteTransition.animateFloat(
