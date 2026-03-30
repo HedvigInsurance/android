@@ -42,7 +42,7 @@ internal class SelectInsuranceForChipIdPresenter(
       currentState = result.fold(
         ifLeft = { SelectInsuranceForChipIdState.Failure },
         ifRight = { contracts ->
-          val preselected = contracts.firstOrNull { it.id == preselectedContractId } ?: contracts.firstOrNull()
+          val preselected = contracts.firstOrNull { it.id == preselectedContractId }
 
           if (contracts.size == 1) {
             contractIdToContinue = contracts[0].id
