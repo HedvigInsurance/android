@@ -32,7 +32,7 @@ internal actual fun HelipadRiveAnimation(
   val resourceId = context.resources.getIdentifier(resourceName, "raw", context.packageName)
 
   if (resourceId == 0 || !RiveInitializer.isAvailable()) {
-    BlinkingAiDotWithTimeout(
+    BlinkingAiDot(
       modifier = modifier,
       isAnimating = !bottomAnimationFinished,
     )

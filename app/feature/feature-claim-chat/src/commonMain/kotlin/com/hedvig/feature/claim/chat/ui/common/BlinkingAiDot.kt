@@ -20,10 +20,10 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Composable
-internal fun BlinkingAiDotWithTimeout(
+internal fun BlinkingAiDot(
   modifier: Modifier = Modifier,
   isAnimating: Boolean = true,
-  blinkDurationMillis: Int = 800,
+  durationMillis: Int = 800,
 ) {
   val infiniteTransition = rememberInfiniteTransition(label = "blink")
 
@@ -31,7 +31,7 @@ internal fun BlinkingAiDotWithTimeout(
     initialValue = 1f,
     targetValue = 0f,
     animationSpec = infiniteRepeatable(
-      animation = tween(blinkDurationMillis),
+      animation = tween(durationMillis),
       repeatMode = RepeatMode.Reverse,
     ),
     label = "alpha",
