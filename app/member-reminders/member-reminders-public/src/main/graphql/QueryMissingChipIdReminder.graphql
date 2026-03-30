@@ -1,0 +1,12 @@
+query MissingChipIdReminder {
+  currentMember {
+    activeContracts {
+      id
+      currentAgreement {
+        productVariant {
+          typeOfContract
+        }
+      }
+    }
+  }
+}

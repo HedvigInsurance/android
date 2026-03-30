@@ -389,6 +389,9 @@ internal fun HedvigNavHost(
         navController.navigate(InsuranceEvidenceGraphDestination)
       },
       openUrl = openUrl,
+      navigateToChipId = { contractId ->
+        navController.navigate(ChipIdGraphDestination(contractId))
+      },
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

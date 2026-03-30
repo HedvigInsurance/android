@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.data
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -100,11 +101,6 @@ sealed interface InsuranceContract {
   }
 }
 
-sealed interface ChipIdState {
-  data object Missing: ChipIdState
-  data object NotRequired: ChipIdState
-  data class Present(val value: String): ChipIdState
-}
 
 data class Addon(
   val addonVariant: AddonVariant,

@@ -22,6 +22,7 @@ internal class GetMemberRemindersUseCaseImpl(
   private val getUpcomingRenewalRemindersUseCase: GetUpcomingRenewalRemindersUseCase,
   private val getNeedsCoInsuredInfoRemindersUseCase: GetNeedsCoInsuredInfoRemindersUseCase,
   private val getContactInfoUpdateIsNeededUseCase: GetContactInfoUpdateIsNeededUseCase,
+  private val getMissingChipIdReminderUseCase: GetMissingChipIdReminderUseCase,
 ) : GetMemberRemindersUseCase {
   override fun invoke(): Flow<MemberReminders> {
     return combine(
@@ -52,19 +53,22 @@ internal class GetMemberRemindersUseCaseImpl(
       getUpcomingRenewalRemindersUseCase.invoke().map { it.mapLeft { null }.merge() },
       getNeedsCoInsuredInfoRemindersUseCase.invoke(),
       getContactInfoUpdateIsNeededUseCase.invoke(),
-    ) {
-      enableNotifications: MemberReminder.EnableNotifications?,
-      connectPayment: MemberReminder.PaymentReminder?,
-      upcomingRenewalReminders: NonEmptyList<MemberReminder.UpcomingRenewal>?,
-      coInsuredInfoResult: Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>,
-      contactInfoReminder: Either<com.hedvig.android.core.common.ErrorMessage, ContactInfoUpdateNeeded?>,
-      ->
+      getMissingChipIdReminderUseCase.invoke(),
+    ) { values ->
+      val enableNotifications = values[0] as MemberReminder.EnableNotifications?
+      val connectPayment = values[1] as MemberReminder.PaymentReminder?
+      val upcomingRenewalReminders = values[2] as NonEmptyList<MemberReminder.UpcomingRenewal>?
+      val coInsuredInfoResult = values[3] as Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
+      val contactInfoReminder = values[4] as Either<com.hedvig.android.core.common.ErrorMessage, ContactInfoUpdateNeeded?>
+      val missingChipId = values[5] as MemberReminder.MissingChipId?
+
       MemberReminders(
         connectPayment = connectPayment,
         upcomingRenewals = upcomingRenewalReminders,
         enableNotifications = enableNotifications,
         coInsuredInfo = coInsuredInfoResult.getOrNull(),
         updateContactInfo = contactInfoReminder.getOrNull(),
+        missingChipId = missingChipId,
       )
     }
   }

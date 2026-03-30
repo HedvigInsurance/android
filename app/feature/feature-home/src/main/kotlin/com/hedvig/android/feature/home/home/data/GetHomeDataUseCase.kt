@@ -167,8 +167,6 @@ internal class GetHomeDataUseCaseImpl(
             )
           } ?: emptyList()
         val travelBannerInfo = travelBannerInfo.getOrNull()
-        val hasMissingChipId = homeQueryData.currentMember.hasMissingChipId()
-        val missingChipIdContractId = homeQueryData.currentMember.getMissingChipIdContractId()
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
@@ -180,8 +178,6 @@ internal class GetHomeDataUseCaseImpl(
           firstVetSections = firstVetActions,
           crossSells = crossSells,
           travelBannerInfo = travelBannerInfo?.firstOrNull(),
-          hasMissingChipId = hasMissingChipId,
-          missingChipIdContractId = missingChipIdContractId,
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
@@ -270,18 +266,6 @@ internal class GetHomeDataUseCaseImpl(
     return activeContracts.isEmpty() && pendingContracts.isNotEmpty()
   }
 
-  private fun HomeQuery.Data.CurrentMember.hasMissingChipId(): Boolean {
-    return getMissingChipIdContractId() != null
-  }
-
-  private fun HomeQuery.Data.CurrentMember.getMissingChipIdContractId(): String? {
-    activeContracts.firstOrNull { contract ->
-      val contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup()
-      contractGroup == ContractGroup.CAT || contractGroup == ContractGroup.DOG
-    }?.let { return it.id }
-
-    return null
-  }
 }
 
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
@@ -303,8 +287,6 @@ internal data class HomeData(
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val travelBannerInfo: AddonBannerInfo?,
-  val hasMissingChipId: Boolean = false,
-  val missingChipIdContractId: String? = null,
 ) {
   @Immutable
   data class ClaimStatusCardsData(
