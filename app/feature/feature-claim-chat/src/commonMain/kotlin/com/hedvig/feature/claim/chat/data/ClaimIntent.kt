@@ -122,7 +122,6 @@ internal sealed interface StepContent {
       SINGLE_SELECT,
       MULTI_SELECT,
       BINARY,
-
       SEARCH,
     }
   }

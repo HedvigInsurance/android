@@ -51,11 +51,12 @@ kotlin {
       implementation(projects.uiForceUpgrade)
     }
     androidMain.dependencies {
-      implementation(libs.rive.android)
       implementation(libs.accompanist.permissions)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
+      implementation(libs.rive.android)
       implementation(projects.composeUi)
+      implementation(projects.coreRive)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.notificationPermission)

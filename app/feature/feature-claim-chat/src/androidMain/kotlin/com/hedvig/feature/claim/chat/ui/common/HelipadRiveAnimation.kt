@@ -1,7 +1,6 @@
 package com.hedvig.feature.claim.chat.ui.common
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -11,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Loop
+import com.hedvig.android.core.rive.RiveInitializer
 import kotlinx.coroutines.delay
 
 private enum class HelipadAnimation(val animationName: String) {
@@ -27,8 +27,11 @@ internal actual fun HelipadRiveAnimation(modifier: Modifier, bottomAnimationFini
   val resourceName = if (isDark) "hedvig_loader_dark" else "hedvig_loader_light"
   val resourceId = context.resources.getIdentifier(resourceName, "raw", context.packageName)
 
-  if (resourceId == 0) {
-    Box(modifier = modifier)
+  if (resourceId == 0 || !RiveInitializer.isAvailable()) {
+    BlinkingAiDot(
+      modifier = modifier,
+      isAnimating = !bottomAnimationFinished,
+    )
     return
   }
 

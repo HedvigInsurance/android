@@ -1,8 +1,0 @@
-fragment EntryPoint on Entrypoint {
-  id
-  displayName
-  options {
-    id
-    displayName
-  }
-}

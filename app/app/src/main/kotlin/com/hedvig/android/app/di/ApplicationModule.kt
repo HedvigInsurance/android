@@ -51,7 +51,6 @@ import com.hedvig.android.core.demomode.di.demoModule
 import com.hedvig.android.core.fileupload.fileUploadModule
 import com.hedvig.android.data.addons.di.dataAddonsModule
 import com.hedvig.android.data.changetier.di.dataChangeTierModule
-import com.hedvig.android.data.claimflow.di.claimFlowDataModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.data.cross.sell.after.claim.closed.di.crossSellAfterClaimClosedModule
 import com.hedvig.android.data.cross.sell.after.flow.di.dataCrossSellAfterFlowModule
@@ -69,7 +68,6 @@ import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.chip.id.di.chipIdModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimhistory.di.claimHistoryModule
-import com.hedvig.android.feature.claimtriaging.di.claimTriagingModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
 import com.hedvig.android.feature.cross.sell.sheet.di.featureCrossSellSheetModule
 import com.hedvig.android.feature.deleteaccount.di.deleteAccountModule
@@ -80,7 +78,6 @@ import com.hedvig.android.feature.insurance.certificate.di.insuranceEvidenceModu
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.movingflow.di.movingFlowModule
-import com.hedvig.android.feature.odyssey.di.odysseyModule
 import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
@@ -170,6 +167,7 @@ private val notificationModule = module {
       get<Context>(),
       get<PermissionManager>(),
       get<HedvigBuildConstants>(),
+      get<HedvigDeepLinkContainer>(),
       HedvigNotificationChannel.Other,
     )
   } bind NotificationSender::class
@@ -303,9 +301,7 @@ val applicationModule = module {
       chooseTierModule,
       claimChatModule,
       claimDetailsModule,
-      claimFlowDataModule,
       claimHistoryModule,
-      claimTriagingModule,
       clockModule,
       coilModule,
       comparisonModule,
@@ -348,7 +344,6 @@ val applicationModule = module {
       networkModule,
       notificationBadgeModule,
       notificationModule,
-      odysseyModule,
       paymentsModule,
       profileModule,
       settingsDatastoreModule,
