@@ -6,13 +6,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
@@ -24,22 +30,35 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
+import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
+import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import com.hedvig.android.feature.chip.id.ui.AddChipIdEvent.RetryLoadData
 import com.hedvig.android.feature.chip.id.ui.AddChipIdEvent.SubmitData
 import com.hedvig.android.feature.chip.id.ui.AddChipIdUiState.Content
@@ -50,6 +69,7 @@ import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -143,6 +163,9 @@ private fun ColumnScope.AddChipIdContent(
   Spacer(Modifier.weight(1f))
   Spacer(Modifier.height(16.dp))
 
+  InsuranceInfoCard(uiState.contract,
+    modifier = Modifier.padding(horizontal = 16.dp))
+  Spacer(Modifier.height(16.dp))
   ChipIdTextField(
     textFieldState = uiState.chipIdState,
     labelText = stringResource(Res.string.CHIP_ID_LABEL),
@@ -215,3 +238,106 @@ private fun ChipIdTextField(
       .padding(horizontal = 16.dp),
   )
 }
+
+
+@Composable
+private fun InsuranceInfoCard(
+  insuranceInfo: PetContractForChipId,
+  modifier: Modifier = Modifier,
+) {
+  HedvigCard(modifier
+    .border(
+      width = 1.dp,
+      color = HedvigTheme.colorScheme.borderPrimary,
+      shape = HedvigTheme.shapes.cornerXLarge,
+    ),
+    color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Column(Modifier.padding(16.dp)) {
+      Row {
+        Image(
+          painter = painterResource(insuranceInfo.contractGroup.pillowResource()),
+          contentDescription = null,
+          modifier = Modifier.size(48.dp),
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+          HedvigText(insuranceInfo.displayName)
+          HedvigText(insuranceInfo.contractExposure, color = HedvigTheme.colorScheme.textSecondary)
+        }
+      }
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewTerminationConfirmationScreen(
+  @PreviewParameter(AddChipIdScreenStateProvider ::class) state: AddChipIdUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      AddChipIdScreen(
+        state,
+        globalSnackBarState = GlobalSnackBarState(),
+        submitChipId = {  },
+        reload = {  },
+        navigateUp = {  },
+        showedSnackBar = {},
+      )
+    }
+  }
+}
+
+
+private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider< AddChipIdUiState>(
+  listOf(
+    AddChipIdUiState.Error,
+    AddChipIdUiState.Loading,
+    Content(
+      chipIdState =  TextFieldState(),
+      contract = PetContractForChipId(
+        id = "sdf",
+        displayName = "Display name",
+        contractExposure = "Kitty",
+        contractGroup = ContractGroup.CAT
+      ),
+      showSuccessSnackBar = false,
+      submittingData = false,
+    ),
+    Content(
+      chipIdState =  TextFieldState(initialText = "123456789012345"),
+      contract = PetContractForChipId(
+        id = "sdf",
+        displayName = "Display name",
+        contractExposure = "Kitty",
+        contractGroup = ContractGroup.CAT
+      ),
+      showSuccessSnackBar = false,
+      submittingData = false,
+    ),
+    Content(
+      chipIdState =  TextFieldState(),
+      contract = PetContractForChipId(
+        id = "sdf",
+        displayName = "Display name",
+        contractExposure = "Kitty",
+        contractGroup = ContractGroup.CAT
+      ),
+      showSuccessSnackBar = false,
+      submittingData = false,
+      errorType = ChipIdErrorType.WrongInput
+    ),
+    Content(
+      chipIdState =  TextFieldState(),
+      contract = PetContractForChipId(
+        id = "sdf",
+        displayName = "Display name",
+        contractExposure = "Kitty",
+        contractGroup = ContractGroup.CAT
+      ),
+      showSuccessSnackBar = false,
+      submittingData = false,
+      errorType = ChipIdErrorType.GeneralError
+    ),
+  ),
+)

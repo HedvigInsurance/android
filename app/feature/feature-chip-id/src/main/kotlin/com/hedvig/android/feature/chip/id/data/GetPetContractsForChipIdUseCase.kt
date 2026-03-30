@@ -6,6 +6,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.logger.logcat
 import octopus.GetPetContractsForChipIdQuery
 
@@ -25,15 +26,12 @@ internal class GetPetContractsForChipIdUseCaseImpl(
         data.currentMember.activeContracts
           .mapNotNull { contract ->
             if (contract.missingPetId) {
-              val result = PetContractForChipId(
+              PetContractForChipId(
                 id = contract.id,
                 displayName = contract.currentAgreement.productVariant.displayName,
                 contractExposure = contract.exposureDisplayNameShort,
+                contractGroup = contract.currentAgreement.productVariant.typeOfContract.toContractGroup(),
               )
-              logcat {
-                "GetPetContractsForChipIdUseCaseImpl: result: $result contract.missingPetId: ${contract.missingPetId}"
-              }
-              result
             } else {
               null
             }

@@ -11,24 +11,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.text.TextRange
+import com.hedvig.android.feature.chip.id.data.GetPetContractsForChipIdUseCase
+import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import com.hedvig.android.feature.chip.id.data.UpdateChipIdUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class AddChipIdViewModel(
-  private val updateChipIdUseCase: UpdateChipIdUseCase,
+  updateChipIdUseCase: UpdateChipIdUseCase,
+  getPetContractsForChipIdUseCase: GetPetContractsForChipIdUseCase,
   contractId: String,
 ) : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
-    initialState = AddChipIdUiState.Loading,
-    presenter = AddChipIdPresenter(
-      updateChipIdUseCase = updateChipIdUseCase,
-      contractId = contractId,
-    ),
-  )
+  initialState = AddChipIdUiState.Loading,
+  presenter = AddChipIdPresenter(
+    updateChipIdUseCase = updateChipIdUseCase,
+    contractId = contractId,
+    getPetContractsForChipIdUseCase = getPetContractsForChipIdUseCase,
+  ),
+)
 
 internal class AddChipIdPresenter(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
+  private val getPetContractsForChipIdUseCase: GetPetContractsForChipIdUseCase,
   private val contractId: String,
 ) : MoleculePresenter<AddChipIdEvent, AddChipIdUiState> {
   @Composable
@@ -37,11 +42,32 @@ internal class AddChipIdPresenter(
       val lastChipIdState = lastState.content?.chipIdState
       TextFieldState(lastChipIdState?.text?.toString() ?: "", lastChipIdState?.selection ?: TextRange(0))
     }
+    var currentState by remember { mutableStateOf(lastState) }
     var submittingData by remember { mutableStateOf(false) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
     var errorType by remember { mutableStateOf<ChipIdErrorType?>(null) }
 
     var submitIteration by remember { mutableIntStateOf(0) }
+    var loadIteration by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(loadIteration) {
+      getPetContractsForChipIdUseCase.invoke().fold(
+        ifLeft = {
+          currentState = AddChipIdUiState.Error
+        },
+        ifRight = {
+          val contract = it.firstOrNull { it.id == contractId }
+          if (contract == null) {
+            currentState = AddChipIdUiState.Error
+            return@LaunchedEffect
+          }
+          currentState = AddChipIdUiState.Content(
+            chipIdState = chipIdState,
+            contract = contract,
+          )
+        },
+      )
+    }
 
     LaunchedEffect(submitIteration) {
       if (submitIteration == 0) return@LaunchedEffect
@@ -68,7 +94,7 @@ internal class AddChipIdPresenter(
     CollectEvents { event ->
       when (event) {
         AddChipIdEvent.RetryLoadData -> {
-          // Retry by resetting state
+          loadIteration++
           chipIdState.setTextAndPlaceCursorAtEnd("")
         }
 
@@ -91,12 +117,15 @@ internal class AddChipIdPresenter(
       }
     }
 
-    return AddChipIdUiState.Content(
-      chipIdState = chipIdState,
-      showSuccessSnackBar = showSuccessSnackBar,
-      submittingData = submittingData,
-      errorType = errorType,
-    )
+    return when (val state = currentState) {
+      is AddChipIdUiState.Content -> state.copy(
+        chipIdState = chipIdState,
+        showSuccessSnackBar = showSuccessSnackBar,
+        submittingData = submittingData,
+        errorType = errorType,
+      )
+      AddChipIdUiState.Error, AddChipIdUiState.Loading -> state
+    }
   }
 }
 
@@ -110,6 +139,7 @@ internal sealed interface AddChipIdUiState {
 
   data class Content(
     val chipIdState: TextFieldState,
+    val contract: PetContractForChipId,
     val showSuccessSnackBar: Boolean = false,
     val submittingData: Boolean = false,
     val errorType: ChipIdErrorType? = null,

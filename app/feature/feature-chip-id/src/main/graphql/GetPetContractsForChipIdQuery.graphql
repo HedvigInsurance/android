@@ -6,7 +6,8 @@ query GetPetContractsForChipId {
       missingPetId
       currentAgreement {
         productVariant {
-        displayName
+          typeOfContract
+          displayName
         }
       }
     }

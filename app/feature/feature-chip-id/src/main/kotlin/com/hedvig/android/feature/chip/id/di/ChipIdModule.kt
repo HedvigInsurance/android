@@ -34,6 +34,7 @@ val chipIdModule = module {
     AddChipIdViewModel(
       updateChipIdUseCase = get<UpdateChipIdUseCase>(),
       contractId = params.get<String>(),
+      getPetContractsForChipIdUseCase = get<GetPetContractsForChipIdUseCase>(),
     )
   }
 }
