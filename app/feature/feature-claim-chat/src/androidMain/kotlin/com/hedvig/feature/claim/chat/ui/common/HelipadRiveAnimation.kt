@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Loop
+import com.hedvig.android.core.rive.RiveInitializer
 import kotlinx.coroutines.delay
 
 private enum class HelipadAnimation(val animationName: String) {
@@ -31,7 +32,7 @@ internal actual fun HelipadRiveAnimation(
   val resourceName = if (isDark) "hedvig_loader_dark" else "hedvig_loader_light"
   val resourceId = context.resources.getIdentifier(resourceName, "raw", context.packageName)
 
-  if (resourceId == 0) {
+  if (resourceId == 0 || !RiveInitializer.isAvailable()) {
     Box(modifier = modifier)
     return
   }
