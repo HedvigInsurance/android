@@ -25,9 +25,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import app.rive.runtime.kotlin.core.Rive
 import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
+import com.hedvig.android.core.rive.RiveInitializer
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
       val context = LocalContext.current
-      Rive.init(context)
+      RiveInitializer.init(context)
       val windowSizeClass = calculateWindowSizeClass(this)
       val navHostController = rememberNavController().also { navController = it }
       LifecycleStartEffect(navHostController) {
