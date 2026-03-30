@@ -40,7 +40,7 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
-  navigateToChipIdScreen: () -> Unit,
+  navigateToChipIdScreen: (String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,

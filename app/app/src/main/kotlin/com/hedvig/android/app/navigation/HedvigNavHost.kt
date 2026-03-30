@@ -334,8 +334,8 @@ internal fun HedvigNavHost(
           ),
         )
       },
-      navigateToChipIdScreen = {
-        navController.navigate(ChipIdGraphDestination())
+      navigateToChipIdScreen = { contractId ->
+        navController.navigate(ChipIdGraphDestination(contractId))
       },
     )
     foreverGraph(
