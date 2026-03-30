@@ -39,7 +39,7 @@ internal fun BlinkingAiDot(
   val color = HedvigTheme.colorScheme.signalGreenElement
   Spacer(
     modifier
-      .wrapContentSize(Alignment.Center)
+      .wrapContentSize(Alignment.CenterStart)
       .size(20.dp)
       .padding(1.dp)
       .alpha(if (isAnimating) alpha else 1f)
