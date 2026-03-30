@@ -33,7 +33,9 @@ internal class SelectInsuranceForChipIdPresenter(
     var currentState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
-    var selectedContract: PetContractForChipId? by remember { mutableStateOf(null) }
+    var selectedContract: PetContractForChipId? by remember { mutableStateOf(
+      if (lastState is SelectInsuranceForChipIdState.Success) lastState.selectedContract else
+      null) }
     var contractIdToContinue: String? by remember { mutableStateOf(null) }
 
     LaunchedEffect(loadIteration) {
