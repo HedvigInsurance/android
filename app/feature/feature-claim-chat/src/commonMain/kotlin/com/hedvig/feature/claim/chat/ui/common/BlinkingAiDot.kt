@@ -20,29 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 
 @Composable
-internal fun BlinkingAiDot(modifier: Modifier = Modifier, durationMillis: Int = 500) {
-  val infiniteTransition = rememberInfiniteTransition(label = "blink")
-  val alpha by infiniteTransition.animateFloat(
-    initialValue = 1f,
-    targetValue = 0f,
-    animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis),
-      repeatMode = RepeatMode.Reverse,
-    ),
-    label = "alpha",
-  )
-  val color = HedvigTheme.colorScheme.signalGreenElement
-  Spacer(
-    modifier
-      .wrapContentSize(Alignment.Center)
-      .size(20.dp)
-      .padding(1.dp)
-      .alpha(alpha)
-      .background(color, CircleShape),
-  )
-}
-
-@Composable
 internal fun BlinkingAiDotWithTimeout(
   modifier: Modifier = Modifier,
   isAnimating: Boolean = true,
