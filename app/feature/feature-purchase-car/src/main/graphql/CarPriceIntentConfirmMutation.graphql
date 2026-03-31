@@ -1,0 +1,13 @@
+mutation CarPriceIntentConfirm($priceIntentId: UUID!) {
+  priceIntentConfirm(priceIntentId: $priceIntentId) {
+    priceIntent {
+      id
+      offers {
+        ...PurchaseProductOfferFragment
+      }
+    }
+    userError {
+      message
+    }
+  }
+}
