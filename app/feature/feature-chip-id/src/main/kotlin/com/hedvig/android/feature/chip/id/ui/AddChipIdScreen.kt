@@ -193,6 +193,7 @@ private fun ColumnScope.AddChipIdContent(
       val errorMessage = when (errorType) {
         ChipIdErrorType.WrongInput -> stringResource(Res.string.CHIP_ID_WRONG_INPUT)
         ChipIdErrorType.GeneralError -> stringResource(Res.string.something_went_wrong)
+        is ChipIdErrorType.ErrorWithMessage -> errorType.message
       }
       HedvigNotificationCard(
         message = errorMessage,

@@ -79,8 +79,10 @@ internal class AddChipIdPresenter(
       updateChipIdUseCase.invoke(insuranceId = contractId, petId = chipIdText).fold(
         ifLeft = { error ->
           Snapshot.withMutableSnapshot {
+            val errorMessage = error.message
             submittingData = false
-            errorType = ChipIdErrorType.GeneralError
+            errorType =  if (errorMessage==null) ChipIdErrorType.GeneralError
+            else ChipIdErrorType.ErrorWithMessage(errorMessage)
           }
         },
         ifRight = {
@@ -154,6 +156,8 @@ internal sealed interface ChipIdErrorType {
   data object WrongInput : ChipIdErrorType
 
   data object GeneralError : ChipIdErrorType
+
+  data class ErrorWithMessage(val message: String) : ChipIdErrorType
 }
 
 internal sealed interface AddChipIdEvent {
