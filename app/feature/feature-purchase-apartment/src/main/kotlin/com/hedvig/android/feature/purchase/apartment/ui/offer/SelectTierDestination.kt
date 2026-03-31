@@ -7,17 +7,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -27,11 +21,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.purchase.apartment.navigation.SummaryParameters
@@ -53,88 +46,62 @@ internal fun SelectTierDestination(
       onContinueToSummary(uiState.summaryToNavigate)
     }
   }
-  SelectTierScreen(
-    uiState = uiState,
+  HedvigScaffold(
     navigateUp = navigateUp,
-    onSelectOffer = { viewModel.emit(SelectTierEvent.SelectOffer(it)) },
-    onContinue = { viewModel.emit(SelectTierEvent.Continue) },
-  )
-}
-
-@Composable
-private fun SelectTierScreen(
-  uiState: SelectTierUiState,
-  navigateUp: () -> Unit,
-  onSelectOffer: (String) -> Unit,
-  onContinue: () -> Unit,
-) {
-  Surface(
-    color = HedvigTheme.colorScheme.backgroundPrimary,
-    modifier = Modifier.fillMaxSize(),
   ) {
-    Column {
-      TopAppBarWithBack(
-        title = "",
-        onClick = navigateUp,
+    Spacer(Modifier.height(16.dp))
+    HedvigText(
+      text = "Anpassa din f\u00f6rs\u00e4kring",
+      style = HedvigTheme.typography.headlineMedium,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(4.dp))
+    HedvigText(
+      text = "V\u00e4lj den skyddsniv\u00e5 som passar dig b\u00e4st",
+      style = HedvigTheme.typography.bodyMedium,
+      color = HedvigTheme.colorScheme.textSecondary,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(24.dp))
+    for ((index, offer) in uiState.offers.withIndex()) {
+      TierCard(
+        offer = offer,
+        isSelected = offer.offerId == uiState.selectedOfferId,
+        onSelect = { viewModel.emit(SelectTierEvent.SelectOffer(offer.offerId)) },
+        modifier = Modifier.padding(horizontal = 16.dp),
       )
-      Column(
-        modifier = Modifier
-          .weight(1f)
-          .verticalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp),
-      ) {
-        Spacer(Modifier.height(16.dp))
-        HedvigText(
-          text = "Anpassa din f\u00f6rs\u00e4kring",
-          style = HedvigTheme.typography.headlineMedium,
-        )
-        Spacer(Modifier.height(4.dp))
-        HedvigText(
-          text = "V\u00e4lj den skyddsniv\u00e5 som passar dig b\u00e4st",
-          style = HedvigTheme.typography.bodyMedium,
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-        Spacer(Modifier.height(24.dp))
-        for ((index, offer) in uiState.offers.withIndex()) {
-          val isSelected = offer.offerId == uiState.selectedOfferId
-          TierCard(
-            offer = offer,
-            isSelected = isSelected,
-            onSelect = { onSelectOffer(offer.offerId) },
-          )
-          if (index < uiState.offers.lastIndex) {
-            Spacer(Modifier.height(12.dp))
-          }
-        }
-        Spacer(Modifier.weight(1f))
-        Spacer(Modifier.height(24.dp))
-        HedvigButton(
-          text = "Forts\u00e4tt",
-          onClick = dropUnlessResumed { onContinue() },
-          enabled = uiState.offers.any { it.offerId == uiState.selectedOfferId },
-          modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+      if (index < uiState.offers.lastIndex) {
+        Spacer(Modifier.height(12.dp))
       }
     }
+    Spacer(Modifier.height(24.dp))
+    HedvigButton(
+      text = "Forts\u00e4tt",
+      onClick = dropUnlessResumed { viewModel.emit(SelectTierEvent.Continue) },
+      enabled = uiState.offers.any { it.offerId == uiState.selectedOfferId },
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
+    Spacer(Modifier.height(16.dp))
   }
 }
 
 @Composable
-private fun TierCard(offer: TierOfferData, isSelected: Boolean, onSelect: () -> Unit) {
+private fun TierCard(
+  offer: TierOfferData,
+  isSelected: Boolean,
+  onSelect: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   HedvigCard(
     onClick = onSelect,
-    color = if (isSelected) {
-      HedvigTheme.colorScheme.surfacePrimary
-    } else {
-      HedvigTheme.colorScheme.surfacePrimary
-    },
     borderColor = if (isSelected) {
       HedvigTheme.colorScheme.signalGreenElement
     } else {
       HedvigTheme.colorScheme.borderSecondary
     },
+    modifier = modifier,
   ) {
     Column(Modifier.padding(16.dp)) {
       Row(
