@@ -40,6 +40,8 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  // Ready for when backend provides cross-sell type info to distinguish apartment purchase products from web URLs
+  onNavigateToApartmentPurchase: (productName: String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
