@@ -135,7 +135,7 @@ fun NavGraphBuilder.apartmentPurchaseNavGraph(
     PurchaseSuccessDestination(
       startDate = route.startDate,
       close = dropUnlessResumed {
-        if (!navController.typedPopBackStack<ApartmentPurchaseGraphDestination>(inclusive = true)) finishApp()
+        if (!navController.popBackStack()) finishApp()
       },
     )
   }
