@@ -62,12 +62,8 @@ fun NavGraphBuilder.insuranceGraph(
           navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
         onCrossSellClick = dropUnlessResumed { url: String ->
-          val productName = parseApartmentProductFromUrl(url)
-          if (productName != null) {
-            onNavigateToApartmentPurchase(productName)
-          } else {
-            openUrl(url)
-          }
+          // Hardcoded for testing: route all cross-sells to in-app purchase
+          onNavigateToApartmentPurchase("SE_APARTMENT_RENT")
         },
         navigateToCancelledInsurances = dropUnlessResumed {
           navController.navigate(InsurancesDestinations.TerminatedInsurances)
