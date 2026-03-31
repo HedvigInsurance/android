@@ -2,6 +2,8 @@ import org.gradle.api.internal.catalog.DelegatingProjectDependency
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
+  alias(libs.plugins.composeKotlinCompilerGradlePlugin)
+  alias(libs.plugins.composeJetbrainsCompilerGradlePlugin)
   id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
   alias(libs.plugins.kmpNativeCoroutines)
@@ -15,16 +17,19 @@ kotlin {
   val xcf = XCFramework(frameworkName)
   val projectsToExport: List<DelegatingProjectDependency> = listOf(
     projects.authlib,
+    projects.coreBuildConstants,
+    projects.coreDatastorePublic,
+    projects.featureFlags,
     projects.featureHelpCenter,
+    projects.networkClients,
     projects.shareddi,
   )
   listOf(
-    iosX64(),
     iosArm64(),
     iosSimulatorArm64(),
   ).forEach { iosTarget ->
     iosTarget.binaries.framework {
-//      isStatic = true
+      isStatic = true
       for (projectToExport in projectsToExport) {
         export(projectToExport)
       }
