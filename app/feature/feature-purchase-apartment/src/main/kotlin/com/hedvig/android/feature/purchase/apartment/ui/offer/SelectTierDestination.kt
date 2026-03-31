@@ -183,7 +183,8 @@ private fun TierCard(
 }
 
 private fun formatPrice(amount: Double, currencyCode: String): String {
-  val format = NumberFormat.getCurrencyInstance(Locale.of("sv", "SE"))
+  @Suppress("DEPRECATION")
+  val format = NumberFormat.getCurrencyInstance(Locale("sv", "SE"))
   format.currency = Currency.getInstance(currencyCode)
   format.maximumFractionDigits = 0
   return "${format.format(amount)}/m\u00e5n"
