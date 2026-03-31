@@ -1,0 +1,50 @@
+fragment ApartmentProductOfferFragment on ProductOffer {
+  id
+  variant {
+    displayName
+    displayNameSubtype
+    displayNameTier
+    tierDescription
+    typeOfContract
+    perils {
+      title
+      description
+      colorCode
+      covered
+      info
+    }
+    documents {
+      type
+      displayName
+      url
+    }
+  }
+  cost {
+    gross {
+      ...MoneyFragment
+    }
+    net {
+      ...MoneyFragment
+    }
+    discountsV2 {
+      amount {
+        ...MoneyFragment
+      }
+    }
+  }
+  startDate
+  deductible {
+    displayName
+    amount
+  }
+  usps
+  exposure {
+    displayNameShort
+  }
+  bundleDiscount {
+    isEligible
+    potentialYearlySavings {
+      ...MoneyFragment
+    }
+  }
+}

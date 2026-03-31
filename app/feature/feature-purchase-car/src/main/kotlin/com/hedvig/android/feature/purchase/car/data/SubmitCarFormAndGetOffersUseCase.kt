@@ -10,7 +10,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.CarPriceIntentConfirmMutation
 import octopus.CarPriceIntentDataUpdateMutation
-import octopus.fragment.PurchaseProductOfferFragment
+import octopus.fragment.CarProductOfferFragment
 
 internal interface SubmitCarFormAndGetOffersUseCase {
   suspend fun invoke(
@@ -90,7 +90,7 @@ internal class SubmitCarFormAndGetOffersUseCaseImpl(
   }
 }
 
-internal fun PurchaseProductOfferFragment.toTierOffer(): CarTierOffer {
+internal fun CarProductOfferFragment.toTierOffer(): CarTierOffer {
   return CarTierOffer(
     offerId = id,
     tierDisplayName = variant.displayNameTier ?: variant.displayName,

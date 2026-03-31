@@ -185,7 +185,7 @@ dependencies {
   implementation(projects.featureAddonPurchase)
   implementation(projects.featurePurchaseApartment)
   implementation(projects.featurePurchaseCar)
-  implementation(projects.featurePurchaseCommon)
+  implementation(projects.purchaseCommon)
   implementation(projects.featureChat)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimChat)

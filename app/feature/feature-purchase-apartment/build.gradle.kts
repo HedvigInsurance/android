@@ -32,7 +32,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featurePurchaseCommon)
+  implementation(projects.purchaseCommon)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)

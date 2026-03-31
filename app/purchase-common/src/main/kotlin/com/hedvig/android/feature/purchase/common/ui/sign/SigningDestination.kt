@@ -64,10 +64,12 @@ fun SigningDestination(
         hasNavigated = true
         navigateToSuccess(state.startDate)
       }
+
       is SigningUiState.Failed -> {
         hasNavigated = true
         navigateToFailure()
       }
+
       is SigningUiState.Polling -> {}
     }
   }
@@ -97,7 +99,9 @@ fun SigningDestination(
 
     is SigningUiState.Success,
     is SigningUiState.Failed,
-    -> HedvigFullScreenCenterAlignedProgress()
+    -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
   }
 }
 

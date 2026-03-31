@@ -3,7 +3,7 @@ mutation CarPriceIntentConfirm($priceIntentId: UUID!) {
     priceIntent {
       id
       offers {
-        ...PurchaseProductOfferFragment
+        ...CarProductOfferFragment
       }
     }
     userError {

@@ -7,10 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,6 +19,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize
+import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
+import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
+import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -126,7 +126,6 @@ private fun formatRegistrationNumber(input: String): String {
   return cleaned.take(3) + " " + cleaned.drop(3).take(3)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CarFormContent(
   ssn: String,
@@ -191,36 +190,21 @@ private fun CarFormContent(
         enabled = !isSubmitting,
       )
 
-      var mileageExpanded by remember { mutableStateOf(false) }
-      ExposedDropdownMenuBox(
-        expanded = mileageExpanded,
-        onExpandedChange = { if (!isSubmitting) mileageExpanded = it },
-      ) {
-        HedvigTextField(
-          text = selectedMileage?.displayName ?: "",
-          onValueChange = {},
-          labelText = "Miltal",
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          errorState = mileageError.toErrorState(),
-          readOnly = true,
-          enabled = !isSubmitting,
-          modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-        )
-        ExposedDropdownMenu(
-          expanded = mileageExpanded,
-          onDismissRequest = { mileageExpanded = false },
-        ) {
-          MileageOption.entries.forEach { option ->
-            DropdownMenuItem(
-              text = { HedvigText(text = option.displayName) },
-              onClick = {
-                onMileageSelected(option)
-                mileageExpanded = false
-              },
-            )
-          }
-        }
-      }
+      DropdownWithDialog(
+        style = DropdownStyle.Label(
+          items = MileageOption.entries.map { SimpleDropdownItem(it.displayName) },
+          label = "Miltal per \u00e5r",
+        ),
+        size = DropdownSize.Medium,
+        hintText = "V\u00e4lj miltal",
+        chosenItemIndex = selectedMileage?.let { MileageOption.entries.indexOf(it) },
+        onItemChosen = { index -> onMileageSelected(MileageOption.entries[index]) },
+        onSelectorClick = {},
+        isEnabled = !isSubmitting,
+        hasError = mileageError != null,
+        errorText = mileageError,
+        modifier = Modifier.fillMaxWidth(),
+      )
 
       HedvigTextField(
         text = street,

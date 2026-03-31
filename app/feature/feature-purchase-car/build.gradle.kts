@@ -31,7 +31,7 @@ dependencies {
   implementation(projects.coreUiData)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featurePurchaseCommon)
+  implementation(projects.purchaseCommon)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
