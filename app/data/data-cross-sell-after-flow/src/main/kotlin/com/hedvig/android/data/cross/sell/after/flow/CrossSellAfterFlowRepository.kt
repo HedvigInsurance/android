@@ -67,6 +67,11 @@ sealed class CrossSellInfoType() {
     override val loggableName: String = "moveFlow"
     override val extraInfo: Map<String, Any?>? = null
   }
+
+  data object Purchase : CrossSellInfoType() {
+    override val loggableName: String = "purchase"
+    override val extraInfo: Map<String, Any?>? = null
+  }
 }
 
 class CrossSellAfterFlowRepositoryImpl() : CrossSellAfterFlowRepository {
