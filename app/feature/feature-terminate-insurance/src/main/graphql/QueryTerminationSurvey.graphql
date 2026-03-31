@@ -1,4 +1,4 @@
-query TerminationSurvey($contractId: ID!) {
+query TerminationSurvey($contractId: UUID!) {
   terminationSurvey(contractId: $contractId) {
     options {
       id

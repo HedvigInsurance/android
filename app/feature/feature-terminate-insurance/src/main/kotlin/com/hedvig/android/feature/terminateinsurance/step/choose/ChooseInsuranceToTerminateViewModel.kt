@@ -85,23 +85,29 @@ private class ChooseInsuranceToTerminatePresenter(
 
     LaunchedEffect(terminatableInsuranceToFetchNextStepFor) {
       val currentStateValue = currentState as? ChooseInsuranceToTerminateStepUiState.Success ?: return@LaunchedEffect
-      currentState = currentStateValue.copy(navigationStepFailedToLoad = false)
-      val terminatableInsurance = terminatableInsuranceToFetchNextStepFor ?: return@LaunchedEffect
-      currentState = currentStateValue.copy(isNavigationStepLoading = true)
+      val terminatableInsurance = terminatableInsuranceToFetchNextStepFor
+      if (terminatableInsurance == null) {
+        currentState = currentStateValue.copy(navigationStepFailedToLoad = false)
+        return@LaunchedEffect
+      }
+      val loadingState = currentStateValue.copy(
+        isNavigationStepLoading = true,
+        navigationStepFailedToLoad = false,
+      )
+      currentState = loadingState
       currentState = terminateInsuranceRepository
         .getTerminationSurvey(terminatableInsurance.id)
         .fold(
           ifLeft = {
-            currentStateValue.copy(
+            loadingState.copy(
               navigationStepFailedToLoad = true,
               isNavigationStepLoading = false,
             )
           },
           ifRight = { surveyData ->
-            currentStateValue.copy(
+            loadingState.copy(
               nextStepWithInsurance = Pair(surveyData, terminatableInsurance),
-              navigationStepFailedToLoad = false,
-              isNavigationStepLoading = true,
+              isNavigationStepLoading = false,
             )
           },
         )
@@ -129,11 +135,11 @@ private class ChooseInsuranceToTerminatePresenter(
                 eligibleInsurances.firstOrNull { it.id == initialSelected }
               }
               ChooseInsuranceToTerminateStepUiState.Success(
-                eligibleInsurances,
-                selectedInsurance,
-                null,
-                false,
-                false,
+                insuranceList = eligibleInsurances,
+                selectedInsurance = selectedInsurance,
+                nextStepWithInsurance = null,
+                isNavigationStepLoading = false,
+                navigationStepFailedToLoad = false,
               )
             }
           },

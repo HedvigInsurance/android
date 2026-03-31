@@ -60,9 +60,9 @@ import hedvig.resources.Res
 import hedvig.resources.SUMMARY_SCREEN_LEARN_MORE_BUTTON
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
 import hedvig.resources.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS
+import hedvig.resources.TERMINATION_OFFER_TITLE
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_HINT
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT
-import hedvig.resources.TERMINATION_OFFER_TITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong

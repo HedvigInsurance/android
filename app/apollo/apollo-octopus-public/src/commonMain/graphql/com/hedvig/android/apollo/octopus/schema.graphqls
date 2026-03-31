@@ -1308,6 +1308,10 @@ type Contract {
   """
   coOwners: [ContractCoOwner!]
   """
+  Checks if petId is missing on the current or upcoming agreement.
+  """
+  missingPetId: Boolean!
+  """
   User messages to show due to self change is blocked.
   """
   selfChangeBlockers: ContractSelfChangeBlockers
@@ -1683,15 +1687,15 @@ returned as ExtendedItemDiscount
 """
 type ExtendedItemDiscount {
   """
-   General discount information 
+  General discount information
   """
   itemDiscount: ItemDiscount!
   """
-   Monthly reduction applied by the discount. It's a negative number 
+  Monthly reduction applied by the discount. It's a negative number
   """
   amount: Money!
   """
-   Whether discount is on a pending state or not 
+  Whether discount is on a pending state or not
   """
   isPending: Boolean!
 }
@@ -2891,6 +2895,10 @@ enum MidtermChangeIntentState {
   INITIATED
   COMPLETED
 }
+type MidtermChangePetIdOutput {
+  activationDate: Date
+  userError: UserError
+}
 type MidtermChangePriceDetailItem {
   displayName: String!
   displayValue: String!
@@ -3430,6 +3438,11 @@ type Mutation {
   """
   priceIntentConfirm(priceIntentId: UUID!): PriceIntentMutationOutput!
   """
+  Apply the customer's registered address (from SPAR lookup) directly into the price intent data
+  server-side, so the real address value never needs to be sent to the client.
+  """
+  priceIntentApplySuggestedAddress(priceIntentId: UUID!): PriceIntentMutationOutput!
+  """
   Change the start date of the given `ProductOffer`s by their ID.
   This is used because it's common to want to change the start date AFTER getting the offer.
   """
@@ -3513,6 +3526,10 @@ type Mutation {
   Commits the midterm change and creates a new agreement for it, takes id of the intent
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
+  """
+  Called to change the Pet-Id of a cat/dog contract. Creates a midterm change without price change and commits it.
+  """
+  midtermChangePetId(contractId: ID!, petId: String!): MidtermChangePetIdOutput
   """
   Call this to confirm removal of selected addon(s).
   """
@@ -3628,11 +3645,11 @@ type PriceIntent {
   """
   product: Product!
   """
-  Submitted user form data.
+  UI-safe masked form data. PII fields (street, zipCode, city) are always masked.
   """
   data: PricingFormData!
   """
-  Data submitted in other places or inferred from other data points
+  Masked, uncommitted form data from automatic lookup (e.g. SPAR address, trial data). PII fields are masked the same way as 'data'.
   """
   suggestedData: PricingFormData!
   """
@@ -3660,6 +3677,10 @@ type PriceIntent {
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
   hasCollectedInsurelyData: Boolean!
+  """
+  When 'true' all required form data has been provided and the price intent can be confirmed.
+  """
+  isReadyToConfirm: Boolean!
 }
 enum PriceIntentAnimal {
   CAT
@@ -3967,10 +3988,6 @@ type ProductOfferPriceMatch {
   externalPrice: Money!
   externalInsurer: ExternalInsurer!
   priceReduction: Money!
-  """
-  Renewal date of the external insurer's policy. Null when not provided by the external insurer.
-  """
-  renewalDate: Date
 }
 type ProductOffersMutationOutput {
   productOffers: [ProductOffer!]!
@@ -4111,7 +4128,7 @@ type Query {
   Cost for selected configuration of removed addon offer
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
-  terminationSurvey(contractId: ID!): TerminationFlowSurvey!
+  terminationSurvey(contractId: UUID!): TerminationFlowSurvey!
   """
   Call this to get the cost of an addon offer for selected addon(s).
   """
@@ -4311,6 +4328,11 @@ type ShopSessionCustomer {
   The personal number of the customer. Can be used for looking up other information.
   """
   ssn: String
+  """
+  The customer's email address. Only available for new members.
+  Returns null for existing/returning members to protect their PII.
+  """
+  email: String
   """
   The list of fields that need to be added in order to sign properly.
   Can be updated through `Mutation.shopSessionCustomerUpdate`.

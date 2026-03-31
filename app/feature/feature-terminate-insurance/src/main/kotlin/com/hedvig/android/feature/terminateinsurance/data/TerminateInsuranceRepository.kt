@@ -161,9 +161,9 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
     is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionTerminateWithDateAction -> {
       Either.Right(
         TerminationAction.TerminateWithDate(
-        minDate = minDate,
-        maxDate = maxDate,
-        extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
+          minDate = minDate,
+          maxDate = maxDate,
+          extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
         ),
       )
     }
@@ -171,7 +171,7 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
     is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionDeleteInsuranceAction -> {
       Either.Right(
         TerminationAction.DeleteInsurance(
-        extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
+          extraCoverageItems = extraCoverage.map { ExtraCoverageItem(it.displayName, it.displayValue) },
         ),
       )
     }
@@ -185,19 +185,49 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAc
 private fun TerminationSurveyOptionSuggestionFragment.toSuggestion(): SurveyOptionSuggestion {
   return SurveyOptionSuggestion(
     type = when (type) {
-      TerminationFlowSurveyOptionSuggestionType.UPDATE_ADDRESS -> SuggestionType.UPDATE_ADDRESS
-      TerminationFlowSurveyOptionSuggestionType.UPGRADE_COVERAGE -> SuggestionType.UPGRADE_COVERAGE
-      TerminationFlowSurveyOptionSuggestionType.DOWNGRADE_PRICE -> SuggestionType.DOWNGRADE_PRICE
-      TerminationFlowSurveyOptionSuggestionType.REDIRECT -> SuggestionType.REDIRECT
-      TerminationFlowSurveyOptionSuggestionType.INFO -> SuggestionType.INFO
-      TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SOLD -> SuggestionType.AUTO_CANCEL_SOLD
-      TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SCRAPPED -> SuggestionType.AUTO_CANCEL_SCRAPPED
+      TerminationFlowSurveyOptionSuggestionType.UPDATE_ADDRESS -> {
+        SuggestionType.UPDATE_ADDRESS
+      }
+
+      TerminationFlowSurveyOptionSuggestionType.UPGRADE_COVERAGE -> {
+        SuggestionType.UPGRADE_COVERAGE
+      }
+
+      TerminationFlowSurveyOptionSuggestionType.DOWNGRADE_PRICE -> {
+        SuggestionType.DOWNGRADE_PRICE
+      }
+
+      TerminationFlowSurveyOptionSuggestionType.REDIRECT -> {
+        SuggestionType.REDIRECT
+      }
+
+      TerminationFlowSurveyOptionSuggestionType.INFO -> {
+        SuggestionType.INFO
+      }
+
+      TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SOLD -> {
+        SuggestionType.AUTO_CANCEL_SOLD
+      }
+
+      TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_SCRAPPED -> {
+        SuggestionType.AUTO_CANCEL_SCRAPPED
+      }
+
       TerminationFlowSurveyOptionSuggestionType.AUTO_CANCEL_DECOMMISSION -> {
         SuggestionType.AUTO_CANCEL_DECOMMISSION
       }
-      TerminationFlowSurveyOptionSuggestionType.AUTO_DECOMMISSION -> SuggestionType.AUTO_DECOMMISSION
-      TerminationFlowSurveyOptionSuggestionType.CAR_ALREADY_DECOMMISSION -> SuggestionType.CAR_ALREADY_DECOMMISSION
-      else -> SuggestionType.UNKNOWN
+
+      TerminationFlowSurveyOptionSuggestionType.AUTO_DECOMMISSION -> {
+        SuggestionType.AUTO_DECOMMISSION
+      }
+
+      TerminationFlowSurveyOptionSuggestionType.CAR_ALREADY_DECOMMISSION -> {
+        SuggestionType.CAR_ALREADY_DECOMMISSION
+      }
+
+      else -> {
+        SuggestionType.UNKNOWN
+      }
     },
     description = description,
     url = url,
