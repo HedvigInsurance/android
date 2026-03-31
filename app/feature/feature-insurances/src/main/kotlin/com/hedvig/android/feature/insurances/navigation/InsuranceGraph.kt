@@ -20,6 +20,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import java.net.URLDecoder
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -40,7 +41,6 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
-  // Ready for when backend provides cross-sell type info to distinguish apartment purchase products from web URLs
   onNavigateToApartmentPurchase: (productName: String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
@@ -61,7 +61,14 @@ fun NavGraphBuilder.insuranceGraph(
         onInsuranceCardClick = dropUnlessResumed { contractId: String ->
           navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        onCrossSellClick = dropUnlessResumed { url: String -> openUrl(url) },
+        onCrossSellClick = dropUnlessResumed { url: String ->
+          val productName = parseApartmentProductFromUrl(url)
+          if (productName != null) {
+            onNavigateToApartmentPurchase(productName)
+          } else {
+            openUrl(url)
+          }
+        },
         navigateToCancelledInsurances = dropUnlessResumed {
           navController.navigate(InsurancesDestinations.TerminatedInsurances)
         },
@@ -117,5 +124,19 @@ fun NavGraphBuilder.insuranceGraph(
         imageLoader = imageLoader,
       )
     }
+  }
+}
+
+private fun parseApartmentProductFromUrl(url: String): String? {
+  val decodedUrl = try {
+    URLDecoder.decode(url, "UTF-8")
+  } catch (_: Exception) {
+    url
+  }
+  val lowerUrl = decodedUrl.lowercase()
+  return when {
+    lowerUrl.contains("hyresratt") || lowerUrl.contains("home-insurance/rental") -> "SE_APARTMENT_RENT"
+    lowerUrl.contains("bostadsratt") || lowerUrl.contains("home-insurance/homeowner") -> "SE_APARTMENT_BRF"
+    else -> null
   }
 }
