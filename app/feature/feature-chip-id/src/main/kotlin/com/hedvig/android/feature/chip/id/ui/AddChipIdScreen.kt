@@ -22,25 +22,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.byValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParameterProvider
-import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
@@ -94,6 +100,9 @@ internal fun AddChipIdDestination(
       viewModel.emit(AddChipIdEvent.ShowedMessage)
       popFlowOnSuccess()
     },
+    updateText = {
+      viewModel.emit(AddChipIdEvent.UpdateText(it))
+    }
   )
 }
 
@@ -105,6 +114,7 @@ private fun AddChipIdScreen(
   reload: () -> Unit,
   navigateUp: () -> Unit,
   showedSnackBar: () -> Unit,
+  updateText: (String) -> Unit
 ) {
   val focusManager = LocalFocusManager.current
   HedvigScaffold(
@@ -139,6 +149,7 @@ private fun AddChipIdScreen(
           submitChipId = submitChipId,
           focusManager = focusManager,
           showedSnackBar = showedSnackBar,
+          updateText = updateText
         )
       }
     }
@@ -152,6 +163,7 @@ private fun ColumnScope.AddChipIdContent(
   submitChipId: () -> Unit,
   focusManager: FocusManager,
   showedSnackBar: () -> Unit,
+  updateText: (String) -> Unit
 ) {
   val successMessage = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
@@ -167,12 +179,10 @@ private fun ColumnScope.AddChipIdContent(
     modifier = Modifier.padding(horizontal = 16.dp))
   Spacer(Modifier.height(16.dp))
   ChipIdTextField(
-    textFieldState = uiState.chipIdState,
+    text = uiState.chipIdText,
     labelText = stringResource(Res.string.CHIP_ID_LABEL),
-    keyboardActionHandler = KeyboardActionHandler {
-      submitChipId()
-      focusManager.clearFocus()
-    },
+    updateText = updateText
+
   )
 
   AnimatedContent(
@@ -213,30 +223,81 @@ private fun ColumnScope.AddChipIdContent(
 
 @Composable
 private fun ChipIdTextField(
-  textFieldState: TextFieldState,
+  text: String,
   labelText: String,
-  keyboardActionHandler: KeyboardActionHandler?,
+  updateText: (String) -> Unit
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  val digitsOnlyTransformation = InputTransformation.byValue { _, proposed ->
-    proposed.filter { it.isDigit() }
-  }
+  var input by remember { mutableStateOf(text ?: "") }
+  val mask = "000-000-000-000-000"
+  val maskColor = HedvigTheme.colorScheme.textTertiary
+  val visualTransformation = ChipIdVisualTransformation(mask, maskColor)
   HedvigTextField(
-    state = textFieldState,
+    text = input,
     labelText = labelText,
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
+    onValueChange = {
+      if(it.length<=15) {
+        updateText(it)
+        input = it
+      }
+    },
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Number,
       imeAction = ImeAction.Done,
     ),
-    inputTransformation = digitsOnlyTransformation,
-    keyboardActions = keyboardActionHandler,
+    visualTransformation = visualTransformation,
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     interactionSource = interactionSource,
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
+}
+
+private class ChipIdVisualTransformation(
+  private val mask: String,
+  private val maskColor: Color,
+) : VisualTransformation {
+  override fun filter(text: AnnotatedString): TransformedText {
+    val trimmed = if (text.text.length >= 15) text.text.substring(0..14) else text.text
+
+    val annotatedString = buildAnnotatedString {
+      for (i in trimmed.indices) {
+        append(trimmed[i])
+        if (i in listOf(2,5,8,11)) {
+          append("-")
+        }
+      }
+      withStyle(SpanStyle(color = maskColor)) {
+        append(mask.takeLast(mask.length - length))
+      }
+    }
+
+    val personalNumberOffsetTranslator = object : OffsetMapping {
+      override fun originalToTransformed(offset: Int): Int {
+        return when {
+          offset <= 2  -> offset
+          offset <= 5  -> offset + 1
+          offset <= 8  -> offset + 2
+          offset <= 11 -> offset + 3
+          offset <= 15 -> offset + 4
+          else -> 19
+        }
+      }
+
+      override fun transformedToOriginal(offset: Int): Int {
+        return when {
+          offset <= 3  -> offset
+          offset <= 7  -> offset - 1
+          offset <= 11 -> offset - 2
+          offset <= 15 -> offset - 3
+          else -> offset - 4
+        }.coerceAtMost(text.length)
+      }
+    }
+    return TransformedText(annotatedString, personalNumberOffsetTranslator)
+  }
 }
 
 
@@ -283,6 +344,7 @@ private fun PreviewTerminationConfirmationScreen(
         reload = {  },
         navigateUp = {  },
         showedSnackBar = {},
+        {}
       )
     }
   }
@@ -294,7 +356,7 @@ private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider<
     AddChipIdUiState.Error,
     AddChipIdUiState.Loading,
     Content(
-      chipIdState =  TextFieldState(),
+      chipIdText = "",
       contract = PetContractForChipId(
         id = "sdf",
         displayName = "Display name",
@@ -305,7 +367,7 @@ private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider<
       submittingData = false,
     ),
     Content(
-      chipIdState =  TextFieldState(initialText = "123456789012345"),
+      chipIdText =  "123456789012345",
       contract = PetContractForChipId(
         id = "sdf",
         displayName = "Display name",
@@ -316,7 +378,7 @@ private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider<
       submittingData = false,
     ),
     Content(
-      chipIdState =  TextFieldState(),
+      chipIdText =  "",
       contract = PetContractForChipId(
         id = "sdf",
         displayName = "Display name",
@@ -328,7 +390,7 @@ private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider<
       errorType = ChipIdErrorType.WrongInput
     ),
     Content(
-      chipIdState =  TextFieldState(),
+      chipIdText =  "",
       contract = PetContractForChipId(
         id = "sdf",
         displayName = "Display name",
