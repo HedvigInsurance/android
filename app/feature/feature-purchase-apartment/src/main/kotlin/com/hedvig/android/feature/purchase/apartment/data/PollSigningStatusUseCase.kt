@@ -1,0 +1,45 @@
+package com.hedvig.android.feature.purchase.apartment.data
+
+import arrow.core.Either
+import arrow.core.raise.either
+import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.logger.logcat
+import octopus.ApartmentShopSessionSigningQuery
+import octopus.type.ShopSessionSigningStatus
+
+internal interface PollSigningStatusUseCase {
+  suspend fun invoke(signingId: String): Either<ErrorMessage, SigningStatus>
+}
+
+internal class PollSigningStatusUseCaseImpl(
+  private val apolloClient: ApolloClient,
+) : PollSigningStatusUseCase {
+  override suspend fun invoke(signingId: String): Either<ErrorMessage, SigningStatus> {
+    return either {
+      apolloClient
+        .query(ApartmentShopSessionSigningQuery(signingId = signingId))
+        .safeExecute()
+        .fold(
+          ifLeft = {
+            logcat(LogPriority.ERROR) { "Failed to poll signing status: $it" }
+            raise(ErrorMessage())
+          },
+          ifRight = { result ->
+            when (result.shopSessionSigning.status) {
+              ShopSessionSigningStatus.SIGNED -> SigningStatus.SIGNED
+
+              ShopSessionSigningStatus.FAILED -> SigningStatus.FAILED
+
+              ShopSessionSigningStatus.PENDING,
+              ShopSessionSigningStatus.CREATING,
+              ShopSessionSigningStatus.UNKNOWN__,
+              -> SigningStatus.PENDING
+            }
+          },
+        )
+    }
+  }
+}
