@@ -25,15 +25,12 @@ internal class ApartmentFormViewModel(
   )
 
 internal sealed interface ApartmentFormEvent {
-  data class UpdateStreet(val value: String) : ApartmentFormEvent
-
-  data class UpdateZipCode(val value: String) : ApartmentFormEvent
-
-  data class UpdateLivingSpace(val value: String) : ApartmentFormEvent
-
-  data class UpdateNumberCoInsured(val value: Int) : ApartmentFormEvent
-
-  data object Submit : ApartmentFormEvent
+  data class SubmitForm(
+    val street: String,
+    val zipCode: String,
+    val livingSpace: String,
+    val numberCoInsured: Int,
+  ) : ApartmentFormEvent
 
   data object ClearNavigation : ApartmentFormEvent
 
@@ -41,10 +38,6 @@ internal sealed interface ApartmentFormEvent {
 }
 
 internal data class ApartmentFormState(
-  val street: String = "",
-  val zipCode: String = "",
-  val livingSpace: String = "",
-  val numberCoInsured: Int = 0,
   val streetError: String? = null,
   val zipCodeError: String? = null,
   val livingSpaceError: String? = null,
@@ -71,28 +64,12 @@ private class ApartmentFormPresenter(
     var sessionAndIntent: SessionAndIntent? by remember { mutableStateOf(null) }
     var sessionLoadIteration by remember { mutableIntStateOf(0) }
     var submitIteration by remember { mutableIntStateOf(0) }
-    var shouldSubmit by remember { mutableStateOf(false) }
+    var pendingSubmit: ApartmentFormEvent.SubmitForm? by remember { mutableStateOf(null) }
 
     CollectEvents { event ->
       when (event) {
-        is ApartmentFormEvent.UpdateStreet -> {
-          currentState = currentState.copy(street = event.value, streetError = null)
-        }
-
-        is ApartmentFormEvent.UpdateZipCode -> {
-          currentState = currentState.copy(zipCode = event.value, zipCodeError = null)
-        }
-
-        is ApartmentFormEvent.UpdateLivingSpace -> {
-          currentState = currentState.copy(livingSpace = event.value, livingSpaceError = null)
-        }
-
-        is ApartmentFormEvent.UpdateNumberCoInsured -> {
-          currentState = currentState.copy(numberCoInsured = event.value.coerceAtLeast(0))
-        }
-
-        ApartmentFormEvent.Submit -> {
-          val errors = validate(currentState)
+        is ApartmentFormEvent.SubmitForm -> {
+          val errors = validate(event.street, event.zipCode, event.livingSpace)
           if (errors.hasErrors()) {
             currentState = currentState.copy(
               streetError = errors.streetError,
@@ -100,7 +77,12 @@ private class ApartmentFormPresenter(
               livingSpaceError = errors.livingSpaceError,
             )
           } else {
-            shouldSubmit = true
+            currentState = currentState.copy(
+              streetError = null,
+              zipCodeError = null,
+              livingSpaceError = null,
+            )
+            pendingSubmit = event
             submitIteration++
           }
         }
@@ -134,16 +116,16 @@ private class ApartmentFormPresenter(
     }
 
     LaunchedEffect(submitIteration) {
-      if (!shouldSubmit) return@LaunchedEffect
+      val submit = pendingSubmit ?: return@LaunchedEffect
       val session = sessionAndIntent ?: return@LaunchedEffect
-      shouldSubmit = false
+      pendingSubmit = null
       currentState = currentState.copy(isSubmitting = true, submitError = null)
       submitFormAndGetOffersUseCase.invoke(
         priceIntentId = session.priceIntentId,
-        street = currentState.street,
-        zipCode = currentState.zipCode,
-        livingSpace = currentState.livingSpace.toInt(),
-        numberCoInsured = currentState.numberCoInsured,
+        street = submit.street,
+        zipCode = submit.zipCode,
+        livingSpace = submit.livingSpace.toInt(),
+        numberCoInsured = submit.numberCoInsured,
       ).fold(
         ifLeft = { error ->
           currentState = currentState.copy(
@@ -175,18 +157,18 @@ private data class ValidationErrors(
   fun hasErrors(): Boolean = streetError != null || zipCodeError != null || livingSpaceError != null
 }
 
-private fun validate(state: ApartmentFormState): ValidationErrors {
+private fun validate(street: String, zipCode: String, livingSpace: String): ValidationErrors {
   return ValidationErrors(
-    streetError = if (state.street.isBlank()) "Ange en adress" else null,
+    streetError = if (street.isBlank()) "Ange en adress" else null,
     zipCodeError = when {
-      state.zipCode.length != 5 -> "Ange ett giltigt postnummer (5 siffror)"
-      !state.zipCode.all { it.isDigit() } -> "Postnumret får bara innehålla siffror"
+      zipCode.length != 5 -> "Ange ett giltigt postnummer (5 siffror)"
+      !zipCode.all { it.isDigit() } -> "Postnumret får bara innehålla siffror"
       else -> null
     },
     livingSpaceError = when {
-      state.livingSpace.isBlank() -> "Ange boyta"
-      state.livingSpace.toIntOrNull() == null -> "Ange ett giltigt tal"
-      state.livingSpace.toInt() <= 0 -> "Boytan måste vara större än 0"
+      livingSpace.isBlank() -> "Ange boyta"
+      livingSpace.toIntOrNull() == null -> "Ange ett giltigt tal"
+      livingSpace.toInt() <= 0 -> "Boytan måste vara större än 0"
       else -> null
     },
   )

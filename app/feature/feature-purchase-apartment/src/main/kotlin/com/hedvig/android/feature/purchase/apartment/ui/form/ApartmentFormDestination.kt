@@ -11,23 +11,28 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigStepper
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Medium
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.apartment.data.ApartmentOffers
 
 @Composable
@@ -55,22 +60,54 @@ internal fun ApartmentFormDestination(
         onButtonClick = { viewModel.emit(ApartmentFormEvent.Retry) },
       )
 
-      else -> ApartmentFormContent(
-        uiState = uiState,
-        onStreetChanged = { viewModel.emit(ApartmentFormEvent.UpdateStreet(it)) },
-        onZipCodeChanged = { viewModel.emit(ApartmentFormEvent.UpdateZipCode(it)) },
-        onLivingSpaceChanged = { viewModel.emit(ApartmentFormEvent.UpdateLivingSpace(it)) },
-        onNumberCoInsuredChanged = { viewModel.emit(ApartmentFormEvent.UpdateNumberCoInsured(it)) },
-        onSubmit = { viewModel.emit(ApartmentFormEvent.Submit) },
-        onRetry = { viewModel.emit(ApartmentFormEvent.Retry) },
-      )
+      else -> {
+        var street by remember { mutableStateOf("") }
+        var zipCode by remember { mutableStateOf("") }
+        var livingSpace by remember { mutableStateOf("") }
+        var numberCoInsured by remember { mutableIntStateOf(0) }
+
+        ApartmentFormContent(
+          street = street,
+          zipCode = zipCode,
+          livingSpace = livingSpace,
+          numberCoInsured = numberCoInsured,
+          streetError = uiState.streetError,
+          zipCodeError = uiState.zipCodeError,
+          livingSpaceError = uiState.livingSpaceError,
+          isSubmitting = uiState.isSubmitting,
+          onStreetChanged = { street = it },
+          onZipCodeChanged = { value -> if (value.all { it.isDigit() }) zipCode = value },
+          onLivingSpaceChanged = { value ->
+            if (value.isEmpty() || value.toIntOrNull() != null) livingSpace = value
+          },
+          onNumberCoInsuredChanged = { numberCoInsured = it },
+          onSubmit = {
+            viewModel.emit(
+              ApartmentFormEvent.SubmitForm(
+                street = street,
+                zipCode = zipCode,
+                livingSpace = livingSpace,
+                numberCoInsured = numberCoInsured,
+              ),
+            )
+          },
+          onRetry = { viewModel.emit(ApartmentFormEvent.Retry) },
+        )
+      }
     }
   }
 }
 
 @Composable
 private fun ApartmentFormContent(
-  uiState: ApartmentFormState,
+  street: String,
+  zipCode: String,
+  livingSpace: String,
+  numberCoInsured: Int,
+  streetError: String?,
+  zipCodeError: String?,
+  livingSpaceError: String?,
+  isSubmitting: Boolean,
   onStreetChanged: (String) -> Unit,
   onZipCodeChanged: (String) -> Unit,
   onLivingSpaceChanged: (String) -> Unit,
@@ -78,12 +115,6 @@ private fun ApartmentFormContent(
   onSubmit: () -> Unit,
   onRetry: () -> Unit,
 ) {
-  if (uiState.submitError != null) {
-    HedvigErrorSection(
-      onButtonClick = onRetry,
-    )
-    return
-  }
   Column(
     modifier = Modifier.fillMaxWidth(),
   ) {
@@ -93,67 +124,57 @@ private fun ApartmentFormContent(
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       HedvigTextField(
-        text = uiState.street,
+        text = street,
         onValueChange = onStreetChanged,
         labelText = "Adress",
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        errorState = uiState.streetError.toErrorState(),
-        keyboardOptions = KeyboardOptions(
-          imeAction = ImeAction.Next,
-        ),
-        enabled = !uiState.isSubmitting,
+        errorState = streetError.toErrorState(),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        enabled = !isSubmitting,
       )
       HedvigTextField(
-        text = uiState.zipCode,
-        onValueChange = { value ->
-          if (value.all { it.isDigit() }) {
-            onZipCodeChanged(value)
-          }
-        },
+        text = zipCode,
+        onValueChange = onZipCodeChanged,
         labelText = "Postnummer",
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        errorState = uiState.zipCodeError.toErrorState(),
+        errorState = zipCodeError.toErrorState(),
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Number,
           imeAction = ImeAction.Next,
         ),
-        enabled = !uiState.isSubmitting,
+        enabled = !isSubmitting,
       )
       HedvigTextField(
-        text = uiState.livingSpace,
-        onValueChange = { value ->
-          if (value.isEmpty() || value.toIntOrNull() != null) {
-            onLivingSpaceChanged(value)
-          }
-        },
+        text = livingSpace,
+        onValueChange = onLivingSpaceChanged,
         labelText = "Boyta (kvm)",
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        errorState = uiState.livingSpaceError.toErrorState(),
+        errorState = livingSpaceError.toErrorState(),
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Number,
           imeAction = ImeAction.Done,
         ),
-        enabled = !uiState.isSubmitting,
+        enabled = !isSubmitting,
       )
       HedvigStepper(
-        text = when (uiState.numberCoInsured) {
+        text = when (numberCoInsured) {
           0 -> "Bara du"
-          else -> "Du + ${uiState.numberCoInsured}"
+          else -> "Du + $numberCoInsured"
         },
         stepperSize = Medium,
         stepperStyle = Labeled("Antal medförsäkrade"),
-        onMinusClick = { onNumberCoInsuredChanged(uiState.numberCoInsured - 1) },
-        onPlusClick = { onNumberCoInsuredChanged(uiState.numberCoInsured + 1) },
-        isPlusEnabled = !uiState.isSubmitting && uiState.numberCoInsured < 5,
-        isMinusEnabled = !uiState.isSubmitting && uiState.numberCoInsured > 0,
+        onMinusClick = { onNumberCoInsuredChanged(numberCoInsured - 1) },
+        onPlusClick = { onNumberCoInsuredChanged(numberCoInsured + 1) },
+        isPlusEnabled = !isSubmitting && numberCoInsured < 5,
+        isMinusEnabled = !isSubmitting && numberCoInsured > 0,
       )
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = "Beräkna pris",
       onClick = onSubmit,
-      enabled = !uiState.isSubmitting,
-      isLoading = uiState.isSubmitting,
+      enabled = !isSubmitting,
+      isLoading = isSubmitting,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
@@ -175,7 +196,14 @@ private fun PreviewApartmentFormEmpty() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ApartmentFormContent(
-        uiState = ApartmentFormState(),
+        street = "",
+        zipCode = "",
+        livingSpace = "",
+        numberCoInsured = 0,
+        streetError = null,
+        zipCodeError = null,
+        livingSpaceError = null,
+        isSubmitting = false,
         onStreetChanged = {},
         onZipCodeChanged = {},
         onLivingSpaceChanged = {},
@@ -193,12 +221,14 @@ private fun PreviewApartmentFormFilled() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ApartmentFormContent(
-        uiState = ApartmentFormState(
-          street = "Storgatan 1",
-          zipCode = "12345",
-          livingSpace = "65",
-          numberCoInsured = 1,
-        ),
+        street = "Storgatan 1",
+        zipCode = "12345",
+        livingSpace = "65",
+        numberCoInsured = 1,
+        streetError = null,
+        zipCodeError = null,
+        livingSpaceError = null,
+        isSubmitting = false,
         onStreetChanged = {},
         onZipCodeChanged = {},
         onLivingSpaceChanged = {},
@@ -216,14 +246,14 @@ private fun PreviewApartmentFormWithErrors() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ApartmentFormContent(
-        uiState = ApartmentFormState(
-          street = "",
-          zipCode = "123",
-          livingSpace = "",
-          streetError = "Ange en adress",
-          zipCodeError = "Ange ett giltigt postnummer (5 siffror)",
-          livingSpaceError = "Ange boyta i kvadratmeter",
-        ),
+        street = "",
+        zipCode = "123",
+        livingSpace = "",
+        numberCoInsured = 0,
+        streetError = "Ange en adress",
+        zipCodeError = "Ange ett giltigt postnummer (5 siffror)",
+        livingSpaceError = "Ange boyta i kvadratmeter",
+        isSubmitting = false,
         onStreetChanged = {},
         onZipCodeChanged = {},
         onLivingSpaceChanged = {},
