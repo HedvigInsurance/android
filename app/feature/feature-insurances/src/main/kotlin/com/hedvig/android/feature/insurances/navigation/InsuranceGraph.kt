@@ -42,6 +42,7 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   onNavigateToApartmentPurchase: (productName: String) -> Unit,
+  onNavigateToCarPurchase: (productName: String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,

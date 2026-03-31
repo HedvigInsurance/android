@@ -184,6 +184,8 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.featureAddonPurchase)
   implementation(projects.featurePurchaseApartment)
+  implementation(projects.featurePurchaseCar)
+  implementation(projects.featurePurchaseCommon)
   implementation(projects.featureChat)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimChat)
