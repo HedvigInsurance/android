@@ -1,0 +1,10 @@
+mutation ApartmentCartEntriesAdd($shopSessionId: UUID!, $offerIds: [UUID!]!) {
+  shopSessionCartEntriesAdd(input: { shopSessionId: $shopSessionId, offerIds: $offerIds }) {
+    shopSession {
+      id
+    }
+    userError {
+      message
+    }
+  }
+}

@@ -1,0 +1,10 @@
+mutation ApartmentPriceIntentDataUpdate($priceIntentId: UUID!, $data: PricingFormData!) {
+  priceIntentDataUpdate(priceIntentId: $priceIntentId, data: $data) {
+    priceIntent {
+      id
+    }
+    userError {
+      message
+    }
+  }
+}

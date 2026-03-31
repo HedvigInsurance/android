@@ -1,0 +1,5 @@
+mutation ApartmentShopSessionCreate($countryCode: CountryCode!) {
+  shopSessionCreate(input: { countryCode: $countryCode }) {
+    id
+  }
+}
