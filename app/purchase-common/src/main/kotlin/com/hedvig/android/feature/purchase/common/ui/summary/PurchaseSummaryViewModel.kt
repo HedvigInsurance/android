@@ -22,7 +22,7 @@ class PurchaseSummaryViewModel(
       params = summaryParameters,
       isSubmitting = false,
       signingToNavigate = null,
-      navigateToFailure = false,
+      submitError = null,
     ),
     presenter = PurchaseSummaryPresenter(
       summaryParameters,
@@ -41,7 +41,7 @@ class PurchaseSummaryPresenter(
     var confirmIteration by remember { mutableIntStateOf(0) }
     var isSubmitting by remember { mutableStateOf(lastState.isSubmitting) }
     var signingToNavigate by remember { mutableStateOf(lastState.signingToNavigate) }
-    var navigateToFailure by remember { mutableStateOf(lastState.navigateToFailure) }
+    var submitError by remember { mutableStateOf(lastState.submitError) }
 
     CollectEvents { event ->
       when (event) {
@@ -51,7 +51,7 @@ class PurchaseSummaryPresenter(
 
         PurchaseSummaryEvent.ClearNavigation -> {
           signingToNavigate = null
-          navigateToFailure = false
+          submitError = null
         }
       }
     }
@@ -63,9 +63,9 @@ class PurchaseSummaryPresenter(
           summaryParameters.shopSessionId,
           summaryParameters.selectedOffer.offerId,
         ).fold(
-          ifLeft = {
+          ifLeft = { error ->
             isSubmitting = false
-            navigateToFailure = true
+            submitError = error.message ?: "N\u00e5got gick fel"
           },
           ifRight = { signingStart ->
             isSubmitting = false
@@ -83,7 +83,7 @@ class PurchaseSummaryPresenter(
       params = summaryParameters,
       isSubmitting = isSubmitting,
       signingToNavigate = signingToNavigate,
-      navigateToFailure = navigateToFailure,
+      submitError = submitError,
     )
   }
 }
@@ -92,7 +92,7 @@ data class PurchaseSummaryUiState(
   val params: SummaryParameters,
   val isSubmitting: Boolean,
   val signingToNavigate: SigningParameters?,
-  val navigateToFailure: Boolean,
+  val submitError: String?,
 )
 
 sealed interface PurchaseSummaryEvent {

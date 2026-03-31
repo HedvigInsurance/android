@@ -100,7 +100,6 @@ fun NavGraphBuilder.apartmentPurchaseNavGraph(
         viewModel = viewModel,
         navigateUp = dropUnlessResumed { navController.popBackStack() },
         navigateToSigning = { params -> navController.navigate(Signing(params)) },
-        navigateToFailure = dropUnlessResumed { navController.navigate(Failure) },
       )
     }
 
@@ -118,16 +117,6 @@ fun NavGraphBuilder.apartmentPurchaseNavGraph(
           navController.navigate(Success(startDate)) {
             typedPopUpTo<ApartmentPurchaseGraphDestination>({ inclusive = true })
           }
-        },
-        navigateToFailure = dropUnlessResumed { navController.navigate(Failure) },
-      )
-    }
-
-    navdestination<Failure> {
-      PurchaseFailureDestination(
-        onRetry = dropUnlessResumed { navController.popBackStack() },
-        close = dropUnlessResumed {
-          if (!navController.typedPopBackStack<ApartmentPurchaseGraphDestination>(inclusive = true)) finishApp()
         },
       )
     }

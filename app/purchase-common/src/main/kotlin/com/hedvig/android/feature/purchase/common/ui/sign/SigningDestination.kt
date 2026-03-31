@@ -38,20 +38,18 @@ import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun SigningDestination(
-  viewModel: SigningViewModel,
-  navigateToSuccess: (startDate: String?) -> Unit,
-  navigateToFailure: () -> Unit,
-) {
+fun SigningDestination(viewModel: SigningViewModel, navigateToSuccess: (startDate: String?) -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
   val canOpenBankId = remember { canBankIdAppHandleUri(context) }
@@ -65,12 +63,7 @@ fun SigningDestination(
         navigateToSuccess(state.startDate)
       }
 
-      is SigningUiState.Failed -> {
-        hasNavigated = true
-        navigateToFailure()
-      }
-
-      is SigningUiState.Polling -> {}
+      else -> {}
     }
   }
 
@@ -97,9 +90,14 @@ fun SigningDestination(
       }
     }
 
-    is SigningUiState.Success,
-    is SigningUiState.Failed,
-    -> {
+    is SigningUiState.Failed -> {
+      SigningErrorScreen(
+        errorMessage = state.errorMessage,
+        onRetry = { viewModel.emit(SigningEvent.Retry) },
+      )
+    }
+
+    is SigningUiState.Success -> {
       HedvigFullScreenCenterAlignedProgress()
     }
   }
@@ -138,6 +136,33 @@ private fun QrCodeSigningScreen(liveQrCodeData: String?, onOpenBankId: () -> Uni
       HedvigButton(
         text = "\u00d6ppna BankID",
         onClick = onOpenBankId,
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
+    Spacer(Modifier.weight(1f))
+  }
+}
+
+@Composable
+private fun SigningErrorScreen(errorMessage: String?, onRetry: () -> Unit) {
+  HedvigScaffold(navigateUp = {}) {
+    Spacer(Modifier.weight(1f))
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    ) {
+      HedvigNotificationCard(
+        message = errorMessage ?: "N\u00e5got gick fel vid signeringen",
+        priority = NotificationDefaults.NotificationPriority.Error,
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(Modifier.height(16.dp))
+      HedvigButton(
+        text = "F\u00f6rs\u00f6k igen",
+        onClick = onRetry,
         enabled = true,
         modifier = Modifier.fillMaxWidth(),
       )

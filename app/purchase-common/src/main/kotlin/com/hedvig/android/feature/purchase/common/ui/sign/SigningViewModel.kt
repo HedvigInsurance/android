@@ -3,6 +3,7 @@ package com.hedvig.android.feature.purchase.common.ui.sign
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,21 +37,34 @@ class SigningPresenter(
     var bankIdOpened by remember { mutableStateOf((lastState as? SigningUiState.Polling)?.bankIdOpened ?: false) }
     var currentState by remember { mutableStateOf(lastState) }
 
+    var pollIteration by remember { mutableIntStateOf(0) }
+
     CollectEvents { event ->
       when (event) {
         SigningEvent.BankIdOpened -> {
           bankIdOpened = true
         }
 
+        SigningEvent.Retry -> {
+          currentState = SigningUiState.Polling(
+            autoStartToken = signingParameters.autoStartToken,
+            startDate = signingParameters.startDate,
+            liveQrCodeData = null,
+            bankIdOpened = bankIdOpened,
+          )
+          pollIteration++
+        }
+
         SigningEvent.ClearNavigation -> {}
       }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(pollIteration) {
+      if (currentState is SigningUiState.Failed) return@LaunchedEffect
       while (true) {
         pollSigningStatusUseCase.invoke(signingParameters.signingId).fold(
-          ifLeft = {
-            currentState = SigningUiState.Failed
+          ifLeft = { error ->
+            currentState = SigningUiState.Failed(error.message)
             return@LaunchedEffect
           },
           ifRight = { pollResult ->
@@ -61,7 +75,7 @@ class SigningPresenter(
               }
 
               SigningStatus.FAILED -> {
-                currentState = SigningUiState.Failed
+                currentState = SigningUiState.Failed("Signeringen misslyckades")
                 return@LaunchedEffect
               }
 
@@ -97,11 +111,13 @@ sealed interface SigningUiState {
 
   data class Success(val startDate: String?) : SigningUiState
 
-  data object Failed : SigningUiState
+  data class Failed(val errorMessage: String?) : SigningUiState
 }
 
 sealed interface SigningEvent {
   data object BankIdOpened : SigningEvent
+
+  data object Retry : SigningEvent
 
   data object ClearNavigation : SigningEvent
 }
