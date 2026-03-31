@@ -29,6 +29,11 @@ internal data class SigningStart(
   val autoStartToken: String,
 )
 
+internal data class SigningPollResult(
+  val status: SigningStatus,
+  val liveQrCodeData: String?,
+)
+
 internal enum class SigningStatus {
   PENDING,
   SIGNED,

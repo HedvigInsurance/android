@@ -21,12 +21,10 @@ internal class SigningViewModel(
     initialState = SigningUiState.Polling(
       autoStartToken = signingParameters.autoStartToken,
       startDate = signingParameters.startDate,
+      liveQrCodeData = null,
       bankIdOpened = false,
     ),
-    presenter = SigningPresenter(
-      signingParameters,
-      pollSigningStatusUseCase,
-    ),
+    presenter = SigningPresenter(signingParameters, pollSigningStatusUseCase),
   )
 
 internal class SigningPresenter(
@@ -40,13 +38,8 @@ internal class SigningPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SigningEvent.BankIdOpened -> {
-          bankIdOpened = true
-        }
-
-        SigningEvent.ClearNavigation -> {
-          // Reset state if needed
-        }
+        SigningEvent.BankIdOpened -> bankIdOpened = true
+        SigningEvent.ClearNavigation -> {}
       }
     }
 
@@ -58,8 +51,8 @@ internal class SigningPresenter(
             currentState = SigningUiState.Failed
             return@LaunchedEffect
           },
-          ifRight = { status ->
-            when (status) {
+          ifRight = { pollResult ->
+            when (pollResult.status) {
               SigningStatus.SIGNED -> {
                 currentState = SigningUiState.Success(startDate = signingParameters.startDate)
                 return@LaunchedEffect
@@ -70,7 +63,14 @@ internal class SigningPresenter(
                 return@LaunchedEffect
               }
 
-              SigningStatus.PENDING -> { /* continue polling */ }
+              SigningStatus.PENDING -> {
+                currentState = SigningUiState.Polling(
+                  autoStartToken = signingParameters.autoStartToken,
+                  startDate = signingParameters.startDate,
+                  liveQrCodeData = pollResult.liveQrCodeData,
+                  bankIdOpened = bankIdOpened,
+                )
+              }
             }
           },
         )
@@ -88,6 +88,7 @@ internal sealed interface SigningUiState {
   data class Polling(
     val autoStartToken: String,
     val startDate: String?,
+    val liveQrCodeData: String?,
     val bankIdOpened: Boolean,
   ) : SigningUiState
 

@@ -11,13 +11,13 @@ import octopus.ApartmentShopSessionSigningQuery
 import octopus.type.ShopSessionSigningStatus
 
 internal interface PollSigningStatusUseCase {
-  suspend fun invoke(signingId: String): Either<ErrorMessage, SigningStatus>
+  suspend fun invoke(signingId: String): Either<ErrorMessage, SigningPollResult>
 }
 
 internal class PollSigningStatusUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : PollSigningStatusUseCase {
-  override suspend fun invoke(signingId: String): Either<ErrorMessage, SigningStatus> {
+  override suspend fun invoke(signingId: String): Either<ErrorMessage, SigningPollResult> {
     return either {
       apolloClient
         .query(ApartmentShopSessionSigningQuery(signingId = signingId))
@@ -28,9 +28,9 @@ internal class PollSigningStatusUseCaseImpl(
             raise(ErrorMessage())
           },
           ifRight = { result ->
-            when (result.shopSessionSigning.status) {
+            val signing = result.shopSessionSigning
+            val status = when (signing.status) {
               ShopSessionSigningStatus.SIGNED -> SigningStatus.SIGNED
-
               ShopSessionSigningStatus.FAILED -> SigningStatus.FAILED
 
               ShopSessionSigningStatus.PENDING,
@@ -38,6 +38,10 @@ internal class PollSigningStatusUseCaseImpl(
               ShopSessionSigningStatus.UNKNOWN__,
               -> SigningStatus.PENDING
             }
+            SigningPollResult(
+              status = status,
+              liveQrCodeData = signing.seBankidProperties?.liveQrCodeData,
+            )
           },
         )
     }
