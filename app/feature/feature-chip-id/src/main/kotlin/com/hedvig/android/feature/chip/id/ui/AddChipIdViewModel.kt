@@ -50,6 +50,10 @@ internal class AddChipIdPresenter(
     var submitIteration by remember { mutableIntStateOf(0) }
     var loadIteration by remember { mutableIntStateOf(0) }
 
+    LaunchedEffect(chipIdState.text) {
+      errorType = null
+    }
+
     LaunchedEffect(loadIteration) {
       getPetContractsForChipIdUseCase.invoke().fold(
         ifLeft = {
