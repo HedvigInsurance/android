@@ -26,13 +26,17 @@ internal fun SigningDestination(
   }
 
   when (val state = uiState) {
-    is SigningUiState.Polling -> HedvigFullScreenCenterAlignedProgress()
+    is SigningUiState.Polling -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is SigningUiState.Success -> {
       LaunchedEffect(state) {
         navigateToSuccess(state.startDate)
       }
       HedvigFullScreenCenterAlignedProgress()
     }
+
     is SigningUiState.Failed -> {
       LaunchedEffect(state) {
         navigateToFailure()

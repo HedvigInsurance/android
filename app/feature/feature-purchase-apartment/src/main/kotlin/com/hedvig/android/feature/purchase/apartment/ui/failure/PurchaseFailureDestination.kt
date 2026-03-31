@@ -7,10 +7,7 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 
 @Composable
-internal fun PurchaseFailureDestination(
-  onRetry: () -> Unit,
-  close: () -> Unit,
-) {
+internal fun PurchaseFailureDestination(onRetry: () -> Unit, close: () -> Unit) {
   HedvigScaffold(
     navigateUp = close,
     topAppBarActionType = TopAppBarActionType.CLOSE,

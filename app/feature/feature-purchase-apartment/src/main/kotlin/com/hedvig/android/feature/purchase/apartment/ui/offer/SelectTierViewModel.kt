@@ -14,17 +14,17 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class SelectTierViewModel(
   params: SelectTierParameters,
 ) : MoleculeViewModel<SelectTierEvent, SelectTierUiState>(
-  SelectTierUiState(
-    offers = params.offers,
-    selectedOfferId = params.offers.firstOrNull { it.tierDisplayName == "Standard" }?.offerId
-      ?: params.offers.firstOrNull()?.offerId
-      ?: "",
-    shopSessionId = params.shopSessionId,
-    productDisplayName = params.productDisplayName,
-    summaryToNavigate = null,
-  ),
-  SelectTierPresenter(params),
-)
+    SelectTierUiState(
+      offers = params.offers,
+      selectedOfferId = params.offers.firstOrNull { it.tierDisplayName == "Standard" }?.offerId
+        ?: params.offers.firstOrNull()?.offerId
+        ?: "",
+      shopSessionId = params.shopSessionId,
+      productDisplayName = params.productDisplayName,
+      summaryToNavigate = null,
+    ),
+    SelectTierPresenter(params),
+  )
 
 internal class SelectTierPresenter(
   private val params: SelectTierParameters,
@@ -36,7 +36,10 @@ internal class SelectTierPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is SelectTierEvent.SelectOffer -> selectedOfferId = event.offerId
+        is SelectTierEvent.SelectOffer -> {
+          selectedOfferId = event.offerId
+        }
+
         SelectTierEvent.Continue -> {
           val selectedOffer = params.offers.first { it.offerId == selectedOfferId }
           summaryToNavigate = SummaryParameters(
@@ -45,7 +48,10 @@ internal class SelectTierPresenter(
             productDisplayName = params.productDisplayName,
           )
         }
-        SelectTierEvent.ClearNavigation -> summaryToNavigate = null
+
+        SelectTierEvent.ClearNavigation -> {
+          summaryToNavigate = null
+        }
       }
     }
 
@@ -69,6 +75,8 @@ internal data class SelectTierUiState(
 
 internal sealed interface SelectTierEvent {
   data class SelectOffer(val offerId: String) : SelectTierEvent
+
   data object Continue : SelectTierEvent
+
   data object ClearNavigation : SelectTierEvent
 }

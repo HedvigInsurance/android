@@ -17,10 +17,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 
 @Composable
-internal fun PurchaseSuccessDestination(
-  startDate: String?,
-  close: () -> Unit,
-) {
+internal fun PurchaseSuccessDestination(startDate: String?, close: () -> Unit) {
   HedvigScaffold(
     navigateUp = close,
     topAppBarActionType = TopAppBarActionType.CLOSE,

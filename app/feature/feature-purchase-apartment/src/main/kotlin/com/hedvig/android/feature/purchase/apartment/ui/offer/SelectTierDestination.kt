@@ -122,11 +122,7 @@ private fun SelectTierScreen(
 }
 
 @Composable
-private fun TierCard(
-  offer: TierOfferData,
-  isSelected: Boolean,
-  onSelect: () -> Unit,
-) {
+private fun TierCard(offer: TierOfferData, isSelected: Boolean, onSelect: () -> Unit) {
   HedvigCard(
     onClick = onSelect,
     color = if (isSelected) {

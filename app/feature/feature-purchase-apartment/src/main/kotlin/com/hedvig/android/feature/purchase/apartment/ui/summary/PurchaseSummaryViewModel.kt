@@ -45,7 +45,10 @@ internal class PurchaseSummaryPresenter(
 
     CollectEvents { event ->
       when (event) {
-        PurchaseSummaryEvent.Confirm -> confirmIteration++
+        PurchaseSummaryEvent.Confirm -> {
+          confirmIteration++
+        }
+
         PurchaseSummaryEvent.ClearNavigation -> {
           signingToNavigate = null
           navigateToFailure = false
@@ -94,5 +97,6 @@ internal data class PurchaseSummaryUiState(
 
 internal sealed interface PurchaseSummaryEvent {
   data object Confirm : PurchaseSummaryEvent
+
   data object ClearNavigation : PurchaseSummaryEvent
 }

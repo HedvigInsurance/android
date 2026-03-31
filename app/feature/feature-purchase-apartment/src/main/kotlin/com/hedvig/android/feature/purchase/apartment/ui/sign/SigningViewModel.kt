@@ -40,7 +40,10 @@ internal class SigningPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SigningEvent.BankIdOpened -> bankIdOpened = true
+        SigningEvent.BankIdOpened -> {
+          bankIdOpened = true
+        }
+
         SigningEvent.ClearNavigation -> {
           // Reset state if needed
         }
@@ -61,10 +64,12 @@ internal class SigningPresenter(
                 currentState = SigningUiState.Success(startDate = signingParameters.startDate)
                 return@LaunchedEffect
               }
+
               SigningStatus.FAILED -> {
                 currentState = SigningUiState.Failed
                 return@LaunchedEffect
               }
+
               SigningStatus.PENDING -> { /* continue polling */ }
             }
           },
@@ -87,10 +92,12 @@ internal sealed interface SigningUiState {
   ) : SigningUiState
 
   data class Success(val startDate: String?) : SigningUiState
+
   data object Failed : SigningUiState
 }
 
 internal sealed interface SigningEvent {
   data object BankIdOpened : SigningEvent
+
   data object ClearNavigation : SigningEvent
 }

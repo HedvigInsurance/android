@@ -26,11 +26,17 @@ internal class ApartmentFormViewModel(
 
 internal sealed interface ApartmentFormEvent {
   data class UpdateStreet(val value: String) : ApartmentFormEvent
+
   data class UpdateZipCode(val value: String) : ApartmentFormEvent
+
   data class UpdateLivingSpace(val value: String) : ApartmentFormEvent
+
   data class UpdateNumberCoInsured(val value: Int) : ApartmentFormEvent
+
   data object Submit : ApartmentFormEvent
+
   data object ClearNavigation : ApartmentFormEvent
+
   data object Retry : ApartmentFormEvent
 }
 
@@ -60,9 +66,7 @@ private class ApartmentFormPresenter(
   private val submitFormAndGetOffersUseCase: SubmitFormAndGetOffersUseCase,
 ) : MoleculePresenter<ApartmentFormEvent, ApartmentFormState> {
   @Composable
-  override fun MoleculePresenterScope<ApartmentFormEvent>.present(
-    lastState: ApartmentFormState,
-  ): ApartmentFormState {
+  override fun MoleculePresenterScope<ApartmentFormEvent>.present(lastState: ApartmentFormState): ApartmentFormState {
     var currentState by remember { mutableStateOf(lastState) }
     var sessionAndIntent: SessionAndIntent? by remember { mutableStateOf(null) }
     var sessionLoadIteration by remember { mutableIntStateOf(0) }
@@ -74,15 +78,19 @@ private class ApartmentFormPresenter(
         is ApartmentFormEvent.UpdateStreet -> {
           currentState = currentState.copy(street = event.value, streetError = null)
         }
+
         is ApartmentFormEvent.UpdateZipCode -> {
           currentState = currentState.copy(zipCode = event.value, zipCodeError = null)
         }
+
         is ApartmentFormEvent.UpdateLivingSpace -> {
           currentState = currentState.copy(livingSpace = event.value, livingSpaceError = null)
         }
+
         is ApartmentFormEvent.UpdateNumberCoInsured -> {
           currentState = currentState.copy(numberCoInsured = event.value.coerceAtLeast(0))
         }
+
         ApartmentFormEvent.Submit -> {
           val errors = validate(currentState)
           if (errors.hasErrors()) {
@@ -96,9 +104,11 @@ private class ApartmentFormPresenter(
             submitIteration++
           }
         }
+
         ApartmentFormEvent.ClearNavigation -> {
           currentState = currentState.copy(offersToNavigate = null)
         }
+
         ApartmentFormEvent.Retry -> {
           if (sessionAndIntent == null) {
             currentState = currentState.copy(loadSessionError = false, isLoadingSession = true)

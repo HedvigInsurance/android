@@ -49,9 +49,11 @@ internal fun ApartmentFormDestination(
   ) {
     when {
       uiState.isLoadingSession -> HedvigFullScreenCenterAlignedProgress()
+
       uiState.loadSessionError -> HedvigErrorSection(
         onButtonClick = { viewModel.emit(ApartmentFormEvent.Retry) },
       )
+
       else -> ApartmentFormContent(
         uiState = uiState,
         onStreetChanged = { viewModel.emit(ApartmentFormEvent.UpdateStreet(it)) },
