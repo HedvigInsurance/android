@@ -1,0 +1,17 @@
+query ApartmentShopSessionSigning($signingId: UUID!) {
+  shopSessionSigning(id: $signingId) {
+    id
+    status
+    seBankidProperties {
+      autoStartToken
+      liveQrCodeData
+      bankidAppOpened
+    }
+    completion {
+      authorizationCode
+    }
+    userError {
+      message
+    }
+  }
+}
