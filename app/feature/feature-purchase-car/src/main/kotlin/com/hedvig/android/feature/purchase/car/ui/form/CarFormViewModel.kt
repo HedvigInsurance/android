@@ -136,13 +136,14 @@ private class CarFormPresenter(
     LaunchedEffect(submitIteration) {
       val submit = pendingSubmit ?: return@LaunchedEffect
       val session = sessionAndIntent ?: return@LaunchedEffect
+      val mileage = submit.mileage ?: return@LaunchedEffect
       pendingSubmit = null
       currentState = currentState.copy(isSubmitting = true, submitError = null)
       submitCarFormAndGetOffersUseCase.invoke(
         priceIntentId = session.priceIntentId,
         ssn = submit.ssn,
         registrationNumber = submit.registrationNumber,
-        mileage = submit.mileage!!,
+        mileage = mileage,
         street = submit.street,
         zipCode = submit.zipCode,
         email = submit.email,

@@ -63,7 +63,7 @@ fun NavGraphBuilder.insuranceGraph(
           navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
         onCrossSellClick = dropUnlessResumed { url: String ->
-          // Hardcoded for testing: route all cross-sells to in-app purchase
+          // TODO: route based on product type from cross-sell data
           onNavigateToApartmentPurchase("SE_APARTMENT_RENT")
         },
         navigateToCancelledInsurances = dropUnlessResumed {
