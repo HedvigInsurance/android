@@ -38,7 +38,10 @@ internal class SigningPresenter(
 
     CollectEvents { event ->
       when (event) {
-        SigningEvent.BankIdOpened -> bankIdOpened = true
+        SigningEvent.BankIdOpened -> {
+          bankIdOpened = true
+        }
+
         SigningEvent.ClearNavigation -> {}
       }
     }

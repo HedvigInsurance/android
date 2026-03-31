@@ -1,25 +1,28 @@
 package com.hedvig.android.feature.purchase.apartment.ui.summary
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.apartment.navigation.SigningParameters
 import com.hedvig.android.feature.purchase.apartment.navigation.SummaryParameters
@@ -80,6 +83,26 @@ private fun PurchaseSummaryScreen(
           text = offer.exposureDisplayName,
           style = HedvigTheme.typography.bodySmall,
         )
+        if (offer.deductibleDisplayName != null) {
+          Spacer(Modifier.height(4.dp))
+          HorizontalItemsWithMaximumSpaceTaken(
+            startSlot = {
+              HedvigText(
+                text = "Sj\u00e4lvrisk",
+                style = HedvigTheme.typography.bodySmall,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            },
+            spaceBetween = 8.dp,
+            endSlot = {
+              HedvigText(
+                text = offer.deductibleDisplayName,
+                style = HedvigTheme.typography.bodySmall,
+                color = HedvigTheme.colorScheme.textSecondary,
+              )
+            },
+          )
+        }
         Spacer(Modifier.height(16.dp))
         HorizontalItemsWithMaximumSpaceTaken(
           startSlot = {
@@ -90,10 +113,26 @@ private fun PurchaseSummaryScreen(
           },
           spaceBetween = 8.dp,
           endSlot = {
-            HedvigText(
-              text = "${offer.netAmount} ${offer.netCurrencyCode}/mån",
-              style = HedvigTheme.typography.bodySmall,
-            )
+            if (offer.hasDiscount && offer.grossAmount != offer.netAmount) {
+              Row {
+                HedvigText(
+                  text = "${offer.grossAmount.toInt()} ${offer.grossCurrencyCode}/m\u00e5n",
+                  style = HedvigTheme.typography.bodySmall,
+                  color = HedvigTheme.colorScheme.textSecondary,
+                  textDecoration = TextDecoration.LineThrough,
+                )
+                Spacer(Modifier.width(4.dp))
+                HedvigText(
+                  text = "${offer.netAmount.toInt()} ${offer.netCurrencyCode}/m\u00e5n",
+                  style = HedvigTheme.typography.bodySmall,
+                )
+              }
+            } else {
+              HedvigText(
+                text = "${offer.netAmount.toInt()} ${offer.netCurrencyCode}/m\u00e5n",
+                style = HedvigTheme.typography.bodySmall,
+              )
+            }
           },
         )
       }

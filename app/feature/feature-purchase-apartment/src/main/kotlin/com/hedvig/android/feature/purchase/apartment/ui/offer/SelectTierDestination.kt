@@ -26,10 +26,13 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupSize
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.purchase.apartment.navigation.SummaryParameters
-import com.hedvig.android.feature.purchase.apartment.navigation.TierOfferData
 import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
@@ -50,7 +53,10 @@ internal fun SelectTierDestination(
   SelectTierContent(
     uiState = uiState,
     navigateUp = navigateUp,
-    onSelectOffer = { viewModel.emit(SelectTierEvent.SelectOffer(it)) },
+    onSelectTier = { viewModel.emit(SelectTierEvent.SelectTier(it)) },
+    onSelectDeductible = { tierName, offerId ->
+      viewModel.emit(SelectTierEvent.SelectDeductible(tierName, offerId))
+    },
     onContinue = { viewModel.emit(SelectTierEvent.Continue) },
   )
 }
@@ -59,7 +65,8 @@ internal fun SelectTierDestination(
 private fun SelectTierContent(
   uiState: SelectTierUiState,
   navigateUp: () -> Unit = {},
-  onSelectOffer: (String) -> Unit = {},
+  onSelectTier: (String) -> Unit = {},
+  onSelectDeductible: (tierName: String, offerId: String) -> Unit = { _, _ -> },
   onContinue: () -> Unit = {},
 ) {
   HedvigScaffold(
@@ -79,14 +86,20 @@ private fun SelectTierContent(
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(24.dp))
-    for ((index, offer) in uiState.offers.withIndex()) {
-      TierCard(
-        offer = offer,
-        isSelected = offer.offerId == uiState.selectedOfferId,
-        onSelect = { onSelectOffer(offer.offerId) },
+    for ((index, tierGroup) in uiState.tierGroups.withIndex()) {
+      val isSelected = tierGroup.tierDisplayName == uiState.selectedTierName
+      val selectedDeductibleId = uiState.selectedDeductibleByTier[tierGroup.tierDisplayName]
+      val selectedDeductible = tierGroup.deductibleOptions.firstOrNull { it.offerId == selectedDeductibleId }
+        ?: tierGroup.deductibleOptions.firstOrNull()
+      TierGroupCard(
+        tierGroup = tierGroup,
+        isSelected = isSelected,
+        selectedDeductibleId = selectedDeductible?.offerId ?: "",
+        onSelectTier = { onSelectTier(tierGroup.tierDisplayName) },
+        onSelectDeductible = { offerId -> onSelectDeductible(tierGroup.tierDisplayName, offerId) },
         modifier = Modifier.padding(horizontal = 16.dp),
       )
-      if (index < uiState.offers.lastIndex) {
+      if (index < uiState.tierGroups.lastIndex) {
         Spacer(Modifier.height(12.dp))
       }
     }
@@ -94,7 +107,7 @@ private fun SelectTierContent(
     HedvigButton(
       text = "Forts\u00e4tt",
       onClick = dropUnlessResumed { onContinue() },
-      enabled = uiState.offers.any { it.offerId == uiState.selectedOfferId },
+      enabled = uiState.selectedTierName.isNotEmpty(),
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
@@ -104,14 +117,17 @@ private fun SelectTierContent(
 }
 
 @Composable
-private fun TierCard(
-  offer: TierOfferData,
+private fun TierGroupCard(
+  tierGroup: TierGroup,
   isSelected: Boolean,
-  onSelect: () -> Unit,
+  selectedDeductibleId: String,
+  onSelectTier: () -> Unit,
+  onSelectDeductible: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val selectedOption = tierGroup.deductibleOptions.firstOrNull { it.offerId == selectedDeductibleId }
   HedvigCard(
-    onClick = onSelect,
+    onClick = onSelectTier,
     borderColor = if (isSelected) {
       HedvigTheme.colorScheme.signalGreenElement
     } else {
@@ -126,13 +142,15 @@ private fun TierCard(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         HedvigText(
-          text = offer.tierDisplayName,
+          text = tierGroup.tierDisplayName,
           style = HedvigTheme.typography.bodyLarge,
         )
-        HedvigText(
-          text = formatPrice(offer.netAmount, offer.netCurrencyCode),
-          style = HedvigTheme.typography.bodyLarge,
-        )
+        if (selectedOption != null) {
+          HedvigText(
+            text = formatPrice(selectedOption.netAmount, selectedOption.netCurrencyCode),
+            style = HedvigTheme.typography.bodyLarge,
+          )
+        }
       }
       AnimatedVisibility(
         visible = isSelected,
@@ -140,9 +158,9 @@ private fun TierCard(
         exit = shrinkVertically(),
       ) {
         Column {
-          if (offer.usps.isNotEmpty()) {
+          if (tierGroup.usps.isNotEmpty()) {
             Spacer(Modifier.height(12.dp))
-            for (usp in offer.usps) {
+            for (usp in tierGroup.usps) {
               Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 4.dp),
@@ -162,6 +180,26 @@ private fun TierCard(
               }
             }
           }
+          if (tierGroup.deductibleOptions.size > 1) {
+            Spacer(Modifier.height(12.dp))
+            HedvigText(
+              text = "Sj\u00e4lvrisk",
+              style = HedvigTheme.typography.bodyMedium,
+            )
+            Spacer(Modifier.height(4.dp))
+            RadioGroup(
+              options = tierGroup.deductibleOptions.map { option ->
+                RadioOption(
+                  id = RadioOptionId(option.offerId),
+                  text = option.deductibleDisplayName,
+                  label = formatPrice(option.netAmount, option.netCurrencyCode),
+                )
+              },
+              selectedOption = RadioOptionId(selectedDeductibleId),
+              onRadioOptionSelected = { onSelectDeductible(it.id) },
+              size = RadioGroupSize.Small,
+            )
+          }
         }
       }
       AnimatedVisibility(
@@ -172,7 +210,7 @@ private fun TierCard(
         Column {
           Spacer(Modifier.height(8.dp))
           HedvigText(
-            text = "V\u00e4lj ${offer.tierDisplayName}",
+            text = "V\u00e4lj ${tierGroup.tierDisplayName}",
             style = HedvigTheme.typography.bodyMedium,
             color = HedvigTheme.colorScheme.textSecondary,
           )
@@ -190,45 +228,43 @@ private fun formatPrice(amount: Double, currencyCode: String): String {
   return "${format.format(amount)}/m\u00e5n"
 }
 
-private val previewOffers = listOf(
-  TierOfferData(
-    offerId = "1",
+private val previewTierGroups = listOf(
+  TierGroup(
     tierDisplayName = "Hem Max",
-    tierDescription = "Vårt mest omfattande skydd",
-    grossAmount = 189.0,
-    grossCurrencyCode = "SEK",
-    netAmount = 189.0,
-    netCurrencyCode = "SEK",
-    usps = listOf("Försäkringsbelopp 1 000 000 kr", "Drulle upp till 50 000 kr ingår", "ID-skydd och flyttskydd"),
-    exposureDisplayName = "Storgatan 1",
-    deductibleDisplayName = "1 500 kr",
-    hasDiscount = false,
+    tierDescription = "V\u00e5rt mest omfattande skydd",
+    usps = listOf(
+      "F\u00f6rs\u00e4kringsbelopp 1 000 000 kr",
+      "Drulle upp till 50 000 kr ing\u00e5r",
+      "ID-skydd och flyttskydd",
+    ),
+    deductibleOptions = listOf(
+      DeductibleOption("1a", "1 500 kr", 189.0, "SEK", 189.0, "SEK", false),
+      DeductibleOption("1b", "3 000 kr", 169.0, "SEK", 169.0, "SEK", false),
+      DeductibleOption("1c", "5 000 kr", 149.0, "SEK", 149.0, "SEK", false),
+    ),
   ),
-  TierOfferData(
-    offerId = "2",
+  TierGroup(
     tierDisplayName = "Hem Standard",
-    tierDescription = "Vår mest populära försäkring",
-    grossAmount = 139.0,
-    grossCurrencyCode = "SEK",
-    netAmount = 118.0,
-    netCurrencyCode = "SEK",
-    usps = listOf("Försäkringsbelopp 1 000 000 kr", "Drulle upp till 50 000 kr ingår"),
-    exposureDisplayName = "Storgatan 1",
-    deductibleDisplayName = "1 500 kr",
-    hasDiscount = true,
+    tierDescription = "V\u00e5r mest popul\u00e4ra f\u00f6rs\u00e4kring",
+    usps = listOf(
+      "F\u00f6rs\u00e4kringsbelopp 1 000 000 kr",
+      "Drulle upp till 50 000 kr ing\u00e5r",
+    ),
+    deductibleOptions = listOf(
+      DeductibleOption("2a", "1 500 kr", 139.0, "SEK", 118.0, "SEK", true),
+      DeductibleOption("2b", "3 000 kr", 119.0, "SEK", 99.0, "SEK", true),
+      DeductibleOption("2c", "5 000 kr", 99.0, "SEK", 85.0, "SEK", true),
+    ),
   ),
-  TierOfferData(
-    offerId = "3",
+  TierGroup(
     tierDisplayName = "Hem Bas",
-    tierDescription = "Innehåller vårt grundskydd",
-    grossAmount = 99.0,
-    grossCurrencyCode = "SEK",
-    netAmount = 99.0,
-    netCurrencyCode = "SEK",
+    tierDescription = "Inneh\u00e5ller v\u00e5rt grundskydd",
     usps = listOf("Grundskydd"),
-    exposureDisplayName = "Storgatan 1",
-    deductibleDisplayName = "1 500 kr",
-    hasDiscount = false,
+    deductibleOptions = listOf(
+      DeductibleOption("3a", "1 500 kr", 99.0, "SEK", 99.0, "SEK", false),
+      DeductibleOption("3b", "3 000 kr", 79.0, "SEK", 79.0, "SEK", false),
+      DeductibleOption("3c", "5 000 kr", 65.0, "SEK", 65.0, "SEK", false),
+    ),
   ),
 )
 
@@ -238,14 +274,17 @@ private fun PreviewSelectTierStandard() {
   HedvigTheme {
     SelectTierContent(
       uiState = SelectTierUiState(
-        offers = previewOffers,
-        selectedOfferId = "2",
+        tierGroups = previewTierGroups,
+        selectedTierName = "Hem Standard",
+        selectedDeductibleByTier = mapOf(
+          "Hem Max" to "1c",
+          "Hem Standard" to "2a",
+          "Hem Bas" to "3c",
+        ),
         shopSessionId = "session",
-        productDisplayName = "Hemförsäkring Hyresrätt",
-        summaryToNavigate = null
+        productDisplayName = "Hemf\u00f6rs\u00e4kring Hyresr\u00e4tt",
+        summaryToNavigate = null,
       ),
-      onSelectOffer = {},
-      onContinue = {},
     )
   }
 }

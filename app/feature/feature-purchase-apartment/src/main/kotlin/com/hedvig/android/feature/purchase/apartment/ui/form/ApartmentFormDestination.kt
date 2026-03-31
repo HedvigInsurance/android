@@ -3,11 +3,9 @@ package com.hedvig.android.feature.purchase.apartment.ui.form
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +25,7 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigStepper
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -54,11 +53,15 @@ internal fun ApartmentFormDestination(
     topAppBarText = "Hemförsäkring",
   ) {
     when {
-      uiState.isLoadingSession -> HedvigFullScreenCenterAlignedProgress()
+      uiState.isLoadingSession -> {
+        HedvigFullScreenCenterAlignedProgress()
+      }
 
-      uiState.loadSessionError -> HedvigErrorSection(
-        onButtonClick = { viewModel.emit(ApartmentFormEvent.Retry) },
-      )
+      uiState.loadSessionError -> {
+        HedvigErrorSection(
+          onButtonClick = { viewModel.emit(ApartmentFormEvent.Retry) },
+        )
+      }
 
       else -> {
         var street by remember { mutableStateOf("") }
@@ -116,8 +119,16 @@ private fun ApartmentFormContent(
   onRetry: () -> Unit,
 ) {
   Column(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
   ) {
+    Spacer(Modifier.height(16.dp))
+    HedvigText(
+      text = "Fyll i dina uppgifter s\u00e5 ber\u00e4knar vi ditt pris",
+      style = HedvigTheme.typography.bodyMedium,
+      color = HedvigTheme.colorScheme.textSecondary,
+    )
     Spacer(Modifier.height(16.dp))
     Column(
       modifier = Modifier.fillMaxWidth(),
@@ -162,7 +173,7 @@ private fun ApartmentFormContent(
           else -> "Du + $numberCoInsured"
         },
         stepperSize = Medium,
-        stepperStyle = Labeled("Antal medförsäkrade"),
+        stepperStyle = Labeled("Antal medf\u00f6rs\u00e4krade"),
         onMinusClick = { onNumberCoInsuredChanged(numberCoInsured - 1) },
         onPlusClick = { onNumberCoInsuredChanged(numberCoInsured + 1) },
         isPlusEnabled = !isSubmitting && numberCoInsured < 5,
@@ -171,14 +182,13 @@ private fun ApartmentFormContent(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Beräkna pris",
+      text = "Ber\u00e4kna pris",
       onClick = onSubmit,
       enabled = !isSubmitting,
       isLoading = isSubmitting,
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(16.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 

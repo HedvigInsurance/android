@@ -31,6 +31,7 @@ internal class PollSigningStatusUseCaseImpl(
             val signing = result.shopSessionSigning
             val status = when (signing.status) {
               ShopSessionSigningStatus.SIGNED -> SigningStatus.SIGNED
+
               ShopSessionSigningStatus.FAILED -> SigningStatus.FAILED
 
               ShopSessionSigningStatus.PENDING,

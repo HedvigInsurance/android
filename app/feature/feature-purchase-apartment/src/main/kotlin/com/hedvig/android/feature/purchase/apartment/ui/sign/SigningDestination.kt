@@ -80,14 +80,14 @@ internal fun SigningDestination(
     }
 
     is SigningUiState.Success -> {
-      LaunchedEffect(state) {
+      LaunchedEffect(Unit) {
         navigateToSuccess(state.startDate)
       }
       HedvigFullScreenCenterAlignedProgress()
     }
 
     is SigningUiState.Failed -> {
-      LaunchedEffect(state) {
+      LaunchedEffect(Unit) {
         navigateToFailure()
       }
       HedvigFullScreenCenterAlignedProgress()
@@ -96,10 +96,7 @@ internal fun SigningDestination(
 }
 
 @Composable
-private fun QrCodeSigningScreen(
-  liveQrCodeData: String?,
-  onOpenBankId: () -> Unit,
-) {
+private fun QrCodeSigningScreen(liveQrCodeData: String?, onOpenBankId: () -> Unit) {
   HedvigScaffold(navigateUp = {}) {
     Spacer(Modifier.weight(1f))
     Column(
@@ -129,8 +126,9 @@ private fun QrCodeSigningScreen(
       }
       Spacer(Modifier.height(24.dp))
       HedvigButton(
-        text = "Öppna BankID",
+        text = "\u00d6ppna BankID",
         onClick = onOpenBankId,
+        enabled = true,
         modifier = Modifier.fillMaxWidth(),
       )
     }

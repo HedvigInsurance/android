@@ -15,33 +15,71 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class SelectTierViewModel(
   params: SelectTierParameters,
 ) : MoleculeViewModel<SelectTierEvent, SelectTierUiState>(
-    SelectTierUiState(
-      offers = params.offers,
-      selectedOfferId = params.offers.firstOrNull { it.tierDisplayName == "Standard" }?.offerId
-        ?: params.offers.firstOrNull()?.offerId
-        ?: "",
-      shopSessionId = params.shopSessionId,
-      productDisplayName = params.productDisplayName,
-      summaryToNavigate = null,
-    ),
+    buildInitialState(params),
     SelectTierPresenter(params),
   )
+
+private fun buildInitialState(params: SelectTierParameters): SelectTierUiState {
+  val tierGroups = groupOffersByTier(params.offers)
+  val defaultTierName = tierGroups.firstOrNull { "Standard" in it.tierDisplayName }?.tierDisplayName
+    ?: tierGroups.firstOrNull()?.tierDisplayName
+    ?: ""
+  val defaultDeductibleByTier = tierGroups.associate { group ->
+    group.tierDisplayName to (group.deductibleOptions.minByOrNull { it.netAmount }?.offerId ?: "")
+  }
+  return SelectTierUiState(
+    tierGroups = tierGroups,
+    selectedTierName = defaultTierName,
+    selectedDeductibleByTier = defaultDeductibleByTier,
+    shopSessionId = params.shopSessionId,
+    productDisplayName = params.productDisplayName,
+    summaryToNavigate = null,
+  )
+}
+
+private fun groupOffersByTier(offers: List<TierOfferData>): List<TierGroup> {
+  return offers.groupBy { it.tierDisplayName }.map { (tierName, tierOffers) ->
+    val first = tierOffers.first()
+    TierGroup(
+      tierDisplayName = tierName,
+      tierDescription = first.tierDescription,
+      usps = first.usps,
+      deductibleOptions = tierOffers.map { offer ->
+        DeductibleOption(
+          offerId = offer.offerId,
+          deductibleDisplayName = offer.deductibleDisplayName ?: "",
+          netAmount = offer.netAmount,
+          netCurrencyCode = offer.netCurrencyCode,
+          grossAmount = offer.grossAmount,
+          grossCurrencyCode = offer.grossCurrencyCode,
+          hasDiscount = offer.hasDiscount,
+        )
+      }.sortedBy { it.netAmount },
+    )
+  }
+}
 
 internal class SelectTierPresenter(
   private val params: SelectTierParameters,
 ) : MoleculePresenter<SelectTierEvent, SelectTierUiState> {
   @Composable
   override fun MoleculePresenterScope<SelectTierEvent>.present(lastState: SelectTierUiState): SelectTierUiState {
-    var selectedOfferId by remember { mutableStateOf(lastState.selectedOfferId) }
+    var selectedTierName by remember { mutableStateOf(lastState.selectedTierName) }
+    var selectedDeductibleByTier by remember { mutableStateOf(lastState.selectedDeductibleByTier) }
     var summaryToNavigate: SummaryParameters? by remember { mutableStateOf(lastState.summaryToNavigate) }
 
     CollectEvents { event ->
       when (event) {
-        is SelectTierEvent.SelectOffer -> {
-          selectedOfferId = event.offerId
+        is SelectTierEvent.SelectTier -> {
+          selectedTierName = event.tierName
+        }
+
+        is SelectTierEvent.SelectDeductible -> {
+          selectedDeductibleByTier = selectedDeductibleByTier + (event.tierName to event.offerId)
         }
 
         SelectTierEvent.Continue -> {
+          val selectedOfferId = selectedDeductibleByTier[selectedTierName] ?: return@CollectEvents
           val selectedOffer = params.offers.first { it.offerId == selectedOfferId }
           summaryToNavigate = SummaryParameters(
             shopSessionId = params.shopSessionId,
@@ -57,8 +95,9 @@ internal class SelectTierPresenter(
     }
 
     return SelectTierUiState(
-      offers = params.offers,
-      selectedOfferId = selectedOfferId,
+      tierGroups = lastState.tierGroups,
+      selectedTierName = selectedTierName,
+      selectedDeductibleByTier = selectedDeductibleByTier,
       shopSessionId = params.shopSessionId,
       productDisplayName = params.productDisplayName,
       summaryToNavigate = summaryToNavigate,
@@ -66,16 +105,36 @@ internal class SelectTierPresenter(
   }
 }
 
+internal data class TierGroup(
+  val tierDisplayName: String,
+  val tierDescription: String,
+  val usps: List<String>,
+  val deductibleOptions: List<DeductibleOption>,
+)
+
+internal data class DeductibleOption(
+  val offerId: String,
+  val deductibleDisplayName: String,
+  val netAmount: Double,
+  val netCurrencyCode: String,
+  val grossAmount: Double,
+  val grossCurrencyCode: String,
+  val hasDiscount: Boolean,
+)
+
 internal data class SelectTierUiState(
-  val offers: List<TierOfferData>,
-  val selectedOfferId: String,
+  val tierGroups: List<TierGroup>,
+  val selectedTierName: String,
+  val selectedDeductibleByTier: Map<String, String>,
   val shopSessionId: String,
   val productDisplayName: String,
   val summaryToNavigate: SummaryParameters?,
 )
 
 internal sealed interface SelectTierEvent {
-  data class SelectOffer(val offerId: String) : SelectTierEvent
+  data class SelectTier(val tierName: String) : SelectTierEvent
+
+  data class SelectDeductible(val tierName: String, val offerId: String) : SelectTierEvent
 
   data object Continue : SelectTierEvent
 
