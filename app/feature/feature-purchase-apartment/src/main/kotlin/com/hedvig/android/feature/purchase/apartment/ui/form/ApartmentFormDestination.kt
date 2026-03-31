@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigStepper
@@ -29,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Medium
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
 import com.hedvig.android.design.system.hedvig.Surface
@@ -77,6 +79,7 @@ internal fun ApartmentFormDestination(
           streetError = uiState.streetError,
           zipCodeError = uiState.zipCodeError,
           livingSpaceError = uiState.livingSpaceError,
+          submitError = uiState.submitError,
           isSubmitting = uiState.isSubmitting,
           onStreetChanged = { street = it },
           onZipCodeChanged = { value -> if (value.all { it.isDigit() }) zipCode = value },
@@ -110,6 +113,7 @@ private fun ApartmentFormContent(
   streetError: String?,
   zipCodeError: String?,
   livingSpaceError: String?,
+  submitError: String?,
   isSubmitting: Boolean,
   onStreetChanged: (String) -> Unit,
   onZipCodeChanged: (String) -> Unit,
@@ -180,6 +184,14 @@ private fun ApartmentFormContent(
         isMinusEnabled = !isSubmitting && numberCoInsured > 0,
       )
     }
+    if (submitError != null) {
+      Spacer(Modifier.height(8.dp))
+      HedvigNotificationCard(
+        message = submitError,
+        priority = NotificationDefaults.NotificationPriority.Error,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = "Ber\u00e4kna pris",
@@ -213,6 +225,7 @@ private fun PreviewApartmentFormEmpty() {
         streetError = null,
         zipCodeError = null,
         livingSpaceError = null,
+        submitError = null,
         isSubmitting = false,
         onStreetChanged = {},
         onZipCodeChanged = {},
@@ -238,6 +251,7 @@ private fun PreviewApartmentFormFilled() {
         streetError = null,
         zipCodeError = null,
         livingSpaceError = null,
+        submitError = null,
         isSubmitting = false,
         onStreetChanged = {},
         onZipCodeChanged = {},
@@ -263,6 +277,7 @@ private fun PreviewApartmentFormWithErrors() {
         streetError = "Ange en adress",
         zipCodeError = "Ange ett giltigt postnummer (5 siffror)",
         livingSpaceError = "Ange boyta i kvadratmeter",
+        submitError = null,
         isSubmitting = false,
         onStreetChanged = {},
         onZipCodeChanged = {},

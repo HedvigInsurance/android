@@ -26,12 +26,14 @@ import com.hedvig.android.design.system.hedvig.DropdownWithDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.car.data.CarOffers
 
@@ -85,6 +87,7 @@ internal fun CarFormDestination(
           streetError = uiState.streetError,
           zipCodeError = uiState.zipCodeError,
           emailError = uiState.emailError,
+          submitError = uiState.submitError,
           isSubmitting = uiState.isSubmitting,
           onSsnChanged = { value -> if (value.length <= 12 && value.all { it.isDigit() }) ssn = value },
           onRegistrationNumberChanged = { value ->
@@ -140,6 +143,7 @@ private fun CarFormContent(
   streetError: String?,
   zipCodeError: String?,
   emailError: String?,
+  submitError: String?,
   isSubmitting: Boolean,
   onSsnChanged: (String) -> Unit,
   onRegistrationNumberChanged: (String) -> Unit,
@@ -240,6 +244,14 @@ private fun CarFormContent(
         enabled = !isSubmitting,
       )
     }
+    if (submitError != null) {
+      Spacer(Modifier.height(8.dp))
+      HedvigNotificationCard(
+        message = submitError,
+        priority = NotificationDefaults.NotificationPriority.Error,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = "Ber\u00e4kna pris",
@@ -278,6 +290,7 @@ private fun PreviewCarFormEmpty() {
         streetError = null,
         zipCodeError = null,
         emailError = null,
+        submitError = null,
         isSubmitting = false,
         onSsnChanged = {},
         onRegistrationNumberChanged = {},
@@ -309,6 +322,7 @@ private fun PreviewCarFormFilled() {
         streetError = null,
         zipCodeError = null,
         emailError = null,
+        submitError = null,
         isSubmitting = false,
         onSsnChanged = {},
         onRegistrationNumberChanged = {},
