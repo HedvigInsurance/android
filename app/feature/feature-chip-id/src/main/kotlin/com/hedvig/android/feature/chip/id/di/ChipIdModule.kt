@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.chip.id.di
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.feature.chip.id.data.GetPetContractsForChipIdUseCase
-import com.hedvig.android.feature.chip.id.data.GetPetContractsForChipIdUseCaseImpl
+import com.hedvig.android.feature.chip.id.data.GetContractsWithMissingChipIdUseCase
+import com.hedvig.android.feature.chip.id.data.GetContractsWithMissingChipIdUseCaseImpl
 import com.hedvig.android.feature.chip.id.data.UpdateChipIdUseCase
 import com.hedvig.android.feature.chip.id.data.UpdateChipIdUseCaseImpl
 import com.hedvig.android.feature.chip.id.ui.AddChipIdViewModel
@@ -17,8 +17,8 @@ val chipIdModule = module {
     )
   }
 
-  single<GetPetContractsForChipIdUseCase> {
-    GetPetContractsForChipIdUseCaseImpl(
+  single<GetContractsWithMissingChipIdUseCase> {
+    GetContractsWithMissingChipIdUseCaseImpl(
       apolloClient = get<ApolloClient>(),
     )
   }
@@ -26,7 +26,7 @@ val chipIdModule = module {
   viewModel<SelectInsuranceForChipIdViewModel> { params ->
     SelectInsuranceForChipIdViewModel(
       preselectedContractId = params.getOrNull<String>(),
-      getPetContractsForChipIdUseCase = get<GetPetContractsForChipIdUseCase>(),
+      getContractsWithMissingChipIdUseCase = get<GetContractsWithMissingChipIdUseCase>(),
     )
   }
 
@@ -34,7 +34,7 @@ val chipIdModule = module {
     AddChipIdViewModel(
       updateChipIdUseCase = get<UpdateChipIdUseCase>(),
       contractId = params.get<String>(),
-      getPetContractsForChipIdUseCase = get<GetPetContractsForChipIdUseCase>(),
+      getContractsWithMissingChipIdUseCase = get<GetContractsWithMissingChipIdUseCase>(),
     )
   }
 }

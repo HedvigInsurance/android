@@ -10,13 +10,13 @@ import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.logger.logcat
 import octopus.GetPetContractsForChipIdQuery
 
-internal interface GetPetContractsForChipIdUseCase {
+internal interface GetContractsWithMissingChipIdUseCase {
   suspend fun invoke(): Either<ApolloOperationError, List<PetContractForChipId>>
 }
 
-internal class GetPetContractsForChipIdUseCaseImpl(
+internal class GetContractsWithMissingChipIdUseCaseImpl(
   private val apolloClient: ApolloClient,
-) : GetPetContractsForChipIdUseCase {
+) : GetContractsWithMissingChipIdUseCase {
   override suspend fun invoke(): Either<ApolloOperationError, List<PetContractForChipId>> {
     return apolloClient
       .query(GetPetContractsForChipIdQuery())

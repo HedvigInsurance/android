@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import com.hedvig.android.feature.chip.id.data.GetPetContractsForChipIdUseCase
+import com.hedvig.android.feature.chip.id.data.GetContractsWithMissingChipIdUseCase
 import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import com.hedvig.android.feature.chip.id.data.UpdateChipIdUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -17,20 +17,20 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class AddChipIdViewModel(
   updateChipIdUseCase: UpdateChipIdUseCase,
-  getPetContractsForChipIdUseCase: GetPetContractsForChipIdUseCase,
+  getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,
   contractId: String,
 ) : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
   initialState = AddChipIdUiState.Loading,
   presenter = AddChipIdPresenter(
     updateChipIdUseCase = updateChipIdUseCase,
     contractId = contractId,
-    getPetContractsForChipIdUseCase = getPetContractsForChipIdUseCase,
+    getContractsWithMissingChipIdUseCase = getContractsWithMissingChipIdUseCase,
   ),
 )
 
 internal class AddChipIdPresenter(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
-  private val getPetContractsForChipIdUseCase: GetPetContractsForChipIdUseCase,
+  private val getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,
   private val contractId: String,
 ) : MoleculePresenter<AddChipIdEvent, AddChipIdUiState> {
   @Composable
@@ -52,7 +52,7 @@ internal class AddChipIdPresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      getPetContractsForChipIdUseCase.invoke().fold(
+      getContractsWithMissingChipIdUseCase.invoke().fold(
         ifLeft = {
           currentState = AddChipIdUiState.Error
         },

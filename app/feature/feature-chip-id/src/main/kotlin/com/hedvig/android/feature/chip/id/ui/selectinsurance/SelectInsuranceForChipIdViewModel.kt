@@ -7,24 +7,23 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.Snapshot
-import com.hedvig.android.feature.chip.id.data.GetPetContractsForChipIdUseCase
+import com.hedvig.android.feature.chip.id.data.GetContractsWithMissingChipIdUseCase
 import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class SelectInsuranceForChipIdViewModel(
-  private val preselectedContractId: String?,
-  private val getPetContractsForChipIdUseCase: GetPetContractsForChipIdUseCase,
+  preselectedContractId: String?,
+  getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,
 ) : MoleculeViewModel<SelectInsuranceForChipIdEvent, SelectInsuranceForChipIdState>(
     initialState = SelectInsuranceForChipIdState.Loading,
-    presenter = SelectInsuranceForChipIdPresenter(preselectedContractId, getPetContractsForChipIdUseCase),
+    presenter = SelectInsuranceForChipIdPresenter(preselectedContractId, getContractsWithMissingChipIdUseCase),
   )
 
 internal class SelectInsuranceForChipIdPresenter(
   private val preselectedContractId: String?,
-  private val getPetContractsForChipIdUseCase: GetPetContractsForChipIdUseCase,
+  private val getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,
 ) : MoleculePresenter<SelectInsuranceForChipIdEvent, SelectInsuranceForChipIdState> {
   @Composable
   override fun MoleculePresenterScope<SelectInsuranceForChipIdEvent>.present(
@@ -40,7 +39,7 @@ internal class SelectInsuranceForChipIdPresenter(
 
     LaunchedEffect(loadIteration) {
       currentState = SelectInsuranceForChipIdState.Loading
-      val result = getPetContractsForChipIdUseCase.invoke()
+      val result = getContractsWithMissingChipIdUseCase.invoke()
       currentState = result.fold(
         ifLeft = { SelectInsuranceForChipIdState.Failure },
         ifRight = { contracts ->
