@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -48,5 +49,13 @@ internal fun PurchaseSuccessDestination(startDate: String?, close: () -> Unit) {
       onClick = close,
     )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewPurchaseSuccess() {
+  HedvigTheme {
+    PurchaseSuccessDestination(startDate = "2026-05-01", close = {})
   }
 }

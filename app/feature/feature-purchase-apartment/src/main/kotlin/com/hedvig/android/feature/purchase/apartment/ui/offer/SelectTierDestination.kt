@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -46,6 +47,21 @@ internal fun SelectTierDestination(
       onContinueToSummary(uiState.summaryToNavigate)
     }
   }
+  SelectTierContent(
+    uiState = uiState,
+    navigateUp = navigateUp,
+    onSelectOffer = { viewModel.emit(SelectTierEvent.SelectOffer(it)) },
+    onContinue = { viewModel.emit(SelectTierEvent.Continue) },
+  )
+}
+
+@Composable
+private fun SelectTierContent(
+  uiState: SelectTierUiState,
+  navigateUp: () -> Unit = {},
+  onSelectOffer: (String) -> Unit = {},
+  onContinue: () -> Unit = {},
+) {
   HedvigScaffold(
     navigateUp = navigateUp,
   ) {
@@ -67,7 +83,7 @@ internal fun SelectTierDestination(
       TierCard(
         offer = offer,
         isSelected = offer.offerId == uiState.selectedOfferId,
-        onSelect = { viewModel.emit(SelectTierEvent.SelectOffer(offer.offerId)) },
+        onSelect = { onSelectOffer(offer.offerId) },
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       if (index < uiState.offers.lastIndex) {
@@ -77,7 +93,7 @@ internal fun SelectTierDestination(
     Spacer(Modifier.height(24.dp))
     HedvigButton(
       text = "Forts\u00e4tt",
-      onClick = dropUnlessResumed { viewModel.emit(SelectTierEvent.Continue) },
+      onClick = dropUnlessResumed { onContinue() },
       enabled = uiState.offers.any { it.offerId == uiState.selectedOfferId },
       modifier = Modifier
         .fillMaxWidth()
@@ -171,4 +187,63 @@ private fun formatPrice(amount: Double, currencyCode: String): String {
   format.currency = Currency.getInstance(currencyCode)
   format.maximumFractionDigits = 0
   return "${format.format(amount)}/m\u00e5n"
+}
+
+private val previewOffers = listOf(
+  TierOfferData(
+    offerId = "1",
+    tierDisplayName = "Hem Max",
+    tierDescription = "Vårt mest omfattande skydd",
+    grossAmount = 189.0,
+    grossCurrencyCode = "SEK",
+    netAmount = 189.0,
+    netCurrencyCode = "SEK",
+    usps = listOf("Försäkringsbelopp 1 000 000 kr", "Drulle upp till 50 000 kr ingår", "ID-skydd och flyttskydd"),
+    exposureDisplayName = "Storgatan 1",
+    deductibleDisplayName = "1 500 kr",
+    hasDiscount = false,
+  ),
+  TierOfferData(
+    offerId = "2",
+    tierDisplayName = "Hem Standard",
+    tierDescription = "Vår mest populära försäkring",
+    grossAmount = 139.0,
+    grossCurrencyCode = "SEK",
+    netAmount = 118.0,
+    netCurrencyCode = "SEK",
+    usps = listOf("Försäkringsbelopp 1 000 000 kr", "Drulle upp till 50 000 kr ingår"),
+    exposureDisplayName = "Storgatan 1",
+    deductibleDisplayName = "1 500 kr",
+    hasDiscount = true,
+  ),
+  TierOfferData(
+    offerId = "3",
+    tierDisplayName = "Hem Bas",
+    tierDescription = "Innehåller vårt grundskydd",
+    grossAmount = 99.0,
+    grossCurrencyCode = "SEK",
+    netAmount = 99.0,
+    netCurrencyCode = "SEK",
+    usps = listOf("Grundskydd"),
+    exposureDisplayName = "Storgatan 1",
+    deductibleDisplayName = "1 500 kr",
+    hasDiscount = false,
+  ),
+)
+
+@HedvigPreview
+@Composable
+private fun PreviewSelectTierStandard() {
+  HedvigTheme {
+    SelectTierContent(
+      uiState = SelectTierUiState(
+        offers = previewOffers,
+        selectedOfferId = "2",
+        shopSessionId = "session",
+        productDisplayName = "Hemförsäkring Hyresrätt",
+      ),
+      onSelectOffer = {},
+      onContinue = {},
+    )
+  }
 }

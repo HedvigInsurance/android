@@ -19,8 +19,11 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.apartment.navigation.SigningParameters
 import com.hedvig.android.feature.purchase.apartment.navigation.SummaryParameters
+import com.hedvig.android.feature.purchase.apartment.navigation.TierOfferData
 
 @Composable
 internal fun PurchaseSummaryDestination(
@@ -107,5 +110,36 @@ private fun PurchaseSummaryScreen(
       onClick = onConfirm,
     )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewPurchaseSummary() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      PurchaseSummaryScreen(
+        params = SummaryParameters(
+          shopSessionId = "session",
+          selectedOffer = TierOfferData(
+            offerId = "1",
+            tierDisplayName = "Hem Standard",
+            tierDescription = "Vår mest populära försäkring",
+            grossAmount = 139.0,
+            grossCurrencyCode = "SEK",
+            netAmount = 118.0,
+            netCurrencyCode = "SEK",
+            usps = emptyList(),
+            exposureDisplayName = "Storgatan 1",
+            deductibleDisplayName = "1 500 kr",
+            hasDiscount = true,
+          ),
+          productDisplayName = "Hemförsäkring Hyresrätt",
+        ),
+        isSubmitting = false,
+        navigateUp = {},
+        onConfirm = {},
+      )
+    }
   }
 }

@@ -17,6 +17,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigPreview
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -163,5 +166,71 @@ private fun String?.toErrorState(): HedvigTextFieldDefaults.ErrorState {
     HedvigTextFieldDefaults.ErrorState.Error.WithMessage(this)
   } else {
     HedvigTextFieldDefaults.ErrorState.NoError
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewApartmentFormEmpty() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ApartmentFormContent(
+        uiState = ApartmentFormState(),
+        onStreetChanged = {},
+        onZipCodeChanged = {},
+        onLivingSpaceChanged = {},
+        onNumberCoInsuredChanged = {},
+        onSubmit = {},
+        onRetry = {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewApartmentFormFilled() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ApartmentFormContent(
+        uiState = ApartmentFormState(
+          street = "Storgatan 1",
+          zipCode = "12345",
+          livingSpace = "65",
+          numberCoInsured = 1,
+        ),
+        onStreetChanged = {},
+        onZipCodeChanged = {},
+        onLivingSpaceChanged = {},
+        onNumberCoInsuredChanged = {},
+        onSubmit = {},
+        onRetry = {},
+      )
+    }
+  }
+}
+
+@HedvigPreview
+@Composable
+private fun PreviewApartmentFormWithErrors() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ApartmentFormContent(
+        uiState = ApartmentFormState(
+          street = "",
+          zipCode = "123",
+          livingSpace = "",
+          streetError = "Ange en adress",
+          zipCodeError = "Ange ett giltigt postnummer (5 siffror)",
+          livingSpaceError = "Ange boyta i kvadratmeter",
+        ),
+        onStreetChanged = {},
+        onZipCodeChanged = {},
+        onLivingSpaceChanged = {},
+        onNumberCoInsuredChanged = {},
+        onSubmit = {},
+        onRetry = {},
+      )
+    }
   }
 }
