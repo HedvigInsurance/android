@@ -3,6 +3,7 @@ package com.hedvig.android.feature.purchase.apartment.ui.offer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.purchase.apartment.navigation.SelectTierParameters
 import com.hedvig.android.feature.purchase.apartment.navigation.SummaryParameters
@@ -31,8 +32,8 @@ internal class SelectTierPresenter(
 ) : MoleculePresenter<SelectTierEvent, SelectTierUiState> {
   @Composable
   override fun MoleculePresenterScope<SelectTierEvent>.present(lastState: SelectTierUiState): SelectTierUiState {
-    var selectedOfferId by mutableStateOf(lastState.selectedOfferId)
-    var summaryToNavigate: SummaryParameters? by mutableStateOf(lastState.summaryToNavigate)
+    var selectedOfferId by remember { mutableStateOf(lastState.selectedOfferId) }
+    var summaryToNavigate: SummaryParameters? by remember { mutableStateOf(lastState.summaryToNavigate) }
 
     CollectEvents { event ->
       when (event) {

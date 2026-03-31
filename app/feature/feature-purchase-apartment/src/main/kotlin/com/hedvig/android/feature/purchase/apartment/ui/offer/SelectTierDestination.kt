@@ -242,6 +242,7 @@ private fun PreviewSelectTierStandard() {
         selectedOfferId = "2",
         shopSessionId = "session",
         productDisplayName = "Hemförsäkring Hyresrätt",
+        summaryToNavigate = null
       ),
       onSelectOffer = {},
       onContinue = {},
