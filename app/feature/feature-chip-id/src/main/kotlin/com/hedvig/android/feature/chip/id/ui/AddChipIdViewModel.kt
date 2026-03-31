@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chip.id.ui
 
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
