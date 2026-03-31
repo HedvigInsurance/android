@@ -48,7 +48,6 @@ internal class SigningPresenter(
 
     LaunchedEffect(Unit) {
       while (true) {
-        delay(2_000)
         pollSigningStatusUseCase.invoke(signingParameters.signingId).fold(
           ifLeft = {
             currentState = SigningUiState.Failed
@@ -77,6 +76,7 @@ internal class SigningPresenter(
             }
           },
         )
+        delay(2_000)
       }
     }
 

@@ -3,6 +3,9 @@ package com.hedvig.android.feature.purchase.apartment.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
+import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
@@ -21,6 +24,7 @@ internal class PollSigningStatusUseCaseImpl(
     return either {
       apolloClient
         .query(ApartmentShopSessionSigningQuery(signingId = signingId))
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .fold(
           ifLeft = {

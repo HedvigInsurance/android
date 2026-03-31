@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,7 +33,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
@@ -55,6 +55,22 @@ internal fun SigningDestination(
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
   val canOpenBankId = remember { canBankIdAppHandleUri(context) }
+  var hasNavigated by remember { mutableStateOf(false) }
+
+  LaunchedEffect(uiState) {
+    if (hasNavigated) return@LaunchedEffect
+    when (val state = uiState) {
+      is SigningUiState.Success -> {
+        hasNavigated = true
+        navigateToSuccess(state.startDate)
+      }
+      is SigningUiState.Failed -> {
+        hasNavigated = true
+        navigateToFailure()
+      }
+      is SigningUiState.Polling -> {}
+    }
+  }
 
   when (val state = uiState) {
     is SigningUiState.Polling -> {
@@ -79,19 +95,9 @@ internal fun SigningDestination(
       }
     }
 
-    is SigningUiState.Success -> {
-      LaunchedEffect(Unit) {
-        navigateToSuccess(state.startDate)
-      }
-      HedvigFullScreenCenterAlignedProgress()
-    }
-
-    is SigningUiState.Failed -> {
-      LaunchedEffect(Unit) {
-        navigateToFailure()
-      }
-      HedvigFullScreenCenterAlignedProgress()
-    }
+    is SigningUiState.Success,
+    is SigningUiState.Failed,
+    -> HedvigFullScreenCenterAlignedProgress()
   }
 }
 
