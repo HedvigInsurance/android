@@ -3,6 +3,7 @@ package com.hedvig.android.memberreminders
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.merge
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
 import java.util.UUID
@@ -57,18 +58,18 @@ internal class GetMemberRemindersUseCaseImpl(
     ) { values ->
       val enableNotifications = values[0] as MemberReminder.EnableNotifications?
       val connectPayment = values[1] as MemberReminder.PaymentReminder?
-      val upcomingRenewalReminders = values[2] as NonEmptyList<MemberReminder.UpcomingRenewal>?
-      val coInsuredInfoResult = values[3] as Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
-      val contactInfoReminder = values[4] as Either<com.hedvig.android.core.common.ErrorMessage, ContactInfoUpdateNeeded?>
-      val missingChipId = values[5] as MemberReminder.MissingChipId?
+      val upcomingRenewalReminders = values[2] as? NonEmptyList<MemberReminder.UpcomingRenewal>?
+      val coInsuredInfoResult = values[3] as? Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
+      val contactInfoReminder = values[4] as? Either<ErrorMessage, ContactInfoUpdateNeeded?>
+      val missingChipIdReminder = values[5] as? Either<ErrorMessage, MemberReminder.MissingChipId?>
 
       MemberReminders(
         connectPayment = connectPayment,
         upcomingRenewals = upcomingRenewalReminders,
         enableNotifications = enableNotifications,
-        coInsuredInfo = coInsuredInfoResult.getOrNull(),
-        updateContactInfo = contactInfoReminder.getOrNull(),
-        missingChipId = missingChipId,
+        coInsuredInfo = coInsuredInfoResult?.getOrNull(),
+        updateContactInfo = contactInfoReminder?.getOrNull(),
+        missingChipId = missingChipIdReminder?.getOrNull(),
       )
     }
   }
