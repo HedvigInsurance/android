@@ -21,9 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.byValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -102,7 +99,7 @@ internal fun AddChipIdDestination(
     },
     updateText = {
       viewModel.emit(AddChipIdEvent.UpdateText(it))
-    }
+    },
   )
 }
 
@@ -114,7 +111,7 @@ private fun AddChipIdScreen(
   reload: () -> Unit,
   navigateUp: () -> Unit,
   showedSnackBar: () -> Unit,
-  updateText: (String) -> Unit
+  updateText: (String) -> Unit,
 ) {
   val focusManager = LocalFocusManager.current
   HedvigScaffold(
@@ -149,7 +146,7 @@ private fun AddChipIdScreen(
           submitChipId = submitChipId,
           focusManager = focusManager,
           showedSnackBar = showedSnackBar,
-          updateText = updateText
+          updateText = updateText,
         )
       }
     }
@@ -163,7 +160,7 @@ private fun ColumnScope.AddChipIdContent(
   submitChipId: () -> Unit,
   focusManager: FocusManager,
   showedSnackBar: () -> Unit,
-  updateText: (String) -> Unit
+  updateText: (String) -> Unit,
 ) {
   val successMessage = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
@@ -175,15 +172,17 @@ private fun ColumnScope.AddChipIdContent(
   Spacer(Modifier.weight(1f))
   Spacer(Modifier.height(16.dp))
 
-  InsuranceInfoCard(uiState.contract,
-    modifier = Modifier.padding(horizontal = 16.dp))
+  InsuranceInfoCard(
+    uiState.contract,
+    modifier = Modifier.padding(horizontal = 16.dp),
+  )
   Spacer(Modifier.height(16.dp))
   ChipIdTextField(
     text = uiState.chipIdText,
     labelText = stringResource(Res.string.CHIP_ID_LABEL),
-    updateText = updateText
+    updateText = updateText,
 
-  )
+    )
 
   AnimatedContent(
     targetState = uiState.errorType,
@@ -225,10 +224,10 @@ private fun ColumnScope.AddChipIdContent(
 private fun ChipIdTextField(
   text: String,
   labelText: String,
-  updateText: (String) -> Unit
+  updateText: (String) -> Unit,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  var input by remember { mutableStateOf(text ?: "") }
+  var input by remember { mutableStateOf(text) }
   val mask = "000-000-000-000-000"
   val maskColor = HedvigTheme.colorScheme.textTertiary
   val visualTransformation = ChipIdVisualTransformation(mask, maskColor)
@@ -237,7 +236,7 @@ private fun ChipIdTextField(
     labelText = labelText,
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
     onValueChange = {
-      if(it.length<=15) {
+      if (it.length <= 15) {
         updateText(it)
         input = it
       }
@@ -265,7 +264,7 @@ private class ChipIdVisualTransformation(
     val annotatedString = buildAnnotatedString {
       for (i in trimmed.indices) {
         append(trimmed[i])
-        if (i in listOf(2,5,8,11)) {
+        if (i in listOf(2, 5, 8, 11)) {
           append("-")
         }
       }
@@ -277,9 +276,9 @@ private class ChipIdVisualTransformation(
     val personalNumberOffsetTranslator = object : OffsetMapping {
       override fun originalToTransformed(offset: Int): Int {
         return when {
-          offset <= 2  -> offset
-          offset <= 5  -> offset + 1
-          offset <= 8  -> offset + 2
+          offset <= 2 -> offset
+          offset <= 5 -> offset + 1
+          offset <= 8 -> offset + 2
           offset <= 11 -> offset + 3
           offset <= 15 -> offset + 4
           else -> 19
@@ -288,8 +287,8 @@ private class ChipIdVisualTransformation(
 
       override fun transformedToOriginal(offset: Int): Int {
         return when {
-          offset <= 3  -> offset
-          offset <= 7  -> offset - 1
+          offset <= 3 -> offset
+          offset <= 7 -> offset - 1
           offset <= 11 -> offset - 2
           offset <= 15 -> offset - 3
           else -> offset - 4
@@ -306,13 +305,15 @@ private fun InsuranceInfoCard(
   insuranceInfo: PetContractForChipId,
   modifier: Modifier = Modifier,
 ) {
-  HedvigCard(modifier
-    .border(
-      width = 1.dp,
-      color = HedvigTheme.colorScheme.borderPrimary,
-      shape = HedvigTheme.shapes.cornerXLarge,
-    ),
-    color = HedvigTheme.colorScheme.backgroundPrimary) {
+  HedvigCard(
+    modifier
+      .border(
+        width = 1.dp,
+        color = HedvigTheme.colorScheme.borderPrimary,
+        shape = HedvigTheme.shapes.cornerXLarge,
+      ),
+    color = HedvigTheme.colorScheme.backgroundPrimary,
+  ) {
     Column(Modifier.padding(16.dp)) {
       Row {
         Image(
@@ -333,25 +334,25 @@ private fun InsuranceInfoCard(
 @HedvigPreview
 @Composable
 private fun PreviewTerminationConfirmationScreen(
-  @PreviewParameter(AddChipIdScreenStateProvider ::class) state: AddChipIdUiState,
+  @PreviewParameter(AddChipIdScreenStateProvider::class) state: AddChipIdUiState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       AddChipIdScreen(
         state,
         globalSnackBarState = GlobalSnackBarState(),
-        submitChipId = {  },
-        reload = {  },
-        navigateUp = {  },
+        submitChipId = { },
+        reload = { },
+        navigateUp = { },
         showedSnackBar = {},
-        {}
+        {},
       )
     }
   }
 }
 
 
-private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider< AddChipIdUiState>(
+private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider<AddChipIdUiState>(
   listOf(
     AddChipIdUiState.Error,
     AddChipIdUiState.Loading,
@@ -361,45 +362,45 @@ private class AddChipIdScreenStateProvider : CollectionPreviewParameterProvider<
         id = "sdf",
         displayName = "Display name",
         contractExposure = "Kitty",
-        contractGroup = ContractGroup.CAT
+        contractGroup = ContractGroup.CAT,
       ),
       showSuccessSnackBar = false,
       submittingData = false,
     ),
     Content(
-      chipIdText =  "123456789012345",
+      chipIdText = "123456789012345",
       contract = PetContractForChipId(
         id = "sdf",
         displayName = "Display name",
         contractExposure = "Kitty",
-        contractGroup = ContractGroup.CAT
+        contractGroup = ContractGroup.CAT,
       ),
       showSuccessSnackBar = false,
       submittingData = false,
     ),
     Content(
-      chipIdText =  "",
+      chipIdText = "",
       contract = PetContractForChipId(
         id = "sdf",
         displayName = "Display name",
         contractExposure = "Kitty",
-        contractGroup = ContractGroup.CAT
+        contractGroup = ContractGroup.CAT,
       ),
       showSuccessSnackBar = false,
       submittingData = false,
-      errorType = ChipIdErrorType.WrongInput
+      errorType = ChipIdErrorType.WrongInput,
     ),
     Content(
-      chipIdText =  "",
+      chipIdText = "",
       contract = PetContractForChipId(
         id = "sdf",
         displayName = "Display name",
         contractExposure = "Kitty",
-        contractGroup = ContractGroup.CAT
+        contractGroup = ContractGroup.CAT,
       ),
       showSuccessSnackBar = false,
       submittingData = false,
-      errorType = ChipIdErrorType.GeneralError
+      errorType = ChipIdErrorType.GeneralError,
     ),
   ),
 )
