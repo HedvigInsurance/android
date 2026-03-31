@@ -23,19 +23,3 @@ internal data class ApartmentTierOffer(
   val deductibleDisplayName: String?,
   val hasDiscount: Boolean,
 )
-
-internal data class SigningStart(
-  val signingId: String,
-  val autoStartToken: String,
-)
-
-internal data class SigningPollResult(
-  val status: SigningStatus,
-  val liveQrCodeData: String?,
-)
-
-internal enum class SigningStatus {
-  PENDING,
-  SIGNED,
-  FAILED,
-}
