@@ -31,6 +31,8 @@ private fun buildInitialState(params: SelectTierParameters): SelectTierUiState {
     tierGroups = tierGroups,
     selectedTierName = defaultTierName,
     selectedDeductibleByTier = defaultDeductibleByTier,
+    dialogTierName = null,
+    dialogDeductibleId = null,
     shopSessionId = params.shopSessionId,
     productDisplayName = params.productDisplayName,
     summaryToNavigate = null,
@@ -66,16 +68,45 @@ class SelectTierPresenter(
   override fun MoleculePresenterScope<SelectTierEvent>.present(lastState: SelectTierUiState): SelectTierUiState {
     var selectedTierName by remember { mutableStateOf(lastState.selectedTierName) }
     var selectedDeductibleByTier by remember { mutableStateOf(lastState.selectedDeductibleByTier) }
+    var dialogTierName: String? by remember { mutableStateOf(lastState.dialogTierName) }
+    var dialogDeductibleId: String? by remember { mutableStateOf(lastState.dialogDeductibleId) }
     var summaryToNavigate: SummaryParameters? by remember { mutableStateOf(lastState.summaryToNavigate) }
 
     CollectEvents { event ->
       when (event) {
-        is SelectTierEvent.SelectTier -> {
-          selectedTierName = event.tierName
+        is SelectTierEvent.SelectTierInDialog -> {
+          dialogTierName = event.tierName
         }
 
-        is SelectTierEvent.SelectDeductible -> {
-          selectedDeductibleByTier = selectedDeductibleByTier + (event.tierName to event.offerId)
+        is SelectTierEvent.SelectDeductibleInDialog -> {
+          dialogDeductibleId = event.offerId
+        }
+
+        SelectTierEvent.ConfirmTier -> {
+          val newTierName = dialogTierName ?: return@CollectEvents
+          selectedTierName = newTierName
+          val group = lastState.tierGroups.firstOrNull { it.tierDisplayName == newTierName }
+          if (group != null) {
+            val cheapest = group.deductibleOptions.minByOrNull { it.netAmount }
+            if (cheapest != null) {
+              selectedDeductibleByTier = selectedDeductibleByTier + (newTierName to cheapest.offerId)
+            }
+          }
+          dialogTierName = null
+        }
+
+        SelectTierEvent.ConfirmDeductible -> {
+          val newDeductibleId = dialogDeductibleId ?: return@CollectEvents
+          selectedDeductibleByTier = selectedDeductibleByTier + (selectedTierName to newDeductibleId)
+          dialogDeductibleId = null
+        }
+
+        SelectTierEvent.RevertTierToConfirmed -> {
+          dialogTierName = null
+        }
+
+        SelectTierEvent.RevertDeductibleToConfirmed -> {
+          dialogDeductibleId = null
         }
 
         SelectTierEvent.Continue -> {
@@ -98,6 +129,8 @@ class SelectTierPresenter(
       tierGroups = lastState.tierGroups,
       selectedTierName = selectedTierName,
       selectedDeductibleByTier = selectedDeductibleByTier,
+      dialogTierName = dialogTierName,
+      dialogDeductibleId = dialogDeductibleId,
       shopSessionId = params.shopSessionId,
       productDisplayName = params.productDisplayName,
       summaryToNavigate = summaryToNavigate,
@@ -126,15 +159,44 @@ data class SelectTierUiState(
   val tierGroups: List<TierGroup>,
   val selectedTierName: String,
   val selectedDeductibleByTier: Map<String, String>,
+  val dialogTierName: String?,
+  val dialogDeductibleId: String?,
   val shopSessionId: String,
   val productDisplayName: String,
   val summaryToNavigate: SummaryParameters?,
-)
+) {
+  val selectedTierIndex: Int?
+    get() = tierGroups.indexOfFirst { it.tierDisplayName == selectedTierName }.takeIf { it >= 0 }
+
+  val selectedDeductibleIndex: Int?
+    get() {
+      val group = tierGroups.firstOrNull { it.tierDisplayName == selectedTierName } ?: return null
+      val deductibleId = selectedDeductibleByTier[selectedTierName] ?: return null
+      return group.deductibleOptions.indexOfFirst { it.offerId == deductibleId }.takeIf { it >= 0 }
+    }
+
+  val currentDeductibleOptions: List<DeductibleOption>
+    get() = tierGroups.firstOrNull { it.tierDisplayName == selectedTierName }?.deductibleOptions ?: emptyList()
+
+  val selectedDeductible: DeductibleOption?
+    get() {
+      val deductibleId = selectedDeductibleByTier[selectedTierName] ?: return null
+      return currentDeductibleOptions.firstOrNull { it.offerId == deductibleId }
+    }
+}
 
 sealed interface SelectTierEvent {
-  data class SelectTier(val tierName: String) : SelectTierEvent
+  data class SelectTierInDialog(val tierName: String) : SelectTierEvent
 
-  data class SelectDeductible(val tierName: String, val offerId: String) : SelectTierEvent
+  data class SelectDeductibleInDialog(val offerId: String) : SelectTierEvent
+
+  data object ConfirmTier : SelectTierEvent
+
+  data object ConfirmDeductible : SelectTierEvent
+
+  data object RevertTierToConfirmed : SelectTierEvent
+
+  data object RevertDeductibleToConfirmed : SelectTierEvent
 
   data object Continue : SelectTierEvent
 
