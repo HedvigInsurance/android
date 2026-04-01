@@ -1308,6 +1308,10 @@ type Contract {
   """
   coOwners: [ContractCoOwner!]
   """
+  Checks if petId is missing on the current or upcoming agreement.
+  """
+  missingPetId: Boolean!
+  """
   User messages to show due to self change is blocked.
   """
   selfChangeBlockers: ContractSelfChangeBlockers
@@ -1683,15 +1687,15 @@ returned as ExtendedItemDiscount
 """
 type ExtendedItemDiscount {
   """
-   General discount information 
+  General discount information
   """
   itemDiscount: ItemDiscount!
   """
-   Monthly reduction applied by the discount. It's a negative number 
+  Monthly reduction applied by the discount. It's a negative number
   """
   amount: Money!
   """
-   Whether discount is on a pending state or not 
+  Whether discount is on a pending state or not
   """
   isPending: Boolean!
 }
@@ -2179,24 +2183,6 @@ enum FlowTerminationNotificationType {
   INFO
   WARNING
 }
-enum FlowTerminationOfferAction {
-  UPDATE_ADDRESS
-  CHANGE_TIER
-}
-input FlowTerminationOfferInput {
-  """
-  This has no significance and is ignored by the backend. It exists to satisfy some codegen limitations
-  """
-  confirmed: Boolean!
-}
-type FlowTerminationOfferStep implements FlowStep {
-  id: ID!
-  title: String!
-  description: String!
-  buttonTitle: String!
-  skipButtonTitle: String!
-  action: FlowTerminationOfferAction!
-}
 input FlowTerminationStartInput {
   contractId: ID!
   supportedSteps: [String!]
@@ -2232,9 +2218,9 @@ interface FlowTerminationSurveyOptionSuggestion {
 }
 type FlowTerminationSurveyOptionSuggestionAction implements FlowTerminationSurveyOptionSuggestion {
   id: ID!
-  action: FlowTerminationSurveyRedirectAction! @deprecated(reason: "Use FlowTerminationOfferStep instead")
-  description: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
-  buttonTitle: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  action: FlowTerminationSurveyRedirectAction!
+  description: String!
+  buttonTitle: String!
   infoType: FlowTerminationSurveyOptionSuggestionInfoType!
 }
 type FlowTerminationSurveyOptionSuggestionInfo implements FlowTerminationSurveyOptionSuggestion {
@@ -2507,6 +2493,10 @@ type Member {
   """
   isEligibleToMakeClaim: Boolean!
   memberActions: MemberActions
+  """
+   Get contract info during termination flow. Null if no message to display. 
+  """
+  terminationNotification(input: TerminationFlowNotificationInput!): TerminationFlowNotification
   """
   Call this to get the info to show banner.
   If empty list is returned then member is not eligible for the addon.
@@ -2904,6 +2894,10 @@ type MidtermChangeIntentMutationOutput {
 enum MidtermChangeIntentState {
   INITIATED
   COMPLETED
+}
+type MidtermChangePetIdOutput {
+  activationDate: Date
+  userError: UserError
 }
 type MidtermChangePriceDetailItem {
   displayName: String!
@@ -3391,7 +3385,6 @@ type Mutation {
   flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
   flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
   flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
-  flowTerminationOfferNext(input: FlowTerminationOfferInput!, context: FlowContext!): Flow!
   travelCertificateCreate(input: TravelCertificateCreateInput!): TravelCertificate!
   """
   The document includes details of the member’s home insurance,
@@ -3444,6 +3437,11 @@ type Mutation {
   `ProductOffers` that can be added to the cart.
   """
   priceIntentConfirm(priceIntentId: UUID!): PriceIntentMutationOutput!
+  """
+  Apply the customer's registered address (from SPAR lookup) directly into the price intent data
+  server-side, so the real address value never needs to be sent to the client.
+  """
+  priceIntentApplySuggestedAddress(priceIntentId: UUID!): PriceIntentMutationOutput!
   """
   Change the start date of the given `ProductOffer`s by their ID.
   This is used because it's common to want to change the start date AFTER getting the offer.
@@ -3529,9 +3527,15 @@ type Mutation {
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
   """
+  Called to change the Pet-Id of a cat/dog contract. Creates a midterm change without price change and commits it.
+  """
+  midtermChangePetId(contractId: ID!, petId: String!): MidtermChangePetIdOutput
+  """
   Call this to confirm removal of selected addon(s).
   """
   addonRemoveConfirm(contractId: ID!, addonIds: [ID!]!): UserError
+  terminateContract(input: TerminationFlowTerminateContractInput!): TerminationFlowContractMutationOutput!
+  deleteContract(input: TerminationFlowDeleteContractInput!): TerminationFlowContractMutationOutput!
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when starting the add/upgrade addon flow.
@@ -3641,11 +3645,11 @@ type PriceIntent {
   """
   product: Product!
   """
-  Submitted user form data.
+  UI-safe masked form data. PII fields (street, zipCode, city) are always masked.
   """
   data: PricingFormData!
   """
-  Data submitted in other places or inferred from other data points
+  Masked, uncommitted form data from automatic lookup (e.g. SPAR address, trial data). PII fields are masked the same way as 'data'.
   """
   suggestedData: PricingFormData!
   """
@@ -3673,6 +3677,10 @@ type PriceIntent {
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
   hasCollectedInsurelyData: Boolean!
+  """
+  When 'true' all required form data has been provided and the price intent can be confirmed.
+  """
+  isReadyToConfirm: Boolean!
 }
 enum PriceIntentAnimal {
   CAT
@@ -3894,20 +3902,6 @@ type ProductOfferAddon {
   """
   isSelected: Boolean!
 }
-type ProductOfferAddonCost {
-  """
-  The ID of the addon
-  """
-  addonId: UUID!
-  """
-  Gross cost of the addon.
-  """
-  grossCost: Money!
-  """
-  Net cost of the addon.
-  """
-  netCost: Money!
-}
 """
 Bundle discount information for a product offer
 """
@@ -3943,10 +3937,6 @@ type ProductOfferCost {
   """
   discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
   discountsV2: [ExtendedItemDiscount!]!
-  """
-  Collection of costs for addons that affect an item.
-  """
-  addonCosts: [ProductOfferAddonCost!]!
 }
 type ProductOfferDeductible {
   displayName: String!
@@ -4138,6 +4128,7 @@ type Query {
   Cost for selected configuration of removed addon offer
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
+  terminationSurvey(contractId: UUID!): TerminationFlowSurvey!
   """
   Call this to get the cost of an addon offer for selected addon(s).
   """
@@ -4338,6 +4329,11 @@ type ShopSessionCustomer {
   """
   ssn: String
   """
+  The customer's email address. Only available for new members.
+  Returns null for existing/returning members to protect their PII.
+  """
+  email: String
+  """
   The list of fields that need to be added in order to sign properly.
   Can be updated through `Mutation.shopSessionCustomerUpdate`.
   """
@@ -4498,9 +4494,73 @@ type SwitcherCaseMutationOutput {
   switcherCase: SwitcherCase
   userError: UserError
 }
+union TerminationFlowAction = TerminationFlowActionTerminateWithDate|TerminationFlowActionDeleteInsurance
+type TerminationFlowActionDeleteInsurance {
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowActionTerminateWithDate {
+  minDate: Date!
+  maxDate: Date!
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowContractMutationOutput {
+  contract: Contract
+  userError: UserError
+}
+input TerminationFlowDeleteContractInput {
+  contractId: ID!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
+}
+type TerminationFlowExtraCoverageItem {
+  displayName: String!
+  displayValue: String
+}
+type TerminationFlowNotification {
+  message: String!
+  type: TerminationFlowNotificationType!
+}
 input TerminationFlowNotificationInput {
   contractId: ID!
   terminationDate: Date!
+}
+enum TerminationFlowNotificationType {
+  INFO
+  WARNING
+}
+type TerminationFlowSurvey {
+  options: [TerminationFlowSurveyOption!]!
+  action: TerminationFlowAction!
+}
+type TerminationFlowSurveyOption {
+  id: ID!
+  title: String!
+  subOptions: [TerminationFlowSurveyOption!]!
+  feedbackRequired: Boolean!
+  suggestion: TerminationFlowSurveyOptionSuggestion
+}
+type TerminationFlowSurveyOptionSuggestion {
+  type: TerminationFlowSurveyOptionSuggestionType!
+  description: String!
+  url: String
+}
+enum TerminationFlowSurveyOptionSuggestionType {
+  UPDATE_ADDRESS
+  UPGRADE_COVERAGE
+  DOWNGRADE_PRICE
+  REDIRECT
+  INFO
+  AUTO_CANCEL_SOLD
+  AUTO_CANCEL_SCRAPPED
+  AUTO_DECOMMISSION
+  AUTO_CANCEL_DECOMMISSION
+  CAR_ALREADY_DECOMMISSION
+}
+input TerminationFlowTerminateContractInput {
+  contractId: ID!
+  terminationDate: Date!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
 }
 type TotalCost {
   monthlyGross: Money!
