@@ -79,8 +79,12 @@ fun NavGraphBuilder.insuranceGraph(
         viewModel = viewModel,
         onEditCoInsuredClick = dropUnlessResumed { contractId: String -> startEditCoInsured(contractId) },
         onEditCoOwnersClick = dropUnlessResumed { contractId: String -> startEditCoOwners(contractId) },
-        onMissingCoInsuredInfoClick = dropUnlessResumed { contractId: String -> startEditCoInsuredAddMissingInfo(contractId) },
-        onMissingCoOwnersInfoClick = dropUnlessResumed { contractId: String -> startEditCoOwnersAddMissingInfo(contractId) },
+        onMissingCoInsuredInfoClick = dropUnlessResumed { contractId: String ->
+          startEditCoInsuredAddMissingInfo(contractId)
+        },
+        onMissingCoOwnersInfoClick = dropUnlessResumed { contractId: String ->
+          startEditCoOwnersAddMissingInfo(contractId)
+        },
         onChangeAddressClick = dropUnlessResumed { startMovingFlow() },
         onCancelInsuranceClick = dropUnlessResumed { cancelInsuranceData: CancelInsuranceData ->
           startTerminationFlow(cancelInsuranceData)

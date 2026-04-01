@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
@@ -99,6 +100,7 @@ import hedvig.resources.CLAIM_CHAT_FORM_NUMBER_MIN_CHAR
 import hedvig.resources.CLAIM_CHAT_FORM_REQUIRED_FIELD
 import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.claims_skip_button
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
@@ -376,8 +378,11 @@ private fun FormContent(
                     SentItemCard(
                       imageLoader = imageLoader,
                       itemTitle = selected.text,
-                      itemSubtitle = if (!selected.isCustomSearchEntry) selected.subtitle else
-                        stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE),
+                      itemSubtitle = if (!selected.isCustomSearchEntry) {
+                        selected.subtitle
+                      } else {
+                        stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE)
+                      },
                       itemImageUrl = selected.imageUrl,
                     )
                   }
@@ -389,12 +394,17 @@ private fun FormContent(
                 val suffix = if (initialTextValue.isNotEmpty() && field.suffix != null) " ${field.suffix}" else ""
                 val textValue = "$initialTextValue$suffix"
                 Column(
-                  Modifier.fillMaxWidth().padding(start = sentAnswersStartPadding),
+                  Modifier.fillMaxWidth()
+                    .padding(start = sentAnswersStartPadding),
                   horizontalAlignment = Alignment.End,
                 ) {
                   if (textValue.isNotEmpty()) {
+                    val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + textValue
                     RoundCornersPill(
                       onClick = null,
+                      modifier = Modifier.clearAndSetSemantics {
+                        contentDescription = description
+                      },
                     ) {
                       HedvigText(textValue, textAlign = TextAlign.End)
                     }
@@ -445,8 +455,11 @@ internal fun SearchForm(
         enabled = true,
       )
     } else {
-      val subtitle = if (!selectedOption.isCustomSearchEntry) selectedOption.subtitle else
+      val subtitle = if (!selectedOption.isCustomSearchEntry) {
+        selectedOption.subtitle
+      } else {
         stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE)
+      }
       SearchItemCard(
         imageLoader = imageLoader,
         itemTitle = selectedOption.text,
@@ -704,7 +717,7 @@ private fun SearchItemCard(
             ) {
               AsyncImage(
                 model = itemImageUrl,
-                contentDescription = itemTitle,
+                contentDescription = EmptyContentDescription,
                 placeholder = crossSellPainterFallback(),
                 error = crossSellPainterFallback(),
                 fallback = crossSellPainterFallback(),
@@ -724,14 +737,12 @@ private fun SearchItemCard(
               textAlign = TextAlign.Start,
             )
             itemSubtitle?.let {
-
               HedvigText(
                 text = itemSubtitle,
                 textAlign = TextAlign.Start,
                 color = HedvigTheme.colorScheme.textSecondary,
                 style = HedvigTheme.typography.finePrint,
               )
-
             }
           }
         }
@@ -743,13 +754,11 @@ private fun SearchItemCard(
         ) {
           Icon(
             imageVector = HedvigIcons.ChevronRight,
-            contentDescription = EmptyContentDescription, //todo: not sure
+            contentDescription = EmptyContentDescription, // todo: not sure
             tint = HedvigTheme.colorScheme.fillPrimary,
             modifier = Modifier.size(24.dp),
           )
-
         }
-
       },
       spaceBetween = 6.dp,
     )
@@ -764,30 +773,35 @@ private fun SentItemCard(
   itemImageUrl: String?,
   modifier: Modifier = Modifier,
 ) {
+  val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + "$itemTitle, $itemSubtitle"
   HedvigCard(
     onClick = null,
-    modifier = modifier,
+    modifier = modifier.clearAndSetSemantics {
+      contentDescription = description
+    },
     color = HedvigTheme.colorScheme.surfacePrimary,
     shape = HedvigTheme.shapes.cornerXLarge,
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier.padding(horizontal = 16.dp)
+      modifier = Modifier.padding(horizontal = 16.dp),
     ) {
       if (itemImageUrl != null) {
-        Box (
+        Box(
           contentAlignment = Alignment.Center,
           modifier = Modifier
             .size(46.dp)
             .background(Color(0xFFFFFFFF), HedvigTheme.shapes.cornerSmall)
-            .border(1.dp,
+            .border(
+              1.dp,
               HedvigTheme.colorScheme.borderPrimary,
-              HedvigTheme.shapes.cornerSmall)
-            .clip(HedvigTheme.shapes.cornerSmall)
-        ){
+              HedvigTheme.shapes.cornerSmall,
+            )
+            .clip(HedvigTheme.shapes.cornerSmall),
+        ) {
           AsyncImage(
             model = itemImageUrl,
-            contentDescription = itemTitle,
+            contentDescription = EmptyContentDescription,
             placeholder = crossSellPainterFallback(),
             error = crossSellPainterFallback(),
             fallback = crossSellPainterFallback(),
@@ -813,7 +827,6 @@ private fun SentItemCard(
             color = HedvigTheme.colorScheme.textSecondary,
             style = HedvigTheme.typography.finePrint,
           )
-
         }
       }
     }

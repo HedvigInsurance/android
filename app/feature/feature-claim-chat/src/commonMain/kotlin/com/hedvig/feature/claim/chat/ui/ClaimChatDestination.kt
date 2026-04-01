@@ -49,7 +49,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -341,8 +344,9 @@ private fun ClaimChatScreenContent(
 
   Box(modifier = modifier.fillMaxSize()) {
     Column(Modifier.matchParentSize()) {
+      val title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE)
       TopAppBar(
-        title = stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
+        title = title,
         actionType = TopAppBarActionType.BACK,
         onActionClick = {
           if (uiState.steps.size > 1) {
@@ -641,9 +645,9 @@ private fun StepTopContent(
 
   Column(modifier) {
     val density = LocalDensity.current
-    if (stepItem.stepContent !is StepContent.Task
-      && stepItem.stepContent !is StepContent.Summary
-      && stepItem.showSpinForThisStep
+    if (stepItem.stepContent !is StepContent.Task &&
+      stepItem.stepContent !is StepContent.Summary &&
+      stepItem.showSpinForThisStep
     ) {
       HelipadRiveAnimation(
         bottomAnimationFinished = isAnimationComplete,
@@ -878,7 +882,6 @@ private fun StepBottomContent(
     }
   }
 }
-
 
 internal val animationSize = 32.sp
 

@@ -207,9 +207,9 @@ internal fun YourInfoTab(
           add(
             addon.addonVariant.displayName
               to stringResource(
-              Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              addon.premium.toString(),
-            ),
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                addon.premium.toString(),
+              ),
           )
         }
         upcomingChangesInsuranceAgreement.cost.discounts.forEach { discount ->

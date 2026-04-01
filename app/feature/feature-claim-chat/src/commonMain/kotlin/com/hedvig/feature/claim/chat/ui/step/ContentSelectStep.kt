@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -29,6 +31,7 @@ import com.hedvig.feature.claim.chat.ui.common.RoundCornersPill
 import com.hedvig.feature.claim.chat.ui.common.SkippedLabel
 import hedvig.resources.GENERAL_CONFIRM
 import hedvig.resources.Res
+import hedvig.resources.TALKBACK_CLAIM_CHAT_YOUR_ANSWER
 import hedvig.resources.claims_skip_button
 import org.jetbrains.compose.resources.stringResource
 
@@ -103,9 +106,15 @@ internal fun ContentSelectStep(
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
           val selected = options.firstOrNull { it.id == selectedOptionId }
           if (selected != null) {
+            val description = stringResource(Res.string.TALKBACK_CLAIM_CHAT_YOUR_ANSWER) + selected.title
             RoundCornersPill(
               onClick = null,
-              modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.End),
+              modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End)
+                .clearAndSetSemantics {
+                  contentDescription = description
+                },
             ) {
               HedvigText(selected.title)
             }

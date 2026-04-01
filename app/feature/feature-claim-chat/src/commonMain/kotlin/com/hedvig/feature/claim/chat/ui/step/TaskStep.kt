@@ -39,13 +39,14 @@ internal fun TaskStepTopContent(
   val taskContentDescription = stringResource(Res.string.CLAIM_CHAT_TASK_CONTENT_DESCRIPTION)
   Column(
     modifier.clearAndSetSemantics {
-      contentDescription = taskContentDescription
+      if (isLastStep) {
+        contentDescription = taskContentDescription
+      }
       if (taskContent.failedToSubmit) {
         hideFromAccessibility()
       }
     },
   ) {
-
     Column {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -59,9 +60,9 @@ internal fun TaskStepTopContent(
             HelipadRiveAnimation(
               bottomAnimationFinished = taskContent.isAnimationFinished,
               modifier = Modifier.size(
-                with (density) {
+                with(density) {
                   animationSize.toDp()
-                }
+                },
               ),
               stepId = stepId,
             )

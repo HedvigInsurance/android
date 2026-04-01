@@ -56,10 +56,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun StartClaimBottomSheet(
   state: HedvigBottomSheetState<Unit>,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
-  isExperimentalClaimChatEnabled: Boolean,
   isStagingEnvironment: Boolean,
 ) {
   HedvigBottomSheet(
@@ -67,9 +65,7 @@ internal fun StartClaimBottomSheet(
     content = {
       StartClaimBottomSheetContent(
         state,
-        isExperimentalClaimChatEnabled,
         navigateToClaimChat,
-        navigateToOldClaimFlow,
         isStagingEnvironment,
         navigateToClaimChatInDevMode,
       )
@@ -80,9 +76,7 @@ internal fun StartClaimBottomSheet(
 @Composable
 private fun StartClaimBottomSheetContent(
   state: HedvigBottomSheetState<Unit>,
-  isExperimentalClaimChatEnabled: Boolean,
   navigateToClaimChat: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   isStagingEnvironment: Boolean,
   navigateToClaimChatInDevMode: () -> Unit,
 ) {
@@ -93,8 +87,8 @@ private fun StartClaimBottomSheetContent(
       text = stringResource(Res.string.HONESTY_PLEDGE_HEADER),
       textAlign = TextAlign.Center,
       modifier = Modifier
-          .fillMaxWidth()
-          .semantics { heading() },
+        .fillMaxWidth()
+        .semantics { heading() },
     )
     Spacer(Modifier.height(16.dp))
     PledgeNotes()
@@ -111,21 +105,14 @@ private fun StartClaimBottomSheetContent(
       enabled = isChecked,
       onClick = dropUnlessResumed {
         state.dismiss {
-          if (isExperimentalClaimChatEnabled) {
-            navigateToClaimChat()
-          } else {
-            navigateToOldClaimFlow()
-          }
+          navigateToClaimChat()
         }
       },
       modifier = Modifier.fillMaxWidth(),
     )
     if (isStagingEnvironment) {
       StagingButtons(
-        isExperimentalClaimChatEnabled,
         state,
-        navigateToOldClaimFlow,
-        navigateToClaimChat,
         navigateToClaimChatInDevMode,
       )
     }
@@ -145,39 +132,13 @@ private fun StartClaimBottomSheetContent(
 }
 
 @Composable
-private fun StagingButtons(
-  isExperimentalClaimChatEnabled: Boolean,
-  state: HedvigBottomSheetState<Unit>,
-  navigateToOldClaimFlow: () -> Unit,
-  navigateToClaimChat: () -> Unit,
-  navigateToClaimChatInDevMode: () -> Unit,
-) {
+private fun StagingButtons(state: HedvigBottomSheetState<Unit>, navigateToClaimChatInDevMode: () -> Unit) {
   Column {
     Spacer(Modifier.height(16.dp))
     Row(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier.fillMaxWidth(),
     ) {
-      HedvigButton(
-        text = if (isExperimentalClaimChatEnabled) {
-          "Old claim flow"
-        } else {
-          "New claim chat"
-        },
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        buttonSize = ButtonDefaults.ButtonSize.Small,
-        onClick = dropUnlessResumed {
-          state.dismiss {
-            if (isExperimentalClaimChatEnabled) {
-              navigateToOldClaimFlow()
-            } else {
-              navigateToClaimChat()
-            }
-          }
-        },
-        modifier = Modifier.weight(1f),
-      )
       HedvigButton(
         text = "Claim Chat (Dev)",
         enabled = true,
@@ -205,9 +166,9 @@ private fun PledgeNotes() {
       Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
-            .fillMaxWidth()
-            .horizontalDivider(DividerPosition.Top, index != 0)
-            .padding(vertical = 16.dp),
+          .fillMaxWidth()
+          .horizontalDivider(DividerPosition.Top, index != 0)
+          .padding(vertical = 16.dp),
       ) {
         Icon(HedvigIcons.Checkmark, null, Modifier.size(24.dp))
         HedvigText(text, Modifier.weight(1f), color = HedvigTheme.colorScheme.textSecondaryTranslucent)
@@ -225,8 +186,8 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
       Column(modifier = Modifier.weight(1f)) {
         HedvigText(
@@ -262,9 +223,7 @@ private fun PreviewStartClaimBottomSheetContent() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       StartClaimBottomSheetContent(
         state = rememberHedvigBottomSheetState(),
-        isExperimentalClaimChatEnabled = true,
         navigateToClaimChat = {},
-        navigateToOldClaimFlow = {},
         isStagingEnvironment = true,
         navigateToClaimChatInDevMode = {},
       )
