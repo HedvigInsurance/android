@@ -11,7 +11,7 @@ struct umbrella_consumerApp: App {
             featureManager: iosFeatureManager(),
             appBuildConfig: IosAppBuildConfig(),
         )
-        LogcatLogger.install(AndroidLogcatLogger())
+        IosLogcatLogger.companion.install()
     }
     var body: some Scene {
         WindowGroup {

@@ -21,6 +21,7 @@ kotlin {
     projects.coreDatastorePublic,
     projects.featureFlags,
     projects.featureHelpCenter,
+    projects.loggingPublic,
     projects.networkClients,
     projects.shareddi,
   )
