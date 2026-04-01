@@ -16,15 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.common.navigation.SigningParameters
 import com.hedvig.android.feature.purchase.common.navigation.SummaryParameters
@@ -44,10 +43,17 @@ fun PurchaseSummaryDestination(
     navigateToSigning(signing)
   }
 
+  if (uiState.submitError != null) {
+    ErrorDialog(
+      title = "N\u00e5got gick fel",
+      message = uiState.submitError,
+      onDismiss = { viewModel.emit(PurchaseSummaryEvent.DismissError) },
+    )
+  }
+
   PurchaseSummaryScreen(
     params = uiState.params,
     isSubmitting = uiState.isSubmitting,
-    submitError = uiState.submitError,
     navigateUp = navigateUp,
     onConfirm = { viewModel.emit(PurchaseSummaryEvent.Confirm) },
   )
@@ -57,7 +63,6 @@ fun PurchaseSummaryDestination(
 private fun PurchaseSummaryScreen(
   params: SummaryParameters,
   isSubmitting: Boolean,
-  submitError: String?,
   navigateUp: () -> Unit,
   onConfirm: () -> Unit,
 ) {
@@ -135,14 +140,6 @@ private fun PurchaseSummaryScreen(
       }
     }
     Spacer(Modifier.weight(1f))
-    if (submitError != null) {
-      Spacer(Modifier.height(8.dp))
-      HedvigNotificationCard(
-        message = submitError,
-        priority = NotificationDefaults.NotificationPriority.Error,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      )
-    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = "Signera med BankID",
@@ -181,7 +178,6 @@ private fun PreviewPurchaseSummary() {
           productDisplayName = "Hemf\u00f6rs\u00e4kring Hyresr\u00e4tt",
         ),
         isSubmitting = false,
-        submitError = null,
         navigateUp = {},
         onConfirm = {},
       )

@@ -37,6 +37,8 @@ internal sealed interface CarFormEvent {
   data object ClearNavigation : CarFormEvent
 
   data object Retry : CarFormEvent
+
+  data object DismissError : CarFormEvent
 }
 
 internal data class CarFormState(
@@ -117,6 +119,10 @@ private class CarFormPresenter(
             currentState = currentState.copy(submitError = null)
           }
         }
+
+        CarFormEvent.DismissError -> {
+          currentState = currentState.copy(submitError = null)
+        }
       }
     }
 
@@ -186,7 +192,6 @@ private data class ValidationErrors(
     emailError != null
 }
 
-private val REGISTRATION_NUMBER_REGEX = Regex("^[A-Z]{3} \\d{2}[A-Z0-9]$")
 private val EMAIL_REGEX = Regex("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")
 
 private fun validate(
@@ -204,8 +209,8 @@ private fun validate(
       else -> null
     },
     registrationNumberError = when {
-      registrationNumber.isBlank() -> "Ange ett registreringsnummer"
-      !REGISTRATION_NUMBER_REGEX.matches(registrationNumber) -> "Ange ett giltigt registreringsnummer (t.ex. ABC 12D)"
+      registrationNumber.isBlank() -> "Ange registreringsnummer"
+      registrationNumber.replace(" ", "").length != 6 -> "Ange ett giltigt registreringsnummer (t.ex. ABC 123)"
       else -> null
     },
     mileageError = if (mileage == null) "V\u00e4lj miltal" else null,

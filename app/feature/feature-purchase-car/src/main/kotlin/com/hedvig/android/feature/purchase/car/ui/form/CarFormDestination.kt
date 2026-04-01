@@ -23,17 +23,16 @@ import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownStyle
 import com.hedvig.android.design.system.hedvig.DropdownItem.SimpleDropdownItem
 import com.hedvig.android.design.system.hedvig.DropdownWithDialog
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.car.data.CarOffers
 
@@ -53,7 +52,6 @@ internal fun CarFormDestination(
   }
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = "Bilf\u00f6rs\u00e4kring",
   ) {
     when {
       uiState.isLoadingSession -> {
@@ -74,6 +72,13 @@ internal fun CarFormDestination(
         var zipCode by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
 
+        if (uiState.submitError != null) {
+          ErrorDialog(
+            title = "N\u00e5got gick fel",
+            message = uiState.submitError,
+            onDismiss = { viewModel.emit(CarFormEvent.DismissError) },
+          )
+        }
         CarFormContent(
           ssn = ssn,
           registrationNumber = registrationNumber,
@@ -87,11 +92,11 @@ internal fun CarFormDestination(
           streetError = uiState.streetError,
           zipCodeError = uiState.zipCodeError,
           emailError = uiState.emailError,
-          submitError = uiState.submitError,
           isSubmitting = uiState.isSubmitting,
           onSsnChanged = { value -> if (value.length <= 12 && value.all { it.isDigit() }) ssn = value },
           onRegistrationNumberChanged = { value ->
-            registrationNumber = formatRegistrationNumber(value)
+            val filtered = value.uppercase().filter { it.isLetterOrDigit() || it == ' ' }
+            if (filtered.length <= 7) registrationNumber = filtered
           },
           onMileageSelected = { selectedMileage = it },
           onStreetChanged = { street = it },
@@ -123,12 +128,6 @@ internal enum class MileageOption(val value: Int, val displayName: String) {
   MILEAGE_2500_PLUS(2501, "2 500+ mil"),
 }
 
-private fun formatRegistrationNumber(input: String): String {
-  val cleaned = input.uppercase().filter { it.isLetterOrDigit() }
-  if (cleaned.length <= 3) return cleaned
-  return cleaned.take(3) + " " + cleaned.drop(3).take(3)
-}
-
 @Composable
 private fun CarFormContent(
   ssn: String,
@@ -143,7 +142,6 @@ private fun CarFormContent(
   streetError: String?,
   zipCodeError: String?,
   emailError: String?,
-  submitError: String?,
   isSubmitting: Boolean,
   onSsnChanged: (String) -> Unit,
   onRegistrationNumberChanged: (String) -> Unit,
@@ -244,14 +242,6 @@ private fun CarFormContent(
         enabled = !isSubmitting,
       )
     }
-    if (submitError != null) {
-      Spacer(Modifier.height(8.dp))
-      HedvigNotificationCard(
-        message = submitError,
-        priority = NotificationDefaults.NotificationPriority.Error,
-        modifier = Modifier.fillMaxWidth(),
-      )
-    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = "Ber\u00e4kna pris",
@@ -290,7 +280,6 @@ private fun PreviewCarFormEmpty() {
         streetError = null,
         zipCodeError = null,
         emailError = null,
-        submitError = null,
         isSubmitting = false,
         onSsnChanged = {},
         onRegistrationNumberChanged = {},
@@ -322,7 +311,6 @@ private fun PreviewCarFormFilled() {
         streetError = null,
         zipCodeError = null,
         emailError = null,
-        submitError = null,
         isSubmitting = false,
         onSsnChanged = {},
         onRegistrationNumberChanged = {},

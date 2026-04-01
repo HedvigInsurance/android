@@ -53,6 +53,10 @@ class PurchaseSummaryPresenter(
           signingToNavigate = null
           submitError = null
         }
+
+        PurchaseSummaryEvent.DismissError -> {
+          submitError = null
+        }
       }
     }
 
@@ -99,4 +103,6 @@ sealed interface PurchaseSummaryEvent {
   data object Confirm : PurchaseSummaryEvent
 
   data object ClearNavigation : PurchaseSummaryEvent
+
+  data object DismissError : PurchaseSummaryEvent
 }
