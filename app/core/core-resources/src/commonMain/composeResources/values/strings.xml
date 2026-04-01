@@ -10,6 +10,7 @@
     <item quantity="one">You have %1$d eligible insurance.</item>
     <item quantity="other">You have %1$d eligible insurances.</item>
   </plurals>
+  <string name="A11Y_OF">of</string>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="A11Y_SCROLL_DOWN">Scroll to bottom</string>
@@ -167,6 +168,11 @@
   <string name="CHAT_TITLE">Messages</string>
   <string name="CHAT_UPLOAD_PRESS_SEND_LABEL">Send</string>
   <string name="CHECKOUT_TITLE">Checkout</string>
+  <string name="CHIP_ID_LABEL">Chip-ID</string>
+  <string name="CHIP_ID_MISSING_BUTTON">Add Chip-ID</string>
+  <string name="CHIP_ID_MISSING_MESSAGE">Chip ID for your pet is missing</string>
+  <string name="CHIP_ID_TOP_TITLE">Update pet Chip-ID</string>
+  <string name="CHIP_ID_WRONG_INPUT">Must be 15 digits</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_BODY">Don’t miss out on important information for your claim</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_CTA">Enable notifications</string>
   <string name="CLAIMS_CASE">Case</string>
@@ -209,7 +215,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
-  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Custom item</string>
+  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Other item</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">If you don't know the exact date, enter an approximate date.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Edit answer</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.</string>
@@ -782,6 +788,7 @@
   <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">At %1$s, %2$s sent a file with type: %3$s, double tap to open.</string>
   <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">At %1$s, %2$s sent a GIF picture.</string>
   <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">At %1$s, %2$s said: %3$s</string>
+  <string name="TALKBACK_CLAIM_CHAT_YOUR_ANSWER">Your answer: </string>
   <string name="TALKBACK_CLAIM_STATUS">Claim status: %1$s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information about your claim</string>
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %1$s. Last message at %2$s.</string>
@@ -809,6 +816,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%1$s per month</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Pinch to zoom</string>
+  <string name="TALKBACK_PLAYBACK_BUTTON_STATE">Play recording. Button.</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Increase</string>
   <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
@@ -840,9 +848,12 @@
   <string name="TERMINATION_BUTTON">Cancel insurance</string>
   <string name="TERMINATION_DATE_TEXT">Select termination date</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">We’ll send a cancellation confirmation within a few days. If you don’t get it after 5 days, feel free to contact us.</string>
-  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Since you’ve decommissioned your car, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOM">If you’ve decommissioned your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Since your car has been decommissioned, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION">Once your car is registered as active with Transportstyrelsen, your insurance will be updated automatically to your previous coverage.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED">If you’ve scrapped your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Since your car has been scrapped, your insurance will be automatically cancelled.</string>
-  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE">Since you\’ve sold your car, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD">If you’ve sold your car, we’ll cancel your insurance automatically. We receive this information directly from Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">We’ll cancel your insurance automatically</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">You’ll receive a confirmation email within a few days, where you can see your new price.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">What it costs</string>
@@ -851,12 +862,13 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">If you’ve decommissioned your car through Transportstyrelsen, your insurance will automatically switch to decommission insurance.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">If you don’t want to keep your decommission insurance, you can cancel it below.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Your insurance will switch to decommission insurance</string>
-  <string name="TERMINATION_FLOW_CAR_BACK_MESSAGE">Since your car is registered again, your insurance will automatically switch back to your regular coverage.</string>
-  <string name="TERMINATION_FLOW_CAR_BACK_TITLE">Your car is back on the road</string>
+  <string name="TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE">We’ll update your insurance automatically</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Cancel insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab "Payments" here in the app.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Cancelling your insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON">Cancel insurance</string>
+  <string name="TERMINATION_FLOW_CAR_BACK_MESSAGE">Since your car is registered again, your insurance will automatically switch back to your regular coverage.</string>
+  <string name="TERMINATION_FLOW_CAR_BACK_TITLE">Your car is back on the road</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_INFO">Please note that you can only cancel one insurance at a time</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE">Select the insurance you want to cancel</string>
   <string name="TERMINATION_FLOW_CONFIRMATION">Your insurance will be cancelled directly</string>

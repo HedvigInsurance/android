@@ -262,6 +262,7 @@ fun NavGraphBuilder.terminateInsuranceGraph(
         suggestionType = suggestionType,
         navigateUp = navController::navigateUp,
         closeTerminationFlow = closeTerminationFlow,
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         onContinueTermination = {
           when (val terminationAction = action) {
             is TerminationAction.TerminateWithDate -> {

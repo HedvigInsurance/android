@@ -163,7 +163,7 @@ private fun AreYouSureScreen(
     if (type is Termination) {
       val dateTimeFormatter = rememberHedvigDateTimeFormatter()
       Spacer(Modifier.height(4.dp))
-      HedvigCard(Modifier.padding(horizontal = 16.dp)) {
+      HedvigCard(modifier.padding(horizontal = 16.dp)) {
         Column(Modifier.padding(16.dp)) {
           HedvigText(
             stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
