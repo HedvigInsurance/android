@@ -3,10 +3,7 @@ import HedvigShared
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            HelpCenterViewController()
-        }
-        .padding()
+        HelpCenterViewController().ignoresSafeArea(.all)
     }
 }
 
