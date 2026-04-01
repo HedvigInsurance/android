@@ -15,7 +15,7 @@ struct umbrella_consumerApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().ignoresSafeArea(.all, edges: .all)
         }
     }
 }
