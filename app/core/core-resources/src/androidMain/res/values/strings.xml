@@ -848,9 +848,12 @@
   <string name="TERMINATION_BUTTON">Cancel insurance</string>
   <string name="TERMINATION_DATE_TEXT">Select termination date</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">We’ll send a cancellation confirmation within a few days. If you don’t get it after 5 days, feel free to contact us.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOM">If you’ve decommissioned your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Since your car has been decommissioned, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION">Once your car is registered as active with Transportstyrelsen, your insurance will be updated automatically to your previous coverage.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED">If you’ve scrapped your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Since your car has been scrapped, your insurance will be automatically cancelled.</string>
-  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE">Since you’ve sold your car, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD">If you’ve sold your car, we’ll cancel your insurance automatically. We receive this information directly from Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">We’ll cancel your insurance automatically</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">You’ll receive a confirmation email within a few days, where you can see your new price.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">What it costs</string>
@@ -859,6 +862,7 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">If you’ve decommissioned your car through Transportstyrelsen, your insurance will automatically switch to decommission insurance.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">If you don’t want to keep your decommission insurance, you can cancel it below.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Your insurance will switch to decommission insurance</string>
+  <string name="TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE">We’ll update your insurance automatically</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Cancel insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab \"Payments\" here in the app.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Cancelling your insurance</string>

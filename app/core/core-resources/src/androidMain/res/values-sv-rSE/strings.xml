@@ -848,9 +848,12 @@
   <string name="TERMINATION_BUTTON">Säg upp försäkring</string>
   <string name="TERMINATION_DATE_TEXT">Välj slutdatum</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">Vi skickar en bekräftelse på uppsägningen inom några dagar. Hör gärna av dig om du inte fått den efter 5 dagar.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOM">Om du har ställt av din bil säger vi upp din försäkring automatiskt. Vi får informationen direkt från Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE">Eftersom din bil har avställts kommer din försäkring att sägas upp automatiskt.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION">När du har ställt på bilen hos Transportstyrelsen uppdateras din försäkring automatiskt till ditt tidigare skydd.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED">Om du har skrotat din bil säger vi upp din försäkring automatiskt. Vi får informationen direkt från Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Eftersom din bil har skrotats kommer din försäkring att sägas upp automatiskt.</string>
-  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE">Eftersom du har sålt din bil kommer din försäkring att sägas upp automatiskt.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD">Om du har sålt din bil säger vi upp din försäkring automatiskt. Vi får informationen direkt från Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">Vi avslutar din försäkring automatiskt</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">Du kommer att få ett bekräftelsemail på din avställningsförsäkring inom några dagar, där du kommer att se ditt nya pris.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">Vad kostar det</string>
@@ -859,6 +862,7 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">Om du har ställt av din bil via Transportstyrelsen kommer din försäkring automatiskt övergå till en avställningsförsäkring.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">Vill du inte behålla din avställningsförsäkring kan du enkelt säga upp den nedan.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Din försäkring kommer övergå till en avställningsförsäkring</string>
+  <string name="TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE">Vi uppdaterar din försäkring automatiskt</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Säg upp försäkring</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken \"Betalningar\" här i appen.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Avsluta din försäkring</string>

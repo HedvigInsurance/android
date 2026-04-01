@@ -25,9 +25,10 @@ import hedvig.resources.GENERAL_CONTACT_US_TITLE
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_BUTTON
 import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_ABOUT
-import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE
-import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE
-import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_DECOM
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED
+import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_SOLD
 import hedvig.resources.TERMINATION_FLOW_AUTO_CANCEL_TITLE
 import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO
 import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE
@@ -36,8 +37,7 @@ import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE
 import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_INFO
 import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION
 import hedvig.resources.TERMINATION_FLOW_AUTO_DECOM_TITLE
-import hedvig.resources.TERMINATION_FLOW_CAR_BACK_MESSAGE
-import hedvig.resources.TERMINATION_FLOW_CAR_BACK_TITLE
+import hedvig.resources.TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE
 import hedvig.resources.TERMINATION_FLOW_I_UNDERSTAND_TEXT
 import org.jetbrains.compose.resources.stringResource
 
@@ -171,9 +171,9 @@ private fun rememberDeflectScreenContent(
 ): DeflectScreenContent {
   val autoCancelTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_TITLE)
   val autoCancelAbout = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_ABOUT)
-  val decommissionMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE)
-  val soldMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE)
-  val scrappedMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE)
+  val decommissionMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_DECOM)
+  val soldMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SOLD)
+  val scrappedMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED)
   val decomTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_TITLE)
   val decomInfo = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_INFO)
   val decomCoveredTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE)
@@ -181,8 +181,8 @@ private fun rememberDeflectScreenContent(
   val decomCostsTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE)
   val decomCostsInfo = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO)
   val decomNotification = stringResource(Res.string.TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION)
-  val carBackTitle = stringResource(Res.string.TERMINATION_FLOW_CAR_BACK_TITLE)
-  val carBackMessage = stringResource(Res.string.TERMINATION_FLOW_CAR_BACK_MESSAGE)
+  val carBackTitle = stringResource(Res.string.TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE)
+  val carBackMessage = stringResource(Res.string.TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION)
 
   return remember(suggestionType, apiDescription) {
     when (suggestionType) {
