@@ -41,10 +41,13 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.setText
+import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
@@ -251,12 +254,20 @@ private fun ExperimentalChipIdTextField() {
     textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
     outputTransformation = ChipIdOutputTransformation(maskColor),
     modifier = Modifier.padding(horizontal = 16.dp),
-    labelText = "Chip-ID",
-    inputTransformation = InputTransformation.maxLength(15).then {
-      if (!asCharSequence().isDigitsOnly()) {
-        revertAllChanges()
+    labelText = "Chip-ID OutputTransformation",
+    inputTransformation = InputTransformation.then (
+      object: InputTransformation {
+        override fun SemanticsPropertyReceiver.applySemantics() {
+          maxLength(30)
+        }
+
+        override fun TextFieldBuffer.transformInput() {
+          if (!asCharSequence().isDigitsOnly() || length > 15) {
+            revertAllChanges()
+          }
+        }
       }
-    },
+    ),
     keyboardOptions = KeyboardOptions(
       keyboardType = KeyboardType.Number,
       imeAction = ImeAction.Done,
@@ -309,7 +320,7 @@ private fun ChipIdTextField(
   val visualTransformation = ChipIdVisualTransformation(mask, maskColor)
   HedvigTextField(
     text = input,
-    labelText = labelText,
+    labelText = "ChipId VisualTransformation", //todo!!!
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
     onValueChange = {
       if (it.length <= 15) {
@@ -327,10 +338,10 @@ private fun ChipIdTextField(
     modifier = Modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp)
-      .clearAndSetSemantics {
-        contentDescription = "Enter ChipId. " +
-          "Edit box. Input: ${if (!input.isEmpty()) input else "empty"} Double tap to activate"
-      },
+//      .clearAndSetSemantics {
+//        contentDescription = "Enter ChipId. " +
+//          "Edit box. Input: ${if (!input.isEmpty()) input else "empty"} Double tap to activate"
+//      },
   )
 }
 
