@@ -32,6 +32,8 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.notification.permission.NotificationPermissionState
+import hedvig.resources.CHIP_ID_MISSING_BUTTON
+import hedvig.resources.CHIP_ID_MISSING_MESSAGE
 import hedvig.resources.CONTRACT_COINSURED_MISSING_ADD_INFO
 import hedvig.resources.CONTRACT_COINSURED_MISSING_INFO_TEXT
 import hedvig.resources.CONTRACT_COOWNERS_MISSING_INFO_TEXT
@@ -60,6 +62,7 @@ fun MemberReminderCardsWithoutNotification(
   onNavigateToNewConversation: () -> Unit,
   contentPadding: PaddingValues,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   MemberReminderCards(
@@ -72,6 +75,7 @@ fun MemberReminderCardsWithoutNotification(
     notificationPermissionState = null,
     contentPadding = contentPadding,
     navigateToContactInfo = navigateToContactInfo,
+    navigateToChipId = navigateToChipId,
     modifier = modifier,
   )
 }
@@ -85,6 +89,7 @@ fun MemberReminderCards(
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
   notificationPermissionState: NotificationPermissionState?,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -99,8 +104,9 @@ fun MemberReminderCards(
         onNavigateToNewConversation = onNavigateToNewConversation,
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
         notificationPermissionState = notificationPermissionState,
-        modifier = modifier.padding(contentPadding),
         navigateToContactInfo = navigateToContactInfo,
+        navigateToChipId = navigateToChipId,
+        modifier = modifier.padding(contentPadding),
       )
     } else if (memberReminders.isNotEmpty()) {
       val pagerState = rememberPagerState(pageCount = { memberReminders.size })
@@ -123,6 +129,7 @@ fun MemberReminderCards(
           snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
           notificationPermissionState = notificationPermissionState,
           navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipId,
           modifier = modifier.fillMaxWidth(),
         )
       }
@@ -147,6 +154,7 @@ private fun ColumnScope.MemberReminderCard(
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
   openUrl: (String) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -210,6 +218,13 @@ private fun ColumnScope.MemberReminderCard(
         modifier = modifier,
       )
     }
+
+    is MemberReminder.MissingChipId -> {
+      ReminderMissingChipId(
+        navigateToChipId = navigateToChipId,
+        modifier = modifier,
+      )
+    }
   }
 }
 
@@ -250,6 +265,19 @@ fun ReminderCardUpdateContactInfo(navigateToContactInfo: () -> Unit, modifier: M
     style = InfoCardStyle.Button(
       buttonText = stringResource(Res.string.MISSING_CONTACT_INFO_CARD_BUTTON),
       onButtonClick = navigateToContactInfo,
+    ),
+  )
+}
+
+@Composable
+internal fun ReminderMissingChipId(navigateToChipId: () -> Unit, modifier: Modifier = Modifier) {
+  HedvigNotificationCard(
+    message = stringResource(Res.string.CHIP_ID_MISSING_MESSAGE),
+    modifier = modifier,
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.CHIP_ID_MISSING_BUTTON),
+      onButtonClick = navigateToChipId,
     ),
   )
 }

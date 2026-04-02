@@ -164,6 +164,7 @@ internal fun HomeDestination(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -186,6 +187,7 @@ internal fun HomeDestination(
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
+    navigateToChipIdScreen = navigateToChipId,
     setEpochDayWhenLastToolTipShown = { epochDay ->
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
@@ -211,6 +213,7 @@ private fun HomeScreen(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -278,6 +281,7 @@ private fun HomeScreen(
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
             navigateToContactInfo = navigateToContactInfo,
+            navigateToChipIdScreen = navigateToChipIdScreen,
           )
         }
       }
@@ -424,6 +428,7 @@ private fun HomeScreenSuccess(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val isInPreview = LocalInspectionMode.current
@@ -502,6 +507,7 @@ private fun HomeScreenSuccess(
               openUrl = openUrl,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
               navigateToContactInfo = navigateToContactInfo,
+              navigateToChipId = navigateToChipIdScreen,
             )
           }
         },
@@ -800,6 +806,7 @@ private fun PreviewHomeScreen(
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
@@ -830,6 +837,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
@@ -881,6 +889,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},

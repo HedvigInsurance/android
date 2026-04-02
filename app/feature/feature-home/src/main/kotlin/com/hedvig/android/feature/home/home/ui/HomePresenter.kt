@@ -250,7 +250,9 @@ private data class SuccessData(
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
         veryImportantMessages = homeData.veryImportantMessages,
-        memberReminders = homeData.memberReminders.copy(enableNotifications = null),
+        memberReminders = homeData.memberReminders.copy(
+          enableNotifications = null,
+        ),
         showHelpCenter = homeData.showHelpCenter,
         chatAction = chatAction,
         firstVetAction = firstVetAction,

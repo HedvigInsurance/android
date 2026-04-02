@@ -28,6 +28,7 @@ import com.hedvig.android.compose.ui.preview.DoubleBooleanCollectionPreviewParam
 import com.hedvig.android.core.common.daysUntil
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
@@ -90,6 +91,8 @@ import hedvig.resources.ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION
 import hedvig.resources.CHANGE_ADDRESS_CO_INSURED_LABEL
 import hedvig.resources.CHANGE_ADDRESS_ONLY_YOU
 import hedvig.resources.CHANGE_ADDRESS_YOU_PLUS
+import hedvig.resources.CHIP_ID_MISSING_BUTTON
+import hedvig.resources.CHIP_ID_MISSING_MESSAGE
 import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_FROM
 import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
 import hedvig.resources.CONTRACT_COINSURED
@@ -137,6 +140,7 @@ internal fun YourInfoTab(
   onChangeTierClick: () -> Unit,
   isDecommissioned: Boolean,
   upcomingChangesInsuranceAgreement: InsuranceAgreement?,
+  chipIdState: ChipIdState,
   onEditCoInsuredClick: () -> Unit,
   onEditCoOwnersClick: () -> Unit,
   onMissingCoInsuredInfoClick: () -> Unit,
@@ -145,6 +149,7 @@ internal fun YourInfoTab(
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   onCancelInsuranceClick: () -> Unit,
+  onFillChipId: () -> Unit,
   isTerminated: Boolean,
   contractHolderDisplayName: String,
   contractHolderSSN: String?,
@@ -352,6 +357,20 @@ internal fun YourInfoTab(
           .padding(horizontal = 16.dp),
       )
     }
+    val hasMissingChipId = chipIdState is ChipIdState.Missing
+    if (hasMissingChipId) {
+      HedvigNotificationCard(
+        message = stringResource(Res.string.CHIP_ID_MISSING_MESSAGE),
+        priority = Attention,
+        style = Button(
+          stringResource(Res.string.CHIP_ID_MISSING_BUTTON),
+          onFillChipId,
+        ),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    }
     AddonsSection(
       existingAddons = existingAddons,
       availableAddons = availableAddons,
@@ -362,7 +381,12 @@ internal fun YourInfoTab(
     )
     if (!isTerminated) {
       Column(Modifier.padding(bottom = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (allowEditCoInsured || allowEditCoOwners || allowChangeTier || allowTerminatingInsurance) {
+        if (allowEditCoInsured ||
+          allowEditCoOwners ||
+          allowChangeTier ||
+          allowTerminatingInsurance ||
+          chipIdState is ChipIdState.Missing
+        ) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),
             enabled = true,
@@ -1007,6 +1031,8 @@ private fun PreviewYourInfoTab() {
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
         navigateToAddAddon = {},
+        chipIdState = ChipIdState.Missing,
+        onFillChipId = {},
       )
     }
   }
