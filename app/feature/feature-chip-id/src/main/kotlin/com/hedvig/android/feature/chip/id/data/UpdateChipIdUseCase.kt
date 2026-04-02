@@ -31,7 +31,7 @@ internal class UpdateChipIdUseCaseImpl(
       )
         .safeExecute {
           logcat { "UpdateChipIdNumberMutation error: $it" }
-          raise(ErrorMessage())
+          ErrorMessage()
         }
         .bind()
 
