@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -59,6 +60,122 @@ import com.hedvig.android.design.system.hedvig.icon.Image
 import kotlin.math.max
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+
+
+internal class HedvigTextFieldDecorator(
+  val value: String,
+  val enabled: Boolean,
+  val interactionSource: MutableInteractionSource,
+  val colors: HedvigTextFieldColors,
+  val configuration: HedvigTextFieldConfiguration,
+  val size: HedvigTextFieldSize,
+  val withPlaceholder: Boolean,
+  val isError: Boolean = false,
+  val readOnly: Boolean = false,
+  val label: @Composable (() -> Unit)? = null,
+  val suffix: @Composable (() -> Unit)? = null,
+  val leadingContent: @Composable (() -> Unit)? = null,
+  val trailingContent: @Composable (() -> Unit)? = null,
+  val supportingText: @Composable (() -> Unit)? = null,
+) : TextFieldDecorator {
+
+  @Composable
+  override fun Decoration(innerTextField: @Composable (() -> Unit)) {
+
+    val decoratedLabel: (@Composable (InputPhase) -> Unit)? = if (label != null) {
+      @Suppress("NAME_SHADOWING")
+      @Composable { inputPhase ->
+        com.hedvig.android.design.system.hedvig.internal.Decoration(
+          colors.labelColor(enabled = enabled, isError = isError, value = value).value,
+          if (inputPhase.onlyShowLabel) size.textStyle else size.labelTextStyle,
+        ) { label() }
+      }
+    } else {
+      null
+    }
+    val decoratedSuffix: (@Composable (InputPhase) -> Unit)? = if (suffix != null) {
+      @Suppress("NAME_SHADOWING")
+      @Composable { inputPhase ->
+        com.hedvig.android.design.system.hedvig.internal.Decoration(
+          if (inputPhase.onlyShowLabel) {
+            colors.labelColor(value, enabled, isError).value
+          } else {
+            colors.textColor(value, enabled, isError).value
+          },
+          size.textStyle,
+        ) { suffix() }
+      }
+    } else {
+      null
+    }
+    val decoratedLeadingContent: (@Composable () -> Unit)? = if (leadingContent != null) {
+      @Composable {
+        com.hedvig.android.design.system.hedvig.internal.Decoration(
+          colors.trailingContentColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
+        ) { leadingContent() }
+      }
+    } else {
+      null
+    }
+    val decoratedTrailingContent: (@Composable () -> Unit)? = if (trailingContent != null) {
+      @Composable {
+        com.hedvig.android.design.system.hedvig.internal.Decoration(
+          colors.trailingContentColor(readOnly = readOnly, enabled = enabled, isError = isError).value,
+        ) { trailingContent() }
+      }
+    } else {
+      null
+    }
+    val decoratedSupportingText: (@Composable () -> Unit)? = if (supportingText != null) {
+      @Composable {
+        com.hedvig.android.design.system.hedvig.internal.Decoration(
+          colors.supportingTextColor(),
+          size.labelTextStyle,
+        ) { supportingText() }
+      }
+    } else {
+      null
+    }
+    val isFocused = interactionSource.collectIsFocusedAsState().value
+    val inputPhase = when {
+      isFocused -> InputPhase.Focused
+      value.isEmpty() && !withPlaceholder -> InputPhase.UnfocusedEmpty
+      else -> InputPhase.UnfocusedNotEmpty
+    }
+    Column {
+      AnimatedTextFieldContent(
+        inputPhase = inputPhase,
+        configuration = configuration,
+        size = size,
+        innerTextField = innerTextField,
+        label = decoratedLabel,
+        suffix = decoratedSuffix,
+        leadingContent = decoratedLeadingContent,
+        trailingContent = decoratedTrailingContent,
+      ) { modifier, containerContent ->
+        ContainerBox(
+          value = value,
+          isError = isError,
+          colors = colors,
+          configuration = configuration,
+          modifier = modifier,
+          content = containerContent,
+        )
+      }
+      AnimatedContent(
+        targetState = decoratedSupportingText,
+        contentAlignment = Alignment.TopStart,
+        transitionSpec = { expandVertically() togetherWith shrinkVertically() },
+      ) { supportingText ->
+        if (supportingText != null) {
+          Box(Modifier.padding(size.supportingTextPadding)) {
+            supportingText()
+          }
+        }
+      }
+    }
+  }
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.chip.id.ui
 
+import android.text.TextUtils
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -21,8 +22,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.insert
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.then
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,8 +40,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.SemanticsPropertyReceiver
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.setText
+import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -74,6 +92,7 @@ import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import androidx.core.text.isDigitsOnly
 
 @Composable
 internal fun AddChipIdDestination(
@@ -181,9 +200,9 @@ private fun ColumnScope.AddChipIdContent(
     text = uiState.chipIdText,
     labelText = stringResource(Res.string.CHIP_ID_LABEL),
     updateText = updateText,
-
-    )
-
+  )
+  Spacer(Modifier.height(16.dp))
+  ExperimentalChipIdTextField()
   AnimatedContent(
     targetState = uiState.errorType,
     transitionSpec = { fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically() },
@@ -200,7 +219,10 @@ private fun ColumnScope.AddChipIdContent(
         priority = NotificationPriority.Error,
         modifier = Modifier
           .padding(horizontal = 16.dp)
-          .fillMaxWidth(),
+          .fillMaxWidth()
+          .semantics {
+            liveRegion = LiveRegionMode.Assertive
+          },
       )
     }
   }
@@ -222,6 +244,63 @@ private fun ColumnScope.AddChipIdContent(
 }
 
 @Composable
+private fun ExperimentalChipIdTextField() {
+  val textFieldState = remember {
+    TextFieldState("")
+  }
+  val maskColor = HedvigTheme.colorScheme.textTertiary
+  HedvigTextField(
+    state = textFieldState,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    outputTransformation = ChipIdOutputTransformation(maskColor),
+    modifier = Modifier.padding(horizontal = 16.dp),
+    labelText = "Chip-ID OutputTransformation",
+    inputTransformation = InputTransformation.then (
+      object: InputTransformation {
+        override fun SemanticsPropertyReceiver.applySemantics() {
+          maxLength(30)
+        }
+
+        override fun TextFieldBuffer.transformInput() {
+          if (!asCharSequence().isDigitsOnly() || length > 15) {
+            revertAllChanges()
+          }
+        }
+      }
+    ),
+    keyboardOptions = KeyboardOptions(
+      keyboardType = KeyboardType.Number,
+      imeAction = ImeAction.Done,
+    ),
+  )
+}
+
+@Stable
+data class ChipIdOutputTransformation(
+  val color: Color
+) : OutputTransformation {
+  override fun TextFieldBuffer.transformOutput() {
+
+    // xxx-xxx-xxx-xxx-xxx
+    val padCount = 15 - length
+    repeat(padCount) {
+      append('x')
+    }
+    if (length > 3) insert(3, "-")
+    if (length > 7) insert(7, "-")
+    if (length > 11) insert(11, "-")
+    if (length > 15) insert(15, "-")
+
+    val regex = Regex("x|(?<=x)-|-(?=x)")
+    regex
+      .findAll(asCharSequence())
+      .forEach { match ->
+        addStyle(SpanStyle(color = color), match.range.start, match.range.last + 1)
+      }
+  }
+}
+
+@Composable
 private fun ChipIdTextField(
   text: String,
   labelText: String,
@@ -229,12 +308,12 @@ private fun ChipIdTextField(
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   var input by remember { mutableStateOf(text) }
-  val mask = "000-000-000-000-000"
+  val mask = "xxx-xxx-xxx-xxx-xxx"
   val maskColor = HedvigTheme.colorScheme.textTertiary
   val visualTransformation = ChipIdVisualTransformation(mask, maskColor)
   HedvigTextField(
     text = input,
-    labelText = labelText,
+    labelText = "ChipId VisualTransformation", //todo!!! should be labelText
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
     onValueChange = {
       if (it.length <= 15) {
@@ -251,7 +330,11 @@ private fun ChipIdTextField(
     interactionSource = interactionSource,
     modifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+      .padding(horizontal = 16.dp)
+//      .clearAndSetSemantics {
+//        contentDescription = "Enter ChipId. " +
+//          "Edit box. Input: ${if (!input.isEmpty()) input else "empty"} Double tap to activate"
+//      },
   )
 }
 
