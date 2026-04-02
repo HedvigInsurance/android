@@ -1,8 +1,12 @@
 mutation UpdateChipIdNumber($petId: String!, $contractId: ID!) {
   midtermChangePetId(petId: $petId, contractId: $contractId) {
-    userError {
-      message
+    ...on MidtermChangePetIdOutput {
+      ... on MidtermChangePetIdActivationDate {
+        activationDate
+      }
+      ... on UserError {
+        message
+      }
     }
-    activationDate
   }
 }

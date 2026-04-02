@@ -10,6 +10,8 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
 import octopus.UpdateChipIdNumberMutation
+import octopus.UpdateChipIdNumberMutation.Data.MidtermChangePetId.Companion.asMidtermChangePetIdActivationDate
+import octopus.UpdateChipIdNumberMutation.Data.MidtermChangePetId.Companion.asUserError
 
 internal interface UpdateChipIdUseCase {
   suspend fun invoke(petId: String, insuranceId: String): Either<ErrorMessage, Unit>
@@ -29,15 +31,17 @@ internal class UpdateChipIdUseCaseImpl(
       )
         .safeExecute {
           logcat { "UpdateChipIdNumberMutation error: $it" }
-          ErrorMessage()
+          raise(ErrorMessage())
         }
         .bind()
 
-      val userError = result.midtermChangePetId?.userError
+      val userError = result.midtermChangePetId.asUserError()
       if (userError != null) {
         raise(ErrorMessage(userError.message))
       }
-      if (result.midtermChangePetId?.activationDate != null) {
+      val date = result.midtermChangePetId.asMidtermChangePetIdActivationDate()?.activationDate
+      if (date != null) {
+        logcat { "UpdateChipIdNumberMutation success with activationDate: $date" }
         Unit
       } else {
         raise(ErrorMessage())
