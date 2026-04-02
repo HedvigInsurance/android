@@ -297,7 +297,6 @@ data class ChipIdOutputTransformation(
       .forEach { match ->
         addStyle(SpanStyle(color = color), match.range.start, match.range.last + 1)
       }
-
   }
 }
 
@@ -314,7 +313,7 @@ private fun ChipIdTextField(
   val visualTransformation = ChipIdVisualTransformation(mask, maskColor)
   HedvigTextField(
     text = input,
-    labelText = "ChipId VisualTransformation", //todo!!!
+    labelText = "ChipId VisualTransformation", //todo!!! should be labelText
     errorState = HedvigTextFieldDefaults.ErrorState.NoError,
     onValueChange = {
       if (it.length <= 15) {
