@@ -280,18 +280,12 @@ data class ChipIdOutputTransformation(
   val color: Color
 ) : OutputTransformation {
   override fun TextFieldBuffer.transformOutput() {
-// Find dash
 
-
-    // Pad the text with placeholder chars if too short.
-    // ___-___-___-___-___
+    // xxx-xxx-xxx-xxx-xxx
     val padCount = 15 - length
     repeat(padCount) {
       append('x')
     }
-
-
-    // OOO-OOO-OOO-OOO-OOO
     if (length > 3) insert(3, "-")
     if (length > 7) insert(7, "-")
     if (length > 11) insert(11, "-")
