@@ -29,7 +29,7 @@ internal class GetMissingChipIdReminderUseCaseImpl(
             .bind()
             .currentMember
             .activeContracts
-            .firstOrNull { it.missingPetId }
+            .firstOrNull { it.isMissingPetId }
             ?.let { MemberReminder.MissingChipId() }
         }
       }

@@ -230,7 +230,7 @@ private fun ContractFragment.toContract(
         description = it.description,
       )
     }.orEmpty(),
-    chipId = when (missingPetId) {
+    chipId = when (isMissingPetId) {
       true -> ChipIdState.Missing
       false -> ChipIdState.NotRequired
     },

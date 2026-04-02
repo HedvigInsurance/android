@@ -25,7 +25,7 @@ internal class GetContractsWithMissingChipIdUseCaseImpl(
       .map { data ->
         data.currentMember.activeContracts
           .mapNotNull { contract ->
-            if (contract.missingPetId) {
+            if (contract.isMissingPetId) {
               PetContractForChipId(
                 id = contract.id,
                 displayName = contract.currentAgreement.productVariant.displayName,
