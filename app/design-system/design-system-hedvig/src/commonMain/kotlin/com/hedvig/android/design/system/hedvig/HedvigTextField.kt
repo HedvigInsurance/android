@@ -2,18 +2,29 @@
 
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldDecorator
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
@@ -30,12 +41,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -50,6 +65,8 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.internal.HedvigDecorationBox
+import com.hedvig.android.design.system.hedvig.internal.HedvigTextFieldDecorator
+import com.hedvig.android.design.system.hedvig.internal.InputPhase
 import com.hedvig.android.design.system.hedvig.tokens.LargeSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.MediumSizeTextFieldTokens
 import com.hedvig.android.design.system.hedvig.tokens.SmallSizeTextFieldTokens
@@ -766,6 +783,103 @@ private fun HedvigTextField(
   }
 }
 
+/**
+ * HedvigTextField with inputTransformation and outputTransformation.
+ */
+@Composable
+fun HedvigTextField(
+  state: TextFieldState,
+  textFieldSize: HedvigTextFieldDefaults.TextFieldSize,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  readOnly: Boolean = false,
+  inputTransformation: InputTransformation? = null,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+  onKeyboardAction: KeyboardActionHandler? = null,
+  lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,
+  onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
+  interactionSource: MutableInteractionSource? = null,
+  outputTransformation: OutputTransformation? = null,
+  scrollState: ScrollState = rememberScrollState(),
+  errorState: ErrorState = ErrorState.NoError,
+  labelText: String? = null,
+  suffix: @Composable (() -> Unit)? = null,
+  leadingContent: @Composable (() -> Unit)? = null,
+  trailingContent: @Composable (() -> Unit)? = null,
+) {
+  val colors = HedvigTextFieldDefaults.colors()
+  val size = textFieldSize.size
+  val cursorBrush: Brush = SolidColor(colors.cursorColor)
+  val configuration = HedvigTextFieldDefaults.configuration()
+  val trailingIconColor by colors.trailingContentColor(
+    readOnly = readOnly,
+    enabled = enabled,
+    isError = errorState is ErrorState.Error,
+  )
+  val textValue by remember {mutableStateOf(state.text)}
+  val intSource = interactionSource ?: remember { MutableInteractionSource() }
+  val isFocused by intSource.collectIsFocusedAsState()
+
+  val decorator = HedvigTextFieldDecorator(
+    value = textValue.toString(),
+    enabled = enabled,
+    interactionSource = intSource,
+    colors = colors,
+    configuration = configuration,
+    size = size,
+    isError = errorState.isError,
+    readOnly = readOnly,
+    label = labelText?.let {
+      { HedvigText(text = labelText) }
+    },
+    suffix = suffix,
+    leadingContent = leadingContent,
+    trailingContent = {
+      TrailingContent(
+        trailingContent = trailingContent,
+        errorState = errorState,
+        trailingIconColor = trailingIconColor,
+        readOnly = readOnly,
+        isFocused = isFocused,
+        text = textValue.toString(),
+        enabled = enabled,
+        clearText = { state.clearText() },
+      )
+    },
+    supportingText = if (errorState is ErrorState.Error.WithMessage) {
+      { HedvigText(text = errorState.message) }
+    } else {
+      null
+    },
+    withPlaceholder = outputTransformation!=null //todo: not sure!,
+  )
+
+  CompositionLocalProvider(LocalTextSelectionColors provides colors.selectionColors) {
+    BasicTextField(
+      state = state,
+      modifier = modifier,
+      enabled = enabled,
+      readOnly = readOnly,
+      inputTransformation = inputTransformation,
+      textStyle = size.textStyle.merge(
+        color = colors.textColor(
+          state.text.toString(),
+          enabled, errorState.isError,
+        ).value,
+      ),
+      keyboardOptions = keyboardOptions,
+      onKeyboardAction = onKeyboardAction,
+      lineLimits = lineLimits,
+      onTextLayout = onTextLayout,
+      interactionSource = interactionSource,
+      outputTransformation = outputTransformation,
+      decorator = decorator,
+      scrollState = scrollState,
+      cursorBrush = cursorBrush
+    )
+  }
+}
+
 @Composable
 private fun HedvigTextField(
   state: TextFieldState,
@@ -929,3 +1043,5 @@ private fun HedvigTextFieldDecorationBox(
 }
 
 private const val SignalAnimationDuration = 400L
+
+
