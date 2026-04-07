@@ -17,6 +17,9 @@ query MemberActions {
       isTravelCertificateEnabled
       isChangeTierEnabled
       memberId
+      sickAbroadDeflect {
+
+      }
       sickAbroadAction {
         deflectPartners {
           id

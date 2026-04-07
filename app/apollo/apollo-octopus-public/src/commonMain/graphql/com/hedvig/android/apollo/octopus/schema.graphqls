@@ -2512,6 +2512,11 @@ type Member {
 type MemberActions {
   memberId: ID!
   """
+  Returns a deflection to emergency partners if the member has an active contract that includes travel insurance coverage.
+  Reuses the ClaimIntentStepContentDeflection type for convenience.
+  """
+  sickAbroadDeflect: ClaimIntentStepContentDeflection
+  """
   Indicates that the member should review their phone number or add if it is missing.
   """
   isContactInfoUpdateNeeded: Boolean!
