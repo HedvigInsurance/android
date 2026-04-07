@@ -1,7 +1,5 @@
 package com.hedvig.android.ui.emergency
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,8 +28,6 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.HelipadOutline
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
 import hedvig.resources.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE
 import hedvig.resources.Res
 import hedvig.resources.SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL

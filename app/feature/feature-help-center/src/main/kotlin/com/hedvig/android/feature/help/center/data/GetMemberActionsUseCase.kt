@@ -49,7 +49,7 @@ internal class GetMemberActionsUseCaseImpl(
           isEditCoOwnersEnabled = isCoInsuredFeatureOn && memberActions?.isEditCoOwnersEnabled ?: false,
           isMovingEnabled = isMovingFeatureOn && memberActions?.isMovingEnabled ?: false,
           isTravelCertificateEnabled = memberActions?.isTravelCertificateEnabled ?: false,
-          sickAbroadAction = memberActions?.sickAbroadAction.toSickAbroadAction(),
+          sickAbroadAction = memberActions?.sickAbroadDeflect.toSickAbroadAction(),
           firstVetAction = memberActions?.firstVetAction?.toVetAction(),
           isTierChangeEnabled = memberActions?.isChangeTierEnabled ?: false,
         )
@@ -103,15 +103,15 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
   )
 }
 
-private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction():
+private fun  MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDeflect?.toSickAbroadAction():
   MemberActionWithDetails.SickAbroadAction {
-  val partners = this?.deflectPartners?.map {
+  val partners = this?.partners?.map {
     DeflectPartner(
       id = it.id,
       imageUrl = it.imageUrl,
       phoneNumber = it.phoneNumber,
       url = it.url,
-      preferredImageHeight = it.preferredImageHeight,
+      preferredImageHeight = null, //todo!
     )
   }
   return MemberActionWithDetails.SickAbroadAction(partners)

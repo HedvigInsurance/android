@@ -18,15 +18,11 @@ query MemberActions {
       isChangeTierEnabled
       memberId
       sickAbroadDeflect {
-
-      }
-      sickAbroadAction {
-        deflectPartners {
+        partners {
           id
           imageUrl
           phoneNumber
           url
-          preferredImageHeight
         }
       }
     }
