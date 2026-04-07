@@ -13,6 +13,8 @@ import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
 import octopus.TerminationSurveyQuery
 import octopus.fragment.TerminationSurveyOptionSuggestionFragment
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import octopus.type.TerminationFlowDeleteContractInput
 import octopus.type.TerminationFlowSurveyOptionSuggestionType
 import octopus.type.TerminationFlowTerminateContractInput
@@ -41,6 +43,7 @@ internal class TerminateInsuranceRepositoryImpl(
     return either {
       val result = apolloClient
         .query(TerminationSurveyQuery(contractId))
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute(::ErrorMessage)
         .bind()
         .terminationSurvey

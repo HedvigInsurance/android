@@ -15,7 +15,7 @@ android {
 
 dependencies {
   api(libs.androidx.navigation.common)
-
+  implementation(libs.apollo.normalizedCache)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.navigation.compose)
