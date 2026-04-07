@@ -9,6 +9,7 @@ on:
       - 'app/authlib/**'
       - 'app/feature/feature-claim-chat/**'
       - 'app/shareddi/**'
+      - 'app/umbrella/**'
   workflow_dispatch:
 
 concurrency:
