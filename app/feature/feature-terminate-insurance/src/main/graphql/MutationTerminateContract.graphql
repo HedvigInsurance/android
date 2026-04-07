@@ -2,7 +2,6 @@ mutation TerminateContract($input: TerminationFlowTerminateContractInput!) {
   terminateContract(input: $input) {
     contract {
       id
-      terminationDate
     }
     userError {
       message

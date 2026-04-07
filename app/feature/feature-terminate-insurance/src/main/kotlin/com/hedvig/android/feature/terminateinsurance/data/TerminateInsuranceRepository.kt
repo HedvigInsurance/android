@@ -15,6 +15,7 @@ import octopus.TerminationSurveyQuery
 import octopus.fragment.TerminationSurveyOptionSuggestionFragment
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.logger.logcat
 import octopus.type.TerminationFlowDeleteContractInput
 import octopus.type.TerminationFlowSurveyOptionSuggestionType
 import octopus.type.TerminationFlowTerminateContractInput
@@ -76,7 +77,7 @@ internal class TerminateInsuranceRepositoryImpl(
       if (userError != null) {
         TerminationResult.UserError(userError)
       } else {
-        TerminationResult.Terminated(result.contract!!.terminationDate!!)
+        TerminationResult.Terminated(terminationDate)
       }
     }
   }
