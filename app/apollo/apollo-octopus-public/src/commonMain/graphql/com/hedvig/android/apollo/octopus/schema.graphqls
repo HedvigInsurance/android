@@ -2520,7 +2520,7 @@ type MemberActions {
   Indicates that the member should review their phone number or add if it is missing.
   """
   isContactInfoUpdateNeeded: Boolean!
-  sickAbroadAction: SickAbroadAction
+  sickAbroadAction: SickAbroadAction @deprecated(reason: "Use sickAbroadDeflect instead")
   """
   Indicate whether the travel certificate option should be displayed.
   """
