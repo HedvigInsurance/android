@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - develop
-      - makerdays/chat-claim
+      - feature/help-center-kmp
     paths:
       - 'app/authlib/**'
       - 'app/feature/feature-claim-chat/**'
