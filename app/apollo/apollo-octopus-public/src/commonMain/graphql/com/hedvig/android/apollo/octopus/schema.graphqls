@@ -1310,7 +1310,7 @@ type Contract {
   """
   Checks if petId is missing on the current or upcoming agreement.
   """
-  missingPetId: Boolean!
+  isMissingPetId: Boolean!
   """
   User messages to show due to self change is blocked.
   """
@@ -1687,15 +1687,15 @@ returned as ExtendedItemDiscount
 """
 type ExtendedItemDiscount {
   """
-  General discount information
+   General discount information 
   """
   itemDiscount: ItemDiscount!
   """
-  Monthly reduction applied by the discount. It's a negative number
+   Monthly reduction applied by the discount. It's a negative number 
   """
   amount: Money!
   """
-  Whether discount is on a pending state or not
+   Whether discount is on a pending state or not 
   """
   isPending: Boolean!
 }
@@ -2409,6 +2409,7 @@ type Member {
   Payment information for this member.
   """
   paymentInformation: MemberPaymentInformation!
+  paymentMethods: MemberPaymentMethods!
   conversations: [Conversation!]!
   legacyConversation: Conversation
   """
@@ -2435,7 +2436,7 @@ type Member {
   """
    Get contract info during termination flow. Null if no message to display. 
   """
-  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
+  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification @deprecated(reason: "Use Query.Member.terminationNotification instead")
   """
   Current bundle discount information for this member's non terminated contracts (active, future or pending).
   Returns null for members that have a contract configuration that don't enable bundle discount.
@@ -2710,6 +2711,20 @@ type MemberMutationOutput {
   member: Member
   userError: UserError
 }
+type MemberPaymentAvailablePaymentMethod {
+  """
+   Payment provider, eg Trustly, Swish, Nordea, Kivra etc. 
+  """
+  provider: MemberPaymentProvider!
+  """
+   True if the member can set up this payment method for payin. 
+  """
+  supportsPayin: Boolean!
+  """
+   True if the member can set up this payment method for payout. 
+  """
+  supportsPayout: Boolean!
+}
 type MemberPaymentChargeMethodInfo {
   """
   An abstract display name of the connection - usually like the name of the bank you are connected to.
@@ -2778,6 +2793,73 @@ type MemberPaymentInformation {
   A payment connection info
   """
   chargeMethod: MemberPaymentChargeMethodInfo
+}
+type MemberPaymentMethod {
+  """
+   The unique id of the payment method. This id is used for switching default and revoking payment methods. 
+  """
+  id: ID!
+  """
+   Payment provider, eg Trustly, Swish, Nordea, Kivra etc. 
+  """
+  provider: MemberPaymentProvider!
+  """
+  The payment method status - ACTIVE, PENDING, or PENDING_DEFAULT.
+  PENDING_DEFAULT means the payment method is awaiting activation and will become default once activated.
+  """
+  status: MemberPaymentMethodStatus!
+  """
+  True if this is the default payment method. Only one ACTIVE payment method can be default at a time.
+  If status is PENDING then payment method will become the default once activated.
+  """
+  isDefault: Boolean!
+  """
+  Specific details of the actual connection - e.g. a bank account reference, phone number for swish,
+  or email/kivra for invoice.
+  """
+  details: PaymentMethodDetails!
+}
+type MemberPaymentMethods {
+  """
+   List of active and pending payment payin methods for this member. 
+  """
+  payinMethods: [MemberPaymentMethod!]!
+  """
+   List of active and pending payment payout methods for this member. 
+  """
+  payoutMethods: [MemberPaymentMethod!]!
+  """
+   The default payment method for payin if any. 
+  """
+  defaultPayinMethod: MemberPaymentMethod
+  """
+   The default payment method for payout if any. 
+  """
+  defaultPayoutMethod: MemberPaymentMethod
+  """
+   The available payment methods that the member can choose from when setting up a new payment method. 
+  """
+  availableMethods: [MemberPaymentAvailablePaymentMethod!]!
+  """
+   The date of the month when member's premium will be charged (or due if invoice) 
+  """
+  chargingDay: Int
+}
+enum MemberPaymentMethodStatus {
+  """
+  The payment connection is active and can be used for payins or payouts.
+  """
+  ACTIVE
+  """
+  The payment connection has been partially set up but is awaiting activation.
+  """
+  PENDING
+}
+enum MemberPaymentProvider {
+  TRUSTLY
+  SWISH
+  NORDEA
+  INVOICE
 }
 type MemberReferral {
   """
@@ -2895,10 +2977,13 @@ enum MidtermChangeIntentState {
   INITIATED
   COMPLETED
 }
-type MidtermChangePetIdOutput {
-  activationDate: Date
-  userError: UserError
+type MidtermChangePetIdActivationDate {
+  """
+  Activation date of the MTA agreement.
+  """
+  activationDate: Date!
 }
+union MidtermChangePetIdOutput = MidtermChangePetIdActivationDate|UserError
 type MidtermChangePriceDetailItem {
   displayName: String!
   displayValue: String!
@@ -3300,6 +3385,34 @@ input MoveToHouseInput {
 type Mutation {
   registerDirectDebit2(clientContext: RegisterDirectDebitClientContext2): DirectDebitResponse2!
   """
+   Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
+  """
+  paymentMethodSetupInvoicePayin(input: PaymentMethodSetupInvoicePayinInput!): PaymentMethodSetupOutput!
+  """
+   Setup Trustly payment payin and payout method for the member. 
+  """
+  paymentMethodSetupTrustly(input: PaymentMethodSetupTrustlyInput!): PaymentMethodSetupOutput!
+  """
+   Setup direct bank payout method for the member. 
+  """
+  paymentMethodSetupNordeaPayout(input: PaymentMethodSetupNordeaPayoutInput!): PaymentMethodSetupOutput!
+  """
+   Setup Swish payout method for the member. 
+  """
+  paymentMethodSetupSwishPayout(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  """
+   Setup Swish payin method for the member. 
+  """
+  paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  """
+   Revoke an active payment method. The member will be required to set up a new payment method if they revoke their default one. 
+  """
+  paymentMethodRevoke(id: ID!): UserError
+  """
+   Set an active payment method as default. 
+  """
+  paymentMethodSetDefault(id: ID!): UserError
+  """
   Start a conversation. This is effectively creating one, but with two slight differences from a regular
   "create something"-mutation:
   - It lets the clients inject the ID of the conversation, which is useful for the implementation for some clients
@@ -3380,11 +3493,11 @@ type Mutation {
   flowClaimSingleItemNext(input: FlowClaimSingleItemInput!, context: FlowContext!): Flow!
   flowClaimSummaryNext(input: FlowClaimSummaryInput!, context: FlowContext!): Flow!
   flowClaimSingleItemCheckoutNext(input: FlowClaimSingleItemCheckoutInput!, context: FlowContext!): Flow!
-  flowTerminationStart(input: FlowTerminationStartInput!, context: FlowContext): Flow!
-  flowTerminationDateNext(input: FlowTerminationDateInput!, context: FlowContext!): Flow!
-  flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
-  flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
-  flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
+  flowTerminationStart(input: FlowTerminationStartInput!, context: FlowContext): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationDateNext(input: FlowTerminationDateInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
   travelCertificateCreate(input: TravelCertificateCreateInput!): TravelCertificate!
   """
   The document includes details of the member’s home insurance,
@@ -3438,11 +3551,6 @@ type Mutation {
   """
   priceIntentConfirm(priceIntentId: UUID!): PriceIntentMutationOutput!
   """
-  Apply the customer's registered address (from SPAR lookup) directly into the price intent data
-  server-side, so the real address value never needs to be sent to the client.
-  """
-  priceIntentApplySuggestedAddress(priceIntentId: UUID!): PriceIntentMutationOutput!
-  """
   Change the start date of the given `ProductOffer`s by their ID.
   This is used because it's common to want to change the start date AFTER getting the offer.
   """
@@ -3454,6 +3562,14 @@ type Mutation {
   - sending `addonIds = []` will unselect all addons
   """
   productOfferAddonsSelect(productOfferId: UUID!, addonIds: [UUID!]!): ProductOffersMutationOutput!
+  """
+  Reprice an existing product offer with updated data. Merges the provided data with the offer's
+  existing `priceIntentData`, creates a new underwriter quote matching the original variant,
+  and replaces the offer.
+  Useful for recommendation offers that don't have a `priceIntentId` and therefore can't use the
+  normal `priceIntentDataUpdate` + `priceIntentConfirm` flow.
+  """
+  productOfferReprice(offerId: UUID!, data: PricingFormData!): ProductOffersMutationOutput!
   """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
@@ -3529,7 +3645,7 @@ type Mutation {
   """
   Called to change the Pet-Id of a cat/dog contract. Creates a midterm change without price change and commits it.
   """
-  midtermChangePetId(contractId: ID!, petId: String!): MidtermChangePetIdOutput
+  midtermChangePetId(contractId: ID!, petId: String!): MidtermChangePetIdOutput!
   """
   Call this to confirm removal of selected addon(s).
   """
@@ -3560,6 +3676,113 @@ type PartnerData {
 }
 type PartnerWidgetTrial {
   trialContract: TrialContract!
+}
+type PaymentMethodBankAccountDetails {
+  """
+   The bank account reference - e.g. clearing number and account number. 
+  """
+  account: String!
+  """
+   The name of the bank - e.g. Nordea, SEB, Handelsbanken. 
+  """
+  bank: String!
+}
+union PaymentMethodDetails = PaymentMethodInvoiceDetails|PaymentMethodSwishDetails|PaymentMethodBankAccountDetails
+enum PaymentMethodInvoiceDelivery {
+  KIVRA
+  MAIL
+}
+type PaymentMethodInvoiceDetails {
+  """
+   How email is delivered - e.g. Kivra or mail. 
+  """
+  delivery: PaymentMethodInvoiceDelivery!
+  """
+   The email address where the invoice is sent in case delivery is set to MAIL. 
+  """
+  email: String
+}
+input PaymentMethodSetupInvoicePayinInput {
+  """
+   Set up invoice payment method as default. 
+  """
+  setAsDefaultPayout: Boolean!
+}
+input PaymentMethodSetupNordeaPayoutInput {
+  """
+   Set up Nordea payout method as default. 
+  """
+  setAsDefault: Boolean!
+  """
+   The clearing number for member's bank account. 
+  """
+  clearingNumber: String!
+  """
+   The account number for member's bank account. 
+  """
+  accountNumber: String!
+}
+type PaymentMethodSetupOutput {
+  """
+   The status of the setup process. If FAILED the reason for failure can be found in the `error` field. 
+  """
+  status: PaymentMethodSetupStatus!
+  """
+   Url to redirect the member to if any. 
+  """
+  url: String
+  """
+   An error message. Only sat if the setup process failed. 
+  """
+  error: UserError
+}
+enum PaymentMethodSetupStatus {
+  """
+   The payment method setup process is completed and the payment method is ready to use. 
+  """
+  ACTIVE
+  """
+   The payment method setup process is still ongoing. 
+  """
+  PENDING
+  """
+   The payment method setup process has failed. 
+  """
+  FAILED
+}
+input PaymentMethodSetupSwishInput {
+  """
+   Set up Swish payment method as default. 
+  """
+  setAsDefault: Boolean!
+  """
+   The Swish mobile number to use for payout or payin. 
+  """
+  phoneNumber: String!
+}
+input PaymentMethodSetupTrustlyInput {
+  """
+   Set up Trustly payment method as default for payin. 
+  """
+  setAsDefaultPayin: Boolean!
+  """
+   Set up Trustly payment method as default for payout. 
+  """
+  setAsDefaultPayout: Boolean!
+  """
+   The URL to redirect the member back to after a successful setup after Trustly onboarding. 
+  """
+  successUrl: String!
+  """
+   The URL to redirect the member back to after a failed setup after Trustly onboarding. 
+  """
+  failureUrl: String!
+}
+type PaymentMethodSwishDetails {
+  """
+   The Swish phone number. 
+  """
+  phoneNumber: String!
 }
 """
 A pending contract is a proto-contract that has yet to become a fully fledged insurance. It usually means it is meant
@@ -3645,11 +3868,11 @@ type PriceIntent {
   """
   product: Product!
   """
-  UI-safe masked form data. PII fields (street, zipCode, city) are always masked.
+  Submitted user form data.
   """
   data: PricingFormData!
   """
-  Masked, uncommitted form data from automatic lookup (e.g. SPAR address, trial data). PII fields are masked the same way as 'data'.
+  Data submitted in other places or inferred from other data points
   """
   suggestedData: PricingFormData!
   """
@@ -3677,10 +3900,6 @@ type PriceIntent {
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
   hasCollectedInsurelyData: Boolean!
-  """
-  When 'true' all required form data has been provided and the price intent can be confirmed.
-  """
-  isReadyToConfirm: Boolean!
 }
 enum PriceIntentAnimal {
   CAT
@@ -3988,6 +4207,14 @@ type ProductOfferPriceMatch {
   externalPrice: Money!
   externalInsurer: ExternalInsurer!
   priceReduction: Money!
+  """
+  Renewal date of the external insurer's policy. Null when not provided by the external insurer.
+  """
+  renewalDate: Date
+  """
+  External insurer's product name/coverage label.
+  """
+  externalInsuranceName: String
 }
 type ProductOffersMutationOutput {
   productOffers: [ProductOffer!]!

@@ -28,7 +28,7 @@ internal open class GetTerminationNotificationUseCase(
       .safeFlow(::ErrorMessage)
       .map { response ->
         either {
-          response.bind().currentMember.terminationFlowNotification?.message
+          response.bind().currentMember.terminationNotification?.message
         }
       }
   }
