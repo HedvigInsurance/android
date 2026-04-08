@@ -38,7 +38,6 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
@@ -58,6 +57,7 @@ import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_LABEL
 import hedvig.resources.SUBMIT_CLAIM_NEED_HELP_TITLE
 import hedvig.resources.general_back_button
 import org.jetbrains.compose.resources.stringResource
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 
 @Composable
 fun PartnerDeflectDestination(
