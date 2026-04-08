@@ -28,8 +28,5 @@ kotlin {
       implementation(projects.languageCore)
       implementation(projects.composeUi)
     }
-    androidMain.dependencies {
-      implementation(libs.androidx.compose.foundation)
-    }
   }
 }
