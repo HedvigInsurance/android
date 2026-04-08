@@ -416,6 +416,7 @@ internal fun HedvigNavHost(
       navController = navController,
       globalSnackBarState = globalSnackBarState,
       navigateUp = navController::navigateUp,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     )
     movingFlowGraph(
       navController = navController,

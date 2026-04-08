@@ -30,6 +30,7 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
   implementation(projects.moleculePublic)
+  implementation(projects.navigationCore)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
