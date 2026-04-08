@@ -49,6 +49,7 @@ kotlin {
       implementation(projects.networkClients)
       implementation(projects.uiClaimFlow)
       implementation(projects.uiForceUpgrade)
+      implementation(projects.partnersDeflect)
     }
     androidMain.dependencies {
       implementation(libs.accompanist.permissions)

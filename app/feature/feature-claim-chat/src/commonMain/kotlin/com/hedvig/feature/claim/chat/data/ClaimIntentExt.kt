@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.shared.partners.deflect.DeflectData
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
@@ -133,13 +134,14 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     }
 
     is DeflectionFragment -> {
-      fun DeflectionInfoBlockFragment.toInfoBlock(): StepContent.Deflect.InfoBlock {
-        return StepContent.Deflect.InfoBlock(title, description)
+      fun DeflectionInfoBlockFragment.toInfoBlock(): DeflectData.InfoBlock {
+        return DeflectData.InfoBlock(title, description)
       }
+
       val partners = if (partners.isNotEmpty()) {
-        StepContent.Deflect.DeflectPartnerContainer.ExtendedPartnerContainer(
+        DeflectData.DeflectPartnerContainer.ExtendedPartnerContainer(
           partners = partners.map { partner ->
-            StepContent.Deflect.DeflectPartnerContainer.ExtendedPartner(
+            DeflectData.DeflectPartnerContainer.ExtendedPartner(
               id = partner.id,
               imageUrl = partner.imageUrl,
               phoneNumber = partner.phoneNumber,
@@ -152,9 +154,9 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
           },
         )
       } else if (simplePartners.isNotEmpty()) {
-        StepContent.Deflect.DeflectPartnerContainer.SimplePartnerContainer(
+        DeflectData.DeflectPartnerContainer.SimplePartnerContainer(
           partners = simplePartners.map { partner ->
-            StepContent.Deflect.DeflectPartnerContainer.SimplePartner(
+            DeflectData.DeflectPartnerContainer.SimplePartner(
               url = partner.url,
               urlButtonTitle = partner.urlButtonTitle,
             )
@@ -166,15 +168,17 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       }
 
       StepContent.Deflect(
-        title = title,
-        infoText = infoText,
-        warningText = warningText,
-        partnersContainer = partners,
-        partnersInfo = partnersInfo?.toInfoBlock(),
-        content = content.toInfoBlock(),
-        faq = faq.map { it.toInfoBlock() },
-        buttonText = buttonTitle,
-      )
+        deflectData = DeflectData(
+          title = title,
+          infoText = infoText,
+          warningText = warningText,
+          partnersContainer = partners,
+          partnersInfo = partnersInfo?.toInfoBlock(),
+          content = content.toInfoBlock(),
+          faq = faq.map { it.toInfoBlock() },
+          buttonText = buttonTitle,
+        ),
+        )
     }
 
     else -> {
