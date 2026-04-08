@@ -171,6 +171,7 @@
   <string name="CHIP_ID_LABEL">Djur-ID (15 siffror)</string>
   <string name="CHIP_ID_MISSING_BUTTON">Lägg till djur-ID</string>
   <string name="CHIP_ID_MISSING_MESSAGE">Lägg till ditt husdjurs ID för bättre hjälp</string>
+  <string name="CHIP_ID_NO_INSURANCES">Inga djurförsäkringar med saknat chip-ID.</string>
   <string name="CHIP_ID_TOP_TITLE">Lägg till djur-ID</string>
   <string name="CHIP_ID_WRONG_INPUT">Ange ett djur-ID med 15 siffror</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_BODY">Aktivera pushnotiser så vi kan hålla dig uppdaterad om ditt ärende.</string>

@@ -62,7 +62,7 @@ fun NavGraphBuilder.chipIdGraph(
         navigateToAddChipId = { contractId: String, popSelectInsurance: Boolean ->
           navController.navigate(ChipIdDestination.AddChipId(contractId)) {
             if (popSelectInsurance) {
-              typedPopUpTo<ChipIdDestination.SelectInsuranceForChipId> {
+              typedPopUpTo<ChipIdGraphDestination> {
                 inclusive = true
               }
             }

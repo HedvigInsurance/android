@@ -171,6 +171,7 @@
   <string name="CHIP_ID_LABEL">Pet ID (15 digits)</string>
   <string name="CHIP_ID_MISSING_BUTTON">Add pet ID</string>
   <string name="CHIP_ID_MISSING_MESSAGE">Add your pet’s ID for better support</string>
+  <string name="CHIP_ID_NO_INSURANCES">No pet insurances with missing chip ID.</string>
   <string name="CHIP_ID_TOP_TITLE">Add pet ID</string>
   <string name="CHIP_ID_WRONG_INPUT">Enter a 15-digit pet ID</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_BODY">Don’t miss out on important information for your claim</string>

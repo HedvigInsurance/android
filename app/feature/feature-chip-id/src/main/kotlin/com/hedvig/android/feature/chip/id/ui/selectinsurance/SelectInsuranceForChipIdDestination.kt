@@ -1,15 +1,20 @@
 package com.hedvig.android.feature.chip.id.ui.selectinsurance
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,6 +28,9 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.data.contract.pillowResource
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.ERROR
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -47,6 +55,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_SUBTITLE
 import hedvig.resources.ADDON_FLOW_SELECT_INSURANCE_TITLE
+import hedvig.resources.CHIP_ID_NO_INSURANCES
 import hedvig.resources.Res
 import hedvig.resources.SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE
 import hedvig.resources.TERMINATION_ADDON_COVERAGE_TITLE
@@ -157,40 +166,59 @@ private fun SelectInsuranceForChipIdContentScreen(
       null,
       Modifier.padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.weight(1f))
-    Spacer(Modifier.height(16.dp))
-    RadioGroup(
-      options = uiState.contracts.map { insuranceForAddon ->
-        RadioOption(
-          id = RadioOptionId(insuranceForAddon.id),
-          text = insuranceForAddon.displayName,
-          label = insuranceForAddon.contractExposure,
+    if (uiState.contracts.isEmpty()) {
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+          .fillMaxWidth()
+          .weight(1f)
+          .padding(horizontal = 16.dp),
+      ) {
+        EmptyState(
+          text = stringResource(Res.string.CHIP_ID_NO_INSURANCES),
+          description = null,
+          iconStyle = ERROR,
+          buttonStyle = EmptyStateDefaults.EmptyStateButtonStyle.NoButton,
         )
-      },
-      selectedOption = uiState.selectedContract?.id?.let { RadioOptionId(it) },
-      onRadioOptionSelected = { optionId ->
-        uiState.contracts.firstOrNull { it.id == optionId.id }?.let {
-          selectInsurance(it)
-        }
-      },
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(12.dp))
-    HedvigButton(
-      stringResource(Res.string.general_continue_button),
-      enabled = uiState.selectedContract != null,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-      onClick = {
-        uiState.selectedContract?.let {
-          navigateToAddChipId(it.id, uiState.contracts.size == 1)
-        }
-      },
-      isLoading = false,
-    )
-    Spacer(Modifier.height(16.dp))
+      }
+    } else {
+      Spacer(Modifier.weight(1f))
+      Spacer(Modifier.height(16.dp))
+      RadioGroup(
+        options = uiState.contracts.map { insuranceForAddon ->
+          RadioOption(
+            id = RadioOptionId(insuranceForAddon.id),
+            text = insuranceForAddon.displayName,
+            label = insuranceForAddon.contractExposure,
+          )
+        },
+        selectedOption = uiState.selectedContract?.id?.let { RadioOptionId(it) },
+        onRadioOptionSelected = { optionId ->
+          uiState.contracts.firstOrNull { it.id == optionId.id }?.let {
+            selectInsurance(it)
+          }
+        },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(12.dp))
+      HedvigButton(
+        stringResource(Res.string.general_continue_button),
+        enabled = uiState.selectedContract != null,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        onClick = {
+          uiState.selectedContract?.let {
+            navigateToAddChipId(it.id, uiState.contracts.size == 1)
+          }
+        },
+        isLoading = false,
+      )
+      Spacer(Modifier.height(16.dp))
+    }
+
   }
 }
