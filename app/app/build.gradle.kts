@@ -183,6 +183,7 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.designSystemInternals)
   implementation(projects.featureAddonPurchase)
+  implementation(projects.featurePurchaseApartment)
   implementation(projects.featureChat)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimChat)

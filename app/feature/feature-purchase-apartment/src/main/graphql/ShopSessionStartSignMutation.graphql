@@ -1,0 +1,19 @@
+mutation ApartmentStartSign($shopSessionId: UUID!) {
+  shopSessionStartSign(shopSessionId: $shopSessionId) {
+    signing {
+      id
+      status
+      seBankidProperties {
+        autoStartToken
+        liveQrCodeData
+        bankidAppOpened
+      }
+      userError {
+        message
+      }
+    }
+    userError {
+      message
+    }
+  }
+}

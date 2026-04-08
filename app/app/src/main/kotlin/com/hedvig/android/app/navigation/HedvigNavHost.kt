@@ -79,8 +79,12 @@ import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import org.koin.mp.KoinPlatform
 import com.hedvig.feature.claim.chat.ClaimChatDestination
 import com.hedvig.feature.claim.chat.claimChatGraph
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
+import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseGraphDestination
+import com.hedvig.android.feature.purchase.apartment.navigation.apartmentPurchaseNavGraph
 import com.hedvig.feature.remove.addons.AddonRemoveGraphDestination
 import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 
@@ -134,6 +138,8 @@ internal fun HedvigNavHost(
   val onNavigateToImageViewer = { imageUrl: String, cacheKey: String ->
     hedvigAppState.navController.navigate(ImageViewer(imageUrl, cacheKey))
   }
+
+  val crossSellAfterFlowRepository = KoinPlatform.getKoin().get<CrossSellAfterFlowRepository>()
 
   NavHost(
     navController = navController,
@@ -318,6 +324,9 @@ internal fun HedvigNavHost(
           ),
         )
       },
+      onNavigateToApartmentPurchase = { productName ->
+        navController.navigate(ApartmentPurchaseGraphDestination(productName))
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -474,6 +483,12 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader
     )
     imageViewerGraph(navController, imageLoader)
+    apartmentPurchaseNavGraph(
+      navController = navController,
+      popBackStack = popBackStackOrFinish,
+      finishApp = finishApp,
+      crossSellAfterFlowRepository = crossSellAfterFlowRepository,
+    )
     removeAddonsNavGraph(
       navController = hedvigAppState.navController,
       onNavigateToNewConversation = {

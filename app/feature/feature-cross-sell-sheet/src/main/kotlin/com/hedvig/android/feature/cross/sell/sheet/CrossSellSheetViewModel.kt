@@ -118,6 +118,7 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
     is CrossSellInfoType.ClosedClaim -> smartCrossSellInput(FlowSource.CLOSED_CLAIM)
     CrossSellInfoType.EditCoInsured -> smartCrossSellInput(FlowSource.EDIT_COINSURED)
     CrossSellInfoType.MovingFlow -> smartCrossSellInput(FlowSource.MOVING)
+    CrossSellInfoType.Purchase -> smartCrossSellInput(FlowSource.UNKNOWN__)
   }
 }
 

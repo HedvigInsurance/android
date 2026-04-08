@@ -1,0 +1,13 @@
+mutation ApartmentPriceIntentConfirm($priceIntentId: UUID!) {
+  priceIntentConfirm(priceIntentId: $priceIntentId) {
+    priceIntent {
+      id
+      offers {
+        ...ApartmentProductOfferFragment
+      }
+    }
+    userError {
+      message
+    }
+  }
+}
