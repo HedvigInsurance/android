@@ -18,12 +18,36 @@ query MemberActions {
       isChangeTierEnabled
       memberId
       sickAbroadDeflect {
+        title
+        infoText
+        warningText
         partners {
           id
           imageUrl
           phoneNumber
+          title
+          description
+          info
           url
+          urlButtonTitle
         }
+        simplePartners {
+          url
+          urlButtonTitle
+        }
+        partnersInfo {
+          title
+          description
+        }
+        content {
+          title
+          description
+        }
+        faq {
+          title
+          description
+        }
+        buttonTitle
       }
     }
   }
