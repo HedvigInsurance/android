@@ -857,7 +857,7 @@ private fun StepBottomContent(
       is StepContent.Deflect -> {
         DeflectStep(
           stepId = stepItem.id,
-          buttonText = stepItem.stepContent.buttonText,
+          buttonText = stepItem.stepContent.deflectData.buttonText,
           deflect = stepItem.stepContent,
           navigateToDeflect = navigateToDeflect,
           modifier = Modifier.fillMaxWidth(),

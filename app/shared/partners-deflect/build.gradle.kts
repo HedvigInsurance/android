@@ -4,7 +4,10 @@ plugins {
 }
 
 hedvig {
+  compose()
+  serialization()
 }
+
 
 kotlin {
   sourceSets {
@@ -22,6 +25,7 @@ kotlin {
       implementation(projects.coreUiData)
       implementation(projects.designSystemHedvig)
       implementation(projects.languageCore)
+      implementation(projects.composeUi)
     }
   }
 }
