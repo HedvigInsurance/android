@@ -22,6 +22,7 @@ fun NavGraphBuilder.chipIdGraph(
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  popBackStack: () -> Unit
 ) {
   navdestination<ChipIdDestination.AddChipIdTriage>(
     deepLinks = navDeepLinks(
@@ -56,9 +57,7 @@ fun NavGraphBuilder.chipIdGraph(
       SelectInsuranceForChipIdDestination(
         viewModel = viewModel,
         navigateUp = navigateUp,
-        popBackStack = {
-          navController.popBackStack()
-        },
+        popBackStack = popBackStack,
         navigateToAddChipId = { contractId: String, popSelectInsurance: Boolean ->
           navController.navigate(ChipIdDestination.AddChipId(contractId)) {
             if (popSelectInsurance) {
