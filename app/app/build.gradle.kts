@@ -141,6 +141,7 @@ dependencies {
   implementation(libs.koin.workManager)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
   implementation(libs.navigationRecentsUrlSharing)

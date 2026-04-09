@@ -8,7 +8,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.CancellationException
-import org.json.JSONObject
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 internal class GetMemberAuthorizationCodeUseCase(
   private val httpClient: HttpClient,
@@ -20,14 +21,14 @@ internal class GetMemberAuthorizationCodeUseCase(
         .safePost("${hedvigBuildConstants.urlGraphqlOctopus}/member-authorization-codes")
         .fold(
           ifLeft = { networkError ->
-            logcat(LogPriority.ERROR) { "Failed to fetch member authorization code: ${networkError.message}" }
+            logcat(LogPriority.WARN) { "Failed to fetch member authorization code: ${networkError.message}" }
             null
           },
           ifRight = { httpResponse ->
             if (httpResponse.status.isSuccess()) {
-              JSONObject(httpResponse.bodyAsText()).getString("authorizationCode")
+              Json.decodeFromString<MemberAuthorizationCodeResponse>(httpResponse.bodyAsText()).authorizationCode
             } else {
-              logcat(LogPriority.ERROR) {
+              logcat(LogPriority.WARN) {
                 "Failed to fetch member authorization code, status: ${httpResponse.status}"
               }
               null
@@ -38,8 +39,11 @@ internal class GetMemberAuthorizationCodeUseCase(
       if (e is CancellationException) {
         throw e
       }
-      logcat(LogPriority.ERROR, e) { "Failed to fetch member authorization code" }
+      logcat(LogPriority.WARN, e) { "Failed to fetch member authorization code" }
       null
     }
   }
 }
+
+@Serializable
+private data class MemberAuthorizationCodeResponse(val authorizationCode: String)
