@@ -15,10 +15,10 @@ internal class GetMemberAuthorizationCodeUseCase(
   private val httpClient: HttpClient,
   private val hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  suspend operator fun invoke(): String? {
+  suspend fun invoke(): String? {
     return try {
       httpClient
-        .safePost("${hedvigBuildConstants.urlGraphqlOctopus}/member-authorization-codes")
+        .safePost("${hedvigBuildConstants.urlAuthService}/member-authorization-codes")
         .fold(
           ifLeft = { networkError ->
             logcat(LogPriority.WARN) { "Failed to fetch member authorization code: ${networkError.message}" }

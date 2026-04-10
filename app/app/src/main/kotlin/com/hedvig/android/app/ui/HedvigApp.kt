@@ -161,7 +161,7 @@ private fun openCrossSellUrl(
   url: String,
 ) {
   scope.launch {
-    val code = getMemberAuthorizationCodeUseCase()
+    val code = getMemberAuthorizationCodeUseCase.invoke()
     val finalUrl = if (code != null) {
       url.toUri().buildUpon().appendQueryParameter("authorization_code", code).build().toString()
     } else {
