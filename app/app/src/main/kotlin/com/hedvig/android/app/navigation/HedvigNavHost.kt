@@ -68,6 +68,8 @@ import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.SelectContractForMoving
 import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
+import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountDestination
+import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountGraph
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
@@ -339,9 +341,15 @@ internal fun HedvigNavHost(
       navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectPayment = navigateToConnectPayment,
+      navigateToPayoutAccount = { navController.navigate(PayoutAccountDestination.Graph) },
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
       onOpenChat = ::navigateToNewConversation,
+    )
+    payoutAccountGraph(
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
+      navigateUp = navController::navigateUp,
     )
     profileGraph(
       settingsDestinationNestedGraphs = {

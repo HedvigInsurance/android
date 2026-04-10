@@ -62,6 +62,7 @@ import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.PaymentOutline
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
@@ -111,6 +112,7 @@ internal fun PaymentsDestination(
   onPaymentClicked: (id: String?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onMemberPaymentDetailsClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
 ) {
@@ -121,6 +123,7 @@ internal fun PaymentsDestination(
     onChangeBankAccount = onChangeBankAccount,
     onDiscountClicked = onDiscountClicked,
     onPaymentHistoryClicked = onPaymentHistoryClicked,
+    onPayoutAccountClicked = onPayoutAccountClicked,
     onRetry = { viewModel.emit(Retry) },
     onPaymentDetailsClicked = onMemberPaymentDetailsClicked,
   )
@@ -133,6 +136,7 @@ private fun PaymentsScreen(
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
   onRetry: () -> Unit,
 ) {
@@ -194,6 +198,7 @@ private fun PaymentsScreen(
               onChangeBankAccount = onChangeBankAccount,
               onDiscountClicked = onDiscountClicked,
               onPaymentHistoryClicked = onPaymentHistoryClicked,
+              onPayoutAccountClicked = onPayoutAccountClicked,
               onPaymentDetailsClicked = onPaymentDetailsClicked,
             )
             Spacer(Modifier.height(16.dp))
@@ -218,6 +223,7 @@ private fun PaymentsContent(
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -279,6 +285,7 @@ private fun PaymentsContent(
       uiState,
       onDiscountClicked = onDiscountClicked,
       onPaymentHistoryClicked = onPaymentHistoryClicked,
+      onPayoutAccountClicked = onPayoutAccountClicked,
       onPaymentDetailsClicked = onPaymentDetailsClicked,
     )
     if (uiState is Content) {
@@ -375,6 +382,7 @@ private fun PaymentsListItems(
   uiState: PaymentsUiState,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
 ) {
   val listItemsSideSpacingModifier = Modifier
@@ -393,6 +401,22 @@ private fun PaymentsListItems(
       },
       modifier = Modifier
         .clickable(onClick = onDiscountClicked)
+        .then(listItemsSideSpacingModifier)
+        .padding(vertical = 16.dp)
+        .fillMaxWidth(),
+    )
+    HorizontalDivider(modifier = listItemsSideSpacingModifier)
+    PaymentsListItem(
+      text = "Payout",
+      icon = {
+        Icon(
+          imageVector = HedvigIcons.PaymentOutline,
+          contentDescription = null,
+          modifier = Modifier.size(24.dp),
+        )
+      },
+      modifier = Modifier
+        .clickable(onClick = onPayoutAccountClicked)
         .then(listItemsSideSpacingModifier)
         .padding(vertical = 16.dp)
         .fillMaxWidth(),
@@ -587,6 +611,7 @@ private fun PreviewPaymentScreen(
       PaymentsScreen(
         uiState = uiState,
         { _ -> },
+        {},
         {},
         {},
         {},
