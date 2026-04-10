@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.composeKotlinCompilerGradlePlugin)
   alias(libs.plugins.composeJetbrainsCompilerGradlePlugin)
   id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
   alias(libs.plugins.kmpNativeCoroutines)
 }
