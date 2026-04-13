@@ -173,7 +173,7 @@
   <string name="CHIP_ID_MISSING_MESSAGE">We are missing your pet’s ID-number</string>
   <string name="CHIP_ID_NO_INSURANCES">You’ve already added the ID-number for all your pets</string>
   <string name="CHIP_ID_TOP_TITLE">Update ID-number</string>
-  <string name="CHIP_ID_WRONG_INPUT">ID-number needs to be exactly 15 numbers</string>
+  <string name="CHIP_ID_WRONG_INPUT">ID-number needs to be exactly 15 digits</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_BODY">Don’t miss out on important information for your claim</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_CTA">Enable notifications</string>
   <string name="CLAIMS_CASE">Case</string>
