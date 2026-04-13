@@ -6,8 +6,10 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import com.hedvig.android.design.system.hedvig.tokens.TypefaceTokens
 import com.hedvig.android.design.system.hedvig.tokens.TypographyKeyTokens
 import com.hedvig.android.design.system.hedvig.tokens.TypographyTokens
+import com.hedvig.android.design.system.hedvig.tokens.toFontFamily
 import com.hedvig.android.design.system.hedvig.tokens.toTextStyle
 
 @Immutable
@@ -23,8 +25,8 @@ data class Typography(
   val headlineSmall: TextStyle,
   val label: TextStyle,
   val finePrint: TextStyle,
-//  val serif: FontFamily,
-//  val sans: FontFamily,
+  val serif: FontFamily,
+  val sans: FontFamily,
 )
 
 internal val HedvigTypography: Typography
@@ -41,8 +43,8 @@ internal val HedvigTypography: Typography
     headlineSmall = TypographyTokens.HeadlineSmall.toTextStyle(),
     label = TypographyTokens.Label.toTextStyle(),
     finePrint = TypographyTokens.FinePrint.toTextStyle(),
-//    serif = FontFamily(), // TypefaceTokens.Serif.toFontFamily(),
-//    sans = FontFamily(), // TypefaceTokens.Sans.toFontFamily(),
+    serif = FontFamily(), // TypefaceTokens.Serif.toFontFamily(),
+    sans = FontFamily(), // TypefaceTokens.Sans.toFontFamily(),
   )
 
 @ReadOnlyComposable
