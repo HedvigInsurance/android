@@ -28,6 +28,7 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navController: NavController,
+  onNavigateUp: () -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -80,7 +81,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateToNewConversation = dropUnlessResumed {
           onNavigateToNewConversation()
         },
-        onNavigateUp = navController::navigateUp,
+        onNavigateUp = onNavigateUp,
       )
     }
 
