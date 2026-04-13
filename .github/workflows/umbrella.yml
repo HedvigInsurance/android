@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - develop
-      - feature/help-center-kmp
+      - feat/help-center-kmp
   workflow_dispatch:
 
 concurrency:
