@@ -409,3 +409,15 @@ private fun PreviewReminderCardUpdateContactInfo() {
     }
   }
 }
+
+@Preview
+@Composable
+private fun PreviewReminderMissingChipId() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReminderMissingChipId(
+        {},
+      )
+    }
+  }
+}

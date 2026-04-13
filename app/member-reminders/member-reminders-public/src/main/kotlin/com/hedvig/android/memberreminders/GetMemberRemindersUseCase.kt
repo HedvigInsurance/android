@@ -96,6 +96,9 @@ data class MemberReminders(
       coInsuredInfo?.let {
         addAll(coInsuredInfo)
       }
+      missingChipId?.let {
+        add(it)
+      }
       if (!alreadyHasNotificationPermission) {
         enableNotifications?.let {
           add(enableNotifications)
@@ -105,9 +108,6 @@ data class MemberReminders(
         addAll(it)
       }
       updateContactInfo?.let {
-        add(it)
-      }
-      missingChipId?.let {
         add(it)
       }
     }

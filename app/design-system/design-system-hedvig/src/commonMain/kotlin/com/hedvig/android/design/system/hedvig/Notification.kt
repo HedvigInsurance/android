@@ -87,7 +87,7 @@ fun HedvigNotificationCard(
 ) {
   HedvigNotificationCard(
     content = {
-      HedvigText(text = message)
+      HedvigText(text = message, minLines = 2)
     },
     priority = priority,
     modifier = modifier,
