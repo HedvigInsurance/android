@@ -489,6 +489,7 @@ internal fun HedvigNavHost(
       },
       openUrl = openUrl,
       tryToDialPhone = externalNavigator::tryToDialPhone,
+      imageLoader = imageLoader
     )
     imageViewerGraph(navController, imageLoader)
     removeAddonsNavGraph(

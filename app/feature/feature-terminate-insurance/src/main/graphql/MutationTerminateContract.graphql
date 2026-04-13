@@ -1,0 +1,10 @@
+mutation TerminateContract($input: TerminationFlowTerminateContractInput!) {
+  terminateContract(input: $input) {
+    contract {
+      id
+    }
+    userError {
+      message
+    }
+  }
+}

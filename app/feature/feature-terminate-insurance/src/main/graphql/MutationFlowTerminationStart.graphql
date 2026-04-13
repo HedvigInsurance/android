@@ -1,7 +1,0 @@
-mutation FlowTerminationStart($flowTerminationStartInput : FlowTerminationStartInput!, $addonsEnabled: Boolean!) {
-  flowTerminationStart(input: $flowTerminationStartInput, context: null) {
-    id
-    context
-    ...TerminationFlowStepFragment
-  }
-}

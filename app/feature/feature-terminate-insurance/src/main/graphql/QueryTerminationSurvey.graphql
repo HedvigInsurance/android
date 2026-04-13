@@ -1,0 +1,58 @@
+query TerminationSurvey($contractId: UUID!) {
+  terminationSurvey(contractId: $contractId) {
+    options {
+      id
+      title
+      feedbackRequired
+      subOptions {
+        id
+        title
+        feedbackRequired
+        subOptions {
+          id
+          title
+          feedbackRequired
+          subOptions {
+            id
+            title
+            feedbackRequired
+            suggestion {
+              ...TerminationSurveyOptionSuggestionFragment
+            }
+          }
+          suggestion {
+            ...TerminationSurveyOptionSuggestionFragment
+          }
+        }
+        suggestion {
+          ...TerminationSurveyOptionSuggestionFragment
+        }
+      }
+      suggestion {
+        ...TerminationSurveyOptionSuggestionFragment
+      }
+    }
+    action {
+      ... on TerminationFlowActionTerminateWithDate {
+        minDate
+        maxDate
+        extraCoverage {
+          displayName
+          displayValue
+        }
+      }
+      ... on TerminationFlowActionDeleteInsurance {
+        extraCoverage {
+          displayName
+          displayValue
+        }
+      }
+    }
+  }
+}
+
+fragment TerminationSurveyOptionSuggestionFragment on TerminationFlowSurveyOptionSuggestion {
+  type
+  description
+  url
+}
