@@ -22,8 +22,8 @@ fun NavGraphBuilder.chipIdGraph(
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  popBackStack: () -> Unit,
-  popFlowOnSuccess: () -> Unit
+  popBackStackOrFinish: () -> Unit,
+  goHome: () -> Unit
 ) {
   navdestination<ChipIdDestination.AddChipIdTriage>(
     deepLinks = navDeepLinks(
@@ -58,11 +58,11 @@ fun NavGraphBuilder.chipIdGraph(
       SelectInsuranceForChipIdDestination(
         viewModel = viewModel,
         navigateUp = navigateUp,
-        popBackStack = popBackStack,
+        popBackStack = popBackStackOrFinish,
         navigateToAddChipId = { contractId: String, popSelectInsurance: Boolean ->
           navController.navigate(ChipIdDestination.AddChipId(contractId)) {
             if (popSelectInsurance) {
-              typedPopUpTo<ChipIdDestination.SelectInsuranceForChipId> {
+              typedPopUpTo<ChipIdGraphDestination> {
                 inclusive = true
               }
             }
@@ -79,8 +79,16 @@ fun NavGraphBuilder.chipIdGraph(
       AddChipIdDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
-        navigateUp = navigateUp,
-        popFlowOnSuccess = popFlowOnSuccess,
+        navigateUp = {
+          if (!navController.popBackStack(ChipIdDestination.AddChipId::class, inclusive = true)) {
+            goHome()
+          }
+        },
+        popFlowOnSuccess = {
+          if (!navController.popBackStack(ChipIdGraphDestination::class, inclusive = true)) {
+            goHome()
+          }
+        }
       )
     }
   }
