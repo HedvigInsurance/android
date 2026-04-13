@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
@@ -100,16 +102,20 @@ fun rememberMaxLineCountForReminders(
   maxWidthPx: Int,
 ): Int {
   val textMeasurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  val fontFamilyResolver = LocalFontFamilyResolver.current
 
   val messages = memberReminders.map { reminder -> getMemberReminderMessage(reminder) }
   val textStyle = LocalTextStyle.current
 
-  return remember(messages, textMeasurer, maxWidthPx, textStyle) {
+  return remember(messages, textMeasurer, maxWidthPx, textStyle, density, fontFamilyResolver) {
     messages.maxOfOrNull { message ->
       val textLayout = textMeasurer.measure(
         text = AnnotatedString(message),
         style = textStyle,
-        constraints = Constraints(maxWidth = maxWidthPx)
+        constraints = Constraints(maxWidth = maxWidthPx),
+        density = density,
+        fontFamilyResolver = fontFamilyResolver,
       )
       textLayout.lineCount
     } ?: 1
