@@ -4,7 +4,9 @@ import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import com.hedvig.android.shared.partners.deflect.DeflectData
 
 @JvmInline
 value class ClaimIntentId(val value: String)
@@ -33,7 +35,7 @@ internal data class ClaimIntentStep(
   val stepContent: StepContent,
   val isRegrettable: Boolean,
   val hint: String?,
-  val showSpinForThisStep: Boolean = true
+  val showSpinForThisStep: Boolean = true,
 )
 
 @Serializable
@@ -66,7 +68,7 @@ internal sealed interface StepContent {
     val descriptions: List<String>,
     val isCompleted: Boolean,
     val failedToSubmit: Boolean,
-    val isAnimationFinished: Boolean = false
+    val isAnimationFinished: Boolean = false,
   ) : StepContent {
     override val isSkippable: Boolean = false
   }
@@ -160,53 +162,11 @@ internal sealed interface StepContent {
 
   @Serializable
   data class Deflect(
-    val title: String?,
-    val infoText: String?,
-    val warningText: String?,
-    val partnersContainer: DeflectPartnerContainer?,
-    val partnersInfo: InfoBlock?,
-    val content: InfoBlock,
-    val faq: List<InfoBlock>,
-    val buttonText: String,
+    @Contextual
+    val deflectData: DeflectData
   ) : StepContent {
     override val isSkippable: Boolean = false
 
-    @Serializable
-    sealed interface DeflectPartnerContainer {
-      @Serializable
-      data class ExtendedPartnerContainer(
-        val partners: List<ExtendedPartner>,
-      ) : DeflectPartnerContainer
-
-      @Serializable
-      data class SimplePartnerContainer(
-        val partners: List<SimplePartner>,
-      ) : DeflectPartnerContainer
-
-      @Serializable
-      data class ExtendedPartner(
-        val id: String,
-        val imageUrl: String?,
-        val phoneNumber: String?,
-        val title: String?,
-        val description: String?,
-        val info: String?,
-        val url: String?,
-        val urlButtonTitle: String?,
-      )
-
-      @Serializable
-      data class SimplePartner(
-        val url: String?,
-        val urlButtonTitle: String?,
-      )
-    }
-
-    @Serializable
-    data class InfoBlock(
-      val title: String,
-      val description: String,
-    )
   }
 
   object Unknown : StepContent {

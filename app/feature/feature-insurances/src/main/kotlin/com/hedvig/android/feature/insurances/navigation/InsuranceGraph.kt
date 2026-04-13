@@ -28,6 +28,7 @@ fun NavGraphBuilder.insuranceGraph(
   navController: NavController,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   startMovingFlow: () -> Unit,
   onNavigateToStartChangeTier: (contractId: String) -> Unit,
   startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -40,6 +41,7 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToChipIdScreen: (String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -59,7 +61,7 @@ fun NavGraphBuilder.insuranceGraph(
         onInsuranceCardClick = dropUnlessResumed { contractId: String ->
           navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        onCrossSellClick = dropUnlessResumed { url: String -> openUrl(url) },
+        onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
         navigateToCancelledInsurances = dropUnlessResumed {
           navController.navigate(InsurancesDestinations.TerminatedInsurances)
         },
@@ -102,6 +104,7 @@ fun NavGraphBuilder.insuranceGraph(
         navigateToAddAddon = { availableAddon ->
           onNavigateToAddonPurchaseFlow(listOf(availableAddon.relatedContractId), availableAddon)
         },
+        navigateToChipIdScreen = navigateToChipIdScreen,
       )
     }
     navdestination<InsurancesDestinations.TerminatedInsurances> {

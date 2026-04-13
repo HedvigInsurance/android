@@ -363,7 +363,6 @@ private fun FormContent(
       }
     } else {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-
         if (content.fields.flatMap { it.selectedOptions }.isNotEmpty()) {
           content.fields.forEach { field ->
             when (field.type) {
@@ -379,8 +378,11 @@ private fun FormContent(
                     SentItemCard(
                       imageLoader = imageLoader,
                       itemTitle = selected.text,
-                      itemSubtitle = if (!selected.isCustomSearchEntry) selected.subtitle else
-                        stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE),
+                      itemSubtitle = if (!selected.isCustomSearchEntry) {
+                        selected.subtitle
+                      } else {
+                        stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE)
+                      },
                       itemImageUrl = selected.imageUrl,
                     )
                   }
@@ -402,7 +404,7 @@ private fun FormContent(
                       onClick = null,
                       modifier = Modifier.clearAndSetSemantics {
                         contentDescription = description
-                      }
+                      },
                     ) {
                       HedvigText(textValue, textAlign = TextAlign.End)
                     }
@@ -453,8 +455,11 @@ internal fun SearchForm(
         enabled = true,
       )
     } else {
-      val subtitle = if (!selectedOption.isCustomSearchEntry) selectedOption.subtitle else
+      val subtitle = if (!selectedOption.isCustomSearchEntry) {
+        selectedOption.subtitle
+      } else {
         stringResource(Res.string.CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE)
+      }
       SearchItemCard(
         imageLoader = imageLoader,
         itemTitle = selectedOption.text,
@@ -732,14 +737,12 @@ private fun SearchItemCard(
               textAlign = TextAlign.Start,
             )
             itemSubtitle?.let {
-
               HedvigText(
                 text = itemSubtitle,
                 textAlign = TextAlign.Start,
                 color = HedvigTheme.colorScheme.textSecondary,
                 style = HedvigTheme.typography.finePrint,
               )
-
             }
           }
         }
@@ -751,13 +754,11 @@ private fun SearchItemCard(
         ) {
           Icon(
             imageVector = HedvigIcons.ChevronRight,
-            contentDescription = EmptyContentDescription, //todo: not sure
+            contentDescription = EmptyContentDescription, // todo: not sure
             tint = HedvigTheme.colorScheme.fillPrimary,
             modifier = Modifier.size(24.dp),
           )
-
         }
-
       },
       spaceBetween = 6.dp,
     )
@@ -826,7 +827,6 @@ private fun SentItemCard(
             color = HedvigTheme.colorScheme.textSecondary,
             style = HedvigTheme.typography.finePrint,
           )
-
         }
       }
     }

@@ -660,7 +660,7 @@ private fun ControlButton(
     countDownText = "3"
     scale.snapTo(1f)
   }
-  //custom description for button's "play" state includes its role and click label. Needed
+  // custom description for button's "play" state includes its role and click label. Needed
   // because when the recording is stopped but the focus is still on the same button,
   // only the state updates, the role and label are not announced.
   val hideFromA11y = audioRecordingState is AudioRecordingStepState.AudioRecording.Playback
@@ -778,9 +778,9 @@ private fun ControlButton(
         fontSize = HedvigTheme.typography.label.fontSize,
         fontStyle = HedvigTheme.typography.label.fontStyle,
         color = if (isEnabled) HedvigTheme.colorScheme.textPrimary else HedvigTheme.colorScheme.textTertiary,
-        modifier = Modifier.semantics{
+        modifier = Modifier.semantics {
           if (hideFromA11y) hideFromAccessibility()
-        }
+        },
       )
     }
   }
@@ -895,7 +895,7 @@ private fun FreeTextInputSection(
             .padding(start = 48.dp)
             .wrapContentWidth(Alignment.End)
             .clearAndSetSemantics {
-             contentDescription = description
+              contentDescription = description
             },
         ) {
           HedvigText(freeText, textAlign = TextAlign.End)
@@ -1016,7 +1016,6 @@ private fun AudioWaves(
     }
   }
 }
-
 
 private val fixedRestingColor: Color
   @Composable

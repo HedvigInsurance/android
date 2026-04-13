@@ -34,12 +34,14 @@ class GetMemberRemindersUseCaseTest {
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
+    val getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
+      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -66,12 +68,14 @@ class GetMemberRemindersUseCaseTest {
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
+    val getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
+      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase
     )
     val testId = "test"
 
@@ -133,4 +137,15 @@ class GetMemberRemindersUseCaseTest {
       )
     }
   }
+
+  class TestGetMissingChipIdReminderUseCase : GetMissingChipIdReminderUseCase {
+    override fun invoke(): Flow<Either<ErrorMessage, MemberReminder.MissingChipId?>> {
+      return flowOf(
+        either {
+          null
+        },
+      )
+    }
+  }
+
 }

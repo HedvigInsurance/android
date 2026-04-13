@@ -65,6 +65,7 @@ import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
 import com.hedvig.android.feature.addon.purchase.di.addonPurchaseModule
 import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.chat.di.chatModule
+import com.hedvig.android.feature.chip.id.di.chipIdModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
 import com.hedvig.android.feature.claimhistory.di.claimHistoryModule
 import com.hedvig.android.feature.connect.payment.trustly.di.connectPaymentTrustlyModule
@@ -296,6 +297,7 @@ val applicationModule = module {
       authModule,
       buildConstantsModule,
       chatModule,
+      chipIdModule,
       chooseTierModule,
       claimChatModule,
       claimDetailsModule,

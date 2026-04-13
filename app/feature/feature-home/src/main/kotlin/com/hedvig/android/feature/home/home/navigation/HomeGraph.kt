@@ -29,8 +29,10 @@ fun NavGraphBuilder.homeGraph(
   navigateToHelpCenter: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   navgraph<HomeDestination.Graph>(
@@ -55,6 +57,7 @@ fun NavGraphBuilder.homeGraph(
         navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
         navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
         openUrl = openUrl,
+        openCrossSellUrl = openCrossSellUrl,
         openAppSettings = openAppSettings,
         navigateToFirstVet = dropUnlessResumed { sections ->
           navController.navigate(HomeDestination.FirstVet(sections))
@@ -63,6 +66,7 @@ fun NavGraphBuilder.homeGraph(
           navigateToContactInfo()
         },
         imageLoader = imageLoader,
+        navigateToChipId = navigateToChipIdScreen,
       )
     }
     navdestination<HomeDestination.FirstVet>(

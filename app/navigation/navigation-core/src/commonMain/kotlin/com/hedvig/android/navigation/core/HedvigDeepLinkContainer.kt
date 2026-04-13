@@ -75,6 +75,10 @@ interface HedvigDeepLinkContainer {
    * that comes after `/` which follows the base deeplink domain
    */
   fun buildDeepLink(suffix: String): String
+
+  val petIdWithoutContractId: List<String>
+
+  val petIdWithContractId: List<String>
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -185,6 +189,13 @@ internal class HedvigDeepLinkContainerImpl(
   override fun buildDeepLink(suffix: String): String {
     return "${baseDeepLinkDomains.first()}/$suffix"
   }
+
+  override val petIdWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/pet-id"
+  }
+  override val petIdWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/pet-id?contractId={contractId}"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -218,4 +229,10 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     insuranceEvidence.first(),
     claimFlow.first(),
     moveContract.first(),
-  )
+    editCoOwners.first(),
+    carAddon.first(),
+    carAddonWithContractId.first(),
+    travelAddonWithContractId.first(),
+    petIdWithoutContractId.first(),
+    petIdWithContractId.first(),
+    )

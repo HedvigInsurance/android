@@ -90,7 +90,7 @@ fun NavGraphBuilder.claimChatGraph(
   }
   navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
     ClaimOutcomeDeflectDestination(
-      deflect = deflect,
+      deflect = deflect.deflectData,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
       openUrl = openUrl,

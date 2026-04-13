@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.0.10"
+    versionName = "14.1.0"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -141,6 +141,7 @@ dependencies {
   implementation(libs.koin.workManager)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
   implementation(libs.navigationRecentsUrlSharing)
@@ -184,6 +185,7 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
+  implementation(projects.featureChipId)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)

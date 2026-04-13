@@ -84,10 +84,11 @@ fun HedvigNotificationCard(
   withIcon: Boolean = NotificationDefaults.withIconDefault,
   style: InfoCardStyle = defaultStyle,
   buttonLoading: Boolean = false,
+  minLines: Int = 1
 ) {
   HedvigNotificationCard(
     content = {
-      HedvigText(text = message)
+      HedvigText(text = message, minLines = minLines)
     },
     priority = priority,
     modifier = modifier,

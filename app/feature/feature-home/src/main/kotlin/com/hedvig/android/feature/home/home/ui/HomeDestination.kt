@@ -160,10 +160,12 @@ internal fun HomeDestination(
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -180,12 +182,14 @@ internal fun HomeDestination(
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
+    navigateToChipIdScreen = navigateToChipId,
     setEpochDayWhenLastToolTipShown = { epochDay ->
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
@@ -206,11 +210,13 @@ private fun HomeScreen(
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -227,7 +233,7 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
-    onCrossSellClick = openUrl,
+    onCrossSellClick = openCrossSellUrl,
     imageLoader = imageLoader,
   )
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -278,6 +284,7 @@ private fun HomeScreen(
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
             navigateToContactInfo = navigateToContactInfo,
+            navigateToChipIdScreen = navigateToChipIdScreen,
           )
         }
       }
@@ -424,6 +431,7 @@ private fun HomeScreenSuccess(
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val isInPreview = LocalInspectionMode.current
@@ -502,6 +510,7 @@ private fun HomeScreenSuccess(
               openUrl = openUrl,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
               navigateToContactInfo = navigateToContactInfo,
+              navigateToChipId = navigateToChipIdScreen,
             )
           }
         },
@@ -794,12 +803,14 @@ private fun PreviewHomeScreen(
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
@@ -824,12 +835,14 @@ private fun PreviewHomeScreenWithError() {
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
@@ -875,12 +888,14 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},

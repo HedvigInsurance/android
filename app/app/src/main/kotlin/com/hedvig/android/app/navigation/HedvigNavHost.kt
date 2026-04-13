@@ -28,6 +28,8 @@ import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
+import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
+import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
@@ -93,6 +95,7 @@ internal fun HedvigNavHost(
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -205,11 +208,15 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
+      openCrossSellUrl = openCrossSellUrl,
       navController = navController,
       navigateToContactInfo = {
         navController.navigate(ProfileDestination.ContactInfo)
       },
       imageLoader = imageLoader,
+      navigateToChipIdScreen = {
+        navController.navigate(ChipIdGraphDestination())
+      },
     )
     insuranceGraph(
       nestedGraphs = {
@@ -262,6 +269,7 @@ internal fun HedvigNavHost(
       },
       navController = navController,
       openUrl = openUrl,
+      openCrossSellUrl = openCrossSellUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
@@ -318,6 +326,9 @@ internal fun HedvigNavHost(
           ),
         )
       },
+      navigateToChipIdScreen = { contractId ->
+        navController.navigate(ChipIdGraphDestination(contractId))
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -370,6 +381,9 @@ internal fun HedvigNavHost(
         navController.navigate(InsuranceEvidenceGraphDestination)
       },
       openUrl = openUrl,
+      navigateToChipId = {
+        navController.navigate(ChipIdGraphDestination())
+      },
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -400,6 +414,18 @@ internal fun HedvigNavHost(
       navController = navController,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onNavigateToNewConversation = ::navigateToNewConversation,
+    )
+    chipIdGraph(
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
+      navigateUp = navController::navigateUp,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      popBackStackOrFinish = popBackStackOrFinish,
+      goHome = {
+          navController.navigate(HomeDestination.Graph) {
+            popUpTo(ChipIdGraphDestination::class) { inclusive = true }
+          }
+      }
     )
     movingFlowGraph(
       navController = navController,
@@ -471,6 +497,7 @@ internal fun HedvigNavHost(
       },
       openUrl = openUrl,
       tryToDialPhone = externalNavigator::tryToDialPhone,
+      imageLoader = imageLoader,
     )
     imageViewerGraph(navController, imageLoader)
     removeAddonsNavGraph(

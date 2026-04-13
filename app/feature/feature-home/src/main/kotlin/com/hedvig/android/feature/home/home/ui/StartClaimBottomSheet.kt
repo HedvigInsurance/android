@@ -87,8 +87,8 @@ private fun StartClaimBottomSheetContent(
       text = stringResource(Res.string.HONESTY_PLEDGE_HEADER),
       textAlign = TextAlign.Center,
       modifier = Modifier
-          .fillMaxWidth()
-          .semantics { heading() },
+        .fillMaxWidth()
+        .semantics { heading() },
     )
     Spacer(Modifier.height(16.dp))
     PledgeNotes()
@@ -166,9 +166,9 @@ private fun PledgeNotes() {
       Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
-            .fillMaxWidth()
-            .horizontalDivider(DividerPosition.Top, index != 0)
-            .padding(vertical = 16.dp),
+          .fillMaxWidth()
+          .horizontalDivider(DividerPosition.Top, index != 0)
+          .padding(vertical = 16.dp),
       ) {
         Icon(HedvigIcons.Checkmark, null, Modifier.size(24.dp))
         HedvigText(text, Modifier.weight(1f), color = HedvigTheme.colorScheme.textSecondaryTranslucent)
@@ -186,8 +186,8 @@ private fun ImportantInfoCheckBox(isChecked: Boolean, onCheckedChange: () -> Uni
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
       Column(modifier = Modifier.weight(1f)) {
         HedvigText(
