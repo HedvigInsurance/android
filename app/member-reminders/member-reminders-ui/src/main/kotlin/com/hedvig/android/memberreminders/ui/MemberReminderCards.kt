@@ -279,6 +279,7 @@ internal fun ReminderMissingChipId(navigateToChipId: () -> Unit, modifier: Modif
       buttonText = stringResource(Res.string.CHIP_ID_MISSING_BUTTON),
       onButtonClick = navigateToChipId,
     ),
+    minLines = 2
   )
 }
 
