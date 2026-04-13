@@ -23,6 +23,11 @@ interface HedvigBuildConstants {
   val urlHedvigGateway: String
 
   /**
+   * The URL targeting auth service backend
+   */
+  val urlAuthService: String
+
+  /**
    * The URL targeting bot service backend
    */
   val urlBotService: String

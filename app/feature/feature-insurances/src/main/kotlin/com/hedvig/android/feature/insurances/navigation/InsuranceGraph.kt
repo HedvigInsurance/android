@@ -28,6 +28,7 @@ fun NavGraphBuilder.insuranceGraph(
   navController: NavController,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   startMovingFlow: () -> Unit,
   onNavigateToStartChangeTier: (contractId: String) -> Unit,
   startTerminationFlow: (cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -60,7 +61,7 @@ fun NavGraphBuilder.insuranceGraph(
         onInsuranceCardClick = dropUnlessResumed { contractId: String ->
           navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        onCrossSellClick = dropUnlessResumed { url: String -> openUrl(url) },
+        onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
         navigateToCancelledInsurances = dropUnlessResumed {
           navController.navigate(InsurancesDestinations.TerminatedInsurances)
         },

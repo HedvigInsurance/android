@@ -95,6 +95,7 @@ internal fun HedvigNavHost(
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -207,6 +208,7 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
+      openCrossSellUrl = openCrossSellUrl,
       navController = navController,
       navigateToContactInfo = {
         navController.navigate(ProfileDestination.ContactInfo)
@@ -267,6 +269,7 @@ internal fun HedvigNavHost(
       },
       navController = navController,
       openUrl = openUrl,
+      openCrossSellUrl = openCrossSellUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
@@ -489,7 +492,7 @@ internal fun HedvigNavHost(
       },
       openUrl = openUrl,
       tryToDialPhone = externalNavigator::tryToDialPhone,
-      imageLoader = imageLoader
+      imageLoader = imageLoader,
     )
     imageViewerGraph(navController, imageLoader)
     removeAddonsNavGraph(
