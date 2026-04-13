@@ -29,6 +29,7 @@ import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
@@ -72,6 +73,7 @@ class MainActivity : AppCompatActivity() {
   private val simpleVideoCache: SimpleCache by inject()
 
   private val logoutUseCase: LogoutUseCase by inject()
+  private val getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase by inject()
 
   private var navController: NavController? = null
 
@@ -161,6 +163,7 @@ class MainActivity : AppCompatActivity() {
         tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
         externalNavigator = externalNavigator,
         logoutUseCase = logoutUseCase,
+        getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
       )
     }
   }

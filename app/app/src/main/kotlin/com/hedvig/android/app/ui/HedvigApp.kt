@@ -12,9 +12,11 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,6 +25,7 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import coil3.ImageLoader
+import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -44,6 +47,7 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -54,6 +58,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -78,6 +83,7 @@ internal fun HedvigApp(
   tryShowAppStoreReviewDialog: () -> Unit,
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
+  getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     windowSizeClass = windowSizeClass,
@@ -105,9 +111,13 @@ internal fun HedvigApp(
         navController = hedvigAppState.navController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
+      val scope = rememberCoroutineScope()
+      val openCrossSellUrl: (String) -> Unit = { url ->
+        openCrossSellUrl(scope, getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, url)
+      }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = deepLinkFirstUriHandler::openUri,
+        onCrossSellClick = openCrossSellUrl,
         imageLoader,
 //        onNavigateToAddonPurchaseFlow = { insuranceIds ->
 //          navHostController.navigate(
@@ -129,6 +139,7 @@ internal fun HedvigApp(
             externalNavigator = externalNavigator,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             openUrl = deepLinkFirstUriHandler::openUri,
+            openCrossSellUrl = openCrossSellUrl,
             finishApp = finishApp,
             imageLoader = imageLoader,
             languageService = languageService,
@@ -140,6 +151,23 @@ internal fun HedvigApp(
         }
       }
     }
+  }
+}
+
+private fun openCrossSellUrl(
+  scope: CoroutineScope,
+  getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
+  deepLinkFirstUriHandler: DeepLinkFirstUriHandler,
+  url: String,
+) {
+  scope.launch {
+    val code = getMemberAuthorizationCodeUseCase.invoke()
+    val finalUrl = if (code != null) {
+      url.toUri().buildUpon().appendQueryParameter("authorization_code", code).build().toString()
+    } else {
+      url
+    }
+    deepLinkFirstUriHandler.openUri(finalUrl)
   }
 }
 
