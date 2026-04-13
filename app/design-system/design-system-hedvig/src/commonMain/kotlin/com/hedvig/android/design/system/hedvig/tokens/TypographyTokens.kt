@@ -114,7 +114,7 @@ private fun TextStyleToken(
 @Composable
 internal fun TextStyleToken.toTextStyle(): TextStyle {
   return DefaultTextStyle.copy(
-    fontFamily = fontFamily.toFontFamily(),
+//    fontFamily = fontFamily.toFontFamily(),
     fontWeight = fontWeight,
     fontSize = fontSize,
     lineHeight = lineHeight,

@@ -669,7 +669,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
       // todo custom style since new DS does not have this specification
       //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
       style = HedvigTheme.typography.headlineMedium.copy(
-        fontFamily = HedvigTheme.typography.serif,
+//        fontFamily = HedvigTheme.typography.serif,
         fontSize = 28.0.sp,
         lineBreak = LineBreak.Heading,
         textAlign = TextAlign.Center,
