@@ -421,6 +421,13 @@ internal fun HedvigNavHost(
       navigateUp = navController::navigateUp,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       popBackStack = popBackStackOrFinish,
+      popFlowOnSuccess = {
+        if (!navController.popBackStack(ChipIdGraphDestination::class, inclusive = true)) {
+          navController.navigate(HomeDestination.Graph) {
+            popUpTo(ChipIdGraphDestination::class) { inclusive = true }
+          }
+        }
+      }
     )
     movingFlowGraph(
       navController = navController,
