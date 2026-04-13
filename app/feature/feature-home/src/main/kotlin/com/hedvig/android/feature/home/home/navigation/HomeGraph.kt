@@ -29,6 +29,7 @@ fun NavGraphBuilder.homeGraph(
   navigateToHelpCenter: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
@@ -65,6 +66,7 @@ fun NavGraphBuilder.homeGraph(
           navigateToContactInfo()
         },
         imageLoader = imageLoader,
+        navigateToChipId = navigateToChipIdScreen,
       )
     }
     navdestination<HomeDestination.FirstVet>(

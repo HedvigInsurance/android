@@ -108,6 +108,7 @@ internal fun ProfileDestination(
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
+  navigateToChipId: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -127,6 +128,7 @@ internal fun ProfileDestination(
     snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
     onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
     onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateToChipId = navigateToChipId,
   )
 }
 
@@ -148,6 +150,7 @@ private fun ProfileScreen(
   onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
+  navigateToChipId: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -226,6 +229,7 @@ private fun ProfileScreen(
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           onNavigateToNewConversation = onNavigateToNewConversation,
           navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipId,
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))

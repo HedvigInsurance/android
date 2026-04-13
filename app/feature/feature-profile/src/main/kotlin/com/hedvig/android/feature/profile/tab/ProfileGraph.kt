@@ -46,6 +46,7 @@ fun NavGraphBuilder.profileGraph(
   onNavigateToTravelCertificate: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
+  navigateToChipId: () -> Unit,
 ) {
   navgraph<ProfileDestination.Graph>(
     startDestination = ProfileDestination.Profile::class,
@@ -83,6 +84,7 @@ fun NavGraphBuilder.profileGraph(
         onNavigateToNewConversation = dropUnlessResumed {
           onNavigateToNewConversation()
         },
+        navigateToChipId = navigateToChipId,
       )
     }
     navdestination<ProfileDestinations.Eurobonus>(

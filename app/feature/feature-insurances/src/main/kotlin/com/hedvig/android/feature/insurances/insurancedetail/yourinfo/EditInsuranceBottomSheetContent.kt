@@ -43,7 +43,6 @@ import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_change_coverage
-import kotlin.collections.buildList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

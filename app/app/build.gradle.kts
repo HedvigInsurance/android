@@ -185,6 +185,7 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
+  implementation(projects.featureChipId)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)

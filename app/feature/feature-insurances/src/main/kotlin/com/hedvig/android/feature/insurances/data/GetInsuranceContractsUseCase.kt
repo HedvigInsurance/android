@@ -12,7 +12,10 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
@@ -139,6 +142,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     },
     cost = this.cost.toMonthlyCost(),
     basePremium = UiMoney.fromMoneyFragment(this.basePremium),
+    chipId = ChipIdState.NotRequired,
   )
 }
 
@@ -226,6 +230,10 @@ private fun ContractFragment.toContract(
         description = it.description,
       )
     }.orEmpty(),
+    chipId = when (isMissingPetId) {
+      true -> ChipIdState.Missing
+      false -> ChipIdState.NotRequired
+    },
   )
 }
 

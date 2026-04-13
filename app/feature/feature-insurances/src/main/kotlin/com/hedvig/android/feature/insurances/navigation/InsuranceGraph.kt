@@ -41,6 +41,7 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToChipIdScreen: (String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -103,6 +104,7 @@ fun NavGraphBuilder.insuranceGraph(
         navigateToAddAddon = { availableAddon ->
           onNavigateToAddonPurchaseFlow(listOf(availableAddon.relatedContractId), availableAddon)
         },
+        navigateToChipIdScreen = navigateToChipIdScreen,
       )
     }
     navdestination<InsurancesDestinations.TerminatedInsurances> {
