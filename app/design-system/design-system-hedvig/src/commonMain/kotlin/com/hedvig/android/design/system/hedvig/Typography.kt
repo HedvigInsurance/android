@@ -43,8 +43,8 @@ internal val HedvigTypography: Typography
     headlineSmall = TypographyTokens.HeadlineSmall.toTextStyle(),
     label = TypographyTokens.Label.toTextStyle(),
     finePrint = TypographyTokens.FinePrint.toTextStyle(),
-    serif = FontFamily(), // TypefaceTokens.Serif.toFontFamily(),
-    sans = FontFamily(), // TypefaceTokens.Sans.toFontFamily(),
+    serif = TypefaceTokens.Serif.toFontFamily(),
+    sans = TypefaceTokens.Sans.toFontFamily(),
   )
 
 @ReadOnlyComposable
