@@ -55,36 +55,6 @@ internal class GetMemberActionsUseCaseImpl(
   }
 }
 
-internal data class MemberAction(
-  val isCancelInsuranceEnabled: Boolean,
-  val isConnectPaymentEnabled: Boolean,
-  val isEditCoInsuredEnabled: Boolean,
-  val isEditCoOwnersEnabled: Boolean,
-  val isMovingEnabled: Boolean,
-  val isTravelCertificateEnabled: Boolean,
-  val isTierChangeEnabled: Boolean,
-  val sickAbroadAction: MemberActionWithDetails.SickAbroadAction?,
-  val firstVetAction: MemberActionWithDetails.FirstVetAction?,
-)
-
-internal sealed interface MemberActionWithDetails {
-  data class SickAbroadAction(
-    val deflectData: DeflectData,
-  ) : MemberActionWithDetails
-
-  data class FirstVetAction(
-    val sections: List<FirstVetSection>,
-  ) : MemberActionWithDetails
-}
-
-internal data class DeflectPartner(
-  val id: String,
-  val imageUrl: String?,
-  val phoneNumber: String?,
-  val url: String?,
-  val preferredImageHeight: Int?,
-)
-
 private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.toVetAction():
   MemberActionWithDetails.FirstVetAction {
   val sections = this.sections.map {
@@ -100,9 +70,9 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
   )
 }
 
-private fun  MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDeflect?.toSickAbroadAction():
+private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDeflect?.toSickAbroadAction():
   MemberActionWithDetails.SickAbroadAction? {
-  if (this==null) return null
+  if (this == null) return null
   val partners = if (partners.isNotEmpty()) {
     DeflectData.DeflectPartnerContainer.ExtendedPartnerContainer(
       partners = partners.map { partner ->
@@ -133,20 +103,20 @@ private fun  MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDefle
   }
 
   val deflectData = DeflectData(
-      title = title,
-      infoText = infoText,
-      warningText = warningText,
-      partnersContainer = partners,
-      partnersInfo = partnersInfo?.let {
-        DeflectData.InfoBlock(it.title,it.description)
-      },
-      content = content.let {
-        DeflectData.InfoBlock(it.title,it.description)
-      },
-      faq = faq.map { faqItem ->
-        DeflectData.InfoBlock(faqItem.title,faqItem.description)
-       },
-      buttonText = buttonTitle,
-    )
+    title = title,
+    infoText = infoText,
+    warningText = warningText,
+    partnersContainer = partners,
+    partnersInfo = partnersInfo?.let {
+      DeflectData.InfoBlock(it.title, it.description)
+    },
+    content = content.let {
+      DeflectData.InfoBlock(it.title, it.description)
+    },
+    faq = faq.map { faqItem ->
+      DeflectData.InfoBlock(faqItem.title, faqItem.description)
+    },
+    buttonText = buttonTitle,
+  )
   return MemberActionWithDetails.SickAbroadAction(deflectData)
 }
