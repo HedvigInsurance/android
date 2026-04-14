@@ -17,6 +17,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -179,7 +180,18 @@ fun MemberReminderCards(
         minLines = 1
       )
     } else if (memberReminders.isNotEmpty()) {
+      val stableReminderIds = remember(memberReminders.map { it.id }) {
+        memberReminders.map { it.id }
+      }
+
       val pagerState = rememberPagerState(pageCount = { memberReminders.size })
+
+      LaunchedEffect(memberReminders.size) {
+        if (pagerState.currentPage >= memberReminders.size && memberReminders.isNotEmpty()) {
+          pagerState.scrollToPage(0)
+        }
+      }
+
       BoxWithConstraints(Modifier.fillMaxWidth()) {
         val minLineCount = rememberMaxLineCountForReminders(
           memberReminders = memberReminders,
@@ -191,24 +203,26 @@ fun MemberReminderCards(
             contentPadding = contentPadding,
             beyondViewportPageCount = 1,
             pageSpacing = 8.dp,
-            key = { index -> memberReminders[index].id },
+            key = { index -> stableReminderIds.getOrNull(index) ?: index },
             modifier = Modifier
               .fillMaxWidth()
               .systemGestureExclusion(),
           ) { page ->
-            MemberReminderCard(
-              memberReminder = memberReminders[page],
-              navigateToAddMissingInfo = navigateToAddMissingInfo,
-              navigateToConnectPayment = navigateToConnectPayment,
-              openUrl = openUrl,
-              onNavigateToNewConversation = onNavigateToNewConversation,
-              snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
-              notificationPermissionState = notificationPermissionState,
-              navigateToContactInfo = navigateToContactInfo,
-              navigateToChipId = navigateToChipId,
-              modifier = modifier.fillMaxWidth(),
-              minLines = minLineCount
-            )
+            memberReminders.getOrNull(page)?.let { reminder ->
+              MemberReminderCard(
+                memberReminder = reminder,
+                navigateToAddMissingInfo = navigateToAddMissingInfo,
+                navigateToConnectPayment = navigateToConnectPayment,
+                openUrl = openUrl,
+                onNavigateToNewConversation = onNavigateToNewConversation,
+                snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
+                notificationPermissionState = notificationPermissionState,
+                navigateToContactInfo = navigateToContactInfo,
+                navigateToChipId = navigateToChipId,
+                modifier = modifier.fillMaxWidth(),
+                minLines = minLineCount
+              )
+            }
           }
         }
       }
@@ -217,7 +231,7 @@ fun MemberReminderCards(
 
       HorizontalPagerIndicator(
         pagerState = pagerState,
-        pageCount = memberReminders.size,
+        pageCount = pagerState.pageCount,
         activeColor = HedvigTheme.colorScheme.fillPrimary,
         modifier = Modifier
           .padding(contentPadding)
