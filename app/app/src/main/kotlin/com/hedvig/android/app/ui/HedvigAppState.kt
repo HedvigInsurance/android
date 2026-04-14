@@ -196,6 +196,7 @@ internal class HedvigAppState(
    */
   fun navigateToLoggedIn() {
     navController.navigate(RootGraph) {
+      restoreState = true
       typedPopUpTo<LoginDestination> {
         inclusive = true
       }
@@ -203,12 +204,17 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedOut() {
+    val currentDestinationRoute = navController.currentDestination?.route
+    val isLoggingOutFromProfile = currentDestinationRoute ==
+      "com.hedvig.android.feature.profile.navigation.ProfileDestination.Profile"
+    // navController.currentDestination.toTopLevelAppDestination() todo: probably add this check too
     for (entry in TopLevelGraph.entries) {
       navController.typedClearBackStack(entry.destination)
     }
     navController.navigate(LoginDestination) {
       typedPopUpTo<RootGraph> {
         inclusive = true
+        saveState = !isLoggingOutFromProfile
       }
     }
   }
