@@ -14,9 +14,9 @@ import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.data.claimflow.ClaimFlowStep
-import com.hedvig.android.data.claimflow.toClaimFlowDestination
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
@@ -28,12 +28,12 @@ import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
+import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
+import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
-import com.hedvig.android.feature.claimtriaging.ClaimTriagingDestination
-import com.hedvig.android.feature.claimtriaging.claimTriagingDestinations
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
@@ -48,6 +48,8 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDes
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo
+import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTermination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
@@ -65,10 +67,6 @@ import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.SelectContractForMoving
 import com.hedvig.android.feature.movingflow.movingFlowGraph
-import com.hedvig.android.feature.odyssey.navigation.ClaimsFlowGraphDestination
-import com.hedvig.android.feature.odyssey.navigation.claimFlowGraph
-import com.hedvig.android.feature.odyssey.navigation.navigateToClaimFlowDestination
-import com.hedvig.android.feature.odyssey.navigation.terminalClaimFlowStepDestinations
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
@@ -91,11 +89,13 @@ import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
+  globalSnackBarState: GlobalSnackBarState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -180,15 +180,12 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
-      navigateToOldClaimFlow = {
-        navController.navigate(ClaimsFlowGraphDestination)
-      },
       navigateToClaimDetails = { claimId ->
         navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
       },
       navigateToConnectPayment = navigateToConnectPayment,
-      navigateToMissingInfo = { contractId: String ->
-        navController.navigate(CoInsuredAddInfo(contractId))
+      navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
+        navController.navigate(CoInsuredAddInfo(contractId, type))
       },
       navigateToHelpCenter = {
         navController.navigate(HelpCenterDestination)
@@ -211,11 +208,15 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
+      openCrossSellUrl = openCrossSellUrl,
       navController = navController,
       navigateToContactInfo = {
         navController.navigate(ProfileDestination.ContactInfo)
       },
       imageLoader = imageLoader,
+      navigateToChipIdScreen = {
+        navController.navigate(ChipIdGraphDestination())
+      },
     )
     insuranceGraph(
       nestedGraphs = {
@@ -268,6 +269,7 @@ internal fun HedvigNavHost(
       },
       navController = navController,
       openUrl = openUrl,
+      openCrossSellUrl = openCrossSellUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
@@ -280,7 +282,10 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       imageLoader = imageLoader,
       startEditCoInsured = { contractId: String ->
-        navController.navigate(CoInsuredAddOrRemove(contractId))
+        navController.navigate(CoInsuredAddOrRemove(contractId, CoInsuredFlowType.CoInsured))
+      },
+      startEditCoOwners = { contractId: String ->
+        navController.navigate(EditCoInsuredTriage(contractId, CoInsuredFlowType.CoOwners))
       },
       onNavigateToStartChangeTier = { contractId: String ->
         navController.navigate(
@@ -290,7 +295,10 @@ internal fun HedvigNavHost(
         )
       },
       startEditCoInsuredAddMissingInfo = { contractId: String ->
-        navController.navigate(CoInsuredAddInfo(contractId))
+        navController.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoInsured))
+      },
+      startEditCoOwnersAddMissingInfo = { contractId: String ->
+        navController.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoOwners))
       },
       onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon ->
         navController.navigate(
@@ -318,6 +326,9 @@ internal fun HedvigNavHost(
           ),
         )
       },
+      navigateToChipIdScreen = { contractId ->
+        navController.navigate(ChipIdGraphDestination(contractId))
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -330,8 +341,14 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
+      onOpenChat = ::navigateToNewConversation,
     )
     profileGraph(
+      settingsDestinationNestedGraphs = {
+        deleteAccountGraph(hedvigDeepLinkContainer, navController)
+      },
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
       nestedGraphs = {
         claimHistoryGraph(
           navigateUp = navController::navigateUp,
@@ -340,15 +357,12 @@ internal fun HedvigNavHost(
           },
         )
       },
-      settingsDestinationNestedGraphs = {
-        deleteAccountGraph(hedvigDeepLinkContainer, navController)
-      },
-      navController = navController,
+      popBackStackOrFinish = popBackStackOrFinish,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
-      navigateToAddMissingInfo = { contractId: String ->
-        navController.navigate(CoInsuredAddInfo(contractId))
+      navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
+        navController.navigate(CoInsuredAddInfo(contractId, type))
       },
       navigateToDeleteAccountFeature = {
         navController.navigate(DeleteAccountDestination)
@@ -357,7 +371,6 @@ internal fun HedvigNavHost(
         navController.navigate(ClaimHistoryDestination)
       },
       openAppSettings = externalNavigator::openAppSettings,
-      openUrl = openUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
@@ -366,6 +379,10 @@ internal fun HedvigNavHost(
       },
       onNavigateToInsuranceEvidence = {
         navController.navigate(InsuranceEvidenceGraphDestination)
+      },
+      openUrl = openUrl,
+      navigateToChipId = {
+        navController.navigate(ChipIdGraphDestination())
       },
     )
     cbmChatGraph(
@@ -398,6 +415,18 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       onNavigateToNewConversation = ::navigateToNewConversation,
     )
+    chipIdGraph(
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
+      navigateUp = navController::navigateUp,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      popBackStackOrFinish = popBackStackOrFinish,
+      goHome = {
+          navController.navigate(HomeDestination.Graph) {
+            popUpTo(ChipIdGraphDestination::class) { inclusive = true }
+          }
+      }
+    )
     movingFlowGraph(
       navController = navController,
       goToChat = ::navigateToNewConversation,
@@ -420,11 +449,19 @@ internal fun HedvigNavHost(
           }
 
           is QuickLinkCoInsuredAddInfo -> {
-            CoInsuredAddInfo(quickLinkDestination.contractId)
+            CoInsuredAddInfo(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
           }
 
           is QuickLinkCoInsuredAddOrRemove -> {
-            CoInsuredAddOrRemove(quickLinkDestination.contractId)
+            CoInsuredAddOrRemove(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
+          }
+
+          is QuickLinkCoOwnerAddInfo -> {
+            CoInsuredAddInfo(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
+          }
+
+          is QuickLinkCoOwnerAddOrRemove -> {
+            CoInsuredAddOrRemove(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
           }
 
           QuickLinkConnectPayment -> {
@@ -446,6 +483,10 @@ internal fun HedvigNavHost(
           QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured -> {
             EditCoInsuredTriage()
           }
+
+          QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners -> {
+            EditCoInsuredTriage(type = CoInsuredFlowType.CoOwners)
+          }
         }
         navController.navigate(destination)
       },
@@ -457,6 +498,7 @@ internal fun HedvigNavHost(
       },
       openUrl = openUrl,
       tryToDialPhone = externalNavigator::tryToDialPhone,
+      imageLoader = imageLoader,
     )
     imageViewerGraph(navController, imageLoader)
     removeAddonsNavGraph(
@@ -499,6 +541,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     onNavigateToNewConversation = {
       navigateToNewConversation(null)
     },
+    openPlayStore = externalNavigator::tryOpenPlayStore,
   )
   claimDetailsGraph(
     navController = navController,
@@ -518,7 +561,7 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
     onNavigateToCoInsuredAddInfo = { contractId ->
-      navController.navigate(CoInsuredAddInfo(contractId))
+      navController.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoInsured))
     },
     onNavigateToAddonPurchaseFlow = { ids ->
       navController.navigate(
@@ -534,50 +577,5 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     navController = navController,
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-  )
-  claimFlowGraph(
-    windowSizeClass = hedvigAppState.windowSizeClass,
-    navController = navController,
-    hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-    shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-    navigateToTriaging = {
-      navController.navigate(ClaimTriagingDestination.ClaimGroups)
-    },
-    onNavigateToImageViewer = onNavigateToImageViewer,
-    openAppSettings = externalNavigator::openAppSettings,
-    closeClaimFlow = {
-      navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
-    },
-    nestedGraphs = {
-      claimTriagingDestinations(
-        navController = navController,
-        windowSizeClass = hedvigAppState.windowSizeClass,
-        startClaimFlow = { claimFlowStep: ClaimFlowStep ->
-          navController.navigateToClaimFlowDestination(claimFlowStep.toClaimFlowDestination())
-        },
-        closeClaimFlow = {
-          navController.typedPopBackStack<ClaimsFlowGraphDestination>(inclusive = true)
-        },
-      )
-    },
-    openUrl = openUrl,
-    tryToDialPhone = externalNavigator::tryToDialPhone,
-    onNavigateToNewConversation = {
-      navigateToNewConversation(null)
-    },
-    imageLoader = imageLoader,
-    appPackageId = hedvigBuildConstants.appPackageId,
-  )
-  terminalClaimFlowStepDestinations(
-    navController = navController,
-    openPlayStore = {
-      navController.popBackStack()
-      externalNavigator.tryOpenPlayStore()
-    },
-    onNavigateToNewConversation = {
-      navigateToNewConversation {
-        typedPopUpTo<HomeDestination.Home>()
-      }
-    },
   )
 }

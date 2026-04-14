@@ -12,7 +12,10 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
@@ -31,6 +34,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
+import octopus.fragment.ContractCoInsuredFragment
+import octopus.fragment.ContractCoOwnerFragment
 import octopus.fragment.ContractFragment
 import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
@@ -137,6 +142,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     },
     cost = this.cost.toMonthlyCost(),
     basePremium = UiMoney.fromMoneyFragment(this.basePremium),
+    chipId = ChipIdState.NotRequired,
   )
 }
 
@@ -165,7 +171,8 @@ private fun ContractFragment.toContract(
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
-      coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
+      coInsured = coInsured?.map { it.toCoInsured() }.orEmpty(),
+      coOwners = coOwners?.map { it.toCoInsured() }.orEmpty(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
       addons = currentAgreement.addons?.map {
         Addon(
@@ -183,7 +190,8 @@ private fun ContractFragment.toContract(
         displayItems = it.displayItems.map { it.toDisplayItem() },
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
-        coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
+        coInsured = coInsured?.map { it.toCoInsured() }.orEmpty(),
+        coOwners = coOwners?.map { it.toCoInsured() }.orEmpty(),
         creationCause = it.creationCause.toCreationCause(),
         addons = it.addons?.map {
           Addon(
@@ -197,6 +205,7 @@ private fun ContractFragment.toContract(
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
+    supportsEditCoOwners = supportsCoOwners && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
     existingAddons = existingAddons?.map {
@@ -221,6 +230,10 @@ private fun ContractFragment.toContract(
         description = it.description,
       )
     }.orEmpty(),
+    chipId = when (isMissingPetId) {
+      true -> ChipIdState.Missing
+      false -> ChipIdState.NotRequired
+    },
   )
 }
 
@@ -255,7 +268,17 @@ private fun AgreementCreationCause.toCreationCause() = when (this) {
   -> InsuranceAgreement.CreationCause.UNKNOWN
 }
 
-private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+private fun ContractCoInsuredFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+  firstName = firstName,
+  lastName = lastName,
+  ssn = ssn,
+  birthDate = birthdate,
+  activatesOn = activatesOn,
+  terminatesOn = terminatesOn,
+  hasMissingInfo = hasMissingInfo,
+)
+
+private fun ContractCoOwnerFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
   firstName = firstName,
   lastName = lastName,
   ssn = ssn,

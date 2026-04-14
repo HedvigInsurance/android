@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
@@ -36,6 +37,7 @@ import kotlinx.datetime.LocalDate
 
 internal class EditCoInsuredPresenter(
   private val contractId: String,
+  private val type: CoInsuredFlowType,
   private val getCoInsuredUseCase: GetCoInsuredUseCase,
   private val fetchCoInsuredPersonalInformationUseCase: FetchCoInsuredPersonalInformationUseCase,
   private val createMidtermChangeUseCase: CreateMidtermChangeUseCase,
@@ -276,7 +278,7 @@ internal class EditCoInsuredPresenter(
         }
 
         createMidtermChangeUseCase
-          .invoke(contractId, list)
+          .invoke(contractId, list, type)
           .fold(
             ifLeft = {
               Snapshot.withMutableSnapshot {
@@ -355,6 +357,7 @@ internal class EditCoInsuredPresenter(
       Error(errorMessage)
     } else if (listState.member != null) {
       Loaded(
+        type = type,
         listState = listState,
         addBottomSheetContentState = addBottomSheetContentState,
         removeBottomSheetContentState = removeBottomSheetContentState,
@@ -471,6 +474,7 @@ internal sealed interface EditCoInsuredState {
   data class Error(val message: String?) : EditCoInsuredState
 
   data class Loaded(
+    val type: CoInsuredFlowType,
     val listState: CoInsuredListState,
     val addBottomSheetContentState: AddBottomSheetContentState,
     val removeBottomSheetContentState: RemoveBottomSheetContentState,
@@ -492,6 +496,8 @@ internal sealed interface EditCoInsuredState {
         originalCoInsured != null &&
         updatedCoInsured != null &&
         originalCoInsured != updatedCoInsured
+
+      fun anyUpdatedCoInsuredHasMissingInfo() = updatedCoInsured?.any { it.hasMissingInfo } == true
 
       fun noCoInsuredHaveMissingInfo() = coInsured.all { !it.hasMissingInfo }
     }

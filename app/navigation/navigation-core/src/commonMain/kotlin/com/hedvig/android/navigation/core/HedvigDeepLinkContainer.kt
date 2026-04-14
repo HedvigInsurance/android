@@ -27,6 +27,11 @@ interface HedvigDeepLinkContainer {
   // A specific destination  for editing co-insured with a contractId. If none match, an error screen is shown
   val editCoInsured: List<String>
 
+  /**
+   * Same as [editCoInsured] but only allows to edit co-owner related contracts instead
+   */
+  val editCoOwners: List<String>
+
   val terminateInsurance: List<String> // The screen with a list of insurances eligible for self-service cancellation
 
   val forever: List<String> // The forever/referrals destination, showing the existing discount and the unique code
@@ -64,6 +69,16 @@ interface HedvigDeepLinkContainer {
   // the screen where member can start moving flow to change address
   // for their home insurance
   val moveContract: List<String>
+
+  /**
+   * Builds a deep link with the right prefix for the current app flavor, being provided a [suffix] which is everything
+   * that comes after `/` which follows the base deeplink domain
+   */
+  fun buildDeepLink(suffix: String): String
+
+  val petIdWithoutContractId: List<String>
+
+  val petIdWithContractId: List<String>
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -105,6 +120,9 @@ internal class HedvigDeepLinkContainerImpl(
 
   override val editCoInsured: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/edit-coinsured?contractId={contractId}"
+  }
+  override val editCoOwners: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/edit-coowners"
   }
   override val terminateInsurance: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/terminate-contract?contractId={contractId}"
@@ -167,6 +185,17 @@ internal class HedvigDeepLinkContainerImpl(
   override val moveContract: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/move-contract"
   }
+
+  override fun buildDeepLink(suffix: String): String {
+    return "${baseDeepLinkDomains.first()}/$suffix"
+  }
+
+  override val petIdWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/pet-id"
+  }
+  override val petIdWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/pet-id?contractId={contractId}"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -200,4 +229,10 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     insuranceEvidence.first(),
     claimFlow.first(),
     moveContract.first(),
-  )
+    editCoOwners.first(),
+    carAddon.first(),
+    carAddonWithContractId.first(),
+    travelAddonWithContractId.first(),
+    petIdWithoutContractId.first(),
+    petIdWithContractId.first(),
+    )

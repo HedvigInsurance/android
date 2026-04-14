@@ -52,6 +52,7 @@ import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
@@ -689,6 +690,7 @@ private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
     UiMoney(89.0, UiCurrencyCode.SEK),
     discounts = emptyList(),
   ),
+  chipId = ChipIdState.NotRequired,
 )
 
 private val previewInsurance = EstablishedInsuranceContract(
@@ -715,6 +717,7 @@ private val previewInsurance = EstablishedInsuranceContract(
     ),
     certificateUrl = null,
     coInsured = listOf(),
+    coOwners = listOf(),
     creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
     addons = null,
     basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -728,6 +731,7 @@ private val previewInsurance = EstablishedInsuranceContract(
   renewalDate = LocalDate.fromEpochDays(500),
   supportsAddressChange = false,
   supportsEditCoInsured = true,
+  supportsEditCoOwners = false,
   isTerminated = false,
   contractHolderDisplayName = "Hhhhh Hhhhh",
   contractHolderSSN = "19910913-1893",
@@ -735,4 +739,5 @@ private val previewInsurance = EstablishedInsuranceContract(
   supportsTierChange = true,
   existingAddons = emptyList(),
   availableAddons = emptyList(),
+  chipId = ChipIdState.Missing,
 )

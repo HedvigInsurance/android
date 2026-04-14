@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -68,6 +69,7 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.Add
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
 import hedvig.resources.COINSURED_WITHOUT_SSN_INFO
+import hedvig.resources.CONTRACT_ADD_ADDITIONAL_COOWNER
 import hedvig.resources.CONTRACT_ADD_COINSURED
 import hedvig.resources.CONTRACT_ADD_COINSURED_NO_SSN
 import hedvig.resources.CONTRACT_BIRTH_DATE
@@ -92,6 +94,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun AddCoInsuredBottomSheetContent(
   bottomSheetState: AddBottomSheetContentState,
+  type: CoInsuredFlowType,
   onSsnChanged: (String) -> Unit,
   onContinue: () -> Unit,
   onDismiss: () -> Unit,
@@ -107,7 +110,10 @@ internal fun AddCoInsuredBottomSheetContent(
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      text = stringResource(Res.string.CONTRACT_ADD_COINSURED),
+      text = when (type) {
+        CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_ADDITIONAL_COOWNER)
+      },
       textAlign = TextAlign.Center,
       modifier = Modifier
         .fillMaxWidth()
@@ -503,6 +509,7 @@ private fun AddCoInsuredBottomSheetContentPreview() {
             ),
           ),
         ),
+        type = CoInsuredFlowType.CoInsured,
         onSsnChanged = {},
         onContinue = {},
         onDismiss = {},
@@ -533,6 +540,7 @@ private fun AddCoInsuredBottomSheetContentWithCoInsuredPreview() {
             // birthDate = LocalDate(2016, 7, 28),
           ),
         ),
+        type = CoInsuredFlowType.CoInsured,
         onSsnChanged = {},
         onContinue = {},
         onDismiss = {},

@@ -22,6 +22,7 @@ import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
@@ -74,7 +75,8 @@ internal class InsurancePresenterTest {
           termsVersion = "SE_DOG_STANDARD-20230330-HEDVIG-null",
         ),
         certificateUrl = null,
-        coInsured = listOf(),
+        coInsured = emptyList(),
+        coOwners = emptyList(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -88,6 +90,7 @@ internal class InsurancePresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
@@ -95,6 +98,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing,
     ),
     EstablishedInsuranceContract(
       id = "contractId#2",
@@ -120,6 +124,7 @@ internal class InsurancePresenterTest {
         ),
         certificateUrl = null,
         coInsured = listOf(),
+        coOwners = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -133,6 +138,7 @@ internal class InsurancePresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = false,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
@@ -140,6 +146,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     ),
   )
   private val terminatedContracts: List<EstablishedInsuranceContract> = listOf(
@@ -167,6 +174,7 @@ internal class InsurancePresenterTest {
         ),
         certificateUrl = null,
         coInsured = listOf(),
+        coOwners = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -180,6 +188,7 @@ internal class InsurancePresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
@@ -187,6 +196,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     ),
     EstablishedInsuranceContract(
       id = "contractId#4",
@@ -212,6 +222,7 @@ internal class InsurancePresenterTest {
         ),
         certificateUrl = null,
         coInsured = listOf(),
+        coOwners = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -225,6 +236,7 @@ internal class InsurancePresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
@@ -232,6 +244,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     ),
   )
   private val validCrossSells: CrossSellResult = CrossSellResult(

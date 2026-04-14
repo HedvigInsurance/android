@@ -5,6 +5,7 @@ import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -41,6 +42,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
             ),
             certificateUrl = null,
             creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
+            coOwners = listOf(),
             coInsured = listOf(
               InsuranceAgreement.CoInsured(
                 ssn = "123",
@@ -82,6 +84,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           renewalDate = LocalDate.fromEpochDays(500),
           supportsAddressChange = false,
           supportsEditCoInsured = true,
+          supportsEditCoOwners = false,
           isTerminated = false,
           contractHolderDisplayName = "Test Member",
           contractHolderSSN = "1111111111-33322",
@@ -89,6 +92,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           tierName = "STANDARD",
           existingAddons = emptyList(),
           availableAddons = emptyList(),
+          chipId = ChipIdState.NotRequired,
         ),
       ).right(),
     )

@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -102,11 +103,12 @@ internal fun ProfileDestination(
   navigateToSettings: () -> Unit,
   navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToAddMissingInfo: (contractId: String) -> Unit,
+  navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
+  navigateToChipId: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -126,6 +128,7 @@ internal fun ProfileDestination(
     snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
     onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
     onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateToChipId = navigateToChipId,
   )
 }
 
@@ -141,12 +144,13 @@ private fun ProfileScreen(
   navigateToSettings: () -> Unit,
   navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToAddMissingInfo: (contractId: String) -> Unit,
+  navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
+  navigateToChipId: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -225,6 +229,7 @@ private fun ProfileScreen(
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           onNavigateToNewConversation = onNavigateToNewConversation,
           navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipId,
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))

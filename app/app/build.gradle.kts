@@ -26,9 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.0.6"
-
-    vectorDrawables.useSupportLibrary = true
+    versionName = "14.1.0"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -143,6 +141,7 @@ dependencies {
   implementation(libs.koin.workManager)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
   implementation(libs.navigationRecentsUrlSharing)
@@ -159,6 +158,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.coreRive)
   implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
@@ -167,7 +167,7 @@ dependencies {
   implementation(projects.dataAddons)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
-  implementation(projects.dataClaimFlow)
+
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
@@ -185,11 +185,12 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
+  implementation(projects.featureChipId)
   implementation(projects.featureChooseTier)
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
-  implementation(projects.featureClaimTriaging)
+
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
@@ -203,7 +204,7 @@ dependencies {
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
-  implementation(projects.featureOdyssey)
+
   implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)

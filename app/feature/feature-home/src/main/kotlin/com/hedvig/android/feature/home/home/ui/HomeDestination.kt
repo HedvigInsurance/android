@@ -70,6 +70,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -157,13 +158,14 @@ internal fun HomeDestination(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -178,15 +180,16 @@ internal fun HomeDestination(
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    navigateToOldClaimFlow = navigateToOldClaimFlow,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
+    navigateToChipIdScreen = navigateToChipId,
     setEpochDayWhenLastToolTipShown = { epochDay ->
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
@@ -205,14 +208,15 @@ private fun HomeScreen(
   navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -229,16 +233,14 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
-    onCrossSellClick = openUrl,
+    onCrossSellClick = openCrossSellUrl,
     imageLoader = imageLoader,
   )
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   StartClaimBottomSheet(
     state = startClaimBottomSheetState,
-    navigateToOldClaimFlow = navigateToOldClaimFlow,
     navigateToClaimChat = navigateToClaimChat,
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
-    isExperimentalClaimChatEnabled = (uiState as? Success)?.isExperimentalClaimChatEnabled ?: false,
     isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
   Box(Modifier.fillMaxSize()) {
@@ -275,7 +277,6 @@ private fun HomeScreen(
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToHelpCenter = navigateToHelpCenter,
-            navigateToOldClaimFlow = navigateToOldClaimFlow,
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
@@ -283,6 +284,7 @@ private fun HomeScreen(
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
             navigateToContactInfo = navigateToContactInfo,
+            navigateToChipIdScreen = navigateToChipIdScreen,
           )
         }
       }
@@ -422,14 +424,14 @@ private fun HomeScreenSuccess(
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val isInPreview = LocalInspectionMode.current
@@ -508,6 +510,7 @@ private fun HomeScreenSuccess(
               openUrl = openUrl,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
               navigateToContactInfo = navigateToContactInfo,
+              navigateToChipId = navigateToChipIdScreen,
             )
           }
         },
@@ -515,11 +518,7 @@ private fun HomeScreenSuccess(
           HedvigButton(
             text = stringResource(Res.string.home_tab_claim_button_text),
             onClick = {
-              if (!uiState.isExperimentalClaimChatEnabled && uiState.isProduction) {
-                navigateToOldClaimFlow()
-              } else {
-                openClaimFlowSheet()
-              }
+              openClaimFlowSheet()
             },
             enabled = true,
             modifier = Modifier
@@ -793,7 +792,6 @@ private fun PreviewHomeScreen(
             eligibleInsurancesIds = nonEmptyListOf("id"),
             flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
-          isExperimentalClaimChatEnabled = true,
           isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
@@ -803,15 +801,16 @@ private fun PreviewHomeScreen(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
@@ -834,15 +833,16 @@ private fun PreviewHomeScreenWithError() {
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},
@@ -877,7 +877,6 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           firstVetAction = null,
           chatAction = null,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = true,
           isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
@@ -887,15 +886,16 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        navigateToOldClaimFlow = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
         navigateToClaimChatInDevMode = {},

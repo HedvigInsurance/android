@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - chore/fix-app-icon
+      - feat/pet-chip-id
   workflow_dispatch:
 
 concurrency:

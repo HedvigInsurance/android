@@ -10,6 +10,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -211,6 +212,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -224,6 +226,7 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
@@ -231,6 +234,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
       EstablishedInsuranceContract(
         "contractId2",
@@ -256,6 +260,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -269,6 +274,7 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = true,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
@@ -276,6 +282,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
     )
 
@@ -303,6 +310,7 @@ class TerminatedContractsPresenterTest {
         ),
         certificateUrl = null,
         coInsured = listOf(),
+        coOwners = listOf(),
         creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
         addons = null,
         basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -316,6 +324,7 @@ class TerminatedContractsPresenterTest {
       renewalDate = LocalDate.fromEpochDays(500),
       supportsAddressChange = false,
       supportsEditCoInsured = true,
+      supportsEditCoOwners = true,
       isTerminated = true,
       contractHolderSSN = "",
       contractHolderDisplayName = "",
@@ -323,6 +332,7 @@ class TerminatedContractsPresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     )
 
     private val activeInsurances = listOf(
@@ -350,6 +360,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -363,6 +374,7 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
@@ -370,6 +382,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
       EstablishedInsuranceContract(
         "contractId4",
@@ -395,6 +408,7 @@ class TerminatedContractsPresenterTest {
           ),
           certificateUrl = null,
           coInsured = listOf(),
+          coOwners = listOf(),
           creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
           addons = null,
           basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -408,6 +422,7 @@ class TerminatedContractsPresenterTest {
         renewalDate = LocalDate.fromEpochDays(500),
         supportsAddressChange = false,
         supportsEditCoInsured = true,
+        supportsEditCoOwners = true,
         isTerminated = false,
         contractHolderSSN = "",
         contractHolderDisplayName = "",
@@ -415,6 +430,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
     )
   }

@@ -60,10 +60,9 @@ fun NavGraphBuilder.claimChatGraph(
   appPackageId: String,
   imageLoader: ImageLoader,
   onNavigateToNewConversation: () -> Unit,
+  openPlayStore: () -> Unit,
 ) {
-  navdestination<ClaimChatDestination>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimFlow),
-  ) {
+  navdestination<ClaimChatDestination> {
     ClaimChatDestination(
       isDevelopmentFlow = isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -86,11 +85,12 @@ fun NavGraphBuilder.claimChatGraph(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
+      openPlayStore = openPlayStore,
     )
   }
   navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
     ClaimOutcomeDeflectDestination(
-      deflect = deflect,
+      deflect = deflect.deflectData,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
       openUrl = openUrl,

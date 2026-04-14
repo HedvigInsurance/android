@@ -2,6 +2,7 @@ package com.hedvig.android.feature.help.center.navigation
 
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -32,10 +33,12 @@ internal sealed interface HelpCenterDestinations {
 
   @Serializable
   data class Emergency(
-    val emergencyNumber: String?,
-    val emergencyUrl: String?,
-    val preferredPartnerImageHeight: Int?,
-  ) : HelpCenterDestinations, Destination
+    val deflectData: DeflectData
+  ) : HelpCenterDestinations, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(typeOf<DeflectData>())
+    }
+  }
 
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations, Destination {

@@ -15,6 +15,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isNullOrEmpty
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder.CoInsuredInfo
 import com.hedvig.android.memberreminders.MemberReminder.UpcomingRenewal
 import com.hedvig.android.memberreminders.test.TestEnableNotificationsReminderSnoozeManager
@@ -33,12 +34,14 @@ class GetMemberRemindersUseCaseTest {
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
+    val getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
+      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -65,12 +68,14 @@ class GetMemberRemindersUseCaseTest {
     val getUpcomingRenewalRemindersUseCase = TestGetUpcomingRenewalRemindersUseCase()
     val getNeedsCoInsuredInfoRemindersUseCase = TestGetNeedsCoInsuredInfoRemindersUseCase()
     val getContactInfoUpdateIsNeededUseCase = TestGetContactInfoUpdateIsNeededUseCase()
+    val getMissingChipIdReminderUseCase = TestGetMissingChipIdReminderUseCase()
     val getMemberRemindersUseCase = GetMemberRemindersUseCaseImpl(
       enableNotificationsReminderSnoozeManager = enableNotificationsReminderManager,
       getConnectPaymentReminderUseCase = getConnectPaymentReminderUseCase,
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
+      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase
     )
     val testId = "test"
 
@@ -82,7 +87,7 @@ class GetMemberRemindersUseCaseTest {
         nonEmptyListOf(UpcomingRenewal("", LocalDate.parse("2023-01-01"), "", testId)).right(),
       )
       getNeedsCoInsuredInfoRemindersUseCase.turbine.add(
-        nonEmptyListOf(CoInsuredInfo("123", testId)).right(),
+        nonEmptyListOf(CoInsuredInfo("123", CoInsuredFlowType.CoInsured, testId)).right(),
       )
       assertAll {
         with(awaitItem()) {
@@ -123,7 +128,7 @@ class GetMemberRemindersUseCaseTest {
     }
   }
 
-  class TestGetContactInfoUpdateIsNeededUseCase() : GetContactInfoUpdateIsNeededUseCase {
+  class TestGetContactInfoUpdateIsNeededUseCase : GetContactInfoUpdateIsNeededUseCase {
     override fun invoke(): Flow<Either<ErrorMessage, MemberReminder.ContactInfoUpdateNeeded?>> {
       return flowOf(
         either {
@@ -132,4 +137,15 @@ class GetMemberRemindersUseCaseTest {
       )
     }
   }
+
+  class TestGetMissingChipIdReminderUseCase : GetMissingChipIdReminderUseCase {
+    override fun invoke(): Flow<Either<ErrorMessage, MemberReminder.MissingChipId?>> {
+      return flowOf(
+        either {
+          null
+        },
+      )
+    }
+  }
+
 }

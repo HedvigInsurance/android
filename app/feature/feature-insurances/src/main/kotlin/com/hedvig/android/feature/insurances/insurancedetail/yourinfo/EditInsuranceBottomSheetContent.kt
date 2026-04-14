@@ -31,6 +31,8 @@ import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.CONTRACT_CHANGE_INFORMATION_TITLE
 import hedvig.resources.CONTRACT_EDIT_COINSURED
+import hedvig.resources.EDIT_COOWNER_SUBTITLE
+import hedvig.resources.EDIT_COOWNER_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
@@ -41,16 +43,17 @@ import hedvig.resources.Res
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.insurance_details_change_coverage
-import kotlin.collections.buildList
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditInsuranceBottomSheetContent(
   allowEditCoInsured: Boolean,
+  allowEditCoOwners: Boolean,
   allowChangeTier: Boolean,
   allowTerminatingInsurance: Boolean,
   allowRemovingAddon: Boolean,
   onEditCoInsuredClick: () -> Unit,
+  onEditCoOwnersClick: () -> Unit,
   onChangeTierClick: () -> Unit,
   onCancelInsuranceClick: () -> Unit,
   onRemoveAddonClick: () -> Unit,
@@ -77,10 +80,19 @@ internal fun EditInsuranceBottomSheetContent(
         ),
       )
     }
-    if (allowTerminatingInsurance) {
+    if (allowEditCoOwners) {
       add(
         RadioOption(
           RadioOptionId("2"),
+          stringResource(Res.string.EDIT_COOWNER_TITLE),
+          stringResource(Res.string.EDIT_COOWNER_SUBTITLE),
+        ),
+      )
+    }
+    if (allowTerminatingInsurance) {
+      add(
+        RadioOption(
+          RadioOptionId("3"),
           stringResource(Res.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE),
           stringResource(Res.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE),
         ),
@@ -89,7 +101,7 @@ internal fun EditInsuranceBottomSheetContent(
     if (allowRemovingAddon) {
       add(
         RadioOption(
-          RadioOptionId("3"),
+          RadioOptionId("4"),
           stringResource(Res.string.REMOVE_ADDON_BUTTON_TITLE),
           stringResource(Res.string.HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE),
         ),
@@ -127,11 +139,15 @@ internal fun EditInsuranceBottomSheetContent(
             onEditCoInsuredClick()
           }
 
-          "2" if allowTerminatingInsurance -> {
+          "2" if allowEditCoOwners -> {
+            onEditCoOwnersClick()
+          }
+
+          "3" if allowTerminatingInsurance -> {
             onCancelInsuranceClick()
           }
 
-          "3" if allowRemovingAddon -> {
+          "4" if allowRemovingAddon -> {
             onRemoveAddonClick()
           }
 
@@ -160,10 +176,12 @@ private fun PreviewEditInsuranceBottomSheetContent() {
       EditInsuranceBottomSheetContent(
         allowTerminatingInsurance = true,
         allowEditCoInsured = true,
+        allowEditCoOwners = true,
         allowChangeTier = true,
         allowRemovingAddon = true,
         onChangeTierClick = {},
         onEditCoInsuredClick = {},
+        onEditCoOwnersClick = {},
         onDismiss = {},
         onCancelInsuranceClick = {},
         onRemoveAddonClick = {},

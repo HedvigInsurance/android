@@ -13,14 +13,14 @@ internal class SubmitSummaryUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) {
-  suspend fun invoke(stepId: StepId): Either<ErrorMessage, ClaimIntent> {
+  suspend fun invoke(stepId: StepId): Either<ClaimChatErrorMessage, ClaimIntent> {
     return either {
       apolloClient
         .mutation(ClaimIntentSubmitSummaryMutation(stepId = stepId.value))
         .safeExecute()
         .mapLeft {
           logcat { "SubmitSummaryUseCase error: $it" }
-          ErrorMessage()
+          ClaimChatErrorMessage.GeneralError
         }
         .bind()
         .claimIntentSubmitSummary

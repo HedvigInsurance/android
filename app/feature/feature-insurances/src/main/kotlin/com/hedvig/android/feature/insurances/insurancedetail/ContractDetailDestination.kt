@@ -43,6 +43,7 @@ import com.hedvig.android.compose.ui.animateContentHeight
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
@@ -97,7 +98,9 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ContractDetailDestination(
   viewModel: ContractDetailViewModel,
   onEditCoInsuredClick: (String) -> Unit,
-  onMissingInfoClick: (String) -> Unit,
+  onEditCoOwnersClick: (String) -> Unit,
+  onMissingCoInsuredInfoClick: (String) -> Unit,
+  onMissingCoOwnersInfoClick: (String) -> Unit,
   onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -109,6 +112,7 @@ internal fun ContractDetailDestination(
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
+  navigateToChipIdScreen: (String) -> Unit,
 ) {
   val uiState: ContractDetailsUiState by viewModel.uiState.collectAsStateWithLifecycle()
   ContractDetailScreen(
@@ -116,7 +120,9 @@ internal fun ContractDetailDestination(
     imageLoader = imageLoader,
     retry = { viewModel.emit(ContractDetailsEvent.RetryLoadingContract) },
     onEditCoInsuredClick = onEditCoInsuredClick,
-    onMissingInfoClick = onMissingInfoClick,
+    onEditCoOwnersClick = onEditCoOwnersClick,
+    onMissingCoInsuredInfoClick = onMissingCoInsuredInfoClick,
+    onMissingCoOwnersInfoClick = onMissingCoOwnersInfoClick,
     onChangeAddressClick = onChangeAddressClick,
     onCancelInsuranceClick = onCancelInsuranceClick,
     onNavigateToNewConversation = onNavigateToNewConversation,
@@ -127,6 +133,7 @@ internal fun ContractDetailDestination(
     navigateToAddAddon = navigateToAddAddon,
     navigateToRemoveAddon = navigateToRemoveAddon,
     navigateToUpgradeAddon = navigateToUpgradeAddon,
+    navigateToChipIdScreen = navigateToChipIdScreen,
   )
 }
 
@@ -137,7 +144,9 @@ private fun ContractDetailScreen(
   imageLoader: ImageLoader,
   retry: () -> Unit,
   onEditCoInsuredClick: (String) -> Unit,
-  onMissingInfoClick: (String) -> Unit,
+  onEditCoOwnersClick: (String) -> Unit,
+  onMissingCoInsuredInfoClick: (String) -> Unit,
+  onMissingCoOwnersInfoClick: (String) -> Unit,
   onChangeTierClick: (String) -> Unit,
   onChangeAddressClick: () -> Unit,
   onCancelInsuranceClick: (cancelInsuranceData: CancelInsuranceData) -> Unit,
@@ -147,6 +156,7 @@ private fun ContractDetailScreen(
   openUrl: (String) -> Unit,
   navigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
+  navigateToChipIdScreen: (String) -> Unit,
   navigateToAddAddon: (AvailableAddon) -> Unit,
 ) {
   Column(Modifier.fillMaxSize()) {
@@ -304,9 +314,11 @@ private fun ContractDetailScreen(
                       contractId = contract.id,
                       coverageItems = contract.displayItems,
                       coInsured = contract.coInsured,
+                      coOwners = contract.coOwners,
                       allowChangeAddress = contract.supportsAddressChange,
                       allowTerminatingInsurance = state.allowTerminatingInsurance,
                       allowEditCoInsured = contract.supportsEditCoInsured,
+                      allowEditCoOwners = contract.supportsEditCoOwners,
                       allowChangeTier = contract.supportsTierChange,
                       allowRemovingAddon = contract.supportsRemovingAddon,
                       onChangeTierClick = {
@@ -317,8 +329,14 @@ private fun ContractDetailScreen(
                       onEditCoInsuredClick = {
                         onEditCoInsuredClick(contract.id)
                       },
-                      onMissingInfoClick = {
-                        onMissingInfoClick(contract.id)
+                      onEditCoOwnersClick = {
+                        onEditCoOwnersClick(contract.id)
+                      },
+                      onMissingCoInsuredInfoClick = {
+                        onMissingCoInsuredInfoClick(contract.id)
+                      },
+                      onMissingCoOwnersInfoClick = {
+                        onMissingCoOwnersInfoClick(contract.id)
                       },
                       onChangeAddressClick = onChangeAddressClick,
                       onNavigateToNewConversation = onNavigateToNewConversation,
@@ -344,6 +362,10 @@ private fun ContractDetailScreen(
                       navigateToAddAddon = navigateToAddAddon,
                       navigateToRemoveAddon = navigateToRemoveAddon,
                       navigateToUpgradeAddon = navigateToUpgradeAddon,
+                      chipIdState = contract.chipId,
+                      onFillChipId = {
+                        navigateToChipIdScreen(contract.id)
+                      },
                     )
                   }
 
@@ -443,6 +465,7 @@ private fun PreviewContractDetailScreen() {
               ),
               certificateUrl = null,
               coInsured = listOf(),
+              coOwners = listOf(),
               creationCause = NEW_CONTRACT,
               addons = listOf(
                 Addon(
@@ -473,30 +496,35 @@ private fun PreviewContractDetailScreen() {
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             supportsEditCoInsured = true,
+            supportsEditCoOwners = false,
             isTerminated = false,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "199101131093",
             supportsTierChange = true,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
+            chipId = ChipIdState.Missing,
           ),
           true,
         ),
         imageLoader = rememberPreviewImageLoader(),
         retry = {},
         onEditCoInsuredClick = {},
+        onEditCoOwnersClick = {},
         onChangeAddressClick = {},
         onCancelInsuranceClick = {
         },
         navigateUp = {},
         navigateBack = {},
         onNavigateToNewConversation = {},
-        onMissingInfoClick = {},
+        onMissingCoInsuredInfoClick = {},
+        onMissingCoOwnersInfoClick = {},
         openUrl = {},
         onChangeTierClick = {},
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
+        navigateToChipIdScreen = {},
       )
     }
   }
@@ -512,18 +540,21 @@ private fun PreviewContractDetailScreenFailure() {
         imageLoader = rememberPreviewImageLoader(),
         retry = {},
         onEditCoInsuredClick = {},
+        onEditCoOwnersClick = {},
         onChangeAddressClick = {},
         onCancelInsuranceClick = {
         },
         navigateUp = {},
         navigateBack = {},
         onNavigateToNewConversation = {},
-        onMissingInfoClick = {},
+        onMissingCoInsuredInfoClick = {},
+        onMissingCoOwnersInfoClick = {},
         openUrl = {},
         onChangeTierClick = {},
         navigateToAddAddon = {},
         navigateToRemoveAddon = { _, _ -> },
         navigateToUpgradeAddon = { _, _ -> },
+        navigateToChipIdScreen = {},
       )
     }
   }

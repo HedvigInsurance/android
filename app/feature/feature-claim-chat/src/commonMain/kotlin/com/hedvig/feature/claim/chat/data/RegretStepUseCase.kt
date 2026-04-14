@@ -10,15 +10,15 @@ import com.hedvig.android.logger.logcat
 import octopus.ClaimIntentRegretStepMutation
 
 internal interface RegretStepUseCase {
-  suspend fun invoke(id: StepId): Either<ErrorMessage, ClaimIntent>
+  suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent>
 }
 
 internal class RegretStepUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,
 ) : RegretStepUseCase {
-  override suspend fun invoke(id: StepId): Either<ErrorMessage, ClaimIntent> = either {
-    val data = apolloClient
+  override suspend fun invoke(id: StepId): Either<ClaimChatErrorMessage, ClaimIntent> = either {
+    apolloClient
       .mutation(
         ClaimIntentRegretStepMutation(
           stepId = id.value,
@@ -27,15 +27,16 @@ internal class RegretStepUseCaseImpl(
       .safeExecute()
       .mapLeft {
         logcat { "SkipStepUseCase error: $it" }
-        ErrorMessage()
+        ClaimChatErrorMessage.GeneralError
       }
       .bind()
       .claimIntentRegretStep
+      .toClaimIntent(languageService.getLocale())
 
-    when {
-      data.userError != null -> raise(ErrorMessage(data.userError.message))
-      data.intent != null -> data.intent.toClaimIntent(languageService.getLocale())
-      else -> raise(ErrorMessage("No data"))
-    }
+//    when {
+//      data.userError != null -> raise(ErrorMessage(data.userError.message))
+//      data.intent != null -> data.intent.toClaimIntent(languageService.getLocale())
+//      else -> raise(ErrorMessage("No data"))
+//    }
   }
 }

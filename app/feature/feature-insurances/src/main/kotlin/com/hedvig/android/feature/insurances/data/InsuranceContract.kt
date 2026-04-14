@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.data
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -21,7 +22,9 @@ sealed interface InsuranceContract {
   val productVariant: ProductVariant
   val displayItems: List<DisplayItem>
   val coInsured: List<InsuranceAgreement.CoInsured>
+  val coOwners: List<InsuranceAgreement.CoInsured>
   val supportsEditCoInsured: Boolean
+  val supportsEditCoOwners: Boolean
   val supportsAddressChange: Boolean
   val supportsTierChange: Boolean
   val supportsRemovingAddon: Boolean
@@ -34,6 +37,8 @@ sealed interface InsuranceContract {
   val cost: MonthlyCost
 
   val basePremium: UiMoney
+
+  val chipId: ChipIdState
 
   data class EstablishedInsuranceContract(
     override val id: String,
@@ -48,15 +53,18 @@ sealed interface InsuranceContract {
     val renewalDate: LocalDate?,
     override val supportsAddressChange: Boolean,
     override val supportsEditCoInsured: Boolean,
+    override val supportsEditCoOwners: Boolean,
     override val supportsTierChange: Boolean,
     override val isTerminated: Boolean,
     override val tierName: String?,
     override val existingAddons: List<ContractAddon>,
     override val availableAddons: List<AvailableAddon>,
+    override val chipId: ChipIdState,
   ) : InsuranceContract {
     override val productVariant: ProductVariant = currentInsuranceAgreement.productVariant
     override val displayItems: List<DisplayItem> = currentInsuranceAgreement.displayItems
     override val coInsured: List<InsuranceAgreement.CoInsured> = currentInsuranceAgreement.coInsured
+    override val coOwners: List<InsuranceAgreement.CoInsured> = currentInsuranceAgreement.coOwners
     override val addons: List<Addon>? = currentInsuranceAgreement.addons
     override val cost: MonthlyCost = currentInsuranceAgreement.cost
     override val basePremium: UiMoney = currentInsuranceAgreement.basePremium
@@ -77,9 +85,12 @@ sealed interface InsuranceContract {
     override val addons: List<Addon>?,
     override val cost: MonthlyCost,
     override val basePremium: UiMoney,
+    override val chipId: ChipIdState,
   ) : InsuranceContract {
     override val coInsured: List<InsuranceAgreement.CoInsured> = listOf()
+    override val coOwners: List<InsuranceAgreement.CoInsured> = listOf()
     override val supportsEditCoInsured: Boolean = false
+    override val supportsEditCoOwners: Boolean = false
     override val supportsAddressChange: Boolean = false
     override val supportsTierChange: Boolean = false
     override val supportsRemovingAddon: Boolean = false
@@ -139,6 +150,7 @@ data class InsuranceAgreement(
   val productVariant: ProductVariant,
   val certificateUrl: String?,
   val coInsured: List<CoInsured>,
+  val coOwners: List<CoInsured>,
   val creationCause: CreationCause,
   val addons: List<Addon>?,
   val cost: MonthlyCost,

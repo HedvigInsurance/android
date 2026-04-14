@@ -42,6 +42,7 @@ kotlin {
       implementation(projects.navigationCompose)
       implementation(projects.navigationComposeTyped)
       implementation(projects.navigationCore)
+      implementation(projects.partnersDeflect)
       implementation(projects.uiEmergency)
     }
     androidMain.dependencies {

@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -157,6 +158,7 @@ private class PreviewTerminatedContractsUiStateProvider :
               ),
               certificateUrl = null,
               coInsured = listOf(),
+              coOwners = listOf(),
               creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
               addons = null,
               basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -170,12 +172,14 @@ private class PreviewTerminatedContractsUiStateProvider :
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             supportsEditCoInsured = true,
+            supportsEditCoOwners = false,
             isTerminated = true,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "19910113-1093",
             supportsTierChange = false,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
+            chipId = ChipIdState.Missing,
           ),
         ),
       ),
