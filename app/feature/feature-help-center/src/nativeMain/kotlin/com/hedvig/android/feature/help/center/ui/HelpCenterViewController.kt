@@ -3,11 +3,13 @@ package com.hedvig.android.feature.help.center.ui
 import androidx.compose.ui.window.ComposeUIViewController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import coil3.ImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import org.koin.compose.koinInject
 import platform.UIKit.UIViewController
 
 @Suppress("unused", "FunctionName") // Used from iOS
@@ -22,6 +24,7 @@ fun HelpCenterViewController(
   return ComposeUIViewController {
     HedvigTheme {
       val navController = rememberNavController()
+      val imageLoader = koinInject<ImageLoader>()
       NavHost(
         navController = navController,
         startDestination = HelpCenterDestination,
@@ -35,6 +38,7 @@ fun HelpCenterViewController(
           onNavigateToNewConversation = onNavigateToNewConversation,
           openUrl = openUrl,
           tryToDialPhone = tryToDialPhone,
+          imageLoader = imageLoader
         )
       }
     }
@@ -52,6 +56,7 @@ private object NoOpHedvigDeepLinkContainer : HedvigDeepLinkContainer {
   override val contract: List<String> = emptyList()
   override val editCoInsuredWithoutContractId: List<String> = emptyList()
   override val editCoInsured: List<String> = emptyList()
+  override val editCoOwners: List<String> = emptyList()
   override val terminateInsurance: List<String> = emptyList()
   override val forever: List<String> = emptyList()
   override val profile: List<String> = emptyList()
@@ -74,4 +79,11 @@ private object NoOpHedvigDeepLinkContainer : HedvigDeepLinkContainer {
   override val claimDetails: List<String> = emptyList()
   override val insuranceEvidence: List<String> = emptyList()
   override val moveContract: List<String> = emptyList()
+
+  override fun buildDeepLink(suffix: String): String {
+    return ""
+  }
+
+  override val petIdWithoutContractId: List<String> = emptyList()
+  override val petIdWithContractId: List<String> = emptyList()
 }
