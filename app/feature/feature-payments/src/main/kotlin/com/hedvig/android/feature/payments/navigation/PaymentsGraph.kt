@@ -32,6 +32,7 @@ fun NavGraphBuilder.paymentsGraph(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
+  navigateToPayoutAccount: () -> Unit,
   onOpenChat: () -> Unit,
 ) {
   navgraph<PaymentsDestination.Graph>(
@@ -48,6 +49,7 @@ fun NavGraphBuilder.paymentsGraph(
         onPaymentHistoryClicked = dropUnlessResumed {
           navController.navigate(PaymentsDestinations.History)
         },
+        onPayoutAccountClicked = dropUnlessResumed { navigateToPayoutAccount() },
         onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
         onDiscountClicked = dropUnlessResumed {
           navController.navigate(PaymentsDestinations.Discounts)
