@@ -515,6 +515,10 @@
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
   <string name="KIVRA_NOTIFICATION_BOX_TEXT">You can’t change the payment method right now. Contact us for help.</string>
   <string name="KIVRA_PAYMENT_INFO">The invoice is sent to your Kivra inbox 14 days before the due date each month.</string>
+  <string name="LEGAL_A11Y">Accessibility</string>
+  <string name="LEGAL_CATEGORY_LABEL">Legal</string>
+  <string name="LEGAL_INFORMATION">Legal information</string>
+  <string name="LEGAL_PRIVACY_POLICY">Privacy policy</string>
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
