@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
@@ -49,18 +48,13 @@ import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
-import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.MemberPaymentsDetails
-import com.hedvig.android.placeholder.PlaceholderHighlight
-import com.hedvig.android.placeholder.shimmer
-import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.KIVRA_NOTIFICATION_BOX_TEXT
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.R
 import hedvig.resources.Res
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -121,7 +115,9 @@ private fun MemberPaymentDetailsSuccessScreen(
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
+  Column(modifier
+    .padding(horizontal = 16.dp)
+    .verticalScroll(rememberScrollState())) {
     val explanationBottomSheetState = rememberHedvigBottomSheetState<PaymentExplanationData>()
     ExplanationBottomSheet(explanationBottomSheetState)
     HorizontalItemsWithMaximumSpaceTaken(
