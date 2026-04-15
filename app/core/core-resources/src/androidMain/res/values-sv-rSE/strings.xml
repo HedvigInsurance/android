@@ -78,6 +78,10 @@
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">Vi använder AI för att du ska få så snabb hjälp som möjligt. Svaren genereras automatiskt och kan ibland innehålla felaktigheter.\n\nVid behov kopplas du till vårt serviceteam som hjälper dig.\n\nVad som gäller för din försäkring anges i ditt försäkringsbrev och i dina villkor.</string>
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI och automatiska meddelanden</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Skanna QR-koden med BankID-appen på din telefon, eller logga in med din e-postadress nedan.</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Utbetalning till ett svenskt bankkonto</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bankkonto</string>
+  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing</string>
+  <string name="BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Direktutbetalning via Trustly</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -143,6 +147,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Ange byggår</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Byggår</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">Du + %1$d</string>
+  <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Ändra konto</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Chatta med en specialist</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">Om det inte fungerar eller om du har några andra frågor, vänligen meddela oss så hjälper en av våra specialister till inom kort!</string>
@@ -613,6 +618,8 @@
   <string name="PAYMENTS_UPCOMING_PAYMENT">Kommande betalning</string>
   <string name="PAYMENTS_VALID_UNTIL">Giltig till %1$s</string>
   <string name="PAYMENT_HISTORY_TITLE">Betalningshistorik</string>
+  <string name="PAYOUT_PAGE_HEADING">Utbetalningskonto</string>
+  <string name="PAYOUT_SELECT_PAYOUT_METHOD">Välj utbetalningsmetod</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">Vi behöver tillåtelse att spela in ljud</string>
   <string name="PERMISSION_DIALOG_TITLE">Behöver tillåtelse</string>
   <string name="PHONE_NUMBER_ROW_TITLE">Telefonnummer</string>
