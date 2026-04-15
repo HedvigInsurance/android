@@ -205,9 +205,8 @@ internal class HedvigAppState(
 
   fun navigateToLoggedOut() {
     val currentDestinationRoute = navController.currentDestination?.route
-    val isLoggingOutFromProfile = currentDestinationRoute ==
-      "com.hedvig.android.feature.profile.navigation.ProfileDestination.Profile"
-    // navController.currentDestination.toTopLevelAppDestination() todo: probably add this check too
+    val isLoggingOutFromProfile = currentDestinationRoute == profileDestinationRoute
+
     for (entry in TopLevelGraph.entries) {
       navController.typedClearBackStack(entry.destination)
     }
@@ -218,6 +217,8 @@ internal class HedvigAppState(
       }
     }
   }
+
+  private val profileDestinationRoute = "com.hedvig.android.feature.profile.navigation.ProfileDestination.Profile"
 
   val darkTheme: Boolean
     @Composable
