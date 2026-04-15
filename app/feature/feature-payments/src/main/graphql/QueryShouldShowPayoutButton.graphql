@@ -1,0 +1,15 @@
+query ShouldShowPayoutButton {
+  currentMember {
+    paymentMethods {
+      defaultPayoutMethod {
+        id
+      }
+      payoutMethods {
+        id
+      }
+      availableMethods {
+        supportsPayout
+      }
+    }
+  }
+}

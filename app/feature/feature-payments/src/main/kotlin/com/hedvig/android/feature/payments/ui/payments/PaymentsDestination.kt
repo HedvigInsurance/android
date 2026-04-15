@@ -287,6 +287,7 @@ private fun PaymentsContent(
       onPaymentHistoryClicked = onPaymentHistoryClicked,
       onPayoutAccountClicked = onPayoutAccountClicked,
       onPaymentDetailsClicked = onPaymentDetailsClicked,
+      showPayoutButton = (uiState as? Content)?.showPayoutButton == true,
     )
     if (uiState is Content) {
       when (uiState.connectedPaymentInfo) {
@@ -384,6 +385,7 @@ private fun PaymentsListItems(
   onPaymentHistoryClicked: () -> Unit,
   onPayoutAccountClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
+  showPayoutButton: Boolean,
 ) {
   val listItemsSideSpacingModifier = Modifier
     .padding(horizontal = 16.dp)
@@ -405,22 +407,24 @@ private fun PaymentsListItems(
         .padding(vertical = 16.dp)
         .fillMaxWidth(),
     )
-    HorizontalDivider(modifier = listItemsSideSpacingModifier)
-    PaymentsListItem(
-      text = "Payout",
-      icon = {
-        Icon(
-          imageVector = HedvigIcons.PaymentOutline,
-          contentDescription = null,
-          modifier = Modifier.size(24.dp),
-        )
-      },
-      modifier = Modifier
-        .clickable(onClick = onPayoutAccountClicked)
-        .then(listItemsSideSpacingModifier)
-        .padding(vertical = 16.dp)
-        .fillMaxWidth(),
-    )
+    if (showPayoutButton) {
+      HorizontalDivider(modifier = listItemsSideSpacingModifier)
+      PaymentsListItem(
+        text = "Payout",
+        icon = {
+          Icon(
+            imageVector = HedvigIcons.PaymentOutline,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+        },
+        modifier = Modifier
+          .clickable(onClick = onPayoutAccountClicked)
+          .then(listItemsSideSpacingModifier)
+          .padding(vertical = 16.dp)
+          .fillMaxWidth(),
+      )
+    }
     HorizontalDivider(modifier = listItemsSideSpacingModifier)
     PaymentsListItem(
       text = stringResource(Res.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL),
@@ -636,6 +640,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "Card",
           "****1234",
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -652,6 +657,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "Card",
           "****1234",
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -668,6 +674,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "Card",
           "****1234",
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -687,6 +694,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "Card",
           "****1234",
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -700,6 +708,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Pending,
+        showPayoutButton = false,
       ),
     )
     add(
@@ -715,6 +724,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -730,6 +740,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -748,6 +759,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -766,6 +778,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
+        showPayoutButton = false,
       ),
     )
   },
