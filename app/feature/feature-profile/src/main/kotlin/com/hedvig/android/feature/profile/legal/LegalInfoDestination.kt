@@ -125,7 +125,7 @@ private fun LinkRow(
       imageVector = HedvigIcons.ArrowNorthEast,
       contentDescription = EmptyContentDescription,
       modifier = Modifier
-        .size(24.dp),
+        .size(16.dp),
     )
   }
 }

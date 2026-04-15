@@ -389,6 +389,7 @@ private fun ColumnScope.ProfileItemRows(
     icon = HedvigIcons.Bookmark,
     onClick = navigateToLegalInfo,
     isLoading = false,
+    modifier = horizontalDividerModifier,
   )
   ProfileRow(
     title = stringResource(Res.string.profile_appSettingsSection_row_headline),
