@@ -7,31 +7,35 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import arrow.core.getOrElse
+import arrow.core.Either
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
 import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
+import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCase
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
+import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
   private val getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
-  private val getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,
+  private val shouldShowPayoutPresenter: ShouldShowPayoutPresenter,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
   @Composable
   override fun MoleculePresenterScope<PaymentsEvent>.present(lastState: PaymentsUiState): PaymentsUiState {
-    var paymentsUiState: PaymentsUiState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
+    var paymentOverviewResult: Either<ErrorMessage, PaymentOverview>? by remember { mutableStateOf(null) }
 
     CollectEvents { event ->
       when (event) {
@@ -40,78 +44,85 @@ internal class PaymentsPresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      val currentPaymentUiState = paymentsUiState
-      paymentsUiState = when (currentPaymentUiState) {
-        is PaymentsUiState.Content -> {
-          currentPaymentUiState.copy(isRetrying = true)
-        }
+      paymentOverviewResult = null
+      paymentOverviewResult = getUpcomingPaymentUseCase.provide().invoke()
+    }
 
-        else -> {
-          PaymentsUiState.Loading
-        }
-      }
-      coroutineScope {
-        val upcomingPaymentDeferred = async { getUpcomingPaymentUseCase.provide().invoke() }
-        val shouldShowPayoutDeferred = async { getShouldShowPayoutUseCase.provide().invoke() }
-        val upcomingPaymentResult = upcomingPaymentDeferred.await()
-        val shouldShowPayoutResult = shouldShowPayoutDeferred.await()
-        upcomingPaymentResult.fold(
-          ifLeft = {
-            paymentsUiState = PaymentsUiState.Error
-          },
-          ifRight = { paymentOverview ->
-            paymentsUiState = PaymentsUiState.Content(
-              isRetrying = false,
-              upcomingPayment = paymentOverview.memberChargeShortInfo?.let { memberCharge ->
-                PaymentsUiState.Content.UpcomingPayment.Content(
-                  netAmount = memberCharge.netAmount,
-                  dueDate = memberCharge.dueDate,
-                  id = memberCharge.id,
-                )
-              } ?: PaymentsUiState.Content.UpcomingPayment.NoUpcomingPayment,
-              upcomingPaymentInfo = run {
-                val memberCharge = paymentOverview.memberChargeShortInfo
-                if (memberCharge?.status == MemberCharge.MemberChargeStatus.PENDING) {
-                  return@run PaymentsUiState.Content.UpcomingPaymentInfo.InProgress
-                }
-                memberCharge?.failedCharge?.let { failedCharge ->
-                  return@run PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
-                    failedPaymentStartDate = failedCharge.fromDate,
-                    failedPaymentEndDate = failedCharge.toDate,
-                  )
-                }
-                PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo
-              },
-              ongoingCharges = paymentOverview.ongoingCharges,
-              connectedPaymentInfo = when (val paymentConnection = paymentOverview.paymentConnection) {
-                is Active -> {
-                  PaymentsUiState.Content.ConnectedPaymentInfo.Active(
-                    displayName = paymentConnection.displayName,
-                    maskedAccountNumber = paymentConnection.displayValue,
-                  )
-                }
+    val shouldShowPayout = shouldShowPayoutPresenter.present(loadIteration)
 
-                Pending -> {
-                  PaymentsUiState.Content.ConnectedPaymentInfo.Pending
-                }
+    val currentPaymentResult = paymentOverviewResult ?: return PaymentsUiState.Loading
 
-                is NeedsSetup -> {
-                  PaymentsUiState.Content.ConnectedPaymentInfo.NeedsSetup(
-                    dueDateToConnect = paymentConnection.terminationDateIfNotConnected,
-                  )
-                }
-
-                Unknown -> {
-                  PaymentsUiState.Content.ConnectedPaymentInfo.Unknown
-                }
-              },
-              showPayoutButton = shouldShowPayoutResult.getOrElse { false },
+    return currentPaymentResult.fold(
+      ifLeft = { PaymentsUiState.Error },
+      ifRight = { paymentOverview ->
+        PaymentsUiState.Content(
+          isRetrying = false,
+          upcomingPayment = paymentOverview.memberChargeShortInfo?.let { memberCharge ->
+            PaymentsUiState.Content.UpcomingPayment.Content(
+              netAmount = memberCharge.netAmount,
+              dueDate = memberCharge.dueDate,
+              id = memberCharge.id,
             )
+          } ?: PaymentsUiState.Content.UpcomingPayment.NoUpcomingPayment,
+          upcomingPaymentInfo = run {
+            val memberCharge = paymentOverview.memberChargeShortInfo
+            if (memberCharge?.status == MemberCharge.MemberChargeStatus.PENDING) {
+              return@run PaymentsUiState.Content.UpcomingPaymentInfo.InProgress
+            }
+            memberCharge?.failedCharge?.let { failedCharge ->
+              return@run PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
+                failedPaymentStartDate = failedCharge.fromDate,
+                failedPaymentEndDate = failedCharge.toDate,
+              )
+            }
+            PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo
+          },
+          ongoingCharges = paymentOverview.ongoingCharges,
+          connectedPaymentInfo = paymentOverview.paymentConnection.toConnectedPaymentInfo(),
+          showPayoutButton = shouldShowPayout,
+        )
+      },
+    )
+  }
+}
+
+internal class ShouldShowPayoutPresenter(
+  private val getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,
+) {
+  @Composable
+  fun present(loadIteration: Int): Boolean {
+    var shouldShowPayout by remember { mutableStateOf(false) }
+    LaunchedEffect(loadIteration) {
+      shouldShowPayout = false
+      for (attempt in 0..2) {
+        delay(attempt.seconds)
+        getShouldShowPayoutUseCase.provide().invoke().fold(
+          ifLeft = {},
+          ifRight = { result ->
+            shouldShowPayout = result
+            return@LaunchedEffect
           },
         )
       }
     }
-    return paymentsUiState
+    return shouldShowPayout
+  }
+}
+
+private fun PaymentConnection.toConnectedPaymentInfo(): ConnectedPaymentInfo {
+  return when (this) {
+    is Active -> ConnectedPaymentInfo.Active(
+      displayName = displayName,
+      maskedAccountNumber = displayValue,
+    )
+
+    Pending -> ConnectedPaymentInfo.Pending
+
+    is NeedsSetup -> ConnectedPaymentInfo.NeedsSetup(
+      dueDateToConnect = terminationDateIfNotConnected,
+    )
+
+    Unknown -> ConnectedPaymentInfo.Unknown
   }
 }
 

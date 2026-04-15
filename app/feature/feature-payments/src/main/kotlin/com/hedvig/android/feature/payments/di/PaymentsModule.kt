@@ -28,6 +28,7 @@ import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
+import com.hedvig.android.feature.payments.ui.payments.ShouldShowPayoutPresenter
 import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -68,10 +69,16 @@ val paymentsModule = module {
     )
   }
 
+  single<ShouldShowPayoutPresenter> {
+    ShouldShowPayoutPresenter(
+      get<GetShouldShowPayoutUseCaseProvider>(),
+    )
+  }
+
   viewModel<PaymentsViewModel> {
     PaymentsViewModel(
       get<GetUpcomingPaymentUseCaseProvider>(),
-      get<GetShouldShowPayoutUseCaseProvider>(),
+      get<ShouldShowPayoutPresenter>(),
     )
   }
 
