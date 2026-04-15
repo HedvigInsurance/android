@@ -194,6 +194,7 @@ val applicationModule = module {
 - Use `Provider<T>` when we need a different implementation for the demo mode of the App, which we very rarely do. We always do that using `ProdOrDemoProvider`
 - Each feature/data module has its own DI module
 - Common dependencies (logging, tracking) auto-injected by build plugin
+- When a Presenter or ViewModel needs to call a use case, always inject the use case directly as a typed dependency — never abstract it into an anonymous `suspend () -> T` lambda. If two separate operations are needed (e.g. payin vs payout setup), create two separate, dedicated use case classes and two separate presenters. Do not create a shared interface just to enable reuse through a single presenter.
 
 ### Data Layer
 

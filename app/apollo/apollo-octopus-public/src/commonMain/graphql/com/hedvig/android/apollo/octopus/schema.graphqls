@@ -1728,6 +1728,11 @@ type ExternalInsurer {
   displayName: String!
   insurelyId: String
 }
+type FetchedExternalInsurance {
+  displayName: String!
+  subtitle: String
+  insurer: ExternalInsurer!
+}
 type FirstVetAction {
   sections: [FirstVetSection!]!
 }
@@ -3711,7 +3716,7 @@ input PaymentMethodSetupInvoicePayinInput {
   """
    Set up invoice payment method as default. 
   """
-  setAsDefaultPayout: Boolean!
+  setAsDefaultPayin: Boolean!
 }
 input PaymentMethodSetupNordeaPayoutInput {
   """
@@ -3905,6 +3910,11 @@ type PriceIntent {
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
   hasCollectedInsurelyData: Boolean!
+  """
+  List of external insurances fetched via Insurely that correspond to products Hedvig offers.
+  Null when no Insurely data collection has been associated with this price intent.
+  """
+  fetchedExternalInsurances: [FetchedExternalInsurance!]
 }
 enum PriceIntentAnimal {
   CAT

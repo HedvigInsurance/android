@@ -36,6 +36,7 @@ import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyPayoutDestination
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
@@ -348,7 +349,7 @@ internal fun HedvigNavHost(
     )
     payoutAccountGraph(
       navController = navController,
-      globalSnackBarState = globalSnackBarState,
+      navigateToTrustlyPayout = { navController.navigate(TrustlyPayoutDestination) },
       navigateUp = navController::navigateUp,
     )
     profileGraph(

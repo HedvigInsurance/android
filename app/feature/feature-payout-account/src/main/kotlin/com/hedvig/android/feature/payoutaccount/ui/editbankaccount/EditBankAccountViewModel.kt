@@ -13,24 +13,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.payoutaccount.data.UpdateBankAccountUseCase
+import com.hedvig.android.feature.payoutaccount.data.SetupNordeaPayoutUseCase
 import com.hedvig.android.feature.payoutaccount.data.bankNameForClearingNumber
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import okio.`-DeprecatedOkio`.buffer
 
 internal class EditBankAccountViewModel(
-  updateBankAccountUseCase: UpdateBankAccountUseCase,
+  setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
 ) : MoleculeViewModel<EditBankAccountEvent, EditBankAccountUiState>(
   EditBankAccountUiState(TextFieldState(), TextFieldState(), null, false, null, false),
-  EditBankAccountPresenter(updateBankAccountUseCase),
+  EditBankAccountPresenter(setupNordeaPayoutUseCase),
 )
 
 internal sealed interface EditBankAccountEvent {
   data object Save : EditBankAccountEvent
-
-  data object SnackBarShown : EditBankAccountEvent
 }
 
 internal data class EditBankAccountUiState(
@@ -39,7 +36,7 @@ internal data class EditBankAccountUiState(
   val bankName: String?,
   val isLoading: Boolean,
   val errorMessage: String?,
-  val showSuccessSnackBar: Boolean,
+  val navigateBack: Boolean,
 ) {
   // Swedish clearing numbers are 4 digits for most banks, 5 for Swedbank's 8-series
   val clearingInputTransformation: InputTransformation = InputTransformation.maxLength(5).digitsOnly()
@@ -49,7 +46,7 @@ internal data class EditBankAccountUiState(
 }
 
 internal class EditBankAccountPresenter(
-  private val updateBankAccountUseCase: UpdateBankAccountUseCase,
+  private val setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
 ) : MoleculePresenter<EditBankAccountEvent, EditBankAccountUiState> {
   @Composable
   override fun MoleculePresenterScope<EditBankAccountEvent>.present(
@@ -60,7 +57,7 @@ internal class EditBankAccountPresenter(
     val bankName = bankNameForClearingNumber(clearingNumberState.text.toString())
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var showSuccessSnackBar by remember { mutableStateOf(false) }
+    var navigateBack by remember { mutableStateOf(false) }
     var saveIteration by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     val currentSave = saveIteration
@@ -68,15 +65,15 @@ internal class EditBankAccountPresenter(
       LaunchedEffect(currentSave) {
         isLoading = true
         errorMessage = null
-        updateBankAccountUseCase.invoke(currentSave.first, currentSave.second).fold(
+        setupNordeaPayoutUseCase.invoke(currentSave.first, currentSave.second).fold(
           ifLeft = {
             isLoading = false
-            errorMessage = "Something went wrong, please try again"
+            errorMessage = it.message ?: "Something went wrong, please try again"
             saveIteration = null
           },
           ifRight = {
             isLoading = false
-            showSuccessSnackBar = true
+            navigateBack = true
             saveIteration = null
           },
         )
@@ -90,10 +87,6 @@ internal class EditBankAccountPresenter(
             saveIteration = clearingNumberState.text.toString() to accountNumberState.text.toString()
           }
         }
-
-        EditBankAccountEvent.SnackBarShown -> {
-          showSuccessSnackBar = false
-        }
       }
     }
 
@@ -103,13 +96,13 @@ internal class EditBankAccountPresenter(
       bankName = bankName,
       isLoading = isLoading,
       errorMessage = errorMessage,
-      showSuccessSnackBar = showSuccessSnackBar,
+      navigateBack = navigateBack,
     )
   }
 }
 
 @Stable
-fun InputTransformation.digitsOnly(): InputTransformation = this.then(DigitsOnlyTransformation)
+private fun InputTransformation.digitsOnly(): InputTransformation = this.then(DigitsOnlyTransformation)
 
 private data object DigitsOnlyTransformation : InputTransformation {
   override fun TextFieldBuffer.transformInput() {

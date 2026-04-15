@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payoutaccount.ui.editbankaccount
+package com.hedvig.android.feature.payoutaccount.ui.setupswish
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -20,27 +20,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 
 @Composable
-internal fun EditBankAccountDestination(
-  viewModel: EditBankAccountViewModel,
+internal fun SetupSwishPayoutDestination(
+  viewModel: SetupSwishPayoutViewModel,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  EditBankAccountScreen(
+  SetupSwishPayoutScreen(
     uiState = uiState,
-    onSave = { viewModel.emit(EditBankAccountEvent.Save) },
+    onSave = { viewModel.emit(SetupSwishPayoutEvent.Save) },
     navigateUp = navigateUp,
   )
 }
 
 @Composable
-private fun EditBankAccountScreen(
-  uiState: EditBankAccountUiState,
+private fun SetupSwishPayoutScreen(
+  uiState: SetupSwishPayoutUiState,
   onSave: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -49,33 +48,18 @@ private fun EditBankAccountScreen(
   }
 
   HedvigScaffold(
-    topAppBarText = "Bank account",
+    topAppBarText = "Swish",
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
     Spacer(Modifier.weight(1f))
     Column(Modifier.padding(horizontal = 16.dp)) {
       HedvigTextField(
-        state = uiState.clearingNumberState,
-        labelText = "Clearing",
+        state = uiState.phoneNumberState,
+        labelText = "Phone number",
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
-        inputTransformation = uiState.clearingInputTransformation,
         keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Number,
-        ),
-        trailingContent = uiState.bankName?.let {
-          { HedvigText(text = it) }
-        },
-        modifier = Modifier.fillMaxWidth(),
-      )
-      Spacer(Modifier.height(4.dp))
-      HedvigTextField(
-        state = uiState.accountNumberState,
-        labelText = "Account number",
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
-        inputTransformation = uiState.accountNumberInputTransformation,
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Number,
+          keyboardType = KeyboardType.Phone,
         ),
         modifier = Modifier.fillMaxWidth(),
       )
@@ -98,9 +82,7 @@ private fun EditBankAccountScreen(
     HedvigButton(
       text = "Save",
       onClick = onSave,
-      enabled = !uiState.isLoading &&
-        uiState.clearingNumberState.text.isNotBlank() &&
-        uiState.accountNumberState.text.isNotBlank(),
+      enabled = !uiState.isLoading && uiState.phoneNumberState.text.isNotBlank(),
       isLoading = uiState.isLoading,
       modifier = Modifier
         .fillMaxWidth()

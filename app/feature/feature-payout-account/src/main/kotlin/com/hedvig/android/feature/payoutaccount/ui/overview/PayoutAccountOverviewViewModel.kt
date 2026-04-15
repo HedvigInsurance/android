@@ -11,6 +11,7 @@ import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import octopus.type.MemberPaymentProvider
 
 internal class PayoutAccountOverviewViewModel(
   getPayoutAccountUseCase: GetPayoutAccountUseCase,
@@ -28,7 +29,10 @@ internal sealed interface PayoutAccountOverviewUiState {
 
   data object Error : PayoutAccountOverviewUiState
 
-  data class Content(val payoutAccount: PayoutAccount) : PayoutAccountOverviewUiState
+  data class Content(
+    val currentMethod: PayoutAccount?,
+    val availablePayoutMethods: List<MemberPaymentProvider>,
+  ) : PayoutAccountOverviewUiState
 }
 
 internal class PayoutAccountOverviewPresenter(
@@ -45,7 +49,12 @@ internal class PayoutAccountOverviewPresenter(
       uiState = PayoutAccountOverviewUiState.Loading
       getPayoutAccountUseCase.invoke().fold(
         ifLeft = { uiState = PayoutAccountOverviewUiState.Error },
-        ifRight = { account -> uiState = PayoutAccountOverviewUiState.Content(account) },
+        ifRight = { data ->
+          uiState = PayoutAccountOverviewUiState.Content(
+            currentMethod = data.currentMethod,
+            availablePayoutMethods = data.availablePayoutMethods,
+          )
+        },
       )
     }
 

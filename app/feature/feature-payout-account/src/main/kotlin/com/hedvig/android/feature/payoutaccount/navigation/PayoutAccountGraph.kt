@@ -3,19 +3,22 @@ package com.hedvig.android.feature.payoutaccount.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.hedvig.android.compose.ui.dropUnlessResumed
-import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountDestination
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountViewModel
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewDestination
+import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewViewModel
+import com.hedvig.android.feature.payoutaccount.ui.selectmethod.SelectPayoutMethodDestination
+import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
+import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import octopus.type.MemberPaymentProvider
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.payoutAccountGraph(
   navController: NavController,
-  globalSnackBarState: GlobalSnackBarState,
+  navigateToTrustlyPayout: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   navgraph<PayoutAccountDestination.Graph>(
@@ -25,6 +28,14 @@ fun NavGraphBuilder.payoutAccountGraph(
       val viewModel: PayoutAccountOverviewViewModel = koinViewModel()
       PayoutAccountOverviewDestination(
         viewModel = viewModel,
+        onConnectPayoutMethodClicked = dropUnlessResumed {
+          val content = viewModel.uiState.value as? PayoutAccountOverviewUiState.Content
+          navController.navigate(
+            PayoutAccountDestinations.SelectPayoutMethod(
+              availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
+            ),
+          )
+        },
         onEditBankAccountClicked = dropUnlessResumed {
           navController.navigate(PayoutAccountDestinations.EditBankAccount)
         },
@@ -32,11 +43,28 @@ fun NavGraphBuilder.payoutAccountGraph(
       )
     }
 
+    navdestination<PayoutAccountDestinations.SelectPayoutMethod> {
+      SelectPayoutMethodDestination(
+        availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
+        onTrustlySelected = dropUnlessResumed { navigateToTrustlyPayout() },
+        onNordeaSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.EditBankAccount) },
+        onSwishSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupSwishPayout) },
+        navigateUp = navController::navigateUp,
+      )
+    }
+
     navdestination<PayoutAccountDestinations.EditBankAccount> {
       val viewModel: EditBankAccountViewModel = koinViewModel()
       EditBankAccountDestination(
         viewModel = viewModel,
-        globalSnackBarState = globalSnackBarState,
+        navigateUp = navController::navigateUp,
+      )
+    }
+
+    navdestination<PayoutAccountDestinations.SetupSwishPayout> {
+      val viewModel: SetupSwishPayoutViewModel = koinViewModel()
+      SetupSwishPayoutDestination(
+        viewModel = viewModel,
         navigateUp = navController::navigateUp,
       )
     }

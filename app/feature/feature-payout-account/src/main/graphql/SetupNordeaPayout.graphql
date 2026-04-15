@@ -1,0 +1,10 @@
+mutation SetupNordeaPayout($clearingNumber: String!, $accountNumber: String!) {
+  paymentMethodSetupNordeaPayout(
+    input: { setAsDefault: true, clearingNumber: $clearingNumber, accountNumber: $accountNumber }
+  ) {
+    status
+    error {
+      message
+    }
+  }
+}

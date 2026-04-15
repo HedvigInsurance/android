@@ -1,0 +1,16 @@
+mutation SetupTrustlyPayout($successUrl: String!, $failureUrl: String!) {
+  paymentMethodSetupTrustly(
+    input: {
+      setAsDefaultPayin: false,
+      setAsDefaultPayout: true,
+      successUrl: $successUrl,
+      failureUrl: $failureUrl
+    }
+  ) {
+    status
+    url
+    error {
+      message
+    }
+  }
+}

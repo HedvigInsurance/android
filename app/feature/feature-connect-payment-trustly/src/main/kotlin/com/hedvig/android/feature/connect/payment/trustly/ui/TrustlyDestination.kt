@@ -41,6 +41,7 @@ import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.PreviewTrustlyCallback
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebChromeClient
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebView
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClient
@@ -58,8 +59,15 @@ import org.jetbrains.compose.resources.stringResource
 @Serializable
 data object TrustlyDestination : Destination
 
+@Serializable
+data object TrustlyPayoutDestination : Destination
+
 @Composable
-internal fun TrustlyDestination(viewModel: TrustlyViewModel, navigateUp: () -> Unit, finishTrustlyFlow: () -> Unit) {
+internal fun TrustlyDestination(
+  viewModel: MoleculeViewModel<TrustlyEvent, TrustlyUiState>,
+  navigateUp: () -> Unit,
+  finishTrustlyFlow: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TrustlyScreen(
     uiState = uiState,
