@@ -41,3 +41,9 @@ internal sealed interface SettingsDestinations {
 val profileBottomNavPermittedDestinations: List<KClass<out Destination>> = listOf(
   ProfileDestinations.Eurobonus::class,
 )
+
+/*
+* Not saving navigation state when explicitly logging out from Profile
+*/
+val destinationToExcludeFromSavingState: KClass<out Destination> = ProfileDestination.Profile::class
+
