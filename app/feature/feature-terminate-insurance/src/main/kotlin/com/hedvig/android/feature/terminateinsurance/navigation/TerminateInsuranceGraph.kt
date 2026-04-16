@@ -29,6 +29,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typed.getRouteFromBackStackOrNull
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import org.koin.compose.viewmodel.koinViewModel
@@ -89,9 +90,9 @@ fun NavGraphBuilder.terminateInsuranceGraph(
   ) {
     navdestination<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsuranceGraphDestination = navController
-        .getRouteFromBackStack<TerminateInsuranceGraphDestination>(backStackEntry)
+        .getRouteFromBackStackOrNull<TerminateInsuranceGraphDestination>(backStackEntry)
       val viewModel: ChooseInsuranceToTerminateViewModel = koinViewModel {
-        parametersOf(terminateInsuranceGraphDestination.insuranceId)
+        parametersOf(terminateInsuranceGraphDestination?.insuranceId)
       }
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,

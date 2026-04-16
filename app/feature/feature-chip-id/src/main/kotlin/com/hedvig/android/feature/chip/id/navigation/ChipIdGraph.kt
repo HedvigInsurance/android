@@ -11,7 +11,7 @@ import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForC
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typed.getRouteFromBackStackOrNull
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import org.koin.compose.viewmodel.koinViewModel
@@ -49,8 +49,8 @@ fun NavGraphBuilder.chipIdGraph(
   ) {
     navdestination<ChipIdDestination.SelectInsuranceForChipId> { backStackEntry ->
       val chipIdGraphDestination = navController
-        .getRouteFromBackStack<ChipIdGraphDestination>(backStackEntry)
-      val preselectedContractId = chipIdGraphDestination.contractId
+        .getRouteFromBackStackOrNull<ChipIdGraphDestination>(backStackEntry)
+      val preselectedContractId = chipIdGraphDestination?.contractId
 
       val viewModel: SelectInsuranceForChipIdViewModel = koinViewModel {
         parametersOf(preselectedContractId)
