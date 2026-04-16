@@ -30,8 +30,9 @@ import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
   private val getUpcomingPaymentUseCase: Provider<GetUpcomingPaymentUseCase>,
-  private val shouldShowPayoutPresenter: ShouldShowPayoutPresenter,
+  getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
+  private val shouldShowPayoutPresenter = ShouldShowPayoutPresenter(getShouldShowPayoutUseCase)
   @Composable
   override fun MoleculePresenterScope<PaymentsEvent>.present(lastState: PaymentsUiState): PaymentsUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
@@ -86,7 +87,7 @@ internal class PaymentsPresenter(
   }
 }
 
-internal class ShouldShowPayoutPresenter(
+private class ShouldShowPayoutPresenter(
   private val getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,
 ) {
   @Composable
