@@ -83,6 +83,7 @@ import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.GENERAL_YES
 import hedvig.resources.LOGOUT_BUTTON
 import hedvig.resources.PROFILE_ABOUT_ROW
+import hedvig.resources.PROFILE_INFO_LABEL
 import hedvig.resources.PROFILE_LOGOUT_DIALOG_MESSAGE
 import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
 import hedvig.resources.PROFILE_TITLE
@@ -369,7 +370,7 @@ private fun ColumnScope.ProfileItemRows(
     )
   }
   ProfileRow(
-    title = stringResource(Res.string.PROFILE_ABOUT_ROW),
+    title = stringResource(Res.string.PROFILE_INFO_LABEL),
     icon = HedvigIcons.InfoOutline,
     onClick = navigateToAboutApp,
     isLoading = false,

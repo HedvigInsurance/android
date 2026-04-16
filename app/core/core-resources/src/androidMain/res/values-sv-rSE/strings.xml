@@ -78,6 +78,10 @@
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">Vi använder AI för att du ska få så snabb hjälp som möjligt. Svaren genereras automatiskt och kan ibland innehålla felaktigheter.\n\nVid behov kopplas du till vårt serviceteam som hjälper dig.\n\nVad som gäller för din försäkring anges i ditt försäkringsbrev och i dina villkor.</string>
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI och automatiska meddelanden</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Skanna QR-koden med BankID-appen på din telefon, eller logga in med din e-postadress nedan.</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Utbetalning till ett svenskt bankkonto</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bankkonto</string>
+  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing</string>
+  <string name="BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Direktutbetalning via Trustly</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -143,6 +147,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Ange byggår</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Byggår</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">Du + %1$d</string>
+  <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Ändra konto</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Ändra skyddsnivå</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Chatta med en specialist</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">Om det inte fungerar eller om du har några andra frågor, vänligen meddela oss så hjälper en av våra specialister till inom kort!</string>
@@ -508,8 +513,12 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>
-  <string name="KIVRA_NOTIFICATION_BOX_TEXT">Du kan inte ändra betalmetod just nu. Kontakta oss för hjälp.</string>
+  <string name="KIVRA_NOTIFICATION_BOX_TEXT">Vill du betala din försäkring via autogiro och möjliggöra snabba utbetalningar vid skador?</string>
   <string name="KIVRA_PAYMENT_INFO">Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.</string>
+  <string name="LEGAL_A11Y">Tillgänglighet</string>
+  <string name="LEGAL_CATEGORY_LABEL">Juridisk information</string>
+  <string name="LEGAL_INFORMATION">Juridisk information</string>
+  <string name="LEGAL_PRIVACY_POLICY">Personuppgifter</string>
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
@@ -613,6 +622,8 @@
   <string name="PAYMENTS_UPCOMING_PAYMENT">Kommande betalning</string>
   <string name="PAYMENTS_VALID_UNTIL">Giltig till %1$s</string>
   <string name="PAYMENT_HISTORY_TITLE">Betalningshistorik</string>
+  <string name="PAYOUT_PAGE_HEADING">Utbetalningskonto</string>
+  <string name="PAYOUT_SELECT_PAYOUT_METHOD">Välj utbetalningsmetod</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">Vi behöver tillåtelse att spela in ljud</string>
   <string name="PERMISSION_DIALOG_TITLE">Behöver tillåtelse</string>
   <string name="PHONE_NUMBER_ROW_TITLE">Telefonnummer</string>
@@ -630,6 +641,7 @@
   <string name="PROFILE_DELETE_ACCOUNT_FAILED">Vi kan inte radera ditt konto just nu</string>
   <string name="PROFILE_DELETE_ACCOUNT_FAILED_LABEL">För att vi ska kunna radera ditt konto måste alla öppna skadeärenden vara stängda och inte finnas några aktiva försäkringar. Var vänlig skriv till oss i appen.</string>
   <string name="PROFILE_FOREVER_TITLE">Hedvig Forever</string>
+  <string name="PROFILE_INFO_LABEL">Information</string>
   <string name="PROFILE_LOGOUT_DIALOG_MESSAGE">Är du säker på att du vill logga ut?</string>
   <string name="PROFILE_MY_INFO_EMAIL_LABEL">Epost</string>
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Inkorrekt epostadress</string>

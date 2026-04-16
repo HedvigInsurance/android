@@ -78,6 +78,10 @@
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct.\n\nIf necessary, you’ll be connected to our service team to help you further.\n\nThe details of your insurance are outlined in your insurance letter and terms and conditions.</string>
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI and automated messages</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Payout via a Swedish bank account</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bank account</string>
+  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing</string>
+  <string name="BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Direct payment via Trustly</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -143,6 +147,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
+  <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!</string>
@@ -508,8 +513,12 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
-  <string name="KIVRA_NOTIFICATION_BOX_TEXT">You can’t change the payment method right now. Contact us for help.</string>
+  <string name="KIVRA_NOTIFICATION_BOX_TEXT">Do you want to pay your insurance via direct debit and enable quick payouts in the event of claims?</string>
   <string name="KIVRA_PAYMENT_INFO">The invoice is sent to your Kivra inbox 14 days before the due date each month.</string>
+  <string name="LEGAL_A11Y">Accessibility</string>
+  <string name="LEGAL_CATEGORY_LABEL">Legal</string>
+  <string name="LEGAL_INFORMATION">Legal information</string>
+  <string name="LEGAL_PRIVACY_POLICY">Privacy policy</string>
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
@@ -613,6 +622,8 @@
   <string name="PAYMENTS_UPCOMING_PAYMENT">Upcoming payment</string>
   <string name="PAYMENTS_VALID_UNTIL">Valid until %1$s</string>
   <string name="PAYMENT_HISTORY_TITLE">Payment history</string>
+  <string name="PAYOUT_PAGE_HEADING">Payout account</string>
+  <string name="PAYOUT_SELECT_PAYOUT_METHOD">Choose payout method</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">We need permission to record audio</string>
   <string name="PERMISSION_DIALOG_TITLE">Needs permission</string>
   <string name="PHONE_NUMBER_ROW_TITLE">Phone</string>
@@ -630,6 +641,7 @@
   <string name="PROFILE_DELETE_ACCOUNT_FAILED">We can\'t delete your account right now</string>
   <string name="PROFILE_DELETE_ACCOUNT_FAILED_LABEL">In order to delete your account you need to have your open claims settled and not have any active insurances. Please reach out to our service team via message in the app.</string>
   <string name="PROFILE_FOREVER_TITLE">Hedvig Forever</string>
+  <string name="PROFILE_INFO_LABEL">Information</string>
   <string name="PROFILE_LOGOUT_DIALOG_MESSAGE">Are you sure you want to log out?</string>
   <string name="PROFILE_MY_INFO_EMAIL_LABEL">Email</string>
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Invalid email</string>

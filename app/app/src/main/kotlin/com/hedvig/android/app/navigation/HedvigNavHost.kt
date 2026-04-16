@@ -341,7 +341,6 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
-      onOpenChat = ::navigateToNewConversation,
     )
     profileGraph(
       settingsDestinationNestedGraphs = {
@@ -384,6 +383,7 @@ internal fun HedvigNavHost(
       navigateToChipId = {
         navController.navigate(ChipIdGraphDestination())
       },
+      languageService = languageService
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
