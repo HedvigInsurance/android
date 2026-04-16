@@ -17,12 +17,14 @@ import com.hedvig.android.feature.profile.contactinfo.ContactInfoDestination
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
+import com.hedvig.android.feature.profile.legal.LegalInfoDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations.Certificates
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -47,6 +49,7 @@ fun NavGraphBuilder.profileGraph(
   onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToChipId: () -> Unit,
+  languageService: LanguageService
 ) {
   navgraph<ProfileDestination.Graph>(
     startDestination = ProfileDestination.Profile::class,
@@ -85,8 +88,20 @@ fun NavGraphBuilder.profileGraph(
           onNavigateToNewConversation()
         },
         navigateToChipId = navigateToChipId,
+        navigateToLegalInfo = dropUnlessResumed {
+          navController.navigate(ProfileDestinations.Legal)
+        },
       )
     }
+
+    navdestination<ProfileDestinations.Legal> {
+      LegalInfoDestination(
+        openUrl = openUrl,
+        navigateUp = navController::navigateUp,
+        languageService = languageService
+      )
+    }
+
     navdestination<ProfileDestinations.Eurobonus>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.eurobonus),
     ) {
