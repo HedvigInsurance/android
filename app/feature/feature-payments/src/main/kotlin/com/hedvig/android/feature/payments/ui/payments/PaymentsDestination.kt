@@ -53,6 +53,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
@@ -355,14 +356,21 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
 
       is PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
-        HedvigNotificationCard(
-          priority = NotificationPriority.Attention,
-          message = stringResource(
-            Res.string.PAYMENTS_MISSED_PAYMENT,
-            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
-            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
-          ),
-        )
+        val allowManualCharge = true //todo
+        Column {
+          HedvigNotificationCard(
+            priority = NotificationPriority.Attention,
+            message = stringResource(
+              Res.string.PAYMENTS_MISSED_PAYMENT,
+              monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
+              monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
+            ),
+            style = if (allowManualCharge) NotificationDefaults.InfoCardStyle.Button(
+              "Charge failed payment manually",{}
+            ) else NotificationDefaults.InfoCardStyle.Default
+          )
+        }
+
       }
 
       null -> {}
