@@ -62,7 +62,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.horizontalDivider
-import com.hedvig.android.design.system.hedvig.icon.Bookmark
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.Eurobonus
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -82,9 +81,9 @@ import com.hedvig.android.pullrefresh.PullRefreshIndicator
 import com.hedvig.android.pullrefresh.pullRefresh
 import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.GENERAL_YES
-import hedvig.resources.LEGAL_CATEGORY_LABEL
 import hedvig.resources.LOGOUT_BUTTON
 import hedvig.resources.PROFILE_ABOUT_ROW
+import hedvig.resources.PROFILE_INFO_LABEL
 import hedvig.resources.PROFILE_LOGOUT_DIALOG_MESSAGE
 import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
 import hedvig.resources.PROFILE_TITLE
@@ -111,7 +110,6 @@ internal fun ProfileDestination(
   onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
   navigateToChipId: () -> Unit,
-  navigateToLegalInfo: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -132,7 +130,6 @@ internal fun ProfileDestination(
     onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
     onNavigateToNewConversation = onNavigateToNewConversation,
     navigateToChipId = navigateToChipId,
-    navigateToLegalInfo = navigateToLegalInfo
   )
 }
 
@@ -155,7 +152,6 @@ private fun ProfileScreen(
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
   navigateToChipId: () -> Unit,
-  navigateToLegalInfo: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -209,7 +205,6 @@ private fun ProfileScreen(
         navigateToEurobonus = navigateToEurobonus,
         navigateToClaimHistory = navigateToClaimHistory,
         navigateToCertificates = navigateToCertificates,
-        navigateToLegalInfo = navigateToLegalInfo
       )
       Spacer(Modifier.height(16.dp))
       Spacer(Modifier.weight(1f))
@@ -272,7 +267,6 @@ private fun ProfileRows(
   navigateToEurobonus: () -> Unit,
   navigateToClaimHistory: () -> Unit,
   navigateToCertificates: () -> Unit,
-  navigateToLegalInfo: () -> Unit,
 ) {
   AnimatedContent(
     targetState = profileUiState,
@@ -293,7 +287,6 @@ private fun ProfileRows(
             navigateToEurobonus = navigateToEurobonus,
             navigateToClaimHistory = navigateToClaimHistory,
             navigateToCertificates = navigateToCertificates,
-            navigateToLegalInfo = navigateToLegalInfo
           )
         }
       }
@@ -340,7 +333,6 @@ private fun ColumnScope.ProfileItemRows(
   navigateToEurobonus: () -> Unit,
   navigateToClaimHistory: () -> Unit,
   navigateToCertificates: () -> Unit,
-  navigateToLegalInfo: () -> Unit,
 ) {
   val horizontalDividerModifier = Modifier.horizontalDivider(DividerPosition.Bottom, horizontalPadding = 16.dp)
   ProfileRow(
@@ -378,16 +370,9 @@ private fun ColumnScope.ProfileItemRows(
     )
   }
   ProfileRow(
-    title = stringResource(Res.string.PROFILE_ABOUT_ROW),
+    title = stringResource(Res.string.PROFILE_INFO_LABEL),
     icon = HedvigIcons.InfoOutline,
     onClick = navigateToAboutApp,
-    isLoading = false,
-    modifier = horizontalDividerModifier,
-  )
-  ProfileRow(
-    title = stringResource(Res.string.LEGAL_CATEGORY_LABEL),
-    icon = HedvigIcons.Bookmark,
-    onClick = navigateToLegalInfo,
     isLoading = false,
     modifier = horizontalDividerModifier,
   )
@@ -453,7 +438,6 @@ private fun PreviewProfileRows(
         {},
         {},
         {},
-        {}
       )
     }
   }
@@ -497,7 +481,6 @@ private fun PreviewAnimatedProfileItemRows() {
             {},
             {},
             {},
-            {}
           )
         }
       }

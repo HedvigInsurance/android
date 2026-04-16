@@ -23,7 +23,7 @@ internal sealed interface ProfileDestinations {
   data object Certificates : ProfileDestinations, Destination
 
   @Serializable
-  data object AboutApp : ProfileDestinations, Destination
+  data object Information : ProfileDestinations, Destination
 
   @Serializable
   data object Licenses : ProfileDestinations, Destination
@@ -31,8 +31,6 @@ internal sealed interface ProfileDestinations {
   @Serializable
   data object SettingsGraph : ProfileDestinations, Destination
 
-  @Serializable
-  data object Legal: ProfileDestinations, Destination
 }
 
 internal sealed interface SettingsDestinations {

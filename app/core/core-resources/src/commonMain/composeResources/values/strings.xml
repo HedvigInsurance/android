@@ -513,7 +513,7 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
-  <string name="KIVRA_NOTIFICATION_BOX_TEXT">You can’t change the payment method right now. Contact us for help.</string>
+  <string name="KIVRA_NOTIFICATION_BOX_TEXT">Do you want to pay your insurance via direct debit and enable quick payouts in the event of claims?</string>
   <string name="KIVRA_PAYMENT_INFO">The invoice is sent to your Kivra inbox 14 days before the due date each month.</string>
   <string name="LEGAL_A11Y">Accessibility</string>
   <string name="LEGAL_CATEGORY_LABEL">Legal</string>
@@ -641,6 +641,7 @@
   <string name="PROFILE_DELETE_ACCOUNT_FAILED">We can't delete your account right now</string>
   <string name="PROFILE_DELETE_ACCOUNT_FAILED_LABEL">In order to delete your account you need to have your open claims settled and not have any active insurances. Please reach out to our service team via message in the app.</string>
   <string name="PROFILE_FOREVER_TITLE">Hedvig Forever</string>
+  <string name="PROFILE_INFO_LABEL">Information</string>
   <string name="PROFILE_LOGOUT_DIALOG_MESSAGE">Are you sure you want to log out?</string>
   <string name="PROFILE_MY_INFO_EMAIL_LABEL">Email</string>
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Invalid email</string>
