@@ -232,7 +232,7 @@ private data class TabRowLayoutInformation(
   private val fixedItemHeight: Dp,
   private val numberOfItems: Int,
 ) : Density by layoutDensity {
-  val maxItemsPerRow = constraints.maxWidth / minItemWidth.roundToPx()
+  val maxItemsPerRow = (constraints.maxWidth / minItemWidth.roundToPx()).coerceAtLeast(1)
   val rowsRequired = (numberOfItems / maxItemsPerRow) + (if (numberOfItems % maxItemsPerRow == 0) 0 else 1)
   val realItemsPerRow: Int = if (rowsRequired == 1) {
     numberOfItems
