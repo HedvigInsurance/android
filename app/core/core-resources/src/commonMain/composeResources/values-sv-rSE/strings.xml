@@ -513,7 +513,7 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">Vi försöker reparera i första hand, men om din %1$s skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$d\u0025** av inköpspriset **%3$d kr**, alltså **%4$d kr**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>
-  <string name="KIVRA_NOTIFICATION_BOX_TEXT">Du kan inte ändra betalmetod just nu. Kontakta oss för hjälp.</string>
+  <string name="KIVRA_NOTIFICATION_BOX_TEXT">Vill du betala din försäkring via autogiro och möjliggöra snabba utbetalningar vid skador?</string>
   <string name="KIVRA_PAYMENT_INFO">Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.</string>
   <string name="LEGAL_A11Y">Tillgänglighet</string>
   <string name="LEGAL_CATEGORY_LABEL">Juridisk information</string>
@@ -641,6 +641,7 @@
   <string name="PROFILE_DELETE_ACCOUNT_FAILED">Vi kan inte radera ditt konto just nu</string>
   <string name="PROFILE_DELETE_ACCOUNT_FAILED_LABEL">För att vi ska kunna radera ditt konto måste alla öppna skadeärenden vara stängda och inte finnas några aktiva försäkringar. Var vänlig skriv till oss i appen.</string>
   <string name="PROFILE_FOREVER_TITLE">Hedvig Forever</string>
+  <string name="PROFILE_INFO_LABEL">Information</string>
   <string name="PROFILE_LOGOUT_DIALOG_MESSAGE">Är du säker på att du vill logga ut?</string>
   <string name="PROFILE_MY_INFO_EMAIL_LABEL">Epost</string>
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Inkorrekt epostadress</string>

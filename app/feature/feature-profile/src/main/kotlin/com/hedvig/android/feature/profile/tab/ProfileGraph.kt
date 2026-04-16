@@ -8,7 +8,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
-import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
+import com.hedvig.android.feature.profile.aboutapp.InformationDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
 import com.hedvig.android.feature.profile.certificates.CertificatesDestination
@@ -17,7 +17,7 @@ import com.hedvig.android.feature.profile.contactinfo.ContactInfoDestination
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
-import com.hedvig.android.feature.profile.legal.LegalInfoDestination
+
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations.Certificates
@@ -49,7 +49,7 @@ fun NavGraphBuilder.profileGraph(
   onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToChipId: () -> Unit,
-  languageService: LanguageService
+  languageService: LanguageService,
 ) {
   navgraph<ProfileDestination.Graph>(
     startDestination = ProfileDestination.Profile::class,
@@ -69,7 +69,7 @@ fun NavGraphBuilder.profileGraph(
           navController.navigate(ProfileDestination.ContactInfo)
         },
         navigateToAboutApp = dropUnlessResumed {
-          navController.navigate(ProfileDestinations.AboutApp)
+          navController.navigate(ProfileDestinations.Information)
         },
         navigateToSettings = dropUnlessResumed {
           navController.navigate(ProfileDestinations.SettingsGraph)
@@ -88,17 +88,6 @@ fun NavGraphBuilder.profileGraph(
           onNavigateToNewConversation()
         },
         navigateToChipId = navigateToChipId,
-        navigateToLegalInfo = dropUnlessResumed {
-          navController.navigate(ProfileDestinations.Legal)
-        },
-      )
-    }
-
-    navdestination<ProfileDestinations.Legal> {
-      LegalInfoDestination(
-        openUrl = openUrl,
-        navigateUp = navController::navigateUp,
-        languageService = languageService
       )
     }
 
@@ -122,9 +111,9 @@ fun NavGraphBuilder.profileGraph(
         popBackStack = popBackStackOrFinish,
       )
     }
-    navdestination<ProfileDestinations.AboutApp> {
+    navdestination<ProfileDestinations.Information> {
       val viewModel: AboutAppViewModel = koinViewModel()
-      AboutAppDestination(
+      InformationDestination(
         viewModel = viewModel,
         onBackPressed = navController::navigateUp,
         showOpenSourceLicenses = dropUnlessResumed {
@@ -132,6 +121,8 @@ fun NavGraphBuilder.profileGraph(
         },
         navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         hedvigBuildConstants = hedvigBuildConstants,
+        languageService = languageService,
+        openUrl = openUrl,
       )
     }
     navdestination<ProfileDestinations.Licenses> {
