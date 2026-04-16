@@ -30,6 +30,9 @@ internal sealed interface ProfileDestinations {
 
   @Serializable
   data object SettingsGraph : ProfileDestinations, Destination
+
+  @Serializable
+  data object Legal: ProfileDestinations, Destination
 }
 
 internal sealed interface SettingsDestinations {

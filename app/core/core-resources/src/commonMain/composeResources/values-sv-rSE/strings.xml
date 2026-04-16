@@ -515,6 +515,10 @@
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Värdering</string>
   <string name="KIVRA_NOTIFICATION_BOX_TEXT">Du kan inte ändra betalmetod just nu. Kontakta oss för hjälp.</string>
   <string name="KIVRA_PAYMENT_INFO">Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.</string>
+  <string name="LEGAL_A11Y">Tillgänglighet</string>
+  <string name="LEGAL_CATEGORY_LABEL">Juridisk information</string>
+  <string name="LEGAL_INFORMATION">Juridisk information</string>
+  <string name="LEGAL_PRIVACY_POLICY">Personuppgifter</string>
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
