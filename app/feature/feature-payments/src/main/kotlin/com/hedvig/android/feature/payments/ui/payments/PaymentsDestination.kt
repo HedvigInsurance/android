@@ -41,8 +41,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigInformationSection
@@ -290,23 +288,17 @@ private fun PaymentsContent(
             modifier = Modifier
               .padding(horizontal = 16.dp)
               .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-          )
-          HedvigButton(
-            text = androidx.compose.ui.res.stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-            onClick = onChangeBankAccount,
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp)
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            style = Button(
+              buttonText = androidx.compose.ui.res.stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
+              onButtonClick = onChangeBankAccount,
+            ),
           )
         }
 
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-        -> {
+          -> {
         }
       }
     }
