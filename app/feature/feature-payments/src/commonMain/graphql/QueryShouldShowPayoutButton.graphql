@@ -2,10 +2,10 @@ query ShouldShowPayoutButton {
   currentMember {
     paymentMethods {
       defaultPayoutMethod {
-        id
+        provider
       }
       payoutMethods {
-        id
+        provider
       }
       availableMethods {
         supportsPayout
