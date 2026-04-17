@@ -52,7 +52,6 @@ private fun Project.configureKotlinAndroidMultiplatform() {
 
   project.configure<KotlinMultiplatformExtension> {
     targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java) {
-      @Suppress("UnstableApiUsage")
       androidResources.enable = true
       compileSdk = libs.versions.compileSdkVersion.get().toInt()
       minSdk = libs.versions.minSdkVersion.get().toInt()
@@ -73,8 +72,6 @@ private fun Project.configureKotlinAndroidMultiplatform() {
         }
       }
       configureAutomaticNamespace(path, namespace, { namespace = it })
-      // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-resources-setup.html#resources-in-the-androidlibrary-target
-      experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }
   }
 

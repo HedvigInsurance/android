@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - develop
-      - makerdays/chat-claim
-    paths:
-      - 'app/authlib/**'
-      - 'app/feature/feature-claim-chat/**'
-      - 'app/shareddi/**'
+      - feat/help-center-kmp
   workflow_dispatch:
 
 concurrency:

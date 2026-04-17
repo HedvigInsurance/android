@@ -76,6 +76,7 @@ fun NavGraphBuilder.homeGraph(
         sections,
         navigateUp = navController::navigateUp,
         navigateBack = navController::popBackStack,
+        openUrl = openUrl,
       )
     }
     nestedGraphs()
