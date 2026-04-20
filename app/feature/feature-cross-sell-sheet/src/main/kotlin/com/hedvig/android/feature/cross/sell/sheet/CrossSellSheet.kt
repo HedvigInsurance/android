@@ -8,7 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.withStateAtLeast
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Content
@@ -17,7 +17,7 @@ import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Error
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheetState.Loading
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CrossSellSheet(

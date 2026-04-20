@@ -8,13 +8,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewState.Loading
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import java.io.File
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class InsuranceEvidenceOverviewViewModel(
   downloadPdfUseCase: DownloadPdfUseCase,
@@ -31,7 +31,7 @@ internal class InsuranceEvidenceOverviewPresenter(
     lastState: InsuranceEvidenceOverviewState,
   ): InsuranceEvidenceOverviewState {
     var currentState by remember {
-      mutableStateOf<InsuranceEvidenceOverviewState>(InsuranceEvidenceOverviewState.Loading)
+      mutableStateOf<InsuranceEvidenceOverviewState>(Loading)
     }
 
     var dataLoadIteration by remember { mutableIntStateOf(0) }
@@ -55,7 +55,7 @@ internal class InsuranceEvidenceOverviewPresenter(
       if (url != null) {
         val oldState = currentState
         currentState = when (oldState) {
-          InsuranceEvidenceOverviewState.Failure -> InsuranceEvidenceOverviewState.Loading
+          InsuranceEvidenceOverviewState.Failure -> Loading
           Loading -> return@LaunchedEffect
           is InsuranceEvidenceOverviewState.Success -> oldState.copy(isButtonLoading = true)
         }
@@ -66,11 +66,11 @@ internal class InsuranceEvidenceOverviewPresenter(
               logcat(LogPriority.ERROR) { "Downloading insurance evidence failed:$errorMessage" }
               currentState = InsuranceEvidenceOverviewState.Failure
             },
-            ifRight = { uri ->
+            ifRight = { downloadedFile ->
               logcat(
                 LogPriority.INFO,
-              ) { "Downloading insurance evidence succeeded. Result uri:${uri.absolutePath}" }
-              currentState = InsuranceEvidenceOverviewState.Success(uri)
+              ) { "Downloading insurance evidence succeeded. Result path:${downloadedFile.path}" }
+              currentState = InsuranceEvidenceOverviewState.Success(downloadedFile)
             },
           )
       } else {
@@ -87,7 +87,7 @@ internal sealed interface InsuranceEvidenceOverviewState {
   data object Failure : InsuranceEvidenceOverviewState
 
   data class Success(
-    val insuranceEvidenceUri: File?,
+    val insuranceEvidenceUri: DownloadedFile?,
     val isButtonLoading: Boolean = false,
   ) : InsuranceEvidenceOverviewState
 }

@@ -1,6 +1,7 @@
 plugins {
   id("hedvig.multiplatform.library")
   id("hedvig.gradle.plugin")
+  alias(libs.plugins.kmpNativeCoroutines)
 }
 
 hedvig {
@@ -16,9 +17,6 @@ kotlin {
       implementation(libs.ktor.client.core)
       implementation(libs.ktor.client.json)
       implementation(libs.ktor.client.logging)
-    }
-    jvmMain.dependencies {
-      api(libs.ktor.client.okhttp)
     }
     iosMain.dependencies {
       implementation(libs.ktor.client.darwin)

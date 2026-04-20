@@ -6,7 +6,10 @@ fragment MoveIntentFragment on MoveIntent {
   maxApartmentNumberCoInsured
   maxApartmentSquareMeters
   isApartmentAvailableforStudent
-  extraBuildingTypes
+  extraBuildingTypesV2 {
+    type
+    displayName
+  }
   currentHomeAddresses {
     id
     displayTitle

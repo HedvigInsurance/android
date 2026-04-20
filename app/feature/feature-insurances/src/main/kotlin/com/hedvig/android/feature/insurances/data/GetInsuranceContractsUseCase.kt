@@ -12,6 +12,10 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
@@ -30,6 +34,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import octopus.InsuranceContractsQuery
 import octopus.fragment.AgreementDisplayItemFragment
+import octopus.fragment.ContractCoInsuredFragment
+import octopus.fragment.ContractCoOwnerFragment
 import octopus.fragment.ContractFragment
 import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
@@ -53,7 +59,12 @@ internal class GetInsuranceContractsUseCaseImpl(
                 .query(
                   InsuranceContractsQuery(
                     addonsEnabled = areAddonsEnabled,
-                    options = Optional.present(DisplayItemOptions(hidePrice = Optional.present(true))),
+                    options = Optional.present(
+                      DisplayItemOptions(
+                        hidePrice = Optional.present(true),
+                        hideAddons = Optional.present(true),
+                      ),
+                    ),
                   ),
                 )
                 .fetchPolicy(FetchPolicy.CacheAndNetwork)
@@ -131,6 +142,7 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
     },
     cost = this.cost.toMonthlyCost(),
     basePremium = UiMoney.fromMoneyFragment(this.basePremium),
+    chipId = ChipIdState.NotRequired,
   )
 }
 
@@ -159,7 +171,8 @@ private fun ContractFragment.toContract(
       },
       productVariant = currentAgreement.productVariant.toProductVariant(),
       certificateUrl = currentAgreement.certificateUrl,
-      coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
+      coInsured = coInsured?.map { it.toCoInsured() }.orEmpty(),
+      coOwners = coOwners?.map { it.toCoInsured() }.orEmpty(),
       creationCause = currentAgreement.creationCause.toCreationCause(),
       addons = currentAgreement.addons?.map {
         Addon(
@@ -177,7 +190,8 @@ private fun ContractFragment.toContract(
         displayItems = it.displayItems.map { it.toDisplayItem() },
         productVariant = it.productVariant.toProductVariant(),
         certificateUrl = it.certificateUrl,
-        coInsured = coInsured?.map { it.toCoInsured() } ?: listOf(),
+        coInsured = coInsured?.map { it.toCoInsured() }.orEmpty(),
+        coOwners = coOwners?.map { it.toCoInsured() }.orEmpty(),
         creationCause = it.creationCause.toCreationCause(),
         addons = it.addons?.map {
           Addon(
@@ -191,8 +205,35 @@ private fun ContractFragment.toContract(
     },
     supportsAddressChange = supportsMoving && isMovingFlowEnabled,
     supportsEditCoInsured = supportsCoInsured && isEditCoInsuredEnabled,
+    supportsEditCoOwners = supportsCoOwners && isEditCoInsuredEnabled,
     isTerminated = isTerminated,
     supportsTierChange = supportsChangeTier,
+    existingAddons = existingAddons?.map {
+      ContractAddon(
+        relatedContractId = ContractId(id),
+        addonVariant = it.addonVariant.toAddonVariant(),
+        displayName = it.displayName,
+        description = it.description,
+        status = when {
+          it.startDate != null -> ContractAddon.Status.ActiveFrom(it.startDate!!)
+          it.endDate != null -> ContractAddon.Status.EndsAt(it.endDate!!)
+          else -> ContractAddon.Status.Unknown
+        },
+        isUpgradable = it.isUpgradable,
+        isRemovable = it.isRemovable,
+      )
+    }.orEmpty(),
+    availableAddons = availableAddons?.map {
+      AvailableAddon(
+        relatedContractId = ContractId(id),
+        displayName = it.displayName,
+        description = it.description,
+      )
+    }.orEmpty(),
+    chipId = when (isMissingPetId) {
+      true -> ChipIdState.Missing
+      false -> ChipIdState.NotRequired
+    },
   )
 }
 
@@ -217,14 +258,27 @@ private fun MonthlyCostFragment.toMonthlyCost(): MonthlyCost {
 
 private fun AgreementCreationCause.toCreationCause() = when (this) {
   AgreementCreationCause.NEW_CONTRACT -> InsuranceAgreement.CreationCause.NEW_CONTRACT
+
   AgreementCreationCause.RENEWAL -> InsuranceAgreement.CreationCause.RENEWAL
+
   AgreementCreationCause.MIDTERM_CHANGE -> InsuranceAgreement.CreationCause.MIDTERM_CHANGE
+
   AgreementCreationCause.UNKNOWN,
   AgreementCreationCause.UNKNOWN__,
   -> InsuranceAgreement.CreationCause.UNKNOWN
 }
 
-private fun ContractFragment.CoInsured.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+private fun ContractCoInsuredFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
+  firstName = firstName,
+  lastName = lastName,
+  ssn = ssn,
+  birthDate = birthdate,
+  activatesOn = activatesOn,
+  terminatesOn = terminatesOn,
+  hasMissingInfo = hasMissingInfo,
+)
+
+private fun ContractCoOwnerFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
   firstName = firstName,
   lastName = lastName,
   ssn = ssn,

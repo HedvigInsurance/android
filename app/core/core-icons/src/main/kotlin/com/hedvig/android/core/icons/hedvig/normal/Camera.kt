@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Camera: ImageVector
+val HedvigIcons.Camera: ImageVector
   get() {
     if (_camera != null) {
       return _camera!!

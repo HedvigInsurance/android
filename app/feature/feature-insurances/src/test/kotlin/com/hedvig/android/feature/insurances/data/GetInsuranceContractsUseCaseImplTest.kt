@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.insurances.data
 
+import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.apollographql.apollo.ApolloClient
@@ -38,7 +39,15 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseThatSupportsTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(false, Optional.Present(DisplayItemOptions(Optional.Present(true)))),
+        operation = InsuranceContractsQuery(
+          false,
+          Optional.Present(
+            DisplayItemOptions(
+              Optional.Present(true),
+              hideAddons = Optional.Present(true),
+            ),
+          ),
+        ),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"
@@ -58,7 +67,15 @@ class GetInsuranceContractsUseCaseImplTest {
   private val apolloClientWithGoodResponseWithoutTier: ApolloClient
     get() = testApolloClientRule.apolloClient.apply {
       registerTestResponse(
-        operation = InsuranceContractsQuery(false, Optional.Present(DisplayItemOptions(Optional.Present(true)))),
+        operation = InsuranceContractsQuery(
+          false,
+          Optional.Present(
+            DisplayItemOptions(
+              Optional.Present(true),
+              hideAddons = Optional.Present(true),
+            ),
+          ),
+        ),
         data = InsuranceContractsQuery.Data(OctopusFakeResolver) {
           currentMember = buildMember {
             firstName = "test"
@@ -119,9 +136,8 @@ class GetInsuranceContractsUseCaseImplTest {
         featureManager = featureManager,
       )
       val result = subjectUseCase.invoke().first()
-      assertk.assertThat(result).isRight().transform {
-        val first = it.first()
-        val result = when (first) {
+      assertThat(result).isRight().transform {
+        val result = when (val first = it.first()) {
           is InsuranceContract.EstablishedInsuranceContract -> first.supportsTierChange
           is InsuranceContract.PendingInsuranceContract -> false
         }
@@ -145,9 +161,8 @@ class GetInsuranceContractsUseCaseImplTest {
         featureManager = featureManager,
       )
       val result = subjectUseCase.invoke().first()
-      assertk.assertThat(result).isRight().transform {
-        val first = it.first()
-        val result = when (first) {
+      assertThat(result).isRight().transform {
+        val result = when (val first = it.first()) {
           is InsuranceContract.EstablishedInsuranceContract -> first.supportsTierChange
           is InsuranceContract.PendingInsuranceContract -> true
         }

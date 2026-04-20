@@ -2,7 +2,8 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
-import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
+import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
+import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
@@ -14,9 +15,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TerminateInsuranceGraphDestination(
-  /**
-   * The ID to the contract which needs to be pre-selected in the termination flow
-   */
   @SerialName("contractId")
   val insuranceId: String? = null,
 ) : Destination
@@ -28,11 +26,13 @@ internal sealed interface TerminateInsuranceDestination {
   @Serializable
   data class TerminationSurveyFirstStep(
     val options: List<TerminationSurveyOption>,
+    val action: TerminationAction,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<List<TerminationSurveyOption>>(),
+        typeOf<TerminationAction>(),
         typeOf<TerminationGraphParameters>(),
       )
     }
@@ -41,11 +41,13 @@ internal sealed interface TerminateInsuranceDestination {
   @Serializable
   data class TerminationSurveySecondStep(
     val subOptions: List<TerminationSurveyOption>,
+    val action: TerminationAction,
     val commonParams: TerminationGraphParameters,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<List<TerminationSurveyOption>>(),
+        typeOf<TerminationAction>(),
         typeOf<TerminationGraphParameters>(),
       )
     }
@@ -57,25 +59,25 @@ internal sealed interface TerminateInsuranceDestination {
     val maxDate: LocalDate,
     val extraCoverageItems: List<ExtraCoverageItem>,
     val commonParams: TerminationGraphParameters,
+    val selectedReasonId: String,
+    val feedbackComment: String?,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<LocalDate>(),
         typeOf<List<ExtraCoverageItem>>(),
-        typeOf<TerminationNotification?>(),
         typeOf<TerminationGraphParameters>(),
       )
     }
   }
 
-  /**
-   * The screen to review the termination situation before submitting the final request
-   */
   @Serializable
   data class TerminationConfirmation(
     val terminationType: TerminationType,
     val extraCoverageItems: List<ExtraCoverageItem>,
     val commonParams: TerminationGraphParameters,
+    val selectedReasonId: String,
+    val feedbackComment: String?,
   ) : TerminateInsuranceDestination, Destination {
     @Serializable
     sealed interface TerminationType {
@@ -90,8 +92,22 @@ internal sealed interface TerminateInsuranceDestination {
       override val typeList: List<KType> = listOf(
         typeOf<TerminationType>(),
         typeOf<List<ExtraCoverageItem>>(),
-        typeOf<TerminationNotification?>(),
         typeOf<TerminationGraphParameters>(),
+      )
+    }
+  }
+
+  @Serializable
+  data class InsuranceDeletion(
+    val commonParams: TerminationGraphParameters,
+    val extraCoverageItems: List<ExtraCoverageItem>,
+    val selectedReasonId: String,
+    val feedbackComment: String?,
+  ) : TerminateInsuranceDestination, Destination {
+    companion object : DestinationNavTypeAware {
+      override val typeList: List<KType> = listOf(
+        typeOf<TerminationGraphParameters>(),
+        typeOf<List<ExtraCoverageItem>>(),
       )
     }
   }
@@ -106,19 +122,6 @@ internal sealed interface TerminateInsuranceDestination {
   }
 
   @Serializable
-  data class InsuranceDeletion(
-    val commonParams: TerminationGraphParameters,
-    val extraCoverageItems: List<ExtraCoverageItem>,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<TerminationGraphParameters>(),
-        typeOf<List<ExtraCoverageItem>>(),
-      )
-    }
-  }
-
-  @Serializable
   data class TerminationFailure(
     val message: String?,
   ) : TerminateInsuranceDestination, Destination
@@ -127,23 +130,20 @@ internal sealed interface TerminateInsuranceDestination {
   data object UnknownScreen : TerminateInsuranceDestination, Destination
 
   @Serializable
-  data class DeflectAutoCancel(
-    val autoCancelDeflectStepParameters: AutoCancelDeflectStepParameters,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<AutoCancelDeflectStepParameters>(),
-      )
-    }
-  }
-
-  @Serializable
-  data class DeflectAutoDecom(
+  data class DeflectSuggestion(
+    val description: String,
+    val url: String?,
+    val suggestionType: SuggestionType,
     val commonParams: TerminationGraphParameters,
+    val action: TerminationAction,
+    val selectedReasonId: String,
+    val feedbackComment: String?,
   ) : TerminateInsuranceDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(
+        typeOf<SuggestionType>(),
         typeOf<TerminationGraphParameters>(),
+        typeOf<TerminationAction>(),
       )
     }
   }
@@ -169,11 +169,4 @@ internal data class TerminationGraphParameters(
   val insuranceDisplayName: String,
   val exposureName: String,
   val contractGroup: ContractGroup,
-)
-
-@Serializable
-internal data class AutoCancelDeflectStepParameters(
-  val title: String,
-  val message: String,
-  val extraMessage: String?,
 )

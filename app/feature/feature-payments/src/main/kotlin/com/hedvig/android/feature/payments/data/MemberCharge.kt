@@ -28,6 +28,7 @@ internal data class MemberCharge(
   val referralDiscount: Discount?,
   private val carriedAdjustment: UiMoney?,
   private val settlementAdjustment: UiMoney?,
+  val chargeMethod: MemberPaymentChargeMethod,
 ) {
   fun carriedAdjustmentIfAboveZero(): UiMoney? = if (carriedAdjustment != null && carriedAdjustment.amount > 0) {
     carriedAdjustment
@@ -63,7 +64,7 @@ internal data class MemberCharge(
     val grossAmount: UiMoney,
     val netAmount: UiMoney,
     val periods: List<Period>,
-    val discounts: List<Discount>,
+    val priceBreakdown: List<Pair<String, UiMoney>>,
   ) {
     @Serializable
     data class Period(
@@ -74,11 +75,11 @@ internal data class MemberCharge(
     ) {
       val description: Description? = when {
         fromDate.dayOfMonth == 1 && toDate.isLastDayOfMonth() -> {
-          MemberCharge.ChargeBreakdown.Period.Description.FullPeriod
+          Description.FullPeriod
         }
 
         else -> {
-          MemberCharge.ChargeBreakdown.Period.Description.BetweenDays(fromDate.daysUntil(toDate))
+          Description.BetweenDays(fromDate.daysUntil(toDate))
         }
       }
 
@@ -104,11 +105,11 @@ internal fun ShortPaymentHistoryQuery.Data.CurrentMember.PastCharge.toPaymentHis
     id = id ?: "",
     netAmount = UiMoney.fromMoneyFragment(net),
     status = when (status) {
-      octopus.type.MemberChargeStatus.UPCOMING -> MemberCharge.MemberChargeStatus.UPCOMING
-      octopus.type.MemberChargeStatus.SUCCESS -> MemberCharge.MemberChargeStatus.SUCCESS
-      octopus.type.MemberChargeStatus.PENDING -> MemberCharge.MemberChargeStatus.PENDING
-      octopus.type.MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
-      octopus.type.MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
+      MemberChargeStatus.UPCOMING -> MemberCharge.MemberChargeStatus.UPCOMING
+      MemberChargeStatus.SUCCESS -> MemberCharge.MemberChargeStatus.SUCCESS
+      MemberChargeStatus.PENDING -> MemberCharge.MemberChargeStatus.PENDING
+      MemberChargeStatus.FAILED -> MemberCharge.MemberChargeStatus.FAILED
+      MemberChargeStatus.UNKNOWN__ -> MemberCharge.MemberChargeStatus.UNKNOWN
     },
     dueDate = date,
   )
@@ -143,20 +144,9 @@ internal fun MemberChargeFragment.toMemberCharge(
           isPreviouslyFailedCharge = it.isPreviouslyFailedCharge,
         )
       },
-      discounts = chargeBreakdown.discounts?.map { discount ->
-        Discount(
-          code = discount.code,
-          description = discount.description,
-          // Expired state is not applicable in this context
-          status = DiscountStatus.ACTIVE,
-          amount = UiMoney(
-            discount.discount.amount,
-            UiCurrencyCode.fromCurrencyCode(discount.discount.currencyCode),
-          ),
-          isReferral = false,
-          statusDescription = null,
-        )
-      } ?: listOf(),
+      priceBreakdown = chargeBreakdown.insurancePriceBreakdown.map {
+        it.displayTitle to UiMoney.fromMoneyFragment(it.amount)
+      },
     )
   },
   settlementAdjustment = settlementAdjustment?.let(UiMoney::fromMoneyFragment),
@@ -175,7 +165,16 @@ internal fun MemberChargeFragment.toMemberCharge(
       statusDescription = null,
     )
   },
+  chargeMethod = paymentProvider.toChargeMethod(),
 )
+
+internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
+  return when {
+    this?.startsWith("kivra", ignoreCase = true) == true -> MemberPaymentChargeMethod.KIVRA
+    this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
+    else -> MemberPaymentChargeMethod.UNKNOWN
+  }
+}
 
 internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
   val previousChargesPeriods = chargeBreakdown

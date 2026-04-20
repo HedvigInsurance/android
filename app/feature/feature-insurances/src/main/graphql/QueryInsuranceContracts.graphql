@@ -54,14 +54,12 @@ fragment ContractFragment on Contract {
   supportsMoving
   supportsCoInsured
   supportsChangeTier
+  supportsCoOwners
   coInsured {
-    firstName
-    lastName
-    ssn
-    birthdate
-    hasMissingInfo
-    activatesOn
-    terminatesOn
+    ...ContractCoInsuredFragment
+  }
+  coOwners {
+    ...ContractCoOwnerFragment
   }
   currentAgreement {
     ...AgreementFragment
@@ -69,6 +67,22 @@ fragment ContractFragment on Contract {
   upcomingChangedAgreement {
     ...AgreementFragment
   }
+  existingAddons @include(if: $addonsEnabled) {
+    addonVariant {
+      ...AddonVariantFragment
+    }
+    displayName
+    description
+    isRemovable
+    isUpgradable
+    startDate
+    endDate
+  }
+  availableAddons @include(if: $addonsEnabled) {
+    displayName
+    description
+  }
+  isMissingPetId
 }
 
 fragment AgreementFragment on Agreement {
@@ -116,4 +130,24 @@ fragment MonthlyCostFragment on ItemCost {
     explanation
     campaignCode
   }
+}
+
+fragment ContractCoInsuredFragment on ContractCoInsured {
+  firstName
+  lastName
+  ssn
+  birthdate
+  hasMissingInfo
+  activatesOn
+  terminatesOn
+}
+
+fragment ContractCoOwnerFragment on ContractCoOwner {
+  firstName
+  lastName
+  ssn
+  birthdate
+  hasMissingInfo
+  activatesOn
+  terminatesOn
 }

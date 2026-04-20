@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.claim.details.ui
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,8 +8,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
+import com.eygraber.uri.Uri
+import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
-import com.hedvig.android.core.fileupload.UploadFileUseCase
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
@@ -18,9 +19,9 @@ import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.Cl
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailUiState.Content.ClaimStatus.CLOSED
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
 import java.io.File
@@ -32,17 +33,17 @@ import kotlinx.datetime.LocalDateTime
 internal class ClaimDetailsViewModel(
   claimId: String,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
-  uploadFileUseCase: UploadFileUseCase,
+  claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
-    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, uploadFileUseCase, downloadPdfUseCase),
+    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, claimsServiceUploadFileUseCase, downloadPdfUseCase),
   )
 
 private class ClaimDetailPresenter(
   private val claimId: String,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
-  private val uploadFileUseCase: UploadFileUseCase,
+  private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculePresenter<ClaimDetailsEvent, ClaimDetailUiState> {
   @Composable
@@ -86,11 +87,11 @@ private class ClaimDetailPresenter(
             content = content?.copy(downloadError = true, isLoadingPdf = null)
             downloadingUrl = null
           },
-          ifRight = { uri ->
+          ifRight = { downloadedFile ->
             logcat(
               LogPriority.INFO,
-            ) { "Downloading terms and conditions succeeded. Result uri:${uri.absolutePath}" }
-            content = content?.copy(downloadError = null, savedFileUri = uri, isLoadingPdf = null)
+            ) { "Downloading terms and conditions succeeded. Result path:${downloadedFile.path}" }
+            content = content?.copy(downloadError = null, savedFileUri = downloadedFile, isLoadingPdf = null)
             downloadingUrl = null
           },
         )
@@ -103,7 +104,7 @@ private class ClaimDetailPresenter(
             isUploadingFile = true,
             uploadError = null,
           )
-          uploadFileUseCase.invoke(uploadUri, uri).fold(
+          claimsServiceUploadFileUseCase.invoke(uploadUri, uri).fold(
             ifLeft = {
               content = content?.copy(
                 isUploadingFile = false,
@@ -120,14 +121,26 @@ private class ClaimDetailPresenter(
 
     CollectEvents { event ->
       when (event) {
-        ClaimDetailsEvent.Retry -> loadIteration++
-        ClaimDetailsEvent.DismissUploadError -> content = content?.copy(uploadError = null)
+        ClaimDetailsEvent.Retry -> {
+          loadIteration++
+        }
+
+        ClaimDetailsEvent.DismissUploadError -> {
+          content = content?.copy(uploadError = null)
+        }
+
         is ClaimDetailsEvent.DownloadPdf -> {
           content = content?.copy(isLoadingPdf = event.url)
           downloadingUrl = event.url
         }
-        ClaimDetailsEvent.DismissDownloadError -> content = content?.copy(downloadError = null)
-        ClaimDetailsEvent.HandledSharingPdfFile -> content = content?.copy(downloadError = null, savedFileUri = null)
+
+        ClaimDetailsEvent.DismissDownloadError -> {
+          content = content?.copy(downloadError = null)
+        }
+
+        ClaimDetailsEvent.HandledSharingPdfFile -> {
+          content = content?.copy(downloadError = null, savedFileUri = null)
+        }
       }
     }
 
@@ -171,7 +184,7 @@ internal sealed interface ClaimDetailUiState {
     val submittedAt: LocalDateTime,
     val insuranceDisplayName: String?,
     val termsConditionsUrl: String?,
-    val savedFileUri: File?,
+    val savedFileUri: DownloadedFile?,
     val downloadError: Boolean?,
     val isLoadingPdf: String?,
     val appealInstructionsUrl: String?,

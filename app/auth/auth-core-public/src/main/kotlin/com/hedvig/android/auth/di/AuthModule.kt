@@ -12,7 +12,6 @@ import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.auth.event.AuthEventBroadcaster
 import com.hedvig.android.auth.event.AuthEventListener
 import com.hedvig.android.auth.event.AuthEventStorage
-import com.hedvig.android.auth.interceptor.AuthTokenRefreshingInterceptor
 import com.hedvig.android.auth.storage.AuthTokenStorage
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
@@ -20,15 +19,14 @@ import com.hedvig.android.core.common.di.ioDispatcherQualifier
 import com.hedvig.android.initializable.Initializable
 import com.hedvig.authlib.AuthEnvironment
 import com.hedvig.authlib.AuthRepository
-import com.hedvig.authlib.OkHttpNetworkAuthRepository
+import com.hedvig.authlib.NetworkAuthRepository
+import io.ktor.client.HttpClient
 import kotlin.coroutines.CoroutineContext
-import okhttp3.OkHttpClient
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val authModule = module {
   single<AccessTokenProvider> { AndroidAccessTokenProvider(get()) }
-  single<AuthTokenRefreshingInterceptor> { AuthTokenRefreshingInterceptor(get()) }
   single<AuthTokenService> {
     AuthTokenServiceImpl(
       get<AuthTokenStorage>(),
@@ -55,14 +53,13 @@ val authModule = module {
   }
 
   single<AuthRepository> {
-    OkHttpNetworkAuthRepository(
+    NetworkAuthRepository(
       environment = if (get<HedvigBuildConstants>().isProduction) {
         AuthEnvironment.PRODUCTION
       } else {
         AuthEnvironment.STAGING
       },
       additionalHttpHeadersProvider = { emptyMap() },
-      okHttpClientBuilder = get<OkHttpClient.Builder>(),
     )
   }
 

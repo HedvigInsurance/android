@@ -5,7 +5,7 @@ import com.hedvig.android.feature.deleteaccount.DeleteAccountPresenter
 import com.hedvig.android.feature.deleteaccount.DeleteAccountUiState
 import com.hedvig.android.feature.deleteaccount.data.DeleteAccountStateUseCase
 import com.hedvig.android.feature.deleteaccount.data.RequestAccountDeletionUseCase
-import com.hedvig.android.molecule.android.MoleculeViewModel
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class DeleteAccountViewModel(
   private val requestAccountDeletionUseCase: RequestAccountDeletionUseCase,

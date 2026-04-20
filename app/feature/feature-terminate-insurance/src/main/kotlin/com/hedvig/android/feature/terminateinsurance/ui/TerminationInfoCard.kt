@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -23,8 +22,11 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.ChevronDown
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER
+import hedvig.resources.TERMINATION_FLOW_DATE_FIELD_TEXT
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminationInfoCardInsurance(displayName: String, exposureName: String, modifier: Modifier = Modifier) {
@@ -79,12 +81,12 @@ internal fun TerminationInfoCardDate(
       startSlot = {
         Column {
           HedvigText(
-            text = stringResource(id = R.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
+            text = stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondary,
           )
           HedvigText(
-            text = dateValue ?: stringResource(R.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
+            text = dateValue ?: stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER),
             style = HedvigTheme.typography.bodySmall,
             color = if (dateValue == null) {
               HedvigTheme.colorScheme.textSecondary

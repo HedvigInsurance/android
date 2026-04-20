@@ -17,9 +17,6 @@ import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
-import com.hedvig.android.logger.LogPriority
-import com.hedvig.android.logger.logcat
-import kotlin.collections.sorted
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.TimeZone
@@ -53,18 +50,16 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentInformation = result.currentMember.paymentInformation
         when (paymentInformation.status) {
           MemberPaymentConnectionStatus.ACTIVE -> {
-            if (paymentInformation.connection == null) {
-              logcat(LogPriority.ERROR) { "Payment connection is active but connection is null" }
-              PaymentConnection.Unknown
-            } else {
-              PaymentConnection.Active(
-                displayName = paymentInformation.connection.displayName,
-                displayValue = paymentInformation.connection.descriptor,
-              )
-            }
+            PaymentConnection.Active(
+              displayName = paymentInformation.chargeMethod?.displayName,
+              displayValue = paymentInformation.chargeMethod?.descriptor,
+            )
           }
 
-          MemberPaymentConnectionStatus.PENDING -> PaymentConnection.Pending
+          MemberPaymentConnectionStatus.PENDING -> {
+            PaymentConnection.Pending
+          }
+
           MemberPaymentConnectionStatus.NEEDS_SETUP -> {
             val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
               .currentMember
@@ -76,7 +71,9 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
           }
 
-          MemberPaymentConnectionStatus.UNKNOWN__ -> PaymentConnection.Unknown
+          MemberPaymentConnectionStatus.UNKNOWN__ -> {
+            PaymentConnection.Unknown
+          }
         }
       },
     )

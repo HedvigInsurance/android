@@ -1,0 +1,128 @@
+package com.hedvig.android.design.system.hedvig
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
+import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_TYPE_NORMAL
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import coil3.ComponentRegistry
+import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
+import coil3.request.Disposable
+import coil3.request.ErrorResult
+import coil3.request.ImageRequest
+import coil3.request.ImageResult
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
+
+@Preview(
+  name = "00_lightMode portrait",
+)
+@Preview(
+  name = "01_nightMode portrait",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
+)
+annotation class HedvigPreview
+
+@Preview(
+  name = "lightMode landscape",
+  locale = "en",
+  device = "spec:parent=pixel_5,orientation=landscape",
+)
+@Preview(
+  name = "darkMode landscape",
+  locale = "en",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
+  device = "spec:parent=pixel_5,orientation=landscape",
+)
+private annotation class HedvigLandscapePreview
+
+@Preview(
+  name = "02_lightMode landscape",
+  locale = "en",
+  device = "spec:parent=pixel_5,orientation=landscape",
+)
+private annotation class HedvigOnlyLightLandscapePreview
+
+@Preview(
+  name = "lightMode tablet portrait",
+  device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait",
+)
+@Preview(
+  name = "darkMode tablet portrait",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
+  device = "spec:width=1280dp,height=800dp,dpi=240,orientation=portrait",
+)
+private annotation class HedvigTabletPreview
+
+@Preview(
+  name = "lightMode tablet landscape",
+  device = "spec:width=1280dp,height=800dp,dpi=240",
+)
+@Preview(
+  name = "darkMode tablet landscape",
+  uiMode = UI_MODE_NIGHT_YES or UI_MODE_TYPE_NORMAL,
+  device = "spec:width=1280dp,height=800dp,dpi=240",
+)
+annotation class HedvigTabletLandscapePreview
+
+@Preview(
+  name = "03_lightMode small screen portrait",
+  device = "spec:width=300dp,height=240dp,dpi=240,orientation=portrait",
+)
+annotation class HedvigVerySmallScreenPreview
+
+@HedvigPreview
+@HedvigLandscapePreview
+@HedvigTabletPreview
+@HedvigTabletLandscapePreview
+@HedvigVerySmallScreenPreview
+annotation class HedvigMultiScreenPreview
+
+@HedvigPreview
+@HedvigOnlyLightLandscapePreview
+@HedvigVerySmallScreenPreview
+annotation class HedvigShortMultiScreenPreview
+
+/**
+ * A fake ImageLoader to be used inside compose @Previews to satisfy the demands of the composables that need it.
+ * Do *not* call from production code.
+ */
+class PreviewImageLoader : ImageLoader {
+  override val components: ComponentRegistry = ComponentRegistry()
+  override val defaults: ImageRequest.Defaults = ImageRequest.Defaults.DEFAULT
+  override val diskCache: DiskCache? = null
+  override val memoryCache: MemoryCache? = null
+
+  override fun enqueue(request: ImageRequest): Disposable {
+    return object : Disposable {
+      override val isDisposed: Boolean
+        get() = true
+      override val job: Deferred<ImageResult>
+        get() = CompletableDeferred()
+
+      override fun dispose() {}
+    }
+  }
+
+  override suspend fun execute(request: ImageRequest): ImageResult {
+    return ErrorResult(null, request, Throwable())
+  }
+
+  override fun newBuilder(): ImageLoader.Builder {
+    error("PreviewImageLoader cannot be rebuilt")
+  }
+
+  override fun shutdown() {}
+}
+
+/**
+ * A fake ImageLoader to be used inside compose @Previews to satisfy the demands of the composables that need it.
+ * Do *not* call from production code.
+ */
+@Composable
+fun rememberPreviewImageLoader(): PreviewImageLoader {
+  return remember { PreviewImageLoader() }
+}

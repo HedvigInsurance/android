@@ -10,6 +10,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.coroutines.flow.first
 import octopus.MemberActionsQuery
@@ -46,9 +47,10 @@ internal class GetMemberActionsUseCaseImpl(
           isConnectPaymentEnabled =
             isConnectPaymentFeatureOn && memberActions?.isConnectPaymentEnabled ?: false,
           isEditCoInsuredEnabled = isCoInsuredFeatureOn && memberActions?.isEditCoInsuredEnabled ?: false,
+          isEditCoOwnersEnabled = isCoInsuredFeatureOn && memberActions?.isEditCoOwnersEnabled ?: false,
           isMovingEnabled = isMovingFeatureOn && memberActions?.isMovingEnabled ?: false,
           isTravelCertificateEnabled = memberActions?.isTravelCertificateEnabled ?: false,
-          sickAbroadAction = memberActions?.sickAbroadAction.toSickAbroadAction(),
+          sickAbroadAction = memberActions?.sickAbroadDeflect.toSickAbroadAction(),
           firstVetAction = memberActions?.firstVetAction?.toVetAction(),
           isTierChangeEnabled = memberActions?.isChangeTierEnabled ?: false,
         )
@@ -61,6 +63,7 @@ internal data class MemberAction(
   val isCancelInsuranceEnabled: Boolean,
   val isConnectPaymentEnabled: Boolean,
   val isEditCoInsuredEnabled: Boolean,
+  val isEditCoOwnersEnabled: Boolean,
   val isMovingEnabled: Boolean,
   val isTravelCertificateEnabled: Boolean,
   val isTierChangeEnabled: Boolean,
@@ -70,7 +73,7 @@ internal data class MemberAction(
 
 internal sealed interface MemberActionWithDetails {
   data class SickAbroadAction(
-    val partners: List<DeflectPartner>?,
+    val deflectData: DeflectData,
   ) : MemberActionWithDetails
 
   data class FirstVetAction(
@@ -101,16 +104,53 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
   )
 }
 
-private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadAction?.toSickAbroadAction():
-  MemberActionWithDetails.SickAbroadAction {
-  val partners = this?.deflectPartners?.map {
-    DeflectPartner(
-      id = it.id,
-      imageUrl = it.imageUrl,
-      phoneNumber = it.phoneNumber,
-      url = it.url,
-      preferredImageHeight = it.preferredImageHeight,
+private fun  MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDeflect?.toSickAbroadAction():
+  MemberActionWithDetails.SickAbroadAction? {
+  if (this==null) return null
+  val partners = if (partners.isNotEmpty()) {
+    DeflectData.DeflectPartnerContainer.ExtendedPartnerContainer(
+      partners = partners.map { partner ->
+        DeflectData.DeflectPartnerContainer.ExtendedPartner(
+          id = partner.id,
+          imageUrl = partner.imageUrl,
+          phoneNumber = partner.phoneNumber,
+          title = partner.title,
+          description = partner.description,
+          info = partner.info,
+          url = partner.url,
+          urlButtonTitle = partner.urlButtonTitle,
+        )
+      },
     )
+  } else if (simplePartners.isNotEmpty()) {
+    DeflectData.DeflectPartnerContainer.SimplePartnerContainer(
+      partners = simplePartners.map { partner ->
+        DeflectData.DeflectPartnerContainer.SimplePartner(
+          url = partner.url,
+          urlButtonTitle = partner.urlButtonTitle,
+        )
+      },
+    )
+  } else {
+    logcat { "DeflectionFragment: both partners and simplePartners came empty" }
+    null
   }
-  return MemberActionWithDetails.SickAbroadAction(partners)
+
+  val deflectData = DeflectData(
+      title = title,
+      infoText = infoText,
+      warningText = warningText,
+      partnersContainer = partners,
+      partnersInfo = partnersInfo?.let {
+        DeflectData.InfoBlock(it.title,it.description)
+      },
+      content = content.let {
+        DeflectData.InfoBlock(it.title,it.description)
+      },
+      faq = faq.map { faqItem ->
+        DeflectData.InfoBlock(faqItem.title,faqItem.description)
+       },
+      buttonText = buttonTitle,
+    )
+  return MemberActionWithDetails.SickAbroadAction(deflectData)
 }

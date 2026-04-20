@@ -1,0 +1,8 @@
+fragment ClaimIntentMutationOutputFragment on ClaimIntentMutationOutput{
+  userError {
+    message
+  }
+  intent {
+    ...ClaimIntentFragment
+  }
+}

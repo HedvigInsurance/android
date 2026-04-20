@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -45,13 +44,24 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
-import hedvig.resources.R
+import com.hedvig.android.feature.change.tier.ui.stepstart.DeflectScreen
+import hedvig.resources.Res
+import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
+import hedvig.resources.TIER_FLOW_PROCESSING
+import hedvig.resources.TIER_FLOW_SELECT_INSURANCE_SUBTITLE
+import hedvig.resources.TIER_FLOW_TITLE
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import hedvig.resources.something_went_wrong
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChooseInsuranceToChangeTierDestination(
   viewModel: ChooseInsuranceViewModel,
   navigateUp: () -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  popBackStack: () -> Unit,
 ) {
   val uiState: ChooseInsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -65,6 +75,8 @@ internal fun ChooseInsuranceToChangeTierDestination(
       viewModel.emit(ChooseInsuranceToCustomizeEvent.ClearNavigationStep)
       navigateToNextStep(params)
     },
+    onNavigateToNewConversation = onNavigateToNewConversation,
+    popBackStack = popBackStack,
   )
 }
 
@@ -76,6 +88,8 @@ private fun ChooseInsuranceScreen(
   fetchTerminationStep: (insurance: CustomisableInsurance) -> Unit,
   selectInsurance: (insuranceId: String) -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  popBackStack: () -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceUiState.NotAllowed -> {
@@ -84,7 +98,7 @@ private fun ChooseInsuranceScreen(
       ) {
         Spacer(Modifier.weight(1f))
         EmptyState(
-          text = stringResource(R.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
+          text = stringResource(Res.string.TERMINATION_NO_TIER_QUOTES_SUBTITLE),
           iconStyle = INFO,
           buttonStyle = NoButton,
           description = null,
@@ -92,7 +106,7 @@ private fun ChooseInsuranceScreen(
         )
         Spacer(Modifier.weight(1f))
         HedvigTextButton(
-          stringResource(R.string.general_close_button),
+          stringResource(Res.string.general_close_button),
           onClick = navigateUp,
           buttonSize = Large,
           modifier = Modifier.fillMaxWidth(),
@@ -129,7 +143,7 @@ private fun ChooseInsuranceScreen(
             content = {
               Icon(
                 imageVector = HedvigIcons.Close,
-                contentDescription = stringResource(R.string.general_close_button),
+                contentDescription = stringResource(Res.string.general_close_button),
               )
             },
           )
@@ -137,7 +151,7 @@ private fun ChooseInsuranceScreen(
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         HedvigText(
-          text = stringResource(R.string.TIER_FLOW_TITLE),
+          text = stringResource(Res.string.TIER_FLOW_TITLE),
           style = HedvigTheme.typography.headlineMedium,
           modifier = Modifier.padding(horizontal = 16.dp),
         )
@@ -147,7 +161,7 @@ private fun ChooseInsuranceScreen(
             lineBreak = LineBreak.Heading,
             color = HedvigTheme.colorScheme.textSecondary,
           ),
-          text = stringResource(R.string.TIER_FLOW_SELECT_INSURANCE_SUBTITLE),
+          text = stringResource(Res.string.TIER_FLOW_SELECT_INSURANCE_SUBTITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
@@ -163,7 +177,7 @@ private fun ChooseInsuranceScreen(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .wrapContentWidth(),
-              text = stringResource(R.string.something_went_wrong),
+              text = stringResource(Res.string.something_went_wrong),
               iconStyle = ERROR,
               description = null,
             )
@@ -186,7 +200,7 @@ private fun ChooseInsuranceScreen(
         )
         Spacer(Modifier.height(16.dp))
         HedvigButton(
-          stringResource(id = R.string.general_continue_button),
+          stringResource(Res.string.general_continue_button),
           enabled = uiState.selectedInsurance != null,
           modifier = Modifier
             .fillMaxWidth()
@@ -201,6 +215,16 @@ private fun ChooseInsuranceScreen(
         Spacer(Modifier.height(16.dp))
       }
     }
+
+    is ChooseInsuranceUiState.Deflect -> {
+      DeflectScreen(
+        uiState.title,
+        uiState.message,
+        closeFlow = popBackStack,
+        onNavigateToNewConversation = onNavigateToNewConversation,
+        navigateUp = navigateUp,
+      )
+    }
   }
 }
 
@@ -208,7 +232,7 @@ private fun ChooseInsuranceScreen(
 private fun LoadingScreen(uiState: ChooseInsuranceUiState.Loading) {
   if (uiState.paramsToNavigateToNextStep == null) {
     HedvigFullScreenCenterAlignedLinearProgress(
-      title = stringResource(R.string.TIER_FLOW_PROCESSING),
+      title = stringResource(Res.string.TIER_FLOW_PROCESSING),
     )
   } else {
     HedvigFullScreenCenterAlignedProgress()
@@ -226,6 +250,8 @@ private fun PreviewChooseInsuranceScreen(
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ChooseInsuranceScreen(
         uiState,
+        {},
+        {},
         {},
         {},
         {},
@@ -283,5 +309,10 @@ private class ChooseInsuranceUiStateProvider :
       ChooseInsuranceUiState.Failure,
       ChooseInsuranceUiState.Loading(),
       ChooseInsuranceUiState.NotAllowed,
+      ChooseInsuranceUiState.Deflect(
+        "How to change back to your previous coverage",
+        "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. " +
+          "Once that’s done, your insurance will be updated automatically.",
+      ),
     ),
   )

@@ -1,0 +1,5 @@
+mutation ClaimIntentSubmitAudio($input: ClaimIntentSubmitAudioInput!) {
+  claimIntentSubmitAudio(input: $input) {
+    ...ClaimIntentMutationOutputFragment
+  }
+}

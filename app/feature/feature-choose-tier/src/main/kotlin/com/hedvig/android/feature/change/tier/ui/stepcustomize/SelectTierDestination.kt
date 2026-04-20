@@ -26,8 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -45,7 +43,7 @@ import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
-import com.hedvig.android.data.contract.android.toPillow
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.DropdownDefaults.DropdownSize.Small
@@ -56,6 +54,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -68,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioGroupStyle
 import com.hedvig.android.design.system.hedvig.RadioOption
@@ -83,7 +83,29 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEve
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
-import hedvig.resources.R
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_COMPARE_BUTTON
+import hedvig.resources.TIER_FLOW_COVERAGE_LABEL
+import hedvig.resources.TIER_FLOW_COVERAGE_PLACEHOLDER
+import hedvig.resources.TIER_FLOW_DEDUCTIBLE_LABEL
+import hedvig.resources.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER
+import hedvig.resources.TIER_FLOW_LOCKED_INFO_DESCRIPTION
+import hedvig.resources.TIER_FLOW_PREVIOUS_PRICE
+import hedvig.resources.TIER_FLOW_PRICE_LABEL
+import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_SUBTITLE
+import hedvig.resources.TIER_FLOW_SELECT_COVERAGE_TITLE
+import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE
+import hedvig.resources.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE
+import hedvig.resources.TIER_FLOW_SUBTITLE
+import hedvig.resources.TIER_FLOW_TITLE
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SelectTierDestination(
@@ -98,14 +120,19 @@ internal fun SelectTierDestination(
     Modifier.fillMaxSize(),
   ) {
     when (val state = uiState) {
-      is Failure -> FailureScreen(
-        reload = {
-          viewModel.emit(SelectCoverageEvent.Reload)
-        },
-        popBackStack = popBackStack,
-      )
+      is Failure -> {
+        FailureScreen(
+          reload = {
+            viewModel.emit(SelectCoverageEvent.Reload)
+          },
+          popBackStack = popBackStack,
+        )
+      }
 
-      Loading -> HedvigFullScreenCenterAlignedProgress()
+      Loading -> {
+        HedvigFullScreenCenterAlignedProgress()
+      }
+
       is Success -> {
         LaunchedEffect(state.uiState.quoteToNavigateFurther) {
           if (state.uiState.quoteToNavigateFurther != null) {
@@ -178,7 +205,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
       )
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
-        stringResource(R.string.general_close_button),
+        stringResource(Res.string.general_close_button),
         onClick = popBackStack,
         buttonSize = Large,
         modifier = Modifier.fillMaxWidth(),
@@ -211,7 +238,7 @@ private fun SelectTierScreen(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )
@@ -219,7 +246,7 @@ private fun SelectTierScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.TIER_FLOW_TITLE),
+      text = stringResource(Res.string.TIER_FLOW_TITLE),
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -229,7 +256,7 @@ private fun SelectTierScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(R.string.TIER_FLOW_SUBTITLE),
+      text = stringResource(Res.string.TIER_FLOW_SUBTITLE),
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -239,7 +266,6 @@ private fun SelectTierScreen(
       data = uiState.contractData,
       onChooseTierClick = onChooseTierClick,
       onChooseDeductibleClick = onChooseDeductibleClick,
-      newDisplayPremium = uiState.chosenQuote?.premium,
       isCurrentChosen = uiState.isCurrentChosen,
       chosenQuote = uiState.chosenQuote,
       isTierChoiceEnabled = uiState.isTierChoiceEnabled,
@@ -257,7 +283,7 @@ private fun SelectTierScreen(
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       buttonSize = Large,
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       enabled = (uiState.chosenQuote != null && !uiState.isCurrentChosen),
       onClick = {
         onContinueClick()
@@ -273,7 +299,7 @@ private fun SelectTierScreen(
         modifier = Modifier
           .fillMaxWidth()
           .padding(horizontal = 16.dp),
-        text = stringResource(R.string.TIER_FLOW_COMPARE_BUTTON),
+        text = stringResource(Res.string.TIER_FLOW_COMPARE_BUTTON),
         onClick = {
           onCompareClick()
         },
@@ -295,7 +321,6 @@ private fun CustomizationCard(
   chosenQuoteInDialog: TierDeductibleQuote?,
   onChooseDeductibleInDialogClick: (quote: TierDeductibleQuote) -> Unit,
   onChooseTierInDialogClick: (tier: Tier) -> Unit,
-  newDisplayPremium: UiMoney?,
   isTierChoiceEnabled: Boolean,
   onChooseDeductibleClick: () -> Unit,
   onSetDeductibleBackToPreviouslyChosen: () -> Unit,
@@ -327,7 +352,7 @@ private fun CustomizationCard(
           add(SimpleDropdownItem(tier.first.tierDisplayName ?: "-"))
         }
       }
-      val hintText = stringResource(R.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
+      val hintText = stringResource(Res.string.TIER_FLOW_COVERAGE_PLACEHOLDER)
       val chosenTierVoiceDescription = if (chosenTierIndex ==
         null
       ) {
@@ -339,7 +364,7 @@ private fun CustomizationCard(
         dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
         isEnabled = isTierChoiceEnabled,
         style = Label(
-          label = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
+          label = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL),
           items = tierSimpleItems,
         ),
         size = Small,
@@ -348,14 +373,14 @@ private fun CustomizationCard(
         onDoAlongWithDismissRequest = onSetTierBackToPreviouslyChosen,
         containerColor = HedvigTheme.colorScheme.surfacePrimary,
         modifier = Modifier.accessibilityForDropdown(
-          labelText = stringResource(R.string.TIER_FLOW_COVERAGE_LABEL),
+          labelText = stringResource(Res.string.TIER_FLOW_COVERAGE_LABEL),
           selectedValue = chosenTierVoiceDescription,
           isEnabled = isTierChoiceEnabled,
         ),
       ) { onDismissRequest ->
         DropdownContent(
-          title = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
-          subTitle = stringResource(R.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
+          title = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_TITLE),
+          subTitle = stringResource(Res.string.TIER_FLOW_SELECT_COVERAGE_SUBTITLE),
           radioGroup = {
             TierCoverageRadioGroup(tiers, chosenTierInDialog, onChooseTierInDialogClick)
           },
@@ -370,7 +395,7 @@ private fun CustomizationCard(
       }
       if (!isTierChoiceEnabled) {
         HedvigText(
-          stringResource(R.string.TIER_FLOW_LOCKED_INFO_DESCRIPTION),
+          stringResource(Res.string.TIER_FLOW_LOCKED_INFO_DESCRIPTION),
           color = HedvigTheme.colorScheme.textSecondary,
           style = HedvigTheme.typography.label,
           modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 4.dp),
@@ -386,7 +411,7 @@ private fun CustomizationCard(
             }
           }
         }
-        val hintText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER)
+        val hintText = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_PLACEHOLDER)
         val chosenDeductibleVoiceDescription = if (chosenQuoteIndex ==
           null
         ) {
@@ -397,7 +422,7 @@ private fun CustomizationCard(
         DropdownWithDialog(
           dialogProperties = DialogProperties(usePlatformDefaultWidth = false),
           style = Label(
-            label = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+            label = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             items = deductibleSimpleItems,
           ),
           isEnabled = quotesForChosenTier.size > 1,
@@ -407,7 +432,7 @@ private fun CustomizationCard(
           onDoAlongWithDismissRequest = onSetDeductibleBackToPreviouslyChosen,
           containerColor = HedvigTheme.colorScheme.surfacePrimary,
           modifier = Modifier.accessibilityForDropdown(
-            labelText = stringResource(R.string.TIER_FLOW_DEDUCTIBLE_LABEL),
+            labelText = stringResource(Res.string.TIER_FLOW_DEDUCTIBLE_LABEL),
             selectedValue = chosenDeductibleVoiceDescription,
             isEnabled = quotesForChosenTier.size > 1,
           ),
@@ -423,28 +448,41 @@ private fun CustomizationCard(
             onCancelButtonClick = {
               onDismissRequest()
             },
-            title = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
-            subTitle = stringResource(R.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
+            title = stringResource(Res.string.TIER_FLOW_SELECT_DEDUCTIBLE_TITLE),
+            subTitle = stringResource(Res.string.TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE),
           )
         }
       }
+      if (chosenQuote != null) {
+        val info = chosenQuote.info
+        if (info != null) {
+          Spacer(modifier = Modifier.height(4.dp))
+          HedvigNotificationCard(
+            message = info,
+            priority = NotificationDefaults.NotificationPriority.Info,
+            style = NotificationDefaults.InfoCardStyle.Default,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+      }
+      Spacer(modifier = Modifier.height(16.dp))
       Spacer(Modifier.height(16.dp))
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           HedvigText(
-            stringResource(R.string.TIER_FLOW_TOTAL),
+            stringResource(Res.string.TIER_FLOW_TOTAL),
             style = HedvigTheme.typography.bodySmall,
           )
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val description = newDisplayPremium?.getPerMonthDescription() ?: ""
+          val description = chosenQuote?.newTotalCost?.monthlyNet?.getPerMonthDescription() ?: ""
           HedvigText(
             text =
-              newDisplayPremium?.let {
+              chosenQuote?.newTotalCost?.monthlyNet?.let { money ->
                 stringResource(
-                  R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                  it,
+                  Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                  money,
                 )
               }
                 ?: "-",
@@ -459,11 +497,11 @@ private fun CustomizationCard(
       if (!isCurrentChosen && data.activeDisplayPremium != null) {
         val voicePerMonth = data.activeDisplayPremium.getPerMonthDescription()
         val voiceDescription = stringResource(
-          R.string.TIER_FLOW_PREVIOUS_PRICE,
+          Res.string.TIER_FLOW_PREVIOUS_PRICE,
           voicePerMonth,
         )
         val perMonth = stringResource(
-          R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
           data.activeDisplayPremium,
         )
         HedvigText(
@@ -473,7 +511,7 @@ private fun CustomizationCard(
               contentDescription = voiceDescription
             },
           textAlign = Companion.End,
-          text = stringResource(R.string.TIER_FLOW_PREVIOUS_PRICE, perMonth),
+          text = stringResource(Res.string.TIER_FLOW_PREVIOUS_PRICE, perMonth),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
         )
@@ -505,7 +543,10 @@ private fun QuoteDeductibleRadioGroup(
     textEndContent = { id ->
       val quote = quotesForChosenTier.first { it.id == id.id }
       HighlightLabel(
-        labelText = stringResource(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, quote.premium),
+        labelText = stringResource(
+          Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          quote.newTotalCost.monthlyNet,
+        ),
         size = HighLightSize.Small,
         color = HighlightColor.Grey(MEDIUM),
         modifier = Modifier.wrapContentSize(Alignment.TopEnd),
@@ -536,7 +577,7 @@ private fun TierCoverageRadioGroup(
     textEndContent = { id ->
       val pair = tiers.first { it.first.tierName == id.id }
       HighlightLabel(
-        labelText = stringResource(R.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
+        labelText = stringResource(Res.string.TIER_FLOW_PRICE_LABEL, pair.second.amount.toInt()),
         size = HighLightSize.Small,
         color = HighlightColor.Grey(MEDIUM),
         modifier = Modifier.wrapContentSize(Alignment.TopEnd),
@@ -589,14 +630,14 @@ private fun DropdownContent(
     radioGroup()
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = stringResource(R.string.general_continue_button),
+      text = stringResource(Res.string.general_continue_button),
       onClick = onContinueButtonClick,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
     )
     Spacer(Modifier.height(8.dp))
     HedvigTextButton(
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       modifier = Modifier.fillMaxWidth(),
       buttonSize = Large,
       onClick = onCancelButtonClick,
@@ -608,7 +649,7 @@ private fun DropdownContent(
 internal fun PillAndBasicInfo(contractGroup: ContractGroup, displayName: String, displaySubtitle: String) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     Image(
-      painter = painterResource(id = contractGroup.toPillow()),
+      painter = painterResource(contractGroup.pillowResource()),
       contentDescription = null,
       modifier = Modifier.size(48.dp),
     )
@@ -641,8 +682,6 @@ private fun CustomizationCardPreview() {
       data = dataForPreview,
       onChooseTierClick = {},
       onChooseDeductibleClick = {},
-      newDisplayPremium = UiMoney(199.0, SEK),
-      isCurrentChosen = false,
       isTierChoiceEnabled = true,
       chosenQuote = quotesForPreview[0],
       quotesForChosenTier = quotesForPreview,
@@ -673,6 +712,7 @@ private fun CustomizationCardPreview() {
       chosenQuoteIndex = null,
       onSetTierBackToPreviouslyChosen = {},
       onSetDeductibleBackToPreviouslyChosen = {},
+      isCurrentChosen = false,
     )
   }
 }
@@ -734,7 +774,6 @@ private fun SelectTierScreenPreview() {
           ) to UiMoney(155.0, SEK),
         ),
         quotesForChosenTier = listOf(quotesForPreview[0]),
-        isCurrentChosen = false,
         isTierChoiceEnabled = true,
         chosenTier = Tier(
           "BAS",
@@ -752,6 +791,7 @@ private fun SelectTierScreenPreview() {
         chosenInDialogQuote = quotesForPreview[0],
         chosenTierIndex = null,
         chosenQuoteIndex = null,
+        isCurrentChosen = false,
       ),
       {},
       {},
@@ -782,7 +822,6 @@ private val quotesForPreview = listOf(
       description = "Endast en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
-    premium = UiMoney(199.0, SEK),
     tier = Tier(
       "BAS",
       tierLevel = 0,
@@ -811,10 +850,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id1",
@@ -824,7 +864,6 @@ private val quotesForPreview = listOf(
       description = "En fast del och en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
-    premium = UiMoney(255.0, SEK),
     tier = Tier(
       "BAS",
       tierLevel = 0,
@@ -853,10 +892,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id2",
@@ -866,7 +906,6 @@ private val quotesForPreview = listOf(
       description = "En fast del och en rörlig del om 25% av skadekostnaden",
     ),
     displayItems = listOf(),
-    premium = UiMoney(355.0, SEK),
     tier = Tier(
       "BAS",
       tierLevel = 0,
@@ -895,10 +934,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id3",
@@ -908,7 +948,6 @@ private val quotesForPreview = listOf(
       description = "Endast en rörlig del om 25% av skadekostnaden.",
     ),
     displayItems = listOf(),
-    premium = UiMoney(230.0, SEK),
     tier = Tier(
       "STANDARD",
       tierLevel = 1,
@@ -937,10 +976,11 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
   TierDeductibleQuote(
     id = "id4",
@@ -950,7 +990,6 @@ private val quotesForPreview = listOf(
       description = "En fast del och en rörlig del om 25% av skadekostnaden",
     ),
     displayItems = listOf(),
-    premium = UiMoney(655.0, SEK),
     tier = Tier(
       "STANDARD",
       tierLevel = 1,
@@ -979,9 +1018,10 @@ private val quotesForPreview = listOf(
       monthlyNet = UiMoney(304.0, SEK),
     ),
     costBreakdown = listOf(
-      "Home Insurance Max" to "300 kr/mo",
-      "Travel Plus" to "80 kr/mo",
-      "Bundle discount 20%" to "76 kr/mo",
+      CostBreakdownEntry("Home Insurance Max", "300 kr/mo", false),
+      CostBreakdownEntry("Travel Plus", "80 kr/mo", true),
+      CostBreakdownEntry("Bundle discount 20%", "76 kr/mo", false),
     ),
+    info = "Some important info",
   ),
 )

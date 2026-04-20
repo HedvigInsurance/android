@@ -4,16 +4,21 @@ on:
   push:
     branches:
       - develop
+      - makerdays/chat-claim
+    paths:
+      - 'app/authlib/**'
+      - 'app/feature/feature-claim-chat/**'
+      - 'app/shareddi/**'
   workflow_dispatch:
 
 concurrency:
   group: ref-${{ github.workflow }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   umbrella_release:
     name: Build and release new umbrella version
-    runs-on: macos-14
+    runs-on: macos-15-xlarge
     steps:
       - uses: actions/checkout@v5
       - name: Setup CI

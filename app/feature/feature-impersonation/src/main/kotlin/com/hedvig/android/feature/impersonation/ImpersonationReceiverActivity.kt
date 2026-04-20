@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
@@ -48,6 +49,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
   val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
     loadKoinModules(module)
 
@@ -92,7 +94,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
   companion object {
     val module = module {
       viewModel { params ->
-        com.hedvig.android.feature.impersonation.ImpersonationReceiverViewModel(
+        ImpersonationReceiverViewModel(
           params.get(),
           get(),
           get(),
@@ -126,7 +128,10 @@ class ImpersonationReceiverViewModel(
   init {
     viewModelScope.launch {
       when (val result = authRepository.exchange(AuthorizationCodeGrant(exchangeToken))) {
-        is AuthTokenResult.Error -> _state.update { Error(result.toString()) }
+        is AuthTokenResult.Error -> {
+          _state.update { Error(result.toString()) }
+        }
+
         is AuthTokenResult.Success -> {
           authTokenService.loginWithTokens(result.accessToken, result.refreshToken)
           _state.update { Success }

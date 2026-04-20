@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -33,14 +33,21 @@ import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsu
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
-import hedvig.resources.R
+import hedvig.resources.EDIT_COOWNER_SUBTITLE
+import hedvig.resources.EDIT_COOWNER_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_COINSURED
+import hedvig.resources.Res
+import hedvig.resources.general_close_button
+import hedvig.resources.general_continue_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditCoInsuredTriageDestination(
   viewModel: EditCoInsuredTriageViewModel,
   navigateUp: () -> Unit,
-  navigateToAddMissingInfo: (String) -> Unit,
-  navigateToAddOrRemoveCoInsured: (String) -> Unit,
+  navigateToAddMissingInfo: (InsuranceForEditOrAddCoInsured) -> Unit,
+  navigateToAddOrRemoveCoInsured: (InsuranceForEditOrAddCoInsured) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   EditCoInsuredTriageScreen(
@@ -68,34 +75,41 @@ private fun EditCoInsuredTriageScreen(
   uiState: EditCoInsuredTriageUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
-  navigateToAddMissingInfo: (String) -> Unit,
-  navigateToAddOrRemoveCoInsured: (String) -> Unit,
+  navigateToAddMissingInfo: (InsuranceForEditOrAddCoInsured) -> Unit,
+  navigateToAddOrRemoveCoInsured: (InsuranceForEditOrAddCoInsured) -> Unit,
   submitSelectedInsurance: () -> Unit,
   selectInsurance: (id: String) -> Unit,
   clearNavigation: () -> Unit,
 ) {
   when (uiState) {
-    Failure -> HedvigScaffold(
-      navigateUp = navigateUp,
-    ) {
-      HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+    Failure -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+      }
     }
 
-    Loading -> HedvigFullScreenCenterAlignedProgress()
+    Loading -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
     is Success -> {
-      LaunchedEffect(uiState.idToNavigateToAddOrRemoveCoInsured) {
-        if (uiState.idToNavigateToAddOrRemoveCoInsured != null) {
+      LaunchedEffect(uiState.insuranceToNavigateToAddOrRemoveCoInsured) {
+        if (uiState.insuranceToNavigateToAddOrRemoveCoInsured != null) {
           clearNavigation()
-          navigateToAddOrRemoveCoInsured(uiState.idToNavigateToAddOrRemoveCoInsured)
+          navigateToAddOrRemoveCoInsured(uiState.insuranceToNavigateToAddOrRemoveCoInsured)
         }
       }
-      LaunchedEffect(uiState.idToNavigateToAddMissingInfo) {
-        if (uiState.idToNavigateToAddMissingInfo != null) {
+      LaunchedEffect(uiState.insuranceToNavigateToAddMissingInfo) {
+        if (uiState.insuranceToNavigateToAddMissingInfo != null) {
           clearNavigation()
-          navigateToAddMissingInfo(uiState.idToNavigateToAddMissingInfo)
+          navigateToAddMissingInfo(uiState.insuranceToNavigateToAddMissingInfo)
         }
       }
-      if (uiState.idToNavigateToAddMissingInfo == null && uiState.idToNavigateToAddOrRemoveCoInsured == null) {
+      if (uiState.insuranceToNavigateToAddMissingInfo == null &&
+        uiState.insuranceToNavigateToAddOrRemoveCoInsured == null
+      ) {
         SuccessScreen(
           uiState = uiState,
           navigateUp = navigateUp,
@@ -126,7 +140,7 @@ private fun SuccessScreen(
         content = {
           Icon(
             imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.general_close_button),
+            contentDescription = stringResource(Res.string.general_close_button),
           )
         },
       )
@@ -134,7 +148,10 @@ private fun SuccessScreen(
   ) {
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = stringResource(R.string.HC_QUICK_ACTIONS_EDIT_COINSURED),
+      text = when (uiState.type) {
+        CoInsuredFlowType.CoInsured -> stringResource(Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.EDIT_COOWNER_TITLE)
+      },
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -144,7 +161,10 @@ private fun SuccessScreen(
         lineBreak = LineBreak.Heading,
         color = HedvigTheme.colorScheme.textSecondary,
       ),
-      text = stringResource(R.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE),
+      text = when (uiState.type) {
+        CoInsuredFlowType.CoInsured -> stringResource(Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.EDIT_COOWNER_SUBTITLE)
+      },
       modifier = Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f))
@@ -165,7 +185,7 @@ private fun SuccessScreen(
     )
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      stringResource(id = R.string.general_continue_button),
+      stringResource(Res.string.general_continue_button),
       enabled = uiState.selected != null,
       modifier = Modifier
         .fillMaxWidth()
@@ -189,15 +209,18 @@ private fun PreviewEditCoInsuredTriageScreen() {
               displayName = "Home insurance",
               exposureName = "Lulanden 85H, 71220",
               destination = EditCoInsuredDestination.MISSING_INFO,
+              type = CoInsuredFlowType.CoInsured,
             ),
             InsuranceForEditOrAddCoInsured(
               id = "2",
               displayName = "Home insurance",
               exposureName = "Drottninggatan 1, 11111",
               destination = EditCoInsuredDestination.MISSING_INFO,
+              type = CoInsuredFlowType.CoInsured,
             ),
           ),
           selected = null,
+          type = CoInsuredFlowType.CoInsured,
           null,
           null,
         ),

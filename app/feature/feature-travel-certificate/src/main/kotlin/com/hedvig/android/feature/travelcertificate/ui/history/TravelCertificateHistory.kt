@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -26,7 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import arrow.core.nonEmptyListOf
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -47,22 +47,32 @@ import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
+import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.ui.TravelCertificateInfoBottomSheet
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.FailureDownloadingHistory
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.Loading
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryUiState.SuccessDownloadingHistory
-import hedvig.resources.R
+import hedvig.resources.ADDON_FLOW_SEE_PRICE_BUTTON
+import hedvig.resources.PROFILE_ROW_TRAVEL_CERTIFICATE
+import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
+import hedvig.resources.Res
+import hedvig.resources.TOAST_READ_MORE
+import hedvig.resources.general_error
+import hedvig.resources.travel_certificate_active
+import hedvig.resources.travel_certificate_downloading_error
+import hedvig.resources.travel_certificate_empty_list_message
+import hedvig.resources.travel_certificate_expired
+import hedvig.resources.travel_certificate_get_travel_certificate_button
 import java.io.File
 import kotlin.String
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TravelCertificateHistoryDestination(
@@ -118,7 +128,7 @@ private fun TravelCertificateHistoryScreen(
       HedvigScaffold(
         navigateUp = navigateUp,
         modifier = Modifier.clearFocusOnTap(),
-        topAppBarText = stringResource(id = R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+        topAppBarText = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
         topAppBarActions = {
           IconButton(
             onClick = { explanationSheetState.show() },
@@ -126,7 +136,7 @@ private fun TravelCertificateHistoryScreen(
           ) {
             Icon(
               imageVector = HedvigIcons.InfoOutline,
-              contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+              contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
               modifier = Modifier.size(24.dp),
             )
           }
@@ -143,7 +153,7 @@ private fun TravelCertificateHistoryScreen(
     is SuccessDownloadingHistory -> {
       if (uiState.travelCertificateUri != null) {
         LaunchedEffect(uiState.travelCertificateUri) {
-          onShareTravelCertificate(uiState.travelCertificateUri)
+          onShareTravelCertificate(File(uiState.travelCertificateUri.path))
         }
       }
       if (uiState.idsToNavigateToAddonPurchase != null) {
@@ -165,7 +175,7 @@ private fun TravelCertificateHistoryScreen(
           showGenerationButton = uiState.showGenerateButton,
           onGoToChooseContract = onGoToChooseContract,
           hasChooseOption = uiState.hasChooseOption,
-          travelAddonBannerInfo = uiState.travelAddonBannerInfo,
+          addonBannerInfo = uiState.addonBannerInfo,
           launchAddonPurchaseFlow = launchAddonPurchaseFlow,
         )
       }
@@ -185,13 +195,13 @@ private fun TravelCertificateSuccessScreen(
   onDismissDownloadCertificateError: () -> Unit,
   showGenerationButton: Boolean,
   hasChooseOption: Boolean,
-  travelAddonBannerInfo: TravelAddonBannerInfo?,
+  addonBannerInfo: AddonBannerInfo?,
   launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
     modifier = Modifier.clearFocusOnTap(),
-    topAppBarText = stringResource(id = R.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
+    topAppBarText = stringResource(Res.string.PROFILE_ROW_TRAVEL_CERTIFICATE),
     topAppBarActions = {
       IconButton(
         onClick = { onIconClick() },
@@ -199,7 +209,7 @@ private fun TravelCertificateSuccessScreen(
       ) {
         Icon(
           imageVector = HedvigIcons.InfoOutline,
-          contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+          contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
           modifier = Modifier.size(24.dp),
         )
       }
@@ -223,9 +233,9 @@ private fun TravelCertificateSuccessScreen(
           )
         }
         Spacer(modifier = Modifier.weight(1f))
-        if (travelAddonBannerInfo != null) {
+        if (addonBannerInfo != null) {
           TravelAddonBanner(
-            travelAddonBannerInfo = travelAddonBannerInfo,
+            addonBannerInfo = addonBannerInfo,
             launchAddonPurchaseFlow = launchAddonPurchaseFlow,
             modifier = Modifier
               .fillMaxWidth()
@@ -236,7 +246,7 @@ private fun TravelCertificateSuccessScreen(
         if (showGenerationButton) {
           Spacer(Modifier.height(8.dp))
           HedvigButton(
-            text = stringResource(R.string.travel_certificate_get_travel_certificate_button),
+            text = stringResource(Res.string.travel_certificate_get_travel_certificate_button),
             onClick = dropUnlessResumed {
               if (hasChooseOption) onGoToChooseContract() else onStartGenerateTravelCertificateFlow()
             },
@@ -253,7 +263,7 @@ private fun TravelCertificateSuccessScreen(
         Modifier.fillMaxWidth(),
       ) {
         HedvigTooltip(
-          message = stringResource(R.string.TOAST_READ_MORE),
+          message = stringResource(Res.string.TOAST_READ_MORE),
           showTooltip = true,
           beakDirection = TopEnd,
           tooltipShown = {},
@@ -268,18 +278,18 @@ private fun TravelCertificateSuccessScreen(
 
 @Composable
 private fun TravelAddonBanner(
-  travelAddonBannerInfo: TravelAddonBannerInfo,
+  addonBannerInfo: AddonBannerInfo,
   launchAddonPurchaseFlow: (ids: List<String>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   FeatureAddonBanner(
     modifier = modifier,
-    title = travelAddonBannerInfo.title,
-    description = travelAddonBannerInfo.description,
-    buttonText = stringResource(R.string.ADDON_FLOW_SEE_PRICE_BUTTON),
-    labels = travelAddonBannerInfo.labels,
+    title = addonBannerInfo.title,
+    description = addonBannerInfo.description,
+    buttonText = stringResource(Res.string.ADDON_FLOW_SEE_PRICE_BUTTON),
+    labels = addonBannerInfo.labels,
     onButtonClick = {
-      launchAddonPurchaseFlow(travelAddonBannerInfo.eligibleInsurancesIds)
+      launchAddonPurchaseFlow(addonBannerInfo.eligibleInsurancesIds)
     },
   )
 }
@@ -292,7 +302,7 @@ private fun EmptyTravelCertificatesScreen(modifier: Modifier = Modifier) {
     verticalArrangement = Arrangement.Center,
   ) {
     EmptyState(
-      text = stringResource(R.string.travel_certificate_empty_list_message),
+      text = stringResource(Res.string.travel_certificate_empty_list_message),
       description = null,
       iconStyle = INFO,
     )
@@ -308,8 +318,8 @@ private fun TravelCertificatesList(
 ) {
   if (showErrorDialog) {
     ErrorDialog(
-      title = stringResource(id = R.string.general_error),
-      message = stringResource(id = R.string.travel_certificate_downloading_error),
+      title = stringResource(Res.string.general_error),
+      message = stringResource(Res.string.travel_certificate_downloading_error),
       onDismiss = {
         onDismissDownloadCertificateError()
       },
@@ -329,16 +339,16 @@ private fun TravelCertificatesList(
       val isExpired = certificate.isExpiredNow
       val color = if (isExpired) HedvigTheme.colorScheme.signalRedElement else Color.Unspecified
       val endText = if (isExpired) {
-        stringResource(id = R.string.travel_certificate_expired)
+        stringResource(Res.string.travel_certificate_expired)
       } else {
-        stringResource(id = R.string.travel_certificate_active)
+        stringResource(Res.string.travel_certificate_active)
       }
 
       HorizontalItemsWithMaximumSpaceTaken(
         spaceBetween = 8.dp,
         startSlot = {
           HedvigText(
-            text = dateTimeFormatter.format(certificate.startDate.toJavaLocalDate()),
+            text = dateTimeFormatter.format(certificate.startDate),
             color = color,
           )
         },
@@ -395,11 +405,12 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = TravelAddonBannerInfo(
+        addonBannerInfo = AddonBannerInfo(
           title = "Travel Plus",
           description = "Extended travel insurance with extra coverage for your travels",
           labels = listOf("Popular"),
           eligibleInsurancesIds = nonEmptyListOf("id"),
+          flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
         ),
       ),
       SuccessDownloadingHistory(
@@ -438,7 +449,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       SuccessDownloadingHistory(
         listOf(
@@ -476,7 +487,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       SuccessDownloadingHistory(
         listOf(
@@ -504,7 +515,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       SuccessDownloadingHistory(
         listOf(
@@ -532,7 +543,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         false,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
       Loading,
       FailureDownloadingHistory,
@@ -572,7 +583,7 @@ private class TravelCertificateHistoryUiStatePreviewProvider :
         null,
         true,
         false,
-        travelAddonBannerInfo = null,
+        addonBannerInfo = null,
       ),
     ),
   )

@@ -28,8 +28,9 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.ANDROID_REPO_PAT }}
+          token: ${{ secrets.ANDROID_REPO_BOT_PAT }}
           commit-message: "Download Strings"
-          branch: "maintenance/download-strings"
+          branch: "chore/download-strings"
           title: "Maintenance: Download Strings"
+          author: "hedvig-ops-bot <infra@hedvig.com>"
           body: ""

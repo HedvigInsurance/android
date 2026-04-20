@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -17,6 +18,7 @@ import timber.log.Timber
 class DesignShowcaseActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge(navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT))
+    ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
     Timber.plant(Timber.DebugTree())
     AndroidLogcatLogger.install()

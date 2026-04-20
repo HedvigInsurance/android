@@ -20,11 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -44,9 +44,16 @@ import com.hedvig.android.feature.editcoinsured.data.Member
 import com.hedvig.android.feature.editcoinsured.data.MonthlyCost
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.InfoFromSsn
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredState.Loaded.ManualInfo
-import hedvig.resources.R
+import hedvig.resources.COINSURED_EDIT_TITLE
+import hedvig.resources.CONTRACT_ADD_COINSURED_REVIEW_INFO
+import hedvig.resources.CONTRACT_ADD_COOWNER_REVIEW_INFO
+import hedvig.resources.GENERAL_SAVE_CHANGES_BUTTON
+import hedvig.resources.Res
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_error
 import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditCoInsuredAddMissingInfoDestination(
@@ -121,7 +128,7 @@ private fun EditCoInsuredScreen(
 ) {
   Column(Modifier.fillMaxSize()) {
     TopAppBar(
-      title = stringResource(id = R.string.COINSURED_EDIT_TITLE),
+      title = stringResource(Res.string.COINSURED_EDIT_TITLE),
       actionType = TopAppBarActionType.BACK,
       onActionClick = navigateUp,
     )
@@ -129,7 +136,7 @@ private fun EditCoInsuredScreen(
     when (uiState) {
       is EditCoInsuredState.Error -> {
         ErrorDialog(
-          title = stringResource(id = R.string.general_error),
+          title = stringResource(Res.string.general_error),
           message = uiState.message,
           onDismiss = onDismissError,
         )
@@ -150,6 +157,7 @@ private fun EditCoInsuredScreen(
         ) {
           AddCoInsuredBottomSheetContent(
             bottomSheetState = uiState.addBottomSheetContentState,
+            type = uiState.type,
             onContinue = onBottomSheetContinue,
             onDismiss = {
               hedvigBottomSheetState.dismiss()
@@ -177,6 +185,7 @@ private fun EditCoInsuredScreen(
         ) {
           CoInsuredList(
             uiState = uiState.listState,
+            type = uiState.type,
             onRemove = {},
             onEdit = { insured ->
               hedvigBottomSheetState.show(uiState.addBottomSheetContentState)
@@ -186,11 +195,12 @@ private fun EditCoInsuredScreen(
           )
           Spacer(Modifier.height(8.dp))
 
-          if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
+          if (uiState.listState.anyUpdatedCoInsuredHasMissingInfo() && uiState.listState.hasMadeChanges()) {
             HedvigNotificationCard(
-              message = stringResource(
-                id = R.string.CONTRACT_ADD_COINSURED_REVIEW_INFO,
-              ),
+              message = when (uiState.type) {
+                CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_ADD_COINSURED_REVIEW_INFO)
+                CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_ADD_COOWNER_REVIEW_INFO)
+              },
               priority = NotificationDefaults.NotificationPriority.Attention,
               modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -202,7 +212,7 @@ private fun EditCoInsuredScreen(
           if (uiState.listState.priceInfo != null && uiState.listState.hasMadeChanges()) {
             Spacer(Modifier.height(8.dp))
             HedvigButton(
-              text = stringResource(id = R.string.GENERAL_SAVE_CHANGES_BUTTON),
+              text = stringResource(Res.string.GENERAL_SAVE_CHANGES_BUTTON),
               onClick = onCommitChanges,
               enabled = true,
               isLoading = uiState.listState.isCommittingUpdate,
@@ -214,7 +224,7 @@ private fun EditCoInsuredScreen(
           Spacer(Modifier.height(8.dp))
           HedvigTextButton(
             onClick = navigateUp,
-            text = stringResource(R.string.general_cancel_button),
+            text = stringResource(Res.string.general_cancel_button),
             modifier = Modifier
               .padding(horizontal = 16.dp)
               .fillMaxWidth(),
@@ -224,7 +234,9 @@ private fun EditCoInsuredScreen(
         }
       }
 
-      EditCoInsuredState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()
+      EditCoInsuredState.Loading -> {
+        HedvigFullScreenCenterAlignedProgressDebounced()
+      }
     }
   }
 }
@@ -331,6 +343,7 @@ private fun EditCoInsuredScreenEditablePreview() {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             originalCoInsured = listOf(
               CoInsured(
@@ -433,6 +446,7 @@ private fun EditCoInsuredScreenNonEditablePreview() {
       EditCoInsuredScreen(
         navigateUp = { },
         uiState = EditCoInsuredState.Loaded(
+          type = CoInsuredFlowType.CoInsured,
           listState = EditCoInsuredState.Loaded.CoInsuredListState(
             originalCoInsured = listOf(
               CoInsured(

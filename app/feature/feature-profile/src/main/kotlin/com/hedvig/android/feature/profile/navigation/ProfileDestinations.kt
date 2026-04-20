@@ -23,13 +23,14 @@ internal sealed interface ProfileDestinations {
   data object Certificates : ProfileDestinations, Destination
 
   @Serializable
-  data object AboutApp : ProfileDestinations, Destination
+  data object Information : ProfileDestinations, Destination
 
   @Serializable
   data object Licenses : ProfileDestinations, Destination
 
   @Serializable
   data object SettingsGraph : ProfileDestinations, Destination
+
 }
 
 internal sealed interface SettingsDestinations {
@@ -40,3 +41,9 @@ internal sealed interface SettingsDestinations {
 val profileBottomNavPermittedDestinations: List<KClass<out Destination>> = listOf(
   ProfileDestinations.Eurobonus::class,
 )
+
+/*
+* Not saving navigation state when explicitly logging out from Profile
+*/
+val destinationToExcludeFromSavingState: KClass<out Destination> = ProfileDestination.Profile::class
+

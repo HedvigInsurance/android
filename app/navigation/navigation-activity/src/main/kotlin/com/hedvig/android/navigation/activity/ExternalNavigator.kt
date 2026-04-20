@@ -5,5 +5,7 @@ interface ExternalNavigator {
 
   fun tryOpenPlayStore()
 
+  fun tryToDialPhone(number: String)
+
   fun openEmailApp()
 }

@@ -34,6 +34,7 @@ import com.hedvig.android.feature.insurances.navigation.insurancesCrossSellBotto
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
+import com.hedvig.android.feature.profile.navigation.destinationToExcludeFromSavingState
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.featureflags.FeatureManager
@@ -47,11 +48,9 @@ import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.theme.Theme
 import kotlin.reflect.KClass
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
@@ -109,7 +108,10 @@ internal class HedvigAppState(
     get() {
       if (!shouldShowNavBars) return NavigationSuiteType.None
       return when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
+        WindowWidthSizeClass.Compact -> {
+          NavigationSuiteType.NavigationBar
+        }
+
         else -> {
           when (windowSizeClass.heightSizeClass) {
             WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
@@ -126,7 +128,7 @@ internal class HedvigAppState(
     .isFeatureEnabled(Feature.UPDATE_NECESSARY)
     .stateIn(
       coroutineScope,
-      SharingStarted.WhileSubscribed(5.seconds),
+      SharingStarted.WhileSubscribed(5_000),
       false,
     )
 
@@ -195,6 +197,7 @@ internal class HedvigAppState(
    */
   fun navigateToLoggedIn() {
     navController.navigate(RootGraph) {
+      restoreState = true
       typedPopUpTo<LoginDestination> {
         inclusive = true
       }
@@ -202,16 +205,20 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedOut() {
+
+    val isLoggingOutFromProfile = navController.currentDestination
+      ?.typedHasRoute(destinationToExcludeFromSavingState) ?: false
+
     for (entry in TopLevelGraph.entries) {
       navController.typedClearBackStack(entry.destination)
     }
     navController.navigate(LoginDestination) {
       typedPopUpTo<RootGraph> {
         inclusive = true
+        saveState = !isLoggingOutFromProfile
       }
     }
   }
-
   val darkTheme: Boolean
     @Composable
     get() {
@@ -244,7 +251,13 @@ private fun RegisterOnDestinationChangedListenerSideEffect(
   coroutineScope: CoroutineScope,
 ) {
   DisposableEffect(navController, coroutineScope) {
-    val listener = NavController.OnDestinationChangedListener { _, destination, bundle ->
+    val listener = NavController.OnDestinationChangedListener { navController, destination, bundle ->
+      // Uncomment to debug the backstack changing in develop builds
+//      logcat {
+//        @android.annotation.SuppressLint("RestrictedApi")
+//        val backstack = navController.currentBackStack.value.map { it.destination.route }.joinToString()
+//        "Backstack: $backstack"
+//      }
       logcat { "Navigated to route:${destination.route} | bundle:$bundle" }
       CurrentDestinationInMemoryStorage.currentDestination = destination
       val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener

@@ -10,11 +10,10 @@ import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
-import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.data.changetier.data.IntentOutput
+import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
+import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.step.survey.SurveyNavigationStep.NavigateToSubOptions
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearEmptyQuotesDialog
@@ -28,27 +27,30 @@ import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurv
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.TryToUpgradeCoverage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class TerminationSurveyViewModel(
   options: List<TerminationSurveyOption>,
-  terminateInsuranceRepository: TerminateInsuranceRepository,
+  action: TerminationAction,
   changeTierRepository: ChangeTierRepository,
+  contractId: String,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
     initialState = TerminationSurveyState(options),
     presenter = TerminationSurveyPresenter(
       options,
-      terminateInsuranceRepository,
+      action,
       changeTierRepository,
+      contractId,
     ),
   )
 
 internal class TerminationSurveyPresenter(
   private val options: List<TerminationSurveyOption>,
-  private val terminateInsuranceRepository: TerminateInsuranceRepository,
+  private val action: TerminationAction,
   private val changeTierRepository: ChangeTierRepository,
+  private val contractId: String,
 ) : MoleculePresenter<TerminationSurveyEvent, TerminationSurveyState> {
   @Composable
   override fun MoleculePresenterScope<TerminationSurveyEvent>.present(
@@ -92,12 +94,24 @@ internal class TerminationSurveyPresenter(
           currentState = currentState.copy(nextNavigationStep = null, intentAndIdToRedirectToChangeTierFlow = null)
         }
 
-        is ShowFullScreenEditText -> showFullScreenTextField = true
-        CloseFullScreenEditText -> showFullScreenTextField = false
-        TryToDowngradePrice -> loadBetterQuotesSource = TERMINATION_BETTER_PRICE
-        TryToUpgradeCoverage -> loadBetterQuotesSource = TERMINATION_BETTER_COVERAGE
+        is ShowFullScreenEditText -> {
+          showFullScreenTextField = true
+        }
+
+        CloseFullScreenEditText -> {
+          showFullScreenTextField = false
+        }
+
+        TryToDowngradePrice -> {
+          loadBetterQuotesSource = TERMINATION_BETTER_PRICE
+        }
+
+        TryToUpgradeCoverage -> {
+          loadBetterQuotesSource = TERMINATION_BETTER_COVERAGE
+        }
+
         ClearEmptyQuotesDialog -> {
-          currentState = currentState.copy(showEmptyQuotesDialog = false)
+          currentState = currentState.copy(showEmptyQuotesDialog = null)
         }
       }
     }
@@ -105,9 +119,8 @@ internal class TerminationSurveyPresenter(
     LaunchedEffect(loadBetterQuotesSource) {
       val source = loadBetterQuotesSource ?: return@LaunchedEffect
       currentState = currentState.copy(actionButtonLoading = true, errorWhileLoadingNextStep = false)
-      val insuranceId = terminateInsuranceRepository.getContractId()
       val result =
-        changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = insuranceId, source = source)
+        changeTierRepository.startChangeTierIntentAndGetQuotesId(insuranceId = contractId, source = source)
       result.fold(
         ifLeft = { errorMessage ->
           logcat(LogPriority.ERROR) {
@@ -120,28 +133,52 @@ internal class TerminationSurveyPresenter(
           loadBetterQuotesSource = null
         },
         ifRight = { changeTierIntent ->
-          if (changeTierIntent.quotes.isEmpty()) {
+          val deflect = changeTierIntent.deflectOutput
+          if (deflect != null) {
             Snapshot.withMutableSnapshot {
               val optionsToDisable = options.filter { option ->
-                option.suggestion is SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier ||
-                  option.suggestion is SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
+                option.suggestion?.type == SuggestionType.DOWNGRADE_PRICE ||
+                  option.suggestion?.type == SuggestionType.UPGRADE_COVERAGE
               }
               disabledOptionsIdsDueToEmptyResultingQuotes = optionsToDisable.map { it.id }
               currentState = currentState.copy(
                 actionButtonLoading = false,
                 errorWhileLoadingNextStep = false,
-                showEmptyQuotesDialog = true,
+                showEmptyQuotesDialog = DeflectType.Deflect(
+                  deflect.title,
+                  deflect.message,
+                ),
                 selectedOptionId = null,
               )
               loadBetterQuotesSource = null
+              return@LaunchedEffect
             }
-          } else {
-            currentState = currentState.copy(
-              errorWhileLoadingNextStep = false,
-              actionButtonLoading = false,
-              intentAndIdToRedirectToChangeTierFlow = insuranceId to changeTierIntent,
-            )
-            loadBetterQuotesSource = null
+          }
+          val intent = changeTierIntent.intentOutput
+          if (intent != null) {
+            if (intent.quotes.isEmpty()) {
+              Snapshot.withMutableSnapshot {
+                val optionsToDisable = options.filter { option ->
+                  option.suggestion?.type == SuggestionType.DOWNGRADE_PRICE ||
+                    option.suggestion?.type == SuggestionType.UPGRADE_COVERAGE
+                }
+                disabledOptionsIdsDueToEmptyResultingQuotes = optionsToDisable.map { it.id }
+                currentState = currentState.copy(
+                  actionButtonLoading = false,
+                  errorWhileLoadingNextStep = false,
+                  showEmptyQuotesDialog = DeflectType.EmptyQuotes,
+                  selectedOptionId = null,
+                )
+                loadBetterQuotesSource = null
+              }
+            } else {
+              currentState = currentState.copy(
+                errorWhileLoadingNextStep = false,
+                actionButtonLoading = false,
+                intentAndIdToRedirectToChangeTierFlow = contractId to intent,
+              )
+              loadBetterQuotesSource = null
+            }
           }
         },
       )
@@ -150,30 +187,14 @@ internal class TerminationSurveyPresenter(
     if (loadNextStep) {
       LaunchedEffect(Unit) {
         val reasonToSubmit = currentState.selectedOption ?: return@LaunchedEffect
-        currentState = currentState.copy(navigationStepLoading = true)
-        currentState = terminateInsuranceRepository
-          .submitReasonForCancelling(reasonToSubmit, feedbackText)
-          .fold(
-            ifLeft = {
-              logcat(LogPriority.WARN) { "Received error on submitting reason for termination" }
-              loadNextStep = false
-              currentState.copy(
-                navigationStepLoading = false,
-                errorWhileLoadingNextStep = true,
-              )
-            },
-            ifRight = { step ->
-              logcat(priority = LogPriority.INFO) {
-                "Successfully submitted reason for termination: $reasonToSubmit and received next step: $step"
-              }
-              loadNextStep = false
-              currentState.copy(
-                navigationStepLoading = false,
-                errorWhileLoadingNextStep = false,
-                nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(step),
-              )
-            },
-          )
+        loadNextStep = false
+        currentState = currentState.copy(
+          nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(
+            selectedOption = reasonToSubmit,
+            feedbackText = feedbackText,
+            action = action,
+          ),
+        )
       }
     }
 
@@ -219,13 +240,18 @@ internal data class TerminationSurveyState(
   val nextNavigationStep: SurveyNavigationStep?,
   val navigationStepLoading: Boolean,
   val errorWhileLoadingNextStep: Boolean,
-  val showEmptyQuotesDialog: Boolean,
-  val intentAndIdToRedirectToChangeTierFlow: Pair<String, ChangeTierDeductibleIntent>?,
+  val showEmptyQuotesDialog: DeflectType? = null,
+  val intentAndIdToRedirectToChangeTierFlow: Pair<String, IntentOutput>?,
   val actionButtonLoading: Boolean,
 ) {
   val selectedOption: TerminationSurveyOption? = reasons.firstOrNull { it.id == selectedOptionId }
   val continueAllowed: Boolean = selectedOption != null &&
-    (selectedOption.suggestion == null || selectedOption.suggestion !is SurveyOptionSuggestion.Known.Action)
+    selectedOption.suggestion?.type !in setOf(
+      SuggestionType.UPDATE_ADDRESS,
+      SuggestionType.UPGRADE_COVERAGE,
+      SuggestionType.DOWNGRADE_PRICE,
+      SuggestionType.REDIRECT,
+    )
 
   constructor(reasons: List<TerminationSurveyOption>) : this(
     reasons = reasons,
@@ -235,14 +261,27 @@ internal data class TerminationSurveyState(
     nextNavigationStep = null,
     navigationStepLoading = false,
     errorWhileLoadingNextStep = false,
-    showEmptyQuotesDialog = false,
+    showEmptyQuotesDialog = null,
     intentAndIdToRedirectToChangeTierFlow = null,
     actionButtonLoading = false,
   )
 }
 
+internal sealed interface DeflectType {
+  data object EmptyQuotes : DeflectType
+
+  data class Deflect(
+    val title: String,
+    val message: String,
+  ) : DeflectType
+}
+
 internal sealed interface SurveyNavigationStep {
-  data class NavigateToNextTerminationStep(val step: TerminateInsuranceStep) : SurveyNavigationStep
+  data class NavigateToNextTerminationStep(
+    val selectedOption: TerminationSurveyOption,
+    val feedbackText: String?,
+    val action: TerminationAction,
+  ) : SurveyNavigationStep
 
   data object NavigateToSubOptions : SurveyNavigationStep
 }

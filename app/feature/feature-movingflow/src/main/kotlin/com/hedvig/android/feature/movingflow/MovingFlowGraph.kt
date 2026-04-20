@@ -32,7 +32,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Serializable
@@ -123,8 +123,8 @@ fun NavGraphBuilder.movingFlowGraph(
         },
       )
     }
-    navdestination<MovingFlowDestinations.EnterNewAddress> {
-      val moveIntentId = it.toRoute<MovingFlowDestinations.EnterNewAddress>().moveIntentId
+    navdestination<EnterNewAddress> {
+      val moveIntentId = it.toRoute<EnterNewAddress>().moveIntentId
       EnterNewAddressDestination(
         viewModel = koinViewModel<EnterNewAddressViewModel>(),
         navigateUp = navController::navigateUp,

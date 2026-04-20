@@ -26,9 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "13.1.18"
-
-    vectorDrawables.useSupportLibrary = true
+    versionName = "14.1.3"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -60,7 +58,7 @@ android {
       isShrinkResources = true
       setProguardFiles(
         listOf(
-          getDefaultProguardFile("proguard-android.txt"),
+          getDefaultProguardFile("proguard-android-optimize.txt"),
           "proguard-rules.pro",
         ),
       )
@@ -73,7 +71,7 @@ android {
       matchingFallbacks += "release"
       setProguardFiles(
         listOf(
-          getDefaultProguardFile("proguard-android.txt"),
+          getDefaultProguardFile("proguard-android-optimize.txt"),
           "proguard-rules.pro",
         ),
       )
@@ -105,19 +103,15 @@ android {
 }
 
 dependencies {
+  "stagingImplementation".invoke(projects.featureImpersonation)
+
   implementation(platform(libs.firebase.bom))
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
-  implementation(libs.androidx.compose.runtime)
-  implementation(libs.androidx.compose.uiCore)
   implementation(libs.androidx.compose.uiToolingPreview)
-  implementation(libs.androidx.compose.uiUnit)
-  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.androidx.lifecycle.process)
-  implementation(libs.androidx.lifecycle.runtime)
-  implementation(libs.androidx.lifecycle.viewModel)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.other.appCompat)
@@ -137,18 +131,23 @@ dependencies {
   implementation(libs.firebase.analytics)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.messaging)
+  implementation(libs.jetbrains.compose.runtime)
+  implementation(libs.jetbrains.compose.ui)
+  implementation(libs.jetbrains.compose.ui.unit)
+  implementation(libs.jetbrains.lifecycle.runtime)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
+  implementation(libs.jetbrains.lifecycle.viewmodel)
   implementation(libs.koin.android)
   implementation(libs.koin.workManager)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(libs.media3.exoplayer)
+  implementation(libs.media3.exoplayer.dash)
   implementation(libs.navigationRecentsUrlSharing)
-  implementation(libs.okhttp.core)
-  implementation(libs.okhttp.loggingInterceptor)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)
-  implementation(libs.media3.exoplayer)
-  implementation(libs.media3.exoplayer.dash)
   implementation(projects.apolloAuthListeners)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
@@ -159,6 +158,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
+  implementation(projects.coreRive)
   implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
@@ -167,12 +167,13 @@ dependencies {
   implementation(projects.dataAddons)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
-  implementation(projects.dataClaimFlow)
-  implementation(projects.dataContractPublic)
+
+  implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataPayingMember)
+  implementation(projects.dataProductVariantPublic)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.dataTermination)
   implementation(projects.databaseAndroid)
@@ -184,54 +185,63 @@ dependencies {
   implementation(projects.designSystemInternals)
   implementation(projects.featureAddonPurchase)
   implementation(projects.featureChat)
+  implementation(projects.featureChipId)
   implementation(projects.featureChooseTier)
+  implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
-  implementation(projects.featureClaimTriaging)
+
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
   implementation(projects.featureFlagsAndroid)
   implementation(projects.featureFlagsPublic)
-  implementation(projects.featureForceUpgrade)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)
   implementation(projects.featureImageViewer)
-  implementation(projects.featureInsurances)
   implementation(projects.featureInsuranceCertificate)
+  implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
-  implementation(projects.featureOdyssey)
+
+  implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
   implementation(projects.foreverUi)
   implementation(projects.initializable)
-  implementation(projects.languageAndroid)
   implementation(projects.languageCore)
   implementation(projects.languageData)
   implementation(projects.languageMigration)
   implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
+  implementation(projects.permissionCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
   implementation(projects.navigationCore)
+  implementation(projects.networkClients)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
+  implementation(projects.shareddi)
   implementation(projects.theme)
   implementation(projects.tierComparison)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)
+  implementation(projects.uiForceUpgrade)
 
-  "stagingImplementation".invoke(projects.featureImpersonation)
+  // OkHttp for ProGuard rules only - not available at compile time
+  runtimeOnly(platform(libs.okhttp.bom))
+  runtimeOnly(libs.okhttp.core)
+
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
+
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
 }
 

@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCase
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
@@ -14,24 +15,26 @@ import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageEve
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Failure
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Loading
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiState.Success
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class EditCoInsuredTriageViewModel(
   getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
   insuranceId: String?,
+  type: CoInsuredFlowType,
 ) : MoleculeViewModel<
     EditCoInsuredTriageEvent,
     EditCoInsuredTriageUiState,
   >(
     initialState = Loading,
-    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, insuranceId),
+    presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, insuranceId, type),
   )
 
 internal class EditCoInsuredTriagePresenter(
   private val getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
   private val insuranceId: String?,
+  private val type: CoInsuredFlowType,
 ) : MoleculePresenter<
     EditCoInsuredTriageEvent,
     EditCoInsuredTriageUiState,
@@ -52,22 +55,28 @@ internal class EditCoInsuredTriagePresenter(
           selected?.let {
             currentState = when (it.destination) {
               EditCoInsuredDestination.MISSING_INFO -> currentStateValue.copy(
-                idToNavigateToAddMissingInfo = it.id,
+                insuranceToNavigateToAddMissingInfo = it,
               )
+
               EditCoInsuredDestination.ADD_OR_REMOVE -> currentStateValue.copy(
-                idToNavigateToAddOrRemoveCoInsured = it.id,
+                insuranceToNavigateToAddOrRemoveCoInsured = it,
               )
             }
           }
         }
-        EditCoInsuredTriageEvent.Reload -> loadIteration++
+
+        EditCoInsuredTriageEvent.Reload -> {
+          loadIteration++
+        }
+
         EditCoInsuredTriageEvent.ClearNavigation -> {
           val currentStateValue = currentState as? Success ?: return@CollectEvents
           currentState = currentStateValue.copy(
-            idToNavigateToAddMissingInfo = null,
-            idToNavigateToAddOrRemoveCoInsured = null,
+            insuranceToNavigateToAddMissingInfo = null,
+            insuranceToNavigateToAddOrRemoveCoInsured = null,
           )
         }
+
         is EditCoInsuredTriageEvent.SelectInsurance -> {
           val currentStateValue = currentState as? Success ?: return@CollectEvents
           val selectedInsurance = currentStateValue.list.first { it.id == event.id }
@@ -77,7 +86,7 @@ internal class EditCoInsuredTriagePresenter(
     }
     LaunchedEffect(loadIteration) {
       currentState = Loading
-      getInsuranceForEditCoInsuredUseCase.invoke().fold(
+      getInsuranceForEditCoInsuredUseCase.invoke(type).fold(
         ifLeft = {
           currentState = Failure
         },
@@ -92,17 +101,17 @@ internal class EditCoInsuredTriagePresenter(
           val success = Success(
             list = data,
             selected = preselected,
-            idToNavigateToAddMissingInfo =
-              if (preselected?.destination == EditCoInsuredDestination.MISSING_INFO) preselected.id else null,
-            idToNavigateToAddOrRemoveCoInsured =
-              if (preselected?.destination == EditCoInsuredDestination.ADD_OR_REMOVE) preselected.id else null,
+            type = type,
+            insuranceToNavigateToAddMissingInfo =
+              if (preselected?.destination == EditCoInsuredDestination.MISSING_INFO) preselected else null,
+            insuranceToNavigateToAddOrRemoveCoInsured =
+              if (preselected?.destination == EditCoInsuredDestination.ADD_OR_REMOVE) preselected else null,
           )
           currentState = success
         },
       )
     }
-    val currentStateValue = currentState
-    return when (currentStateValue) {
+    return when (val currentStateValue = currentState) {
       Failure -> Failure
       Loading -> Loading
       is Success -> currentStateValue.copy(selected = selected)
@@ -128,7 +137,8 @@ internal sealed interface EditCoInsuredTriageUiState {
   data class Success(
     val list: List<InsuranceForEditOrAddCoInsured>,
     val selected: InsuranceForEditOrAddCoInsured?,
-    val idToNavigateToAddMissingInfo: String? = null,
-    val idToNavigateToAddOrRemoveCoInsured: String? = null,
+    val type: CoInsuredFlowType,
+    val insuranceToNavigateToAddMissingInfo: InsuranceForEditOrAddCoInsured? = null,
+    val insuranceToNavigateToAddOrRemoveCoInsured: InsuranceForEditOrAddCoInsured? = null,
   ) : EditCoInsuredTriageUiState
 }

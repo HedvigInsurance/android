@@ -2,8 +2,6 @@ mutation ChangeTierDeductibleCreateIntent($contractId: ID!,
   $source: ChangeTierDeductibleSource!,
 $addonsFlagOn: Boolean!) {
   changeTierDeductibleCreateIntent(input:{ contractId: $contractId, source: $source }) {
-
-
     intent {
       activationDate
       agreementToChange {
@@ -32,6 +30,7 @@ $addonsFlagOn: Boolean!) {
         costBreakdown {
           displayName
           displayValue
+          isCrossed
         }
 
         deductible {
@@ -54,7 +53,12 @@ $addonsFlagOn: Boolean!) {
             ...AddonVariantFragment
           }
         }
+        info
       }
+    }
+    deflectOutput {
+      title
+      message
     }
   }
 }

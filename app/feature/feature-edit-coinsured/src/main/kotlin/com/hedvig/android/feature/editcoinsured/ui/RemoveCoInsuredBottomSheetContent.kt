@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Ghost
 import com.hedvig.android.design.system.hedvig.EmptyState
@@ -26,11 +26,18 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
-import hedvig.resources.R
+import hedvig.resources.CONTRACT_REMOVE_COINSURED_CONFIRMATION
+import hedvig.resources.CONTRACT_REMOVE_COOWNER_CONFIRMATION
+import hedvig.resources.REMOVE_CONFIRMATION_BUTTON
+import hedvig.resources.Res
+import hedvig.resources.general_cancel_button
+import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun RemoveCoInsuredBottomSheetContent(
+  type: CoInsuredFlowType,
   onDismiss: () -> Unit,
   onRemove: (CoInsured) -> Unit,
   isLoading: Boolean,
@@ -42,7 +49,10 @@ internal fun RemoveCoInsuredBottomSheetContent(
   ) {
     Spacer(Modifier.height(16.dp))
     HedvigText(
-      stringResource(id = R.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION),
+      when (type) {
+        CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_REMOVE_COINSURED_CONFIRMATION)
+        CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_REMOVE_COOWNER_CONFIRMATION)
+      },
       textAlign = TextAlign.Center,
     )
     AnimatedVisibility(
@@ -53,7 +63,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
       Column {
         Spacer(Modifier.height(16.dp))
         EmptyState(
-          text = stringResource(R.string.something_went_wrong),
+          text = stringResource(Res.string.something_went_wrong),
           modifier = Modifier.fillMaxWidth(),
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
           description = null,
@@ -62,7 +72,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
     }
     Spacer(Modifier.height(24.dp))
     HedvigButton(
-      text = stringResource(id = R.string.REMOVE_CONFIRMATION_BUTTON),
+      text = stringResource(Res.string.REMOVE_CONFIRMATION_BUTTON),
       onClick = {
         onRemove(coInsured)
       },
@@ -74,7 +84,7 @@ internal fun RemoveCoInsuredBottomSheetContent(
     Spacer(Modifier.height(8.dp))
     HedvigButton(
       onClick = onDismiss,
-      text = stringResource(R.string.general_cancel_button),
+      text = stringResource(Res.string.general_cancel_button),
       enabled = true,
       buttonStyle = Ghost,
       modifier = Modifier.fillMaxWidth(),
@@ -90,6 +100,7 @@ private fun RemoveCoInsuredBottomSheetContentPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       RemoveCoInsuredBottomSheetContent(
+        type = CoInsuredFlowType.CoInsured,
         onDismiss = {},
         onRemove = {},
         isLoading = false,
@@ -114,6 +125,7 @@ private fun RemoveCoInsuredBottomSheetContentWithCoInsuredPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       RemoveCoInsuredBottomSheetContent(
+        type = CoInsuredFlowType.CoInsured,
         onDismiss = {},
         onRemove = {},
         isLoading = false,

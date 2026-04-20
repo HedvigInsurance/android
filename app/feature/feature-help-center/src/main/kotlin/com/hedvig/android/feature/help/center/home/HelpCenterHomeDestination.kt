@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.help.center.home
 
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -43,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,10 +55,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,6 +91,7 @@ import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
+import com.hedvig.android.design.system.hedvig.SearchField
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
@@ -115,7 +114,26 @@ import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.R
+import hedvig.resources.GENERAL_REMOVE
+import hedvig.resources.HC_CLAIMS_A_01
+import hedvig.resources.HC_CLAIMS_Q_01
+import hedvig.resources.HC_COMMON_QUESTIONS_TITLE
+import hedvig.resources.HC_COMMON_TOPICS_TITLE
+import hedvig.resources.HC_HOME_VIEW_ANSWER
+import hedvig.resources.HC_HOME_VIEW_QUESTION
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE
+import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
+import hedvig.resources.HC_QUICK_ACTIONS_TITLE
+import hedvig.resources.HC_TITLE
+import hedvig.resources.Res
+import hedvig.resources.SEARCH_NOTHING_FOUND
+import hedvig.resources.SEARCH_PLACEHOLDER
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_continue_button
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HelpCenterHomeDestination(
@@ -208,7 +226,7 @@ private fun HelpCenterHomeScreen(
           onDismissQuickActionDialog()
         },
         style = DialogDefaults.DialogStyle.TitleNoButtons(
-          stringResource(R.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
+          stringResource(Res.string.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE),
         ),
       ) {
         Column(Modifier.verticalScroll(rememberScrollState())) {
@@ -229,7 +247,7 @@ private fun HelpCenterHomeScreen(
           )
           Spacer(Modifier.height(16.dp))
           HedvigButton(
-            text = stringResource(R.string.general_continue_button),
+            text = stringResource(Res.string.general_continue_button),
             enabled = selectedIndex != null,
             modifier = Modifier.fillMaxWidth(),
             onClick = {
@@ -241,7 +259,7 @@ private fun HelpCenterHomeScreen(
           Spacer(Modifier.height(4.dp))
           HedvigTextButton(
             buttonSize = Large,
-            text = stringResource(R.string.general_cancel_button),
+            text = stringResource(Res.string.general_cancel_button),
             modifier = Modifier.fillMaxWidth(),
             onClick = {
               selectedIndex = null
@@ -265,7 +283,7 @@ private fun HelpCenterHomeScreen(
   ) {
     Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
-        title = stringResource(id = R.string.HC_TITLE),
+        title = stringResource(Res.string.HC_TITLE),
         onClick = onNavigateUp,
       )
       Spacer(modifier = Modifier.height(8.dp))
@@ -278,7 +296,7 @@ private fun HelpCenterHomeScreen(
           modifier = Modifier.fillMaxSize(),
         )
       } else {
-        val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
         SearchField(
           searchQuery = searchQuery,
           focusRequester = focusRequester,
@@ -293,16 +311,17 @@ private fun HelpCenterHomeScreen(
               onClearSearch()
             } else {
               searchQuery = it
-              val results = searchForQuery(
-                query = it,
-                context = context,
-                quickLinksForSearch = (
-                  quickLinksUiState as?
-                    HelpCenterUiState.QuickLinkUiState.QuickLinks
-                )?.quickLinks ?: listOf(),
-                questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
-              )
-              onUpdateSearchResults(it, results)
+              coroutineScope.launch {
+                val results = searchForQuery(
+                  query = it,
+                  quickLinksForSearch = (
+                    quickLinksUiState as?
+                      HelpCenterUiState.QuickLinkUiState.QuickLinks
+                  )?.quickLinks ?: listOf(),
+                  questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
+                )
+                onUpdateSearchResults(it, results)
+              }
             }
           },
           onKeyboardAction = {
@@ -394,7 +413,7 @@ private fun ContentWithoutSearch(
             )
           } else {
             Image(
-              painter = painterResource(id = R.drawable.pillow_hedvig),
+              painter = painterResource(id = hedvig.resources.R.drawable.pillow_hedvig),
               contentDescription = null,
               modifier = Modifier
                 .size(170.dp)
@@ -409,9 +428,9 @@ private fun ContentWithoutSearch(
         modifier = Modifier
           .padding(horizontal = 20.dp),
       ) {
-        HedvigText(stringResource(id = R.string.HC_HOME_VIEW_QUESTION))
+        HedvigText(stringResource(Res.string.HC_HOME_VIEW_QUESTION))
         HedvigText(
-          text = stringResource(id = R.string.HC_HOME_VIEW_ANSWER),
+          text = stringResource(Res.string.HC_HOME_VIEW_ANSWER),
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
@@ -432,7 +451,7 @@ private fun ContentWithoutSearch(
           Column {
             HelpCenterSection(
               modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-              title = stringResource(id = R.string.HC_COMMON_TOPICS_TITLE),
+              title = stringResource(Res.string.HC_COMMON_TOPICS_TITLE),
               chipContainerColor = HighlightColor.Yellow(LIGHT),
               content = {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -457,7 +476,7 @@ private fun ContentWithoutSearch(
         ) {
           HelpCenterSectionWithClickableRows(
             modifier = Modifier.padding(PaddingValues(horizontal = 16.dp)),
-            title = stringResource(id = R.string.HC_COMMON_QUESTIONS_TITLE),
+            title = stringResource(Res.string.HC_COMMON_QUESTIONS_TITLE),
             chipContainerColor = HighlightColor.Blue(LIGHT),
             items = questions,
             itemText = { it.question },
@@ -550,7 +569,7 @@ private fun SearchResults(
         HedvigText(
           modifier = Modifier.fillMaxWidth(),
           textAlign = TextAlign.Center,
-          text = stringResource(R.string.SEARCH_NOTHING_FOUND),
+          text = stringResource(Res.string.SEARCH_NOTHING_FOUND),
         )
         Spacer(modifier = Modifier.height(16.dp))
       }
@@ -566,22 +585,26 @@ private fun SearchResults(
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
         Spacer(modifier = Modifier.height(16.dp))
-        LocalConfiguration.current
-        val resources = LocalContext.current.resources
         if (activeSearchState.results.filteredQuickLinks != null) {
+          val titleResMap = activeSearchState.results.filteredQuickLinks.map { quickLink ->
+            quickLink.quickAction.titleRes to stringResource(quickLink.quickAction.titleRes)
+          }.toMap()
+          val hintResMap = activeSearchState.results.filteredQuickLinks.map { quickLink ->
+            quickLink.quickAction.hintTextRes to stringResource(quickLink.quickAction.hintTextRes)
+          }.toMap()
           HelpCenterSectionWithClickableRows(
-            title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
+            title = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE),
             chipContainerColor = HighlightColor.Green(LIGHT),
             items = activeSearchState.results.filteredQuickLinks,
-            itemText = { resources.getString(it.quickAction.titleRes) },
-            itemSubtitle = { resources.getString(it.quickAction.hintTextRes) },
+            itemText = { titleResMap[it.quickAction.titleRes]!! },
+            itemSubtitle = { hintResMap[it.quickAction.hintTextRes]!! },
             onClickItem = { onQuickActionsSelected(it.quickAction) },
           )
           Spacer(Modifier.height(32.dp))
         }
         if (activeSearchState.results.filteredQuestions != null) {
           HelpCenterSectionWithClickableRows(
-            title = stringResource(R.string.HC_COMMON_QUESTIONS_TITLE),
+            title = stringResource(Res.string.HC_COMMON_QUESTIONS_TITLE),
             chipContainerColor = HighlightColor.Blue(LIGHT),
             items = activeSearchState.results.filteredQuestions,
             itemText = { it.question },
@@ -591,107 +614,6 @@ private fun SearchResults(
         }
       }
     }
-  }
-}
-
-@Composable
-private fun SearchField(
-  searchQuery: String?,
-  focusRequester: FocusRequester,
-  onClearSearch: () -> Unit,
-  onKeyboardAction: () -> Unit,
-  onSearchChange: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Box(
-    modifier = modifier
-      .fillMaxWidth()
-      .height(40.dp)
-      .background(
-        color = HedvigTheme.colorScheme.surfacePrimary,
-        shape = HedvigTheme.shapes.cornerMedium,
-      ),
-  ) {
-    BasicTextField(
-      value = searchQuery ?: "",
-      onValueChange = onSearchChange,
-      cursorBrush = SolidColor(HedvigTheme.colorScheme.fillPrimary),
-      modifier = Modifier
-        .fillMaxWidth()
-        .focusRequester(focusRequester),
-      textStyle = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textPrimary),
-      keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-      keyboardActions = KeyboardActions(
-        onSearch = {
-          onKeyboardAction()
-        },
-      ),
-      decorationBox = { innerTextField ->
-        Row(
-          Modifier
-            .fillMaxSize(),
-          horizontalArrangement = Arrangement.Start,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Icon(
-            HedvigIcons.Search,
-            contentDescription = null,
-            modifier = Modifier
-              .alpha(0.60f)
-              .padding(8.dp)
-              .size(24.dp),
-          )
-          Box(
-            modifier = Modifier
-              .weight(1f)
-              .padding(horizontal = 4.dp),
-            contentAlignment = Alignment.CenterStart,
-          ) {
-            if (searchQuery.isNullOrEmpty()) {
-              HedvigText(
-                text = stringResource(R.string.SEARCH_PLACEHOLDER),
-                style = HedvigTheme.typography.bodySmall.copy(color = LocalContentColor.current),
-                modifier = Modifier
-                  .alpha(0.60f),
-              )
-            }
-            innerTextField()
-          }
-          ClearSearchIcon(
-            onClick = onClearSearch,
-            tint = HedvigTheme.colorScheme.fillPrimary,
-            modifier = Modifier
-              .padding(8.dp)
-              .size(24.dp)
-              .then(
-                if (searchQuery.isNullOrEmpty()) {
-                  Modifier.withoutPlacement()
-                } else {
-                  Modifier
-                },
-              ),
-          )
-        }
-      },
-    )
-  }
-}
-
-@Composable
-private fun ClearSearchIcon(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  tint: Color = LocalContentColor.current,
-) {
-  IconButton(
-    onClick = onClick,
-    modifier = modifier,
-  ) {
-    Icon(
-      HedvigIcons.Close,
-      contentDescription = stringResource(R.string.GENERAL_REMOVE),
-      tint = tint,
-    )
   }
 }
 
@@ -717,7 +639,7 @@ private fun QuickLinksSection(
 ) {
   HelpCenterSection(
     modifier = Modifier.padding(horizontal = 16.dp),
-    title = stringResource(R.string.HC_QUICK_ACTIONS_TITLE),
+    title = stringResource(Res.string.HC_QUICK_ACTIONS_TITLE),
     chipContainerColor = HighlightColor.Green(LIGHT),
     content = {
       AnimatedContent(
@@ -815,18 +737,17 @@ private fun QuickLinkCard(
   }
 }
 
-private fun searchForQuery(
+private suspend fun searchForQuery(
   query: String,
   quickLinksForSearch: List<HelpCenterUiState.QuickLink>,
   questionsForSearch: List<FAQItem>,
-  context: Context,
 ): HelpCenterUiState.HelpSearchResults? {
   val lowercased = query.lowercase()
   val resultsInQuickLinks =
     buildList {
       for (link in quickLinksForSearch) {
-        val title = context.getString(link.quickAction.titleRes).lowercase()
-        val hint = context.getString(link.quickAction.hintTextRes).lowercase()
+        val title = getString(link.quickAction.titleRes).lowercase()
+        val hint = getString(link.quickAction.hintTextRes).lowercase()
         if (title.contains(lowercased) || hint.contains(lowercased)) {
           add(link)
         }
@@ -870,8 +791,8 @@ private fun PreviewHelpCenterHomeScreen(
         questions = listOf(
           FAQItem(
             "01",
-            stringResource(R.string.HC_CLAIMS_Q_01),
-            stringResource(R.string.HC_CLAIMS_A_01),
+            stringResource(Res.string.HC_CLAIMS_Q_01),
+            stringResource(Res.string.HC_CLAIMS_A_01),
           ),
         ),
         selectedQuickAction = null,
@@ -928,8 +849,8 @@ private fun PreviewQuickLinkAnimations() {
           questions = listOf(
             FAQItem(
               "01",
-              stringResource(R.string.HC_CLAIMS_Q_01),
-              stringResource(R.string.HC_CLAIMS_A_01),
+              stringResource(Res.string.HC_CLAIMS_Q_01),
+              stringResource(Res.string.HC_CLAIMS_A_01),
             ),
           ),
           selectedQuickAction = null,
@@ -996,8 +917,8 @@ private class QuickLinkUiStatePreviewProvider :
             List(3) {
               HelpCenterUiState.QuickLink(
                 StandaloneQuickLink(
-                  R.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
-                  R.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+                  Res.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+                  Res.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
                   QuickLinkDestination.OuterDestination.QuickLinkTermination,
                 ),
               )

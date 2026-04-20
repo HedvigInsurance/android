@@ -123,6 +123,8 @@ private val TestHedvigBuildConstants = object : HedvigBuildConstants {
   override val urlGraphqlOctopus: String = ""
   override val urlBaseWeb: String = ""
   override val urlOdyssey: String = ""
+  override val urlHedvigGateway: String = ""
+  override val urlAuthService: String = ""
   override val urlBotService: String = ""
   override val urlClaimsService: String = ""
   override val deepLinkHosts: List<String> = listOf("")
@@ -132,4 +134,7 @@ private val TestHedvigBuildConstants = object : HedvigBuildConstants {
   override val isDebug: Boolean = false
   override val isProduction: Boolean = true
   override val buildApiVersion: Int = Int.MAX_VALUE
+  override val platformName: String = ""
+  override val model: String = ""
+  override val userAgent: String = ""
 }

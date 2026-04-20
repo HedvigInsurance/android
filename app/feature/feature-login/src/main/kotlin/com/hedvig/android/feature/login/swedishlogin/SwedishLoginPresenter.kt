@@ -85,8 +85,13 @@ internal class SwedishLoginPresenter(
                     LoginStatusResult.Exception("Error: ${authTokenResult.message}")
                   }
 
-                  is AuthTokenResult.Error.IOError -> LoginStatusResult.Exception("IO Error ${authTokenResult.message}")
-                  is AuthTokenResult.Error.UnknownError -> LoginStatusResult.Exception(authTokenResult.message)
+                  is AuthTokenResult.Error.IOError -> {
+                    LoginStatusResult.Exception("IO Error ${authTokenResult.message}")
+                  }
+
+                  is AuthTokenResult.Error.UnknownError -> {
+                    LoginStatusResult.Exception(authTokenResult.message)
+                  }
                 }
               }
 
@@ -112,9 +117,11 @@ internal class SwedishLoginPresenter(
       if (bankIdProperties != null) {
         return@LaunchedEffect
       }
-      val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)
-      when (result) {
-        is AuthAttemptResult.BankIdProperties -> bankIdProperties = result
+      when (val result = authRepository.startLoginAttempt(LoginMethod.SE_BANKID, OtpMarket.SE)) {
+        is AuthAttemptResult.BankIdProperties -> {
+          bankIdProperties = result
+        }
+
         is AuthAttemptResult.Error -> {
           logcat(LogPriority.ERROR) { "Got Error when signing in with BankId: $result" }
           startLoginAttemptFailed = true
@@ -137,7 +144,10 @@ internal class SwedishLoginPresenter(
           }
         }
 
-        SwedishLoginEvent.DidOpenBankIDApp -> allowOpeningBankId = false
+        SwedishLoginEvent.DidOpenBankIDApp -> {
+          allowOpeningBankId = false
+        }
+
         SwedishLoginEvent.StartDemoMode -> {
           launch {
             demoManager.setDemoMode(true)
@@ -159,12 +169,23 @@ internal class SwedishLoginPresenter(
         navigateToLoginScreen,
       )
     }
-    val loginStatusResultValue = loginStatusResult
-    val bankIdUiState: BankIdUiState = when (loginStatusResultValue) {
-      null -> BankIdUiState.Loading
-      is LoginStatusResult.Failed -> BankIdUiState.BankIdError(loginStatusResultValue.localisedMessage)
-      is LoginStatusResult.Exception -> BankIdUiState.BankIdError(loginStatusResultValue.message)
-      is LoginStatusResult.Completed -> BankIdUiState.LoggedIn
+    val bankIdUiState: BankIdUiState = when (val loginStatusResultValue = loginStatusResult) {
+      null -> {
+        BankIdUiState.Loading
+      }
+
+      is LoginStatusResult.Failed -> {
+        BankIdUiState.BankIdError(loginStatusResultValue.localisedMessage)
+      }
+
+      is LoginStatusResult.Exception -> {
+        BankIdUiState.BankIdError(loginStatusResultValue.message)
+      }
+
+      is LoginStatusResult.Completed -> {
+        BankIdUiState.LoggedIn
+      }
+
       is LoginStatusResult.Pending -> {
         BankIdUiState.HandlingBankId(
           statusMessage = loginStatusResultValue.statusMessage,

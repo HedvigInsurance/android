@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.home.di
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
@@ -49,6 +50,7 @@ val homeModule = module {
       get<SeenImportantMessagesStorage>(),
       get<CrossSellHomeNotificationServiceProvider>(),
       get<ApplicationScope>(),
+      get<HedvigBuildConstants>(),
     )
   }
 }

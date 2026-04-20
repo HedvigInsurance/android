@@ -12,18 +12,42 @@ query MemberActions {
       isCancelInsuranceEnabled
       isConnectPaymentEnabled
       isEditCoInsuredEnabled
+      isEditCoOwnersEnabled
       isMovingEnabled
       isTravelCertificateEnabled
       isChangeTierEnabled
       memberId
-      sickAbroadAction {
-        deflectPartners {
+      sickAbroadDeflect {
+        title
+        infoText
+        warningText
+        partners {
           id
           imageUrl
           phoneNumber
+          title
+          description
+          info
           url
-          preferredImageHeight
+          urlButtonTitle
         }
+        simplePartners {
+          url
+          urlButtonTitle
+        }
+        partnersInfo {
+          title
+          description
+        }
+        content {
+          title
+          description
+        }
+        faq {
+          title
+          description
+        }
+        buttonTitle
       }
     }
   }

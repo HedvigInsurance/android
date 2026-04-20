@@ -9,10 +9,10 @@ hedvig {
 }
 
 dependencies {
-  implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.runtime)
-  implementation(libs.koin.compose)
+  implementation(libs.jetbrains.compose.runtime)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)

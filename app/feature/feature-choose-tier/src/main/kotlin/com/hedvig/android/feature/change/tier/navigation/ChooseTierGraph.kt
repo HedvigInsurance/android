@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.change.tier.navigation
 
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToChangeTierDestination
@@ -19,17 +20,16 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 fun NavGraphBuilder.changeTierGraph(
-  navigator: Navigator,
   navController: NavController,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  onNavigateToNewConversation: () -> Unit,
 ) {
   navdestination<StartTierFlowDestination> (
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithContractId),
@@ -40,15 +40,17 @@ fun NavGraphBuilder.changeTierGraph(
     StartChangeTierFlowDestination(
       viewModel = viewModel,
       popBackStack = {
-        navigator.popBackStack()
+        navController.popBackStack()
       },
       launchFlow = { params: InsuranceCustomizationParameters ->
-        navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
+        navController.navigate(ChooseTierGraphDestination(params)) {
           typedPopUpTo<StartTierFlowDestination> {
             inclusive = true
           }
         }
       },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      navigateUp = navController::navigateUp,
     )
   }
 
@@ -58,14 +60,18 @@ fun NavGraphBuilder.changeTierGraph(
     val viewModel: ChooseInsuranceViewModel = koinViewModel()
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,
-      navigateUp = navigator::navigateUp,
+      navigateUp = navController::navigateUp,
       navigateToNextStep = { params: InsuranceCustomizationParameters ->
-        navigator.navigateUnsafe(ChooseTierGraphDestination(params)) {
+        navController.navigate(ChooseTierGraphDestination(params)) {
           typedPopUpTo<StartTierFlowChooseInsuranceDestination> {
             inclusive = true
           }
         }
       },
+      popBackStack = {
+        navController.popBackStack()
+      },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
 
@@ -81,9 +87,9 @@ fun NavGraphBuilder.changeTierGraph(
       }
       SelectTierDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         navigateToSummary = { quote ->
-          navigator.navigateUnsafe(
+          navController.navigate(
             ChooseTierDestination.Summary(
               SummaryParameters(
                 quoteIdToSubmit = quote.id,
@@ -94,10 +100,10 @@ fun NavGraphBuilder.changeTierGraph(
           )
         },
         popBackStack = {
-          navigator.popBackStack()
+          navController.popBackStack()
         },
         navigateToComparison = { listOfQuotes, selectedTerms ->
-          navigator.navigateUnsafe(
+          navController.navigate(
             ChooseTierDestination.Comparison(
               ComparisonParameters(
                 termsIds = listOfQuotes.map {
@@ -119,7 +125,7 @@ fun NavGraphBuilder.changeTierGraph(
       }
       ComparisonDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
       )
     }
 
@@ -131,15 +137,15 @@ fun NavGraphBuilder.changeTierGraph(
       }
       ChangeTierSummaryDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = navController::navigateUp,
         onExitTierFlow = {
           navController.typedPopBackStack<ChooseTierGraphDestination>(inclusive = true)
         },
         onFailure = {
-          navigator.navigateUnsafe(ChooseTierDestination.SubmitFailure)
+          navController.navigate(ChooseTierDestination.SubmitFailure)
         },
         onSuccess = {
-          navigator.navigateUnsafe(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {
+          navController.navigate(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {
             typedPopUpTo<ChooseTierDestination.SelectTierAndDeductible> {
               inclusive = true
             }
@@ -151,13 +157,13 @@ fun NavGraphBuilder.changeTierGraph(
     navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) {
       SubmitTierSuccessScreen(
         activationDate,
-        popBackStack = navigator::popBackStack,
+        popBackStack = navController::popBackStack,
       )
     }
 
     navdestination<ChooseTierDestination.SubmitFailure> { _ ->
       SubmitTierFailureScreen(
-        popBackStack = navigator::popBackStack,
+        popBackStack = navController::popBackStack,
       )
     }
   }

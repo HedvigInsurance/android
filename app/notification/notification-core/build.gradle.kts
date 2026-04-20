@@ -9,4 +9,5 @@ dependencies {
   implementation(libs.androidx.other.coreKtx)
   implementation(libs.firebase.messaging)
   implementation(projects.coreResources)
+  implementation(projects.permissionCore)
 }

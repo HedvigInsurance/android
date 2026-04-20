@@ -13,7 +13,7 @@ import arrow.core.Either
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -36,6 +36,7 @@ internal class HomePresenter(
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
   private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   private val applicationScope: CoroutineScope,
+  private val isProduction: Boolean,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -49,7 +50,10 @@ internal class HomePresenter(
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
-        HomeEvent.RefreshData -> loadIteration++
+        HomeEvent.RefreshData -> {
+          loadIteration++
+        }
+
         is HomeEvent.MarkMessageAsSeen -> {
           seenImportantMessagesStorage.markMessageAsSeen(homeEvent.messageId)
         }
@@ -133,7 +137,8 @@ internal class HomePresenter(
           chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
-          travelAddonBannerInfo = successData.travelAddonBannerInfo,
+          addonBannerInfo = successData.addonBannerInfo,
+          isProduction = isProduction,
         )
       }
     }
@@ -169,7 +174,8 @@ internal sealed interface HomeUiState {
     val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
-    val travelAddonBannerInfo: TravelAddonBannerInfo?,
+    val addonBannerInfo: AddonBannerInfo?,
+    val isProduction: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
@@ -189,7 +195,7 @@ private data class SuccessData(
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
-  val travelAddonBannerInfo: TravelAddonBannerInfo?,
+  val addonBannerInfo: AddonBannerInfo?,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -204,7 +210,7 @@ private data class SuccessData(
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
-        travelAddonBannerInfo = lastState.travelAddonBannerInfo,
+        addonBannerInfo = lastState.addonBannerInfo,
       )
     }
 
@@ -229,24 +235,30 @@ private data class SuccessData(
       return SuccessData(
         homeText = when (homeData.contractStatus) {
           HomeData.ContractStatus.Active -> HomeText.Active
+
           is HomeData.ContractStatus.ActiveInFuture -> HomeText.ActiveInFuture(
             homeData.contractStatus.futureInceptionDate,
           )
 
           HomeData.ContractStatus.Terminated -> HomeText.Terminated
+
           HomeData.ContractStatus.Pending -> HomeText.Pending
+
           HomeData.ContractStatus.Switching -> HomeText.Switching
+
           HomeData.ContractStatus.Unknown -> HomeText.Active
         },
         claimStatusCardsData = homeData.claimStatusCardsData,
         veryImportantMessages = homeData.veryImportantMessages,
-        memberReminders = homeData.memberReminders.copy(enableNotifications = null),
+        memberReminders = homeData.memberReminders.copy(
+          enableNotifications = null,
+        ),
         showHelpCenter = homeData.showHelpCenter,
         chatAction = chatAction,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
-        travelAddonBannerInfo = homeData.travelBannerInfo,
+        addonBannerInfo = homeData.travelBannerInfo,
       )
     }
   }

@@ -47,10 +47,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -61,7 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import arrow.core.nonEmptyListOf
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.google.accompanist.permissions.isGranted
 import com.hedvig.android.compose.pager.indicator.HorizontalPagerIndicator
 import com.hedvig.android.compose.ui.plus
@@ -70,7 +68,9 @@ import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellBottomSheet
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.FlowType
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Secondary
@@ -96,8 +96,7 @@ import com.hedvig.android.design.system.hedvig.icon.HedvigLogotype
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
-import com.hedvig.android.design.system.hedvig.tokens.HedvigSerif
-import com.hedvig.android.feature.home.home.data.HomeData
+import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.home.home.data.HomeData.ClaimStatusCardsData
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
@@ -126,7 +125,18 @@ import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentText.
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment.SegmentType.INACTIVE
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
-import hedvig.resources.R
+import hedvig.resources.CHAT_NEW_MESSAGE
+import hedvig.resources.Res
+import hedvig.resources.TOAST_NEW_OFFER
+import hedvig.resources.home_tab_active_in_future_info
+import hedvig.resources.home_tab_claim_button_text
+import hedvig.resources.home_tab_get_help
+import hedvig.resources.home_tab_pending_switchable_welcome_title_without_name
+import hedvig.resources.home_tab_pending_unknown_title_without_name
+import hedvig.resources.home_tab_terminated_welcome_title_without_name
+import hedvig.resources.home_tab_welcome_title_without_name
+import hedvig.resources.important_message_hide
+import hedvig.resources.important_message_read_more
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -137,21 +147,25 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HomeDestination(
   viewModel: HomeViewModel,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onStartClaim: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipId: () -> Unit,
   imageLoader: ImageLoader,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -162,17 +176,20 @@ internal fun HomeDestination(
     reload = { viewModel.emit(HomeEvent.RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateToClaimChat = navigateToClaimChat,
+    navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    onStartClaim = onStartClaim,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
+    openCrossSellUrl = openCrossSellUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
+    navigateToChipIdScreen = navigateToChipId,
     setEpochDayWhenLastToolTipShown = { epochDay ->
       viewModel.emit(HomeEvent.CrossSellToolTipShown(epochDay))
     },
@@ -187,16 +204,19 @@ private fun HomeScreen(
   reload: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
   onClaimDetailCardClicked: (String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  onStartClaim: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   markCrossSellsNotificationAsSeen: () -> Unit,
   setEpochDayWhenLastToolTipShown: (Long) -> Unit,
   imageLoader: ImageLoader,
@@ -213,8 +233,15 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
-    onCrossSellClick = openUrl,
+    onCrossSellClick = openCrossSellUrl,
     imageLoader = imageLoader,
+  )
+  val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  StartClaimBottomSheet(
+    state = startClaimBottomSheetState,
+    navigateToClaimChat = navigateToClaimChat,
+    navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
+    isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
@@ -241,7 +268,7 @@ private fun HomeScreen(
           )
         }
 
-        is HomeUiState.Success -> {
+        is Success -> {
           HomeScreenSuccess(
             uiState = uiState,
             pullRefreshState = pullRefreshState,
@@ -250,13 +277,14 @@ private fun HomeScreen(
             onClaimDetailCardClicked = onClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToHelpCenter = navigateToHelpCenter,
-            onStartClaimClicked = onStartClaim,
+            openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
             navigateToContactInfo = navigateToContactInfo,
+            navigateToChipIdScreen = navigateToChipIdScreen,
           )
         }
       }
@@ -264,7 +292,7 @@ private fun HomeScreen(
 
     Column {
       TopAppBarLayoutForActions {
-        val currentState = uiState as? HomeUiState.Success
+        val currentState = uiState as? Success
         if (currentState != null) {
           val actionsList = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
@@ -273,26 +301,27 @@ private fun HomeScreen(
           }
           actionsList.forEach { action ->
             when (action) {
-              HomeTopBarAction.ChatAction -> ToolbarChatIcon(
-                onClick = onNavigateToInbox,
-                modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
-              )
+              ChatAction -> {
+                ToolbarChatIcon(
+                  onClick = onNavigateToInbox,
+                  modifier = Modifier.notificationCircle(uiState.hasUnseenChatMessages),
+                )
+              }
 
-              is HomeTopBarAction.CrossSellsAction -> {
+              is CrossSellsAction -> {
                 ToolbarCrossSellsIcon(
                   onClick = {
                     crossSellBottomSheetState.show(
                       action.crossSells,
                     )
                   },
-                  modifier = Modifier
-                    .notificationCircle(
-                      action.crossSellRecommendationNotification.hasUnreadRecommendation,
-                    ),
+                  modifier = Modifier.notificationCircle(
+                    action.crossSellRecommendationNotification.hasUnreadRecommendation,
+                  ),
                 )
               }
 
-              is HomeTopBarAction.FirstVetAction -> {
+              is FirstVetAction -> {
                 val sections = action.sections
                 ToolbarFirstVetIcon(
                   onClick = { navigateToFirstVet(sections) },
@@ -302,18 +331,16 @@ private fun HomeScreen(
           }
         }
       }
-      if ((uiState as? HomeUiState.Success)?.chatAction != null) {
+      if ((uiState as? Success)?.chatAction != null) {
         val updatedHasUnseenChatMessages by rememberUpdatedState(uiState.hasUnseenChatMessages)
         val shouldShowNewMessageTooltip by produceState(false) {
-          snapshotFlow { updatedHasUnseenChatMessages }
-            .drop(1)
-            .collectLatest {
-              value = it
-            }
+          snapshotFlow { updatedHasUnseenChatMessages }.drop(1).collectLatest {
+            value = it
+          }
         }
         if (shouldShowNewMessageTooltip) {
           HedvigTooltip(
-            message = stringResource(R.string.CHAT_NEW_MESSAGE),
+            message = stringResource(Res.string.CHAT_NEW_MESSAGE),
             showTooltip = shouldShowNewMessageTooltip,
             tooltipStyle = Inbox,
             beakDirection = TopEnd,
@@ -358,7 +385,7 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
     }
     if (shouldShowCrossSellsTooltip) {
       HedvigTooltip(
-        message = stringResource(R.string.TOAST_NEW_OFFER),
+        message = stringResource(Res.string.TOAST_NEW_OFFER),
         showTooltip = true,
         tooltipStyle = TooltipDefaults.TooltipStyle.Campaign(
           subMessage = null,
@@ -390,20 +417,21 @@ private fun getCrossSellsToolTipEndPadding(uiState: Success): Int {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HomeScreenSuccess(
-  uiState: HomeUiState.Success,
+  uiState: Success,
   pullRefreshState: PullRefreshState,
   toolbarHeight: Dp,
   notificationPermissionState: NotificationPermissionState,
   onClaimDetailCardClicked: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
-  onStartClaimClicked: () -> Unit,
+  openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
-  navigateToMissingInfo: (String) -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val isInPreview = LocalInspectionMode.current
@@ -427,10 +455,8 @@ private fun HomeScreenSuccess(
     NotificationPermissionDialog(notificationPermissionState, openAppSettings)
     val fullScreenSizeValue = fullScreenSize
     if (fullScreenSizeValue != null) {
-      val horizontalInsets = WindowInsets.safeDrawing
-        .only(WindowInsetsSides.Horizontal)
-        .exclude(consumedWindowInsets)
-        .asPaddingValues()
+      val horizontalInsets =
+        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).exclude(consumedWindowInsets).asPaddingValues()
       HomeLayout(
         fullScreenSize = fullScreenSizeValue,
         welcomeMessage = {
@@ -466,7 +492,7 @@ private fun HomeScreenSuccess(
           Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             if (uiState.homeText is HomeText.ActiveInFuture) {
               HedvigNotificationCard(
-                message = stringResource(R.string.home_tab_active_in_future_info, uiState.homeText.inception),
+                message = stringResource(Res.string.home_tab_active_in_future_info, uiState.homeText.inception),
                 priority = NotificationPriority.Info,
                 modifier = Modifier
                   .fillMaxWidth()
@@ -484,13 +510,16 @@ private fun HomeScreenSuccess(
               openUrl = openUrl,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
               navigateToContactInfo = navigateToContactInfo,
+              navigateToChipId = navigateToChipIdScreen,
             )
           }
         },
         startClaimButton = {
           HedvigButton(
-            text = stringResource(R.string.home_tab_claim_button_text),
-            onClick = onStartClaimClicked,
+            text = stringResource(Res.string.home_tab_claim_button_text),
+            onClick = {
+              openClaimFlowSheet()
+            },
             enabled = true,
             modifier = Modifier
               .fillMaxWidth()
@@ -501,7 +530,7 @@ private fun HomeScreenSuccess(
         helpCenterButton = {
           if (uiState.isHelpCenterEnabled) {
             HedvigButton(
-              text = stringResource(R.string.home_tab_get_help),
+              text = stringResource(Res.string.home_tab_get_help),
               onClick = navigateToHelpCenter,
               buttonStyle = Secondary,
               enabled = true,
@@ -533,7 +562,7 @@ private fun HomeScreenSuccess(
 
 @Composable
 private fun ImportantMessages(
-  list: List<HomeData.VeryImportantMessage>,
+  list: List<VeryImportantMessage>,
   openUrl: (String) -> Unit,
   hideImportantMessage: (id: String) -> Unit,
   contentPadding: PaddingValues,
@@ -587,7 +616,7 @@ private fun ImportantMessages(
 private fun VeryImportantMessageCard(
   openUrl: (String) -> Unit,
   hideImportantMessage: (id: String) -> Unit,
-  veryImportantMessage: HomeData.VeryImportantMessage,
+  veryImportantMessage: VeryImportantMessage,
   modifier: Modifier = Modifier,
 ) {
   key(veryImportantMessage.id) {
@@ -598,15 +627,15 @@ private fun VeryImportantMessageCard(
       withIcon = false,
       style = if (veryImportantMessage.linkInfo != null) {
         NotificationDefaults.InfoCardStyle.Buttons(
-          leftButtonText = stringResource(R.string.important_message_hide),
-          rightButtonText =
-            veryImportantMessage.linkInfo.buttonText ?: stringResource(R.string.important_message_read_more),
+          leftButtonText = stringResource(Res.string.important_message_hide),
+          rightButtonText = veryImportantMessage.linkInfo.buttonText
+            ?: stringResource(Res.string.important_message_read_more),
           onLeftButtonClick = { hideImportantMessage(veryImportantMessage.id) },
           onRightButtonClick = { openUrl(veryImportantMessage.linkInfo.link) },
         )
       } else {
         NotificationDefaults.InfoCardStyle.Button(
-          buttonText = stringResource(R.string.important_message_hide),
+          buttonText = stringResource(Res.string.important_message_hide),
           onButtonClick = { hideImportantMessage(veryImportantMessage.id) },
         )
       },
@@ -628,18 +657,18 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
     )
   } else {
     val headlineText = when (homeText) {
-      is HomeText.Active -> stringResource(R.string.home_tab_welcome_title_without_name)
+      is Active -> stringResource(Res.string.home_tab_welcome_title_without_name)
       is HomeText.ActiveInFuture -> error("Image shows here instead")
-      is HomeText.Pending -> stringResource(R.string.home_tab_pending_unknown_title_without_name)
-      is HomeText.Switching -> stringResource(R.string.home_tab_pending_switchable_welcome_title_without_name)
-      is HomeText.Terminated -> stringResource(R.string.home_tab_terminated_welcome_title_without_name)
+      is HomeText.Pending -> stringResource(Res.string.home_tab_pending_unknown_title_without_name)
+      is HomeText.Switching -> stringResource(Res.string.home_tab_pending_switchable_welcome_title_without_name)
+      is HomeText.Terminated -> stringResource(Res.string.home_tab_terminated_welcome_title_without_name)
     }
     HedvigText(
       text = headlineText,
       // todo custom style since new DS does not have this specification
       //  https://hedviginsurance.slack.com/archives/C03U9C6Q7TP/p1727365167917719
       style = HedvigTheme.typography.headlineMedium.copy(
-        fontFamily = FontFamily.HedvigSerif,
+        fontFamily = HedvigTheme.typography.serif,
         fontSize = 28.0.sp,
         lineBreak = LineBreak.Heading,
         textAlign = TextAlign.Center,
@@ -657,13 +686,11 @@ private fun CrossSellBottomSheet(
   imageLoader: ImageLoader,
 ) {
   LaunchedEffect(state) {
-    snapshotFlow { state.isVisible }
-      .distinctUntilChanged()
-      .collect { isVisible ->
-        if (isVisible) {
-          markCrossSellsNotificationAsSeen()
-        }
+    snapshotFlow { state.isVisible }.distinctUntilChanged().collect { isVisible ->
+      if (isVisible) {
+        markCrossSellsNotificationAsSeen()
       }
+    }
   }
   CrossSellBottomSheet(
     state = state,
@@ -758,30 +785,35 @@ private fun PreviewHomeScreen(
             ),
           ),
           chatAction = ChatAction,
-          travelAddonBannerInfo = TravelAddonBannerInfo(
+          addonBannerInfo = AddonBannerInfo(
             title = "Title",
             description = "description",
             labels = listOf("Label"),
             eligibleInsurancesIds = nonEmptyListOf("id"),
+            flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
+          isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        onStartClaim = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -798,19 +830,22 @@ private fun PreviewHomeScreenWithError() {
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        onStartClaim = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -824,7 +859,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HomeScreen(
-        uiState = HomeUiState.Success(
+        uiState = Success(
           homeText = homeText,
           isReloading = false,
           claimStatusCardsData = null,
@@ -841,25 +876,29 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           crossSellsAction = null,
           firstVetAction = null,
           chatAction = null,
-          travelAddonBannerInfo = null,
+          addonBannerInfo = null,
+          isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
+        navigateToClaimChat = {},
         onClaimDetailCardClicked = {},
         navigateToConnectPayment = {},
-        onStartClaim = {},
         navigateToHelpCenter = {},
         openUrl = {},
+        openCrossSellUrl = {},
         openAppSettings = {},
-        navigateToMissingInfo = {},
+        navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
+        navigateToChipIdScreen = {},
         setEpochDayWhenLastToolTipShown = {},
         imageLoader = rememberPreviewImageLoader(),
+        navigateToClaimChatInDevMode = {},
       )
     }
   }
@@ -867,7 +906,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
 
 private class HomeTextPreviewParameterProvider : CollectionPreviewParameterProvider<HomeText>(
   listOf(
-    HomeText.Active,
+    Active,
     HomeText.ActiveInFuture(LocalDate.parse("2025-01-01")),
     HomeText.Pending,
     HomeText.Switching,

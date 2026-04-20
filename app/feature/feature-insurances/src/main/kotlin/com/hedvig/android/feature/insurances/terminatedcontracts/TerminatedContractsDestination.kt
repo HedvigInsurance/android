@@ -8,14 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -31,8 +31,11 @@ import com.hedvig.android.feature.insurances.data.InsuranceAgreement
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
 import com.hedvig.android.feature.insurances.data.MonthlyCost
 import com.hedvig.android.feature.insurances.ui.createChips
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_back_button
+import hedvig.resources.insurances_tab_cancelled_insurances_title
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TerminatedContractsDestination(
@@ -61,7 +64,7 @@ private fun TerminatedContractsScreen(
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = stringResource(R.string.insurances_tab_cancelled_insurances_title),
+    topAppBarText = stringResource(Res.string.insurances_tab_cancelled_insurances_title),
   ) {
     Spacer(Modifier.height(16.dp))
     when (uiState) {
@@ -78,7 +81,7 @@ private fun TerminatedContractsScreen(
 
       TerminatedContractsUiState.NoTerminatedInsurances -> {
         HedvigErrorSection(
-          buttonText = stringResource(R.string.general_back_button),
+          buttonText = stringResource(Res.string.general_back_button),
           onButtonClick = navigateUp,
           modifier = Modifier.weight(1f),
         )
@@ -155,6 +158,7 @@ private class PreviewTerminatedContractsUiStateProvider :
               ),
               certificateUrl = null,
               coInsured = listOf(),
+              coOwners = listOf(),
               creationCause = InsuranceAgreement.CreationCause.NEW_CONTRACT,
               addons = null,
               basePremium = UiMoney(89.0, UiCurrencyCode.SEK),
@@ -168,10 +172,14 @@ private class PreviewTerminatedContractsUiStateProvider :
             renewalDate = LocalDate.fromEpochDays(500),
             supportsAddressChange = false,
             supportsEditCoInsured = true,
+            supportsEditCoOwners = false,
             isTerminated = true,
             contractHolderDisplayName = "Hugo Linder",
             contractHolderSSN = "19910113-1093",
             supportsTierChange = false,
+            existingAddons = emptyList(),
+            availableAddons = emptyList(),
+            chipId = ChipIdState.Missing,
           ),
         ),
       ),

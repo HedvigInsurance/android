@@ -1,13 +1,6 @@
 package com.hedvig.android.feature.connect.payment.trustly.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,13 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.composewebview.AccompanistWebViewClient
 import com.hedvig.android.composewebview.LoadingState
 import com.hedvig.android.composewebview.WebView
 import com.hedvig.android.composewebview.rememberSaveableWebViewState
@@ -51,13 +41,19 @@ import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.PreviewTrustlyCallback
-import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyJavascriptInterface
-import com.hedvig.android.feature.connect.payment.trustly.webview.TrustlyWebChromeClient
-import com.hedvig.android.logger.LogPriority
+import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebChromeClient
+import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebView
+import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClient
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_done_button
+import hedvig.resources.pay_in_confirmation_direct_debit_headline
+import hedvig.resources.pay_in_error_body
+import hedvig.resources.pay_in_explainer_direct_debit_headline
+import hedvig.resources.something_went_wrong
 import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 
 @Serializable
 data object TrustlyDestination : Destination
@@ -105,15 +101,15 @@ private fun TrustlyScreen(
       TrustlyUiState.FailedToConnectCard -> {
         HedvigErrorSection(
           onButtonClick = retryConnectingCard,
-          title = stringResource(R.string.something_went_wrong),
-          subTitle = stringResource(R.string.pay_in_error_body),
+          title = stringResource(Res.string.something_went_wrong),
+          subTitle = stringResource(Res.string.pay_in_error_body),
         )
       }
 
       TrustlyUiState.FailedToStartSession -> {
         HedvigErrorSection(
           onButtonClick = retryConnectingCard,
-          title = stringResource(R.string.something_went_wrong),
+          title = stringResource(Res.string.something_went_wrong),
           subTitle = null,
         )
       }
@@ -125,9 +121,9 @@ private fun TrustlyScreen(
         ) {
           EmptyState(
             iconStyle = SUCCESS,
-            text = stringResource(R.string.pay_in_confirmation_direct_debit_headline),
+            text = stringResource(Res.string.pay_in_confirmation_direct_debit_headline),
             description = null,
-            buttonStyle = Button(stringResource(R.string.general_done_button), finishTrustlyFlow),
+            buttonStyle = Button(stringResource(Res.string.general_done_button), finishTrustlyFlow),
           )
         }
       }
@@ -135,7 +131,6 @@ private fun TrustlyScreen(
   }
 }
 
-@SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun TrustlyBrowser(
   uiState: TrustlyUiState.Browsing,
@@ -143,50 +138,8 @@ private fun TrustlyBrowser(
   connectingCardSucceeded: () -> Unit,
   connectingCardFailed: () -> Unit,
 ) {
-  val context = LocalContext.current
   val webViewState = rememberSaveableWebViewState()
   val webViewNavigator = rememberWebViewNavigator()
-
-  val webViewClient = remember {
-    object : AccompanistWebViewClient() {
-      override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
-        super.onPageStarted(view, url, favicon)
-        logcat { "Trustly Webview loading url:$url" }
-
-        if (url?.startsWith("bankid") == true) {
-          logcat(LogPriority.ERROR) { "Url did in fact try to open bankid" }
-          view.stopLoading()
-          val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-          context.startActivity(intent)
-          return
-        }
-        if (url == uiState.trustlyCallback.successUrl) {
-          logcat { "Trustly Webview overrides success url:$url" }
-          view.stopLoading()
-          webViewNavigator.stopLoading()
-          connectingCardSucceeded()
-          return
-        }
-        if (url == uiState.trustlyCallback.failureUrl) {
-          logcat { "Trustly Webview overrides fail url:$url" }
-          view.stopLoading()
-          webViewNavigator.stopLoading()
-          connectingCardFailed()
-          return
-        }
-      }
-
-      override fun onPageFinished(view: WebView, url: String?) {
-        super.onPageFinished(view, url)
-        logcat { "Trustly Webview finished loading url:$url" }
-      }
-
-      override fun onReceivedError(view: WebView, request: WebResourceRequest?, error: WebResourceError?) {
-        super.onReceivedError(view, request, error)
-        logcat(LogPriority.WARN) { "Webview got error:$error for request:$request" }
-      }
-    }
-  }
 
   LaunchedEffect(uiState.url) {
     webViewNavigator.loadUrl(uiState.url)
@@ -194,7 +147,7 @@ private fun TrustlyBrowser(
 
   Column {
     TopAppBarWithBack(
-      title = stringResource(R.string.pay_in_explainer_direct_debit_headline),
+      title = stringResource(Res.string.pay_in_explainer_direct_debit_headline),
       onClick = navigateUp,
     )
     Box(
@@ -204,27 +157,37 @@ private fun TrustlyBrowser(
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)),
     ) {
       WebView(
-        state = webViewState,
-        navigator = webViewNavigator,
-        onCreated = { webView ->
-          webView.settings.javaScriptEnabled = true
-          webView.settings.javaScriptCanOpenWindowsAutomatically = true
-          webView.settings.domStorageEnabled = true
-          webView.settings.setSupportMultipleWindows(true)
-
-          webView.webChromeClient = TrustlyWebChromeClient()
-          webView.addJavascriptInterface(
-            TrustlyJavascriptInterface(activity = context as Activity),
-            TrustlyJavascriptInterface.NAME,
+        factory = { context ->
+          TrustlyWebView(
+            activity = context as Activity,
+            successHandler = {
+              logcat { "Trustly Webview: successHandler" }
+              connectingCardSucceeded()
+            },
+            errorHandler = {
+              logcat { "Trustly Webview: errorHandler" }
+              connectingCardFailed()
+            },
+            abortHandler = {
+              logcat { "Trustly Webview: abortHandler" }
+              connectingCardFailed()
+            },
           )
         },
-        client = webViewClient,
+        state = webViewState,
+        navigator = webViewNavigator,
+        client = remember { TrustlyWebViewClient() },
+        chromeClient = remember { TrustlyWebChromeClient() },
         modifier = Modifier.matchParentSize(),
       )
       val loadingState = webViewState.loadingState
       if (loadingState is LoadingState.Loading) {
         val brushColor = HedvigTheme.colorScheme.fillPrimary
-        Canvas(Modifier.fillMaxWidth().height(4.dp)) {
+        Canvas(
+          Modifier
+            .fillMaxWidth()
+            .height(4.dp),
+        ) {
           drawRect(brushColor, size = Size(size.width * loadingState.progress, size.height))
         }
       }

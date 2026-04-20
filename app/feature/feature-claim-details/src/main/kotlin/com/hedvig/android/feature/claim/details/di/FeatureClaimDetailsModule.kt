@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.claim.details.di
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
-import com.hedvig.android.core.fileupload.UploadFileUseCase
 import com.hedvig.android.data.cross.sell.after.claim.closed.CrossSellAfterClaimClosedRepository
 import com.hedvig.android.feature.claim.details.data.GetClaimDetailUiStateUseCase
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
@@ -16,7 +16,7 @@ val claimDetailsModule = module {
   }
   viewModel<AddFilesViewModel> { (targetUploadUrl: String, initialFilesUri: List<String>) ->
     AddFilesViewModel(
-      uploadFileUseCase = get(),
+      claimsServiceUploadFileUseCase = get(),
       fileService = get(),
       targetUploadUrl = targetUploadUrl,
       cacheManager = get(),
@@ -27,7 +27,7 @@ val claimDetailsModule = module {
     ClaimDetailsViewModel(
       claimId = claimId,
       getClaimDetailUiStateUseCase = get<GetClaimDetailUiStateUseCase>(),
-      uploadFileUseCase = get<UploadFileUseCase>(),
+      claimsServiceUploadFileUseCase = get<ClaimsServiceUploadFileUseCase>(),
       downloadPdfUseCase = get<DownloadPdfUseCase>(),
     )
   }

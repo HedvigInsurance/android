@@ -1,8 +1,11 @@
 package com.hedvig.android.feature.home.home.navigation
 
-import androidx.navigation.NavBackStackEntry
+import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import coil.ImageLoader
+import coil3.ImageLoader
+import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
@@ -11,56 +14,59 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.Navigator
-import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigator: Navigator,
-  onNavigateToInbox: (NavBackStackEntry) -> Unit,
-  onNavigateToNewConversation: (NavBackStackEntry) -> Unit,
-  onStartClaim: (NavBackStackEntry) -> Unit,
-  navigateToClaimDetails: (NavBackStackEntry, claimId: String) -> Unit,
+  navController: NavController,
+  onNavigateToInbox: () -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  navigateToClaimDetails: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
-  navigateToContactInfo: (NavBackStackEntry) -> Unit,
-  navigateToMissingInfo: (NavBackStackEntry, String) -> Unit,
-  navigateToHelpCenter: (NavBackStackEntry) -> Unit,
+  navigateToContactInfo: () -> Unit,
+  navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
+  navigateToHelpCenter: () -> Unit,
+  navigateToClaimChat: () -> Unit,
+  navigateToClaimChatInDevMode: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   navgraph<HomeDestination.Graph>(
     startDestination = HomeDestination.Home::class,
   ) {
     navdestination<HomeDestination.Home>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home, hedvigDeepLinkContainer.claimFlow),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
-    ) { backStackEntry ->
+    ) {
       val viewModel: HomeViewModel = koinViewModel()
       HomeDestination(
         viewModel = viewModel,
-        onNavigateToInbox = { onNavigateToInbox(backStackEntry) },
-        onNavigateToNewConversation = { onNavigateToNewConversation(backStackEntry) },
-        onClaimDetailCardClicked = { claimId: String ->
-          navigateToClaimDetails(backStackEntry, claimId)
+        onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+        navigateToClaimChat = dropUnlessResumed { navigateToClaimChat() },
+        navigateToClaimChatInDevMode = dropUnlessResumed { navigateToClaimChatInDevMode() },
+        onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
+          navigateToClaimDetails(claimId)
         },
-        navigateToConnectPayment = navigateToConnectPayment,
-        onStartClaim = { onStartClaim(backStackEntry) },
-        navigateToMissingInfo = { contractId -> navigateToMissingInfo(backStackEntry, contractId) },
-        navigateToHelpCenter = { navigateToHelpCenter(backStackEntry) },
+        navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+        navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
+        navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
         openUrl = openUrl,
+        openCrossSellUrl = openCrossSellUrl,
         openAppSettings = openAppSettings,
-        navigateToFirstVet = { sections ->
-          with(navigator) {
-            backStackEntry.navigate(HomeDestination.FirstVet(sections))
-          }
+        navigateToFirstVet = dropUnlessResumed { sections ->
+          navController.navigate(HomeDestination.FirstVet(sections))
         },
-        navigateToContactInfo = {
-          navigateToContactInfo(backStackEntry)
+        navigateToContactInfo = dropUnlessResumed {
+          navigateToContactInfo()
         },
         imageLoader = imageLoader,
+        navigateToChipId = navigateToChipIdScreen,
       )
     }
     navdestination<HomeDestination.FirstVet>(
@@ -68,8 +74,8 @@ fun NavGraphBuilder.homeGraph(
     ) {
       FirstVetDestination(
         sections,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = navController::navigateUp,
+        navigateBack = navController::popBackStack,
       )
     }
     nestedGraphs()

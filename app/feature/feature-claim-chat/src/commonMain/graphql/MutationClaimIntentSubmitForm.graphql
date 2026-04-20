@@ -1,0 +1,5 @@
+mutation ClaimIntentSubmitForm($input: ClaimIntentSubmitFormInput!) {
+  claimIntentSubmitForm(input: $input) {
+    ...ClaimIntentMutationOutputFragment
+  }
+}

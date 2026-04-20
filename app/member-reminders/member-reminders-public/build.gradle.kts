@@ -9,12 +9,13 @@ hedvig {
 
 dependencies {
   api(libs.kotlinx.datetime)
+  api(projects.dataCoinsured)
 
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.api)
-  implementation(libs.apollo.runtime)
   implementation(libs.apollo.normalizedCache)
+  implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
   implementation(libs.koin.core)
@@ -25,6 +26,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
+  implementation(projects.dataContract)
   implementation(projects.dataPayingMember)
   implementation(projects.featureFlagsPublic)
 

@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
@@ -27,13 +26,18 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightS
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Lock
-import hedvig.resources.R
+import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
+import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_FROM
+import hedvig.resources.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL
+import hedvig.resources.CONTRACT_EDIT_INFO
+import hedvig.resources.GENERAL_REMOVE
+import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun InsuredRow(
@@ -79,8 +83,8 @@ internal fun InsuredRow(
             Spacer(Modifier.height(4.dp))
             HighlightLabel(
               labelText = stringResource(
-                id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
-                dateTimeFormatter.format(activatesOn.toJavaLocalDate()),
+                Res.string.CONTRACT_ADD_COINSURED_ACTIVE_FROM,
+                dateTimeFormatter.format(activatesOn),
               ),
               size = Small,
               color = Amber(MEDIUM),
@@ -90,8 +94,8 @@ internal fun InsuredRow(
             Spacer(Modifier.height(4.dp))
             HighlightLabel(
               labelText = stringResource(
-                id = R.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
-                dateTimeFormatter.format(terminatesOn.toJavaLocalDate()),
+                Res.string.CONTRACT_ADD_COINSURED_ACTIVE_UNTIL,
+                dateTimeFormatter.format(terminatesOn),
               ),
               size = Small,
               color = Red(LIGHT),
@@ -122,14 +126,16 @@ internal fun InsuredRow(
           }
 
           allowEdit && hasMissingInfo -> {
-            HedvigText(stringResource(id = R.string.CONTRACT_EDIT_INFO))
+            HedvigText(stringResource(Res.string.CONTRACT_EDIT_INFO))
           }
 
-          !allowEdit -> Icon(
-            imageVector = HedvigIcons.Close,
-            contentDescription = stringResource(R.string.GENERAL_REMOVE),
-            modifier = Modifier.size(16.dp),
-          )
+          !allowEdit -> {
+            Icon(
+              imageVector = HedvigIcons.Close,
+              contentDescription = stringResource(Res.string.GENERAL_REMOVE),
+              modifier = Modifier.size(16.dp),
+            )
+          }
 
           else -> {}
         }

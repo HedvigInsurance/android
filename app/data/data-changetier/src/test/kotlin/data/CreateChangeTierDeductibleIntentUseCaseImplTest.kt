@@ -3,6 +3,7 @@ package data
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.annotations.ApolloExperimental
@@ -15,6 +16,7 @@ import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.CreateChangeTierDeductibleIntentUseCaseImpl
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.changetier.data.TierConstants
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.featureflags.flags.Feature
@@ -29,6 +31,7 @@ import octopus.type.buildChangeTierDeductibleCreateIntentOutput
 import octopus.type.buildChangeTierDeductibleFromAgreement
 import octopus.type.buildChangeTierDeductibleIntent
 import octopus.type.buildChangeTierDeductibleQuote
+import octopus.type.buildChangeTierDeflectOutput
 import octopus.type.buildDeductible
 import octopus.type.buildMoney
 import octopus.type.buildProductVariant
@@ -71,6 +74,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
         data = ChangeTierDeductibleCreateIntentMutation.Data(OctopusFakeResolver) {
           changeTierDeductibleCreateIntent = buildChangeTierDeductibleCreateIntentOutput {
             intent = null
+            deflectOutput = null
           }
         },
       )
@@ -147,6 +151,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
                 }
               }
             }
+            deflectOutput = null
           }
         },
       )
@@ -223,6 +228,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
                 }
               }
             }
+            deflectOutput = null
           }
         },
       )
@@ -270,6 +276,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
               }
               quotes = listOf()
             }
+            deflectOutput = null
           }
         },
       )
@@ -346,6 +353,28 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
                 }
               }
             }
+            deflectOutput = null
+          }
+        },
+      )
+    }
+
+  @OptIn(ApolloExperimental::class)
+  private val apolloClientWithDeflectOutput: ApolloClient
+    get() = testApolloClientRule.apolloClient.apply {
+      registerTestResponse(
+        operation = ChangeTierDeductibleCreateIntentMutation(
+          contractId = testId,
+          source = testSource,
+          addonsFlagOn = true,
+        ),
+        data = ChangeTierDeductibleCreateIntentMutation.Data(OctopusFakeResolver) {
+          changeTierDeductibleCreateIntent = buildChangeTierDeductibleCreateIntentOutput {
+            intent = null
+            deflectOutput = buildChangeTierDeflectOutput {
+              title = "Deflect title"
+              message = "Deflect message"
+            }
           }
         },
       )
@@ -362,7 +391,9 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
     assertk.assertThat(result)
       .isNotNull()
       .isRight()
-      .prop(ChangeTierDeductibleIntent::quotes)
+      .prop(ChangeTierDeductibleIntent::intentOutput)
+      .isNotNull()
+      .prop(IntentOutput::quotes)
       .isEmpty()
   }
 
@@ -378,16 +409,20 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
     assertk.assertThat(result)
       .isNotNull()
       .isRight()
-      .prop(ChangeTierDeductibleIntent::activationDate)
+      .prop(ChangeTierDeductibleIntent::intentOutput)
+      .isNotNull()
+      .prop(IntentOutput::activationDate)
       .isEqualTo(activationDateNovember)
 
-    val ids = result.getOrNull()?.quotes?.map { it.id }
+    val ids = result.getOrNull()?.intentOutput?.quotes?.map { it.id }
     assertk.assertThat(ids)
       .isNotNull()
       .isEqualTo(listOf(TierConstants.CURRENT_ID, "id"))
 
     val deductibleAmount =
-      result.getOrNull()?.quotes?.first { it.id != TierConstants.CURRENT_ID }?.deductible?.deductibleAmount?.amount
+      result.getOrNull()?.intentOutput?.quotes?.first {
+        it.id != TierConstants.CURRENT_ID
+      }?.deductible?.deductibleAmount?.amount
 
     assertk.assertThat(deductibleAmount)
       .isNotNull()
@@ -395,7 +430,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
   }
 
   @Test
-  fun `when response is otherwise good but the intent is null the result is ErrorMessage`() = runTest {
+  fun `when response is otherwise good but the intent and deflect are null the result is ErrorMessage`() = runTest {
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
     val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
       apolloClient = apolloClientWithGoodButNullResponse,
@@ -446,7 +481,7 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
       featureManager = featureManager,
     )
     val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
-      .getOrNull()?.quotes?.filter { it.id == TierConstants.CURRENT_ID }
+      .getOrNull()?.intentOutput?.quotes?.filter { it.id == TierConstants.CURRENT_ID }
     val resultSize = result?.size
     val resultFirst = result?.first()
 
@@ -472,5 +507,104 @@ class CreateChangeTierDeductibleIntentUseCaseImplTest {
     assertk.assertThat(result)
       .isNotNull()
       .isLeft()
+  }
+
+  @Test
+  fun `when result's deflectOutput is not null intentOutput should be null and deflectOutput should be populated`() =
+    runTest {
+      val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+      val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
+        apolloClient = apolloClientWithDeflectOutput,
+        featureManager = featureManager,
+      )
+      val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
+
+      assertk.assertThat(result)
+        .isNotNull()
+        .isRight()
+
+      val intent = result.getOrNull()
+      assertk.assertThat(intent?.intentOutput)
+        .isNull()
+
+      assertk.assertThat(intent?.deflectOutput)
+        .isNotNull()
+
+      assertk.assertThat(intent?.deflectOutput?.title)
+        .isEqualTo("Deflect title")
+    }
+
+  @Test
+  fun `when deflectOutput is present intent field is ignored`() = runTest {
+    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TRAVEL_ADDON to true))
+    val apolloClientWithBothSet = testApolloClientRule.apolloClient.apply {
+      registerTestResponse(
+        operation = ChangeTierDeductibleCreateIntentMutation(
+          contractId = testId,
+          source = testSource,
+          addonsFlagOn = true,
+        ),
+        data = ChangeTierDeductibleCreateIntentMutation.Data(OctopusFakeResolver) {
+          changeTierDeductibleCreateIntent = buildChangeTierDeductibleCreateIntentOutput {
+            intent = buildChangeTierDeductibleIntent {
+              activationDate = activationDateNovember
+              agreementToChange = buildChangeTierDeductibleFromAgreement {
+                premium = buildMoney {
+                  amount = 169.0
+                  currencyCode = SEK
+                }
+                deductible = buildDeductible {
+                  displayText = "A very good deductible"
+                  percentage = 0
+                  amount = buildMoney {
+                    amount = 3000.0
+                    currencyCode = SEK
+                  }
+                }
+                displayItems = listOf()
+                tierLevel = 1
+                tierName = "STANDARD"
+                productVariant = buildProductVariant {
+                  displayName = "Variant"
+                  typeOfContract = "SE_APARTMENT_RENT"
+                  partner = null
+                  perils = listOf()
+                  insurableLimits = listOf()
+                  documents = listOf()
+                  displayNameTier = "Standard"
+                  tierDescription = "Our standard coverage"
+                }
+              }
+              quotes = listOf()
+            }
+            deflectOutput = buildChangeTierDeflectOutput {
+              title = "Deflect title"
+              message = "Deflect message"
+            }
+          }
+        },
+      )
+    }
+
+    val createChangeTierDeductibleIntentUseCase = CreateChangeTierDeductibleIntentUseCaseImpl(
+      apolloClient = apolloClientWithBothSet,
+      featureManager = featureManager,
+    )
+    val result = createChangeTierDeductibleIntentUseCase.invoke(testId, ChangeTierCreateSource.SELF_SERVICE)
+
+    assertk.assertThat(result)
+      .isNotNull()
+      .isRight()
+
+    val intent = result.getOrNull()
+
+    assertk.assertThat(intent?.intentOutput)
+      .isNull()
+
+    assertk.assertThat(intent?.deflectOutput)
+      .isNotNull()
+
+    assertk.assertThat(intent?.deflectOutput?.title)
+      .isEqualTo("Deflect title")
   }
 }

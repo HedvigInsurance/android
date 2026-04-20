@@ -1,0 +1,5 @@
+query ClaimIntent($id: ID!) {
+  claimIntent(id: $id) {
+    ...ClaimIntentFragment
+  }
+}

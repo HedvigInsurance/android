@@ -31,6 +31,7 @@ hedvig {
     mapScalarToKotlinString("UUID")
     mapScalarToKotlinString("Url")
     mapScalarToKotlinString("FlowContext")
+    mapScalarToKotlinString("ClaimIntentStepContentFormFieldValue")
   }
 }
 

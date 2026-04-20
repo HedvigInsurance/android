@@ -13,7 +13,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -24,9 +26,10 @@ import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
-import coil.ImageLoader
+import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
@@ -34,6 +37,7 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
@@ -69,6 +73,7 @@ class MainActivity : AppCompatActivity() {
   private val simpleVideoCache: SimpleCache by inject()
 
   private val logoutUseCase: LogoutUseCase by inject()
+  private val getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase by inject()
 
   private var navController: NavController? = null
 
@@ -97,6 +102,7 @@ class MainActivity : AppCompatActivity() {
       statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
       navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
     )
+    ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
     val defaultLocale = getSystemLocale(resources.configuration)
     languageLaunchCheckUseCase.invoke(defaultLocale)
@@ -121,6 +127,8 @@ class MainActivity : AppCompatActivity() {
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
+      val context = LocalContext.current
+      RiveInitializer.init(context)
       val windowSizeClass = calculateWindowSizeClass(this)
       val navHostController = rememberNavController().also { navController = it }
       LifecycleStartEffect(navHostController) {
@@ -155,6 +163,7 @@ class MainActivity : AppCompatActivity() {
         tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
         externalNavigator = externalNavigator,
         logoutUseCase = logoutUseCase,
+        getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
       )
     }
   }

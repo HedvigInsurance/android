@@ -3,6 +3,7 @@ query Conversation($id: UUID!, $newerToken: String, $olderToken: String) {
     messagePage(newerToken: $newerToken, olderToken: $olderToken) {
       ...ChatMessagePageFragment
     }
+    responseIsBeingGenerated
   }
 }
 
@@ -31,5 +32,9 @@ fragment ChatMessageFragment on ChatMessage {
   }
   ... on ChatMessageText {
     text
+    actions {
+      title
+      url
+    }
   }
 }

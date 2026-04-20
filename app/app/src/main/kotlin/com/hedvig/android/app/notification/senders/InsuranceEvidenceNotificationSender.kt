@@ -15,10 +15,12 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
-import hedvig.resources.R.drawable.ic_hedvig_h
+import com.hedvig.android.permission.PermissionManager
+import hedvig.resources.R
 
 class InsuranceEvidenceNotificationSender(
   private val context: Context,
+  private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
@@ -37,7 +39,7 @@ class InsuranceEvidenceNotificationSender(
     val body = remoteMessage.bodyFromCustomerIoData()
     val notification = NotificationCompat
       .Builder(context, notificationChannel.channelId)
-      .setSmallIcon(ic_hedvig_h)
+      .setSmallIcon(R.drawable.ic_hedvig_h)
       .setContentTitle(title)
       .setContentText(body)
       .setAutoCancel(true)
@@ -46,6 +48,7 @@ class InsuranceEvidenceNotificationSender(
       .build()
     sendHedvigNotification(
       context = context,
+      permissionManager = permissionManager,
       notificationId = INSURANCE_EVIDENCE_NOTIFICATION_ID,
       notification = notification,
       notificationChannel = notificationChannel,

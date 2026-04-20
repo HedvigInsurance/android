@@ -5,6 +5,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.the
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -29,6 +30,12 @@ private fun Project.configureKotlinMultiplatform() {
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+      binaries.all {
+        freeCompilerArgs += "-Xdisable-phases=DevirtualizationAnalysis,DCEPhase,RemoveRedundantCallsToStaticInitializersPhase"
+      }
+    }
+
     listOf(
       iosX64(),
       iosArm64(),

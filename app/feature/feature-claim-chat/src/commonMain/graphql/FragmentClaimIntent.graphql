@@ -1,0 +1,129 @@
+fragment ClaimIntentFragment on ClaimIntent {
+  id
+  progress
+  currentStep {
+    id
+    text
+    hint
+    content {
+      ...ClaimIntentStepContentFragment
+    }
+    isRegrettable
+  }
+  createdClaim {
+    id
+    submittedAt
+  }
+}
+
+fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
+  ...FormFragment
+  ...ContentSelectFragment
+  ...TaskFragment
+  ...AudioRecordingFragment
+  ...FileUploadFragment
+  ...SummaryFragment
+  ...DeflectionFragment
+}
+
+fragment FormFragment on ClaimIntentStepContentForm {
+  fields {
+    id
+    type
+    title
+    suffix
+    isRequired
+    options {
+      title
+      subtitle
+      value
+    }
+    defaultValues
+    minValue
+    maxValue
+    searchData {
+      suggestedQuery
+      modalTitle
+      modalSubtitle
+    }
+  }
+  isSkippable
+}
+
+fragment ContentSelectFragment on ClaimIntentStepContentSelect {
+  options {
+    id
+    title
+  }
+  isSkippable
+  style
+  defaultSelectedId
+}
+
+fragment TaskFragment on ClaimIntentStepContentTask {
+  description
+  isCompleted
+}
+
+fragment AudioRecordingFragment on ClaimIntentStepContentAudioRecording {
+  uploadUri
+  isSkippable
+  freeTextMinLength
+  freeTextMaxLength
+}
+
+fragment FileUploadFragment on ClaimIntentStepContentFileUpload {
+  uploadUri
+  isSkippable
+}
+
+fragment SummaryFragment on ClaimIntentStepContentSummary {
+  items {
+    title
+    value
+  }
+  audioRecordings {
+    url
+  }
+  fileUploads {
+    url
+    contentType
+    fileName
+  }
+  freeTexts
+}
+
+fragment DeflectionFragment on ClaimIntentStepContentDeflection {
+  title
+  infoText
+  warningText
+  partners {
+    id
+    imageUrl
+    phoneNumber
+    title
+    description
+    info
+    url
+    urlButtonTitle
+  }
+  simplePartners {
+    url
+    urlButtonTitle
+  }
+  partnersInfo {
+    ...DeflectionInfoBlockFragment
+  }
+  content {
+    ...DeflectionInfoBlockFragment
+  }
+  faq {
+    ...DeflectionInfoBlockFragment
+  }
+  buttonTitle
+}
+
+fragment DeflectionInfoBlockFragment on ClaimIntentStepContentDeflectionInfoBlock {
+  title
+  description
+}

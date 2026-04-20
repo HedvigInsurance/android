@@ -3,6 +3,7 @@ package com.hedvig.android.core.common.di
 import com.hedvig.android.core.common.ApplicationScope
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import org.koin.dsl.module
 
 val coreCommonModule = module {

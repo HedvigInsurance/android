@@ -3,7 +3,6 @@ package com.hedvig.android.feature.chat.ui
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -15,7 +14,9 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.R
+import hedvig.resources.Res
+import hedvig.resources.general_close_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ChatBanner(
@@ -39,7 +40,7 @@ internal fun ChatBanner(
       withIcon = true,
       style = if (possibleToClose) {
         NotificationDefaults.InfoCardStyle.Button(
-          buttonText = stringResource(R.string.general_close_button),
+          buttonText = stringResource(Res.string.general_close_button),
           onButtonClick = onCloseCLick,
         )
       } else {

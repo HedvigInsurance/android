@@ -11,9 +11,9 @@ import arrow.core.raise.either
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.shared.foreverui.ui.data.ForeverData
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.RetryLoadReferralData
@@ -46,7 +46,9 @@ internal class ForeverPresenter(
           currentState = state.copy(referralCodeErrorMessage = null)
         }
 
-        RetryLoadReferralData -> foreverDataLoadIteration++
+        RetryLoadReferralData -> {
+          foreverDataLoadIteration++
+        }
 
         is SubmitNewReferralCode -> {
           referralCodeToSubmit = event.code.trim()
@@ -106,8 +108,7 @@ internal class ForeverPresenter(
         },
       )
     }
-    val state = currentState
-    return when (state) {
+    return when (val state = currentState) {
       ForeverUiState.Error, ForeverUiState.Loading -> state
       is ForeverUiState.Success -> state.copy(showReferralCodeSuccessfullyChangedMessage = showSuccessSnackbar)
     }

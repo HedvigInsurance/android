@@ -1,4 +1,5 @@
-import com.android.build.api.dsl.androidLibrary
+import com.android.build.api.dsl.KotlinMultiplatformAndroidCompilation
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.hedvig.android.configureAutomaticNamespace
 import com.hedvig.android.configureKotlinCompilerOptions
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -7,10 +8,12 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.plugin.KotlinHierarchyBuilder
 
 class KotlinMultiplatformAndroidLibraryConventionPlugin : Plugin<Project> {
   override fun apply(target: Project) {
@@ -26,6 +29,17 @@ class KotlinMultiplatformAndroidLibraryConventionPlugin : Plugin<Project> {
 }
 
 /**
+ * Replacement of [KotlinHierarchyBuilder.withAndroidTarget] while using `androidLibrary {}` instead of `androidTarget`
+ * as one of the KMP targets.
+ */
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
+fun KotlinHierarchyBuilder.withAndroidLibraryTarget() {
+  withCompilations {
+    it is KotlinMultiplatformAndroidCompilation
+  }
+}
+
+/**
  * Configure base Kotlin Multiplatform libraries that also need to be an android target
  *
  * See [com.hedvig.android.configureKotlinAndroid] as the source of truth for what must be done here. There are
@@ -37,17 +51,19 @@ private fun Project.configureKotlinAndroidMultiplatform() {
   val libs = the<LibrariesForLibs>()
 
   project.configure<KotlinMultiplatformExtension> {
-    androidLibrary {
-      this.compileSdk = libs.versions.compileSdkVersion.get().toInt()
-      this.minSdk = libs.versions.minSdkVersion.get().toInt()
-      this.enableCoreLibraryDesugaring = true
-      this.compilations.configureEach {
-        this.compileTaskProvider.configure {
-          this.compilerOptions {
-            this.configureKotlinCompilerOptions()
+    targets.withType(KotlinMultiplatformAndroidLibraryTarget::class.java) {
+      @Suppress("UnstableApiUsage")
+      androidResources.enable = true
+      compileSdk = libs.versions.compileSdkVersion.get().toInt()
+      minSdk = libs.versions.minSdkVersion.get().toInt()
+      enableCoreLibraryDesugaring = true
+      compilations.configureEach {
+        compileTaskProvider.configure {
+          compilerOptions {
+            configureKotlinCompilerOptions()
           }
         }
-        this.compileTaskProvider.configure {
+        compileTaskProvider.configure {
           compilerOptions {
             if (this is KotlinJvmCompilerOptions) {
               this.jvmTarget.set(JvmTarget.JVM_21)
@@ -56,7 +72,7 @@ private fun Project.configureKotlinAndroidMultiplatform() {
           }
         }
       }
-      configureAutomaticNamespace(path, this.namespace, { this.namespace = it })
+      configureAutomaticNamespace(path, namespace, { namespace = it })
       // https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-resources-setup.html#resources-in-the-androidlibrary-target
       experimentalProperties["android.experimental.kmp.enableAndroidResources"] = true
     }

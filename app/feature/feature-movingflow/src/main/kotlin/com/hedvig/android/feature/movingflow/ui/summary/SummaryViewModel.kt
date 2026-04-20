@@ -31,11 +31,11 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Content.S
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryUiState.Loading
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
-import com.hedvig.android.tiersandaddons.DisplayDocument
+import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.DisplayDocument
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
@@ -180,8 +180,11 @@ internal class SummaryPresenter(
       val summaryInfoValue = summaryInfo
     ) {
       SummaryInfoState.Loading -> Loading
+
       SummaryInfoState.Error.MissingOngoingMovingFlow -> SummaryUiState.Error
+
       SummaryInfoState.Error.NoMatchingQuoteFound -> SummaryUiState.Error
+
       is SummaryInfoState.Content -> SummaryUiState.Content(
         summaryInfo = summaryInfoValue.summaryInfo,
         isSubmitting = submitChangesWithData != null,

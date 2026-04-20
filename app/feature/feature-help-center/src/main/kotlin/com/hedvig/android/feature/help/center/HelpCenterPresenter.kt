@@ -112,8 +112,14 @@ internal class HelpCenterPresenter(
 
     CollectEvents { event ->
       when (event) {
-        is OnQuickActionSelected -> selectedQuickAction = event.quickAction
-        is OnDismissQuickActionDialog -> selectedQuickAction = null
+        is OnQuickActionSelected -> {
+          selectedQuickAction = event.quickAction
+        }
+
+        is OnDismissQuickActionDialog -> {
+          selectedQuickAction = null
+        }
+
         ClearSearchQuery -> {
           currentState = currentState.copy(search = null)
         }
@@ -140,12 +146,15 @@ internal class HelpCenterPresenter(
           selectedQuickAction = null
           currentState = currentState.copy(destinationToNavigate = null)
         }
+
         is NavigateToQuickAction -> {
           selectedQuickAction = null
           currentState = currentState.copy(destinationToNavigate = event.destination)
         }
 
-        HelpCenterEvent.ReloadFAQAndQuickLinks -> loadIteration++
+        HelpCenterEvent.ReloadFAQAndQuickLinks -> {
+          loadIteration++
+        }
       }
     }
 

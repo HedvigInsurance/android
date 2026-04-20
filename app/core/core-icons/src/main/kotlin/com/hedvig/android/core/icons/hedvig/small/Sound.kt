@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.core.icons.HedvigIcons
 
 @Suppress("UnusedReceiverParameter")
-public val HedvigIcons.Sound: ImageVector
+val HedvigIcons.Sound: ImageVector
   get() {
     if (_sound != null) {
       return _sound!!

@@ -1,3 +1,28 @@
+type ActiveAddon {
+  id: ID!
+  """
+  Cost of the existing addon.
+  """
+  cost: ItemCost!
+  """
+  Used for displaying current coverage.
+  eg Travel Insurance Plus (45 days)
+  """
+  displayTitle: String!
+  """
+  Used for displaying current coverage.
+  eg Risk description
+  """
+  displayDescription: String
+}
+"""
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+"""
+scalar ID
+"""
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+"""
+scalar String
 """
 An addon is an additional insurance that can be added to a contract. It is usually a separate insurance.
 """
@@ -11,6 +36,42 @@ type Addon {
   Premium of the addon.
   """
   premium: Money!
+}
+"""
+Output type for AddonActivate mutation.
+"""
+type AddonActivationOutput {
+  """
+  If any error occurred.
+  """
+  userError: UserError
+}
+"""
+Output type for AddonBanner query.
+Returns info to show in the banner.
+"""
+type AddonBanner {
+  """
+  List of member contracts that is eligible.
+  One of these ids are required later when calling AddonOffer to get addon prices.
+  """
+  contractIds: [ID!]!
+  """
+  Title to show in banner page.
+  """
+  displayTitleName: String!
+  """
+  Description to show in banner page.
+  """
+  descriptionDisplayName: String!
+  """
+  Texts to show as badges in banner page. Empty if no banner to show.
+  """
+  badges: [String!]!
+  """
+  Flow type
+  """
+  flow: AddonFlow!
 }
 """
 Root of coverage comparison result
@@ -39,10 +100,6 @@ type AddonComparisonCell {
 The `Boolean` scalar type represents `true` or `false`.
 """
 scalar Boolean
-"""
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
-"""
-scalar String
 type AddonComparisonRow {
   """
   Peril title
@@ -56,6 +113,176 @@ type AddonComparisonRow {
   Coverage per tier
   """
   cells: [AddonComparisonCell!]!
+}
+"""
+Returns price for an Addon offer.
+"""
+type AddonContractQuote {
+  """
+  Id of the quote.
+  """
+  quoteId: ID!
+  """
+  Display title of the addon group. eg Travel plus or Car Plus
+  """
+  displayTitle: String!
+  """
+  Display description of the addon group.
+  eg For those who travel often: luggage protection and 24/7 assistance worldwide
+  """
+  displayDescription: String!
+  """
+  The date the addon will be activated.
+  """
+  activationDate: Date!
+  """
+  Addon Content
+  """
+  addonOffer: AddonOfferContent!
+  """
+  List of member current addons
+  """
+  activeAddons: [ActiveAddon!]!
+  """
+  Base insurance cost
+  """
+  baseQuoteCost: ItemCost!
+  """
+  Product variant
+  """
+  productVariant: ProductVariant!
+}
+enum AddonDeflectType {
+  UPGRADE_TIER
+}
+type AddonDisplayItem {
+  displayTitle: String!
+  displayValue: String!
+}
+"""
+Type of flow.
+"""
+enum AddonFlow {
+  APP_TRAVEL_PLUS_SELL_ONLY
+  APP_TRAVEL_PLUS_SELL_OR_UPGRADE
+  APP_CAR_PLUS
+}
+type AddonOffer {
+  """
+  Title to show in offer page.
+  eg "Extend your coverage"
+  """
+  pageTitle: String!
+  """
+  Description to show in offer page.
+  eg "Get extra coverage when you travel abroad"
+  """
+  pageDescription: String!
+  """
+  Optional info message to show on the summary page.
+  """
+  infoMessage: String
+  """
+  New quote
+  """
+  quote: AddonContractQuote!
+  """
+  Agreement total cost
+  """
+  currentTotalCost: ItemCost!
+  """
+  Title to show in what's included page.
+  eg "What is Travel Insurance Plus?"
+  """
+  whatsIncludedPageTitle: String!
+  """
+  Description to show in what's included page.
+  eg "Travel Insurance Plus is extended coverage for those..."
+  """
+  whatsIncludedPageDescription: String!
+}
+"""
+AddonOfferSelectable is used when we have multiple variants for the same quote
+AddonOfferToggleable is used when we have only one variant
+"""
+union AddonOfferContent = AddonOfferSelectable|AddonOfferToggleable
+type AddonOfferDeflect {
+  """
+  Title to show in the page.
+  eg "You have to upgrade your tier"
+  """
+  pageTitle: String!
+  """
+  Description to show in the page.
+  """
+  pageDescription: String!
+  """
+  Deflect type for clients so clients know which action to take
+  """
+  type: AddonDeflectType
+}
+"""
+Output type for AddonOffer mutation.
+Returns offer with quote and addons with prices etc to show in the offer page.
+"""
+union AddonOfferOutput = UserError|AddonOffer|AddonOfferDeflect
+type AddonOfferQuote {
+  """
+  Id of the addon.
+  """
+  id: ID!
+  """
+  Display value of the addon. Will be shown in the select days dropdown. eg 45 days 60 days
+  """
+  displayTitle: String!
+  """
+  Display description we want to show that explains addon
+  """
+  displayDescription: String!
+  """
+  Display items of the addon.
+  eg 'Coverage' with a value of '45 days'
+  """
+  displayItems: [AddonDisplayItem!]!
+  """
+  Cost of the addon
+  """
+  cost: ItemCost!
+  """
+  Addon variant
+  """
+  addonVariant: AddonVariant!
+  """
+   Addon subtype 
+  """
+  subtype: String
+}
+type AddonOfferSelectable {
+  """
+  Display title for variants
+  eg "Maximum travel limit"
+  """
+  fieldTitle: String!
+  """
+  Info title when selecting from variants
+  eg "Choose your maximum travel limit"
+  """
+  selectionTitle: String!
+  """
+  Info description when selecting from variants
+  eg "Days covered when travelling"
+  """
+  selectionDescription: String!
+  """
+  Quotes for addons
+  """
+  quotes: [AddonOfferQuote!]!
+}
+type AddonOfferToggleable {
+  """
+  Quotes for addon
+  """
+  quotes: [AddonOfferQuote!]!
 }
 type AddonPeril {
   """
@@ -75,6 +302,40 @@ type AddonPeril {
   """
   colorCode: String
 }
+type AddonRemoveOffer {
+  """
+  Title to show in removal page.
+  """
+  pageTitle: String!
+  """
+  Description to show in removal page.
+  """
+  pageDescription: String!
+  """
+  Current agreement total cost.
+  """
+  currentTotalCost: ItemCost!
+  """
+  Base insurance cost after removal of removable addons.
+  """
+  baseCost: ItemCost!
+  """
+  Product variant.
+  """
+  productVariant: ProductVariant!
+  """
+  The date the removal will take effect.
+  """
+  activationDate: Date!
+  """
+  Addons available for removal.
+  """
+  removableAddons: [ActiveAddon!]!
+}
+"""
+Output type for addonRemoveStart mutation.
+"""
+union AddonRemoveOutput = UserError|AddonRemoveOffer
 type AddonVariant {
   """
   A `AddonVariant` is identified by its terms version, which is the more technical
@@ -88,10 +349,6 @@ type AddonVariant {
   documents: [InsuranceDocument!]!
   displayName: String!
 }
-"""
-The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
-"""
-scalar ID
 """
 The agreement is the actual, immutable reincarnation of an insurance that is active on a certain date date.
 It carries the actual relevant information about the insurance, such as the form/do dates, premium, insurance
@@ -185,51 +442,31 @@ enum AppPlatform {
   IOS
   ANDROID
 }
-type AvailablePaymentMethodsResponse {
-  paymentMethodsResponse: PaymentMethodsResponse!
+"""
+An addon available for purchase.
+"""
+type AvailableAddon {
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
 }
-input BrowserInfo {
-  userAgent: String!
-  acceptHeader: String!
-  language: String!
-  colorDepth: Int!
-  screenHeight: Int!
-  screenWidth: Int!
-  timeZoneOffset: Int!
-  javaEnabled: Boolean!
-}
-type CampaignDiscount {
+"""
+Yearly savings from bundle discount
+"""
+type BundleYearlySavings {
   """
-  The type of discount, determines the relevancy of the other fields.
+  Total yearly savings amount from bundle discount
   """
-  type: CampaignDiscountType!
-  months: Int!
-  amount: Money!
-  percentage: Int!
-}
-enum CampaignDiscountType {
+  savings: Money!
   """
-  A fixed deduction of cost. This means `CampaignDiscount.amount` is non-zero.
+  Whether the bundle discount covers the full period (true) or has pending/future items (false)
   """
-  MONTHLY_COST
-  """
-  Free for a number of months. This means `CampaignDiscount.months` is non-zero.
-  """
-  FREE_MONTHS
-  """
-  A percentage discount for a number of months. This means both `CampaignDiscount.months`
-  and `CampaignDiscount.percentage` are non-zero.
-  """
-  MONTHLY_PERCENTAGE
-  """
-  A percentage discount indefinitely. This means `CampaignDiscount.percentage` is non-zero.
-  """
-  INDEFINITE_PERCENTAGE
-  """
-  A hack-case to support tagging the member with some kind of partner source. This isn't an actual discount,
-  but we want to display it someplace.
-  """
-  VISIBLE_NO_DISCOUNT
+  bundleDiscountCoversFullPeriod: Boolean!
 }
 type CarItemNotification {
   message: String!
@@ -257,11 +494,6 @@ type Cart {
   Currently redeemed campaign, if any
   It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
   """
-  redeemedCampaign: RedeemedCampaign @deprecated(reason: "Use 'redeemedCampaignV2' instead")
-  """
-  Currently redeemed campaign, if any
-  It's possible that campaignsEnabled is set to false, this means campaign is read-only and cannot be removed
-  """
   redeemedCampaignV2: RedeemedCampaignV2
 }
 """
@@ -276,6 +508,10 @@ type CartBundleDiscountInfo {
   Number of products in cart that are eligible for bundle discount
   """
   eligibleProductCount: Int
+  """
+  Yearly savings from bundle discount
+  """
+  yearlySavings: BundleYearlySavings!
 }
 type CartCost {
   """
@@ -290,6 +526,10 @@ type CartCost {
   Price you will pay after discount.
   """
   net: Money!
+  """
+  Whether the cart has bundle discount.
+  """
+  hasBundleDiscount: Boolean!
 }
 type CartItem {
   """
@@ -300,6 +540,10 @@ type CartItem {
   A list of notifications that are relevant to this cart item.
   """
   notifications: [CarItemNotification!]!
+}
+enum CarTrialProduct {
+  HEDVIG_60_DAYS
+  HEDVIG_14_DAYS
 }
 """
 Returns changed price for an addon.
@@ -364,6 +608,10 @@ type ChangeTierDeductibleCreateIntentOutput {
    Fail case 
   """
   userError: UserError
+  """
+   Deflect output 
+  """
+  deflectOutput: ChangeTierDeflectOutput
 }
 type ChangeTierDeductibleDisplayItem {
   displayTitle: String!
@@ -460,15 +708,24 @@ type ChangeTierDeductibleQuote {
   insurance base premium, addons premiums, campaigns and bundle discounts
   """
   costBreakdown: [ChangeTierPriceDetailItem!]!
+  """
+  Info message we want to show for selected quote
+  """
+  info: String
 }
 enum ChangeTierDeductibleSource {
   SELF_SERVICE
   TERMINATION_BETTER_PRICE
   TERMINATION_BETTER_COVERAGE
 }
+type ChangeTierDeflectOutput {
+  title: String!
+  message: String!
+}
 type ChangeTierPriceDetailItem {
   displayName: String!
   displayValue: String!
+  isCrossed: Boolean!
 }
 interface ChatMessage {
   id: ID!
@@ -480,6 +737,9 @@ interface ChatMessage {
   """
   disclaimer: ChatMessageDisclaimer
 }
+"""
+@deprecated Use ChatMessageText with actions field instead
+"""
 type ChatMessageAction implements ChatMessage {
   id: ID!
   sender: ChatMessageSender!
@@ -518,6 +778,7 @@ type ChatMessageFile implements ChatMessage {
   sentAt: Instant!
   signedUrl: Url!
   mimeType: String!
+  fileName: String
   disclaimer: ChatMessageDisclaimer
 }
 type ChatMessageMutationOutput {
@@ -540,8 +801,12 @@ type ChatMessageText implements ChatMessage {
   sentAt: Instant!
   text: String!
   disclaimer: ChatMessageDisclaimer
+  actions: ChatMessageTextAction
 }
-scalar CheckoutPaymentsAction
+type ChatMessageTextAction {
+  url: Url!
+  title: String!
+}
 type Claim {
   id: ID!
   """
@@ -617,12 +882,43 @@ Root type expressing the entire flow for members trying to report a new claim.
 """
 type ClaimIntent {
   id: ID!
-  currentStep: ClaimIntentStep!
-  sourceMessages: [ClaimIntentSourceMessage!]
+  currentStep: ClaimIntentStep
+  """
+  A value between 0.0 and 1.0 that indicates roughly how far along the submission
+  flow the user has progressed.
+  """
+  progress: Float
+  """
+  The created claim of this intent.
+  Once this value is returned, the intent is effectively over, and no steps
+  can be produced or interacted with.
+  """
+  createdClaim: Claim
+}
+"""
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+"""
+scalar Float
+input ClaimIntentFormFieldSearchInput {
+  stepId: ID!
+  fieldId: ID!
+  query: String!
+}
+type ClaimIntentFormFieldSearchOutput {
+  options: [ClaimIntentStepContentFormFieldOption!]!
+  """
+  If present, this suggests a different query to use.
+  Typically when there are no options, this could contain a fix for a possible query typo.
+  """
+  suggestedQuery: String
 }
 input ClaimIntentFormSubmitInputField {
   fieldId: ID!
-  values: [ClaimIntentStepContentFormFieldValue!]
+  """
+  For most field types, send a single value here.
+  If `ClaimIntentStepContentFormField.isRequired == false`, this can be left empty for "no value".
+  """
+  values: [ClaimIntentStepContentFormFieldValue!]!
 }
 type ClaimIntentMutationOutput {
   intent: ClaimIntent
@@ -633,11 +929,7 @@ type ClaimIntentSourceMessage {
   text: String!
 }
 input ClaimIntentStartInput {
-  """
-  Optionally inject a chat message ID to start the claim intent from. This will replace the audio recording
-  as the first step, using the chat history as the implicit first step.
-  """
-  sourceMessageId: ID
+  developmentFlow: Boolean
 }
 """
 Represents a single step in the claim submission flow.
@@ -646,23 +938,72 @@ shapes (see the `ClaimIntentStepContent` union).
 """
 type ClaimIntentStep {
   id: ID!
-  text: String!
+  text: String
+  hint: String
   content: ClaimIntentStepContent!
+  isRegrettable: Boolean!
 }
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentSummary|ClaimIntentStepContentOutcome
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentDeflection
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
 """
 type ClaimIntentStepContentAudioRecording {
-  hint: String!
   """
   The relative URI towards where one should upload the audio recording.
   """
   uploadUri: String!
+  freeTextMinLength: Int!
+  freeTextMaxLength: Int!
+  isSkippable: Boolean!
+}
+"""
+A read-only step which contains a 'deflection' - i.e. a suggestion that the user takes their claim elsewhere,
+to one of our claims partners.
+This is a terminal step - and cannot be submitted.
+"""
+type ClaimIntentStepContentDeflection {
+  title: String
+  infoText: String
+  warningText: String
+  partners: [ClaimIntentStepContentDeflectionPartner!]!
+  partnersInfo: ClaimIntentStepContentDeflectionInfoBlock
+  content: ClaimIntentStepContentDeflectionInfoBlock!
+  faq: [ClaimIntentStepContentDeflectionInfoBlock!]!
+  buttonTitle: String!
+  simplePartners: [ClaimIntentStepContentDeflectionSimplePartner!]!
+}
+type ClaimIntentStepContentDeflectionInfoBlock {
+  title: String!
+  description: String!
+}
+type ClaimIntentStepContentDeflectionPartner {
+  id: ID!
+  imageUrl: Url
+  phoneNumber: String
+  title: String
+  description: String
+  info: String
+  url: Url
+  urlButtonTitle: String
+}
+type ClaimIntentStepContentDeflectionSimplePartner {
+  url: Url!
+  urlButtonTitle: String!
+}
+"""
+A file upload can be used to prompt the user to upload several files.
+Submitted using `Mutation.claimIntentSubmitFileUpload`.
+"""
+type ClaimIntentStepContentFileUpload {
+  """
+  The relative URI towards where one should upload the files.
+  """
+  uploadUri: String!
+  isSkippable: Boolean!
 }
 """
 A form step is one that contains a form in the shape of a list of "fields".
@@ -670,6 +1011,7 @@ Submitted using `Mutation.claimIntentSubmitForm`.
 """
 type ClaimIntentStepContentForm {
   fields: [ClaimIntentStepContentFormField!]!
+  isSkippable: Boolean!
 }
 """
 A single field to render in the form.
@@ -701,9 +1043,13 @@ type ClaimIntentStepContentFormField {
   """
   options: [ClaimIntentStepContentFormFieldOption!]
   """
-  If present - the pre-defined value of this field.
+  If there are default values, they will show up in this array. Empty means no default value.
   """
-  defaultValue: ClaimIntentStepContentFormFieldValue
+  defaultValues: [ClaimIntentStepContentFormFieldValue!]!
+  """
+  If type is SEARCH, then this will be present.
+  """
+  searchData: ClaimIntentStepContentFormFieldSearchData
   """
   If present - the minimal value this field can hold.
   """
@@ -715,14 +1061,34 @@ type ClaimIntentStepContentFormField {
 }
 type ClaimIntentStepContentFormFieldOption {
   title: String!
+  subtitle: String
+  imageUrl: String
+  isCustomSearchEntry: Boolean!
   value: ClaimIntentStepContentFormFieldValue!
+}
+type ClaimIntentStepContentFormFieldSearchData {
+  """
+  Can be auto-inserted into the search bar.
+  """
+  suggestedQuery: String
+  """
+  Title of the search modal.
+  """
+  modalTitle: String!
+  """
+  Subtitle of the search modal.
+  """
+  modalSubtitle: String!
 }
 enum ClaimIntentStepContentFormFieldType {
   TEXT
   DATE
   NUMBER
+  PHONE_NUMBER
   SINGLE_SELECT
+  MULTI_SELECT
   BINARY
+  SEARCH
 }
 """
 A scalar representing client-server agreed upon submittable form values.
@@ -730,11 +1096,36 @@ This typically will be backed by a String - but other formats could appear.
 """
 scalar ClaimIntentStepContentFormFieldValue
 """
-A step that shows the outcome of a claim intent.
-This is a terminal step - there is no way to submit it.
+A select step is one that contains a choice to select one of several alternatives.
+It can be seen as a special-case form with nicer rendering.
+Submitted using `Mutation.claimIntentSubmitSelect`.
 """
-type ClaimIntentStepContentOutcome {
-  claimId: ID!
+type ClaimIntentStepContentSelect {
+  options: [ClaimIntentStepContentSelectOption!]!
+  style: ClaimIntentStepContentSelectStyle!
+  defaultSelectedId: ID
+  isSkippable: Boolean!
+}
+"""
+A single choice in a "select" step.
+"""
+type ClaimIntentStepContentSelectOption {
+  """
+  The ID for this option. Used when submitting the choice
+  """
+  id: ID!
+  """
+  Rendered title of the choice
+  """
+  title: String!
+}
+"""
+Decides the rendering style of the select step.
+If this is `BINARY` - then clients can assume that `ClaimIntentStepContentSelect.options` have two values.
+"""
+enum ClaimIntentStepContentSelectStyle {
+  PILL
+  BINARY
 }
 """
 A read-only step where the entire claim intent information is displayed before submitting.
@@ -743,6 +1134,7 @@ Submitted using `Mutation.claimIntentSubmitSummary`.
 type ClaimIntentStepContentSummary {
   items: [ClaimIntentStepContentSummaryItem!]!
   audioRecordings: [ClaimIntentStepContentSummaryAudioRecording!]!
+  freeTexts: [String!]!
   fileUploads: [ClaimIntentStepContentSummaryFileUpload!]!
 }
 type ClaimIntentStepContentSummaryAudioRecording {
@@ -767,12 +1159,20 @@ type ClaimIntentStepContentTask {
 }
 input ClaimIntentSubmitAudioInput {
   stepId: ID!
-  audioReference: String
+  audioFileId: ID
   freeText: String
+}
+input ClaimIntentSubmitFileUploadInput {
+  stepId: ID!
+  fileIds: [ID!]!
 }
 input ClaimIntentSubmitFormInput {
   stepId: ID!
   fields: [ClaimIntentFormSubmitInputField!]!
+}
+input ClaimIntentSubmitSelectInput {
+  stepId: ID!
+  selectedId: ID!
 }
 input ClaimIntentSubmitSummaryInput {
   stepId: ID!
@@ -885,6 +1285,10 @@ type Contract {
   """
   supportsCoInsured: Boolean!
   """
+  Whether or not this co-insured for contract can be changed through the 'MidtermChange' API.
+  """
+  supportsCoOwners: Boolean!
+  """
   Whether or not travel certificate can be created for the contract
   """
   supportsTravelCertificate: Boolean!
@@ -898,14 +1302,103 @@ type Contract {
   """
   coInsured: [ContractCoInsured!]
   """
+  Current state of co-owners including upcoming changes.
+  If current agreement doesn't support co-owners, this is null
+  Reuses ContractCoInsured type, for now.
+  """
+  coOwners: [ContractCoOwner!]
+  """
+  Checks if petId is missing on the current or upcoming agreement.
+  """
+  isMissingPetId: Boolean!
+  """
   User messages to show due to self change is blocked.
   """
   selfChangeBlockers: ContractSelfChangeBlockers
+  """
+  List of available addons for the contract.
+  """
+  existingAddons: [ContractAddon!]!
+  """
+  List of available addons for the contract.
+  """
+  availableAddons: [AvailableAddon!]!
+}
+"""
+Represents an existing addon variant on a Contract level, on current or upcoming agreement.
+"""
+type ContractAddon {
+  """
+  The AddonVariant of the agreement, which is the umbrella container for a lot of data related to the addon,
+  such as names, legal documents, perils etc.
+  """
+  addonVariant: AddonVariant!
+  """
+  Display name of the addon.
+  """
+  displayName: String!
+  """
+  Description of the addon.
+  """
+  description: String!
+  """
+  If the addon is currently removable.
+  """
+  isRemovable: Boolean!
+  """
+  If the addon is currently upgradeable.
+  """
+  isUpgradable: Boolean!
+  """
+  Start date, null if pending
+  """
+  startDate: Date
+  """
+  End date, null if open-ended
+  """
+  endDate: Date
 }
 """
 A co-insured on contract.
 """
 type ContractCoInsured {
+  """
+  firstName + lastName + birthDate if all are present, otherwise null
+  """
+  id: ID
+  """
+  First name.
+  """
+  firstName: String
+  """
+  Last name.
+  """
+  lastName: String
+  """
+  National identification number if any.
+  """
+  ssn: String
+  """
+  Co-insured birthdate.
+  """
+  birthdate: Date
+  """
+  The date this co-insured will be removed.
+  """
+  terminatesOn: Date
+  """
+  The date this co-insured will be added.
+  """
+  activatesOn: Date
+  """
+  Whether or not any of firstName, lastName, ssn or birthdate is missing and needs to be added.
+  """
+  hasMissingInfo: Boolean!
+}
+"""
+A co-insured on contract.
+"""
+type ContractCoOwner {
   """
   firstName + lastName + birthDate if all are present, otherwise null
   """
@@ -992,6 +1485,7 @@ type Conversation {
   newestMessage: ChatMessage
   messagePage(olderToken: String, newerToken: String): ChatMessagePage!
   statusMessage: String
+  responseIsBeingGenerated: Boolean!
   """
   Return the claim for this conversation, if it has one.
   Conversations auto-created when a claim is opened will have this, others will not.
@@ -1017,6 +1511,12 @@ input ConversationStartInput {
   """
   id: UUID!
 }
+input CoOwnersInput {
+  firstName: String
+  lastName: String
+  ssn: String
+  birthdate: Date
+}
 enum CountryCode {
   """
   Sweden
@@ -1035,11 +1535,11 @@ type CrossSell {
   id: ID!
   title: String!
   description: String!
+  buttonTitle: String!
   """
   Product page URL for completing the purchase
   """
   storeUrl: String!
-  type: CrossSellType! @deprecated(reason: "Use pillowImage$size for images, you don't need to know cross-sell type on the client")
   pillowImageSmall: StoryblokImageAsset!
   pillowImageLarge: StoryblokImageAsset!
 }
@@ -1069,17 +1569,6 @@ enum CrossSellSource {
   EDIT_COINSURED
   MOVING_FLOW
 }
-enum CrossSellType {
-  CAR
-  HOME
-  ACCIDENT
-  PET
-  PET_CAT
-  PET_DOG
-  APARTMENT_BRF
-  APARTMENT_RENT
-  HOUSE
-}
 type CrossSellV2 {
   """
   Prioritized recommendation (null for INSURANCES)
@@ -1089,6 +1578,7 @@ type CrossSellV2 {
   Other available cross-sells (behavior varies by userFlow)
   """
   otherCrossSells: [CrossSell!]!
+  discountAvailable: Boolean!
 }
 enum CurrencyCode {
   """
@@ -1126,6 +1616,7 @@ type DirectDebitResponse2 {
 }
 input DisplayItemOptions {
   hidePrice: Boolean! = false
+  hideAddons: Boolean! = false
 }
 type EmailMessage {
   id: ID!
@@ -1184,6 +1675,29 @@ input EventInput {
   The event data.
   """
   data: JSON!
+}
+type ExplanationItem {
+  title: String
+  text: String!
+}
+"""
+Single discount line that represents a distinct discount source affecting the item.
+Could represent contract campaign or bundle discount. Referral bonuses apply to member as a whole and will never be
+returned as ExtendedItemDiscount
+"""
+type ExtendedItemDiscount {
+  """
+   General discount information 
+  """
+  itemDiscount: ItemDiscount!
+  """
+   Monthly reduction applied by the discount. It's a negative number 
+  """
+  amount: Money!
+  """
+   Whether discount is on a pending state or not 
+  """
+  isPending: Boolean!
 }
 type ExternalInsuranceCancellation {
   """
@@ -1259,10 +1773,6 @@ type FlowClaimAutomaticAutogiroPayout implements FlowClaimCheckoutMethod {
 input FlowClaimAutomaticAutogiroPayoutInput {
   amount: Float!
 }
-"""
-The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
-"""
-scalar Float
 interface FlowClaimCheckoutMethod {
   id: ID!
 }
@@ -1617,9 +2127,20 @@ interface FlowStep {
 input FlowTerminationCarAutoDecomInput {
   proceedToCancel: Boolean!
 }
+"""
+ Deflect step informing about car insurance automatically switching to decommission tier
+(if decommissioned) or regular tier (if the car is set active again). Member can continue termination from this step.
+"""
 type FlowTerminationCarAutoDecomStep implements FlowStep {
   id: ID!
+  title: String!
+  message: String!
+  explanations: [ExplanationItem!]!
+  info: String
 }
+"""
+ Deflect step informing about car auto-cancellation. End of termination flow. 
+"""
 type FlowTerminationCarDeflectAutoCancelStep implements FlowStep {
   id: ID!
   title: String!
@@ -1888,6 +2409,7 @@ type Member {
   Payment information for this member.
   """
   paymentInformation: MemberPaymentInformation!
+  paymentMethods: MemberPaymentMethods!
   conversations: [Conversation!]!
   legacyConversation: Conversation
   """
@@ -1897,8 +2419,6 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
-  partnerClaimsActive: [PartnerClaim!]!
-  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -1916,12 +2436,14 @@ type Member {
   """
    Get contract info during termination flow. Null if no message to display. 
   """
-  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
-  hasActivePaymentConnection: Boolean! @deprecated(reason: "Use `paymentInformation.status` instead")
+  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification @deprecated(reason: "Use Query.Member.terminationNotification instead")
   """
-  The currently redeemed campaign of this member, if any.
+  Current bundle discount information for this member's non terminated contracts (active, future or pending).
+  Returns null for members that have a contract configuration that don't enable bundle discount.
+  Bundle discount requires at least 2 eligible contracts (home, apartment, car, pet).
+  Accident and trial products are not eligible for bundle discount.
   """
-  redeemedCampaigns: [RedeemedCampaign!]!
+  bundleDiscount: MemberBundleDiscountInfo
   """
   The currently redeemed campaign of this member, if any.
   """
@@ -1955,11 +2477,6 @@ type Member {
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
-  Young Pet Guide stories for the member.
-  Returns a list of educational content stories for young pet owners.
-  """
-  puppyGuideStories: [PuppyGuideStory!]!
-  """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
   """
@@ -1978,6 +2495,15 @@ type Member {
   isEligibleToMakeClaim: Boolean!
   memberActions: MemberActions
   """
+   Get contract info during termination flow. Null if no message to display. 
+  """
+  terminationNotification(input: TerminationFlowNotificationInput!): TerminationFlowNotification
+  """
+  Call this to get the info to show banner.
+  If empty list is returned then member is not eligible for the addon.
+  """
+  addonBanners(flows: [AddonFlow!]!): [AddonBanner!]!
+  """
   Call this to get the info to show in the Travel Addon Upsell or Upgrade banner.
   If null is returned then member is not eligable for the travel addon.
   """
@@ -1986,10 +2512,15 @@ type Member {
 type MemberActions {
   memberId: ID!
   """
+  Returns a deflection to emergency partners if the member has an active contract that includes travel insurance coverage.
+  Reuses the ClaimIntentStepContentDeflection type for convenience.
+  """
+  sickAbroadDeflect: ClaimIntentStepContentDeflection
+  """
   Indicates that the member should review their phone number or add if it is missing.
   """
   isContactInfoUpdateNeeded: Boolean!
-  sickAbroadAction: SickAbroadAction
+  sickAbroadAction: SickAbroadAction @deprecated(reason: "Use sickAbroadDeflect instead")
   """
   Indicate whether the travel certificate option should be displayed.
   """
@@ -1998,12 +2529,27 @@ type MemberActions {
   Indicate whether the possibility to create insurance evidence should be displayed.
   """
   isCreatingOfInsuranceEvidenceEnabled: Boolean!
-  isMovingEnabled: Boolean
-  isConnectPaymentEnabled: Boolean
-  isEditCoInsuredEnabled: Boolean
-  isCancelInsuranceEnabled: Boolean
+  isMovingEnabled: Boolean!
+  isConnectPaymentEnabled: Boolean!
+  isEditCoInsuredEnabled: Boolean!
+  isEditCoOwnersEnabled: Boolean!
+  isCancelInsuranceEnabled: Boolean!
   firstVetAction: FirstVetAction
-  isChangeTierEnabled: Boolean
+  isChangeTierEnabled: Boolean!
+}
+"""
+Bundle discount savings information for a member
+"""
+type MemberBundleDiscountInfo {
+  """
+  Total yearly savings amount from bundle discount across all eligible contracts
+  """
+  yearlySavings: Money!
+  """
+  Whether the bundle discount covers the full period for all contracts.
+  False if some contracts have future start dates (discount doesn't apply until all are active).
+  """
+  bundleDiscountCoversFullPeriod: Boolean!
 }
 """
 Upcoming charge info, null in case of pending or fully settled members
@@ -2028,6 +2574,14 @@ type MemberCharge {
   """
   date: Date!
   """
+  URL to the invoice of a past charge, null if no invoice generated
+  """
+  paymentInvoiceUrl: String
+  """
+  The provider that was or will be used to charge the member, null if unknown
+  """
+  paymentProvider: String
+  """
   Breakdown of the upcoming charge by items
   """
   chargeBreakdown: [MemberChargeBreakdownItem!]!
@@ -2051,10 +2605,11 @@ type MemberCharge {
 type MemberChargeBreakdownItem {
   gross: Money!
   net: Money!
-  discounts: [MemberChargeBreakdownItemDiscount!]
+  discounts: [MemberChargeBreakdownItemDiscount!] @deprecated(reason: "Added to the insurance price breakdown")
   displayTitle: String!
   displaySubtitle: String
   periods: [MemberChargeBreakdownItemPeriod!]!
+  insurancePriceBreakdown: [MemberChargePriceBreakdownItem!]!
 }
 type MemberChargeBreakdownItemDiscount {
   code: String!
@@ -2066,6 +2621,10 @@ type MemberChargeBreakdownItemPeriod {
   toDate: Date!
   amount: Money!
   isPreviouslyFailedCharge: Boolean!
+}
+type MemberChargePriceBreakdownItem {
+  displayTitle: String!
+  amount: Money!
 }
 """
 The status of the charge
@@ -2080,7 +2639,7 @@ enum MemberChargeStatus {
   """
   SUCCESS
   """
-  The charge is pending that means either has been send to payment-service or to the payment provider
+  The charge is pending that means either has been send to the payment provider
   """
   PENDING
   """
@@ -2157,6 +2716,51 @@ type MemberMutationOutput {
   member: Member
   userError: UserError
 }
+type MemberPaymentAvailablePaymentMethod {
+  """
+   Payment provider, eg Trustly, Swish, Nordea, Kivra etc. 
+  """
+  provider: MemberPaymentProvider!
+  """
+   True if the member can set up this payment method for payin. 
+  """
+  supportsPayin: Boolean!
+  """
+   True if the member can set up this payment method for payout. 
+  """
+  supportsPayout: Boolean!
+}
+type MemberPaymentChargeMethodInfo {
+  """
+  An abstract display name of the connection - usually like the name of the bank you are connected to.
+  """
+  displayName: String
+  """
+  A more specific description of your actual connection, such as a bank account reference.
+  """
+  descriptor: String
+  """
+  A payment method used eg AutoGiro
+  """
+  paymentMethod: String!
+  """
+  A payment mandate eg Hedvig Försäkring AB, Trustly
+  """
+  mandate: String
+  """
+  A date of the month when the charge will happen
+  """
+  chargingDayInTheMonth: Int @deprecated(reason: "Use dueDate instead.")
+  """
+  Due date
+  """
+  dueDate: Int
+  """
+  Payment provider used for charging the member, eg Trustly or Kivra.
+  This is used to determine the charge schedule and mandate provider.
+  """
+  paymentProvider: String!
+}
 type MemberPaymentConnection {
   """
   An abstract display name of the connection - usually like the name of the bank you are connected to.
@@ -2189,7 +2793,78 @@ type MemberPaymentInformation {
   """
   A payment connection if registered.
   """
-  connection: MemberPaymentConnection
+  connection: MemberPaymentConnection @deprecated(reason: "Use chargeMethod instead. It provides additional charge metadata including mandate provider, payment method label, and charge schedule.")
+  """
+  A payment connection info
+  """
+  chargeMethod: MemberPaymentChargeMethodInfo
+}
+type MemberPaymentMethod {
+  """
+   The unique id of the payment method. This id is used for switching default and revoking payment methods. 
+  """
+  id: ID!
+  """
+   Payment provider, eg Trustly, Swish, Nordea, Kivra etc. 
+  """
+  provider: MemberPaymentProvider!
+  """
+  The payment method status - ACTIVE, PENDING, or PENDING_DEFAULT.
+  PENDING_DEFAULT means the payment method is awaiting activation and will become default once activated.
+  """
+  status: MemberPaymentMethodStatus!
+  """
+  True if this is the default payment method. Only one ACTIVE payment method can be default at a time.
+  If status is PENDING then payment method will become the default once activated.
+  """
+  isDefault: Boolean!
+  """
+  Specific details of the actual connection - e.g. a bank account reference, phone number for swish,
+  or email/kivra for invoice.
+  """
+  details: PaymentMethodDetails!
+}
+type MemberPaymentMethods {
+  """
+   List of active and pending payment payin methods for this member. 
+  """
+  payinMethods: [MemberPaymentMethod!]!
+  """
+   List of active and pending payment payout methods for this member. 
+  """
+  payoutMethods: [MemberPaymentMethod!]!
+  """
+   The default payment method for payin if any. 
+  """
+  defaultPayinMethod: MemberPaymentMethod
+  """
+   The default payment method for payout if any. 
+  """
+  defaultPayoutMethod: MemberPaymentMethod
+  """
+   The available payment methods that the member can choose from when setting up a new payment method. 
+  """
+  availableMethods: [MemberPaymentAvailablePaymentMethod!]!
+  """
+   The date of the month when member's premium will be charged (or due if invoice) 
+  """
+  chargingDay: Int
+}
+enum MemberPaymentMethodStatus {
+  """
+  The payment connection is active and can be used for payins or payouts.
+  """
+  ACTIVE
+  """
+  The payment connection has been partially set up but is awaiting activation.
+  """
+  PENDING
+}
+enum MemberPaymentProvider {
+  TRUSTLY
+  SWISH
+  NORDEA
+  INVOICE
 }
 type MemberReferral {
   """
@@ -2293,6 +2968,11 @@ input MidtermChangeIntentCreateInput {
   This list contains "null" entries for co-insured not yet defined.
   """
   coInsuredInputs: [CoInsuredInput!]
+  """
+  The list of all co-owners to set on the agreement.
+  This list contains "null" entries for co-owners not yet defined.
+  """
+  coOwnersInputs: [CoOwnersInput!]
 }
 type MidtermChangeIntentMutationOutput {
   intent: MidtermChangeIntent
@@ -2302,6 +2982,13 @@ enum MidtermChangeIntentState {
   INITIATED
   COMPLETED
 }
+type MidtermChangePetIdActivationDate {
+  """
+  Activation date of the MTA agreement.
+  """
+  activationDate: Date!
+}
+union MidtermChangePetIdOutput = MidtermChangePetIdActivationDate|UserError
 type MidtermChangePriceDetailItem {
   displayName: String!
   displayValue: String!
@@ -2410,7 +3097,7 @@ input MoveExtraBuildingInput {
   """
    Extra building type 
   """
-  type: MoveExtraBuildingType!
+  type: String!
   """
    If extra building has water connected 
   """
@@ -2431,6 +3118,10 @@ enum MoveExtraBuildingType {
   BARN
   BOATHOUSE
   OTHER
+}
+type MoveExtraBuildingTypeV2 {
+  type: String!
+  displayName: String!
 }
 type MoveHomeQuote {
   """
@@ -2519,7 +3210,11 @@ type MoveIntent {
   """
    All available external building types accepted for new address 
   """
-  extraBuildingTypes: [MoveExtraBuildingType!]!
+  extraBuildingTypes: [MoveExtraBuildingType!]! @deprecated(reason: "Use extraBuildingTypesV2")
+  """
+   All available external building types accepted for new address 
+  """
+  extraBuildingTypesV2: [MoveExtraBuildingTypeV2!]!
   """
    Number of co-insured from existing contract to use as default 
   """
@@ -2532,12 +3227,12 @@ type MoveIntent {
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   Quote variants for new home contract that member needs to pick one from.
   """
-  homeQuotes: [MoveHomeQuote!]
+  homeQuotes: [MoveHomeQuote!]!
   """
   Will only be present after moveIntentRequest and for new V2_TIERS_AND_DEDUCTIBLES API.
   The MTA quotes for member's non-home contracts with new address.
   """
-  mtaQuotes: [MoveMtaQuote!]
+  mtaQuotes: [MoveMtaQuote!]!
 }
 """
 Cost breakdown for selected move intent configuration
@@ -2695,6 +3390,34 @@ input MoveToHouseInput {
 type Mutation {
   registerDirectDebit2(clientContext: RegisterDirectDebitClientContext2): DirectDebitResponse2!
   """
+   Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
+  """
+  paymentMethodSetupInvoicePayin(input: PaymentMethodSetupInvoicePayinInput!): PaymentMethodSetupOutput!
+  """
+   Setup Trustly payment payin and payout method for the member. 
+  """
+  paymentMethodSetupTrustly(input: PaymentMethodSetupTrustlyInput!): PaymentMethodSetupOutput!
+  """
+   Setup direct bank payout method for the member. 
+  """
+  paymentMethodSetupNordeaPayout(input: PaymentMethodSetupNordeaPayoutInput!): PaymentMethodSetupOutput!
+  """
+   Setup Swish payout method for the member. 
+  """
+  paymentMethodSetupSwishPayout(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  """
+   Setup Swish payin method for the member. 
+  """
+  paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  """
+   Revoke an active payment method. The member will be required to set up a new payment method if they revoke their default one. 
+  """
+  paymentMethodRevoke(id: ID!): UserError
+  """
+   Set an active payment method as default. 
+  """
+  paymentMethodSetDefault(id: ID!): UserError
+  """
   Start a conversation. This is effectively creating one, but with two slight differences from a regular
   "create something"-mutation:
   - It lets the clients inject the ID of the conversation, which is useful for the implementation for some clients
@@ -2708,13 +3431,32 @@ type Mutation {
   """
   claimIntentStart(input: ClaimIntentStartInput): ClaimIntent!
   """
+  Skip this step, proceeding to the next without submitting a response for it.
+  Should only be called if the step is marked as `isSkippable: true`.
+  """
+  claimIntentSkipStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
+  Regret this step, rewinding the intent back to having the current step be a copy of
+  the one referenced as `stepId` (but with a new id).
+  Should only be called if the step is marked as `isRegrettable: true`.
+  """
+  claimIntentRegretStep(stepId: ID!): ClaimIntentMutationOutput!
+  """
   Submit a step containing a `ClaimIntentStepContentForm`.
   """
   claimIntentSubmitForm(input: ClaimIntentSubmitFormInput!): ClaimIntentMutationOutput!
   """
+  Submit a step containing a `ClaimIntentStepContentSelect`.
+  """
+  claimIntentSubmitSelect(input: ClaimIntentSubmitSelectInput!): ClaimIntentMutationOutput!
+  """
   Submit a step containing a `ClaimIntentStepContentAudioRecording`.
   """
   claimIntentSubmitAudio(input: ClaimIntentSubmitAudioInput!): ClaimIntentMutationOutput!
+  """
+  Submit a step containing a `ClaimIntentStepContentFileUpload`.
+  """
+  claimIntentSubmitFileUpload(input: ClaimIntentSubmitFileUploadInput!): ClaimIntentMutationOutput!
   """
   Submit a step containing a `ClaimIntentStepContentTask`.
   """
@@ -2756,19 +3498,11 @@ type Mutation {
   flowClaimSingleItemNext(input: FlowClaimSingleItemInput!, context: FlowContext!): Flow!
   flowClaimSummaryNext(input: FlowClaimSummaryInput!, context: FlowContext!): Flow!
   flowClaimSingleItemCheckoutNext(input: FlowClaimSingleItemCheckoutInput!, context: FlowContext!): Flow!
-  flowTerminationStart(input: FlowTerminationStartInput!, context: FlowContext): Flow!
-  flowTerminationDateNext(input: FlowTerminationDateInput!, context: FlowContext!): Flow!
-  flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
-  flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
-  flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
-  """
-  Tokenize payment details per member in order to be used in future and returns the status
-  """
-  tokenizePaymentDetails2(req: TokenizationRequest): TokenizationResponse
-  """
-  Handle payment redirection, required for 3D Secure verification on cards
-  """
-  submitAdyenRedirection2(req: SubmitAdyenRedirectionRequest): SubmitAdyenRedirectionResponse!
+  flowTerminationStart(input: FlowTerminationStartInput!, context: FlowContext): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationDateNext(input: FlowTerminationDateInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
   travelCertificateCreate(input: TravelCertificateCreateInput!): TravelCertificate!
   """
   The document includes details of the member’s home insurance,
@@ -2834,9 +3568,13 @@ type Mutation {
   """
   productOfferAddonsSelect(productOfferId: UUID!, addonIds: [UUID!]!): ProductOffersMutationOutput!
   """
-  Mark a young pet guide story as read for a specific member.
+  Reprice an existing product offer with updated data. Merges the provided data with the offer's
+  existing `priceIntentData`, creates a new underwriter quote matching the original variant,
+  and replaces the offer.
+  Useful for recommendation offers that don't have a `priceIntentId` and therefore can't use the
+  normal `priceIntentDataUpdate` + `priceIntentConfirm` flow.
   """
-  puppyGuideEngagement(engagement: PuppyEngagementInput!): PuppyGuideStoryMutationOutput!
+  productOfferReprice(offerId: UUID!, data: PricingFormData!): ProductOffersMutationOutput!
   """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
@@ -2861,6 +3599,10 @@ type Mutation {
   """
   shopSessionCartCampaignUnredeem(input: ShopSessionCartCampaignUnredeemInput!): ShopSessionMutationOutput!
   """
+  Update cookie consent given during the shop session.
+  """
+  shopSessionCookieConsentUpdate(input: ShopSessionCookieConsentUpdateInput!): ShopSessionMutationOutput!
+  """
   Begin signing the session, with the ultimate goal of creating insurances in our system, and possibly
   also creating a new Member.
   Signing is an asynchronous process, where the client must poll using `Query.shopSessionSigning` and follow
@@ -2872,7 +3614,6 @@ type Mutation {
   insurance the day after.
   """
   switcherCaseComplete(id: UUID!, currentExpiryDate: Date!): SwitcherCaseMutationOutput!
-  partnerWidgetInit(input: PartnerWidgetInitInput!): ShopSession! @deprecated(reason: "To be removed with old widget app")
   """
    Initiate a Move intent 
   """
@@ -2907,6 +3648,25 @@ type Mutation {
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
   """
+  Called to change the Pet-Id of a cat/dog contract. Creates a midterm change without price change and commits it.
+  """
+  midtermChangePetId(contractId: ID!, petId: String!): MidtermChangePetIdOutput!
+  """
+  Call this to confirm removal of selected addon(s).
+  """
+  addonRemoveConfirm(contractId: ID!, addonIds: [ID!]!): UserError
+  terminateContract(input: TerminationFlowTerminateContractInput!): TerminationFlowContractMutationOutput!
+  deleteContract(input: TerminationFlowDeleteContractInput!): TerminationFlowContractMutationOutput!
+  """
+  Call this to get addon quotes with price etc to show in the offer page.
+  Call this when starting the add/upgrade addon flow.
+  """
+  addonGenerateOffer(contractId: ID!): AddonOfferOutput!
+  """
+  Call this to accept an addon offer and activate selected addon(s).
+  """
+  addonActivateOffer(quoteId: ID!, selectedAddonIds: [ID!]!): AddonActivationOutput!
+  """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when member clicks on the "See price" button in the Travel Addon Upsell banner.
   """
@@ -2916,51 +3676,119 @@ type Mutation {
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
 }
-type PartnerClaim {
-  id: ID!
-  externalId: String!
-  exposureDisplayName: String
-  status: ClaimStatus
-  submittedAt: Date!
-  payoutAmount: Money
-  associatedTypeOfContract: String
-  claimType: String
-  handlerEmail: String
-  displayItems: [ClaimDisplayItem!]!
-  """
-  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
-  """
-  productVariant: ProductVariant
-}
 type PartnerData {
   sas: SasPartnerData
-}
-type PartnerWidgetData {
-  externalRequestId: String!
-  trialInfo: PartnerWidgetTrialInfo
-}
-input PartnerWidgetInitInput {
-  partnerId: UUID!
-  countryCode: CountryCode!
-  externalRequestId: String
-  externalMemberId: UUID
 }
 type PartnerWidgetTrial {
   trialContract: TrialContract!
 }
-type PartnerWidgetTrialInfo {
-  startDate: Date!
-  endDate: Date!
-  birthDate: Date!
-  insuranceData: JSON!
-  ssn: String
-  firstName: String
-  lastName: String
-  email: String
-  phoneNumber: String
+type PaymentMethodBankAccountDetails {
+  """
+   The bank account reference - e.g. clearing number and account number. 
+  """
+  account: String!
+  """
+   The name of the bank - e.g. Nordea, SEB, Handelsbanken. 
+  """
+  bank: String!
 }
-scalar PaymentMethodDetails
-scalar PaymentMethodsResponse
+union PaymentMethodDetails = PaymentMethodInvoiceDetails|PaymentMethodSwishDetails|PaymentMethodBankAccountDetails
+enum PaymentMethodInvoiceDelivery {
+  KIVRA
+  MAIL
+}
+type PaymentMethodInvoiceDetails {
+  """
+   How email is delivered - e.g. Kivra or mail. 
+  """
+  delivery: PaymentMethodInvoiceDelivery!
+  """
+   The email address where the invoice is sent in case delivery is set to MAIL. 
+  """
+  email: String
+}
+input PaymentMethodSetupInvoicePayinInput {
+  """
+   Set up invoice payment method as default. 
+  """
+  setAsDefaultPayout: Boolean!
+}
+input PaymentMethodSetupNordeaPayoutInput {
+  """
+   Set up Nordea payout method as default. 
+  """
+  setAsDefault: Boolean!
+  """
+   The clearing number for member's bank account. 
+  """
+  clearingNumber: String!
+  """
+   The account number for member's bank account. 
+  """
+  accountNumber: String!
+}
+type PaymentMethodSetupOutput {
+  """
+   The status of the setup process. If FAILED the reason for failure can be found in the `error` field. 
+  """
+  status: PaymentMethodSetupStatus!
+  """
+   Url to redirect the member to if any. 
+  """
+  url: String
+  """
+   An error message. Only sat if the setup process failed. 
+  """
+  error: UserError
+}
+enum PaymentMethodSetupStatus {
+  """
+   The payment method setup process is completed and the payment method is ready to use. 
+  """
+  ACTIVE
+  """
+   The payment method setup process is still ongoing. 
+  """
+  PENDING
+  """
+   The payment method setup process has failed. 
+  """
+  FAILED
+}
+input PaymentMethodSetupSwishInput {
+  """
+   Set up Swish payment method as default. 
+  """
+  setAsDefault: Boolean!
+  """
+   The Swish mobile number to use for payout or payin. 
+  """
+  phoneNumber: String!
+}
+input PaymentMethodSetupTrustlyInput {
+  """
+   Set up Trustly payment method as default for payin. 
+  """
+  setAsDefaultPayin: Boolean!
+  """
+   Set up Trustly payment method as default for payout. 
+  """
+  setAsDefaultPayout: Boolean!
+  """
+   The URL to redirect the member back to after a successful setup after Trustly onboarding. 
+  """
+  successUrl: String!
+  """
+   The URL to redirect the member back to after a failed setup after Trustly onboarding. 
+  """
+  failureUrl: String!
+}
+type PaymentMethodSwishDetails {
+  """
+   The Swish phone number. 
+  """
+  phoneNumber: String!
+}
 """
 A pending contract is a proto-contract that has yet to become a fully fledged insurance. It usually means it is meant
 to be activated when an existing external insurance has been cancelled (switching).
@@ -3006,6 +3834,14 @@ type PendingContract {
   List of addons on the agreement.
   """
   addons: [Addon!]!
+  """
+  List of available addons for the contract.
+  """
+  existingAddons: [ContractAddon!]!
+  """
+  List of available addons for the contract.
+  """
+  availableAddons: [AvailableAddon!]!
 }
 type Peril {
   id: ID!
@@ -3142,6 +3978,10 @@ type Product {
   """
   variants: [ProductVariant!]!
   """
+  Return all the possible `AddonVariants` available for this Product
+  """
+  addonVariants: [AddonVariant!]!
+  """
   Localized name of the product in short form.
   """
   displayNameShort: String!
@@ -3157,6 +3997,11 @@ type Product {
   Localized tagline of the product.
   """
   tagline: String!
+  """
+  Localized tagline of the product to be used during purchase flow. This gives editors
+  a couple of tagline options to choose for.
+  """
+  purchaseFlowTagline: String!
   """
   The pillow image asset associated with this product.
   """
@@ -3181,10 +4026,6 @@ type Product {
   Indicates if the product can be bought multiple times or not.
   """
   multiple: Boolean
-  """
-  Bundle discount information for this product
-  """
-  bundleDiscount: ProductOfferBundleDiscountInfo!
   """
   A list of the external insurers valid for this specific product.
   """
@@ -3244,6 +4085,10 @@ type ProductOffer {
   """
   addons: [ProductOfferAddon!]!
   """
+  Bundle discount information for a particular offer
+  """
+  bundleDiscount: ProductOfferBundleDiscountInfo!
+  """
   Values related to cancellation/switching of their existing other insurance.
   """
   cancellation: ExternalInsuranceCancellation!
@@ -3289,12 +4134,20 @@ type ProductOfferBundleDiscountInfo {
   Whether the product is eligible for bundle discount
   """
   isEligible: Boolean!
+  """
+  Potential yearly savings for an offer with bundle discount. 'null' if the offer is not eligible for bundle discount
+  """
+  potentialYearlySavings: Money
 }
 type ProductOfferCost {
   """
   The original price of the base insurance, without selected addons.
   """
   baseInsuranceGross: Money!
+  """
+  The net price of the base insurance after discounts, without selected addons.
+  """
+  baseInsuranceNet: Money!
   """
   Price you will pay after discount for the entire offer, including selected addons.
   """
@@ -3306,7 +4159,8 @@ type ProductOfferCost {
   """
   Collection of discounts that affect an item. Referral bonuses apply to member as a whole so it will not be listed here
   """
-  discounts: [ItemDiscount!]!
+  discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
+  discountsV2: [ExtendedItemDiscount!]!
 }
 type ProductOfferDeductible {
   displayName: String!
@@ -3358,6 +4212,14 @@ type ProductOfferPriceMatch {
   externalPrice: Money!
   externalInsurer: ExternalInsurer!
   priceReduction: Money!
+  """
+  Renewal date of the external insurer's policy. Null when not provided by the external insurer.
+  """
+  renewalDate: Date
+  """
+  External insurer's product name/coverage label.
+  """
+  externalInsuranceName: String
 }
 type ProductOffersMutationOutput {
   productOffers: [ProductOffer!]!
@@ -3437,53 +4299,6 @@ type ProductVariantComparisonRow {
   """
   covered: [String!]!
 }
-input PuppyEngagementInput {
-  name: String!
-  rating: Int
-  opened: Boolean
-  read: Boolean
-  closed: Boolean
-}
-type PuppyGuideStory {
-  """
-  The unique name/identifier of the story.
-  """
-  name: String!
-  """
-  The display title of the story.
-  """
-  title: String!
-  """
-  The subtitle or description of the story.
-  """
-  subtitle: String!
-  """
-  The main content of the story.
-  """
-  content: String!
-  """
-  The image associated with this story.
-  """
-  image: String!
-  """
-  Categories this story belongs to.
-  """
-  categories: [String!]!
-  """
-  The date when the story was marked as read by the user.
-  """
-  read: Boolean!
-  """
-   The user's rating of the story.
-  """
-  rating: Int
-}
-type PuppyGuideStoryMutationOutput {
-  """
-  Indicates whether the mutation was successful.
-  """
-  success: Boolean!
-}
 type Query {
   """
   Return a conversation for a given ID.
@@ -3491,8 +4306,8 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
-  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
+  claimIntentFormFieldSearch(input: ClaimIntentFormFieldSearchInput!): ClaimIntentFormFieldSearchOutput!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
   """
   Gets the currently authenticated member. This is the only valid way to query a `Member` type, and it is based
@@ -3501,10 +4316,6 @@ type Query {
   currentMember: Member!
   entrypointGroups(type: EntrypointType!): [EntrypointGroup!]!
   entrypointSearch(input: EntrypointSearchInput): [Entrypoint!]!
-  """
-  Returns all the available payments methods before the client requests a tokenization
-  """
-  availablePaymentMethods2: AvailablePaymentMethodsResponse!
   shopSession(id: UUID!): ShopSession!
   carTrial(contractId: UUID!): TrialExtension
   """
@@ -3541,6 +4352,19 @@ type Query {
   Cost for selected configuration of moveIntent
   """
   moveIntentCost(intentId: ID!, " Quote that specifies desired tiers and addons " selectedHomeQuoteId: ID!, " Selected addons. Requires corresponding quote to be selected as well " selectedAddonIds: [ID!]!): MoveIntentCost!
+  """
+  Call this to get removable addon quotes to show in the removal flow.
+  """
+  addonRemoveStart(contractId: ID!): AddonRemoveOutput!
+  """
+  Cost for selected configuration of removed addon offer
+  """
+  addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
+  terminationSurvey(contractId: UUID!): TerminationFlowSurvey!
+  """
+  Call this to get the cost of an addon offer for selected addon(s).
+  """
+  addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
@@ -3555,51 +4379,6 @@ type RecommendedCrossSell {
 type RecommendedCrossSellBackgroundPillowImages {
   leftImage: StoryblokImageAsset!
   rightImage: StoryblokImageAsset!
-}
-"""
-A type describing a redeemed campaign.
-@deprecated Use 'RedeemedCampaignV2' instead.
-"""
-type RedeemedCampaign {
-  id: ID!
-  """
-  The code the user input to attach this campaign.
-  """
-  code: String!
-  """
-  A user-readable description of this campaign.
-  """
-  description: String!
-  """
-  The discount information from this campaign.
-  """
-  discount: CampaignDiscount!
-  """
-  REFERRAL (you were invited by a friend) or VOUCHER (this is some kind of limited discount or similar)
-  """
-  type: RedeemedCampaignType!
-  """
-  The expiry of this campaign, this is non-null if the following is true:
-  - It is a kind of campaign that has an expiry (i.e. NOT a referral)
-  - It has been successfully redeemed by a signed member (i.e. not only in a ShopSession)
-  """
-  expiresAt: Date
-  """
-  Lists the currently active contracts that this campaign is applicable to.
-  If this is applicable to ALL insurances, `null` is returned. Otherwise we return the contracts here.
-  NOTE: The implementation of this is rather cursed, and thus this should be used sparingly.
-  """
-  onlyApplicableToContracts: [Contract!]
-}
-enum RedeemedCampaignType {
-  """
-  Invited by a friend (Hedvig Forever)
-  """
-  REFERRAL
-  """
-  Some kind of discount usually created in Hope.
-  """
-  VOUCHER
 }
 enum RedeemedCampaignTypeV2 {
   REFERRAL
@@ -3668,10 +4447,6 @@ type ShopSession {
   """
   urls: ShopSessionUrls!
   """
-  Feature flags and experiment eligibility
-  """
-  experiments: ShopSessionExperiments
-  """
   The Cart value of this shop session, carrying offers currently awaiting checkout.
   """
   cart: Cart!
@@ -3690,7 +4465,6 @@ type ShopSession {
   Indicates when this shop session was signed successfully. Not set if signing attempts fail.
   """
   signedAt: DateTime!
-  partnerWidgetData: PartnerWidgetData @deprecated(reason: "To be removed with old widget web app. New implementation uses partnerWidgetTrial for trials and generic info everywhere else")
   partnerName: String
   """
   Trial-specific info for trial insurances supported in widget flows (no Car Trials, for example)
@@ -3726,6 +4500,7 @@ input ShopSessionAttributionInput {
   A/B testing experiments
   """
   experiments: [ShopSessionExperimentInput!]
+  trackingData: JSON
 }
 input ShopSessionCartCampaignRedeemInput {
   shopSessionId: UUID!
@@ -3742,6 +4517,11 @@ input ShopSessionCartEntriesAddInput {
 input ShopSessionCartEntriesRemoveInput {
   shopSessionId: UUID!
   offerIds: [UUID!]!
+}
+input ShopSessionCookieConsentUpdateInput {
+  shopSessionId: UUID!
+  provider: String!
+  preferences: [String!]!
 }
 input ShopSessionCreateInput {
   countryCode: CountryCode!
@@ -3781,6 +4561,11 @@ type ShopSessionCustomer {
   """
   ssn: String
   """
+  The customer's email address. Only available for new members.
+  Returns null for existing/returning members to protect their PII.
+  """
+  email: String
+  """
   The list of fields that need to be added in order to sign properly.
   Can be updated through `Mutation.shopSessionCustomerUpdate`.
   """
@@ -3813,10 +4598,6 @@ input ShopSessionExperimentInput {
   Experiment variant in SCREAMING_SNAKE_CASE (e.g., 'CONTROL', 'VARIANT_A', 'NEW')
   """
   variant: String!
-}
-type ShopSessionExperiments {
-  bundleDiscount: Boolean
-  accidentDiscount: Boolean
 }
 type ShopSessionMutationOutput {
   shopSession: ShopSession
@@ -3930,13 +4711,6 @@ type StoryblokImageAsset {
   src: String!
   alt: String
 }
-input SubmitAdyenRedirectionRequest {
-  md: String!
-  pares: String!
-}
-type SubmitAdyenRedirectionResponse {
-  resultCode: String!
-}
 """
 Represents a case of switching, pointing towards a soon-to-be insurance Contract on our platform.
 If it is not completed, it can be by calling `Mutation.switcherCaseComplete`.
@@ -3952,33 +4726,73 @@ type SwitcherCaseMutationOutput {
   switcherCase: SwitcherCase
   userError: UserError
 }
+union TerminationFlowAction = TerminationFlowActionTerminateWithDate|TerminationFlowActionDeleteInsurance
+type TerminationFlowActionDeleteInsurance {
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowActionTerminateWithDate {
+  minDate: Date!
+  maxDate: Date!
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowContractMutationOutput {
+  contract: Contract
+  userError: UserError
+}
+input TerminationFlowDeleteContractInput {
+  contractId: ID!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
+}
+type TerminationFlowExtraCoverageItem {
+  displayName: String!
+  displayValue: String
+}
+type TerminationFlowNotification {
+  message: String!
+  type: TerminationFlowNotificationType!
+}
 input TerminationFlowNotificationInput {
   contractId: ID!
   terminationDate: Date!
 }
-enum TokenizationChannel {
-  ANDROID
-  IOS
-  WEB
+enum TerminationFlowNotificationType {
+  INFO
+  WARNING
 }
-input TokenizationRequest {
-  paymentMethodDetails: PaymentMethodDetails!
-  channel: TokenizationChannel!
-  browserInfo: BrowserInfo
-  returnUrl: String!
+type TerminationFlowSurvey {
+  options: [TerminationFlowSurveyOption!]!
+  action: TerminationFlowAction!
 }
-union TokenizationResponse = TokenizationResponseFinished|TokenizationResponseAction
-type TokenizationResponseAction {
-  action: CheckoutPaymentsAction!
+type TerminationFlowSurveyOption {
+  id: ID!
+  title: String!
+  subOptions: [TerminationFlowSurveyOption!]!
+  feedbackRequired: Boolean!
+  suggestion: TerminationFlowSurveyOptionSuggestion
 }
-type TokenizationResponseFinished {
-  resultCode: String!
-  tokenizationResult: TokenizationResultType!
+type TerminationFlowSurveyOptionSuggestion {
+  type: TerminationFlowSurveyOptionSuggestionType!
+  description: String!
+  url: String
 }
-enum TokenizationResultType {
-  COMPLETED
-  PENDING
-  FAILED
+enum TerminationFlowSurveyOptionSuggestionType {
+  UPDATE_ADDRESS
+  UPGRADE_COVERAGE
+  DOWNGRADE_PRICE
+  REDIRECT
+  INFO
+  AUTO_CANCEL_SOLD
+  AUTO_CANCEL_SCRAPPED
+  AUTO_DECOMMISSION
+  AUTO_CANCEL_DECOMMISSION
+  CAR_ALREADY_DECOMMISSION
+}
+input TerminationFlowTerminateContractInput {
+  contractId: ID!
+  terminationDate: Date!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
 }
 type TotalCost {
   monthlyGross: Money!
@@ -4063,6 +4877,7 @@ type TrialExtension {
   id: UUID!
   priceIntent: PriceIntent!
   trialContract: TrialContract!
+  product: CarTrialProduct!
   shopSession: ShopSession!
 }
 """

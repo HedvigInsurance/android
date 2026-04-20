@@ -10,12 +10,12 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
+import com.hedvig.android.core.fileupload.DownloadedFile
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewEvent
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewPresenter
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewState
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
-import java.io.File
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -46,20 +46,20 @@ internal class InsuranceEvidenceOverviewPresenterTest {
   @Test
   fun `when download succeeds show success state with correct uri`() = runTest {
     val (presenter, downloadPdfUseCase) = createPresenterWithFakes()
-    val file = File("dummy/path")
+    val downloadedFile = DownloadedFile(path = "dummy/path", name = "dummy")
     presenter.test(InsuranceEvidenceOverviewState.Loading) {
       sendEvent(InsuranceEvidenceOverviewEvent.OnDownloadCertificate("url"))
       skipItems(3)
-      downloadPdfUseCase.resultTurbine.add(file.right())
+      downloadPdfUseCase.resultTurbine.add(downloadedFile.right())
       assertThat(awaitItem() as InsuranceEvidenceOverviewState.Success)
-        .prop(InsuranceEvidenceOverviewState.Success::insuranceEvidenceUri).isEqualTo(file)
+        .prop(InsuranceEvidenceOverviewState.Success::insuranceEvidenceUri).isEqualTo(downloadedFile)
     }
   }
 
   @Test
   fun `when download fails first time but then succeeds on retry state becomes success`() = runTest {
     val (presenter, downloadPdfUseCase) = createPresenterWithFakes()
-    val file = File("dummy/path")
+    val downloadedFile = DownloadedFile(path = "dummy/path", name = "dummy")
     presenter.test(InsuranceEvidenceOverviewState.Loading) {
       skipItems(1)
       downloadPdfUseCase.resultTurbine.add(ErrorMessage().left())
@@ -67,7 +67,7 @@ internal class InsuranceEvidenceOverviewPresenterTest {
       skipItems(1)
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceOverviewState.Failure::class)
       sendEvent(InsuranceEvidenceOverviewEvent.RetryLoadData)
-      downloadPdfUseCase.resultTurbine.add(file.right())
+      downloadPdfUseCase.resultTurbine.add(downloadedFile.right())
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceOverviewState.Loading::class)
       assertThat(awaitItem()).isInstanceOf(InsuranceEvidenceOverviewState.Success::class)
     }
@@ -75,9 +75,9 @@ internal class InsuranceEvidenceOverviewPresenterTest {
 }
 
 class FakeDownloadPdfUseCase : DownloadPdfUseCase {
-  val resultTurbine = Turbine<Either<ErrorMessage, File>>()
+  val resultTurbine = Turbine<Either<ErrorMessage, DownloadedFile>>()
 
-  override suspend fun invoke(url: String): Either<ErrorMessage, File> {
+  override suspend fun invoke(url: String): Either<ErrorMessage, DownloadedFile> {
     return resultTurbine.awaitItem()
   }
 }

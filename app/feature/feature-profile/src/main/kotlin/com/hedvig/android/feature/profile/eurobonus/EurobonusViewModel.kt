@@ -9,9 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCase
 import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCase
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class EurobonusViewModel(
   getEurobonusDataUseCase: GetEurobonusDataUseCase,

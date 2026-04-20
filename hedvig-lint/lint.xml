@@ -14,4 +14,24 @@
   <issue id="UnsafeOptInUsageError">
     <option name="opt-in" value="androidx.media3.common.util.UnstableApi" />
   </issue>
+
+  <!-- region For performance reasons, ignore any wear related lints which we do not care about -->
+  <issue id="InvalidWearFeatureAttribute" severity="ignore" />
+  <issue id="SquareAndRoundTilePreviews" severity="ignore" />
+  <issue id="TilePreviewImageFormat" severity="ignore" />
+  <issue id="TileProviderPermissions" severity="ignore" />
+  <issue id="WatchFaceEditor" severity="ignore" />
+  <issue id="WatchFaceForAndroidX" severity="ignore" />
+  <issue id="WatchFaceFormatDeclaresHasNoCode" severity="ignore" />
+  <issue id="WatchFaceFormatMissingVersion" severity="ignore" />
+  <issue id="WatchFaceFormatInvalidVersion" severity="ignore" />
+  <issue id="WearableActionDuplicate" severity="ignore" />
+  <issue id="WearableConfigurationAction" severity="ignore" />
+  <issue id="WearStandaloneAppFlag" severity="ignore" />
+  <issue id="WearSplashScreen" severity="ignore" />
+  <issue id="WearRecents" severity="ignore" />
+  <issue id="WearPasswordInput" severity="ignore" />
+  <issue id="WearMaterialTheme" severity="ignore" />
+  <issue id="WearBackNavigation" severity="ignore" />
+  <!-- endregion -->
 </lint>

@@ -14,10 +14,12 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
+import com.hedvig.android.permission.PermissionManager
 import hedvig.resources.R
 
 class CrossSellNotificationSender(
   private val context: Context,
+  private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
@@ -52,6 +54,7 @@ class CrossSellNotificationSender(
       .build()
     sendHedvigNotification(
       context = context,
+      permissionManager = permissionManager,
       notificationId = CROSS_SELL_NOTIFICATION_ID,
       notification = notification,
       notificationChannel = notificationChannel,

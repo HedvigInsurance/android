@@ -14,11 +14,13 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -79,7 +81,7 @@ internal class GetHomeDataUseCaseImpl(
       hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
       getMemberRemindersUseCase.invoke(),
       flow {
-        emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(TravelAddonBannerSource.INSURANCES_TAB))
+        emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(AddonBannerSource.INSURANCES_TAB))
       },
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
@@ -175,7 +177,7 @@ internal class GetHomeDataUseCaseImpl(
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
-          travelBannerInfo = travelBannerInfo,
+          travelBannerInfo = travelBannerInfo?.firstOrNull(),
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
@@ -283,7 +285,7 @@ internal data class HomeData(
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
-  val travelBannerInfo: TravelAddonBannerInfo?,
+  val travelBannerInfo: AddonBannerInfo?,
 ) {
   @Immutable
   data class ClaimStatusCardsData(
@@ -323,7 +325,7 @@ internal data class HomeData(
 /**
  * The reason this exists is because the standard combine function only allows up to 5 generic flows.
  */
-public fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
+fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
   flow: Flow<T1>,
   flow2: Flow<T2>,
   flow3: Flow<T3>,

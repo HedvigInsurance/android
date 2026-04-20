@@ -14,12 +14,12 @@ android {
 }
 
 dependencies {
-  implementation(libs.androidx.lifecycle.compose)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
+  implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
-  implementation(libs.koin.coreViewmodel)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
@@ -29,6 +29,5 @@ dependencies {
   implementation(projects.designSystemHedvig)
   implementation(projects.featureFlagsPublic)
   implementation(projects.languageCore)
-  implementation(projects.moleculeAndroid)
   implementation(projects.moleculePublic)
 }

@@ -39,7 +39,7 @@ android {
       isShrinkResources = true
       setProguardFiles(
         listOf(
-          getDefaultProguardFile("proguard-android.txt"),
+          getDefaultProguardFile("proguard-android-optimize.txt"),
           "proguard-rules.pro",
         ),
       )
@@ -51,11 +51,13 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.foundationLayout)
-  implementation(libs.androidx.compose.runtime)
   implementation(libs.datadog.sdk.core)
+  implementation(libs.jetbrains.compose.runtime)
   implementation(libs.kotlinx.datetime)
   implementation(libs.timber)
   implementation(projects.composeUi)
+  implementation(projects.coreResources)
+  implementation(projects.dataContract)
   implementation(projects.designSystemHedvig)
   implementation(projects.trackingCore)
   implementation(projects.trackingDatadog)

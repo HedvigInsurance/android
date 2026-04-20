@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - feat/pet-chip-id
   workflow_dispatch:
 
 concurrency:

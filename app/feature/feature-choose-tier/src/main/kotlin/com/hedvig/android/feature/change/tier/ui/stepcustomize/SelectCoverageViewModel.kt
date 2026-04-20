@@ -29,9 +29,9 @@ import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageSta
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class SelectCoverageViewModel(
   params: InsuranceCustomizationParameters,
@@ -98,7 +98,9 @@ internal class SelectCoveragePresenter(
           }
         }
 
-        Reload -> currentContractLoadIteration++
+        Reload -> {
+          currentContractLoadIteration++
+        }
 
         LaunchComparison -> {
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
@@ -154,7 +156,7 @@ internal class SelectCoveragePresenter(
                 chosenQuoteInDialog = current
                 currentPartialState = PartialUiState.Success(
                   contractData = ContractData(
-                    activeDisplayPremium = current.premium,
+                    activeDisplayPremium = current.newTotalCost.monthlyNet,
                     contractGroup = current.productVariant.contractGroup,
                     contractDisplayName = current.productVariant.displayName,
                     contractDisplaySubtitle = currentContractData.currentExposureName,
@@ -171,10 +173,15 @@ internal class SelectCoveragePresenter(
       }
     }
 
-    val currentPartialStateValue = currentPartialState
-    return when (currentPartialStateValue) {
-      is PartialUiState.Failure -> Failure
-      PartialUiState.Loading -> Loading
+    return when (val currentPartialStateValue = currentPartialState) {
+      is PartialUiState.Failure -> {
+        Failure
+      }
+
+      PartialUiState.Loading -> {
+        Loading
+      }
+
       is PartialUiState.Success -> {
         val chosenQuoteIndex =
           currentPartialStateValue.map[chosenTier]?.indexOf(chosenQuote).takeIf { it != -1 }
@@ -212,7 +219,7 @@ private fun buildListOfTiersAndPremiums(map: Map<Tier, List<TierDeductibleQuote>
   return buildList {
     map.keys.forEach { tier ->
       // show the lowest premium for this coverage (with From... added later)
-      val premium = map[tier]!!.minBy { it.premium.amount }.premium
+      val premium = map[tier]!!.minBy { it.newTotalCost.monthlyNet.amount }.newTotalCost.monthlyNet
       add(tier to premium)
     }
   }.sortedBy { pair ->
@@ -227,7 +234,7 @@ private fun mapQuotesToTiersAndQuotes(quotes: List<TierDeductibleQuote>): Map<Ti
     }
     .map { entry ->
       entry.key to entry.value.sortedBy {
-        it.deductible?.deductibleAmount?.amount ?: it.premium.amount
+        it.deductible?.deductibleAmount?.amount ?: it.newTotalCost.monthlyNet.amount
       }
     }
   val result = mapOf(*grouped.toTypedArray())
@@ -261,7 +268,9 @@ internal sealed interface SelectCoverageEvent {
 private fun mapLastStateToPartial(state: SelectCoverageState): PartialUiState {
   return when (state) {
     Loading -> PartialUiState.Loading
+
     is Failure -> PartialUiState.Failure
+
     is Success -> PartialUiState.Success(
       contractData = state.uiState.contractData,
       currentActiveQuote = state.currentActiveQuote,

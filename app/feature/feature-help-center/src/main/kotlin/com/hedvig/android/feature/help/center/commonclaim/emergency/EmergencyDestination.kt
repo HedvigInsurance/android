@@ -1,24 +1,25 @@
 package com.hedvig.android.feature.help.center.commonclaim.emergency
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import com.hedvig.android.ui.emergency.EmergencyScreen
+import coil3.ImageLoader
+import com.hedvig.android.shared.partners.deflect.DeflectData
+import com.hedvig.android.shared.partners.deflect.ui.PartnerDeflectDestination
 
 @Composable
 internal fun EmergencyDestination(
-  emergencyNumber: String?,
-  emergencyUrl: String?,
-  preferredPartnerImageHeight: Int?,
+  deflect: DeflectData,
+  imageLoader: ImageLoader,
   navigateUp: () -> Unit,
   openUrl: (String) -> Unit,
+  tryToDialPhone: (String) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
 ) {
-  EmergencyScreen(
-    emergencyNumber = emergencyNumber,
+  PartnerDeflectDestination(
+    deflect = deflect,
+    imageLoader = imageLoader,
     navigateUp = navigateUp,
-    modifier = Modifier.fillMaxSize(),
     openUrl = openUrl,
-    emergencyUrl = emergencyUrl,
-    preferredPartnerImageHeight = preferredPartnerImageHeight,
+    tryToDialPhone = tryToDialPhone,
+    onNavigateToNewConversation = onNavigateToNewConversation,
   )
 }

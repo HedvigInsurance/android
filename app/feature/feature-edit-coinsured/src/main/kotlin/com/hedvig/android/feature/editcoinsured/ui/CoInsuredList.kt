@@ -4,22 +4,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.datepicker.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.horizontalDivider
+import com.hedvig.android.design.system.hedvig.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.Member
-import hedvig.resources.R
+import hedvig.resources.CONTRACT_COINSURED
+import hedvig.resources.CONTRACT_COOWNER
+import hedvig.resources.CONTRACT_NO_INFORMATION
+import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun CoInsuredList(
   uiState: EditCoInsuredState.Loaded.CoInsuredListState,
+  type: CoInsuredFlowType,
   onRemove: (CoInsured) -> Unit,
   onEdit: (CoInsured) -> Unit,
   allowEdit: Boolean,
@@ -46,9 +51,14 @@ internal fun CoInsuredList(
 
     uiState.coInsured.forEach { coInsured ->
       InsuredRow(
-        displayName = coInsured.displayName.ifBlank { stringResource(id = R.string.CONTRACT_COINSURED) },
+        displayName = coInsured.displayName.ifBlank {
+          when (type) {
+            CoInsuredFlowType.CoInsured -> stringResource(Res.string.CONTRACT_COINSURED)
+            CoInsuredFlowType.CoOwners -> stringResource(Res.string.CONTRACT_COOWNER)
+          }
+        },
         identifier = coInsured.identifier(dateTimeFormatter)
-          ?: stringResource(id = R.string.CONTRACT_NO_INFORMATION),
+          ?: stringResource(Res.string.CONTRACT_NO_INFORMATION),
         hasMissingInfo = coInsured.hasMissingInfo,
         isMember = false,
         allowEdit = allowEdit,
@@ -101,9 +111,10 @@ private fun PreviewCoInsuredList() {
           ),
           allCoInsured = listOf(),
         ),
-        {},
-        {},
-        true,
+        type = CoInsuredFlowType.CoInsured,
+        onRemove = {},
+        onEdit = {},
+        allowEdit = true,
       )
     }
   }

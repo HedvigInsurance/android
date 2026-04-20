@@ -14,25 +14,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.ItemCostDiscount
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.AddonVariant
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigDateTimeFormatterDefaults
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -40,29 +42,40 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
-import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
-import com.hedvig.android.design.system.hedvig.datepicker.HedvigDateTimeFormatterDefaults
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
-import com.hedvig.android.feature.addon.purchase.data.CurrentTravelAddon
-import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuote
+import com.hedvig.android.feature.addon.purchase.data.AddonQuote
+import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Content
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryState.Loading
-import com.hedvig.android.tiersandaddons.CostBreakdownEntry
-import com.hedvig.android.tiersandaddons.DisplayDocument
-import com.hedvig.android.tiersandaddons.QuoteCard
-import com.hedvig.android.tiersandaddons.QuoteDisplayItem
-import hedvig.resources.R
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import com.hedvig.ui.tiersandaddons.DisplayDocument
+import com.hedvig.ui.tiersandaddons.QuoteCard
+import com.hedvig.ui.tiersandaddons.QuoteDisplayItem
+import hedvig.resources.ADDON_FLOW_CONFIRMATION_BUTTON
+import hedvig.resources.ADDON_FLOW_CONFIRMATION_TITLE
+import hedvig.resources.ADDON_FLOW_PRICE_LABEL
+import hedvig.resources.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON
+import hedvig.resources.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE
+import hedvig.resources.CONFIRM_CHANGES_TITLE
+import hedvig.resources.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION
+import hedvig.resources.GENERAL_CONFIRM
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_SUMMARY_TITLE
+import hedvig.resources.TIER_FLOW_TOTAL
+import hedvig.resources.general_cancel_button
+import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AddonSummaryDestination(
   viewModel: AddonSummaryViewModel,
+  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
   onSuccess: (activationDate: LocalDate) -> Unit,
@@ -79,8 +92,12 @@ internal fun AddonSummaryDestination(
       onFailure()
     },
     navigateUp = navigateUp,
+    navigateBack = navigateBack,
     onSubmitQuoteClick = {
       viewModel.emit(AddonSummaryEvent.Submit)
+    },
+    reload = {
+      viewModel.emit(AddonSummaryEvent.Reload)
     },
   )
 }
@@ -89,59 +106,78 @@ internal fun AddonSummaryDestination(
 private fun AddonSummaryScreen(
   uiState: AddonSummaryState,
   onSuccess: (LocalDate) -> Unit,
+  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
   onFailure: () -> Unit,
+  reload: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
 ) {
   when (uiState) {
-    Loading -> HedvigFullScreenCenterAlignedProgress()
-
-    is Content -> {
-      LaunchedEffect(uiState.navigateToFailure) {
-        val fail = uiState.navigateToFailure
-        if (fail) {
-          onFailure()
-        }
-      }
-      LaunchedEffect(uiState.activationDateForSuccessfullyPurchasedAddon) {
-        val date = uiState.activationDateForSuccessfullyPurchasedAddon
+    is Loading -> {
+      LaunchedEffect(uiState.activationDateToNavigateToSuccess) {
+        val date = uiState.activationDateToNavigateToSuccess
         if (date != null) {
           onSuccess(date)
         }
       }
 
+      HedvigFullScreenCenterAlignedProgress()
+    }
+
+    is Content -> {
+      LaunchedEffect(uiState.navigateToFailure) {
+        val fail = uiState.navigateToFailure
+        if (fail != null) {
+          onFailure()
+        }
+      }
+
       SummarySuccessScreen(
         uiState = uiState,
+        navigateBack = navigateBack,
         navigateUp = navigateUp,
         onConfirmClick = onSubmitQuoteClick,
       )
+    }
+
+    AddonSummaryState.Error -> {
+      HedvigScaffold(
+        navigateUp = navigateUp,
+      ) {
+        HedvigErrorSection(onButtonClick = reload, modifier = Modifier.weight(1f))
+      }
     }
   }
 }
 
 @Composable
-private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, navigateUp: () -> Unit) {
+private fun SummarySuccessScreen(
+  uiState: Content,
+  onConfirmClick: () -> Unit,
+  navigateBack: () -> Unit,
+  navigateUp: () -> Unit,
+) {
   HedvigScaffold(
     navigateUp,
-    topAppBarText = stringResource(R.string.TIER_FLOW_SUMMARY_TITLE),
+    topAppBarText = stringResource(Res.string.TIER_FLOW_SUMMARY_TITLE),
   ) {
     val locale = getLocale()
     val formattedDate = remember(uiState.activationDate, locale) {
       HedvigDateTimeFormatterDefaults.dateMonthAndYear(
         locale,
-      ).format(uiState.activationDate.toJavaLocalDate())
+      ).format(uiState.activationDate)
     }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     if (showConfirmationDialog) {
       HedvigAlertDialog(
-        title = stringResource(R.string.ADDON_FLOW_CONFIRMATION_TITLE),
+        title = stringResource(Res.string.ADDON_FLOW_CONFIRMATION_TITLE),
         onDismissRequest = { showConfirmationDialog = false },
         onConfirmClick = onConfirmClick,
         buttonSize = DialogDefaults.ButtonSize.BIG,
-        confirmButtonLabel = stringResource(R.string.ADDON_FLOW_CONFIRMATION_BUTTON),
-        dismissButtonLabel = stringResource(R.string.general_close_button),
+        confirmButtonLabel = stringResource(Res.string.GENERAL_CONFIRM),
+        dismissButtonLabel = stringResource(Res.string.general_close_button),
         text = stringResource(
-          R.string.ADDON_FLOW_CONFIRMATION_DESCRIPTION,
+          Res.string.GENERAL_CHANGE_CONFIRMATION_DESCRIPTION,
           formattedDate,
         ),
       )
@@ -158,43 +194,49 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       Modifier
         .padding(horizontal = 16.dp),
     ) {
-      HedvigNotificationCard(
-        message = stringResource(R.string.ADDON_FLOW_SUMMARY_INFO_TEXT),
-        priority = NotificationDefaults.NotificationPriority.Info,
-      )
-      Spacer(Modifier.height(24.dp))
+      uiState.notificationMessage?.let {
+        HedvigNotificationCard(
+          modifier = Modifier.fillMaxWidth(),
+          message = uiState.notificationMessage,
+          priority = NotificationDefaults.NotificationPriority.Info,
+        )
+        Spacer(Modifier.height(24.dp))
+      }
       HorizontalItemsWithMaximumSpaceTaken(
         modifier = Modifier.semantics(true) {},
         startSlot = {
           HedvigText(
-            stringResource(R.string.TIER_FLOW_TOTAL),
+            stringResource(Res.string.TIER_FLOW_TOTAL),
             style = HedvigTheme.typography.bodySmall,
           )
         },
         spaceBetween = 8.dp,
         endSlot = {
-          val text = if (uiState.totalPriceChange.amount > 0) {
-            // with +
-            stringResource(
-              R.string.ADDON_FLOW_PRICE_LABEL,
-              uiState.totalPriceChange,
-            )
-          } else {
-            // without + (supposedly with minus)
-            stringResource(
-              R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-              uiState.totalPriceChange,
+          val totalExtra = uiState.costBreakdownWithExtras?.totalExtra
+          if (totalExtra != null) {
+            val text = if (totalExtra.amount > 0) {
+              // with +
+              stringResource(
+                Res.string.ADDON_FLOW_PRICE_LABEL,
+                totalExtra,
+              )
+            } else {
+              // without + (supposedly with minus)
+              stringResource(
+                Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+                totalExtra,
+              )
+            }
+            val voiceDescription = totalExtra.getPerMonthDescription()
+            HedvigText(
+              text = text,
+              textAlign = TextAlign.End,
+              style = HedvigTheme.typography.bodySmall,
+              modifier = Modifier.semantics(true) {
+                contentDescription = voiceDescription
+              },
             )
           }
-          val voiceDescription = uiState.totalPriceChange.getPerMonthDescription()
-          HedvigText(
-            text = text,
-            textAlign = TextAlign.End,
-            style = HedvigTheme.typography.bodySmall,
-            modifier = Modifier.semantics(true) {
-              contentDescription = voiceDescription
-            },
-          )
         },
       )
       Row(
@@ -202,7 +244,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
         horizontalArrangement = Arrangement.End,
       ) {
         HedvigText(
-          text = stringResource(R.string.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE),
+          text = stringResource(Res.string.ADDON_FLOW_SUMMARY_PRICE_SUBTITLE),
           textAlign = TextAlign.End,
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondary,
@@ -210,7 +252,7 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
       }
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(R.string.ADDON_FLOW_SUMMARY_CONFIRM_BUTTON),
+        text = stringResource(Res.string.CONFIRM_CHANGES_TITLE),
         modifier = Modifier.fillMaxWidth(),
         buttonStyle = Primary,
         buttonSize = Large,
@@ -219,6 +261,15 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
           showConfirmationDialog = true
         },
       )
+      Spacer(Modifier.height(8.dp))
+      HedvigButton(
+        text = stringResource(Res.string.general_cancel_button),
+        modifier = Modifier.fillMaxWidth(),
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        buttonSize = Large,
+        enabled = true,
+        onClick = dropUnlessResumed(block = navigateBack),
+      )
       Spacer(Modifier.height(16.dp))
     }
   }
@@ -226,77 +277,21 @@ private fun SummarySuccessScreen(uiState: Content, onConfirmClick: () -> Unit, n
 
 @Composable
 private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
-  val locale = getLocale()
-  val formattedDate = remember(uiState.activationDate, locale) {
-    HedvigDateTimeFormatterDefaults.dateMonthAndYear(
-      locale,
-    ).format(uiState.activationDate.toJavaLocalDate())
-  }
-  val premium: UiMoney = uiState.quote.itemCost.monthlyNet
-  val previousPremium: UiMoney? = if (uiState.currentTravelAddon != null) {
+  val premium: UiMoney? = uiState.costBreakdownWithExtras?.totalMonthlyNet
+  val previousPremium: UiMoney? = if (premium == uiState.costBreakdownWithExtras?.totalMonthlyGross) {
     null
   } else {
-    uiState.quote.itemCost.monthlyGross
+    uiState.costBreakdownWithExtras?.totalMonthlyGross
   }
-  val costBreakdown: List<CostBreakdownEntry> =
-    if (uiState.currentTravelAddon != null) {
-      val currentAddonDisplayItemValue = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.currentTravelAddon.netPremium,
-      )
-      val newAddonDisplayValueNet = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.quote.itemCost.monthlyNet,
-      )
-      buildList {
-        add(
-          CostBreakdownEntry(
-            uiState.currentTravelAddon.displayNameLong,
-            currentAddonDisplayItemValue,
-            true,
-          ),
-        )
-        add(
-          CostBreakdownEntry(
-            uiState.quote.displayNameLong,
-            newAddonDisplayValueNet,
-            false,
-          ),
-        )
-      }
-    } else {
-      val newAddonDisplayValueGross = stringResource(
-        R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-        uiState.quote.itemCost.monthlyGross,
-      )
-      buildList {
-        add(
-          CostBreakdownEntry(
-            uiState.quote.displayNameLong,
-            newAddonDisplayValueGross,
-            false,
-          ),
-        )
-        uiState.quote.itemCost.discounts.forEach { discount ->
-          add(
-            CostBreakdownEntry(
-              discount.displayName,
-              discount.displayValue,
-              false,
-            ),
-          )
-        }
-      }
-    }
+  val costBreakdown: List<CostBreakdownEntry> = uiState.costBreakdownWithExtras?.displayItems
+    ?: emptyList()
   QuoteCard(
-    subtitle = stringResource(
-      R.string.ADDON_FLOW_SUMMARY_ACTIVE_FROM,
-      formattedDate,
-    ),
-    premium = premium,
+    subtitle = uiState.insuranceExposure,
+    contractGroup = uiState.contractGroup,
+    premium = premium ?: UiMoney(0.0, UiCurrencyCode.SEK),
     costBreakdown = costBreakdown,
     previousPremium = previousPremium,
-    displayItems = uiState.quote.displayDetails.map {
+    displayItems = uiState.displayItems.map {
       QuoteDisplayItem(
         title = it.first,
         subtitle = null,
@@ -304,95 +299,20 @@ private fun SummaryCard(uiState: Content, modifier: Modifier = Modifier) {
       )
     },
     modifier = modifier,
-    displayName = uiState.offerDisplayName,
-    contractGroup = null,
+    displayName = uiState.insuranceDisplayName,
     insurableLimits = emptyList(),
-    documents = uiState.quote.documents.map {
-      DisplayDocument(it.displayName, it.url)
+    documents = uiState.documents.map {
+      DisplayDocument(
+        displayName = it.displayName,
+        url = it.url,
+      )
     },
   )
 }
 
-@Composable
-private fun AddonCostBreakdownComposable(
-  currentTravelAddon: CurrentTravelAddon?,
-  quote: TravelAddonQuote,
-  modifier: Modifier = Modifier,
-) {
-  ProvideTextStyle(HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary)) {
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      Spacer(Modifier.height(8.dp))
-      if (currentTravelAddon != null) {
-        HorizontalItemsWithMaximumSpaceTaken(
-          {
-            HedvigText(
-              currentTravelAddon.displayNameLong,
-              style = LocalTextStyle.current.copy(
-                textDecoration = TextDecoration.LineThrough,
-              ),
-            )
-          },
-          {
-            HedvigText(
-              text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                currentTravelAddon.netPremium,
-              ),
-              textAlign = TextAlign.End,
-              style = LocalTextStyle.current.copy(
-                textDecoration = TextDecoration.LineThrough,
-              ),
-            )
-          },
-          spaceBetween = 8.dp,
-        )
-        HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(quote.displayNameLong) },
-          {
-            HedvigText(
-              text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                quote.itemCost.monthlyNet,
-              ),
-              textAlign = TextAlign.End,
-            )
-          },
-          spaceBetween = 8.dp,
-        )
-      } else {
-        HorizontalItemsWithMaximumSpaceTaken(
-          { HedvigText(quote.displayNameLong) },
-          {
-            HedvigText(
-              text = stringResource(
-                R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
-                quote.itemCost.monthlyGross,
-              ),
-              textAlign = TextAlign.End,
-            )
-          },
-          spaceBetween = 8.dp,
-        )
-        quote.itemCost.discounts.forEach { discount ->
-          HorizontalItemsWithMaximumSpaceTaken(
-            { HedvigText(discount.displayName) },
-            {
-              HedvigText(
-                text = discount.displayValue,
-                textAlign = TextAlign.End,
-              )
-            },
-            spaceBetween = 8.dp,
-          )
-        }
-      }
-    }
-  }
-}
-
 @HedvigPreview
 @Composable
-private fun PreviewChooseInsuranceToTerminateScreen(
+private fun PreviewAddonSummaryScreen(
   @PreviewParameter(
     ChooseInsuranceForAddonUiStateProvider::class,
   ) uiState: AddonSummaryState,
@@ -405,6 +325,8 @@ private fun PreviewChooseInsuranceToTerminateScreen(
         {},
         {},
         {},
+        {},
+        {},
       )
     }
   }
@@ -413,104 +335,152 @@ private fun PreviewChooseInsuranceToTerminateScreen(
 private class ChooseInsuranceForAddonUiStateProvider :
   CollectionPreviewParameterProvider<AddonSummaryState>(
     listOf(
-      Loading,
+      Loading(activationDateToNavigateToSuccess = null),
       Content(
-        currentTravelAddon = CurrentTravelAddon(
-          listOf("Coverage" to "45 days", "Insured people" to "You+1"),
-          displayNameLong = "Travel Plus 45 days",
-          netPremium = UiMoney(49.0, UiCurrencyCode.SEK),
-        ),
-        offerDisplayName = "TravelPlus",
-        activationDate = LocalDate(2025, 1, 1),
-        quote = TravelAddonQuote(
-          displayName = "60 days",
-          addonId = "addonId1",
-          quoteId = "id",
-          displayDetails = listOf(
-            "Amount of insured people" to "You +1",
-            "Coverage" to "60 days",
-          ),
-          addonVariant = AddonVariant(
-            termsVersion = "terms",
-            documents = listOf(),
-            perils = listOf(),
-            displayName = "60 days",
-            product = "",
-          ),
-          addonSubtype = "60 days",
-          documents = listOf(
-            TravelAddonQuoteInsuranceDocument(
-              "Some terms",
-              "url",
+        currentlyActiveAddons = listOf(
+          CurrentlyActiveAddon(
+            displayTitle = "Travel Plus 45 days",
+            displayDescription = "description",
+            cost = ItemCost(
+              UiMoney(49.0, UiCurrencyCode.SEK),
+              UiMoney(49.0, UiCurrencyCode.SEK),
+              emptyList(),
             ),
           ),
-          displayNameLong = "Travel Plus 60 days",
-          itemCost = ItemCost(
-            UiMoney(79.0, UiCurrencyCode.SEK),
-            UiMoney(89.0, UiCurrencyCode.SEK),
-            discounts = listOf(
-              ItemCostDiscount(
-                campaignCode = "Bundle",
-                displayName = "15% bundle discount",
-                displayValue = "-19kr/mo",
-                explanation = "some explanation",
+        ),
+        insuranceDisplayName = "TravelPlus",
+        activationDate = LocalDate(2025, 1, 1),
+        quotes = listOf(
+          AddonQuote(
+            displayTitle = "60 days",
+            addonId = "addonId1",
+            displayDetails = listOf(
+              "Amount of insured people" to "You +1",
+              "Coverage" to "60 days",
+            ),
+            addonVariant = AddonVariant(
+              termsVersion = "terms",
+              documents = listOf(),
+              perils = listOf(),
+              displayName = "60 days",
+              product = "",
+            ),
+            displayDescription = "Travel Plus 60 days",
+            documents = listOf(
+              TravelAddonQuoteInsuranceDocument(
+                displayName = "Document display name",
+                url = "",
               ),
             ),
+            itemCost = ItemCost(
+              UiMoney(79.0, UiCurrencyCode.SEK),
+              UiMoney(89.0, UiCurrencyCode.SEK),
+              discounts = listOf(
+                ItemCostDiscount(
+                  campaignCode = "Bundle",
+                  displayName = "15% bundle discount",
+                  displayValue = "-19kr/mo",
+                  explanation = "some explanation",
+                ),
+              ),
+            ),
+            addonSubtype = "DAYS_60",
           ),
         ),
-        activationDateForSuccessfullyPurchasedAddon = null,
-        navigateToFailure = false,
-        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK),
+        navigateToFailure = null,
+        insuranceExposure = "Exposure",
+        notificationMessage = "Notification message",
+        documents = emptyList(),
+        costBreakdownWithExtras = CostBreakdownWithExtras(
+          totalMonthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalMonthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalExtra = UiMoney(50.0, UiCurrencyCode.SEK),
+          displayItems = listOf(
+            CostBreakdownEntry(
+              displayName = "base insurance",
+              displayValue = "200 kr/mo",
+              hasStrikethrough = false,
+            ),
+            CostBreakdownEntry(
+              displayName = "addon",
+              displayValue = "50 kr/mo",
+              hasStrikethrough = false,
+            ),
+          ),
+        ),
+        displayItems = emptyList(),
+        contractGroup = null,
       ),
       Content(
-        currentTravelAddon = null,
-        offerDisplayName = "TravelPlus",
+        currentlyActiveAddons = emptyList(),
+        insuranceDisplayName = "TravelPlus",
         activationDate = LocalDate(2025, 1, 1),
-        quote = TravelAddonQuote(
-          displayName = "60 days",
-          addonId = "addonId1",
-          quoteId = "id",
-          displayDetails = listOf(
-            "Amount of insured people" to "You +1",
-            "Coverage" to "60 days",
-          ),
-          addonVariant = AddonVariant(
-            termsVersion = "terms",
-            documents = listOf(),
-            perils = listOf(),
-            displayName = "60 days",
-            product = "",
-          ),
-          addonSubtype = "60 days",
-          documents = listOf(
-            TravelAddonQuoteInsuranceDocument(
-              "Some terms",
-              "url",
+        quotes = listOf(
+          AddonQuote(
+            displayTitle = "60 days",
+            addonId = "addonId1",
+            displayDetails = listOf(
+              "Amount of insured people" to "You +1",
+              "Coverage" to "60 days",
             ),
+            addonVariant = AddonVariant(
+              termsVersion = "terms",
+              documents = listOf(),
+              perils = listOf(),
+              displayName = "60 days",
+              product = "",
+            ),
+            displayDescription = "Travel Plus 60 days",
+            documents = listOf(
+              TravelAddonQuoteInsuranceDocument(
+                displayName = "Document display name",
+                url = "",
+              ),
+            ),
+            itemCost = ItemCost(
+              UiMoney(40.0, UiCurrencyCode.SEK),
+              UiMoney(89.0, UiCurrencyCode.SEK),
+              discounts = listOf(
+                ItemCostDiscount(
+                  campaignCode = "Bundle",
+                  displayName = "15% bundle discount",
+                  displayValue = "-10 kr/mo",
+                  explanation = "some explanation",
+                ),
+                ItemCostDiscount(
+                  campaignCode = "TRALALA",
+                  displayName = "50% discount for 3 months",
+                  displayValue = "-39 kr/mo",
+                  explanation = "some explanation",
+                ),
+              ),
+            ),
+            addonSubtype = "DAYS_60",
           ),
-          displayNameLong = "Travel Plus 60 days",
-          itemCost = ItemCost(
-            UiMoney(40.0, UiCurrencyCode.SEK),
-            UiMoney(89.0, UiCurrencyCode.SEK),
-            discounts = listOf(
-              ItemCostDiscount(
-                campaignCode = "Bundle",
-                displayName = "15% bundle discount",
-                displayValue = "-10 kr/mo",
-                explanation = "some explanation",
-              ),
-              ItemCostDiscount(
-                campaignCode = "TRALALA",
-                displayName = "50% discount for 3 months",
-                displayValue = "-39 kr/mo",
-                explanation = "some explanation",
-              ),
+        ),
+        navigateToFailure = null,
+        insuranceExposure = "Exposure",
+        notificationMessage = "Notification message",
+        documents = emptyList(),
+        costBreakdownWithExtras = CostBreakdownWithExtras(
+          totalMonthlyNet = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalMonthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
+          totalExtra = UiMoney(50.0, UiCurrencyCode.SEK),
+          displayItems = listOf(
+            CostBreakdownEntry(
+              displayName = "base insurance",
+              displayValue = "200 kr/mo",
+              hasStrikethrough = false,
+            ),
+            CostBreakdownEntry(
+              displayName = "addon",
+              displayValue = "50 kr/mo",
+              hasStrikethrough = false,
             ),
           ),
         ),
-        activationDateForSuccessfullyPurchasedAddon = null,
-        navigateToFailure = false,
-        totalPriceChange = UiMoney(11.0, UiCurrencyCode.SEK),
+        displayItems = emptyList(),
+        contractGroup = null,
       ),
     ),
   )

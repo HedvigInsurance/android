@@ -29,9 +29,13 @@ import com.hedvig.android.feature.profile.data.ContactInformation
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 import com.hedvig.android.feature.profile.data.valueForTextField
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
+import kotlinx.coroutines.delay
 
 internal sealed interface ContactInfoEvent {
   data object RetryLoadData : ContactInfoEvent
@@ -99,7 +103,7 @@ internal sealed interface ContactInfoUiState {
 internal class ContactInfoViewModel(
   repository: Provider<ContactInfoRepository>,
 ) : MoleculeViewModel<ContactInfoEvent, ContactInfoUiState>(
-    ContactInfoUiState.Loading,
+    Loading,
     ContactInfoPresenter(repository),
   )
 
@@ -128,15 +132,15 @@ internal class ContactInfoPresenter(
     var dataFetchingState by remember {
       mutableStateOf(
         when (lastState) {
-          is Content -> DataFetchingState.Idle
-          ContactInfoUiState.Error -> DataFetchingState.Error
-          Loading -> DataFetchingState.Fetching
+          is Content -> Idle
+          ContactInfoUiState.Error -> Error
+          Loading -> Fetching
         },
       )
     }
 
     val updateStateWithFetchedContactInformation = { contactInformation: ContactInformation ->
-      dataFetchingState = DataFetchingState.Idle
+      dataFetchingState = Idle
       uploadedEmail = contactInformation.email
       uploadedPhoneNumber = contactInformation.phoneNumber
       email.setTextAndPlaceCursorAtEnd(contactInformation.email.valueForTextField)
@@ -144,13 +148,14 @@ internal class ContactInfoPresenter(
     }
 
     LaunchedEffect(refetchDataIteration) {
-      if (refetchDataIteration == 0 && lastState is ContactInfoUiState.Content) {
+      if (refetchDataIteration == 0 && lastState is Content) {
         return@LaunchedEffect
       }
-      dataFetchingState = DataFetchingState.Fetching
+      errorSnackBarText = null
+      dataFetchingState = Fetching
       repository.provide().contactInfo().fold(
         ifLeft = {
-          dataFetchingState = DataFetchingState.Error
+          dataFetchingState = Error
         },
         ifRight = { contactInformation ->
           Snapshot.withMutableSnapshot {
@@ -163,6 +168,12 @@ internal class ContactInfoPresenter(
     if (submittingData != null) {
       LaunchedEffect(submittingData) {
         val (submittingPhoneNumber, submittingEmail) = submittingData!!
+        val retrySubmissionStart = if (errorSnackBarText != null) {
+          Clock.System.now()
+        } else {
+          null
+        }
+        errorSnackBarText = null
         repository
           .provide()
           .updateInfo(
@@ -171,6 +182,9 @@ internal class ContactInfoPresenter(
           )
           .fold(
             ifLeft = { error ->
+              if (retrySubmissionStart != null) {
+                delayAtLeastOneSecondToShowThatTheNewRequestFailedAgain(retrySubmissionStart)
+              }
               val text = error.message
               if (text == null) {
                 Snapshot.withMutableSnapshot {
@@ -189,7 +203,6 @@ internal class ContactInfoPresenter(
                 updateStateWithFetchedContactInformation(contactInformation)
                 submittingData = null
                 showSuccessToast = true
-                errorSnackBarText = null
               }
             },
           )
@@ -217,8 +230,8 @@ internal class ContactInfoPresenter(
 
         ContactInfoEvent.ShowedMessage -> {
           Snapshot.withMutableSnapshot {
-            showSuccessToast = false
             errorSnackBarText = null
+            showSuccessToast = false
           }
         }
       }
@@ -226,8 +239,10 @@ internal class ContactInfoPresenter(
 
     return when (dataFetchingState) {
       Error -> ContactInfoUiState.Error
-      Fetching -> ContactInfoUiState.Loading
-      Idle -> ContactInfoUiState.Content(
+
+      Fetching -> Loading
+
+      Idle -> Content(
         emailState = email,
         phoneNumberState = phoneNumber,
         uploadedEmail = uploadedEmail,
@@ -237,6 +252,11 @@ internal class ContactInfoPresenter(
         showSuccessSnackBar = showSuccessToast,
       )
     }
+  }
+
+  private suspend fun delayAtLeastOneSecondToShowThatTheNewRequestFailedAgain(submissionStart: Instant) {
+    val retrySubmissionEnd = Clock.System.now()
+    delay(1.seconds - (retrySubmissionEnd - submissionStart))
   }
 }
 

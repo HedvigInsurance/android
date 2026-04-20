@@ -16,9 +16,9 @@ import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContract
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -63,8 +63,14 @@ internal class TravelCertificateTravellersInputPresenter(
 
     CollectEvents { event ->
       when (event) {
-        TravelCertificateTravellersInputEvent.RetryLoadData -> loadIteration++
-        TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> generateIteration++
+        TravelCertificateTravellersInputEvent.RetryLoadData -> {
+          loadIteration++
+        }
+
+        TravelCertificateTravellersInputEvent.GenerateTravelCertificate -> {
+          generateIteration++
+        }
+
         is TravelCertificateTravellersInputEvent.ChangeCoInsuredChecked -> {
           coInsuredIncludedMap.put(event.coInsured.id, !event.coInsured.isIncluded)
         }
@@ -88,7 +94,7 @@ internal class TravelCertificateTravellersInputPresenter(
               it.hasMissingInfo
             }.map { coInsuredData ->
               CoInsured(
-                id = CoInsured.CoInsuredId(coInsuredData),
+                id = CoInsuredId(coInsuredData),
                 name = "${coInsuredData.firstName} ${coInsuredData.lastName}",
                 ssn = coInsuredData.ssn,
                 dateOfBirth = coInsuredData.dateOfBirth,
@@ -131,8 +137,14 @@ internal class TravelCertificateTravellersInputPresenter(
     }
 
     return when (val screenContentValue = screenContent) {
-      TravelersInputScreenContent.Failure -> TravelCertificateTravellersInputUiState.Failure
-      TravelersInputScreenContent.Loading -> TravelCertificateTravellersInputUiState.Loading
+      TravelersInputScreenContent.Failure -> {
+        TravelCertificateTravellersInputUiState.Failure
+      }
+
+      TravelersInputScreenContent.Loading -> {
+        TravelCertificateTravellersInputUiState.Loading
+      }
+
       is TravelersInputScreenContent.Success -> {
         TravelCertificateTravellersInputUiState.Success(
           coInsuredHasMissingInfo = screenContentValue.coInsuredHasMissingInfo,
@@ -143,9 +155,11 @@ internal class TravelCertificateTravellersInputPresenter(
         )
       }
 
-      is TravelersInputScreenContent.UrlFetched -> TravelCertificateTravellersInputUiState.UrlFetched(
-        screenContentValue.travelCertificateUrl,
-      )
+      is TravelersInputScreenContent.UrlFetched -> {
+        TravelCertificateTravellersInputUiState.UrlFetched(
+          screenContentValue.travelCertificateUrl,
+        )
+      }
     }
   }
 }

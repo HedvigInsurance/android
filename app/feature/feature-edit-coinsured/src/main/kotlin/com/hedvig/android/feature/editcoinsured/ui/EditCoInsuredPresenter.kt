@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.raise.either
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.CoInsured
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredError
 import com.hedvig.android.feature.editcoinsured.data.CoInsuredPersonalInformation
@@ -36,6 +37,7 @@ import kotlinx.datetime.LocalDate
 
 internal class EditCoInsuredPresenter(
   private val contractId: String,
+  private val type: CoInsuredFlowType,
   private val getCoInsuredUseCase: GetCoInsuredUseCase,
   private val fetchCoInsuredPersonalInformationUseCase: FetchCoInsuredPersonalInformationUseCase,
   private val createMidtermChangeUseCase: CreateMidtermChangeUseCase,
@@ -114,17 +116,18 @@ internal class EditCoInsuredPresenter(
           }
         }
 
-        is EditCoInsuredEvent.OnCoInsuredSelected ->
+        is EditCoInsuredEvent.OnCoInsuredSelected -> {
           addBottomSheetContentState = addBottomSheetContentState.copy(
             selectedCoInsured = event.coInsured,
             errorMessage = null,
           )
+        }
 
         is RemoveCoInsured -> {
           editedCoInsuredList = listState.coInsured.filterNot { it == event.coInsured }
         }
 
-        is EditCoInsuredEvent.OnSsnChanged ->
+        is EditCoInsuredEvent.OnSsnChanged -> {
           if (event.ssn.length <= 12) {
             addBottomSheetContentState = addBottomSheetContentState.copy(
               manualInfo = ManualInfo(),
@@ -136,27 +139,31 @@ internal class EditCoInsuredPresenter(
               errorMessage = null,
             )
           }
+        }
 
-        is EditCoInsuredEvent.OnBirthDateChanged ->
+        is EditCoInsuredEvent.OnBirthDateChanged -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               manualInfo = addBottomSheetContentState.manualInfo.copy(birthDate = event.birthDate),
               errorMessage = null,
             )
+        }
 
-        is EditCoInsuredEvent.OnFirstNameChanged ->
+        is EditCoInsuredEvent.OnFirstNameChanged -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               manualInfo = addBottomSheetContentState.manualInfo.copy(firstName = event.firstName),
               errorMessage = null,
             )
+        }
 
-        is EditCoInsuredEvent.OnLastNameChanged ->
+        is EditCoInsuredEvent.OnLastNameChanged -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               manualInfo = addBottomSheetContentState.manualInfo.copy(lastName = event.lastName),
               errorMessage = null,
             )
+        }
 
         is EditCoInsuredEvent.OnManualInputSwitchChanged -> {
           addBottomSheetContentState = addBottomSheetContentState.copy(
@@ -200,13 +207,14 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        EditCoInsuredEvent.OnAddNewCoInsured ->
+        EditCoInsuredEvent.OnAddNewCoInsured -> {
           addBottomSheetContentState =
             addBottomSheetContentState.copy(
               selectableCoInsured = null,
               selectedCoInsured = null,
               errorMessage = null,
             )
+        }
 
         ResetAddBottomSheetState -> {
           addBottomSheetContentState = Loaded.AddBottomSheetContentState(
@@ -215,9 +223,17 @@ internal class EditCoInsuredPresenter(
           )
         }
 
-        ResetRemoveBottomSheetState -> removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
-        OnDismissError -> errorMessage = null
-        EditCoInsuredEvent.OnCommitChanges -> commit = true
+        ResetRemoveBottomSheetState -> {
+          removeBottomSheetContentState = Loaded.RemoveBottomSheetContentState()
+        }
+
+        OnDismissError -> {
+          errorMessage = null
+        }
+
+        EditCoInsuredEvent.OnCommitChanges -> {
+          commit = true
+        }
       }
     }
 
@@ -226,8 +242,7 @@ internal class EditCoInsuredPresenter(
       val ssn = addBottomSheetContentState.infoFromSsn.ssn
       if (ssn != null && !addBottomSheetContentState.showManualInput) {
         either {
-          val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssn).bind()
-          when (result) {
+          when (val result = fetchCoInsuredPersonalInformationUseCase.invoke(ssn).bind()) {
             is CoInsuredPersonalInformation.FullInfo -> {
               addBottomSheetContentState = addBottomSheetContentState.copy(
                 infoFromSsn = InfoFromSsn(
@@ -263,7 +278,7 @@ internal class EditCoInsuredPresenter(
         }
 
         createMidtermChangeUseCase
-          .invoke(contractId, list)
+          .invoke(contractId, list, type)
           .fold(
             ifLeft = {
               Snapshot.withMutableSnapshot {
@@ -342,6 +357,7 @@ internal class EditCoInsuredPresenter(
       Error(errorMessage)
     } else if (listState.member != null) {
       Loaded(
+        type = type,
         listState = listState,
         addBottomSheetContentState = addBottomSheetContentState,
         removeBottomSheetContentState = removeBottomSheetContentState,
@@ -400,7 +416,7 @@ internal class EditCoInsuredPresenter(
     originalIds: List<String>,
     activationDate: LocalDate,
   ): List<CoInsured> {
-    return coInsured.map { it ->
+    return coInsured.map {
       if (originalIds.contains(it.id)) {
         it
       } else {
@@ -458,6 +474,7 @@ internal sealed interface EditCoInsuredState {
   data class Error(val message: String?) : EditCoInsuredState
 
   data class Loaded(
+    val type: CoInsuredFlowType,
     val listState: CoInsuredListState,
     val addBottomSheetContentState: AddBottomSheetContentState,
     val removeBottomSheetContentState: RemoveBottomSheetContentState,
@@ -479,6 +496,8 @@ internal sealed interface EditCoInsuredState {
         originalCoInsured != null &&
         updatedCoInsured != null &&
         originalCoInsured != updatedCoInsured
+
+      fun anyUpdatedCoInsuredHasMissingInfo() = updatedCoInsured?.any { it.hasMissingInfo } == true
 
       fun noCoInsuredHaveMissingInfo() = coInsured.all { !it.hasMissingInfo }
     }

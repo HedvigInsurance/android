@@ -6,13 +6,26 @@ import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATIO
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
+import octopus.ChangeTierDeductibleCreateIntentMutation
 import octopus.type.ChangeTierDeductibleSource
 
 data class ChangeTierDeductibleIntent(
+  val intentOutput: IntentOutput?,
+  val deflectOutput: DeflectOutput?,
+)
+
+data class IntentOutput(
   val activationDate: LocalDate,
   val quotes: List<TierDeductibleQuote>,
+)
+
+@Serializable
+data class DeflectOutput(
+  val title: String,
+  val message: String,
 )
 
 @Serializable
@@ -20,13 +33,13 @@ data class TierDeductibleQuote(
   val id: String,
   val tier: Tier,
   val deductible: Deductible?,
-  val premium: UiMoney,
   val displayItems: List<ChangeTierDeductibleDisplayItem>,
   val productVariant: ProductVariant,
   val addons: List<ChangeTierDeductibleAddonQuote>,
   val currentTotalCost: TotalCost,
   val newTotalCost: TotalCost,
-  val costBreakdown: List<Pair<String, String>>,
+  val costBreakdown: List<CostBreakdownEntry>,
+  val info: String?,
 )
 
 @Serializable

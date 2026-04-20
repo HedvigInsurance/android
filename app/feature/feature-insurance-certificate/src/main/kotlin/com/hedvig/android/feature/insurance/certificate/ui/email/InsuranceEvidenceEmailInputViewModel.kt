@@ -10,11 +10,15 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialEmailUseCase
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputState.Loading
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.core.common.android.validation.validateEmail
-import hedvig.resources.R
+import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
+import hedvig.resources.Res
+import hedvig.resources.something_went_wrong
+import hedvig.resources.travel_certificate_email_empty_error
+import org.jetbrains.compose.resources.StringResource
 
 internal class InsuranceEvidenceEmailInputViewModel(
   generateInsuranceEvidenceUseCase: GenerateInsuranceEvidenceUseCase,
@@ -52,9 +56,9 @@ internal class InsuranceEvidenceEmailInputPresenter(
           currentState = successScreenState.copy(emailValidationErrorMessage = null)
         } else {
           val invalidEmailErrorMessage = if (successScreenState.email.isNullOrEmpty()) {
-            R.string.travel_certificate_email_empty_error
+            Res.string.travel_certificate_email_empty_error
           } else {
-            R.string.PROFILE_MY_INFO_INVALID_EMAIL
+            Res.string.PROFILE_MY_INFO_INVALID_EMAIL
           }
           currentState = successScreenState.copy(emailValidationErrorMessage = invalidEmailErrorMessage)
         }
@@ -68,11 +72,16 @@ internal class InsuranceEvidenceEmailInputPresenter(
             emailValidationErrorMessage = null,
           )
         }
+
         InsuranceEvidenceEmailInputEvent.ClearNavigation -> {
           val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@CollectEvents
           currentState = successScreenState.copy(fetchedCertificateUrl = null)
         }
-        InsuranceEvidenceEmailInputEvent.RetryLoadData -> loadIteration++
+
+        InsuranceEvidenceEmailInputEvent.RetryLoadData -> {
+          loadIteration++
+        }
+
         InsuranceEvidenceEmailInputEvent.Submit -> {
           validateInputAndContinue()
         }
@@ -98,15 +107,14 @@ internal class InsuranceEvidenceEmailInputPresenter(
     }
 
     LaunchedEffect(generateIteration, generateCertificateInputData) {
-      val emailToSubmit = generateCertificateInputData
-      if (emailToSubmit == null) return@LaunchedEffect
+      val emailToSubmit = generateCertificateInputData ?: return@LaunchedEffect
       val successScreenState = currentState as? InsuranceEvidenceEmailInputState.Success ?: return@LaunchedEffect
       currentState = successScreenState.copy(buttonLoading = true)
       generateInsuranceEvidenceUseCase.invoke(emailToSubmit)
         .fold(
           ifLeft = {
             currentState = successScreenState.copy(
-              generatingErrorMessage = R.string.something_went_wrong,
+              generatingErrorMessage = Res.string.something_went_wrong,
               buttonLoading = false,
             )
           },
@@ -131,9 +139,9 @@ internal sealed interface InsuranceEvidenceEmailInputState {
 
   data class Success(
     val email: String?,
-    val emailValidationErrorMessage: Int? = null,
+    val emailValidationErrorMessage: StringResource? = null,
     val buttonLoading: Boolean = false,
-    val generatingErrorMessage: Int? = null,
+    val generatingErrorMessage: StringResource? = null,
     val fetchedCertificateUrl: String? = null,
   ) : InsuranceEvidenceEmailInputState
 }

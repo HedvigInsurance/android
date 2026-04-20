@@ -2,7 +2,7 @@ query InsurancesForTravelAddon {
   currentMember {
     activeContracts {
       id
-      exposureDisplayName
+      exposureDisplayNameShort
       currentAgreement {
         productVariant {
           displayName

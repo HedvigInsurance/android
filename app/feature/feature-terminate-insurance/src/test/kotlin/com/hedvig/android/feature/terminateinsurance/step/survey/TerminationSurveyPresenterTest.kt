@@ -8,12 +8,12 @@ import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isSameInstanceAs
 import assertk.assertions.isTrue
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
@@ -21,17 +21,18 @@ import com.hedvig.android.data.changetier.data.ChangeTierDeductibleDisplayItem
 import com.hedvig.android.data.changetier.data.ChangeTierDeductibleIntent
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Deductible
+import com.hedvig.android.data.changetier.data.DeflectOutput
+import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.feature.terminateinsurance.InsuranceId
-import com.hedvig.android.feature.terminateinsurance.data.InfoType
+import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
+import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
@@ -43,36 +44,47 @@ import org.junit.Test
 class TerminationSurveyPresenterTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
-  private val downgradeSuggestion = SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier(
-    "description",
-    "Button",
-    InfoType.INFO,
+
+  private val downgradeSuggestion = SurveyOptionSuggestion(
+    type = SuggestionType.DOWNGRADE_PRICE,
+    description = "Check if you can get a better price",
+    url = null,
+  )
+
+  private val testAction = TerminationAction.TerminateWithDate(
+    minDate = LocalDate(2024, 6, 1),
+    maxDate = LocalDate(2024, 6, 29),
+    extraCoverageItems = emptyList(),
   )
 
   private val listOfOptionsForHome = listOf(
     TerminationSurveyOption(
       id = "id1",
-      feedBackRequired = false,
+      feedbackRequired = false,
       title = "I'm moving",
       subOptions = emptyList(),
       listIndex = 0,
-      suggestion = SurveyOptionSuggestion.Known.Action.UpdateAddress("description", "buttonTitle", InfoType.INFO),
+      suggestion = SurveyOptionSuggestion(
+        type = SuggestionType.UPDATE_ADDRESS,
+        description = "Update your address instead",
+        url = null,
+      ),
     ),
     TerminationSurveyOption(
       id = "id2",
       title = " I no longer need insurance",
-      feedBackRequired = false,
+      feedbackRequired = false,
       suggestion = null,
       listIndex = 1,
       subOptions = listOf(
-        TerminationSurveyOption("id2-2", 0, "I have moved abroad", feedBackRequired = false, null, emptyList()),
-        TerminationSurveyOption("id2-1", 1, "Other reason", feedBackRequired = true, null, emptyList()),
+        TerminationSurveyOption("id2-2", 0, "I have moved abroad", false, null, emptyList()),
+        TerminationSurveyOption("id2-1", 1, "Other reason", true, null, emptyList()),
       ),
     ),
     TerminationSurveyOption(
       id = "id3",
       title = "- I got a better offer elsewhere",
-      feedBackRequired = true,
+      feedbackRequired = true,
       suggestion = null,
       listIndex = 2,
       subOptions = emptyList(),
@@ -80,7 +92,7 @@ class TerminationSurveyPresenterTest {
     TerminationSurveyOption(
       id = "id4",
       title = "Other reason",
-      feedBackRequired = false,
+      feedbackRequired = false,
       suggestion = downgradeSuggestion,
       listIndex = 3,
       subOptions = emptyList(),
@@ -89,12 +101,12 @@ class TerminationSurveyPresenterTest {
 
   @Test
   fun `if tap on feedback field it would open full screen input field`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       options = listOfOptionsForHome,
-      terminateInsuranceRepository = repository,
-      changeTierRepository,
+      action = testAction,
+      changeTierRepository = changeTierRepository,
+      contractId = "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       assertThat(awaitItem().reasons).isEqualTo(listOfOptionsForHome)
@@ -107,12 +119,12 @@ class TerminationSurveyPresenterTest {
 
   @Test
   fun `if full screen input field is dismissed do not show full screen input field`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -127,12 +139,12 @@ class TerminationSurveyPresenterTest {
 
   @Test
   fun `the received options are displayed in the correct order`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       assertThat(awaitItem().reasons).isEqualTo(listOfOptionsForHome)
@@ -141,12 +153,12 @@ class TerminationSurveyPresenterTest {
 
   @Test
   fun `if feedback for a reason is changed the screen-wide feedback text is updated with the new input`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -162,69 +174,39 @@ class TerminationSurveyPresenterTest {
   }
 
   @Test
-  fun `when survey is submitted the right option with the right feedback is submitted`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
-    val changeTierRepository = FakeChangeTierRepository()
-    val presenter = TerminationSurveyPresenter(
-      listOfOptionsForHome,
-      repository,
-      changeTierRepository,
-    )
-    val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
-      LocalDate(2024, 6, 1),
-      LocalDate(2024, 6, 29),
-      emptyList(),
-    )
-    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
-      skipItems(1)
-      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
-      skipItems(1)
-      sendEvent(TerminationSurveyEvent.EditTextFeedback("entirely new feedback"))
-      skipItems(1)
-      sendEvent(TerminationSurveyEvent.Continue)
-      assertThat(awaitItem().navigationStepLoading).isTrue()
-      assertThat(repository.submitReasonForCancellingTurbine.awaitItem())
-        .isEqualTo(listOfOptionsForHome[3] to "entirely new feedback")
-      expectNoEvents()
-      repository.terminationFlowTurbine.add(nextStep.right())
-      assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToNextTerminationStep(nextStep))
-    }
-  }
-
-  @Test
   fun `when survey is submitted for option with no subOptions navigate to next termination step`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
-    )
-    val nextStep = TerminateInsuranceStep.TerminateInsuranceDate(
-      LocalDate(2024, 6, 1),
-      LocalDate(2024, 6, 29),
-      emptyList(),
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
-      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[2]))
+      skipItems(1)
+      sendEvent(TerminationSurveyEvent.EditTextFeedback("my feedback"))
       skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
-      repository.submitReasonForCancellingTurbine.awaitItem()
-      skipItems(1)
-      repository.terminationFlowTurbine.add(nextStep.right())
-      assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToNextTerminationStep(nextStep))
+      val result = awaitItem()
+      assertThat(result.nextNavigationStep).isNotNull()
+        .isInstanceOf<SurveyNavigationStep.NavigateToNextTerminationStep>()
+      val navStep = result.nextNavigationStep as SurveyNavigationStep.NavigateToNextTerminationStep
+      assertThat(navStep.selectedOption).isEqualTo(listOfOptionsForHome[2])
+      assertThat(navStep.feedbackText).isEqualTo("my feedback")
+      assertThat(navStep.action).isEqualTo(testAction)
     }
   }
 
   @Test
   fun `when survey is submitted for option with subOptions navigate to next survey screen`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -237,12 +219,12 @@ class TerminationSurveyPresenterTest {
 
   @Test
   fun `when chosen option contain suggestion to change tier disable continue`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -257,12 +239,12 @@ class TerminationSurveyPresenterTest {
 
   @Test
   fun `when repo has good intent but quotes are empty show ooops dialog and disable the option`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -271,14 +253,20 @@ class TerminationSurveyPresenterTest {
       val navig0 = current0.intentAndIdToRedirectToChangeTierFlow
       assertThat(navig0).isNull()
       changeTierRepository.changeTierIntentTurbine.add(
-        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), emptyList()).right(),
+        ChangeTierDeductibleIntent(
+          IntentOutput(
+            LocalDate(2024, 11, 15),
+            emptyList(),
+          ),
+          null,
+        ).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
       val current = awaitItem()
       val optionNowDisabled = current.reasons.first { it.suggestion == downgradeSuggestion }
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
-      assertThat(currentEmptyQuotesDialog).isTrue()
+      assertThat(currentEmptyQuotesDialog).isNotNull()
       assertThat(currentRedirectToChangeTierIntent).isNull()
       assertThat(optionNowDisabled.isDisabled).isTrue()
     }
@@ -286,36 +274,42 @@ class TerminationSurveyPresenterTest {
 
   @Test
   fun `when repo has good intent with non-empty quotes redirect to changeTierFlow`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
       skipItems(2)
       changeTierRepository.changeTierIntentTurbine.add(
-        ChangeTierDeductibleIntent(LocalDate(2024, 11, 15), listOf(testQuote)).right(),
+        ChangeTierDeductibleIntent(
+          IntentOutput(
+            LocalDate(2024, 11, 15),
+            listOf(testQuote),
+          ),
+          null,
+        ).right(),
       )
       sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
       val current = awaitItem()
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
-      assertThat(currentEmptyQuotesDialog).isFalse()
+      assertThat(currentEmptyQuotesDialog).isNull()
       assertThat(currentRedirectToChangeTierIntent).isNotNull()
     }
   }
 
   @Test
   fun `when repo gives bad response show error`() = runTest {
-    val repository = FakeTerminateInsuranceRepository()
     val changeTierRepository = FakeChangeTierRepository()
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
-      repository,
+      testAction,
       changeTierRepository,
+      "contractId",
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
@@ -326,9 +320,78 @@ class TerminationSurveyPresenterTest {
       val error = current.errorWhileLoadingNextStep
       val currentEmptyQuotesDialog = current.showEmptyQuotesDialog
       val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
-      assertThat(currentEmptyQuotesDialog).isFalse()
+      assertThat(currentEmptyQuotesDialog).isNull()
       assertThat(currentRedirectToChangeTierIntent).isNull()
       assertThat(error).isTrue()
+    }
+  }
+
+  @Test
+  fun `when deflectOutput is returned show deflect dialog and do not redirect to change tier flow`() = runTest {
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      testAction,
+      changeTierRepository,
+      "contractId",
+    )
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      skipItems(2)
+      changeTierRepository.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = null,
+          deflectOutput = DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect msg",
+          ),
+        ).right(),
+      )
+      sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
+      val current = awaitItem()
+      val currentDeflectDialog = current.showEmptyQuotesDialog
+      val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
+      val currentSelectedOptionId = current.selectedOptionId
+      assertThat(currentDeflectDialog).isNotNull().isInstanceOf<DeflectType.Deflect>()
+      val deflectType = currentDeflectDialog as DeflectType.Deflect
+      assertThat(deflectType.title).isEqualTo("Deflect title")
+      assertThat(currentRedirectToChangeTierIntent).isNull()
+      assertThat(currentSelectedOptionId).isNull()
+    }
+  }
+
+  @Test
+  fun `when both intentOutput and deflectOutput are returned deflect takes precedence`() = runTest {
+    val changeTierRepository = FakeChangeTierRepository()
+    val presenter = TerminationSurveyPresenter(
+      listOfOptionsForHome,
+      testAction,
+      changeTierRepository,
+      "contractId",
+    )
+    presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
+      sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
+      skipItems(2)
+      changeTierRepository.changeTierIntentTurbine.add(
+        ChangeTierDeductibleIntent(
+          intentOutput = IntentOutput(
+            LocalDate(2024, 11, 15),
+            listOf(testQuote),
+          ),
+          deflectOutput = DeflectOutput(
+            title = "Deflect title",
+            message = "Deflect message",
+          ),
+        ).right(),
+      )
+      sendEvent(TerminationSurveyEvent.TryToDowngradePrice)
+      val current = awaitItem()
+      val currentDeflectDialog = current.showEmptyQuotesDialog
+      val currentRedirectToChangeTierIntent = current.intentAndIdToRedirectToChangeTierFlow
+      assertThat(currentDeflectDialog).isNotNull().isInstanceOf<DeflectType.Deflect>()
+      val deflectType = currentDeflectDialog as DeflectType.Deflect
+      assertThat(deflectType.title).isEqualTo("Deflect title")
+      assertThat(currentRedirectToChangeTierIntent).isNull()
     }
   }
 }
@@ -347,7 +410,6 @@ private val testQuote = TierDeductibleQuote(
       displayTitle = "ioi",
     ),
   ),
-  premium = UiMoney(199.0, SEK),
   tier = Tier(
     "BAS",
     tierLevel = 0,
@@ -368,18 +430,15 @@ private val testQuote = TierDeductibleQuote(
     termsVersion = "termsVersion",
   ),
   currentTotalCost = TotalCost(
-    monthlyGross = UiMoney(250.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(200.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(250.0, SEK),
+    monthlyNet = UiMoney(200.0, SEK),
   ),
   newTotalCost = TotalCost(
-    monthlyGross = UiMoney(380.0, UiCurrencyCode.SEK),
-    monthlyNet = UiMoney(304.0, UiCurrencyCode.SEK),
+    monthlyGross = UiMoney(380.0, SEK),
+    monthlyNet = UiMoney(304.0, SEK),
   ),
-  costBreakdown = listOf(
-    "Home Insurance Max" to "300 kr/mo",
-    "Travel Plus" to "80 kr/mo",
-    "Bundle discount 20%" to "76 kr/mo",
-  ),
+  costBreakdown = emptyList(),
+  info = null,
 )
 
 private class FakeChangeTierRepository() : ChangeTierRepository {
@@ -413,36 +472,3 @@ private class FakeChangeTierRepository() : ChangeTierRepository {
     return "string"
   }
 }
-
-private class FakeTerminateInsuranceRepository : TerminateInsuranceRepository {
-  val terminationFlowTurbine = Turbine<Either<ErrorMessage, TerminateInsuranceStep>>(name = "terminationFlowTurbine")
-  val submitReasonForCancellingTurbine =
-    Turbine<Pair<TerminationSurveyOption, String?>>(name = "submitReasonForCancellingTurbine")
-
-  override suspend fun startTerminationFlow(insuranceId: InsuranceId): Either<ErrorMessage, TerminateInsuranceStep> =
-    terminationFlowTurbine.awaitItem()
-
-  override suspend fun setTerminationDate(terminationDate: LocalDate): Either<ErrorMessage, TerminateInsuranceStep> =
-    terminationFlowTurbine.awaitItem()
-
-  override suspend fun submitReasonForCancelling(
-    reason: TerminationSurveyOption,
-    feedback: String?,
-  ): Either<ErrorMessage, TerminateInsuranceStep> {
-    submitReasonForCancellingTurbine.add(reason to feedback)
-    return terminationFlowTurbine.awaitItem()
-  }
-
-  override suspend fun confirmDeletion(): Either<ErrorMessage, TerminateInsuranceStep> =
-    terminationFlowTurbine.awaitItem()
-
-  override suspend fun getContractId(): String {
-    return fakeContractId
-  }
-
-  override suspend fun continueAfterAutoDecomDeflect(): Either<ErrorMessage, TerminateInsuranceStep> {
-    return terminationFlowTurbine.awaitItem()
-  }
-}
-
-private val fakeContractId = "fakeContractId"

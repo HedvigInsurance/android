@@ -22,9 +22,9 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Making
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryState.Success
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.datetime.LocalDate
 
 internal class SummaryViewModel(
@@ -53,8 +53,14 @@ private class SummaryPresenter(
 
     CollectEvents { event ->
       when (event) {
-        Reload -> loadDataIteration++
-        SubmitQuote -> submitIteration++
+        Reload -> {
+          loadDataIteration++
+        }
+
+        SubmitQuote -> {
+          submitIteration++
+        }
+
         ClearNavigation -> {
           if (currentState is MakingChanges) {
             currentState = (currentState as MakingChanges).copy(
@@ -114,7 +120,7 @@ private class SummaryPresenter(
               } else {
                 val currentContract = ContractData(
                   contractGroup = currentQuoteToChange.productVariant.contractGroup,
-                  activeDisplayPremium = currentQuoteToChange.premium,
+                  activeDisplayPremium = currentQuoteToChange.currentTotalCost.monthlyNet,
                   contractDisplayName = currentQuoteToChange.productVariant.displayName,
                   contractDisplaySubtitle = currentContractData.currentExposureName,
                 )

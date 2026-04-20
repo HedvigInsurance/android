@@ -50,9 +50,9 @@ import com.hedvig.android.feature.chat.paging.ChatRemoteMediator
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
@@ -146,9 +146,9 @@ internal class CbmChatPresenter(
     var conversationInfoStatus by remember {
       mutableStateOf(
         if (lastState is CbmChatUiState.Loaded) {
-          ConversationInfoStatus.Loaded(lastState.backendConversationInfo)
+          Loaded(lastState.backendConversationInfo)
         } else {
-          ConversationInfoStatus.Initializing
+          Initializing
         },
       )
     }
@@ -167,17 +167,17 @@ internal class CbmChatPresenter(
     }.collectAsState(false)
 
     LaunchedEffect(conversationIdStatusLoadIteration) {
-      if (conversationInfoStatus is ConversationInfoStatus.Loaded && conversationIdStatusLoadIteration == 0) {
+      if (conversationInfoStatus is Loaded && conversationIdStatusLoadIteration == 0) {
         return@LaunchedEffect
       }
-      conversationInfoStatus = ConversationInfoStatus.Initializing
+      conversationInfoStatus = Initializing
       chatRepository.provide().getConversationInfo(conversationId).collect { result ->
         result.fold(
           ifLeft = {
-            conversationInfoStatus = ConversationInfoStatus.Failed
+            conversationInfoStatus = Failed
           },
           ifRight = { conversationInfo ->
-            conversationInfoStatus = ConversationInfoStatus.Loaded(conversationInfo)
+            conversationInfoStatus = Loaded(conversationInfo)
           },
         )
       }
@@ -186,10 +186,15 @@ internal class CbmChatPresenter(
     val updatedConversationInfoStatus by rememberUpdatedState(conversationInfoStatus)
     CollectEvents { event ->
       val startConversationIfNecessary = suspend {
-        val conversationInfoStatusValue = updatedConversationInfoStatus
-        val conversationAlreadyStarted = when (conversationInfoStatusValue) {
-          Failed -> false
-          Initializing -> false
+        val conversationAlreadyStarted = when (val conversationInfoStatusValue = updatedConversationInfoStatus) {
+          Failed -> {
+            false
+          }
+
+          Initializing -> {
+            false
+          }
+
           is Loaded -> {
             when (conversationInfoStatusValue.conversationInfo) {
               NoConversation -> false
@@ -199,54 +204,71 @@ internal class CbmChatPresenter(
         }
         if (!conversationAlreadyStarted) {
           chatRepository.provide().createConversation(conversationId).onRight { backendConversationInfo ->
-            conversationInfoStatus = ConversationInfoStatus.Loaded(backendConversationInfo)
+            conversationInfoStatus = Loaded(backendConversationInfo)
           }
         }
       }
       when (event) {
-        CbmChatEvent.RetryLoadingChat -> conversationIdStatusLoadIteration++
-        is CbmChatEvent.SendTextMessage -> launch {
-          numberOfOngoingUploads.update { it + 1 }
-          startConversationIfNecessary()
-          chatRepository.provide().sendText(conversationId, null, event.message)
-          numberOfOngoingUploads.update { it - 1 }
+        CbmChatEvent.RetryLoadingChat -> {
+          conversationIdStatusLoadIteration++
         }
 
-        is CbmChatEvent.SendPhotoMessage -> launch {
-          numberOfOngoingUploads.update { it + 1 }
-          startConversationIfNecessary()
-          chatRepository.provide().sendPhotos(conversationId, event.uriList)
-          numberOfOngoingUploads.update { it - 1 }
-        }
-
-        is CbmChatEvent.SendMediaMessage -> launch {
-          numberOfOngoingUploads.update { it + 1 }
-          startConversationIfNecessary()
-          val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
-          Snapshot.withMutableSnapshot {
-            for (result in result) {
-              result.onError(
-                onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
-                onFileTooBigError = { showFileTooBigErrorToast = true },
-              )
-            }
+        is CbmChatEvent.SendTextMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            chatRepository.provide().sendText(conversationId, null, event.message)
+            numberOfOngoingUploads.update { it - 1 }
           }
-          numberOfOngoingUploads.update { it - 1 }
         }
 
-        is CbmChatEvent.RetrySendChatMessage -> launch {
-          numberOfOngoingUploads.update { it + 1 }
-          startConversationIfNecessary()
-          val result = chatRepository.provide().retrySendMessage(conversationId, event.messageId)
-          result.onError(
-            onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
-            onFileTooBigError = { showFileTooBigErrorToast = true },
-          )
-          numberOfOngoingUploads.update { it - 1 }
+        is CbmChatEvent.SendPhotoMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            chatRepository.provide().sendPhotos(conversationId, event.uriList)
+            numberOfOngoingUploads.update { it - 1 }
+          }
         }
 
-        CbmChatEvent.ClearFileTooBigToast -> showFileTooBigErrorToast = false
-        CbmChatEvent.ClearFileFailedToBeSentToast -> showFileFailedToBeSendToast = false
+        is CbmChatEvent.SendMediaMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            val result = chatRepository.provide().sendMedia(conversationId, event.uriList)
+            Snapshot.withMutableSnapshot {
+              for (result in result) {
+                result.onError(
+                  onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
+                  onFileTooBigError = { showFileTooBigErrorToast = true },
+                )
+              }
+            }
+            numberOfOngoingUploads.update { it - 1 }
+          }
+        }
+
+        is CbmChatEvent.RetrySendChatMessage -> {
+          launch {
+            numberOfOngoingUploads.update { it + 1 }
+            startConversationIfNecessary()
+            val result = chatRepository.provide().retrySendMessage(conversationId, event.messageId)
+            result.onError(
+              onFailedToPersistUriPermissionError = { showFileFailedToBeSendToast = true },
+              onFileTooBigError = { showFileTooBigErrorToast = true },
+            )
+            numberOfOngoingUploads.update { it - 1 }
+          }
+        }
+
+        CbmChatEvent.ClearFileTooBigToast -> {
+          showFileTooBigErrorToast = false
+        }
+
+        CbmChatEvent.ClearFileFailedToBeSentToast -> {
+          showFileFailedToBeSendToast = false
+        }
+
         CbmChatEvent.HideBanner -> {
           hideBanner = true
         }
@@ -254,8 +276,14 @@ internal class CbmChatPresenter(
     }
 
     return when (val conversationIdStatusValue = conversationInfoStatus) {
-      Initializing -> CbmChatUiState.Initializing
-      Failed -> CbmChatUiState.Error
+      Initializing -> {
+        CbmChatUiState.Initializing
+      }
+
+      Failed -> {
+        CbmChatUiState.Error
+      }
+
       is Loaded -> {
         presentLoadedChat(
           pagingData = pagingData,
@@ -307,7 +335,7 @@ private fun presentLoadedChat(
   }
 
   LaunchedEffect(backendConversationInfo, conversationId, lazyPagingItems) {
-    if (backendConversationInfo is ConversationInfo.NoConversation) return@LaunchedEffect
+    if (backendConversationInfo is NoConversation) return@LaunchedEffect
     snapshotFlow { lazyPagingItems.itemCount }
       .map { it > 0 }
       .distinctUntilChanged()
@@ -378,10 +406,14 @@ internal sealed interface CbmChatUiState {
     val showFileFailedToBeSentToast: Boolean,
   ) : CbmChatUiState {
     val topAppBarText: TopAppBarText = when (backendConversationInfo) {
-      NoConversation -> TopAppBarText.NewConversation
+      NoConversation -> {
+        TopAppBarText.NewConversation
+      }
+
       is Info -> {
         when {
           backendConversationInfo.isLegacy -> TopAppBarText.Legacy
+
           backendConversationInfo.claimInfo != null -> TopAppBarText.ClaimConversation(
             backendConversationInfo.claimInfo.claimType,
             backendConversationInfo.createdAt,
@@ -433,10 +465,18 @@ private fun Either<MessageSendError, *>.onError(
   onFileTooBigError: (MessageSendError.FileTooBigError) -> Unit,
 ) {
   when (this) {
-    is Either.Left<MessageSendError> -> when (val error = value) {
-      is MessageSendError.FailedToPersistUriPermissionError -> onFailedToPersistUriPermissionError(error)
-      is MessageSendError.FileTooBigError -> onFileTooBigError(error)
-      is MessageSendError.GenericError -> {}
+    is Either.Left<MessageSendError> -> {
+      when (val error = value) {
+        is MessageSendError.FailedToPersistUriPermissionError -> {
+          onFailedToPersistUriPermissionError(error)
+        }
+
+        is MessageSendError.FileTooBigError -> {
+          onFileTooBigError(error)
+        }
+
+        is MessageSendError.GenericError -> {}
+      }
     }
 
     is Either.Right<*> -> {}

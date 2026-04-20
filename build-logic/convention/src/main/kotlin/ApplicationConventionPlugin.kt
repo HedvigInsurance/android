@@ -1,13 +1,11 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.variant.HostTestBuilder
 import com.hedvig.android.configureKotlinAndroid
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.the
 
 class ApplicationConventionPlugin : Plugin<Project> {
@@ -20,9 +18,8 @@ class ApplicationConventionPlugin : Plugin<Project> {
         apply(libs.plugins.kotlin.get().pluginId)
       }
 
-      extensions.configure<BaseAppModuleExtension> {
-        val extension = extensions.getByType<ApplicationExtension>()
-        configureKotlinAndroid(extension)
+      extensions.configure<ApplicationExtension> {
+        configureKotlinAndroid(this)
         defaultConfig.targetSdk = libs.versions.targetSdkVersion.get().toInt()
         // Libraries don't build debug so fall back to release.
         buildTypes.getByName("debug") {
@@ -30,13 +27,13 @@ class ApplicationConventionPlugin : Plugin<Project> {
         }
       }
       extensions.configure<ApplicationAndroidComponentsExtension> {
+        @Suppress("UnstableApiUsage")
         beforeVariants(selector().withBuildType("release")) { applicationVariantBuilder ->
-          @Suppress("DEPRECATION")
-          applicationVariantBuilder.enableUnitTest = false
+          applicationVariantBuilder.hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.enable = false
         }
+        @Suppress("UnstableApiUsage")
         beforeVariants(selector().withBuildType("staging")) { applicationVariantBuilder ->
-          @Suppress("DEPRECATION")
-          applicationVariantBuilder.enableUnitTest = false
+          applicationVariantBuilder.hostTests[HostTestBuilder.UNIT_TEST_TYPE]?.enable = false
         }
       }
     }

@@ -3,7 +3,6 @@ package com.hedvig.android.app.apollo
 import com.apollographql.apollo.api.ApolloRequest
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Error as ApolloKotlinError
-import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.Operation.Data
 import com.apollographql.apollo.exception.CacheMissException
 import com.apollographql.apollo.interceptor.ApolloInterceptor
@@ -22,16 +21,18 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 
 internal class LoggingInterceptor : ApolloInterceptor {
-  override fun <D : Operation.Data> intercept(
+  override fun <D : Data> intercept(
     request: ApolloRequest<D>,
     chain: ApolloInterceptorChain,
   ): Flow<ApolloResponse<D>> {
-    logcat { "GraphQL request for ${request.operation.name()} START." }
+    logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} START." }
     return chain.proceed(request).onEach { response ->
-      logcat { "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}" }
+      logcat(LogPriority.DEBUG) {
+        "GraphQL request for ${request.operation.name()} EMISSION. Response data: ${response.data}"
+      }
       val data = response.data
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
-      if (errors.isNotEmpty() && !errors.isUnathenticated()) {
+      if (errors.isNotEmpty() && !errors.isUnauthenticated()) {
         logError(data, errors, request, response)
       }
       if (response.exception != null && response.exception !is CacheMissException) {
@@ -40,11 +41,11 @@ internal class LoggingInterceptor : ApolloInterceptor {
         }
       }
     }.onCompletion {
-      logcat { "GraphQL request for ${request.operation.name()} END." }
+      logcat(LogPriority.DEBUG) { "GraphQL request for ${request.operation.name()} END." }
     }
   }
 
-  private fun <D : Operation.Data> logError(
+  private fun <D : Data> logError(
     data: D?,
     errors: List<LoggableGraphqlError>,
     request: ApolloRequest<D>,
@@ -84,7 +85,7 @@ internal class LogoutOnUnauthenticatedInterceptor(
   override fun <D : Data> intercept(request: ApolloRequest<D>, chain: ApolloInterceptorChain): Flow<ApolloResponse<D>> {
     return chain.proceed(request).onEach { response ->
       val errors = response.errors.orEmpty().map { it.toGraphqlError() }
-      val isUnauthenticated = errors.isUnathenticated()
+      val isUnauthenticated = errors.isUnauthenticated()
       if (isUnauthenticated && !demoManager.isDemoMode().first()) {
         logcat { "LogoutOnUnauthenticatedInterceptor detected unauthenticated request, force logging out" }
         authTokenService.logoutAndInvalidateTokens()
@@ -114,7 +115,7 @@ private data class LoggableGraphqlError(
   )
 }
 
-private fun List<LoggableGraphqlError>.isUnathenticated(): Boolean {
+private fun List<LoggableGraphqlError>.isUnauthenticated(): Boolean {
   return any { it.extensions.errorType == ExtensionErrorType.Unauthenticated }
 }
 

@@ -26,10 +26,10 @@ import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCase
+import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.data.addons.data.AddonBannerSource
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
-import com.hedvig.android.data.addons.data.TravelAddonBannerInfo
-import com.hedvig.android.data.addons.data.TravelAddonBannerSource
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
@@ -80,20 +80,20 @@ internal class GetHomeUseCaseTest {
 
       override suspend fun setDemoMode(demoMode: Boolean) {}
     },
-    demoImpl = object : GetTravelAddonBannerInfoUseCase {
-      override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
+    demoImpl = object : GetAddonBannerInfoUseCase {
+      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
         return flowOf(
           either {
-            null
+            emptyList()
           },
         )
       }
     },
-    prodImpl = object : GetTravelAddonBannerInfoUseCase {
-      override fun invoke(source: TravelAddonBannerSource): Flow<Either<ErrorMessage, TravelAddonBannerInfo?>> {
+    prodImpl = object : GetAddonBannerInfoUseCase {
+      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
         return flowOf(
           either {
-            null
+            emptyList()
           },
         )
       }

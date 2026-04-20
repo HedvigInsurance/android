@@ -32,13 +32,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -88,9 +88,24 @@ import com.hedvig.android.shared.foreverui.ui.data.ReferralState.ACTIVE
 import com.hedvig.android.shared.foreverui.ui.data.ReferredByInfo
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Loading
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverUiState.Success
-import hedvig.resources.R
+import hedvig.resources.FOREVER_TAB_MONTHLY_DISCOUNT
+import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
+import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
+import hedvig.resources.REFERRALS_SHARE_SHEET_TITLE
+import hedvig.resources.REFERRAL_SMS_MESSAGE
+import hedvig.resources.Res
+import hedvig.resources.TAB_REFERRALS_TITLE
+import hedvig.resources.TALKBACK_YOUR_REFERRAL_DISCOUNT
+import hedvig.resources.referrals_change_change_code
+import hedvig.resources.referrals_change_code_changed
+import hedvig.resources.referrals_empty_body
+import hedvig.resources.referrals_empty_code_headline
+import hedvig.resources.referrals_empty_share_code_button
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ForeverDestination(
@@ -100,9 +115,8 @@ fun ForeverDestination(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
-  LocalConfiguration.current
-  val resources = context.resources
-  val shareSheetTitle = stringResource(R.string.REFERRALS_SHARE_SHEET_TITLE)
+  val shareSheetTitle = stringResource(Res.string.REFERRALS_SHARE_SHEET_TITLE)
+  val coroutineScope = rememberCoroutineScope()
   ForeverScreen(
     uiState = uiState,
     reload = { viewModel.emit(ForeverEvent.RetryLoadReferralData) },
@@ -112,22 +126,25 @@ fun ForeverDestination(
       viewModel.emit(ForeverEvent.ShowedReferralCodeSuccessfulChangeMessage)
     },
     onShareCodeClick = { code: String, incentive: UiMoney ->
-      context.showShareSheet(shareSheetTitle) { intent ->
-        intent.putExtra(
-          Intent.EXTRA_TEXT,
-          resources.getString(
-            R.string.REFERRAL_SMS_MESSAGE,
-            incentive.toString(),
-            buildString {
-              append(hedvigBuildConstants.urlBaseWeb)
-              append("/")
-              append(languageService.getLanguage().webPath())
-              append("/forever/")
-              append(Uri.encode(code))
-            },
-          ),
+      coroutineScope.launch {
+        val string = getString(
+          Res.string.REFERRAL_SMS_MESSAGE,
+          incentive.toString(),
+          buildString {
+            append(hedvigBuildConstants.urlBaseWeb)
+            append("/")
+            append(languageService.getLanguage().webPath())
+            append("/forever/")
+            append(Uri.encode(code))
+          },
         )
-        intent.type = "text/plain"
+        context.showShareSheet(shareSheetTitle) { intent ->
+          intent.putExtra(
+            Intent.EXTRA_TEXT,
+            string,
+          )
+          intent.type = "text/plain"
+        }
       }
     },
   )
@@ -146,7 +163,7 @@ private fun ForeverScreen(
     WindowInsets.systemBars.getTop(this).toDp()
   }
   val pullRefreshState = rememberPullRefreshState(
-    refreshing = (uiState as? ForeverUiState.Success)?.reloading == true,
+    refreshing = (uiState as? Success)?.reloading == true,
     onRefresh = reload,
     refreshingOffset = PullRefreshDefaults.RefreshingOffset + systemBarInsetTopDp,
   )
@@ -164,12 +181,17 @@ private fun ForeverScreen(
       },
     ) { uiStateAnimated ->
       when (uiStateAnimated) {
-        ForeverUiState.Error -> HedvigErrorSection(
-          onButtonClick = reload,
-          modifier = Modifier.fillMaxSize(),
-        )
+        ForeverUiState.Error -> {
+          HedvigErrorSection(
+            onButtonClick = reload,
+            modifier = Modifier.fillMaxSize(),
+          )
+        }
 
-        Loading -> LoadingForeverContent()
+        Loading -> {
+          LoadingForeverContent()
+        }
+
         is Success -> {
           ForeverContent(
             uiState = uiStateAnimated,
@@ -206,7 +228,7 @@ internal fun LoadingForeverContent() {
         },
     ) {
       HedvigText(
-        text = stringResource(R.string.TAB_REFERRALS_TITLE),
+        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
         style = HedvigTheme.typography.headlineSmall,
       )
     }
@@ -242,7 +264,7 @@ internal fun LoadingForeverContent() {
 
 @Composable
 internal fun ForeverContent(
-  uiState: ForeverUiState.Success,
+  uiState: Success,
   pullRefreshState: PullRefreshState,
   onShareCodeClick: (code: String, incentive: UiMoney) -> Unit,
   onSubmitCode: (String) -> Unit,
@@ -284,7 +306,7 @@ internal fun ForeverContent(
       modifier = Modifier.align(Alignment.TopCenter),
     )
     HedvigSnackbar(
-      snackbarText = stringResource(R.string.referrals_change_code_changed),
+      snackbarText = stringResource(Res.string.referrals_change_code_changed),
       showSnackbar = uiState.showReferralCodeSuccessfullyChangedMessage,
       showedSnackbar = showedReferralCodeSuccessfulChangeMessage,
       priority = NotificationPriority.Info,
@@ -298,7 +320,7 @@ internal fun ForeverContent(
 
 @Composable
 private fun ForeverScrollableContent(
-  uiState: ForeverUiState.Success,
+  uiState: Success,
   pullRefreshState: PullRefreshState,
   referralExplanationBottomSheetState: HedvigBottomSheetState<UiMoney>,
   referralCodeBottomSheetState: HedvigBottomSheetState<String>,
@@ -324,7 +346,7 @@ private fun ForeverScrollableContent(
         },
     ) {
       HedvigText(
-        text = stringResource(R.string.TAB_REFERRALS_TITLE),
+        text = stringResource(Res.string.TAB_REFERRALS_TITLE),
         style = HedvigTheme.typography.headlineSmall,
       )
       if (uiState.foreverData?.incentive != null) {
@@ -334,7 +356,7 @@ private fun ForeverScrollableContent(
         ) {
           Icon(
             imageVector = HedvigIcons.InfoOutline,
-            contentDescription = stringResource(R.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
+            contentDescription = stringResource(Res.string.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION),
             modifier = Modifier.size(24.dp),
           )
         }
@@ -342,7 +364,7 @@ private fun ForeverScrollableContent(
     }
     val discount = uiState.foreverData?.currentDiscount
     if (discount != null) {
-      val yourDiscountDescription = stringResource(R.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
+      val yourDiscountDescription = stringResource(Res.string.TALKBACK_YOUR_REFERRAL_DISCOUNT)
       val discountUiMoneyDescription = discount.getDescription()
       Spacer(Modifier.height(16.dp))
       HedvigText(
@@ -372,7 +394,7 @@ private fun ForeverScrollableContent(
     if (noReferrals && uiState.foreverData.incentive != null) {
       HedvigText(
         text = stringResource(
-          id = R.string.referrals_empty_body,
+          Res.string.referrals_empty_body,
           uiState.foreverData.incentive.toString(),
         ),
         style = HedvigTheme.typography.bodySmall.copy(
@@ -386,7 +408,7 @@ private fun ForeverScrollableContent(
       )
     } else {
       HedvigText(
-        text = stringResource(id = R.string.FOREVER_TAB_MONTHLY_DISCOUNT),
+        text = stringResource(Res.string.FOREVER_TAB_MONTHLY_DISCOUNT),
         textAlign = TextAlign.Center,
         modifier = Modifier
           .fillMaxWidth()
@@ -396,7 +418,7 @@ private fun ForeverScrollableContent(
         ?: UiMoney(0.0, uiState.foreverData?.currentGrossCost?.currencyCode ?: SEK)
       val discountText =
         "-" + stringResource(
-          id = R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
+          Res.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION,
           discountValue.toString(),
         )
       HedvigText(
@@ -417,7 +439,7 @@ private fun ForeverScrollableContent(
     if (uiState.foreverData?.incentive != null && uiState.foreverData.campaignCode != null) {
       Spacer(Modifier.height(16.dp))
       HedvigButton(
-        text = stringResource(R.string.referrals_empty_share_code_button),
+        text = stringResource(Res.string.referrals_empty_share_code_button),
         enabled = true,
         onClick = {
           onShareCodeClick(
@@ -431,7 +453,7 @@ private fun ForeverScrollableContent(
       )
       Spacer(Modifier.height(8.dp))
       HedvigTextButton(
-        text = stringResource(id = R.string.referrals_change_change_code),
+        text = stringResource(Res.string.referrals_change_change_code),
         onClick = { referralCodeBottomSheetState.show(uiState.foreverData.campaignCode) },
         buttonSize = Large,
         modifier = Modifier
@@ -471,7 +493,7 @@ internal fun ReferralCodeCard(campaignCode: String, modifier: Modifier = Modifie
     ) {
       Column {
         HedvigText(
-          text = stringResource(id = R.string.referrals_empty_code_headline),
+          text = stringResource(Res.string.referrals_empty_code_headline),
           style = HedvigTheme.typography.bodySmall.copy(color = HedvigTheme.colorScheme.textSecondary),
         )
         HedvigText(
@@ -513,7 +535,7 @@ private fun PreviewForeverContent(
 private class ForeverUiStateProvider : CollectionPreviewParameterProvider<ForeverUiState>(
   listOf(
     ForeverUiState.Error,
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referredBy = ReferredByInfo(
           name = "Sladan",
@@ -521,7 +543,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
           activeDiscount = UiMoney(10.0, SEK),
         ),
         referrals = listOf(
-          Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
+          Referral("Name#1", ACTIVE, UiMoney(10.0, SEK)),
           Referral("Name#2", ReferralState.IN_PROGRESS, null),
           Referral("Name#3", ReferralState.TERMINATED, null),
           Referral("Name#4", ReferralState.TERMINATED, null),
@@ -540,7 +562,7 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referredBy = ReferredByInfo(
           name = "Sladan",
@@ -559,11 +581,11 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referredBy = null,
         referrals = listOf(
-          Referral("Name#1", ReferralState.ACTIVE, UiMoney(10.0, UiCurrencyCode.SEK)),
+          Referral("Name#1", ACTIVE, UiMoney(10.0, SEK)),
           Referral("Name#2", ReferralState.IN_PROGRESS, null),
           Referral("Name#3", ReferralState.TERMINATED, null),
           Referral("Name#4", ReferralState.TERMINATED, null),
@@ -582,21 +604,21 @@ private class ForeverUiStateProvider : CollectionPreviewParameterProvider<Foreve
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Success(
+    Success(
       foreverData = ForeverData(
         referrals = emptyList(),
         referredBy = null,
         campaignCode = "HEDV1G",
-        incentive = UiMoney(10.0, UiCurrencyCode.SEK),
-        currentNetCost = UiMoney(80.0, UiCurrencyCode.SEK),
-        currentDiscount = UiMoney(20.0, UiCurrencyCode.SEK),
-        currentGrossCost = UiMoney(100.0, UiCurrencyCode.SEK),
+        incentive = UiMoney(10.0, SEK),
+        currentNetCost = UiMoney(80.0, SEK),
+        currentDiscount = UiMoney(20.0, SEK),
+        currentGrossCost = UiMoney(100.0, SEK),
       ),
       referralCodeLoading = false,
       referralCodeErrorMessage = null,
       reloading = false,
       showReferralCodeSuccessfullyChangedMessage = true,
     ),
-    ForeverUiState.Loading,
+    Loading,
   ),
 )

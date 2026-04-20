@@ -14,12 +14,10 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,28 +26,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.media3.datasource.cache.SimpleCache
-import coil.ImageLoader
+import coil3.ImageLoader
+import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
-import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import hedvig.resources.R
-import kotlinx.coroutines.flow.first
+import hedvig.resources.EXIT_DEMO_MODE_BUTTON
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun HedvigAppUi(
@@ -59,6 +56,7 @@ internal fun HedvigAppUi(
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -67,6 +65,7 @@ internal fun HedvigAppUi(
   logoutUseCase: LogoutUseCase,
 ) {
   val isDemoMode by demoManager.isDemoMode().collectAsState(false)
+  val globalSnackBarState = rememberGlobalSnackBarState()
   Box(Modifier.fillMaxSize()) {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -78,27 +77,34 @@ internal fun HedvigAppUi(
         currentDestination = hedvigAppState.currentDestination,
         onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
       ) {
-        HedvigNavHost(
-          hedvigAppState = hedvigAppState,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-          externalNavigator = externalNavigator,
-          finishApp = finishApp,
-          shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-          openUrl = openUrl,
-          imageLoader = imageLoader,
-          simpleVideoCache = simpleVideoCache,
-          languageService = languageService,
-          hedvigBuildConstants = hedvigBuildConstants,
+        Box(
+          propagateMinConstraints = true,
           modifier = Modifier
             .fillMaxHeight()
             .weight(1f)
             .animatedNavigationBarInsetsConsumption(hedvigAppState),
-        )
+        ) {
+          GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
+          HedvigNavHost(
+            hedvigAppState = hedvigAppState,
+            globalSnackBarState = globalSnackBarState,
+            hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+            externalNavigator = externalNavigator,
+            finishApp = finishApp,
+            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
+            openUrl = openUrl,
+            openCrossSellUrl = openCrossSellUrl,
+            imageLoader = imageLoader,
+            simpleVideoCache = simpleVideoCache,
+            languageService = languageService,
+            hedvigBuildConstants = hedvigBuildConstants,
+          )
+        }
       }
     }
     if (isDemoMode) {
       DemoModeLabel(
-        stringResource(R.string.EXIT_DEMO_MODE_BUTTON),
+        stringResource(Res.string.EXIT_DEMO_MODE_BUTTON),
         onButtonClick = { logoutUseCase.invoke() },
         modifier = Modifier
           .padding(start = 16.dp, end = 32.dp, bottom = 86.dp)
@@ -119,17 +125,26 @@ internal fun HedvigAppUi(
 private fun Modifier.animatedNavigationBarInsetsConsumption(hedvigAppState: HedvigAppState) = composed {
   val density = LocalDensity.current
   val insetsToConsume = when (hedvigAppState.navigationSuiteType) {
-    NavigationSuiteType.NavigationBar -> WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
-    NavigationSuiteType.None -> PaddingValues(0.dp)
+    NavigationSuiteType.NavigationBar -> {
+      WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues(density)
+    }
+
+    NavigationSuiteType.None -> {
+      PaddingValues(0.dp)
+    }
+
     NavigationSuiteType.NavigationRail,
     NavigationSuiteType.NavigationRailXLarge,
-    ->
+    -> {
       WindowInsets.systemBars
         .union(WindowInsets.displayCutout)
         .only(WindowInsetsSides.Left)
         .asPaddingValues(density)
+    }
 
-    else -> PaddingValues(0.dp)
+    else -> {
+      PaddingValues(0.dp)
+    }
   }
 
   val paddingValuesVectorConverter: TwoWayConverter<PaddingValues, AnimationVector4D> = TwoWayConverter(

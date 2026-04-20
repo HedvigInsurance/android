@@ -1,0 +1,5 @@
+mutation ConfirmAddonRemoval($addonIds: [ID!]!, $contractId: ID!) {
+  addonRemoveConfirm(addonIds: $addonIds, contractId: $contractId) {
+    message
+  }
+}
