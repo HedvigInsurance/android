@@ -14,7 +14,9 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val payoutAccountModule = module {
-  single<GetPayoutAccountUseCase> { GetPayoutAccountUseCaseImpl(get<ApolloClient>()) }
+  single<GetPayoutAccountUseCase> {
+    GetPayoutAccountUseCaseImpl(get<ApolloClient>())
+  }
   single<SetupNordeaPayoutUseCase> {
     SetupNordeaPayoutUseCaseImpl(get<ApolloClient>(), get<NetworkCacheManager>())
   }

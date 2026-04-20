@@ -21,6 +21,12 @@ internal class SetupNordeaPayoutUseCaseImpl(
   private val networkCacheManager: NetworkCacheManager,
 ) : SetupNordeaPayoutUseCase {
   override suspend fun invoke(clearingNumber: String, accountNumber: String): Either<ErrorMessage, Unit> = either {
+    FakePayoutAccountStorage.currentMethod = PayoutAccount.BankAccount(
+      clearingNumber = clearingNumber,
+      accountNumber = accountNumber,
+      bankName = bankNameForClearingNumber(clearingNumber),
+    )
+    return@either
     val result = apolloClient
       .mutation(SetupNordeaPayoutMutation(clearingNumber = clearingNumber, accountNumber = accountNumber))
       .safeExecute(::ErrorMessage)
