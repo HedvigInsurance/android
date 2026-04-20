@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
@@ -56,27 +58,36 @@ internal fun ImageViewerDestination(
 ) {
   Box(
     Modifier
-      .fillMaxSize()
-      .background(Color.Black),
+        .fillMaxSize()
+        .background(Color.Black),
   ) {
     val zoomableState = rememberZoomableState(overZoomConfig = OverZoomConfig(1f, 4f))
     Zoomable(
       state = zoomableState,
       modifier = Modifier.matchParentSize(),
     ) {
-      AsyncImage(
-        imageLoader = imageLoader,
-        model = ImageRequest.Builder(LocalContext.current)
-          .data(imageUrl)
-          .diskCacheKey(cacheKey)
-          .memoryCacheKey(cacheKey)
-          .build(),
-        contentDescription = stringResource(Res.string.TALKBACK_PINCH_TO_ZOOM),
-        modifier = Modifier.fillMaxSize()
-          .semantics {
-            role = Role.Image
-          },
-      )
+      Box(modifier = Modifier.wrapContentSize()) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Color.White, RectangleShape),
+        )
+
+        AsyncImage(
+          imageLoader = imageLoader,
+          model = ImageRequest.Builder(LocalContext.current)
+            .data(imageUrl)
+            .diskCacheKey(cacheKey)
+            .memoryCacheKey(cacheKey)
+            .build(),
+          contentDescription = stringResource(Res.string.TALKBACK_PINCH_TO_ZOOM),
+          modifier = Modifier
+              .wrapContentSize()
+              .semantics {
+                  role = Role.Image
+              },
+        )
+      }
     }
     HedvigTheme(darkTheme = true) {
       Crossfade(
@@ -86,10 +97,10 @@ internal fun ImageViewerDestination(
           Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
-              .padding(horizontal = 4.dp)
-              .fillMaxWidth()
-              .height(64.dp),
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
+                .padding(horizontal = 4.dp)
+                .fillMaxWidth()
+                .height(64.dp),
           ) {
             val description = stringResource(Res.string.general_back_button)
             IconButton(
