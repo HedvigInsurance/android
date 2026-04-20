@@ -19,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import android.graphics.Canvas as AndroidCanvas
+import android.graphics.Color as AndroidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
@@ -26,9 +28,12 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
+import coil3.Bitmap
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import coil3.size.Size
+import coil3.transform.Transformation
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
@@ -46,6 +51,8 @@ import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.TALKBACK_PINCH_TO_ZOOM
 import hedvig.resources.general_back_button
 import org.jetbrains.compose.resources.stringResource
+import androidx.core.graphics.createBitmap
+import coil3.request.transformations
 
 @Composable
 internal fun ImageViewerDestination(
@@ -68,6 +75,7 @@ internal fun ImageViewerDestination(
         imageLoader = imageLoader,
         model = ImageRequest.Builder(LocalContext.current)
           .data(imageUrl)
+          .transformations(WhiteBackgroundTransformation())
           .diskCacheKey(cacheKey)
           .memoryCacheKey(cacheKey)
           .build(),
@@ -120,6 +128,19 @@ internal fun ImageViewerDestination(
     }
   }
 }
+
+class WhiteBackgroundTransformation : Transformation() {
+  override val cacheKey = "white_background"
+
+  override suspend fun transform(input: Bitmap, size: Size): Bitmap {
+    val output = createBitmap(input.width, input.height)
+    val canvas = AndroidCanvas(output)
+    canvas.drawColor(AndroidColor.WHITE)
+    canvas.drawBitmap(input, 0f, 0f, null)
+    return output
+  }
+}
+
 
 @HedvigPreview
 @Composable
