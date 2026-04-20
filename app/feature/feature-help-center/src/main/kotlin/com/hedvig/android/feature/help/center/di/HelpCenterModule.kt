@@ -14,7 +14,13 @@ import com.hedvig.android.feature.help.center.data.GetInsuranceForEditCoInsuredU
 import com.hedvig.android.feature.help.center.data.GetInsuranceForEditCoInsuredUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCase
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCaseImpl
+import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
+import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCaseImpl
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.SetArticleRatingUseCase
+import com.hedvig.android.feature.help.center.data.SetArticleRatingUseCaseImpl
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.featureflags.FeatureManager
@@ -29,6 +35,10 @@ val helpCenterModule = module {
 
   single<GetHelpCenterTopicUseCase> {
     GetHelpCenterTopicUseCaseImpl(get<GetHelpCenterFAQUseCase>())
+  }
+
+  single<GetPuppyGuideUseCase> {
+    GetPuppyGuideUseCaseImpl(get<ApolloClient>())
   }
 
   single<GetQuickLinksUseCase> {
@@ -54,6 +64,7 @@ val helpCenterModule = module {
       getQuickLinksUseCase = get<GetQuickLinksUseCase>(),
       hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
       getHelpCenterFAQUseCase = get<GetHelpCenterFAQUseCase>(),
+      getPuppyGuideUseCase = get<GetPuppyGuideUseCase>(),
     )
   }
 
@@ -82,5 +93,21 @@ val helpCenterModule = module {
     ShowNavigateToInboxViewModel(
       hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
     )
+  }
+
+  viewModel<PuppyGuideViewModel> {
+    PuppyGuideViewModel(getPuppyGuideUseCase = get<GetPuppyGuideUseCase>())
+  }
+
+  viewModel<PuppyArticleViewModel> { params ->
+    PuppyArticleViewModel(
+      getPuppyGuideUseCase = get<GetPuppyGuideUseCase>(),
+      setArticleRatingUseCase = get<SetArticleRatingUseCase>(),
+      storyName = params.get(),
+    )
+  }
+
+  single<SetArticleRatingUseCase> {
+    SetArticleRatingUseCaseImpl(apolloClient = get())
   }
 }

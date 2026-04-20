@@ -15,6 +15,10 @@ import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
 import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.Emergency
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
+import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
@@ -81,6 +85,13 @@ fun NavGraphBuilder.helpCenterGraph(
           onNavigateToNewConversation()
         },
         onNavigateUp = navController::navigateUp,
+        onNavigateToPuppyGuide = {
+          with(navigator) {
+            backStackEntry.navigate(
+              HelpCenterDestinations.PuppyGuide,
+            )
+          }
+        },
       )
     }
 
@@ -136,6 +147,35 @@ fun NavGraphBuilder.helpCenterGraph(
         tryToDialPhone = tryToDialPhone,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         imageLoader = imageLoader
+      )
+    }
+
+    navdestination<HelpCenterDestinations.PuppyGuide> { backStackEntry ->
+      val viewModel = koinViewModel<PuppyGuideViewModel>()
+      PuppyGuideDestination(
+        viewModel,
+        onNavigateUp = navigator::navigateUp,
+        onNavigateToArticle = { story ->
+          with(navigator) {
+            backStackEntry.navigate(
+              HelpCenterDestinations.PuppyGuideArticle(
+                story.name,
+              ),
+            )
+          }
+        },
+        imageLoader = imageLoader,
+      )
+    }
+
+    navdestination<HelpCenterDestinations.PuppyGuideArticle> {
+      val viewModel = koinViewModel<PuppyArticleViewModel> {
+        parametersOf(storyName)
+      }
+      PuppyArticleDestination(
+        viewModel = viewModel,
+        navigateUp = navigator::navigateUp,
+        imageLoader = imageLoader,
       )
     }
   }
