@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -27,12 +28,18 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 @Composable
 internal fun SetupSwishPayoutDestination(
   viewModel: SetupSwishPayoutViewModel,
+  globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SetupSwishPayoutScreen(
     uiState = uiState,
+    globalSnackBarState = globalSnackBarState,
     onSave = { viewModel.emit(SetupSwishPayoutEvent.Save) },
+    showedSnackBar = {
+      viewModel.emit(SetupSwishPayoutEvent.ShowedSnackBar)
+      navigateUp()
+    },
     navigateUp = navigateUp,
   )
 }
@@ -40,11 +47,15 @@ internal fun SetupSwishPayoutDestination(
 @Composable
 private fun SetupSwishPayoutScreen(
   uiState: SetupSwishPayoutUiState,
+  globalSnackBarState: GlobalSnackBarState,
   onSave: () -> Unit,
+  showedSnackBar: () -> Unit,
   navigateUp: () -> Unit,
 ) {
-  LaunchedEffect(uiState.navigateBack) {
-    if (uiState.navigateBack) navigateUp()
+  LaunchedEffect(uiState.showSuccessSnackBar) {
+    if (!uiState.showSuccessSnackBar) return@LaunchedEffect
+    globalSnackBarState.show("Changes saved", NotificationPriority.Campaign)
+    showedSnackBar()
   }
 
   HedvigScaffold(
@@ -82,7 +93,7 @@ private fun SetupSwishPayoutScreen(
     HedvigButton(
       text = "Save",
       onClick = onSave,
-      enabled = !uiState.isLoading && uiState.phoneNumberState.text.isNotBlank(),
+      enabled = !uiState.isLoading && uiState.phoneNumberState.text.length >= 10,
       isLoading = uiState.isLoading,
       modifier = Modifier
         .fillMaxWidth()

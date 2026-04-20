@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -28,12 +29,18 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 @Composable
 internal fun EditBankAccountDestination(
   viewModel: EditBankAccountViewModel,
+  globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   EditBankAccountScreen(
     uiState = uiState,
+    globalSnackBarState = globalSnackBarState,
     onSave = { viewModel.emit(EditBankAccountEvent.Save) },
+    showedSnackBar = {
+      viewModel.emit(EditBankAccountEvent.ShowedSnackBar)
+      navigateUp()
+    },
     navigateUp = navigateUp,
   )
 }
@@ -41,11 +48,15 @@ internal fun EditBankAccountDestination(
 @Composable
 private fun EditBankAccountScreen(
   uiState: EditBankAccountUiState,
+  globalSnackBarState: GlobalSnackBarState,
   onSave: () -> Unit,
+  showedSnackBar: () -> Unit,
   navigateUp: () -> Unit,
 ) {
-  LaunchedEffect(uiState.navigateBack) {
-    if (uiState.navigateBack) navigateUp()
+  LaunchedEffect(uiState.showSuccessSnackBar) {
+    if (!uiState.showSuccessSnackBar) return@LaunchedEffect
+    globalSnackBarState.show("Changes saved", NotificationPriority.Campaign)
+    showedSnackBar()
   }
 
   HedvigScaffold(

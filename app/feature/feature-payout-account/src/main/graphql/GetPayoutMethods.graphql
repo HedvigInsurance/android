@@ -11,6 +11,10 @@ query GetPayoutMethods {
           ... on PaymentMethodSwishDetails {
             phoneNumber
           }
+          ... on PaymentMethodInvoiceDetails {
+            delivery
+            email
+          }
         }
       }
       availableMethods {

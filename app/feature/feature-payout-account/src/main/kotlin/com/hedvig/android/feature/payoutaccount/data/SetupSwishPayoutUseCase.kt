@@ -25,6 +25,7 @@ internal class SetupSwishPayoutUseCase(
       PaymentMethodSetupStatus.FAILED -> {
         raise(ErrorMessage(output.error?.message ?: "Failed to set up Swish payout"))
       }
+
       else -> {
         networkCacheManager.clearCache()
       }

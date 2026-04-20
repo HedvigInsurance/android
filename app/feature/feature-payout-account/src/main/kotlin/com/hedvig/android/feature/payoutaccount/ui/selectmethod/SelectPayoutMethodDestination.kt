@@ -40,6 +40,7 @@ internal fun SelectPayoutMethodDestination(
             )
             Spacer(Modifier.height(8.dp))
           }
+
           MemberPaymentProvider.NORDEA -> {
             PayoutMethodRow(
               title = "Bank account",
@@ -48,6 +49,7 @@ internal fun SelectPayoutMethodDestination(
             )
             Spacer(Modifier.height(8.dp))
           }
+
           MemberPaymentProvider.SWISH -> {
             PayoutMethodRow(
               title = "Swish",
@@ -56,6 +58,7 @@ internal fun SelectPayoutMethodDestination(
             )
             Spacer(Modifier.height(8.dp))
           }
+
           else -> {}
         }
       }
@@ -65,12 +68,7 @@ internal fun SelectPayoutMethodDestination(
 }
 
 @Composable
-private fun PayoutMethodRow(
-  title: String,
-  subtitle: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun PayoutMethodRow(title: String, subtitle: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
     onClick = onClick,
     modifier = modifier.fillMaxWidth(),

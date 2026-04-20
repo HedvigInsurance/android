@@ -349,6 +349,7 @@ internal fun HedvigNavHost(
     )
     payoutAccountGraph(
       navController = navController,
+      globalSnackBarState = globalSnackBarState,
       navigateToTrustlyPayout = { navController.navigate(TrustlyPayoutDestination) },
       navigateUp = navController::navigateUp,
     )
@@ -431,10 +432,10 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       popBackStackOrFinish = popBackStackOrFinish,
       goHome = {
-          navController.navigate(HomeDestination.Graph) {
-            popUpTo(ChipIdGraphDestination::class) { inclusive = true }
-          }
-      }
+        navController.navigate(HomeDestination.Graph) {
+          popUpTo(ChipIdGraphDestination::class) { inclusive = true }
+        }
+      },
     )
     movingFlowGraph(
       navController = navController,

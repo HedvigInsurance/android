@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payoutaccount.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountDestination
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountViewModel
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewDestination
@@ -18,6 +19,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.payoutAccountGraph(
   navController: NavController,
+  globalSnackBarState: GlobalSnackBarState,
   navigateToTrustlyPayout: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -57,6 +59,7 @@ fun NavGraphBuilder.payoutAccountGraph(
       val viewModel: EditBankAccountViewModel = koinViewModel()
       EditBankAccountDestination(
         viewModel = viewModel,
+        globalSnackBarState = globalSnackBarState,
         navigateUp = navController::navigateUp,
       )
     }
@@ -65,6 +68,7 @@ fun NavGraphBuilder.payoutAccountGraph(
       val viewModel: SetupSwishPayoutViewModel = koinViewModel()
       SetupSwishPayoutDestination(
         viewModel = viewModel,
+        globalSnackBarState = globalSnackBarState,
         navigateUp = navController::navigateUp,
       )
     }

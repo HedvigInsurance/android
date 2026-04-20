@@ -10,6 +10,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.GetPayoutMethodsQuery
 import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.DefaultPayoutMethod.Details.Companion.asPaymentMethodBankAccountDetails
+import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.DefaultPayoutMethod.Details.Companion.asPaymentMethodInvoiceDetails
 import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.DefaultPayoutMethod.Details.Companion.asPaymentMethodSwishDetails
 import octopus.type.MemberPaymentProvider
 
@@ -35,7 +36,10 @@ internal class GetPayoutAccountUseCaseImpl(
     val paymentMethods = result.currentMember.paymentMethods
     val currentMethod = paymentMethods.defaultPayoutMethod?.let { method ->
       when (method.provider) {
-        MemberPaymentProvider.TRUSTLY -> PayoutAccount.Trustly
+        MemberPaymentProvider.TRUSTLY -> {
+          PayoutAccount.Trustly
+        }
+
         MemberPaymentProvider.SWISH -> {
           val swishDetails = method.details.asPaymentMethodSwishDetails()
           if (swishDetails != null) {
@@ -44,6 +48,7 @@ internal class GetPayoutAccountUseCaseImpl(
             null
           }
         }
+
         MemberPaymentProvider.NORDEA -> {
           val bankAccountDetails = method.details.asPaymentMethodBankAccountDetails()
           if (bankAccountDetails != null) {
@@ -60,7 +65,22 @@ internal class GetPayoutAccountUseCaseImpl(
             null
           }
         }
-        else -> null
+
+        MemberPaymentProvider.INVOICE -> {
+          val invoiceDetails = method.details.asPaymentMethodInvoiceDetails()
+          if (invoiceDetails != null) {
+            PayoutAccount.Invoice(
+              delivery = invoiceDetails.delivery,
+              email = invoiceDetails.email,
+            )
+          } else {
+            null
+          }
+        }
+
+        else -> {
+          null
+        }
       }
     }
 

@@ -22,12 +22,21 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class EditBankAccountViewModel(
   setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
 ) : MoleculeViewModel<EditBankAccountEvent, EditBankAccountUiState>(
-  EditBankAccountUiState(TextFieldState(), TextFieldState(), null, false, null, false),
-  EditBankAccountPresenter(setupNordeaPayoutUseCase),
-)
+    EditBankAccountUiState(
+      clearingNumberState = TextFieldState(),
+      accountNumberState = TextFieldState(),
+      bankName = null,
+      isLoading = false,
+      errorMessage = null,
+      showSuccessSnackBar = false,
+    ),
+    EditBankAccountPresenter(setupNordeaPayoutUseCase),
+  )
 
 internal sealed interface EditBankAccountEvent {
   data object Save : EditBankAccountEvent
+
+  data object ShowedSnackBar : EditBankAccountEvent
 }
 
 internal data class EditBankAccountUiState(
@@ -36,7 +45,7 @@ internal data class EditBankAccountUiState(
   val bankName: String?,
   val isLoading: Boolean,
   val errorMessage: String?,
-  val navigateBack: Boolean,
+  val showSuccessSnackBar: Boolean,
 ) {
   // Swedish clearing numbers are 4 digits for most banks, 5 for Swedbank's 8-series
   val clearingInputTransformation: InputTransformation = InputTransformation.maxLength(5).digitsOnly()
@@ -57,7 +66,7 @@ internal class EditBankAccountPresenter(
     val bankName = bankNameForClearingNumber(clearingNumberState.text.toString())
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var navigateBack by remember { mutableStateOf(false) }
+    var showSuccessSnackBar by remember { mutableStateOf(false) }
     var saveIteration by remember { mutableStateOf<Pair<String, String>?>(null) }
 
     val currentSave = saveIteration
@@ -73,7 +82,7 @@ internal class EditBankAccountPresenter(
           },
           ifRight = {
             isLoading = false
-            navigateBack = true
+            showSuccessSnackBar = true
             saveIteration = null
           },
         )
@@ -87,6 +96,10 @@ internal class EditBankAccountPresenter(
             saveIteration = clearingNumberState.text.toString() to accountNumberState.text.toString()
           }
         }
+
+        EditBankAccountEvent.ShowedSnackBar -> {
+          showSuccessSnackBar = false
+        }
       }
     }
 
@@ -96,7 +109,7 @@ internal class EditBankAccountPresenter(
       bankName = bankName,
       isLoading = isLoading,
       errorMessage = errorMessage,
-      navigateBack = navigateBack,
+      showSuccessSnackBar = showSuccessSnackBar,
     )
   }
 }

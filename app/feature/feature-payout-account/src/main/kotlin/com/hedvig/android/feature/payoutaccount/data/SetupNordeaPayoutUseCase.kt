@@ -31,6 +31,7 @@ internal class SetupNordeaPayoutUseCaseImpl(
       PaymentMethodSetupStatus.FAILED -> {
         raise(ErrorMessage(output.error?.message ?: "Failed to set up payout method"))
       }
+
       else -> {
         networkCacheManager.clearCache()
       }

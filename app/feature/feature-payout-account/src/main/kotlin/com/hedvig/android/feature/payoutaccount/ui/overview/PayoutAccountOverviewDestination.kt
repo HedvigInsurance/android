@@ -154,6 +154,31 @@ private fun PayoutAccountContent(
         }
       }
 
+      is PayoutAccount.Invoice -> {
+        HedvigTextField(
+          text = "Invoice",
+          onValueChange = {},
+          labelText = "Account",
+          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+          readOnly = true,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+        if (availablePayoutMethods.size > 1) {
+          Spacer(Modifier.height(8.dp))
+          HedvigButton(
+            text = "Change account",
+            onClick = onConnectPayoutMethodClicked,
+            enabled = true,
+            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 16.dp),
+          )
+        }
+      }
+
       is PayoutAccount.BankAccount -> {
         val displayText = buildString {
           if (currentMethod.bankName != null) {
