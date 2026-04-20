@@ -15,12 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
@@ -66,28 +64,20 @@ internal fun ImageViewerDestination(
       state = zoomableState,
       modifier = Modifier.matchParentSize(),
     ) {
-      Box(modifier = Modifier.wrapContentSize()) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(Color.White, RectangleShape),
-        )
-
-        AsyncImage(
-          imageLoader = imageLoader,
-          model = ImageRequest.Builder(LocalContext.current)
-            .data(imageUrl)
-            .diskCacheKey(cacheKey)
-            .memoryCacheKey(cacheKey)
-            .build(),
-          contentDescription = stringResource(Res.string.TALKBACK_PINCH_TO_ZOOM),
-          modifier = Modifier
-              .wrapContentSize()
-              .semantics {
-                  role = Role.Image
-              },
-        )
-      }
+      AsyncImage(
+        imageLoader = imageLoader,
+        model = ImageRequest.Builder(LocalContext.current)
+          .data(imageUrl)
+          .diskCacheKey(cacheKey)
+          .memoryCacheKey(cacheKey)
+          .build(),
+        contentDescription = stringResource(Res.string.TALKBACK_PINCH_TO_ZOOM),
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics {
+                role = Role.Image
+            },
+      )
     }
     HedvigTheme(darkTheme = true) {
       Crossfade(
