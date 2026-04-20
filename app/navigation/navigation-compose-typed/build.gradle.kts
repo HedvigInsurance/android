@@ -1,5 +1,6 @@
 plugins {
-  id("hedvig.android.library")
+  id("hedvig.multiplatform.library")
+  id("hedvig.multiplatform.library.android")
   id("hedvig.gradle.plugin")
 }
 
@@ -8,12 +9,16 @@ hedvig {
   compose()
 }
 
-dependencies {
-  implementation(libs.androidx.navigation.common)
-  implementation(libs.androidx.navigation.runtime)
-  implementation(libs.jetbrains.compose.runtime)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.kotlinx.serialization.core)
-  implementation(projects.navigationCommon)
-  implementation(projects.navigationCompose)
+kotlin {
+  sourceSets {
+    commonMain.dependencies {
+      implementation(libs.jetbrains.navigation.compose)
+      implementation(libs.jetbrains.compose.runtime)
+      implementation(libs.jetbrains.lifecycle.viewmodel)
+      implementation(libs.koin.composeViewModel)
+      implementation(libs.kotlinx.serialization.core)
+      implementation(projects.navigationCommon)
+      implementation(projects.navigationCompose)
+    }
+  }
 }

@@ -49,7 +49,7 @@ dependencies {
   implementation(projects.coreResources)
   implementation(projects.dataChat)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationActivity)

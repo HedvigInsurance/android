@@ -1728,6 +1728,11 @@ type ExternalInsurer {
   displayName: String!
   insurelyId: String
 }
+type FetchedExternalInsurance {
+  displayName: String!
+  subtitle: String
+  insurer: ExternalInsurer!
+}
 type FirstVetAction {
   sections: [FirstVetSection!]!
 }
@@ -2729,6 +2734,22 @@ type MemberPaymentAvailablePaymentMethod {
    True if the member can set up this payment method for payout. 
   """
   supportsPayout: Boolean!
+  """
+  True if this method is already ACTIVE for member and can be chosen as default directly without setup, false if
+  this is a new payment method that the member has not yet set up.
+  If this is true, then the `details` field will be populated with the payment method details. If this is false, then
+  the `details` field will be null since the member has not yet set up this payment method.
+  If true then this method can be set up as default directly by calling `paymentMethodSetDefaultPayin` or
+  `paymentMethodSetDefaultPayout` mutation depending on if it's a payin or payout method. If false, then the
+  corresponding mutation for setting up this payment method should be called, eg. `paymentMethodSetupTrustly`,
+  `paymentMethodSetupSwishPayin` etc.
+  """
+  isActive: Boolean!
+  """
+  For already connected and ACTIVE methods, ie isActive=true, specific details of the actual connection - e.g. a bank
+  account reference, phone number for swish, or email/kivra for invoice.
+  """
+  details: PaymentMethodDetails
 }
 type MemberPaymentChargeMethodInfo {
   """
@@ -2801,48 +2822,75 @@ type MemberPaymentInformation {
 }
 type MemberPaymentMethod {
   """
-   The unique id of the payment method. This id is used for switching default and revoking payment methods. 
-  """
-  id: ID!
-  """
-   Payment provider, eg Trustly, Swish, Nordea, Kivra etc. 
+  Payment provider, eg Trustly, Swish, Nordea, Kivra etc.
+  This is used as the "identifier" of the payment method since there can only be one ACTIVE or PENDING payment method
+  per provider.
   """
   provider: MemberPaymentProvider!
   """
-  The payment method status - ACTIVE, PENDING, or PENDING_DEFAULT.
-  PENDING_DEFAULT means the payment method is awaiting activation and will become default once activated.
+  The payment method status - ACTIVE, PENDING.
+  If ACTIVE, the payment method is ready to use for payins or payouts depending on if it's a payin or payout method.
+  If PENDING, the payment method has been set up but is still awaiting activation and cannot be used for payins or
+  payouts until then. Once activated, the status will change to ACTIVE.
   """
   status: MemberPaymentMethodStatus!
   """
-  True if this is the default payment method. Only one ACTIVE payment method can be default at a time.
-  If status is PENDING then payment method will become the default once activated.
+  This is 'true' for only one of the members ACTIVE methods which is the default payment method that will be used for
+  charging or payout the member. For PENDING methods, this can also be 'true' if the member has chosen to set up this
+  payment method as default during the setup process.
   """
   isDefault: Boolean!
   """
-  Specific details of the actual connection - e.g. a bank account reference, phone number for swish,
+  Specific details of the actual connection if method is ACTIVE - e.g. a bank account reference, phone number for swish,
   or email/kivra for invoice.
   """
   details: PaymentMethodDetails!
 }
 type MemberPaymentMethods {
   """
-   List of active and pending payment payin methods for this member. 
+  List of all member's ACTIVE and PENDING payment payin methods.
+  A member can have multiple ACTIVE payment methods with these constraints:
+  - Only one ACTIVE payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  - Only one ACTIVE payment method can be default at a time.
+  A member can have multiple PENDING payment methods with these constraints:
+  - Only one PENDING payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  So there can exist max two payment methods per provider, one ACTIVE and one PENDING.
+  If a PENDING payment method has isDefault=true, then it will become the default ACTIVE payment method once activated.
   """
   payinMethods: [MemberPaymentMethod!]!
   """
-   List of active and pending payment payout methods for this member. 
+  List of all member's ACTIVE and PENDING payment payout methods.
+  A member can have multiple ACTIVE payment methods with these constraints:
+  - Only one ACTIVE payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  - Only one ACTIVE payment method can be default at a time.
+  A member can have multiple PENDING payment methods with these constraints:
+  - Only one PENDING payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  So there can exist max two payment methods per provider, one ACTIVE and one PENDING.
+  If a PENDING payment method has isDefault=true, then it will become the default ACTIVE payment method once activated.
   """
   payoutMethods: [MemberPaymentMethod!]!
   """
-   The default payment method for payin if any. 
+  The default payment method to use for payins if any.
+  Note that there can exist a PENDING payment method in `payinMethods` list with `isDefault`=true, in that case this default
+  payment method will be replaced by it once the pending method is activated.
   """
   defaultPayinMethod: MemberPaymentMethod
   """
-   The default payment method for payout if any. 
+  The default payment method to use for payouts if any.
+  Note that there can exist a PENDING payment method in `payoutMethods` list with `isDefault`=true, in that case this default
+  payment method will be replaced by it once the pending method is activated.
   """
   defaultPayoutMethod: MemberPaymentMethod
   """
-   The available payment methods that the member can choose from when setting up a new payment method. 
+  The available payment methods that the member can choose from when setting up a new payment method.
+  This list can include both payment methods that the member has already set up and new payment methods that the
+  member has not yet set up but are available to them. For already set up payment methods, the `isActive` field will
+  be true and the `details` field will be populated with the payment method details. For new payment methods that the
+  member has not yet set up, the `isActive` field will be false and the `details` field will be null.
+  If member picks a new payment method to set up, the corresponding mutation for setting up that payment method should
+  be called, eg. `paymentMethodSetupTrustly`, `paymentMethodSetupSwishPayin` etc.
+  If member picks an already set up payment method to set up as default, then `paymentMethodSetDefaultPayin` or
+  `paymentMethodSetDefaultPayout` mutation should be called depending on if it's a payin or payout method.
   """
   availableMethods: [MemberPaymentAvailablePaymentMethod!]!
   """
@@ -3392,9 +3440,9 @@ type Mutation {
   """
    Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
   """
-  paymentMethodSetupInvoicePayin(input: PaymentMethodSetupInvoicePayinInput!): PaymentMethodSetupOutput!
+  paymentMethodSetupInvoicePayin: PaymentMethodSetupOutput!
   """
-   Setup Trustly payment payin and payout method for the member. 
+   Setup Trustly payment payin and payout method for the member. Requires member consent via redirect to Trustly URL in response.
   """
   paymentMethodSetupTrustly(input: PaymentMethodSetupTrustlyInput!): PaymentMethodSetupOutput!
   """
@@ -3406,17 +3454,19 @@ type Mutation {
   """
   paymentMethodSetupSwishPayout(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
   """
-   Setup Swish payin method for the member. 
+   Setup Swish payin method for the member. Requires member consent in Swish app. 
   """
   paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
   """
-   Revoke an active payment method. The member will be required to set up a new payment method if they revoke their default one. 
+  A member can have multiple ACTIVE payment methods where one of those is default. This mutation changes the
+  members default payment method for charging to any of his/hers other active payment methods.
   """
-  paymentMethodRevoke(id: ID!): UserError
+  paymentMethodSetDefaultPayin(provider: MemberPaymentProvider!): UserError
   """
-   Set an active payment method as default. 
+  A member can have multiple ACTIVE payment methods where one of those is default. This mutation changes the
+  members default payment method for payouts to any of his/hers other active payment methods.
   """
-  paymentMethodSetDefault(id: ID!): UserError
+  paymentMethodSetDefaultPayout(provider: MemberPaymentProvider!): UserError
   """
   Start a conversation. This is effectively creating one, but with two slight differences from a regular
   "create something"-mutation:
@@ -3707,17 +3757,7 @@ type PaymentMethodInvoiceDetails {
   """
   email: String
 }
-input PaymentMethodSetupInvoicePayinInput {
-  """
-   Set up invoice payment method as default. 
-  """
-  setAsDefaultPayout: Boolean!
-}
 input PaymentMethodSetupNordeaPayoutInput {
-  """
-   Set up Nordea payout method as default. 
-  """
-  setAsDefault: Boolean!
   """
    The clearing number for member's bank account. 
   """
@@ -3757,23 +3797,11 @@ enum PaymentMethodSetupStatus {
 }
 input PaymentMethodSetupSwishInput {
   """
-   Set up Swish payment method as default. 
-  """
-  setAsDefault: Boolean!
-  """
    The Swish mobile number to use for payout or payin. 
   """
   phoneNumber: String!
 }
 input PaymentMethodSetupTrustlyInput {
-  """
-   Set up Trustly payment method as default for payin. 
-  """
-  setAsDefaultPayin: Boolean!
-  """
-   Set up Trustly payment method as default for payout. 
-  """
-  setAsDefaultPayout: Boolean!
   """
    The URL to redirect the member back to after a successful setup after Trustly onboarding. 
   """
@@ -3905,6 +3933,11 @@ type PriceIntent {
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
   hasCollectedInsurelyData: Boolean!
+  """
+  List of external insurances fetched via Insurely that correspond to products Hedvig offers.
+  Null when no Insurely data collection has been associated with this price intent.
+  """
+  fetchedExternalInsurances: [FetchedExternalInsurance!]
 }
 enum PriceIntentAnimal {
   CAT

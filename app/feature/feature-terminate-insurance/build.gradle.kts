@@ -38,6 +38,7 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.dataTermination)
   implementation(projects.designSystemHedvig)
+  implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)

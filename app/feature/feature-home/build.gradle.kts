@@ -45,7 +45,7 @@ dependencies {
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.languageCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.memberRemindersUi)

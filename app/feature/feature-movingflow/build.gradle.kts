@@ -35,7 +35,7 @@ dependencies {
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataProductVariantPublic)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
