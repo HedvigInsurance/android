@@ -57,6 +57,9 @@ fun NavGraphBuilder.paymentsGraph(
         onMemberPaymentDetailsClicked = dropUnlessResumed {
           navController.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
+        onOpenManualCharge = {
+          //todo
+        },
       )
     }
 

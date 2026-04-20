@@ -274,6 +274,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
       paymentConnection = PaymentConnection.Active(
         displayName = "Nordea",
         displayValue = "31489*****",
+        chargeMethod = MemberPaymentChargeMethod.TRUSTLY
       ),
     )
   }

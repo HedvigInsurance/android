@@ -16,6 +16,7 @@ import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
+import com.hedvig.android.feature.payments.data.toChargeMethod
 import com.hedvig.android.feature.payments.data.toFailedCharge
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
@@ -53,6 +54,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             PaymentConnection.Active(
               displayName = paymentInformation.chargeMethod?.displayName,
               displayValue = paymentInformation.chargeMethod?.descriptor,
+              chargeMethod = paymentInformation.chargeMethod?.paymentMethod.toChargeMethod(),
             )
           }
 

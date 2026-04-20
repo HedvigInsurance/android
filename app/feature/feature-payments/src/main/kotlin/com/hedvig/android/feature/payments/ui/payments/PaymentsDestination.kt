@@ -114,6 +114,7 @@ internal fun PaymentsDestination(
   onPaymentHistoryClicked: () -> Unit,
   onMemberPaymentDetailsClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
+  onOpenManualCharge: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PaymentsScreen(
@@ -124,6 +125,7 @@ internal fun PaymentsDestination(
     onPaymentHistoryClicked = onPaymentHistoryClicked,
     onRetry = { viewModel.emit(Retry) },
     onPaymentDetailsClicked = onMemberPaymentDetailsClicked,
+    onOpenManualCharge = onOpenManualCharge
   )
 }
 
@@ -135,6 +137,7 @@ private fun PaymentsScreen(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
+  onOpenManualCharge: () -> Unit,
   onRetry: () -> Unit,
 ) {
   val density = LocalDensity.current
@@ -196,6 +199,7 @@ private fun PaymentsScreen(
               onDiscountClicked = onDiscountClicked,
               onPaymentHistoryClicked = onPaymentHistoryClicked,
               onPaymentDetailsClicked = onPaymentDetailsClicked,
+              onOpenManualCharge = onOpenManualCharge
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -220,6 +224,7 @@ private fun PaymentsContent(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
+  onOpenManualCharge: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -258,6 +263,7 @@ private fun PaymentsContent(
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      onOpenManualCharge = onOpenManualCharge
     )
     val showConnectedPaymentInfo = uiState is Content &&
       uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsSetup
@@ -342,7 +348,11 @@ private fun CardNotConnectedWarningCard(
 }
 
 @Composable
-private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, modifier: Modifier = Modifier) {
+private fun UpcomingPaymentInfoCard(
+  upcomingPaymentInfo: UpcomingPaymentInfo?,
+  onOpenManualCharge: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   Box(modifier) {
     when (upcomingPaymentInfo) {
       NoInfo -> {}
@@ -356,7 +366,7 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
 
       is PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
-        val allowManualCharge = true //todo
+        val allowManualCharge = upcomingPaymentInfo.isManualChargeAllowed
         Column {
           HedvigNotificationCard(
             priority = NotificationPriority.Attention,
@@ -365,8 +375,9 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
               monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
               monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
             ),
-            style = if (allowManualCharge) NotificationDefaults.InfoCardStyle.Button(
-              "Charge failed payment manually",{}
+            style = if (allowManualCharge) Button(
+              buttonText = "Charge failed payment manually", //todo
+              onButtonClick = onOpenManualCharge
             ) else NotificationDefaults.InfoCardStyle.Default
           )
         }
@@ -600,6 +611,7 @@ private fun PreviewPaymentScreen(
         {},
         {},
         {},
+        {}
       )
     }
   }
@@ -664,6 +676,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = true,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active(
@@ -693,7 +706,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().toLocalDateTime(TimeZone.UTC).date,
           "qrdfgeth",
         ),
-        upcomingPaymentInfo = NoInfo,
+        upcomingPaymentInfo = PaymentFailed(
+          System.now().toLocalDateTime(TimeZone.UTC).date,
+          System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = true,
+        ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
@@ -726,6 +743,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = true,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
@@ -744,6 +762,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = true,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
