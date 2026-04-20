@@ -81,6 +81,8 @@
   <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Utbetalning till ett svenskt bankkonto</string>
   <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bankkonto</string>
   <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing</string>
+  <string name="BANK_PAYOUT_METHOD_INVOICE_DESCRIPTION">Direktutbetalning via Faktura</string>
+  <string name="BANK_PAYOUT_METHOD_SWISH_DESCRIPTION">Direktutbetalning via Swish</string>
   <string name="BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Direktutbetalning via Trustly</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
@@ -517,7 +519,7 @@
   <string name="KIVRA_PAYMENT_INFO">Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.</string>
   <string name="LEGAL_A11Y">Tillgänglighet</string>
   <string name="LEGAL_CATEGORY_LABEL">Juridisk information</string>
-  <string name="LEGAL_INFORMATION">Juridisk information</string>
+  <string name="LEGAL_INFORMATION">Legal information</string>
   <string name="LEGAL_PRIVACY_POLICY">Personuppgifter</string>
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>

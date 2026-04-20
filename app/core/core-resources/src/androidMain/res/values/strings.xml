@@ -81,6 +81,8 @@
   <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Payout via a Swedish bank account</string>
   <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bank account</string>
   <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing</string>
+  <string name="BANK_PAYOUT_METHOD_INVOICE_DESCRIPTION">Direct payment via Invoice</string>
+  <string name="BANK_PAYOUT_METHOD_SWISH_DESCRIPTION">Direct payment via Swish</string>
   <string name="BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Direct payment via Trustly</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
