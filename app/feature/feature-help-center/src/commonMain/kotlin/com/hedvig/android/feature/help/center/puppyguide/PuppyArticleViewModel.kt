@@ -11,9 +11,9 @@ import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.data.SetArticleRatingUseCase
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class PuppyArticleViewModel(
   getPuppyGuideUseCase: GetPuppyGuideUseCase,

@@ -9,9 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
-import com.hedvig.android.molecule.android.MoleculeViewModel
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.coroutines.flow.SharingStarted
 
 internal class PuppyGuideViewModel(

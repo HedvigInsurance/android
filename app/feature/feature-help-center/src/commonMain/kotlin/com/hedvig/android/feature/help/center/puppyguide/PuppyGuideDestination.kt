@@ -36,16 +36,14 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
-import coil.compose.AsyncImage
+import coil3.ImageLoader
+import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -61,8 +59,14 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
-import hedvig.resources.R
+import hedvig.resources.PUPPY_GUIDE_INFO
+import hedvig.resources.PUPPY_GUIDE_LABEL_READ
+import hedvig.resources.PUPPY_GUIDE_TITLE
+import hedvig.resources.Res
+import hedvig.resources.hundar_badar_pet
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PuppyGuideDestination(
@@ -165,7 +169,7 @@ private fun PuppyGuideSuccessScreen(
               modifier = Modifier.fillMaxWidth(),
             ) {
               Image(
-                painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
+                painter = painterResource(Res.drawable.hundar_badar_pet),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
@@ -175,10 +179,10 @@ private fun PuppyGuideSuccessScreen(
               )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            HedvigText(stringResource(R.string.PUPPY_GUIDE_TITLE))
+            HedvigText(stringResource(Res.string.PUPPY_GUIDE_TITLE))
             Spacer(modifier = Modifier.height(8.dp))
             HedvigText(
-              stringResource(R.string.PUPPY_GUIDE_INFO),
+              stringResource(Res.string.PUPPY_GUIDE_INFO),
               color = HedvigTheme.colorScheme.textSecondary,
             )
             Spacer(modifier = Modifier.height(48.dp))
@@ -308,7 +312,7 @@ private fun ArticleItem(
             end = 12.dp,
             top = 12.dp,
           ),
-          labelText = stringResource(R.string.PUPPY_GUIDE_LABEL_READ),
+          labelText = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
           size = HighlightLabelDefaults.HighLightSize.Small,
           color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
         )

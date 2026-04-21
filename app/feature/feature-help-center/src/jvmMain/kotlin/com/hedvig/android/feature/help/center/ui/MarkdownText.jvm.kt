@@ -6,7 +6,7 @@ import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.design.system.hedvig.RichText
 
 @Composable
-actual fun MarkdownText(markdown: String, modifier: Modifier) {
+actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: Boolean) {
   RichText(modifier = modifier) {
     Markdown(content = markdown)
   }

@@ -12,13 +12,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -35,9 +33,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,17 +43,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -73,7 +62,6 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import arrow.core.toNonEmptyListOrNull
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.PreviewContentWithProvidedParametersAnimatedOnClick
-import com.hedvig.android.compose.ui.withoutPlacement
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.DialogDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -89,9 +77,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade.LIGHT
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.RadioGroup
 import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
@@ -99,9 +84,6 @@ import com.hedvig.android.design.system.hedvig.SearchField
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.clearFocusOnTap
-import com.hedvig.android.design.system.hedvig.icon.Close
-import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.Search
 import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.feature.help.center.HelpCenterEvent
@@ -118,7 +100,6 @@ import com.hedvig.android.feature.help.center.ui.HelpCenterSection
 import com.hedvig.android.feature.help.center.ui.HelpCenterSectionWithClickableRows
 import com.hedvig.android.feature.help.center.ui.StillNeedHelpSection
 import com.hedvig.android.placeholder.PlaceholderHighlight
-import hedvig.resources.GENERAL_REMOVE
 import hedvig.resources.HC_CLAIMS_A_01
 import hedvig.resources.HC_CLAIMS_Q_01
 import hedvig.resources.HC_COMMON_QUESTIONS_TITLE
@@ -130,12 +111,15 @@ import hedvig.resources.HC_QUICK_ACTIONS_CANCELLATION_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_EDIT_INSURANCE_TITLE
 import hedvig.resources.HC_QUICK_ACTIONS_TITLE
 import hedvig.resources.HC_TITLE
+import hedvig.resources.PUPPY_GUIDE_GO_BUTTON
+import hedvig.resources.PUPPY_GUIDE_LABEL
+import hedvig.resources.PUPPY_GUIDE_SUBTITLE
+import hedvig.resources.PUPPY_GUIDE_TITLE
 import hedvig.resources.Res
 import hedvig.resources.SEARCH_NOTHING_FOUND
-import hedvig.resources.SEARCH_PLACEHOLDER
-import hedvig.resources.blur_background
 import hedvig.resources.general_cancel_button
 import hedvig.resources.general_continue_button
+import hedvig.resources.hundar_badar_pet
 import hedvig.resources.pillow_hedvig
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
@@ -324,7 +308,7 @@ private fun HelpCenterHomeScreen(
                   quickLinksForSearch = (
                     quickLinksUiState as?
                       HelpCenterUiState.QuickLinkUiState.QuickLinks
-                  )?.quickLinks ?: listOf(),
+                    )?.quickLinks ?: listOf(),
                   questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
                 )
                 onUpdateSearchResults(it, results)
@@ -420,7 +404,7 @@ private fun ContentWithoutSearch(
             )
           } else {
             Image(
-              painter = painterResource(id = Res.drawable.pillow_hedvig),
+              painter = painterResource(Res.drawable.pillow_hedvig),
               contentDescription = null,
               modifier = Modifier
                 .size(170.dp)
@@ -517,7 +501,7 @@ private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
     Column {
       Box(Modifier.align(Alignment.CenterHorizontally)) {
         Image(
-          painter = painterResource(id = com.hedvig.android.feature.help.center.R.drawable.hundar_badar_pet),
+          painter = painterResource(Res.drawable.hundar_badar_pet),
           contentDescription = null,
           contentScale = ContentScale.Crop,
           modifier = Modifier
@@ -525,7 +509,7 @@ private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .clip(HedvigTheme.shapes.cornerXLargeTop),
         )
         HighlightLabel(
-          stringResource(R.string.PUPPY_GUIDE_LABEL),
+          stringResource(Res.string.PUPPY_GUIDE_LABEL),
           size = HighlightLabelDefaults.HighLightSize.Small,
           color = HighlightColor.Pink(LIGHT),
           modifier = Modifier.padding(top = 16.dp, start = 16.dp),
@@ -534,17 +518,17 @@ private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
       Spacer(Modifier.height(16.dp))
       HedvigText(
-        stringResource(R.string.PUPPY_GUIDE_TITLE),
+        stringResource(Res.string.PUPPY_GUIDE_TITLE),
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       HedvigText(
-        stringResource(R.string.PUPPY_GUIDE_SUBTITLE),
+        stringResource(Res.string.PUPPY_GUIDE_SUBTITLE),
         modifier = Modifier.padding(horizontal = 16.dp),
         color = HedvigTheme.colorScheme.textSecondary,
       )
       Spacer(Modifier.height(16.dp))
       HedvigButtonGhostWithBorder(
-        stringResource(R.string.PUPPY_GUIDE_GO_BUTTON),
+        stringResource(Res.string.PUPPY_GUIDE_GO_BUTTON),
         onClick = onClick,
         modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
       )

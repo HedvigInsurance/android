@@ -15,6 +15,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.apollo.runtime)
+      implementation(libs.apollo.normalizedCache)
       implementation(libs.arrow.core)
       implementation(libs.arrow.fx)
       implementation(libs.coroutines.core)

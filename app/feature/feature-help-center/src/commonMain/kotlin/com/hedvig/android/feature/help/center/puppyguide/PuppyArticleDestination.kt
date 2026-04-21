@@ -25,18 +25,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.ImageLoader
-import coil.compose.AsyncImage
-import com.halilibo.richtext.commonmark.Markdown
-import com.halilibo.richtext.ui.RichTextStyle
-import com.halilibo.richtext.ui.string.RichTextStringStyle
+import coil3.compose.AsyncImage
+import coil3.ImageLoader
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -47,13 +43,17 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
-import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
+import com.hedvig.android.feature.help.center.ui.MarkdownText
 import com.hedvig.android.logger.logcat
-import hedvig.resources.R
+import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
+import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
+import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PuppyArticleDestination(
@@ -166,30 +166,11 @@ private fun PuppyArticleSuccessScreen(
           HedvigTheme.typography.bodySmall
             .copy(color = HedvigTheme.colorScheme.textSecondaryTranslucent),
         ) {
-          val headingColor = HedvigTheme.colorScheme.textPrimary
-          RichText(
-            style = RichTextStyle(
-              headingStyle = { _, currentStyle ->
-                currentStyle.copy(
-                  color = headingColor,
-                )
-              },
-              stringStyle = RichTextStringStyle(
-                boldStyle = SpanStyle(
-                  color = headingColor,
-                ),
-              ),
-            ),
-          ) {
-            Markdown(
-              content = uiState.story.content,
-            )
-          }
+          MarkdownText(uiState.story.content, withArticleStyle = true)
         }
         Spacer(Modifier.height(48.dp))
-        HedvigText(stringResource(R.string.PUPPY_GUIDE_RATING_QUESTION))
+        HedvigText(stringResource(Res.string.PUPPY_GUIDE_RATING_QUESTION))
         Spacer(Modifier.height(16.dp))
-        logcat { "Mariia: uiState.story.rating ${uiState.story.rating}" }
         RatingSection(
           onRatingClick = onRatingClick,
           selectedRating = uiState.story.rating,
@@ -244,7 +225,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(
-          stringResource(R.string.PUPPY_GUIDE_RATING_NOT_HELPFUL),
+          stringResource(Res.string.PUPPY_GUIDE_RATING_NOT_HELPFUL),
           style = HedvigTheme.typography.label,
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
@@ -252,7 +233,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
       endSlot = {
         Row(horizontalArrangement = Arrangement.End) {
           HedvigText(
-            stringResource(R.string.PUPPY_GUIDE_RATING_VERY_HELPFUL),
+            stringResource(Res.string.PUPPY_GUIDE_RATING_VERY_HELPFUL),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondaryTranslucent,
           )

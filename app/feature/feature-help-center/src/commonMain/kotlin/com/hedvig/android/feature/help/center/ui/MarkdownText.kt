@@ -9,4 +9,6 @@ import androidx.compose.ui.Modifier
  * On iOS/other platforms: Falls back to plain text
  */
 @Composable
-expect fun MarkdownText(markdown: String, modifier: Modifier = Modifier)
+expect fun MarkdownText(markdown: String,
+                        modifier: Modifier = Modifier,
+                        withArticleStyle: Boolean = false)
