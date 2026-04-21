@@ -19,6 +19,7 @@ import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.unit.Dp
+import com.hedvig.android.design.system.hedvig.internal.identityHashCode
 import com.hedvig.android.design.system.hedvig.tokens.StateTokens
 
 /**
@@ -192,5 +193,5 @@ private val DefaultUnboundedRipple = RippleNodeFactory(
 private object NoopIndication : Indication {
   override fun equals(other: Any?): Boolean = other === NoopIndication
 
-  override fun hashCode(): Int = System.identityHashCode(this)
+  override fun hashCode(): Int = identityHashCode(this)
 }

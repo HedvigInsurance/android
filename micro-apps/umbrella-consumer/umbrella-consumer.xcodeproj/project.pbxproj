@@ -6,6 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		558DDBF52F76ACAE00B1F12F /* DatadogCore in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDBF42F76ACAE00B1F12F /* DatadogCore */; };
+		558DDBF72F76ACAE00B1F12F /* DatadogCrashReporting in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDBF62F76ACAE00B1F12F /* DatadogCrashReporting */; };
+		558DDBF92F76ACAE00B1F12F /* DatadogFlags in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDBF82F76ACAE00B1F12F /* DatadogFlags */; };
+		558DDBFB2F76ACAE00B1F12F /* DatadogLogs in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDBFA2F76ACAE00B1F12F /* DatadogLogs */; };
+		558DDBFD2F76ACAE00B1F12F /* DatadogProfiling in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDBFC2F76ACAE00B1F12F /* DatadogProfiling */; };
+		558DDBFF2F76ACAE00B1F12F /* DatadogRUM in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDBFE2F76ACAE00B1F12F /* DatadogRUM */; };
+		558DDC012F76ACAE00B1F12F /* DatadogSessionReplay in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDC002F76ACAE00B1F12F /* DatadogSessionReplay */; };
+		558DDC032F76ACAE00B1F12F /* DatadogTrace in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDC022F76ACAE00B1F12F /* DatadogTrace */; };
+		558DDC052F76ACAE00B1F12F /* DatadogWebViewTracking in Frameworks */ = {isa = PBXBuildFile; productRef = 558DDC042F76ACAE00B1F12F /* DatadogWebViewTracking */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		55D8AB952EBE16C700E53763 /* umbrella-consumer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "umbrella-consumer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +48,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				558DDC052F76ACAE00B1F12F /* DatadogWebViewTracking in Frameworks */,
+				558DDBFD2F76ACAE00B1F12F /* DatadogProfiling in Frameworks */,
+				558DDBFB2F76ACAE00B1F12F /* DatadogLogs in Frameworks */,
+				558DDBF72F76ACAE00B1F12F /* DatadogCrashReporting in Frameworks */,
+				558DDC012F76ACAE00B1F12F /* DatadogSessionReplay in Frameworks */,
+				558DDBF52F76ACAE00B1F12F /* DatadogCore in Frameworks */,
+				558DDBFF2F76ACAE00B1F12F /* DatadogRUM in Frameworks */,
+				558DDBF92F76ACAE00B1F12F /* DatadogFlags in Frameworks */,
+				558DDC032F76ACAE00B1F12F /* DatadogTrace in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +100,15 @@
 			);
 			name = "umbrella-consumer";
 			packageProductDependencies = (
+				558DDBF42F76ACAE00B1F12F /* DatadogCore */,
+				558DDBF62F76ACAE00B1F12F /* DatadogCrashReporting */,
+				558DDBF82F76ACAE00B1F12F /* DatadogFlags */,
+				558DDBFA2F76ACAE00B1F12F /* DatadogLogs */,
+				558DDBFC2F76ACAE00B1F12F /* DatadogProfiling */,
+				558DDBFE2F76ACAE00B1F12F /* DatadogRUM */,
+				558DDC002F76ACAE00B1F12F /* DatadogSessionReplay */,
+				558DDC022F76ACAE00B1F12F /* DatadogTrace */,
+				558DDC042F76ACAE00B1F12F /* DatadogWebViewTracking */,
 			);
 			productName = "umbrella-consumer";
 			productReference = 55D8AB952EBE16C700E53763 /* umbrella-consumer.app */;
@@ -108,6 +138,9 @@
 			);
 			mainGroup = 55D8AB8C2EBE16C700E53763;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 55D8AB962EBE16C700E53763 /* Products */;
 			projectDirPath = "";
@@ -145,7 +178,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT\"\ncd ../..\nexport JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-23.jdk/Contents/Home\"\n./gradlew :umbrella:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT\"\ncd ../..\nexport JAVA_HOME=\"/Library/Java/JavaVirtualMachines/zulu-23.jdk/Contents/Home\"\n./gradlew :umbrella:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -213,7 +246,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -271,7 +304,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -296,8 +329,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -330,8 +364,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -371,6 +406,65 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/DataDog/dd-sdk-ios.git";
+			requirement = {
+				kind = exactVersion;
+				version = 3.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		558DDBF42F76ACAE00B1F12F /* DatadogCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogCore;
+		};
+		558DDBF62F76ACAE00B1F12F /* DatadogCrashReporting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogCrashReporting;
+		};
+		558DDBF82F76ACAE00B1F12F /* DatadogFlags */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogFlags;
+		};
+		558DDBFA2F76ACAE00B1F12F /* DatadogLogs */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogLogs;
+		};
+		558DDBFC2F76ACAE00B1F12F /* DatadogProfiling */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogProfiling;
+		};
+		558DDBFE2F76ACAE00B1F12F /* DatadogRUM */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogRUM;
+		};
+		558DDC002F76ACAE00B1F12F /* DatadogSessionReplay */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogSessionReplay;
+		};
+		558DDC022F76ACAE00B1F12F /* DatadogTrace */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogTrace;
+		};
+		558DDC042F76ACAE00B1F12F /* DatadogWebViewTracking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 558DDBF32F76ACAE00B1F12F /* XCRemoteSwiftPackageReference "dd-sdk-ios" */;
+			productName = DatadogWebViewTracking;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 55D8AB8D2EBE16C700E53763 /* Project object */;
 }

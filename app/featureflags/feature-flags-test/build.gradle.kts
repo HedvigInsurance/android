@@ -5,5 +5,5 @@ plugins {
 
 dependencies {
   implementation(libs.turbine)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
 }

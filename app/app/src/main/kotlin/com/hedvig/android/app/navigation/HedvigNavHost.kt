@@ -440,6 +440,7 @@ internal fun HedvigNavHost(
     helpCenterGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navController = navController,
+      onNavigateUp = navController::navigateUp,
       onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
         val destination: Destination = when (quickLinkDestination) {
           QuickLinkChangeAddress -> {
