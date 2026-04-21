@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.payoutaccount.ui.selectmethod
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +14,17 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
+import com.hedvig.android.design.system.hedvig.HedvigTheme
+import hedvig.resources.BANK_PAYOUT_METHOD_CARD_DESCRIPTION
+import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
+import hedvig.resources.PAYMENTS_INVOICE
+import hedvig.resources.PAYOUT_METHOD_INVOICE_DESCRIPTION
+import hedvig.resources.PAYOUT_METHOD_SWISH_DESCRIPTION
+import hedvig.resources.PAYOUT_METHOD_TRUSTLY_DESCRIPTION
+import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
+import hedvig.resources.Res
 import octopus.type.MemberPaymentProvider
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SelectPayoutMethodDestination(
@@ -25,48 +36,44 @@ internal fun SelectPayoutMethodDestination(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = "Connect payout account",
+    topAppBarText = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
     Spacer(Modifier.height(8.dp))
-    Column(Modifier.padding(horizontal = 16.dp)) {
+    Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       for (provider in availableProviders) {
         when (provider) {
           MemberPaymentProvider.TRUSTLY -> {
             PayoutMethodRow(
               title = "Trustly",
-              subtitle = "Connect via Trustly",
+              subtitle = stringResource(Res.string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION),
               onClick = onTrustlySelected,
             )
-            Spacer(Modifier.height(8.dp))
           }
 
           MemberPaymentProvider.NORDEA -> {
             PayoutMethodRow(
-              title = "Bank account",
-              subtitle = "Enter clearing and account number",
+              title = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
+              subtitle = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_DESCRIPTION),
               onClick = onNordeaSelected,
             )
-            Spacer(Modifier.height(8.dp))
           }
 
           MemberPaymentProvider.SWISH -> {
             PayoutMethodRow(
               title = "Swish",
-              subtitle = "Connect via Swish",
+              subtitle = stringResource(Res.string.PAYOUT_METHOD_SWISH_DESCRIPTION),
               onClick = onSwishSelected,
             )
-            Spacer(Modifier.height(8.dp))
           }
 
           MemberPaymentProvider.INVOICE -> {
             PayoutMethodRow(
-              title = "Invoice",
-              subtitle = "Connect via Kivra",
+              title = stringResource(Res.string.PAYMENTS_INVOICE),
+              subtitle = stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION),
               onClick = onInvoiceSelected,
             )
-            Spacer(Modifier.height(8.dp))
           }
 
           else -> {}
@@ -87,7 +94,7 @@ private fun PayoutMethodRow(title: String, subtitle: String, onClick: () -> Unit
       HedvigText(text = title)
       HedvigText(
         text = subtitle,
-        color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.textSecondary,
+        color = HedvigTheme.colorScheme.textSecondary,
       )
     }
   }

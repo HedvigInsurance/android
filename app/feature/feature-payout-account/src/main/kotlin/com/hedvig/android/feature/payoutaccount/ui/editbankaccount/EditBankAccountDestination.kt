@@ -18,6 +18,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
+import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
+import hedvig.resources.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -60,7 +64,7 @@ private fun EditBankAccountScreen(
   }
 
   HedvigScaffold(
-    topAppBarText = "Bank account",
+    topAppBarText = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -68,7 +72,7 @@ private fun EditBankAccountScreen(
     Column(Modifier.padding(horizontal = 16.dp)) {
       HedvigTextField(
         state = uiState.clearingNumberState,
-        labelText = "Clearing",
+        labelText = stringResource(Res.string.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL),
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
         inputTransformation = uiState.clearingInputTransformation,
         keyboardOptions = KeyboardOptions(
