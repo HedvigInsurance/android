@@ -17,6 +17,7 @@ import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDe
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import octopus.type.MemberPaymentProvider
 import org.koin.compose.viewmodel.koinViewModel
@@ -41,9 +42,6 @@ fun NavGraphBuilder.payoutAccountGraph(
               availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
             ),
           )
-        },
-        onEditBankAccountClicked = dropUnlessResumed {
-          navController.navigate(PayoutAccountDestinations.EditBankAccount)
         },
         navigateUp = navigateUp,
       )
@@ -71,6 +69,9 @@ fun NavGraphBuilder.payoutAccountGraph(
       EditBankAccountDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
+        onSuccessfullyConnected = {
+          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+        },
         navigateUp = navController::navigateUp,
       )
     }
@@ -80,6 +81,9 @@ fun NavGraphBuilder.payoutAccountGraph(
       SetupSwishPayoutDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
+        onSuccessfullyConnected = {
+          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+        },
         navigateUp = navController::navigateUp,
       )
     }
@@ -89,6 +93,9 @@ fun NavGraphBuilder.payoutAccountGraph(
       SetupInvoicePayoutDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
+        onSuccessfullyConnected = {
+          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+        },
         navigateUp = navController::navigateUp,
       )
     }

@@ -29,11 +29,13 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import hedvig.resources.PAYMENTS_ACCOUNT
 
 @Composable
 internal fun EditBankAccountDestination(
   viewModel: EditBankAccountViewModel,
   globalSnackBarState: GlobalSnackBarState,
+  onSuccessfullyConnected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -43,7 +45,7 @@ internal fun EditBankAccountDestination(
     onSave = { viewModel.emit(EditBankAccountEvent.Save) },
     showedSnackBar = {
       viewModel.emit(EditBankAccountEvent.ShowedSnackBar)
-      navigateUp()
+      onSuccessfullyConnected()
     },
     navigateUp = navigateUp,
   )
@@ -73,7 +75,7 @@ private fun EditBankAccountScreen(
       HedvigTextField(
         state = uiState.clearingNumberState,
         labelText = stringResource(Res.string.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL),
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         inputTransformation = uiState.clearingInputTransformation,
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Number,
@@ -86,8 +88,8 @@ private fun EditBankAccountScreen(
       Spacer(Modifier.height(4.dp))
       HedvigTextField(
         state = uiState.accountNumberState,
-        labelText = "Account number",
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+        labelText = stringResource(Res.string.PAYMENTS_ACCOUNT),
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         inputTransformation = uiState.accountNumberInputTransformation,
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Number,

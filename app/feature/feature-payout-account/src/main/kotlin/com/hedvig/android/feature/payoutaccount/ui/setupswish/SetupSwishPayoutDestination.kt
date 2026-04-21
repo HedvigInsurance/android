@@ -29,6 +29,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.Notification
 internal fun SetupSwishPayoutDestination(
   viewModel: SetupSwishPayoutViewModel,
   globalSnackBarState: GlobalSnackBarState,
+  onSuccessfullyConnected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -38,7 +39,7 @@ internal fun SetupSwishPayoutDestination(
     onSave = { viewModel.emit(SetupSwishPayoutEvent.Save) },
     showedSnackBar = {
       viewModel.emit(SetupSwishPayoutEvent.ShowedSnackBar)
-      navigateUp()
+      onSuccessfullyConnected()
     },
     navigateUp = navigateUp,
   )
@@ -68,7 +69,7 @@ private fun SetupSwishPayoutScreen(
       HedvigTextField(
         state = uiState.phoneNumberState,
         labelText = "Phone number",
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Large,
+        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Phone,
         ),

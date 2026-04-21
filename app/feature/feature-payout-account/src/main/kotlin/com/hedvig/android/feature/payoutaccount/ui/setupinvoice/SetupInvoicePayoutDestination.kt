@@ -19,11 +19,16 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
+import hedvig.resources.PAYMENTS_INVOICE
+import hedvig.resources.Res
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SetupInvoicePayoutDestination(
   viewModel: SetupInvoicePayoutViewModel,
   globalSnackBarState: GlobalSnackBarState,
+  onSuccessfullyConnected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -33,7 +38,7 @@ internal fun SetupInvoicePayoutDestination(
     onConnect = { viewModel.emit(SetupInvoicePayoutEvent.Connect) },
     showedSnackBar = {
       viewModel.emit(SetupInvoicePayoutEvent.ShowedSnackBar)
-      navigateUp()
+      onSuccessfullyConnected()
     },
     navigateUp = navigateUp,
   )
@@ -47,14 +52,15 @@ private fun SetupInvoicePayoutScreen(
   showedSnackBar: () -> Unit,
   navigateUp: () -> Unit,
 ) {
+  val changesSaved = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
     if (!uiState.showSuccessSnackBar) return@LaunchedEffect
-    globalSnackBarState.show("Changes saved", NotificationPriority.Campaign)
+    globalSnackBarState.show(changesSaved, NotificationPriority.Campaign)
     showedSnackBar()
   }
 
   HedvigScaffold(
-    topAppBarText = "Invoice",
+    topAppBarText = stringResource(Res.string.PAYMENTS_INVOICE),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {

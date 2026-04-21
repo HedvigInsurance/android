@@ -41,14 +41,12 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PayoutAccountOverviewDestination(
   viewModel: PayoutAccountOverviewViewModel,
   onConnectPayoutMethodClicked: () -> Unit,
-  onEditBankAccountClicked: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PayoutAccountOverviewScreen(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
-    onEditBankAccountClicked = onEditBankAccountClicked,
     onRetry = { viewModel.emit(PayoutAccountOverviewEvent.Retry) },
     navigateUp = navigateUp,
   )
@@ -58,7 +56,6 @@ internal fun PayoutAccountOverviewDestination(
 private fun PayoutAccountOverviewScreen(
   uiState: PayoutAccountOverviewUiState,
   onConnectPayoutMethodClicked: () -> Unit,
-  onEditBankAccountClicked: () -> Unit,
   onRetry: () -> Unit,
   navigateUp: () -> Unit,
 ) {
@@ -90,7 +87,6 @@ private fun PayoutAccountOverviewScreen(
           currentMethod = uiState.currentMethod,
           availablePayoutMethods = uiState.availablePayoutMethods,
           onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
-          onEditBankAccountClicked = onEditBankAccountClicked,
           modifier = Modifier.weight(1f),
         )
       }
@@ -103,7 +99,6 @@ private fun PayoutAccountContent(
   currentMethod: PayoutAccount?,
   availablePayoutMethods: List<MemberPaymentProvider>,
   onConnectPayoutMethodClicked: () -> Unit,
-  onEditBankAccountClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -216,10 +211,11 @@ private fun PayoutAccountContent(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
+        Spacer(Modifier.weight(1f))
         Spacer(Modifier.height(8.dp))
         HedvigButton(
-          text = "Edit account",
-          onClick = onEditBankAccountClicked,
+          text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
+          onClick = onConnectPayoutMethodClicked,
           enabled = true,
           modifier = Modifier
             .fillMaxWidth()
@@ -241,7 +237,6 @@ private fun PreviewPayoutAccountOverviewScreen(
       PayoutAccountOverviewScreen(
         uiState = uiState,
         onConnectPayoutMethodClicked = {},
-        onEditBankAccountClicked = {},
         onRetry = {},
         navigateUp = {},
       )
