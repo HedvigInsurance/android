@@ -21,6 +21,7 @@ internal fun SelectPayoutMethodDestination(
   onTrustlySelected: () -> Unit,
   onNordeaSelected: () -> Unit,
   onSwishSelected: () -> Unit,
+  onInvoiceSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
@@ -55,6 +56,15 @@ internal fun SelectPayoutMethodDestination(
               title = "Swish",
               subtitle = "Connect via Swish",
               onClick = onSwishSelected,
+            )
+            Spacer(Modifier.height(8.dp))
+          }
+
+          MemberPaymentProvider.INVOICE -> {
+            PayoutMethodRow(
+              title = "Invoice",
+              subtitle = "Connect via Kivra",
+              onClick = onInvoiceSelected,
             )
             Spacer(Modifier.height(8.dp))
           }

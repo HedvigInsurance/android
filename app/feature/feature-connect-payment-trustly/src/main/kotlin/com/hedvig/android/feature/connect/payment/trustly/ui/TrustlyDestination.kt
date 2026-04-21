@@ -41,11 +41,11 @@ import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.PreviewTrustlyCallback
-import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebChromeClient
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebView
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClient
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.common.Destination
 import hedvig.resources.Res
 import hedvig.resources.general_done_button
@@ -222,13 +222,12 @@ private fun TrustlyPreview(
   }
 }
 
-private class TrustlyUiStateProvider :
-  CollectionPreviewParameterProvider<TrustlyUiState>(
-    listOf(
-      TrustlyUiState.Browsing("", PreviewTrustlyCallback("", "")),
-      TrustlyUiState.Loading,
-      TrustlyUiState.FailedToConnectCard,
-      TrustlyUiState.FailedToStartSession,
-      TrustlyUiState.SucceededInConnectingCard,
-    ),
-  )
+private class TrustlyUiStateProvider : CollectionPreviewParameterProvider<TrustlyUiState>(
+  listOf(
+    TrustlyUiState.Browsing("", PreviewTrustlyCallback("", "")),
+    TrustlyUiState.Loading,
+    TrustlyUiState.FailedToConnectCard,
+    TrustlyUiState.FailedToStartSession,
+    TrustlyUiState.SucceededInConnectingCard,
+  ),
+)

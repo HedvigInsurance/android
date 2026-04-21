@@ -17,6 +17,7 @@ internal class StartTrustlyPayoutSessionUseCase(
 ) {
   suspend fun invoke(): Either<ErrorMessage, TrustlyInitiateProcessUrl> {
     return either {
+      return@either TrustlyInitiateProcessUrl("fake://trustly-payout-success")
       val data = apolloClient
         .mutation(
           SetupTrustlyPayoutMutation(

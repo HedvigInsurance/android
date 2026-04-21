@@ -10,6 +10,8 @@ import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOvervie
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewViewModel
 import com.hedvig.android.feature.payoutaccount.ui.selectmethod.SelectPayoutMethodDestination
+import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayoutDestination
+import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayoutViewModel
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.compose.navdestination
@@ -51,6 +53,7 @@ fun NavGraphBuilder.payoutAccountGraph(
         onTrustlySelected = dropUnlessResumed { navigateToTrustlyPayout() },
         onNordeaSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.EditBankAccount) },
         onSwishSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupSwishPayout) },
+        onInvoiceSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupInvoicePayout) },
         navigateUp = navController::navigateUp,
       )
     }
@@ -67,6 +70,15 @@ fun NavGraphBuilder.payoutAccountGraph(
     navdestination<PayoutAccountDestinations.SetupSwishPayout> {
       val viewModel: SetupSwishPayoutViewModel = koinViewModel()
       SetupSwishPayoutDestination(
+        viewModel = viewModel,
+        globalSnackBarState = globalSnackBarState,
+        navigateUp = navController::navigateUp,
+      )
+    }
+
+    navdestination<PayoutAccountDestinations.SetupInvoicePayout> {
+      val viewModel: SetupInvoicePayoutViewModel = koinViewModel()
+      SetupInvoicePayoutDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
         navigateUp = navController::navigateUp,

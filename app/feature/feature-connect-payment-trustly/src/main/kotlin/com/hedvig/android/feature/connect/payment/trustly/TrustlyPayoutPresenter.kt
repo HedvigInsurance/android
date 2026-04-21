@@ -41,8 +41,13 @@ internal class TrustlyPayoutPresenter(
           browsing = null
         },
         ifRight = {
-          startSessionError = null
-          browsing = TrustlyUiState.Browsing(it.url, trustlyCallback)
+          // todo testing remove hardcoded success
+          if (it.url.startsWith("fake://")) {
+            succeededInConnectingCard = true
+          } else {
+            startSessionError = null
+            browsing = TrustlyUiState.Browsing(it.url, trustlyCallback)
+          }
         },
       )
     }

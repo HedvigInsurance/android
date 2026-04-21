@@ -22,4 +22,7 @@ internal sealed interface PayoutAccountDestinations {
 
   @Serializable
   data object SetupSwishPayout : PayoutAccountDestinations, Destination
+
+  @Serializable
+  data object SetupInvoicePayout : PayoutAccountDestinations, Destination
 }
