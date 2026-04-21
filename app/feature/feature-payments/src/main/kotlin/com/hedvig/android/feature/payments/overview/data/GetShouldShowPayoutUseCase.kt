@@ -23,6 +23,7 @@ internal class GetShouldShowPayoutUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetShouldShowPayoutUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Boolean> = either {
+    return@either true // todo testing delete
     val result = apolloClient
       .query(ShouldShowPayoutButtonQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)

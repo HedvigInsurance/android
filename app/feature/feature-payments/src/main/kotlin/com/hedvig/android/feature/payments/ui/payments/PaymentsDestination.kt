@@ -640,7 +640,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           "Card",
           "****1234",
         ),
-        showPayoutButton = false,
+        showPayoutButton = true,
       ),
     )
     add(

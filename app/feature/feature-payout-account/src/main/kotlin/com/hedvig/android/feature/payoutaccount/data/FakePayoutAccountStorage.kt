@@ -9,5 +9,5 @@ import octopus.type.PaymentMethodInvoiceDelivery
 //   PayoutAccount.BankAccount("8327", "12345678", "Swedbank")                → Bank account display
 //   PayoutAccount.Invoice(PaymentMethodInvoiceDelivery.KIVRA, null)          → Invoice display
 internal object FakePayoutAccountStorage {
-  var currentMethod: PayoutAccount? = null
+  var currentMethod: PayoutAccount? = PayoutAccount.Trustly
 }
