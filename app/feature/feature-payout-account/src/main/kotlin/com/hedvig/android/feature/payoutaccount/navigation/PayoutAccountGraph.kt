@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payoutaccount.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptionsBuilder
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountDestination
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountViewModel
@@ -16,13 +17,14 @@ import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDe
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import octopus.type.MemberPaymentProvider
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.payoutAccountGraph(
   navController: NavController,
   globalSnackBarState: GlobalSnackBarState,
-  navigateToTrustlyPayout: () -> Unit,
+  navigateToTrustlyPayout: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
   navigateUp: () -> Unit,
 ) {
   navgraph<PayoutAccountDestination.Graph>(
@@ -50,7 +52,13 @@ fun NavGraphBuilder.payoutAccountGraph(
     navdestination<PayoutAccountDestinations.SelectPayoutMethod> {
       SelectPayoutMethodDestination(
         availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
-        onTrustlySelected = dropUnlessResumed { navigateToTrustlyPayout() },
+        onTrustlySelected = dropUnlessResumed {
+          navigateToTrustlyPayout {
+            typedPopUpTo<PayoutAccountDestinations.SelectPayoutMethod> {
+              inclusive = true
+            }
+          }
+        },
         onNordeaSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.EditBankAccount) },
         onSwishSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupSwishPayout) },
         onInvoiceSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupInvoicePayout) },

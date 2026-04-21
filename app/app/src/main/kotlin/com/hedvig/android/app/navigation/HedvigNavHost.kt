@@ -350,7 +350,9 @@ internal fun HedvigNavHost(
     payoutAccountGraph(
       navController = navController,
       globalSnackBarState = globalSnackBarState,
-      navigateToTrustlyPayout = { navController.navigate(TrustlyPayoutDestination) },
+      navigateToTrustlyPayout = { builder ->
+        navController.navigate(TrustlyPayoutDestination, builder)
+      },
       navigateUp = navController::navigateUp,
     )
     profileGraph(
