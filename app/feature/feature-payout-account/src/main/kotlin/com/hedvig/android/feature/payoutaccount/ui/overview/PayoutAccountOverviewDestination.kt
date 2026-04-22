@@ -14,7 +14,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -117,20 +116,22 @@ private fun PayoutAccountContent(
       }
 
       is PayoutAccount.BankAccount -> {
-        val displayText = buildString {
-          if (currentMethod.bankName != null) {
-            append(currentMethod.bankName)
-            append(" ")
-          }
-          if (currentMethod.clearingNumber != null && currentMethod.accountNumber != null) {
-            append(currentMethod.clearingNumber)
-            append("-")
-            append(currentMethod.accountNumber)
-          }
-        }
         PayoutAccountReadOnlyTextField(
           label = stringResource(Res.string.PAYMENTS_ACCOUNT),
-          text = displayText,
+          text = buildString {
+            val hasBankNumber = currentMethod.clearingNumber != null && currentMethod.accountNumber != null
+            if (currentMethod.bankName != null) {
+              this.append(currentMethod.bankName)
+              if (hasBankNumber) {
+                this.append(" ")
+              }
+            }
+            if (hasBankNumber) {
+              this.append(currentMethod.clearingNumber)
+              this.append("-")
+              this.append(currentMethod.accountNumber)
+            }
+          },
         )
       }
     }
