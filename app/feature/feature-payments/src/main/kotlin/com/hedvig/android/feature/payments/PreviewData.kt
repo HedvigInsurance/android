@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
@@ -98,6 +99,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      sum = UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -131,6 +133,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK)
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -164,6 +167,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK)
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -197,6 +201,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK)
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -230,6 +235,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK)
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -266,6 +272,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
       failedCharge = MemberCharge.FailedCharge(
         fromDate = LocalDate.fromEpochDays(200),
         toDate = LocalDate.fromEpochDays(201),
+        sum = UiMoney(200.0, UiCurrencyCode.SEK),
       ),
     )
     return PaymentOverview(
@@ -276,6 +283,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
         displayValue = "31489*****",
         chargeMethod = MemberPaymentChargeMethod.TRUSTLY
       ),
+      isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK))
     )
   }
 
@@ -288,6 +296,7 @@ internal val paymentDetailsPreviewData = MemberCharge(
   failedCharge = MemberCharge.FailedCharge(
     fromDate = LocalDate.fromEpochDays(200),
     toDate = LocalDate.fromEpochDays(201),
+    sum = UiMoney(200.0, UiCurrencyCode.SEK),
   ),
   chargeBreakdowns = listOf(
     MemberCharge.ChargeBreakdown(

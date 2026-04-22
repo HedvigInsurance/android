@@ -39,6 +39,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
@@ -67,6 +68,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.ui.payments.PaymentsEvent.Retry
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content
@@ -366,7 +368,6 @@ private fun UpcomingPaymentInfoCard(
 
       is PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
-        val allowManualCharge = upcomingPaymentInfo.isManualChargeAllowed
         Column {
           HedvigNotificationCard(
             priority = NotificationPriority.Attention,
@@ -375,7 +376,7 @@ private fun UpcomingPaymentInfoCard(
               monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
               monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
             ),
-            style = if (allowManualCharge) Button(
+            style = if (upcomingPaymentInfo.isManualChargeAllowed!=null) Button(
               buttonText = "Charge failed payment manually", //todo
               onButtonClick = onOpenManualCharge
             ) else NotificationDefaults.InfoCardStyle.Default
@@ -676,7 +677,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          isManualChargeAllowed = true,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK)
+          ),
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active(
@@ -709,7 +712,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          isManualChargeAllowed = true,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK)
+          ),
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
@@ -743,7 +748,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          isManualChargeAllowed = true,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK)
+          ),
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
@@ -762,7 +769,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          isManualChargeAllowed = true,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK)
+          ),
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
