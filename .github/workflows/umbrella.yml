@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - feat/help-center-kmp
+      - feat/puppy-guide-kmp
   workflow_dispatch:
 
 concurrency:
