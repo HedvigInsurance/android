@@ -468,6 +468,41 @@ type BundleYearlySavings {
   """
   bundleDiscountCoversFullPeriod: Boolean!
 }
+"""
+SHA-256-hashed user data for Facebook Conversions API (CAPI).
+All non-null field values are hex-encoded SHA-256 hashes of the normalized plaintext.
+Normalization follows https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
+"""
+type CapiUserData {
+  """
+  Hashed email (em)
+  """
+  em: String!
+  """
+  Hashed Gmail-normalized email, only present for Gmail addresses (gem)
+  """
+  gem: String
+  """
+  Hashed first name (fn)
+  """
+  fn: String!
+  """
+  Hashed last name (ln)
+  """
+  ln: String!
+  """
+  Hashed postal/zip code, null if unavailable (zp)
+  """
+  zp: String
+  """
+  Hashed city, null if unavailable (ct)
+  """
+  ct: String
+  """
+  Hashed country code, e.g. 'se' (co)
+  """
+  co: String!
+}
 type CarItemNotification {
   message: String!
 }
@@ -1687,15 +1722,15 @@ returned as ExtendedItemDiscount
 """
 type ExtendedItemDiscount {
   """
-   General discount information 
+  General discount information
   """
   itemDiscount: ItemDiscount!
   """
-   Monthly reduction applied by the discount. It's a negative number 
+  Monthly reduction applied by the discount. It's a negative number
   """
   amount: Money!
   """
-   Whether discount is on a pending state or not 
+  Whether discount is on a pending state or not
   """
   isPending: Boolean!
 }
@@ -2481,6 +2516,11 @@ type Member {
   - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
+  """
+  Young Pet Guide stories for the member.
+  Returns a list of educational content stories for young pet owners.
+  """
+  puppyGuideStories: [PuppyGuideStory!]!
   """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
@@ -3596,7 +3636,7 @@ type Mutation {
   Update the raw insurance-related data for this `PriceIntent`. This data is mostly related to the insured object
   itself, and not the "holder" of the insurance.
   """
-  priceIntentDataUpdate(priceIntentId: UUID!, data: PricingFormData!): PriceIntentMutationOutput!
+  priceIntentDataUpdate(priceIntentId: UUID!, data: PricingFormData!, applySuggestedData: Boolean): PriceIntentMutationOutput!
   """
   Associate a specific Insurely `dataCollectionId` from lookup-service with this PriceIntent.
   """
@@ -3626,6 +3666,10 @@ type Mutation {
   normal `priceIntentDataUpdate` + `priceIntentConfirm` flow.
   """
   productOfferReprice(offerId: UUID!, data: PricingFormData!): ProductOffersMutationOutput!
+  """
+  Mark a young pet guide story as read for a specific member.
+  """
+  puppyGuideEngagement(engagement: PuppyEngagementInput!): PuppyGuideStoryMutationOutput!
   """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
@@ -3770,19 +3814,19 @@ input PaymentMethodSetupNordeaPayoutInput {
 }
 type PaymentMethodSetupOutput {
   """
-   The status of the setup process. If FAILED the reason for failure can be found in the `error` field.
+   The status of the setup process. If FAILED the reason for failure can be found in the `error` field. 
   """
   status: PaymentMethodSetupStatus!
   """
-   The order id for the payment method setup order if SUCCESSFUL.
+   The order id for the payment method setup order if SUCCESSFUL. 
   """
   orderId: ID
   """
-   Url to redirect the member to if any.
+   Url to redirect the member to if any. 
   """
   url: String
   """
-   An error message. Only sat if the setup process failed.
+   An error message. Only sat if the setup process failed. 
   """
   error: UserError
 }
@@ -3906,11 +3950,11 @@ type PriceIntent {
   """
   product: Product!
   """
-  Submitted user form data.
+  UI-safe masked form data. PII fields (street, zipCode, city) are always masked.
   """
   data: PricingFormData!
   """
-  Data submitted in other places or inferred from other data points
+  Masked, uncommitted form data from automatic lookup (e.g. SPAR address, trial data). PII fields are masked the same way as 'data'.
   """
   suggestedData: PricingFormData!
   """
@@ -3943,6 +3987,10 @@ type PriceIntent {
   Null when no Insurely data collection has been associated with this price intent.
   """
   fetchedExternalInsurances: [FetchedExternalInsurance!]
+  """
+  When 'true' all required form data has been provided and the price intent can be confirmed.
+  """
+  isReadyToConfirm: Boolean!
 }
 enum PriceIntentAnimal {
   CAT
@@ -4103,7 +4151,7 @@ type ProductOffer {
   """
   priceIntentId: UUID
   """
-  The form data used to generate the offer
+  UI-safe masked form data used to generate the offer. PII fields (street, zipCode, city) are masked when address came from registration address lookup.
   """
   priceIntentData: PricingFormData!
   """
@@ -4272,11 +4320,6 @@ if the user has input enough information to generate it.
 type ProductRecommendation {
   product: Product!
   offer: ProductOffer
-  """
-  External insurance data from Insurely, available even when no offer could be generated.
-  Null when no Insurely data collection is associated with the session.
-  """
-  externalInsurance: RecommendationExternalInsurance
 }
 type ProductVariant {
   """
@@ -4341,6 +4384,53 @@ type ProductVariantComparisonRow {
   List of covered items for this peril
   """
   covered: [String!]!
+}
+input PuppyEngagementInput {
+  name: String!
+  rating: Int
+  opened: Boolean
+  read: Boolean
+  closed: Boolean
+}
+type PuppyGuideStory {
+  """
+  The unique name/identifier of the story.
+  """
+  name: String!
+  """
+  The display title of the story.
+  """
+  title: String!
+  """
+  The subtitle or description of the story.
+  """
+  subtitle: String!
+  """
+  The main content of the story.
+  """
+  content: String!
+  """
+  The image associated with this story.
+  """
+  image: String!
+  """
+  Categories this story belongs to.
+  """
+  categories: [String!]!
+  """
+  The date when the story was marked as read by the user.
+  """
+  read: Boolean!
+  """
+   The user's rating of the story.
+  """
+  rating: Int
+}
+type PuppyGuideStoryMutationOutput {
+  """
+  Indicates whether the mutation was successful.
+  """
+  success: Boolean!
 }
 type Query {
   """
@@ -4408,32 +4498,6 @@ type Query {
   Call this to get the cost of an addon offer for selected addon(s).
   """
   addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
-}
-type RecommendationExternalInsurance {
-  """
-  Display name of the external insurance product
-  """
-  displayName: String!
-  """
-  The external insurer
-  """
-  insurer: ExternalInsurer!
-  """
-  Monthly price of the external insurance. Null if not available.
-  """
-  price: Money
-  """
-  Contextual subtitle (e.g. address, registration number, pet name)
-  """
-  subtitle: String
-  """
-  Renewal date of the external policy. Null when not provided.
-  """
-  renewalDate: Date
-  """
-  Insurely data collection ID
-  """
-  dataCollectionId: String!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!
@@ -4683,6 +4747,12 @@ type ShopSessionOutcome {
   Note that this will not contain and `PendingContract`s.
   """
   createdContracts: [Contract!]!
+  """
+  Pre-hashed Facebook CAPI user data (SHA-256 hex, lowercase) for this signed session.
+  Fields follow Meta's Conversions API customer information parameter spec.
+  Requires authentication (inherits MemberAccessible from the outcome).
+  """
+  capiUserData: CapiUserData!
 }
 type ShopSessionSigning {
   id: UUID!
