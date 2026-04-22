@@ -2,7 +2,6 @@ package com.hedvig.android.feature.payoutaccount.ui.overview
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -104,91 +102,18 @@ private fun PayoutAccountContent(
   Column(modifier) {
     Spacer(Modifier.height(8.dp))
     when (currentMethod) {
-      null -> {
-        Spacer(Modifier.weight(1f))
-        HedvigButton(
-          text = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD),
-          onClick = onConnectPayoutMethodClicked,
-          enabled = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      }
+      null -> {}
 
       is PayoutAccount.SwishPayout -> {
-        HedvigTextField(
-          text = currentMethod.phoneNumber,
-          onValueChange = {},
-          labelText = "Swish",
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          readOnly = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        if (availablePayoutMethods.size > 1) {
-          Spacer(Modifier.height(8.dp))
-          HedvigButton(
-            text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
-            onClick = onConnectPayoutMethodClicked,
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-          )
-        }
+        PayoutAccountReadOnlyTextField(label = "Swish", text = currentMethod.phoneNumber)
       }
 
       PayoutAccount.Trustly -> {
-        HedvigTextField(
-          text = "Trustly",
-          onValueChange = {},
-          labelText = "Account",
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          readOnly = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        if (availablePayoutMethods.size > 1) {
-          Spacer(Modifier.height(8.dp))
-          HedvigButton(
-            text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
-            onClick = onConnectPayoutMethodClicked,
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-          )
-        }
+        PayoutAccountReadOnlyTextField(label = "Account", text = "Trustly")
       }
 
       is PayoutAccount.Invoice -> {
-        HedvigTextField(
-          text = "Invoice",
-          onValueChange = {},
-          labelText = "Account",
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          readOnly = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-        if (availablePayoutMethods.size > 1) {
-          Spacer(Modifier.height(8.dp))
-          HedvigButton(
-            text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
-            onClick = onConnectPayoutMethodClicked,
-            enabled = true,
-            buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 16.dp),
-          )
-        }
+        PayoutAccountReadOnlyTextField(label = "Account", text = "Invoice")
       }
 
       is PayoutAccount.BankAccount -> {
@@ -201,17 +126,26 @@ private fun PayoutAccountContent(
           append("-")
           append(currentMethod.accountNumber)
         }
-        HedvigTextField(
+        PayoutAccountReadOnlyTextField(
+          label = stringResource(Res.string.PAYMENTS_ACCOUNT),
           text = displayText,
-          onValueChange = {},
-          labelText = stringResource(Res.string.PAYMENTS_ACCOUNT),
-          textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-          readOnly = true,
+        )
+      }
+    }
+    Spacer(Modifier.weight(1f))
+    when {
+      currentMethod == null -> {
+        HedvigButton(
+          text = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD),
+          onClick = onConnectPayoutMethodClicked,
+          enabled = true,
           modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         )
-        Spacer(Modifier.weight(1f))
+      }
+
+      currentMethod is PayoutAccount.BankAccount -> {
         Spacer(Modifier.height(8.dp))
         HedvigButton(
           text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
@@ -222,9 +156,40 @@ private fun PayoutAccountContent(
             .padding(horizontal = 16.dp),
         )
       }
+
+      availablePayoutMethods.size > 1 -> {
+        Spacer(Modifier.height(8.dp))
+        HedvigButton(
+          text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
+          onClick = onConnectPayoutMethodClicked,
+          enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
     }
     Spacer(Modifier.height(16.dp))
   }
+}
+
+@Composable
+private fun PayoutAccountReadOnlyTextField(
+  label: String,
+  text: String,
+  modifier: Modifier = Modifier,
+) {
+  HedvigTextField(
+    text = text,
+    onValueChange = {},
+    labelText = label,
+    textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+    readOnly = true,
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp),
+  )
 }
 
 @Composable
