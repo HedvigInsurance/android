@@ -15,7 +15,7 @@ internal class SetupSwishPayoutUseCase(
   private val networkCacheManager: NetworkCacheManager,
 ) {
   suspend fun invoke(phoneNumber: String): Either<ErrorMessage, Unit> = either {
-    FakePayoutAccountStorage.currentMethod = PayoutAccount.SwishPayout(phoneNumber = phoneNumber)
+    FakePayoutAccountStorage.currentMethod = PayoutAccount.SwishPayout(phoneNumber = phoneNumber, isPending = false)
     return@either
     val result = apolloClient
       .mutation(SetupSwishPayoutMutation(phoneNumber = phoneNumber))

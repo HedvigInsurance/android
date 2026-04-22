@@ -9,9 +9,10 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.GetPayoutMethodsQuery
-import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.DefaultPayoutMethod.Details.Companion.asPaymentMethodBankAccountDetails
-import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.DefaultPayoutMethod.Details.Companion.asPaymentMethodInvoiceDetails
-import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.DefaultPayoutMethod.Details.Companion.asPaymentMethodSwishDetails
+import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.PayoutMethod.Details.Companion.asPaymentMethodBankAccountDetails
+import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.PayoutMethod.Details.Companion.asPaymentMethodInvoiceDetails
+import octopus.GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.PayoutMethod.Details.Companion.asPaymentMethodSwishDetails
+import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
 
 internal data class PayoutAccountData(
@@ -39,53 +40,44 @@ internal class GetPayoutAccountUseCase(
       .bind()
 
     val paymentMethods = result.currentMember.paymentMethods
-    val currentMethod = paymentMethods.defaultPayoutMethod?.let { method ->
+    val defaultPayoutMethod = paymentMethods.payoutMethods.firstOrNull { it.isDefault }
+    // todo payout feature. Return the other, non-default payout methods when we can switch to them
+    val currentMethod = defaultPayoutMethod?.let { method ->
+      val isPending = method.status == MemberPaymentMethodStatus.PENDING
       when (method.provider) {
         MemberPaymentProvider.TRUSTLY -> {
-          PayoutAccount.Trustly
+          PayoutAccount.Trustly(isPending = isPending)
         }
 
         MemberPaymentProvider.SWISH -> {
-          val swishDetails = method.details?.asPaymentMethodSwishDetails()
-          if (swishDetails != null) {
-            PayoutAccount.SwishPayout(phoneNumber = swishDetails.phoneNumber)
-          } else {
-            null
-          }
+          val phoneNumber = method.details?.asPaymentMethodSwishDetails()?.phoneNumber
+          PayoutAccount.SwishPayout(phoneNumber = phoneNumber, isPending = isPending)
         }
 
         MemberPaymentProvider.NORDEA -> {
           val bankAccountDetails = method.details?.asPaymentMethodBankAccountDetails()
-          if (bankAccountDetails != null) {
-            val account = bankAccountDetails.account
-            val dashIndex = account.indexOf('-')
-            val clearingNumber = if (dashIndex >= 0) account.substring(0, dashIndex) else account
-            val accountNumber = if (dashIndex >= 0) account.substring(dashIndex + 1) else ""
-            PayoutAccount.BankAccount(
-              clearingNumber = clearingNumber,
-              accountNumber = accountNumber,
-              bankName = bankAccountDetails.bank,
-            )
-          } else {
-            null
-          }
+          val account = bankAccountDetails?.account
+          val dashIndex = account?.indexOf('-') ?: -1
+          val clearingNumber = if (dashIndex >= 0) account?.substring(0, dashIndex) else account
+          val accountNumber = if (dashIndex >= 0) account?.substring(dashIndex + 1) else null
+          PayoutAccount.BankAccount(
+            clearingNumber = clearingNumber,
+            accountNumber = accountNumber,
+            bankName = bankAccountDetails?.bank,
+            isPending = isPending,
+          )
         }
 
         MemberPaymentProvider.INVOICE -> {
           val invoiceDetails = method.details?.asPaymentMethodInvoiceDetails()
-          if (invoiceDetails != null) {
-            PayoutAccount.Invoice(
-              delivery = invoiceDetails.delivery,
-              email = invoiceDetails.email,
-            )
-          } else {
-            null
-          }
+          PayoutAccount.Invoice(
+            delivery = invoiceDetails?.delivery,
+            email = invoiceDetails?.email,
+            isPending = isPending,
+          )
         }
 
-        else -> {
-          null
-        }
+        else -> null
       }
     }
 

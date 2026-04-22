@@ -1,8 +1,10 @@
 query GetPayoutMethods {
   currentMember {
     paymentMethods {
-      defaultPayoutMethod {
+      payoutMethods {
         provider
+        status
+        isDefault
         details {
           ... on PaymentMethodBankAccountDetails {
             account

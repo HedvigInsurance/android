@@ -105,10 +105,10 @@ private fun PayoutAccountContent(
       null -> {}
 
       is PayoutAccount.SwishPayout -> {
-        PayoutAccountReadOnlyTextField(label = "Swish", text = currentMethod.phoneNumber)
+        PayoutAccountReadOnlyTextField(label = "Swish", text = currentMethod.phoneNumber.orEmpty())
       }
 
-      PayoutAccount.Trustly -> {
+      is PayoutAccount.Trustly -> {
         PayoutAccountReadOnlyTextField(label = "Account", text = "Trustly")
       }
 
@@ -122,9 +122,11 @@ private fun PayoutAccountContent(
             append(currentMethod.bankName)
             append(" ")
           }
-          append(currentMethod.clearingNumber)
-          append("-")
-          append(currentMethod.accountNumber)
+          if (currentMethod.clearingNumber != null && currentMethod.accountNumber != null) {
+            append(currentMethod.clearingNumber)
+            append("-")
+            append(currentMethod.accountNumber)
+          }
         }
         PayoutAccountReadOnlyTextField(
           label = stringResource(Res.string.PAYMENTS_ACCOUNT),
@@ -175,11 +177,7 @@ private fun PayoutAccountContent(
 }
 
 @Composable
-private fun PayoutAccountReadOnlyTextField(
-  label: String,
-  text: String,
-  modifier: Modifier = Modifier,
-) {
+private fun PayoutAccountReadOnlyTextField(label: String, text: String, modifier: Modifier = Modifier) {
   HedvigTextField(
     text = text,
     onValueChange = {},
@@ -218,15 +216,15 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
     ),
     Content(
-      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67"),
+      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
     ),
     Content(
-      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67"),
+      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67", isPending = false),
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
     ),
     Content(
-      currentMethod = PayoutAccount.Trustly,
+      currentMethod = PayoutAccount.Trustly(isPending = false),
       availablePayoutMethods = listOf(MemberPaymentProvider.TRUSTLY),
     ),
     Content(
@@ -234,6 +232,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
         clearingNumber = "3300",
         accountNumber = "1234567",
         bankName = "Nordea",
+        isPending = false,
       ),
       availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
     ),
@@ -241,6 +240,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       currentMethod = PayoutAccount.Invoice(
         delivery = PaymentMethodInvoiceDelivery.KIVRA,
         email = null,
+        isPending = false,
       ),
       availablePayoutMethods = listOf(MemberPaymentProvider.INVOICE),
     ),
@@ -248,6 +248,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       currentMethod = PayoutAccount.Invoice(
         delivery = PaymentMethodInvoiceDelivery.MAIL,
         email = "user@example.com",
+        isPending = false,
       ),
       availablePayoutMethods = listOf(MemberPaymentProvider.INVOICE, MemberPaymentProvider.TRUSTLY),
     ),

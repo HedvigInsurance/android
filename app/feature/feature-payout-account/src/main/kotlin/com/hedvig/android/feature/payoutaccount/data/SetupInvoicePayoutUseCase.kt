@@ -19,6 +19,7 @@ internal class SetupInvoicePayoutUseCase(
     FakePayoutAccountStorage.currentMethod = PayoutAccount.Invoice(
       delivery = PaymentMethodInvoiceDelivery.KIVRA,
       email = null,
+      isPending = false,
     )
     return@either
     val result = apolloClient

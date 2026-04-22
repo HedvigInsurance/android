@@ -21,6 +21,7 @@ internal class SetupNordeaPayoutUseCase(
       clearingNumber = clearingNumber,
       accountNumber = accountNumber,
       bankName = bankNameForClearingNumber(clearingNumber),
+      isPending = false,
     )
     return@either
     val result = apolloClient
