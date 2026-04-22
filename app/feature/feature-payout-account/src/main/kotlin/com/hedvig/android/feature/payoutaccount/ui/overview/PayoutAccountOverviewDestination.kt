@@ -135,43 +135,18 @@ private fun PayoutAccountContent(
       }
     }
     Spacer(Modifier.weight(1f))
-    when {
-      currentMethod == null -> {
-        HedvigButton(
-          text = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD),
-          onClick = onConnectPayoutMethodClicked,
-          enabled = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      }
-
-      currentMethod is PayoutAccount.BankAccount -> {
-        Spacer(Modifier.height(8.dp))
-        HedvigButton(
-          text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
-          onClick = onConnectPayoutMethodClicked,
-          enabled = true,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      }
-
-      availablePayoutMethods.size > 1 -> {
-        Spacer(Modifier.height(8.dp))
-        HedvigButton(
-          text = stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL),
-          onClick = onConnectPayoutMethodClicked,
-          enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        )
-      }
-    }
+    HedvigButton(
+      text = if (currentMethod == null) {
+        stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD)
+      } else {
+        stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
+      },
+      onClick = onConnectPayoutMethodClicked,
+      enabled = true,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+    )
     Spacer(Modifier.height(16.dp))
   }
 }
