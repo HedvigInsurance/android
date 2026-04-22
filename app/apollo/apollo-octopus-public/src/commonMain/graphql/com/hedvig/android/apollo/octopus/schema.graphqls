@@ -2842,9 +2842,10 @@ type MemberPaymentMethod {
   isDefault: Boolean!
   """
   Specific details of the actual connection if method is ACTIVE - e.g. a bank account reference, phone number for swish,
-  or email/kivra for invoice.
+  or email/kivra for invoice. If method is PENDING, then this field will be null since the member has not yet set up
+  this payment method.
   """
-  details: PaymentMethodDetails!
+  details: PaymentMethodDetails
 }
 type MemberPaymentMethods {
   """
@@ -3769,15 +3770,19 @@ input PaymentMethodSetupNordeaPayoutInput {
 }
 type PaymentMethodSetupOutput {
   """
-   The status of the setup process. If FAILED the reason for failure can be found in the `error` field. 
+   The status of the setup process. If FAILED the reason for failure can be found in the `error` field.
   """
   status: PaymentMethodSetupStatus!
   """
-   Url to redirect the member to if any. 
+   The order id for the payment method setup order if SUCCESSFUL.
+  """
+  orderId: ID
+  """
+   Url to redirect the member to if any.
   """
   url: String
   """
-   An error message. Only sat if the setup process failed. 
+   An error message. Only sat if the setup process failed.
   """
   error: UserError
 }

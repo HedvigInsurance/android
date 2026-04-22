@@ -50,7 +50,7 @@ internal class GetPayoutAccountUseCaseImpl(
         }
 
         MemberPaymentProvider.SWISH -> {
-          val swishDetails = method.details.asPaymentMethodSwishDetails()
+          val swishDetails = method.details?.asPaymentMethodSwishDetails()
           if (swishDetails != null) {
             PayoutAccount.SwishPayout(phoneNumber = swishDetails.phoneNumber)
           } else {
@@ -59,7 +59,7 @@ internal class GetPayoutAccountUseCaseImpl(
         }
 
         MemberPaymentProvider.NORDEA -> {
-          val bankAccountDetails = method.details.asPaymentMethodBankAccountDetails()
+          val bankAccountDetails = method.details?.asPaymentMethodBankAccountDetails()
           if (bankAccountDetails != null) {
             val account = bankAccountDetails.account
             val dashIndex = account.indexOf('-')
@@ -76,7 +76,7 @@ internal class GetPayoutAccountUseCaseImpl(
         }
 
         MemberPaymentProvider.INVOICE -> {
-          val invoiceDetails = method.details.asPaymentMethodInvoiceDetails()
+          val invoiceDetails = method.details?.asPaymentMethodInvoiceDetails()
           if (invoiceDetails != null) {
             PayoutAccount.Invoice(
               delivery = invoiceDetails.delivery,
