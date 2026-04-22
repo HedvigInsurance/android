@@ -19,14 +19,10 @@ internal data class PayoutAccountData(
   val availablePayoutMethods: List<MemberPaymentProvider>,
 )
 
-internal interface GetPayoutAccountUseCase {
-  suspend fun invoke(): Either<ErrorMessage, PayoutAccountData>
-}
-
-internal class GetPayoutAccountUseCaseImpl(
+internal class GetPayoutAccountUseCase(
   private val apolloClient: ApolloClient,
-) : GetPayoutAccountUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, PayoutAccountData> = either {
+) {
+  suspend fun invoke(): Either<ErrorMessage, PayoutAccountData> = either {
     return@either PayoutAccountData(
       currentMethod = FakePayoutAccountStorage.currentMethod,
       availablePayoutMethods = listOf(

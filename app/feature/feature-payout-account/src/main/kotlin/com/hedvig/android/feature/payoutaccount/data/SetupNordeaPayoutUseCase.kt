@@ -12,15 +12,11 @@ import com.hedvig.android.core.common.ErrorMessage
 import octopus.SetupNordeaPayoutMutation
 import octopus.type.PaymentMethodSetupStatus
 
-internal interface SetupNordeaPayoutUseCase {
-  suspend fun invoke(clearingNumber: String, accountNumber: String): Either<ErrorMessage, Unit>
-}
-
-internal class SetupNordeaPayoutUseCaseImpl(
+internal class SetupNordeaPayoutUseCase(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
-) : SetupNordeaPayoutUseCase {
-  override suspend fun invoke(clearingNumber: String, accountNumber: String): Either<ErrorMessage, Unit> = either {
+) {
+  suspend fun invoke(clearingNumber: String, accountNumber: String): Either<ErrorMessage, Unit> = either {
     FakePayoutAccountStorage.currentMethod = PayoutAccount.BankAccount(
       clearingNumber = clearingNumber,
       accountNumber = accountNumber,
