@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
@@ -65,14 +66,11 @@ internal class PaymentsPresenter(
               if (memberCharge?.status == MemberCharge.MemberChargeStatus.PENDING) {
                 return@run PaymentsUiState.Content.UpcomingPaymentInfo.InProgress
               }
-              val paymentConnection = paymentOverview.paymentConnection
               memberCharge?.failedCharge?.let { failedCharge ->
-                val isManualChargeAllowed = paymentConnection is Active &&
-                  paymentConnection.chargeMethod == MemberPaymentChargeMethod.TRUSTLY
                 return@run PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
                   failedPaymentStartDate = failedCharge.fromDate,
                   failedPaymentEndDate = failedCharge.toDate,
-                  isManualChargeAllowed = isManualChargeAllowed
+                  isManualChargeAllowed = paymentOverview.isManualChargeAllowed
                 )
               }
               PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo
@@ -142,7 +140,7 @@ internal sealed interface PaymentsUiState {
       data class PaymentFailed(
         val failedPaymentStartDate: LocalDate,
         val failedPaymentEndDate: LocalDate,
-        val isManualChargeAllowed: Boolean
+        val isManualChargeAllowed: ManualChargeToPrompt?
       ) : UpcomingPaymentInfo
     }
 
