@@ -60,12 +60,14 @@ internal fun ClaimHistoryDestination(
   claimHistoryViewModel: ClaimHistoryViewModel,
   navigateUp: () -> Unit,
   navigateToClaimDetails: (String) -> Unit,
+  navigateToPartnerClaimDetails: (String) -> Unit,
 ) {
   val uiState by claimHistoryViewModel.uiState.collectAsStateWithLifecycle()
   ClaimHistoryScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     navigateToClaimDetails = navigateToClaimDetails,
+    navigateToPartnerClaimDetails = navigateToPartnerClaimDetails,
     reload = { claimHistoryViewModel.emit(ClaimHistoryEvent.Reload) },
   )
 }
@@ -75,6 +77,7 @@ private fun ClaimHistoryScreen(
   uiState: ClaimHistoryUiState,
   navigateUp: () -> Unit,
   navigateToClaimDetails: (String) -> Unit,
+  navigateToPartnerClaimDetails: (String) -> Unit,
   reload: () -> Unit,
 ) {
   HedvigScaffold(
@@ -108,7 +111,7 @@ private fun ClaimHistoryScreen(
           .fillMaxWidth(),
       )
 
-      is ClaimHistoryUiState.Content -> ClaimHistoryContent(uiState, navigateToClaimDetails)
+      is ClaimHistoryUiState.Content -> ClaimHistoryContent(uiState, navigateToClaimDetails, navigateToPartnerClaimDetails)
     }
   }
 }
@@ -118,14 +121,20 @@ private fun ClaimHistoryScreen(
 private fun ColumnScope.ClaimHistoryContent(
   uiState: ClaimHistoryUiState.Content,
   navigateToClaimDetails: (String) -> Unit,
+  navigateToPartnerClaimDetails: (String) -> Unit,
 ) {
   uiState.claims.forEachIndexed { index, claim ->
-    ClaimHistoryItem(index, claim, navigateToClaimDetails)
+    ClaimHistoryItem(index, claim, navigateToClaimDetails, navigateToPartnerClaimDetails)
   }
 }
 
 @Composable
-private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDetails: (String) -> Unit) {
+private fun ClaimHistoryItem(
+  index: Int,
+  claim: ClaimHistory,
+  navigateToClaimDetails: (String) -> Unit,
+  navigateToPartnerClaimDetails: (String) -> Unit,
+) {
   val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   HorizontalItemsWithMaximumSpaceTaken(
     {
@@ -179,7 +188,11 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
       .fillMaxWidth()
       .clickable(
         onClick = dropUnlessResumed {
-          navigateToClaimDetails(claim.id)
+          if (claim.isPartnerClaim) {
+            navigateToPartnerClaimDetails(claim.id)
+          } else {
+            navigateToClaimDetails(claim.id)
+          }
         },
       )
       .horizontalDivider(DividerPosition.Top, show = index != 0, horizontalPadding = 18.dp)
@@ -199,6 +212,7 @@ private fun PreviewClaimHistoryScreen(
         {},
         {},
         {},
+        {},
       )
     }
   }
@@ -214,6 +228,7 @@ private class ClaimHistoryUiStateCollectionPreviewParameterProvider :
             claimType = "$it",
             outcome = ClaimHistory.ClaimOutcome.entries[it],
             submittedAt = Instant.fromEpochMilliseconds(100),
+            isPartnerClaim = false,
           )
         }.toNonEmptyListOrThrow(),
       ),

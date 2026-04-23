@@ -11,12 +11,17 @@ import org.koin.compose.viewmodel.koinViewModel
 @Serializable
 data object ClaimHistoryDestination : Destination
 
-fun NavGraphBuilder.claimHistoryGraph(navigateUp: () -> Unit, navigateToClaimDetails: (String) -> Unit) {
+fun NavGraphBuilder.claimHistoryGraph(
+  navigateUp: () -> Unit,
+  navigateToClaimDetails: (String) -> Unit,
+  navigateToPartnerClaimDetails: (String) -> Unit,
+) {
   navdestination<ClaimHistoryDestination> {
     ClaimHistoryDestination(
       claimHistoryViewModel = koinViewModel(),
       navigateUp = navigateUp,
       navigateToClaimDetails = navigateToClaimDetails,
+      navigateToPartnerClaimDetails = navigateToPartnerClaimDetails,
     )
   }
 }

@@ -354,6 +354,7 @@ internal fun HedvigNavHost(
           navigateToClaimDetails = { claimId ->
             navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
           },
+          navigateToPartnerClaimDetails = {},
         )
       },
       popBackStackOrFinish = popBackStackOrFinish,
