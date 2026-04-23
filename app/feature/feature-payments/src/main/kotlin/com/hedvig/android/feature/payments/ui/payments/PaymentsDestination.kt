@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -61,6 +63,7 @@ import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyl
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
@@ -238,6 +241,20 @@ private fun PaymentsContent(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Spacer(Modifier.height(8.dp))
+    when (val upcomingPaymentInfo = (uiState as? Content)?.upcomingPaymentInfo) {
+      is PaymentFailed -> {
+        if (upcomingPaymentInfo.isManualChargeAllowed != null) {
+          FailedPaymentInfo(
+            amountDue = upcomingPaymentInfo.isManualChargeAllowed.sum.toString(),
+            onReviewPaymentClick = onOpenManualCharge,
+            modifier = Modifier.padding(horizontal = 16.dp)
+          )
+          Spacer(Modifier.height(8.dp))
+        }
+      }
+
+      else -> {}
+    }
     val ongoingCharges = (uiState as? Content)?.ongoingCharges
     if (!ongoingCharges.isNullOrEmpty()) {
       OngoingPaymentCards(
@@ -268,7 +285,6 @@ private fun PaymentsContent(
       modifier = Modifier
         .padding(horizontal = 16.dp)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-      onOpenManualCharge = onOpenManualCharge,
     )
     val showConnectedPaymentInfo = uiState is Content &&
       uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsSetup
@@ -355,7 +371,6 @@ private fun CardNotConnectedWarningCard(
 @Composable
 private fun UpcomingPaymentInfoCard(
   upcomingPaymentInfo: UpcomingPaymentInfo?,
-  onOpenManualCharge: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier) {
@@ -371,23 +386,18 @@ private fun UpcomingPaymentInfoCard(
 
       is PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
-        Column {
-          HedvigNotificationCard(
-            priority = NotificationPriority.Attention,
-            message = stringResource(
-              Res.string.PAYMENTS_MISSED_PAYMENT,
-              monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
-              monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
-            ),
-            style = if (upcomingPaymentInfo.isManualChargeAllowed != null) {
-              Button(
-                buttonText = "Charge failed payment manually", // todo
-                onButtonClick = onOpenManualCharge,
-              )
-            } else {
-              NotificationDefaults.InfoCardStyle.Default
-            },
-          )
+        if (upcomingPaymentInfo.isManualChargeAllowed == null) {
+          Column {
+            HedvigNotificationCard(
+              priority = NotificationPriority.Attention,
+              message = stringResource(
+                Res.string.PAYMENTS_MISSED_PAYMENT,
+                monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
+                monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
+              ),
+              style = NotificationDefaults.InfoCardStyle.Default,
+            )
+          }
         }
       }
 
@@ -584,9 +594,11 @@ private fun PaymentCard(
 private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
     color = HedvigTheme.colorScheme.fillNegative,
-    borderColor = HedvigTheme.colorScheme.borderPrimary,
     modifier = modifier
       .fillMaxWidth()
+      .border(1.dp, HedvigTheme.colorScheme.borderPrimary,
+        HedvigTheme.shapes.cornerXLarge)
+      .hedvigDropShadow()
   ) {
     Column(
       modifier = Modifier
@@ -640,7 +652,9 @@ private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Uni
         text = "We couldn't collect this payment from your bank account. Pay now to keep your insurance active.",
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
 
       Spacer(Modifier.height(12.dp))
