@@ -23,6 +23,7 @@ fun NavGraphBuilder.homeGraph(
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
+  navigateToPartnerClaimDetails: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
@@ -52,6 +53,9 @@ fun NavGraphBuilder.homeGraph(
         navigateToClaimChatInDevMode = dropUnlessResumed { navigateToClaimChatInDevMode() },
         onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
           navigateToClaimDetails(claimId)
+        },
+        onPartnerClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
+          navigateToPartnerClaimDetails(claimId)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
         navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
