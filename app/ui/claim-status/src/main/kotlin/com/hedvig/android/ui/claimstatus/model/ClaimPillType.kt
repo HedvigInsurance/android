@@ -25,6 +25,18 @@ sealed interface ClaimPillType {
   }
 
   companion object {
+    fun fromPartnerClaim(status: ClaimStatus?): List<ClaimPillType> {
+      return when (status) {
+        ClaimStatus.CLOSED -> listOf(Closed.GenericClosed)
+        ClaimStatus.CREATED,
+        ClaimStatus.IN_PROGRESS,
+        ClaimStatus.REOPENED,
+        ClaimStatus.UNKNOWN__,
+        null,
+        -> listOf(Claim)
+      }
+    }
+
     fun fromClaimFragment(claim: ClaimFragment): List<ClaimPillType> {
       return when (claim.status) {
         ClaimStatus.CREATED -> {
