@@ -174,37 +174,14 @@ private fun PartnerClaimDetailContent(
     )
     if (uiState.handlerEmail != null) {
       Spacer(Modifier.height(24.dp))
-      HedvigCard {
-        Column(modifier = Modifier.padding(16.dp)) {
-          HorizontalItemsWithMaximumSpaceTaken(
-            modifier = Modifier
-              .clip(HedvigTheme.shapes.cornerXSmall)
-              .clickable { openUrl("mailto:${uiState.handlerEmail}") },
-            startSlot = {
-              HedvigText(
-                text = uiState.handlerEmail,
-                style = HedvigTheme.typography.bodySmall,
-                modifier = Modifier.wrapContentSize(Alignment.CenterStart),
-              )
-            },
-            endSlot = {
-              IconButton(
-                onClick = { openUrl("mailto:${uiState.handlerEmail}") },
-                modifier = Modifier
-                  .size(40.dp)
-                  .wrapContentSize(Alignment.CenterEnd),
-              ) {
-                Icon(
-                  imageVector = HedvigIcons.ArrowNorthEast,
-                  contentDescription = null,
-                  tint = HedvigTheme.colorScheme.signalGreyElement,
-                  modifier = Modifier.size(16.dp),
-                )
-              }
-            },
-            spaceBetween = 8.dp,
-          )
-        }
+      HedvigCard(
+        onClick = { openUrl("mailto:${uiState.handlerEmail}") },
+      ) {
+        HedvigText(
+          text = uiState.handlerEmail,
+          style = HedvigTheme.typography.bodySmall,
+          modifier = Modifier.padding(16.dp),
+        )
       }
     }
     if (uiState.termsConditionsUrl != null) {
