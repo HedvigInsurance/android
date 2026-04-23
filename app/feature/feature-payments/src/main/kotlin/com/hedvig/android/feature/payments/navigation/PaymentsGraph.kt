@@ -58,7 +58,7 @@ fun NavGraphBuilder.paymentsGraph(
           navController.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
         onOpenManualCharge = {
-          //todo
+          // todo
         },
       )
     }

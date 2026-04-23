@@ -180,17 +180,20 @@ internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
 
   val from = previousChargesPeriods.minOfOrNull { it.fromDate }
   val to = previousChargesPeriods.maxOfOrNull { it.toDate }
-  val sum = if (previousChargesPeriods.isNotEmpty()) UiMoney(
-    previousChargesPeriods.sumOf { it.amount.amount },
-    UiCurrencyCode.fromCurrencyCode(previousChargesPeriods.first().amount.currencyCode),
-  ) else
+  val sum = if (previousChargesPeriods.isNotEmpty()) {
+    UiMoney(
+      previousChargesPeriods.sumOf { it.amount.amount },
+      UiCurrencyCode.fromCurrencyCode(previousChargesPeriods.first().amount.currencyCode),
+    )
+  } else {
     UiMoney(0.0, UiCurrencyCode.SEK)
+  }
 
   return if (from != null && to != null) {
     MemberCharge.FailedCharge(
       from,
       to,
-      sum
+      sum,
     )
   } else {
     null

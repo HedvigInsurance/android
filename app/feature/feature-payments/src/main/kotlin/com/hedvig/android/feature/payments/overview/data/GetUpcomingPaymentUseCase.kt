@@ -104,9 +104,13 @@ internal data class GetUpcomingPaymentUseCaseImpl(
           paymentConnection is Active &&
           paymentConnection.chargeMethod == MemberPaymentChargeMethod.TRUSTLY &&
           memberChargeShortInfo?.failedCharge != null
-        ) ManualChargeToPrompt(
-          memberChargeShortInfo.failedCharge.sum,
-        ) else null
+        ) {
+          ManualChargeToPrompt(
+            memberChargeShortInfo.failedCharge.sum,
+          )
+        } else {
+          null
+        }
 
         PaymentOverview(
           memberChargeShortInfo = memberChargeShortInfo,

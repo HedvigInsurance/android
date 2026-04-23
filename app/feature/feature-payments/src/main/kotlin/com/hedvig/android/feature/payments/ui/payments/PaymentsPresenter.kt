@@ -73,7 +73,7 @@ internal class PaymentsPresenter(
                     return@run PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
                       failedPaymentStartDate = failedCharge.fromDate,
                       failedPaymentEndDate = failedCharge.toDate,
-                      isManualChargeAllowed = paymentOverview.isManualChargeAllowed
+                      isManualChargeAllowed = paymentOverview.isManualChargeAllowed,
                     )
                   }
                   PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo
@@ -105,8 +105,6 @@ internal class PaymentsPresenter(
             },
           )
         }
-
-
     }
     return paymentsUiState
   }
@@ -146,7 +144,7 @@ internal sealed interface PaymentsUiState {
       data class PaymentFailed(
         val failedPaymentStartDate: LocalDate,
         val failedPaymentEndDate: LocalDate,
-        val isManualChargeAllowed: ManualChargeToPrompt?
+        val isManualChargeAllowed: ManualChargeToPrompt?,
       ) : UpcomingPaymentInfo
     }
 

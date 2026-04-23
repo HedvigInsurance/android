@@ -115,9 +115,11 @@ private fun MemberPaymentDetailsSuccessScreen(
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier
-    .padding(horizontal = 16.dp)
-    .verticalScroll(rememberScrollState())) {
+  Column(
+    modifier
+      .padding(horizontal = 16.dp)
+      .verticalScroll(rememberScrollState()),
+  ) {
     val explanationBottomSheetState = rememberHedvigBottomSheetState<PaymentExplanationData>()
     ExplanationBottomSheet(explanationBottomSheetState)
     HorizontalItemsWithMaximumSpaceTaken(

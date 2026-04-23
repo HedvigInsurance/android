@@ -133,7 +133,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
-      UiMoney(200.0, UiCurrencyCode.SEK)
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -167,7 +167,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
-      UiMoney(200.0, UiCurrencyCode.SEK)
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -201,7 +201,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
-      UiMoney(200.0, UiCurrencyCode.SEK)
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -235,7 +235,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
-      UiMoney(200.0, UiCurrencyCode.SEK)
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -281,9 +281,9 @@ internal val paymentOverViewPreviewData: PaymentOverview
       paymentConnection = PaymentConnection.Active(
         displayName = "Nordea",
         displayValue = "31489*****",
-        chargeMethod = MemberPaymentChargeMethod.TRUSTLY
+        chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
       ),
-      isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK))
+      isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
     )
   }
 
