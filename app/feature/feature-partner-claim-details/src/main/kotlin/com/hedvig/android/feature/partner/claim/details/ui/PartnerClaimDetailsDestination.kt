@@ -188,11 +188,13 @@ private fun PartnerClaimDetailContent(
             )
           },
           endSlot = {
-            Icon(
-              imageVector = HedvigIcons.ArrowNorthEast,
-              contentDescription = null,
-              modifier = Modifier.size(16.dp),
-            )
+            Row(horizontalArrangement = Arrangement.End) {
+              Icon(
+                imageVector = HedvigIcons.ArrowNorthEast,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+              )
+            }
           },
           spaceBetween = 8.dp,
         )
