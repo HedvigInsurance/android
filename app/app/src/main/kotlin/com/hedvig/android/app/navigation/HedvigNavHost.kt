@@ -32,6 +32,8 @@ import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
 import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
+import com.hedvig.android.feature.partner.claim.details.navigation.PartnerClaimOverviewDestination
+import com.hedvig.android.feature.partner.claim.details.navigation.partnerClaimDetailsGraph
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
@@ -182,6 +184,9 @@ internal fun HedvigNavHost(
       },
       navigateToClaimDetails = { claimId ->
         navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+      },
+      navigateToPartnerClaimDetails = { claimId ->
+        navController.navigate(PartnerClaimOverviewDestination(claimId))
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
@@ -354,7 +359,9 @@ internal fun HedvigNavHost(
           navigateToClaimDetails = { claimId ->
             navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
           },
-          navigateToPartnerClaimDetails = {},
+          navigateToPartnerClaimDetails = { claimId ->
+            navController.navigate(PartnerClaimOverviewDestination(claimId))
+          },
         )
       },
       popBackStackOrFinish = popBackStackOrFinish,
@@ -555,6 +562,10 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+  )
+  partnerClaimDetailsGraph(
+    navigateUp = navController::navigateUp,
+    openUrl = openUrl,
   )
   travelCertificateGraph(
     navController = navController,
