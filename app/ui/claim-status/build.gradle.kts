@@ -14,7 +14,9 @@ dependencies {
   implementation(libs.jetbrains.compose.ui)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.composePagerIndicator)
+  implementation(projects.composeUi)
   implementation(projects.coreResources)
   implementation(projects.coreUiData)
+  implementation(projects.dataDisplayItems)
   implementation(projects.designSystemHedvig)
 }

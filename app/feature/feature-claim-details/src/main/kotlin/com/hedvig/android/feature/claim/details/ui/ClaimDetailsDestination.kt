@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -28,7 +27,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,20 +45,15 @@ import com.hedvig.android.compose.photo.capture.state.rememberPhotoCaptureState
 import com.hedvig.android.compose.ui.LayoutWithoutPlacement
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
-import com.hedvig.android.compose.ui.stringWithShiftedLabel
 import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.display.items.DisplayItem
-import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Date
-import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.DateTime
 import com.hedvig.android.data.display.items.DisplayItem.DisplayItemValue.Text
-import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Medium
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.File
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -69,32 +62,30 @@ import com.hedvig.android.design.system.hedvig.HedvigMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTextButton
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HedvigThreeDotsProgressIndicator
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.IconButton
-import com.hedvig.android.design.system.hedvig.LocalContentColor
-import com.hedvig.android.design.system.hedvig.LocalTextStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType.BACK
-import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.icon.ArrowNorthEast
 import com.hedvig.android.design.system.hedvig.icon.Chat
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.notificationCircle
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.file.upload.ui.FilePickerBottomSheet
+import com.hedvig.android.ui.claimstatus.ClaimDisplayItemsSection
+import com.hedvig.android.ui.claimstatus.ClaimDocumentCard
+import com.hedvig.android.ui.claimstatus.ClaimExplanationBottomSheet
 import com.hedvig.android.ui.claimstatus.ClaimStatusCard
+import com.hedvig.android.ui.claimstatus.ClaimTermsConditionsCard
 import com.hedvig.android.ui.claimstatus.model.ClaimPillType
 import com.hedvig.android.ui.claimstatus.model.ClaimProgressSegment
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
@@ -102,15 +93,12 @@ import com.hedvig.audio.player.data.PlayableAudioSource
 import com.hedvig.audio.player.data.SignedAudioUrl
 import hedvig.resources.CLAIMS_YOUR_CLAIM
 import hedvig.resources.DASHBOARD_OPEN_CHAT
-import hedvig.resources.MY_DOCUMENTS_INSURANCE_TERMS
 import hedvig.resources.REFERRALS_INFO_BUTTON_CONTENT_DESCRIPTION
 import hedvig.resources.Res
-import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.claim_outcome_unresponsive_support_text
 import hedvig.resources.claim_status_appeal_instruction_link_text
 import hedvig.resources.claim_status_being_handled_reopened_support_text
 import hedvig.resources.claim_status_being_handled_support_text
-import hedvig.resources.claim_status_claim_details_info_text
 import hedvig.resources.claim_status_claim_details_title
 import hedvig.resources.claim_status_detail_add_files
 import hedvig.resources.claim_status_detail_add_more_files
@@ -122,7 +110,6 @@ import hedvig.resources.claim_status_not_covered_support_text
 import hedvig.resources.claim_status_paid_support_text_short
 import hedvig.resources.claim_status_submitted_support_text
 import hedvig.resources.claim_status_uploaded_files_upload_text
-import hedvig.resources.general_close_button
 import hedvig.resources.general_error
 import hedvig.resources.something_went_wrong
 import hedvig.resources.travel_certificate_downloading_error
@@ -323,7 +310,7 @@ private fun NonDynamicGrid(
   navigateToConversation: (() -> Unit)?,
 ) {
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
-  ExplanationBottomSheet(explanationBottomSheetState)
+  ClaimExplanationBottomSheet(explanationBottomSheetState)
   Column(
     Modifier
       .padding(
@@ -376,26 +363,6 @@ private fun NonDynamicGrid(
       onDismissUploadError = onDismissUploadError,
       downloadFromUrl = downloadFromUrl,
     )
-  }
-}
-
-@Composable
-internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
-  HedvigBottomSheet(sheetState) { _ ->
-    HedvigText(
-      text = stringResource(Res.string.claim_status_claim_details_info_text),
-      modifier = Modifier
-        .fillMaxWidth(),
-    )
-    Spacer(Modifier.height(32.dp))
-    HedvigTextButton(
-      text = stringResource(Res.string.general_close_button),
-      buttonSize = Large,
-      onClick = { sheetState.dismiss() },
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
   }
 }
 
@@ -498,7 +465,7 @@ private fun BeforeGridContent(
   )
 
   Spacer(Modifier.height(8.dp))
-  DisplayItemsSection(
+  ClaimDisplayItemsSection(
     displayItems = uiState.displayItems,
     modifier = Modifier
       .fillMaxWidth()
@@ -582,7 +549,7 @@ private fun AfterGridContent(
       Spacer(Modifier.height(8.dp))
     }
     if (uiState.termsConditionsUrl != null) {
-      TermsConditionsCard(
+      ClaimTermsConditionsCard(
         onClick = { downloadFromUrl(uiState.termsConditionsUrl) },
         modifier = Modifier.padding(16.dp),
         isLoading = uiState.termsConditionsUrl == uiState.isLoadingPdf,
@@ -601,38 +568,6 @@ private fun AfterGridContent(
 }
 
 @Composable
-private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
-  HedvigCard(onClick = onClick) {
-    Row(
-      modifier,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      if (isLoading) {
-        LayoutWithoutPlacement(
-          sizeAdjustingContent = {
-            DocumentCard(
-              title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
-            )
-          },
-        ) {
-          Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth(),
-          ) {
-            HedvigThreeDotsProgressIndicator()
-          }
-        }
-      } else {
-        DocumentCard(
-          title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
-        )
-      }
-    }
-  }
-}
-
-@Composable
 private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
   HedvigCard(onClick = onClick) {
     Row(
@@ -642,7 +577,7 @@ private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modif
       if (isLoading) {
         LayoutWithoutPlacement(
           sizeAdjustingContent = {
-            DocumentCard(
+            ClaimDocumentCard(
               title = stringResource(Res.string.claim_status_appeal_instruction_link_text),
             )
           },
@@ -656,44 +591,11 @@ private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modif
           }
         }
       } else {
-        DocumentCard(
+        ClaimDocumentCard(
           title = stringResource(Res.string.claim_status_appeal_instruction_link_text),
         )
       }
     }
-  }
-}
-
-@Composable
-private fun DocumentCard(title: String) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        Column {
-          HedvigText(
-            text = stringWithShiftedLabel(
-              text = title,
-              labelText = "PDF",
-              labelFontSize = HedvigTheme.typography.label.fontSize,
-              textColor = LocalContentColor.current,
-              textFontSize = LocalTextStyle.current.fontSize,
-            ),
-          )
-        }
-      },
-      endSlot = {
-        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-          Icon(
-            imageVector = HedvigIcons.ArrowNorthEast,
-            contentDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
-            modifier = Modifier.size(16.dp),
-          )
-        }
-      },
-      spaceBetween = 8.dp,
-    )
   }
 }
 
@@ -752,33 +654,6 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
   Column(modifier) {
     val audioPlayer = rememberAudioPlayer(playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl))
     HedvigAudioPlayer(audioPlayer = audioPlayer)
-  }
-}
-
-@Composable
-private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modifier = Modifier) {
-  CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
-    Column(modifier) {
-      for (displayItem in displayItems) {
-        HorizontalItemsWithMaximumSpaceTaken(
-          spaceBetween = 8.dp,
-          startSlot = {
-            HedvigText(text = displayItem.title)
-          },
-          endSlot = {
-            val formatter = rememberHedvigDateTimeFormatter()
-            HedvigText(
-              text = when (val item = displayItem.value) {
-                is Date -> formatter.format(item.date)
-                is DateTime -> formatter.format(item.localDateTime)
-                is Text -> item.text
-              },
-              textAlign = TextAlign.End,
-            )
-          },
-        )
-      }
-    }
   }
 }
 
