@@ -1184,6 +1184,19 @@ type ClaimMutationOutput {
   claim: Claim
   userError: UserError
 }
+type PartnerClaim {
+  id: ID!
+  externalId: String!
+  exposureDisplayName: String
+  status: ClaimStatus
+  submittedAt: Date
+  payoutAmount: Money
+  associatedTypeOfContract: String
+  claimType: String
+  handlerEmail: String
+  displayItems: [ClaimDisplayItem!]!
+  productVariant: ProductVariant
+}
 enum ClaimOutcome {
   PAID
   NOT_COMPENSATED
@@ -2419,6 +2432,8 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  partnerClaimsActive: [PartnerClaim!]!
+  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -4306,6 +4321,7 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
+  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   claimIntentFormFieldSearch(input: ClaimIntentFormFieldSearchInput!): ClaimIntentFormFieldSearchOutput!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
