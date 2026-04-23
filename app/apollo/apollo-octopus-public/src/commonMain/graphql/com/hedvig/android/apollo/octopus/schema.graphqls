@@ -468,6 +468,41 @@ type BundleYearlySavings {
   """
   bundleDiscountCoversFullPeriod: Boolean!
 }
+"""
+SHA-256-hashed user data for Facebook Conversions API (CAPI).
+All non-null field values are hex-encoded SHA-256 hashes of the normalized plaintext.
+Normalization follows https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
+"""
+type CapiUserData {
+  """
+  Hashed email (em)
+  """
+  em: String!
+  """
+  Hashed Gmail-normalized email, only present for Gmail addresses (gem)
+  """
+  gem: String
+  """
+  Hashed first name (fn)
+  """
+  fn: String!
+  """
+  Hashed last name (ln)
+  """
+  ln: String!
+  """
+  Hashed postal/zip code, null if unavailable (zp)
+  """
+  zp: String
+  """
+  Hashed city, null if unavailable (ct)
+  """
+  ct: String
+  """
+  Hashed country code, e.g. 'se' (co)
+  """
+  co: String!
+}
 type CarItemNotification {
   message: String!
 }
@@ -1184,19 +1219,6 @@ type ClaimMutationOutput {
   claim: Claim
   userError: UserError
 }
-type PartnerClaim {
-  id: ID!
-  externalId: String!
-  exposureDisplayName: String
-  status: ClaimStatus
-  submittedAt: Date
-  payoutAmount: Money
-  associatedTypeOfContract: String
-  claimType: String
-  handlerEmail: String
-  displayItems: [ClaimDisplayItem!]!
-  productVariant: ProductVariant
-}
 enum ClaimOutcome {
   PAID
   NOT_COMPENSATED
@@ -1700,15 +1722,15 @@ returned as ExtendedItemDiscount
 """
 type ExtendedItemDiscount {
   """
-   General discount information 
+  General discount information
   """
   itemDiscount: ItemDiscount!
   """
-   Monthly reduction applied by the discount. It's a negative number 
+  Monthly reduction applied by the discount. It's a negative number
   """
   amount: Money!
   """
-   Whether discount is on a pending state or not 
+  Whether discount is on a pending state or not
   """
   isPending: Boolean!
 }
@@ -1740,6 +1762,11 @@ type ExternalInsurer {
   id: ID!
   displayName: String!
   insurelyId: String
+}
+type FetchedExternalInsurance {
+  displayName: String!
+  subtitle: String
+  insurer: ExternalInsurer!
 }
 type FirstVetAction {
   sections: [FirstVetSection!]!
@@ -2492,6 +2519,11 @@ type Member {
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
+  Young Pet Guide stories for the member.
+  Returns a list of educational content stories for young pet owners.
+  """
+  puppyGuideStories: [PuppyGuideStory!]!
+  """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
   """
@@ -2744,6 +2776,22 @@ type MemberPaymentAvailablePaymentMethod {
    True if the member can set up this payment method for payout. 
   """
   supportsPayout: Boolean!
+  """
+  True if this method is already ACTIVE for member and can be chosen as default directly without setup, false if
+  this is a new payment method that the member has not yet set up.
+  If this is true, then the `details` field will be populated with the payment method details. If this is false, then
+  the `details` field will be null since the member has not yet set up this payment method.
+  If true then this method can be set up as default directly by calling `paymentMethodSetDefaultPayin` or
+  `paymentMethodSetDefaultPayout` mutation depending on if it's a payin or payout method. If false, then the
+  corresponding mutation for setting up this payment method should be called, eg. `paymentMethodSetupTrustly`,
+  `paymentMethodSetupSwishPayin` etc.
+  """
+  isActive: Boolean!
+  """
+  For already connected and ACTIVE methods, ie isActive=true, specific details of the actual connection - e.g. a bank
+  account reference, phone number for swish, or email/kivra for invoice.
+  """
+  details: PaymentMethodDetails
 }
 type MemberPaymentChargeMethodInfo {
   """
@@ -2816,48 +2864,76 @@ type MemberPaymentInformation {
 }
 type MemberPaymentMethod {
   """
-   The unique id of the payment method. This id is used for switching default and revoking payment methods. 
-  """
-  id: ID!
-  """
-   Payment provider, eg Trustly, Swish, Nordea, Kivra etc. 
+  Payment provider, eg Trustly, Swish, Nordea, Kivra etc.
+  This is used as the "identifier" of the payment method since there can only be one ACTIVE or PENDING payment method
+  per provider.
   """
   provider: MemberPaymentProvider!
   """
-  The payment method status - ACTIVE, PENDING, or PENDING_DEFAULT.
-  PENDING_DEFAULT means the payment method is awaiting activation and will become default once activated.
+  The payment method status - ACTIVE, PENDING.
+  If ACTIVE, the payment method is ready to use for payins or payouts depending on if it's a payin or payout method.
+  If PENDING, the payment method has been set up but is still awaiting activation and cannot be used for payins or
+  payouts until then. Once activated, the status will change to ACTIVE.
   """
   status: MemberPaymentMethodStatus!
   """
-  True if this is the default payment method. Only one ACTIVE payment method can be default at a time.
-  If status is PENDING then payment method will become the default once activated.
+  This is 'true' for only one of the members ACTIVE methods which is the default payment method that will be used for
+  charging or payout the member. For PENDING methods, this can also be 'true' if the member has chosen to set up this
+  payment method as default during the setup process.
   """
   isDefault: Boolean!
   """
-  Specific details of the actual connection - e.g. a bank account reference, phone number for swish,
-  or email/kivra for invoice.
+  Specific details of the actual connection if method is ACTIVE - e.g. a bank account reference, phone number for swish,
+  or email/kivra for invoice. If method is PENDING, then this field will be null since the member has not yet set up
+  this payment method.
   """
-  details: PaymentMethodDetails!
+  details: PaymentMethodDetails
 }
 type MemberPaymentMethods {
   """
-   List of active and pending payment payin methods for this member. 
+  List of all member's ACTIVE and PENDING payment payin methods.
+  A member can have multiple ACTIVE payment methods with these constraints:
+  - Only one ACTIVE payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  - Only one ACTIVE payment method can be default at a time.
+  A member can have multiple PENDING payment methods with these constraints:
+  - Only one PENDING payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  So there can exist max two payment methods per provider, one ACTIVE and one PENDING.
+  If a PENDING payment method has isDefault=true, then it will become the default ACTIVE payment method once activated.
   """
   payinMethods: [MemberPaymentMethod!]!
   """
-   List of active and pending payment payout methods for this member. 
+  List of all member's ACTIVE and PENDING payment payout methods.
+  A member can have multiple ACTIVE payment methods with these constraints:
+  - Only one ACTIVE payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  - Only one ACTIVE payment method can be default at a time.
+  A member can have multiple PENDING payment methods with these constraints:
+  - Only one PENDING payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  So there can exist max two payment methods per provider, one ACTIVE and one PENDING.
+  If a PENDING payment method has isDefault=true, then it will become the default ACTIVE payment method once activated.
   """
   payoutMethods: [MemberPaymentMethod!]!
   """
-   The default payment method for payin if any. 
+  The default payment method to use for payins if any.
+  Note that there can exist a PENDING payment method in `payinMethods` list with `isDefault`=true, in that case this default
+  payment method will be replaced by it once the pending method is activated.
   """
   defaultPayinMethod: MemberPaymentMethod
   """
-   The default payment method for payout if any. 
+  The default payment method to use for payouts if any.
+  Note that there can exist a PENDING payment method in `payoutMethods` list with `isDefault`=true, in that case this default
+  payment method will be replaced by it once the pending method is activated.
   """
   defaultPayoutMethod: MemberPaymentMethod
   """
-   The available payment methods that the member can choose from when setting up a new payment method. 
+  The available payment methods that the member can choose from when setting up a new payment method.
+  This list can include both payment methods that the member has already set up and new payment methods that the
+  member has not yet set up but are available to them. For already set up payment methods, the `isActive` field will
+  be true and the `details` field will be populated with the payment method details. For new payment methods that the
+  member has not yet set up, the `isActive` field will be false and the `details` field will be null.
+  If member picks a new payment method to set up, the corresponding mutation for setting up that payment method should
+  be called, eg. `paymentMethodSetupTrustly`, `paymentMethodSetupSwishPayin` etc.
+  If member picks an already set up payment method to set up as default, then `paymentMethodSetDefaultPayin` or
+  `paymentMethodSetDefaultPayout` mutation should be called depending on if it's a payin or payout method.
   """
   availableMethods: [MemberPaymentAvailablePaymentMethod!]!
   """
@@ -3407,9 +3483,9 @@ type Mutation {
   """
    Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
   """
-  paymentMethodSetupInvoicePayin(input: PaymentMethodSetupInvoicePayinInput!): PaymentMethodSetupOutput!
+  paymentMethodSetupInvoicePayin: PaymentMethodSetupOutput!
   """
-   Setup Trustly payment payin and payout method for the member. 
+   Setup Trustly payment payin and payout method for the member. Requires member consent via redirect to Trustly URL in response.
   """
   paymentMethodSetupTrustly(input: PaymentMethodSetupTrustlyInput!): PaymentMethodSetupOutput!
   """
@@ -3421,17 +3497,19 @@ type Mutation {
   """
   paymentMethodSetupSwishPayout(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
   """
-   Setup Swish payin method for the member. 
+   Setup Swish payin method for the member. Requires member consent in Swish app. 
   """
   paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
   """
-   Revoke an active payment method. The member will be required to set up a new payment method if they revoke their default one. 
+  A member can have multiple ACTIVE payment methods where one of those is default. This mutation changes the
+  members default payment method for charging to any of his/hers other active payment methods.
   """
-  paymentMethodRevoke(id: ID!): UserError
+  paymentMethodSetDefaultPayin(provider: MemberPaymentProvider!): UserError
   """
-   Set an active payment method as default. 
+  A member can have multiple ACTIVE payment methods where one of those is default. This mutation changes the
+  members default payment method for payouts to any of his/hers other active payment methods.
   """
-  paymentMethodSetDefault(id: ID!): UserError
+  paymentMethodSetDefaultPayout(provider: MemberPaymentProvider!): UserError
   """
   Start a conversation. This is effectively creating one, but with two slight differences from a regular
   "create something"-mutation:
@@ -3560,7 +3638,7 @@ type Mutation {
   Update the raw insurance-related data for this `PriceIntent`. This data is mostly related to the insured object
   itself, and not the "holder" of the insurance.
   """
-  priceIntentDataUpdate(priceIntentId: UUID!, data: PricingFormData!): PriceIntentMutationOutput!
+  priceIntentDataUpdate(priceIntentId: UUID!, data: PricingFormData!, applySuggestedData: Boolean): PriceIntentMutationOutput!
   """
   Associate a specific Insurely `dataCollectionId` from lookup-service with this PriceIntent.
   """
@@ -3590,6 +3668,10 @@ type Mutation {
   normal `priceIntentDataUpdate` + `priceIntentConfirm` flow.
   """
   productOfferReprice(offerId: UUID!, data: PricingFormData!): ProductOffersMutationOutput!
+  """
+  Mark a young pet guide story as read for a specific member.
+  """
+  puppyGuideEngagement(engagement: PuppyEngagementInput!): PuppyGuideStoryMutationOutput!
   """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
@@ -3691,6 +3773,22 @@ type Mutation {
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
 }
+type PartnerClaim {
+  id: ID!
+  externalId: String!
+  exposureDisplayName: String
+  status: ClaimStatus
+  submittedAt: Date
+  payoutAmount: Money
+  associatedTypeOfContract: String
+  claimType: String
+  handlerEmail: String
+  displayItems: [ClaimDisplayItem!]!
+  """
+  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
+  """
+  productVariant: ProductVariant
+}
 type PartnerData {
   sas: SasPartnerData
 }
@@ -3722,17 +3820,7 @@ type PaymentMethodInvoiceDetails {
   """
   email: String
 }
-input PaymentMethodSetupInvoicePayinInput {
-  """
-   Set up invoice payment method as default. 
-  """
-  setAsDefaultPayout: Boolean!
-}
 input PaymentMethodSetupNordeaPayoutInput {
-  """
-   Set up Nordea payout method as default. 
-  """
-  setAsDefault: Boolean!
   """
    The clearing number for member's bank account. 
   """
@@ -3747,6 +3835,10 @@ type PaymentMethodSetupOutput {
    The status of the setup process. If FAILED the reason for failure can be found in the `error` field. 
   """
   status: PaymentMethodSetupStatus!
+  """
+   The order id for the payment method setup order if SUCCESSFUL. 
+  """
+  orderId: ID
   """
    Url to redirect the member to if any. 
   """
@@ -3772,23 +3864,11 @@ enum PaymentMethodSetupStatus {
 }
 input PaymentMethodSetupSwishInput {
   """
-   Set up Swish payment method as default. 
-  """
-  setAsDefault: Boolean!
-  """
    The Swish mobile number to use for payout or payin. 
   """
   phoneNumber: String!
 }
 input PaymentMethodSetupTrustlyInput {
-  """
-   Set up Trustly payment method as default for payin. 
-  """
-  setAsDefaultPayin: Boolean!
-  """
-   Set up Trustly payment method as default for payout. 
-  """
-  setAsDefaultPayout: Boolean!
   """
    The URL to redirect the member back to after a successful setup after Trustly onboarding. 
   """
@@ -3888,11 +3968,11 @@ type PriceIntent {
   """
   product: Product!
   """
-  Submitted user form data.
+  UI-safe masked form data. PII fields (street, zipCode, city) are always masked.
   """
   data: PricingFormData!
   """
-  Data submitted in other places or inferred from other data points
+  Masked, uncommitted form data from automatic lookup (e.g. SPAR address, trial data). PII fields are masked the same way as 'data'.
   """
   suggestedData: PricingFormData!
   """
@@ -3920,6 +4000,15 @@ type PriceIntent {
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
   hasCollectedInsurelyData: Boolean!
+  """
+  List of external insurances fetched via Insurely that correspond to products Hedvig offers.
+  Null when no Insurely data collection has been associated with this price intent.
+  """
+  fetchedExternalInsurances: [FetchedExternalInsurance!]
+  """
+  When 'true' all required form data has been provided and the price intent can be confirmed.
+  """
+  isReadyToConfirm: Boolean!
 }
 enum PriceIntentAnimal {
   CAT
@@ -4080,7 +4169,7 @@ type ProductOffer {
   """
   priceIntentId: UUID
   """
-  The form data used to generate the offer
+  UI-safe masked form data used to generate the offer. PII fields (street, zipCode, city) are masked when address came from registration address lookup.
   """
   priceIntentData: PricingFormData!
   """
@@ -4313,6 +4402,53 @@ type ProductVariantComparisonRow {
   List of covered items for this peril
   """
   covered: [String!]!
+}
+input PuppyEngagementInput {
+  name: String!
+  rating: Int
+  opened: Boolean
+  read: Boolean
+  closed: Boolean
+}
+type PuppyGuideStory {
+  """
+  The unique name/identifier of the story.
+  """
+  name: String!
+  """
+  The display title of the story.
+  """
+  title: String!
+  """
+  The subtitle or description of the story.
+  """
+  subtitle: String!
+  """
+  The main content of the story.
+  """
+  content: String!
+  """
+  The image associated with this story.
+  """
+  image: String!
+  """
+  Categories this story belongs to.
+  """
+  categories: [String!]!
+  """
+  The date when the story was marked as read by the user.
+  """
+  read: Boolean!
+  """
+   The user's rating of the story.
+  """
+  rating: Int
+}
+type PuppyGuideStoryMutationOutput {
+  """
+  Indicates whether the mutation was successful.
+  """
+  success: Boolean!
 }
 type Query {
   """
@@ -4630,6 +4766,12 @@ type ShopSessionOutcome {
   Note that this will not contain and `PendingContract`s.
   """
   createdContracts: [Contract!]!
+  """
+  Pre-hashed Facebook CAPI user data (SHA-256 hex, lowercase) for this signed session.
+  Fields follow Meta's Conversions API customer information parameter spec.
+  Requires authentication (inherits MemberAccessible from the outcome).
+  """
+  capiUserData: CapiUserData!
 }
 type ShopSessionSigning {
   id: UUID!
