@@ -267,8 +267,9 @@ internal class GetHomeDataUseCaseImpl(
 }
 
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
-  val regularCards = (this.currentMember.claims ?: this.currentMember.claimsActive).orEmpty()
-    .map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
+  val regularCards =
+    this.currentMember.claims.orEmpty().map(ClaimStatusCardUiState::fromClaimStatusCardsQuery) +
+      this.currentMember.claimsActive.orEmpty().map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
   val partnerClaims = this.currentMember.partnerClaimsActive
   val partnerCards = partnerClaims.map(ClaimStatusCardUiState::fromPartnerClaim)
 
