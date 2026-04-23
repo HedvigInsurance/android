@@ -172,18 +172,6 @@ private fun PartnerClaimDetailContent(
         .fillMaxWidth()
         .padding(horizontal = 2.dp),
     )
-    if (uiState.handlerEmail != null) {
-      Spacer(Modifier.height(24.dp))
-      HedvigCard(
-        onClick = { openUrl("mailto:${uiState.handlerEmail}") },
-      ) {
-        HedvigText(
-          text = uiState.handlerEmail,
-          style = HedvigTheme.typography.bodySmall,
-          modifier = Modifier.padding(16.dp),
-        )
-      }
-    }
     if (uiState.termsConditionsUrl != null) {
       Spacer(Modifier.height(24.dp))
       HedvigText(

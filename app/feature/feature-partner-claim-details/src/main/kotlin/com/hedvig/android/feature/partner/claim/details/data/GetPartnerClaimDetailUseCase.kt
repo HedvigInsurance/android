@@ -42,7 +42,6 @@ internal class GetPartnerClaimDetailUseCase(
                   displayItems = claim.displayItems.map {
                     DisplayItem.fromStrings(it.displayTitle, it.displayValue)
                   },
-                  handlerEmail = claim.handlerEmail,
                   termsConditionsUrl = claim.productVariant?.documents
                     ?.firstOrNull { it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS }?.url,
                 )

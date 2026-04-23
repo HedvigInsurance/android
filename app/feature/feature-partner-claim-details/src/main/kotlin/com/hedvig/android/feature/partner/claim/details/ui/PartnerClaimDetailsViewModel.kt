@@ -63,7 +63,6 @@ internal sealed interface PartnerClaimDetailUiState {
     val claimStatusCardUiState: ClaimStatusCardUiState,
     val claimStatus: ClaimStatus?,
     val displayItems: List<DisplayItem>,
-    val handlerEmail: String?,
     val termsConditionsUrl: String?,
   ) : PartnerClaimDetailUiState
 }
