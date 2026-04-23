@@ -175,29 +175,36 @@ private fun PartnerClaimDetailContent(
     if (uiState.handlerEmail != null) {
       Spacer(Modifier.height(24.dp))
       HedvigCard {
-        HorizontalItemsWithMaximumSpaceTaken(
-          modifier = Modifier
-            .clip(HedvigTheme.shapes.cornerXSmall)
-            .clickable { openUrl("mailto:${uiState.handlerEmail}") }
-            .padding(16.dp),
-          startSlot = {
-            HedvigText(
-              text = uiState.handlerEmail,
-              style = HedvigTheme.typography.bodySmall,
-              modifier = Modifier.wrapContentSize(Alignment.CenterStart),
-            )
-          },
-          endSlot = {
-            Row(horizontalArrangement = Arrangement.End) {
-              Icon(
-                imageVector = HedvigIcons.ArrowNorthEast,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
+        Column(modifier = Modifier.padding(16.dp)) {
+          HorizontalItemsWithMaximumSpaceTaken(
+            modifier = Modifier
+              .clip(HedvigTheme.shapes.cornerXSmall)
+              .clickable { openUrl("mailto:${uiState.handlerEmail}") },
+            startSlot = {
+              HedvigText(
+                text = uiState.handlerEmail,
+                style = HedvigTheme.typography.bodySmall,
+                modifier = Modifier.wrapContentSize(Alignment.CenterStart),
               )
-            }
-          },
-          spaceBetween = 8.dp,
-        )
+            },
+            endSlot = {
+              IconButton(
+                onClick = { openUrl("mailto:${uiState.handlerEmail}") },
+                modifier = Modifier
+                  .size(40.dp)
+                  .wrapContentSize(Alignment.CenterEnd),
+              ) {
+                Icon(
+                  imageVector = HedvigIcons.ArrowNorthEast,
+                  contentDescription = null,
+                  tint = HedvigTheme.colorScheme.signalGreyElement,
+                  modifier = Modifier.size(16.dp),
+                )
+              }
+            },
+            spaceBetween = 8.dp,
+          )
+        }
       }
     }
     if (uiState.termsConditionsUrl != null) {
