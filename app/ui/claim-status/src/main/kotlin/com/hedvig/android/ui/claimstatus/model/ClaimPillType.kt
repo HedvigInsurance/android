@@ -28,6 +28,7 @@ sealed interface ClaimPillType {
     fun fromPartnerClaim(status: ClaimStatus?): List<ClaimPillType> {
       return when (status) {
         ClaimStatus.CLOSED -> listOf(Closed.GenericClosed)
+
         ClaimStatus.CREATED,
         ClaimStatus.IN_PROGRESS,
         ClaimStatus.REOPENED,

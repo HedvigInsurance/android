@@ -32,8 +32,6 @@ import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
 import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
-import com.hedvig.android.feature.partner.claim.details.navigation.PartnerClaimOverviewDestination
-import com.hedvig.android.feature.partner.claim.details.navigation.partnerClaimDetailsGraph
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
@@ -69,6 +67,8 @@ import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.SelectContractForMoving
 import com.hedvig.android.feature.movingflow.movingFlowGraph
+import com.hedvig.android.feature.partner.claim.details.navigation.PartnerClaimOverviewDestination
+import com.hedvig.android.feature.partner.claim.details.navigation.partnerClaimDetailsGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
@@ -391,7 +391,7 @@ internal fun HedvigNavHost(
       navigateToChipId = {
         navController.navigate(ChipIdGraphDestination())
       },
-      languageService = languageService
+      languageService = languageService,
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -430,10 +430,10 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       popBackStackOrFinish = popBackStackOrFinish,
       goHome = {
-          navController.navigate(HomeDestination.Graph) {
-            popUpTo(ChipIdGraphDestination::class) { inclusive = true }
-          }
-      }
+        navController.navigate(HomeDestination.Graph) {
+          popUpTo(ChipIdGraphDestination::class) { inclusive = true }
+        }
+      },
     )
     movingFlowGraph(
       navController = navController,

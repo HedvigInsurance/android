@@ -7,10 +7,7 @@ import com.hedvig.android.navigation.compose.navdestination
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-fun NavGraphBuilder.partnerClaimDetailsGraph(
-  navigateUp: () -> Unit,
-  openUrl: (String) -> Unit,
-) {
+fun NavGraphBuilder.partnerClaimDetailsGraph(navigateUp: () -> Unit, openUrl: (String) -> Unit) {
   navdestination<PartnerClaimOverviewDestination> {
     val viewModel: PartnerClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
     PartnerClaimDetailsDestination(

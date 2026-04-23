@@ -111,7 +111,11 @@ private fun ClaimHistoryScreen(
           .fillMaxWidth(),
       )
 
-      is ClaimHistoryUiState.Content -> ClaimHistoryContent(uiState, navigateToClaimDetails, navigateToPartnerClaimDetails)
+      is ClaimHistoryUiState.Content -> ClaimHistoryContent(
+        uiState,
+        navigateToClaimDetails,
+        navigateToPartnerClaimDetails,
+      )
     }
   }
 }

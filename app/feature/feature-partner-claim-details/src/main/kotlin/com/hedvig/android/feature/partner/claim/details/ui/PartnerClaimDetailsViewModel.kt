@@ -58,7 +58,9 @@ internal sealed interface PartnerClaimDetailEvent {
 
 internal sealed interface PartnerClaimDetailUiState {
   data object Loading : PartnerClaimDetailUiState
+
   data object Error : PartnerClaimDetailUiState
+
   data class Content(
     val claimStatusCardUiState: ClaimStatusCardUiState,
     val claimStatus: ClaimStatus?,

@@ -111,10 +111,7 @@ private fun PartnerClaimDetailScreen(
 }
 
 @Composable
-private fun PartnerClaimDetailContent(
-  uiState: PartnerClaimDetailUiState.Content,
-  openUrl: (String) -> Unit,
-) {
+private fun PartnerClaimDetailContent(uiState: PartnerClaimDetailUiState.Content, openUrl: (String) -> Unit) {
   val explanationBottomSheetState = rememberHedvigBottomSheetState<Unit>()
   ClaimExplanationBottomSheet(explanationBottomSheetState)
   Column(
