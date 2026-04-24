@@ -12,6 +12,7 @@ sealed interface ClaimDetailDestination {
      */
     @SerialName("claimId")
     val claimId: String,
+    val isPartnerClaim: Boolean = false,
   ) : ClaimDetailDestination, Destination
 }
 
