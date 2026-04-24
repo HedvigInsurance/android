@@ -128,11 +128,7 @@ private fun ColumnScope.ClaimHistoryContent(
 }
 
 @Composable
-private fun ClaimHistoryItem(
-  index: Int,
-  claim: ClaimHistory,
-  navigateToClaimDetails: (String, Boolean) -> Unit,
-) {
+private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDetails: (String, Boolean) -> Unit) {
   val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   HorizontalItemsWithMaximumSpaceTaken(
     {

@@ -38,7 +38,13 @@ internal class ClaimDetailsViewModel(
   downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
-    ClaimDetailPresenter(claimId, isPartnerClaim, getClaimDetailUiStateUseCase, claimsServiceUploadFileUseCase, downloadPdfUseCase),
+    ClaimDetailPresenter(
+      claimId,
+      isPartnerClaim,
+      getClaimDetailUiStateUseCase,
+      claimsServiceUploadFileUseCase,
+      downloadPdfUseCase,
+    ),
   )
 
 private class ClaimDetailPresenter(
