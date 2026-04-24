@@ -117,9 +117,7 @@ private fun EditBankAccountScreen(
     HedvigButton(
       text = stringResource(Res.string.general_save_button),
       onClick = onSave,
-      enabled = !uiState.isLoading &&
-        uiState.clearingNumberState.text.isNotBlank() &&
-        uiState.accountNumberState.text.isNotBlank(),
+      enabled = uiState.canSave,
       isLoading = uiState.isLoading,
       modifier = Modifier
         .fillMaxWidth()

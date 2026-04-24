@@ -22,16 +22,16 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class EditBankAccountViewModel(
   setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
 ) : MoleculeViewModel<EditBankAccountEvent, EditBankAccountUiState>(
-    EditBankAccountUiState(
-      clearingNumberState = TextFieldState(),
-      accountNumberState = TextFieldState(),
-      bankName = null,
-      isLoading = false,
-      errorMessage = null,
-      showSuccessSnackBar = false,
-    ),
-    EditBankAccountPresenter(setupNordeaPayoutUseCase),
-  )
+  EditBankAccountUiState(
+    clearingNumberState = TextFieldState(),
+    accountNumberState = TextFieldState(),
+    bankName = null,
+    isLoading = false,
+    errorMessage = null,
+    showSuccessSnackBar = false,
+  ),
+  EditBankAccountPresenter(setupNordeaPayoutUseCase),
+)
 
 internal sealed interface EditBankAccountEvent {
   data object Save : EditBankAccountEvent
@@ -47,6 +47,11 @@ internal data class EditBankAccountUiState(
   val errorMessage: String?,
   val showSuccessSnackBar: Boolean,
 ) {
+  val canSave: Boolean
+    get() = !isLoading &&
+      clearingNumberState.text.length >= 4 &&
+      accountNumberState.text.length == 10
+
   // Swedish clearing numbers are 4 digits for most banks, 5 for Swedbank's 8-series
   val clearingInputTransformation: InputTransformation = InputTransformation.maxLength(5).digitsOnly()
 
