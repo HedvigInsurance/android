@@ -1,5 +1,0 @@
-query PartnerClaimDetail($claimId: ID!) {
-  partnerClaim(id: $claimId) {
-    ...PartnerClaimFragment
-  }
-}
