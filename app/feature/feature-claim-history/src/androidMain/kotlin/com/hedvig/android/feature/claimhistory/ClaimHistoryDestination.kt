@@ -59,15 +59,13 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ClaimHistoryDestination(
   claimHistoryViewModel: ClaimHistoryViewModel,
   navigateUp: () -> Unit,
-  navigateToClaimDetails: (String) -> Unit,
-  navigateToPartnerClaimDetails: (String) -> Unit,
+  navigateToClaimDetails: (String, Boolean) -> Unit,
 ) {
   val uiState by claimHistoryViewModel.uiState.collectAsStateWithLifecycle()
   ClaimHistoryScreen(
     uiState = uiState,
     navigateUp = navigateUp,
     navigateToClaimDetails = navigateToClaimDetails,
-    navigateToPartnerClaimDetails = navigateToPartnerClaimDetails,
     reload = { claimHistoryViewModel.emit(ClaimHistoryEvent.Reload) },
   )
 }
@@ -76,8 +74,7 @@ internal fun ClaimHistoryDestination(
 private fun ClaimHistoryScreen(
   uiState: ClaimHistoryUiState,
   navigateUp: () -> Unit,
-  navigateToClaimDetails: (String) -> Unit,
-  navigateToPartnerClaimDetails: (String) -> Unit,
+  navigateToClaimDetails: (String, Boolean) -> Unit,
   reload: () -> Unit,
 ) {
   HedvigScaffold(
@@ -114,7 +111,6 @@ private fun ClaimHistoryScreen(
       is ClaimHistoryUiState.Content -> ClaimHistoryContent(
         uiState,
         navigateToClaimDetails,
-        navigateToPartnerClaimDetails,
       )
     }
   }
@@ -124,11 +120,10 @@ private fun ClaimHistoryScreen(
 @Composable
 private fun ColumnScope.ClaimHistoryContent(
   uiState: ClaimHistoryUiState.Content,
-  navigateToClaimDetails: (String) -> Unit,
-  navigateToPartnerClaimDetails: (String) -> Unit,
+  navigateToClaimDetails: (String, Boolean) -> Unit,
 ) {
   uiState.claims.forEachIndexed { index, claim ->
-    ClaimHistoryItem(index, claim, navigateToClaimDetails, navigateToPartnerClaimDetails)
+    ClaimHistoryItem(index, claim, navigateToClaimDetails)
   }
 }
 
@@ -136,8 +131,7 @@ private fun ColumnScope.ClaimHistoryContent(
 private fun ClaimHistoryItem(
   index: Int,
   claim: ClaimHistory,
-  navigateToClaimDetails: (String) -> Unit,
-  navigateToPartnerClaimDetails: (String) -> Unit,
+  navigateToClaimDetails: (String, Boolean) -> Unit,
 ) {
   val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   HorizontalItemsWithMaximumSpaceTaken(
@@ -192,11 +186,7 @@ private fun ClaimHistoryItem(
       .fillMaxWidth()
       .clickable(
         onClick = dropUnlessResumed {
-          if (claim.isPartnerClaim) {
-            navigateToPartnerClaimDetails(claim.id)
-          } else {
-            navigateToClaimDetails(claim.id)
-          }
+          navigateToClaimDetails(claim.id, claim.isPartnerClaim)
         },
       )
       .horizontalDivider(DividerPosition.Top, show = index != 0, horizontalPadding = 18.dp)
@@ -214,8 +204,7 @@ private fun PreviewClaimHistoryScreen(
       ClaimHistoryScreen(
         uiState = uiState,
         {},
-        {},
-        {},
+        { _, _ -> },
         {},
       )
     }

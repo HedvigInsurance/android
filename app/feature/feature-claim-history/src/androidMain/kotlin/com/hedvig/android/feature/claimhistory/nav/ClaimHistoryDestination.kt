@@ -13,15 +13,13 @@ data object ClaimHistoryDestination : Destination
 
 fun NavGraphBuilder.claimHistoryGraph(
   navigateUp: () -> Unit,
-  navigateToClaimDetails: (String) -> Unit,
-  navigateToPartnerClaimDetails: (String) -> Unit,
+  navigateToClaimDetails: (claimId: String, isPartnerClaim: Boolean) -> Unit,
 ) {
   navdestination<ClaimHistoryDestination> {
     ClaimHistoryDestination(
       claimHistoryViewModel = koinViewModel(),
       navigateUp = navigateUp,
       navigateToClaimDetails = navigateToClaimDetails,
-      navigateToPartnerClaimDetails = navigateToPartnerClaimDetails,
     )
   }
 }

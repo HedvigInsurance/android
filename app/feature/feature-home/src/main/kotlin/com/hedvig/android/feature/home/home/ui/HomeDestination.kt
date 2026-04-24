@@ -156,8 +156,7 @@ internal fun HomeDestination(
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
-  onClaimDetailCardClicked: (String) -> Unit,
-  onPartnerClaimDetailCardClicked: (String) -> Unit,
+  onClaimDetailCardClicked: (claimId: String, isPartnerClaim: Boolean) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
@@ -180,7 +179,6 @@ internal fun HomeDestination(
     navigateToClaimChat = navigateToClaimChat,
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     onClaimDetailCardClicked = onClaimDetailCardClicked,
-    onPartnerClaimDetailCardClicked = onPartnerClaimDetailCardClicked,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
@@ -208,8 +206,7 @@ private fun HomeScreen(
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
-  onClaimDetailCardClicked: (String) -> Unit,
-  onPartnerClaimDetailCardClicked: (String) -> Unit,
+  onClaimDetailCardClicked: (claimId: String, isPartnerClaim: Boolean) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
@@ -278,7 +275,6 @@ private fun HomeScreen(
             toolbarHeight = toolbarHeight,
             notificationPermissionState = notificationPermissionState,
             onClaimDetailCardClicked = onClaimDetailCardClicked,
-            onPartnerClaimDetailCardClicked = onPartnerClaimDetailCardClicked,
             navigateToConnectPayment = navigateToConnectPayment,
             navigateToHelpCenter = navigateToHelpCenter,
             openClaimFlowSheet = startClaimBottomSheetState::show,
@@ -425,8 +421,7 @@ private fun HomeScreenSuccess(
   pullRefreshState: PullRefreshState,
   toolbarHeight: Dp,
   notificationPermissionState: NotificationPermissionState,
-  onClaimDetailCardClicked: (claimId: String) -> Unit,
-  onPartnerClaimDetailCardClicked: (claimId: String) -> Unit,
+  onClaimDetailCardClicked: (claimId: String, isPartnerClaim: Boolean) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openClaimFlowSheet: () -> Unit,
@@ -480,11 +475,10 @@ private fun HomeScreenSuccess(
           if (uiState.claimStatusCardsData != null) {
             ClaimStatusCards(
               onClick = { claimId ->
-                if (claimId in (uiState.claimStatusCardsData.partnerClaimIds)) {
-                  onPartnerClaimDetailCardClicked(claimId)
-                } else {
-                  onClaimDetailCardClicked(claimId)
-                }
+                onClaimDetailCardClicked(
+                  claimId,
+                  claimId in (uiState.claimStatusCardsData.partnerClaimIds),
+                )
               },
               claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
@@ -810,8 +804,7 @@ private fun PreviewHomeScreen(
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         navigateToClaimChat = {},
-        onClaimDetailCardClicked = {},
-        onPartnerClaimDetailCardClicked = {},
+        onClaimDetailCardClicked = { _, _ -> },
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},
@@ -843,8 +836,7 @@ private fun PreviewHomeScreenWithError() {
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         navigateToClaimChat = {},
-        onClaimDetailCardClicked = {},
-        onPartnerClaimDetailCardClicked = {},
+        onClaimDetailCardClicked = { _, _ -> },
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},
@@ -897,8 +889,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         navigateToClaimChat = {},
-        onClaimDetailCardClicked = {},
-        onPartnerClaimDetailCardClicked = {},
+        onClaimDetailCardClicked = { _, _ -> },
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},

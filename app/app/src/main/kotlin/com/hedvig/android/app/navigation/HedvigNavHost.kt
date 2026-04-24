@@ -67,8 +67,6 @@ import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.SelectContractForMoving
 import com.hedvig.android.feature.movingflow.movingFlowGraph
-import com.hedvig.android.feature.partner.claim.details.navigation.PartnerClaimOverviewDestination
-import com.hedvig.android.feature.partner.claim.details.navigation.partnerClaimDetailsGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
@@ -182,11 +180,8 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
-      navigateToClaimDetails = { claimId ->
-        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
-      },
-      navigateToPartnerClaimDetails = { claimId ->
-        navController.navigate(PartnerClaimOverviewDestination(claimId))
+      navigateToClaimDetails = { claimId, isPartnerClaim ->
+        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId, isPartnerClaim))
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
@@ -356,11 +351,8 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         claimHistoryGraph(
           navigateUp = navController::navigateUp,
-          navigateToClaimDetails = { claimId ->
-            navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
-          },
-          navigateToPartnerClaimDetails = { claimId ->
-            navController.navigate(PartnerClaimOverviewDestination(claimId))
+          navigateToClaimDetails = { claimId, isPartnerClaim ->
+            navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId, isPartnerClaim))
           },
         )
       },
@@ -562,10 +554,6 @@ private fun NavGraphBuilder.nestedHomeGraphs(
     },
     applicationId = hedvigBuildConstants.appPackageId,
     hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-  )
-  partnerClaimDetailsGraph(
-    navigateUp = navController::navigateUp,
-    openUrl = openUrl,
   )
   travelCertificateGraph(
     navController = navController,
