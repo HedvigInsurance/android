@@ -42,6 +42,10 @@ internal class GetMemberRemindersUseCaseImpl(
                 MemberReminder.PaymentReminder.ConnectPayment()
               }
 
+              PaymentReminder.ShowConnectPayoutReminder -> {
+                MemberReminder.PaymentReminder.ConnectPayout()
+              }
+
               is PaymentReminder.ShowMissingPaymentsReminder -> {
                 MemberReminder.PaymentReminder.TerminationDueToMissedPayments(
                   terminationDate = paymentReminder.terminationDate,
@@ -124,6 +128,10 @@ sealed interface MemberReminder {
     ) : PaymentReminder
 
     data class ConnectPayment(
+      override val id: String = UUID.randomUUID().toString(),
+    ) : PaymentReminder
+
+    data class ConnectPayout(
       override val id: String = UUID.randomUUID().toString(),
     ) : PaymentReminder
   }

@@ -44,10 +44,14 @@ internal class GetConnectPaymentReminderUseCaseImpl(
         return@either PaymentReminder.ShowMissingPaymentsReminder(missingPaymentsContractTerminationDate)
       }
       val payStatus = result.currentMember.paymentInformation.status
-      ensure(payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
-        ConnectPaymentReminderError.DomainError.AlreadySetup
+      if (payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
+        return@either PaymentReminder.ShowConnectPaymentReminder
       }
-      PaymentReminder.ShowConnectPaymentReminder
+      val isMissingPayoutMethod = result.currentMember.paymentMethods.payoutMethods.isEmpty()
+      if (isMissingPayoutMethod) {
+        return@either PaymentReminder.ShowConnectPayoutReminder
+      }
+      raise(ConnectPaymentReminderError.DomainError.AlreadySetup)
     }.onLeft {
       if (it !is ConnectPaymentReminderError.DomainError) {
         logcat { "GetConnectPaymentReminderUseCase failed with error:$it" }
@@ -68,6 +72,8 @@ sealed interface ConnectPaymentReminderError {
 
 sealed interface PaymentReminder {
   data object ShowConnectPaymentReminder : PaymentReminder
+
+  data object ShowConnectPayoutReminder : PaymentReminder
 
   data class ShowMissingPaymentsReminder(val terminationDate: LocalDate) : PaymentReminder
 }

@@ -186,6 +186,7 @@ internal fun HedvigNavHost(
         navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
       },
       navigateToConnectPayment = navigateToConnectPayment,
+      navigateToConnectPayout = { navController.navigate(PayoutAccountDestination.Graph) },
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
         navController.navigate(CoInsuredAddInfo(contractId, type))
       },
@@ -372,6 +373,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
+      navigateToConnectPayout = { navController.navigate(PayoutAccountDestination.Graph) },
       navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
         navController.navigate(CoInsuredAddInfo(contractId, type))
       },

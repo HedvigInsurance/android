@@ -8,5 +8,10 @@ query GetPayinMethodStatus {
       terminationDueToMissedPayments
       id
     }
+    paymentMethods {
+      payoutMethods {
+        status
+      }
+    }
   }
 }

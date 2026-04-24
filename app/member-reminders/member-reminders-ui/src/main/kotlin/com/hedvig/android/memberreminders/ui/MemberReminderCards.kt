@@ -48,6 +48,8 @@ import hedvig.resources.CONTRACT_VIEW_CERTIFICATE_BUTTON
 import hedvig.resources.DASHBOARD_RENEWAL_PROMPTER_BODY
 import hedvig.resources.MISSING_CONTACT_INFO_CARD_BUTTON
 import hedvig.resources.MISSING_CONTACT_INFO_CARD_TEXT
+import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
+import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW
@@ -72,6 +74,9 @@ fun getMemberReminderMessage(reminder: MemberReminder): String {
 
     is MemberReminder.PaymentReminder.ConnectPayment ->
       stringResource(Res.string.info_card_missing_payment_body)
+
+    is MemberReminder.PaymentReminder.ConnectPayout ->
+      stringResource(Res.string.PAYOUT_MISSING_INFO)
 
     is MemberReminder.PaymentReminder.TerminationDueToMissedPayments ->
       stringResource(Res.string.info_card_missing_payment_missing_payments_body, reminder.terminationDate)
@@ -126,6 +131,7 @@ fun rememberMaxLineCountForReminders(
 fun MemberReminderCardsWithoutNotification(
   memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -137,6 +143,7 @@ fun MemberReminderCardsWithoutNotification(
   MemberReminderCards(
     memberReminders = memberReminders,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayout = navigateToConnectPayout,
     openUrl = openUrl,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
     onNavigateToNewConversation = onNavigateToNewConversation,
@@ -153,6 +160,7 @@ fun MemberReminderCardsWithoutNotification(
 fun MemberReminderCards(
   memberReminders: List<MemberReminder>,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   snoozeNotificationPermissionReminder: () -> Unit,
@@ -169,6 +177,7 @@ fun MemberReminderCards(
         memberReminder = memberReminders.first(),
         navigateToAddMissingInfo = navigateToAddMissingInfo,
         navigateToConnectPayment = navigateToConnectPayment,
+        navigateToConnectPayout = navigateToConnectPayout,
         openUrl = openUrl,
         onNavigateToNewConversation = onNavigateToNewConversation,
         snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
@@ -200,6 +209,7 @@ fun MemberReminderCards(
               memberReminder = memberReminders[page],
               navigateToAddMissingInfo = navigateToAddMissingInfo,
               navigateToConnectPayment = navigateToConnectPayment,
+              navigateToConnectPayout = navigateToConnectPayout,
               openUrl = openUrl,
               onNavigateToNewConversation = onNavigateToNewConversation,
               snoozeNotificationPermissionReminder = snoozeNotificationPermissionReminder,
@@ -232,6 +242,7 @@ private fun ColumnScope.MemberReminderCard(
   memberReminder: MemberReminder,
   navigateToAddMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipId: () -> Unit,
   openUrl: (String) -> Unit,
@@ -256,6 +267,15 @@ private fun ColumnScope.MemberReminderCard(
     is MemberReminder.PaymentReminder.ConnectPayment -> {
       ReminderCardConnectPayment(
         navigateToConnectPayment = navigateToConnectPayment,
+        modifier = modifier,
+        minLines = minLines,
+        memberReminder = memberReminder,
+      )
+    }
+
+    is MemberReminder.PaymentReminder.ConnectPayout -> {
+      ReminderCardConnectPayout(
+        navigateToConnectPayout = navigateToConnectPayout,
         modifier = modifier,
         minLines = minLines,
         memberReminder = memberReminder,
@@ -400,6 +420,26 @@ private fun ReminderCardConnectPayment(
     style = InfoCardStyle.Button(
       buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
       onButtonClick = navigateToConnectPayment,
+    ),
+    minLines = minLines,
+  )
+}
+
+@Composable
+private fun ReminderCardConnectPayout(
+  memberReminder: MemberReminder,
+  navigateToConnectPayout: () -> Unit,
+  modifier: Modifier = Modifier,
+  minLines: Int = 1,
+) {
+  val message = getMemberReminderMessage(memberReminder)
+  HedvigNotificationCard(
+    message = message,
+    modifier = modifier,
+    priority = NotificationPriority.Attention,
+    style = InfoCardStyle.Button(
+      buttonText = stringResource(Res.string.PAYOUT_ADD_PAYOUT_METHOD),
+      onButtonClick = navigateToConnectPayout,
     ),
     minLines = minLines,
   )

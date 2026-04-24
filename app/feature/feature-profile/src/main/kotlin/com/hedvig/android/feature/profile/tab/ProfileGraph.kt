@@ -38,6 +38,7 @@ fun NavGraphBuilder.profileGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
   navigateToDeleteAccountFeature: () -> Unit,
   navigateToClaimHistory: () -> Unit,
@@ -75,6 +76,7 @@ fun NavGraphBuilder.profileGraph(
           navController.navigate(Certificates)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+        navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
         navigateToAddMissingInfo = dropUnlessResumed { contractId: String, type: CoInsuredFlowType ->
           navigateToAddMissingInfo(contractId, type)
         },
