@@ -22,9 +22,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 import octopus.ClaimQuery
+import octopus.PartnerClaimDetailQuery
 import octopus.fragment.ClaimFragment
+import octopus.fragment.PartnerClaimFragment
 import octopus.type.ClaimOutcome
 import octopus.type.ClaimStatus
 import octopus.type.InsuranceDocumentType
@@ -33,11 +36,14 @@ internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
   private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
 ) {
-  fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  fun invoke(claimId: String, isPartnerClaim: Boolean = false): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return flow {
       while (currentCoroutineContext().isActive) {
-        val queryFlow = queryFlow(claimId)
-        emitAll(queryFlow)
+        if (isPartnerClaim) {
+          emitAll(partnerQueryFlow(claimId))
+        } else {
+          emitAll(queryFlow(claimId))
+        }
         delay(POLL_INTERVAL)
       }
     }
@@ -58,6 +64,62 @@ internal class GetClaimDetailUiStateUseCase(
           ClaimDetailUiState.Content.fromClaim(claim, claim.conversation?.id, claim.conversation?.unreadMessageCount)
         }
       }
+  }
+
+  private fun partnerQueryFlow(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
+    return apolloClient
+      .query(PartnerClaimDetailQuery(claimId))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .safeFlow { Error.NetworkError }
+      .map { response ->
+        either {
+          val claim = response.bind().partnerClaim
+          ensureNotNull(claim) { Error.NoClaimFound }
+          fromPartnerClaim(claim)
+        }
+      }
+  }
+
+  private fun fromPartnerClaim(claim: PartnerClaimFragment): ClaimDetailUiState.Content {
+    val termsConditionsUrl = claim.productVariant?.documents
+      ?.firstOrNull { it.type == InsuranceDocumentType.TERMS_AND_CONDITIONS }?.url
+    val submittedAt = claim.submittedAt
+      ?.atStartOfDayIn(TimeZone.UTC)
+      ?.toLocalDateTime(TimeZone.UTC)
+      ?: kotlinx.datetime.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+
+    return ClaimDetailUiState.Content(
+      claimId = claim.id,
+      conversationId = null,
+      hasUnreadMessages = false,
+      submittedContent = null,
+      files = emptyList(),
+      claimStatusCardUiState = ClaimStatusCardUiState.fromPartnerClaim(claim),
+      claimStatus = when (claim.status) {
+        ClaimStatus.CREATED -> ClaimDetailUiState.Content.ClaimStatus.CREATED
+        ClaimStatus.IN_PROGRESS -> ClaimDetailUiState.Content.ClaimStatus.IN_PROGRESS
+        ClaimStatus.CLOSED -> ClaimDetailUiState.Content.ClaimStatus.CLOSED
+        ClaimStatus.REOPENED -> ClaimDetailUiState.Content.ClaimStatus.REOPENED
+        ClaimStatus.UNKNOWN__, null -> ClaimDetailUiState.Content.ClaimStatus.UNKNOWN
+      },
+      claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.UNKNOWN,
+      uploadUri = "",
+      isUploadingFile = false,
+      uploadError = null,
+      claimType = claim.claimType,
+      insuranceDisplayName = claim.exposureDisplayName ?: claim.productVariant?.displayName,
+      submittedAt = submittedAt,
+      termsConditionsUrl = termsConditionsUrl,
+      savedFileUri = null,
+      downloadError = null,
+      isLoadingPdf = null,
+      appealInstructionsUrl = null,
+      isUploadingFilesEnabled = false,
+      infoText = null,
+      displayItems = claim.displayItems.map {
+        DisplayItem.fromStrings(it.displayTitle, it.displayValue)
+      },
+    )
   }
 
   private fun ClaimDetailUiState.Content.Companion.fromClaim(
