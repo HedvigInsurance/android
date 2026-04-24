@@ -73,6 +73,7 @@ internal fun bankNameForClearingNumber(clearingNumber: String): String? {
     9955 -> "Kommuninvest"
     9956 -> "VP Securities"
     in 9960..9969 -> "Nordea"
+    in 80000..89999 -> "Swedbank"
     else -> null
   }
 }
