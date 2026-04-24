@@ -99,6 +99,10 @@ import hedvig.resources.PAYMENTS_MISSED_PAYMENT
 import hedvig.resources.PAYMENTS_NO_PAYMENTS_IN_PROGRESS
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
 import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BODY
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BUTTON
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
@@ -633,14 +637,12 @@ private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Uni
           verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
           HedvigText(
-            // todo text
-            text = "Payment overdue",
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textPrimary,
           )
           HedvigText(
-            // todo text
-            text = "Amount due: $amountDue",
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE, amountDue),
             style = HedvigTheme.typography.label,
             color = HedvigTheme.colorScheme.textSecondary,
           )
@@ -648,8 +650,7 @@ private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Uni
       }
       Spacer(Modifier.height(8.dp))
       HedvigText(
-        // todo text
-        text = "We couldn't collect this payment from your bank account. Pay now to keep your insurance active.",
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BODY),
         style = HedvigTheme.typography.label,
         color = HedvigTheme.colorScheme.textSecondary,
         modifier = Modifier
@@ -659,7 +660,7 @@ private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Uni
 
       Spacer(Modifier.height(12.dp))
       HedvigButton(
-        text = "Review payment",
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BUTTON),
         onClick = onReviewPaymentClick,
         enabled = true,
         modifier = Modifier
@@ -700,7 +701,7 @@ private fun PreviewFailedPaymentInfo() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       FailedPaymentInfo(
-        amountDue = "233",
+        amountDue = "233 kr",
         {},
       )
     }
