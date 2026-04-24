@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.DropdownDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -37,22 +35,34 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
-import com.hedvig.android.design.system.hedvig.rememberHedvigBirthDateDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.feature.payments.data.ManualChargeInfo
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.payment_details_receipt_card_total
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ManualChargeDestination(viewModel: ManualChargeViewModel, navigateUp: () -> Unit) {
+internal fun ManualChargeDestination(
+  viewModel: ManualChargeViewModel,
+  navigateUp: () -> Unit,
+  onNavigateToPaymentDetails: (chargeId: String) -> Unit,
+) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
   ManualChargeScreen(
     uiState = uiState.value,
     navigateUp = navigateUp,
     reload = { viewModel.emit(ManualChargeEvent.Retry) },
+    onNavigateToPaymentDetails = onNavigateToPaymentDetails
   )
 }
 
@@ -61,6 +71,7 @@ private fun ManualChargeScreen(
   uiState: ManualChargeUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
+  onNavigateToPaymentDetails: (chargeId: String) -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -84,19 +95,30 @@ private fun ManualChargeScreen(
       }
 
       is ManualChargeUiState.Success -> {
-        ManualChargeSuccessScreen(uiState)
+        ManualChargeSuccessScreen(
+          uiState,
+          onNavigateToPaymentDetails = onNavigateToPaymentDetails
+        )
       }
     }
   }
 }
 
 @Composable
-private fun ManualChargeSuccessScreen(uiState: ManualChargeUiState.Success) {
+private fun ManualChargeSuccessScreen(
+  uiState: ManualChargeUiState.Success,
+  onNavigateToPaymentDetails: (chargeId: String) -> Unit,
+) {
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   val dateTimeFormatterWithYear = rememberHedvigDateTimeFormatter()
   Column(
     modifier = Modifier
-      .padding(16.dp)
+      .padding(
+        top = 8.dp,
+        start = 16.dp,
+        end = 16.dp,
+        bottom = 16.dp,
+      )
       .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge)
       .fillMaxWidth()
       .background(
@@ -127,27 +149,31 @@ private fun ManualChargeSuccessScreen(uiState: ManualChargeUiState.Success) {
       Spacer(modifier = Modifier.width(12.dp))
       Column(modifier = Modifier.weight(1f)) {
         HedvigText(
-          text = "Overdue since ${dateTimeFormatter.format (uiState.dueDate)}",
+          text = stringResource(
+            Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE,
+            dateTimeFormatter.format(uiState.manualChargeInfo.missedDueDate),
+          ),
         )
         HedvigText(
-          text = "Pay now to avoid interruption",
+          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY),
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
     }
-
-    HedvigButton(
-      text = "View payment details",
-      onClick = { /* TODO: Navigate to payment details */ },
-      enabled = true,
-      modifier = Modifier.fillMaxWidth(),
-      buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-      buttonSize = ButtonDefaults.ButtonSize.Medium,
-      border = HedvigTheme.colorScheme.borderPrimary
-    )
-
+    if (uiState.manualChargeInfo.chargeId!=null) {
+      HedvigButton(
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS),
+        onClick = {
+          onNavigateToPaymentDetails(uiState.manualChargeInfo.chargeId)
+        },
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
+        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
+        border = HedvigTheme.colorScheme.borderPrimary,
+      )
+    }
     Spacer(modifier = Modifier.height(16.dp))
-
     Column(
       modifier = Modifier.fillMaxWidth(),
     ) {
@@ -157,31 +183,34 @@ private fun ManualChargeSuccessScreen(uiState: ManualChargeUiState.Success) {
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         HedvigText(
-          text = "Due date", //todo
-          color = HedvigTheme.colorScheme.textSecondary,
-          style = HedvigTheme.typography.label
-        )
-        HedvigText(
-          text = dateTimeFormatterWithYear.format(uiState.dueDate),
-          color = HedvigTheme.colorScheme.textSecondary,
-          style = HedvigTheme.typography.label
-        )
-      }
-      Spacer( Modifier.height(10.dp))
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-      ) {
-        HedvigText(
-          text = "Bank account", //todo
-          color = HedvigTheme.colorScheme.textSecondary,
-          style = HedvigTheme.typography.label
-        )
-        HedvigText(
-          text = "*** *3242", //todo
+          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE), //todo
           color = HedvigTheme.colorScheme.textSecondary,
           style = HedvigTheme.typography.label,
         )
+        HedvigText(
+          text = dateTimeFormatterWithYear.format(uiState.manualChargeInfo.missedDueDate),
+          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.label,
+        )
+      }
+      if (uiState.manualChargeInfo.bankDescriptor!=null &&
+        uiState.manualChargeInfo.bankAccountDisplayValue!=null) {
+        Spacer(Modifier.height(10.dp))
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+          HedvigText(
+            text = uiState.manualChargeInfo.bankDescriptor,
+            color = HedvigTheme.colorScheme.textSecondary,
+            style = HedvigTheme.typography.label,
+          )
+          HedvigText(
+            text = uiState.manualChargeInfo.bankAccountDisplayValue,
+            color = HedvigTheme.colorScheme.textSecondary,
+            style = HedvigTheme.typography.label,
+          )
+        }
       }
     }
 
@@ -197,16 +226,16 @@ private fun ManualChargeSuccessScreen(uiState: ManualChargeUiState.Success) {
       verticalAlignment = Alignment.CenterVertically,
     ) {
       HedvigText(
-        text = "Total",
+        text = stringResource(Res.string.payment_details_receipt_card_total),
       )
       HedvigText(
-        text = uiState.amount.toString(),
+        text = uiState.manualChargeInfo.amountDue.toString(),
         textAlign = TextAlign.End,
       )
     }
 
     HedvigButton(
-      text = "Pay ${uiState.amount}",
+      text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
       onClick = { /* TODO: Handle payment */ },
       enabled = true,
       modifier = Modifier.fillMaxWidth(),
@@ -214,7 +243,7 @@ private fun ManualChargeSuccessScreen(uiState: ManualChargeUiState.Success) {
 
     Spacer(modifier = Modifier.height(8.dp))
     HedvigText(
-      text = "Ensure your account has enough\nfunds to cover this payment",
+      text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT),
       color = HedvigTheme.colorScheme.textSecondaryTranslucent,
       textAlign = TextAlign.Center,
       style = HedvigTheme.typography.label,
@@ -234,11 +263,17 @@ private fun ManualChargeScreenSuccessPreview() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ManualChargeScreen(
         uiState = ManualChargeUiState.Success(
-          dueDate = LocalDate(2026, 1, 1),
-          amount = UiMoney(100.0, UiCurrencyCode.SEK),
+          ManualChargeInfo(
+            missedDueDate = LocalDate(2026, 1, 15),
+            amountDue = UiMoney(100.0, UiCurrencyCode.SEK),
+            chargeId = "chargeId",
+            bankDescriptor = "Bank account",
+            bankAccountDisplayValue = "**** 8324"
+          )
         ),
         navigateUp = {},
         reload = {},
+        {}
       )
     }
   }
@@ -254,6 +289,7 @@ private fun ManualChargeScreenLoadingPreview() {
         uiState = ManualChargeUiState.Loading,
         navigateUp = {},
         reload = {},
+        {}
       )
     }
   }
@@ -269,6 +305,7 @@ private fun ManualChargeScreenFailurePreview() {
         uiState = ManualChargeUiState.Failure(ManualChargeFailureReason.GeneralFailure),
         navigateUp = {},
         reload = {},
+        {}
       )
     }
   }

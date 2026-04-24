@@ -611,6 +611,12 @@
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Att betala: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">Vi kunde inte dra betalningen från ditt bankkonto. Betala för att undvika avbrott i ditt skydd.</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BUTTON">Granska betalning</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY">Betala för att undvika avbrott</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE">Förfallodag</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT">Se till att det finns tillräckliga medel på kontot för att genomföra betalningen</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY">Betala %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE">Försenad sedan %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">Visa betalningsinformation</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_TITLE">Försenad betalning</string>
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Betalning genomförd</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s dagar</string>

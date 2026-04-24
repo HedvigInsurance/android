@@ -9,10 +9,14 @@ import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
 import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetDiscountsUseCase
 import com.hedvig.android.feature.payments.data.GetDiscountsUseCaseImpl
+import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
+import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetMemberPaymentsDetailsUseCase
 import com.hedvig.android.feature.payments.data.GetMemberPaymentsDetailsUseCaseImpl
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCaseImpl
+import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
+import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
@@ -22,6 +26,7 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.featureflags.FeatureManager
@@ -117,6 +122,24 @@ val paymentsModule = module {
   single<GetUpcomingPaymentUseCaseDemo> {
     GetUpcomingPaymentUseCaseDemo(
       clock = get<Clock>(),
+    )
+  }
+
+  single<TriggerManualChargeUseCase> {
+    TriggerManualChargeUseCaseImpl()
+  }
+
+  single<GetManualChargeInfoUseCase> {
+    GetManualChargeInfoUseCaseImpl(
+      get<ApolloClient>(),
+      get<FeatureManager>(),
+    )
+  }
+
+  viewModel<ManualChargeViewModel> {
+    ManualChargeViewModel(
+      get<GetManualChargeInfoUseCase>(),
+      get<TriggerManualChargeUseCase>(),
     )
   }
 }

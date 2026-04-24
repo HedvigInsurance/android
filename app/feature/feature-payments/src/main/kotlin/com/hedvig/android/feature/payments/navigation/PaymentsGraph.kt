@@ -72,6 +72,13 @@ fun NavGraphBuilder.paymentsGraph(
       ManualChargeDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
+        onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
+          navController.navigate(
+            PaymentsDestinations.Details(
+              chargeId,
+            ),
+          )
+        }
       )
     }
 

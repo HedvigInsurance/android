@@ -1,20 +1,27 @@
 package com.hedvig.android.feature.payments.ui.manualcharge
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
+import com.hedvig.android.feature.payments.data.ManualChargeInfo
+import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.datetime.LocalDate
 
-internal class ManualChargeViewModel : MoleculeViewModel<ManualChargeEvent, ManualChargeUiState>(
+internal class ManualChargeViewModel(
+  getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
+  triggerManualCharge: TriggerManualChargeUseCase
+) : MoleculeViewModel<ManualChargeEvent, ManualChargeUiState>(
   initialState = ManualChargeUiState.Loading,
-  presenter = ManualChargePresenter(),
+  presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge),
 )
 
-private class ManualChargePresenter : MoleculePresenter<ManualChargeEvent, ManualChargeUiState> {
+private class ManualChargePresenter(
+  private val getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
+  private val triggerManualCharge: TriggerManualChargeUseCase
+) : MoleculePresenter<ManualChargeEvent, ManualChargeUiState> {
   @Composable
   override fun MoleculePresenterScope<ManualChargeEvent>.present(
     lastState: ManualChargeUiState,
@@ -32,8 +39,7 @@ internal sealed interface ManualChargeUiState {
   ) : ManualChargeUiState
 
   data class Success(
-    val dueDate: LocalDate,
-    val amount: UiMoney
+    val manualChargeInfo: ManualChargeInfo
   ) : ManualChargeUiState
 }
 

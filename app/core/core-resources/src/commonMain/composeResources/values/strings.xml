@@ -611,6 +611,12 @@
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Amount due: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">We couldn't collect this payment from your bank account. Pay now to keep your coverage active.</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BUTTON">Review payment</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY">Pay now to avoid interruption</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE">Payment due</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT">Ensure your account has enough funds to cover this payment</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY">Pay %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE">Overdue since %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">View payment details</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_TITLE">Payment overdue</string>
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Payment successful</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s days</string>

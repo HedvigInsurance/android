@@ -1,0 +1,33 @@
+query ManualChargeInfo {
+  currentMember {
+    futureCharge {
+      ...on MemberCharge {
+        chargeBreakdown {
+          periods {
+            isPreviouslyFailedCharge
+          }
+        }
+      }
+
+    }
+    pastCharges {
+      ...on MemberCharge {
+        id
+        date
+        status
+        net {
+          ...MoneyFragment
+        }
+      }
+    }
+
+    paymentInformation {
+      status
+      chargeMethod {
+        displayName
+        descriptor
+        paymentMethod
+      }
+    }
+  }
+}
