@@ -3,9 +3,7 @@ package com.hedvig.android.feature.connect.payment.trustly.di
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.feature.connect.payment.trustly.StartTrustlyPayoutSessionUseCase
 import com.hedvig.android.feature.connect.payment.trustly.StartTrustlySessionUseCase
-import com.hedvig.android.feature.connect.payment.trustly.TrustlyPayoutViewModel
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallback
 import com.hedvig.android.feature.connect.payment.trustly.data.TrustlyCallbackImpl
@@ -17,20 +15,10 @@ val connectPaymentTrustlyModule = module {
   single<StartTrustlySessionUseCase> {
     StartTrustlySessionUseCase(get<ApolloClient>(), get<TrustlyCallback>())
   }
-  single<StartTrustlyPayoutSessionUseCase> {
-    StartTrustlyPayoutSessionUseCase(get<ApolloClient>(), get<TrustlyCallback>())
-  }
   viewModel<TrustlyViewModel> {
     TrustlyViewModel(
       trustlyCallback = get<TrustlyCallback>(),
       startTrustlySessionUseCase = get<StartTrustlySessionUseCase>(),
-      networkCacheManager = get<NetworkCacheManager>(),
-    )
-  }
-  viewModel<TrustlyPayoutViewModel> {
-    TrustlyPayoutViewModel(
-      trustlyCallback = get<TrustlyCallback>(),
-      startTrustlyPayoutSessionUseCase = get<StartTrustlyPayoutSessionUseCase>(),
       networkCacheManager = get<NetworkCacheManager>(),
     )
   }
