@@ -55,6 +55,9 @@ kotlin {
       implementation(libs.compose.richtext)
       implementation(libs.compose.richtextCommonmark)
     }
+    nativeMain.dependencies {
+      implementation(libs.mikepenz.markdown)
+    }
     androidInstrumentedTest.dependencies {
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
