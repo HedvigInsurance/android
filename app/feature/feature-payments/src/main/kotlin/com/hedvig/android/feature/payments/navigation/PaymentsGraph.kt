@@ -12,6 +12,8 @@ import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeDestination
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
@@ -60,6 +62,16 @@ fun NavGraphBuilder.paymentsGraph(
         onOpenManualCharge = {
           // todo
         },
+      )
+    }
+
+    navdestination<PaymentsDestinations.ManualCharge>(
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.manualCharge),
+    ) {
+      val viewModel: ManualChargeViewModel = koinViewModel()
+      ManualChargeDestination(
+        viewModel = viewModel,
+        navigateUp = navController::navigateUp,
       )
     }
 
