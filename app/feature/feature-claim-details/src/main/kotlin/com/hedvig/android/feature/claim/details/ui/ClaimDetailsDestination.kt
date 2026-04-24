@@ -471,29 +471,31 @@ private fun BeforeGridContent(
       .fillMaxWidth()
       .padding(horizontal = 2.dp),
   )
-  Spacer(Modifier.height(24.dp))
-  HedvigText(
-    stringResource(Res.string.claim_status_detail_uploaded_files_info_title),
-    Modifier.padding(horizontal = 2.dp),
-  )
-  Spacer(Modifier.height(8.dp))
-  when (uiState.submittedContent) {
-    is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
-      ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
-    }
-
-    is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
-      HedvigCard(Modifier.fillMaxWidth()) {
-        HedvigText(
-          uiState.submittedContent.text,
-          Modifier.padding(16.dp),
-        )
+  if (uiState.submittedContent != null || uiState.files.isNotEmpty()) {
+    Spacer(Modifier.height(24.dp))
+    HedvigText(
+      stringResource(Res.string.claim_status_detail_uploaded_files_info_title),
+      Modifier.padding(horizontal = 2.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    when (uiState.submittedContent) {
+      is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
+        ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
       }
-    }
 
-    else -> {}
+      is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+        HedvigCard(Modifier.fillMaxWidth()) {
+          HedvigText(
+            uiState.submittedContent.text,
+            Modifier.padding(16.dp),
+          )
+        }
+      }
+
+      else -> {}
+    }
+    Spacer(Modifier.height(8.dp))
   }
-  Spacer(Modifier.height(8.dp))
 }
 
 @Composable
