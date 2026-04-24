@@ -30,6 +30,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.general_save_button
 
 @Composable
 internal fun EditBankAccountDestination(
@@ -74,15 +75,16 @@ private fun EditBankAccountScreen(
     Column(Modifier.padding(horizontal = 16.dp)) {
       HedvigTextField(
         state = uiState.clearingNumberState,
-        labelText = stringResource(Res.string.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL),
+        labelText = buildString {
+          append(stringResource(Res.string.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL))
+          if (uiState.bankName != null) {
+            append(" ")
+            append(uiState.bankName)
+          }
+        },
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         inputTransformation = uiState.clearingInputTransformation,
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Number,
-        ),
-        trailingContent = uiState.bankName?.let {
-          { HedvigText(text = it) }
-        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth(),
       )
       Spacer(Modifier.height(4.dp))
@@ -113,7 +115,7 @@ private fun EditBankAccountScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Save",
+      text = stringResource(Res.string.general_save_button),
       onClick = onSave,
       enabled = !uiState.isLoading &&
         uiState.clearingNumberState.text.isNotBlank() &&
