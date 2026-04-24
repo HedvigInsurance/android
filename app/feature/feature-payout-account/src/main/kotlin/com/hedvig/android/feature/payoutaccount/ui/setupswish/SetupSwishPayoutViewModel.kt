@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.payoutaccount.data.SetupSwishPayoutUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -28,7 +29,7 @@ internal sealed interface SetupSwishPayoutEvent {
 internal data class SetupSwishPayoutUiState(
   val phoneNumberState: TextFieldState,
   val isLoading: Boolean,
-  val errorMessage: String?,
+  val errorMessage: ErrorMessage?,
   val showSuccessSnackBar: Boolean,
 )
 
@@ -41,7 +42,7 @@ internal class SetupSwishPayoutPresenter(
   ): SetupSwishPayoutUiState {
     val phoneNumberState = remember { lastState.phoneNumberState }
     var isLoading by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var errorMessage by remember { mutableStateOf<ErrorMessage?>(null) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
     var saveIteration by remember { mutableStateOf<String?>(null) }
 
@@ -53,7 +54,7 @@ internal class SetupSwishPayoutPresenter(
         setupSwishPayoutUseCase.invoke(currentSave).fold(
           ifLeft = {
             isLoading = false
-            errorMessage = it.message ?: "Something went wrong, please try again"
+            errorMessage = it
             saveIteration = null
           },
           ifRight = {

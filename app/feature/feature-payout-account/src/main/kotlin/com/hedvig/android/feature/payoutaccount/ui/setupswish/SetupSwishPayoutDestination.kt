@@ -24,6 +24,11 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
+import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
+import hedvig.resources.Res
+import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SetupSwishPayoutDestination(
@@ -53,9 +58,10 @@ private fun SetupSwishPayoutScreen(
   showedSnackBar: () -> Unit,
   navigateUp: () -> Unit,
 ) {
+  val changesSaved = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
     if (!uiState.showSuccessSnackBar) return@LaunchedEffect
-    globalSnackBarState.show("Changes saved", NotificationPriority.Campaign)
+    globalSnackBarState.show(changesSaved, NotificationPriority.Campaign)
     showedSnackBar()
   }
 
@@ -68,7 +74,7 @@ private fun SetupSwishPayoutScreen(
     Column(Modifier.padding(horizontal = 16.dp)) {
       HedvigTextField(
         state = uiState.phoneNumberState,
-        labelText = "Phone number",
+        labelText = stringResource(Res.string.ODYSSEY_PHONE_NUMBER_LABEL),
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         keyboardOptions = KeyboardOptions(
           keyboardType = KeyboardType.Phone,
@@ -82,12 +88,13 @@ private fun SetupSwishPayoutScreen(
       exit = shrinkVertically(),
     ) {
       HedvigNotificationCard(
-        message = uiState.errorMessage ?: "",
+        message = uiState.errorMessage?.message
+          ?: stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION),
         priority = NotificationPriority.Attention,
         modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .padding(top = 4.dp)
-          .fillMaxWidth(),
+            .padding(horizontal = 16.dp)
+            .padding(top = 4.dp)
+            .fillMaxWidth(),
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -97,8 +104,8 @@ private fun SetupSwishPayoutScreen(
       enabled = !uiState.isLoading && uiState.phoneNumberState.text.length >= 10,
       isLoading = uiState.isLoading,
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }

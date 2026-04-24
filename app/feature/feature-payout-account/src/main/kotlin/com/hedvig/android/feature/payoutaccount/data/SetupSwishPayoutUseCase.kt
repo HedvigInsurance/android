@@ -25,7 +25,7 @@ internal class SetupSwishPayoutUseCase(
     val output = result.paymentMethodSetupSwishPayout
     when (output.status) {
       PaymentMethodSetupStatus.FAILED -> {
-        raise(ErrorMessage(output.error?.message ?: "Failed to set up Swish payout"))
+        raise(ErrorMessage(output.error?.message))
       }
 
       else -> {
