@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import kotlin.time.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
@@ -86,7 +87,7 @@ internal class GetClaimDetailUiStateUseCase(
     val submittedAt = claim.submittedAt
       ?.atStartOfDayIn(TimeZone.UTC)
       ?.toLocalDateTime(TimeZone.UTC)
-      ?: kotlinx.datetime.Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+      ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
     return ClaimDetailUiState.Content(
       claimId = claim.id,
