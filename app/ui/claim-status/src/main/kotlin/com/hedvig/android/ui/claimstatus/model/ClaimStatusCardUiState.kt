@@ -20,7 +20,7 @@ data class ClaimStatusCardUiState(
       return ClaimStatusCardUiState(
         id = claim.id,
         claimType = claim.claimType,
-        insuranceDisplayName = claim.exposureDisplayName ?: claim.productVariant?.displayName,
+        insuranceDisplayName = null,
         submittedDate = claim.submittedAt?.atStartOfDayIn(TimeZone.UTC) ?: Clock.System.now(),
         pillTypes = ClaimPillType.fromPartnerClaim(claim.status),
         claimProgressItemsUiState = ClaimProgressSegment.fromPartnerClaim(claim.status),
