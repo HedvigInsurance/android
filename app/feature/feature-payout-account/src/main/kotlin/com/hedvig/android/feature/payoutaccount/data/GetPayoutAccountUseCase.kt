@@ -45,27 +45,9 @@ internal class GetPayoutAccountUseCase(
     val currentMethod = defaultPayoutMethod?.let { method ->
       val isPending = method.status == MemberPaymentMethodStatus.PENDING
       when (method.provider) {
-        MemberPaymentProvider.TRUSTLY -> {
-          PayoutAccount.Trustly(isPending = isPending)
-        }
-
         MemberPaymentProvider.SWISH -> {
           val phoneNumber = method.details?.asPaymentMethodSwishDetails()?.phoneNumber
           PayoutAccount.SwishPayout(phoneNumber = phoneNumber, isPending = isPending)
-        }
-
-        MemberPaymentProvider.NORDEA -> {
-          val bankAccountDetails = method.details?.asPaymentMethodBankAccountDetails()
-          val account = bankAccountDetails?.account
-          val dashIndex = account?.indexOf('-') ?: -1
-          val clearingNumber = if (dashIndex >= 0) account?.substring(0, dashIndex) else account
-          val accountNumber = if (dashIndex >= 0) account?.substring(dashIndex + 1) else null
-          PayoutAccount.BankAccount(
-            clearingNumber = clearingNumber,
-            accountNumber = accountNumber,
-            bankName = bankAccountDetails?.bank,
-            isPending = isPending,
-          )
         }
 
         MemberPaymentProvider.INVOICE -> {
@@ -77,7 +59,29 @@ internal class GetPayoutAccountUseCase(
           )
         }
 
-        else -> null
+        MemberPaymentProvider.TRUSTLY -> {
+          val (clearingNumber, accountNumber, bankName) = parseBankAccountDetails(method)
+          PayoutAccount.Trustly(
+            clearingNumber = clearingNumber,
+            accountNumber = accountNumber,
+            bankName = bankName,
+            isPending = isPending,
+          )
+        }
+
+        MemberPaymentProvider.NORDEA -> {
+          val (clearingNumber, accountNumber, bankName) = parseBankAccountDetails(method)
+          PayoutAccount.BankAccount(
+            clearingNumber = clearingNumber,
+            accountNumber = accountNumber,
+            bankName = bankName,
+            isPending = isPending,
+          )
+        }
+
+        else -> {
+          null
+        }
       }
     }
 
@@ -90,4 +94,25 @@ internal class GetPayoutAccountUseCase(
       availablePayoutMethods = availablePayoutMethods,
     )
   }
+}
+
+private data class ParsedBankAccountDetails(
+  val clearingNumber: String?,
+  val accountNumber: String?,
+  val bankName: String?,
+)
+
+private fun parseBankAccountDetails(
+  method: GetPayoutMethodsQuery.Data.CurrentMember.PaymentMethods.PayoutMethod,
+): ParsedBankAccountDetails {
+  val bankAccountDetails = method.details?.asPaymentMethodBankAccountDetails()
+  val account = bankAccountDetails?.account
+  val dashIndex = account?.indexOf('-') ?: -1
+  val clearingNumber = if (dashIndex >= 0) account?.substring(0, dashIndex) else account
+  val accountNumber = if (dashIndex >= 0) account?.substring(dashIndex + 1) else null
+  return ParsedBankAccountDetails(
+    clearingNumber = clearingNumber,
+    accountNumber = accountNumber,
+    bankName = bankAccountDetails?.bank,
+  )
 }

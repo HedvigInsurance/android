@@ -18,10 +18,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
-import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
-import hedvig.resources.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL
-import hedvig.resources.Res
-import org.jetbrains.compose.resources.stringResource
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -29,8 +25,12 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
+import hedvig.resources.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.Res
 import hedvig.resources.general_save_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun EditBankAccountDestination(

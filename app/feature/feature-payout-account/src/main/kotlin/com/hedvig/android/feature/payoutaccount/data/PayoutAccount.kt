@@ -5,7 +5,12 @@ import octopus.type.PaymentMethodInvoiceDelivery
 internal sealed interface PayoutAccount {
   val isPending: Boolean
 
-  data class Trustly(override val isPending: Boolean) : PayoutAccount
+  data class Trustly(
+    val clearingNumber: String?,
+    val accountNumber: String?,
+    val bankName: String?,
+    override val isPending: Boolean,
+  ) : PayoutAccount
 
   data class SwishPayout(
     val phoneNumber: String?,

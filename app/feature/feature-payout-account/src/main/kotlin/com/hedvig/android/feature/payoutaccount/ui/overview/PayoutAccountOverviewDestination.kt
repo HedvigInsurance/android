@@ -108,7 +108,10 @@ private fun PayoutAccountContent(
       }
 
       is PayoutAccount.Trustly -> {
-        PayoutAccountReadOnlyTextField(label = "Account", text = "Trustly")
+        PayoutAccountReadOnlyTextField(
+          label = formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), currentMethod.bankName),
+          text = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber),
+        )
       }
 
       is PayoutAccount.Invoice -> {
@@ -117,21 +120,8 @@ private fun PayoutAccountContent(
 
       is PayoutAccount.BankAccount -> {
         PayoutAccountReadOnlyTextField(
-          label = stringResource(Res.string.PAYMENTS_ACCOUNT),
-          text = buildString {
-            val hasBankNumber = currentMethod.clearingNumber != null && currentMethod.accountNumber != null
-            if (currentMethod.bankName != null) {
-              this.append(currentMethod.bankName)
-              if (hasBankNumber) {
-                this.append(" ")
-              }
-            }
-            if (hasBankNumber) {
-              this.append(currentMethod.clearingNumber)
-              this.append("-")
-              this.append(currentMethod.accountNumber)
-            }
-          },
+          label = formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), currentMethod.bankName),
+          text = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber),
         )
       }
     }
@@ -164,6 +154,17 @@ private fun PayoutAccountReadOnlyTextField(label: String, text: String, modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
   )
+}
+
+private fun formatBankAccountLabel(baseLabel: String, bankName: String?): String {
+  return if (bankName != null) "$baseLabel - $bankName" else baseLabel
+}
+
+private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: String?): String {
+  return when {
+    clearingNumber != null && accountNumber != null -> "$clearingNumber-$accountNumber"
+    else -> clearingNumber.orEmpty()
+  }
 }
 
 @Composable
@@ -200,7 +201,12 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
     ),
     Content(
-      currentMethod = PayoutAccount.Trustly(isPending = false),
+      currentMethod = PayoutAccount.Trustly(
+        clearingNumber = "8327",
+        accountNumber = "12345678",
+        bankName = "Mock Swedbank",
+        isPending = false,
+      ),
       availablePayoutMethods = listOf(MemberPaymentProvider.TRUSTLY),
     ),
     Content(

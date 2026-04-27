@@ -92,9 +92,9 @@ private fun SetupSwishPayoutScreen(
           ?: stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION),
         priority = NotificationPriority.Attention,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 4.dp)
-            .fillMaxWidth(),
+          .padding(horizontal = 16.dp)
+          .padding(top = 4.dp)
+          .fillMaxWidth(),
       )
     }
     Spacer(Modifier.height(16.dp))
@@ -104,8 +104,8 @@ private fun SetupSwishPayoutScreen(
       enabled = !uiState.isLoading && uiState.phoneNumberState.text.length >= 10,
       isLoading = uiState.isLoading,
       modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
   }
