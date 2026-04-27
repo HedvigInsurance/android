@@ -380,6 +380,25 @@ private fun NonDynamicGrid(
 }
 
 @Composable
+private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+  HedvigBottomSheet(sheetState) { _ ->
+    HedvigText(
+      text = stringResource(Res.string.claim_status_claim_details_info_text),
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(32.dp))
+    HedvigTextButton(
+      text = stringResource(Res.string.general_close_button),
+      buttonSize = Large,
+      onClick = { sheetState.dismiss() },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
 private fun BeforeGridContent(
   uiState: ClaimDetailUiState.Content,
   hasUnreadMessages: Boolean,
@@ -583,6 +602,38 @@ private fun AfterGridContent(
 }
 
 @Composable
+private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
+  HedvigCard(onClick = onClick) {
+    Row(
+      modifier,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (isLoading) {
+        LayoutWithoutPlacement(
+          sizeAdjustingContent = {
+            DocumentCard(
+              title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
+            )
+          },
+        ) {
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            HedvigThreeDotsProgressIndicator()
+          }
+        }
+      } else {
+        DocumentCard(
+          title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
+        )
+      }
+    }
+  }
+}
+
+@Composable
 private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
   HedvigCard(onClick = onClick) {
     Row(
@@ -611,6 +662,39 @@ private fun AppealInstructionCard(onClick: () -> Unit, isLoading: Boolean, modif
         )
       }
     }
+  }
+}
+
+@Composable
+private fun DocumentCard(title: String) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    HorizontalItemsWithMaximumSpaceTaken(
+      startSlot = {
+        Column {
+          HedvigText(
+            text = stringWithShiftedLabel(
+              text = title,
+              labelText = "PDF",
+              labelFontSize = HedvigTheme.typography.label.fontSize,
+              textColor = LocalContentColor.current,
+              textFontSize = LocalTextStyle.current.fontSize,
+            ),
+          )
+        }
+      },
+      endSlot = {
+        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+          Icon(
+            imageVector = HedvigIcons.ArrowNorthEast,
+            contentDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
+            modifier = Modifier.size(16.dp),
+          )
+        }
+      },
+      spaceBetween = 8.dp,
+    )
   }
 }
 
@@ -673,25 +757,6 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
 }
 
 @Composable
-private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
-  HedvigBottomSheet(sheetState) { _ ->
-    HedvigText(
-      text = stringResource(Res.string.claim_status_claim_details_info_text),
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(32.dp))
-    HedvigTextButton(
-      text = stringResource(Res.string.general_close_button),
-      buttonSize = Large,
-      onClick = { sheetState.dismiss() },
-      modifier = Modifier.fillMaxWidth(),
-    )
-    Spacer(Modifier.height(8.dp))
-    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-  }
-}
-
-@Composable
 private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modifier = Modifier) {
   CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
     Column(modifier) {
@@ -715,71 +780,6 @@ private fun DisplayItemsSection(displayItems: List<DisplayItem>, modifier: Modif
         )
       }
     }
-  }
-}
-
-@Composable
-private fun TermsConditionsCard(onClick: () -> Unit, isLoading: Boolean, modifier: Modifier = Modifier) {
-  HedvigCard(onClick = onClick) {
-    Row(
-      modifier,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      if (isLoading) {
-        LayoutWithoutPlacement(
-          sizeAdjustingContent = {
-            DocumentCard(
-              title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
-            )
-          },
-        ) {
-          Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth(),
-          ) {
-            HedvigThreeDotsProgressIndicator()
-          }
-        }
-      } else {
-        DocumentCard(
-          title = stringResource(Res.string.MY_DOCUMENTS_INSURANCE_TERMS),
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun DocumentCard(title: String) {
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    HorizontalItemsWithMaximumSpaceTaken(
-      startSlot = {
-        Column {
-          HedvigText(
-            text = stringWithShiftedLabel(
-              text = title,
-              labelText = "PDF",
-              labelFontSize = HedvigTheme.typography.label.fontSize,
-              textColor = LocalContentColor.current,
-              textFontSize = LocalTextStyle.current.fontSize,
-            ),
-          )
-        }
-      },
-      endSlot = {
-        Row(horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-          Icon(
-            imageVector = HedvigIcons.ArrowNorthEast,
-            contentDescription = stringResource(Res.string.TALKBACK_OPEN_EXTERNAL_LINK),
-            modifier = Modifier.size(16.dp),
-          )
-        }
-      },
-      spaceBetween = 8.dp,
-    )
   }
 }
 
