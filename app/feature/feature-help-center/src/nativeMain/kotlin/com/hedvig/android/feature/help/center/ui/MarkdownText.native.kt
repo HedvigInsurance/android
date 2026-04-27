@@ -3,11 +3,13 @@ package com.hedvig.android.feature.help.center.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownTypography
+import com.mikepenz.markdown.model.*
 
 @Composable
 actual fun MarkdownText(
@@ -23,14 +25,10 @@ actual fun MarkdownText(
     modifier = modifier,
     colors = object : MarkdownColors {
       override val text: Color = colors.textPrimary
-      override val codeText: Color = colors.textPrimary
-      override val inlineCodeText: Color = colors.textPrimary
-      override val linkText: Color = colors.link
       override val codeBackground: Color = colors.surfaceSecondary
       override val inlineCodeBackground: Color = colors.surfaceSecondary
       override val dividerColor: Color = colors.borderPrimary
       override val tableBackground: Color = colors.surfaceSecondary
-      override val tableText: Color = colors.textPrimary
     },
     typography = object : MarkdownTypography {
       override val h1: TextStyle = typography.headlineLarge
@@ -47,7 +45,13 @@ actual fun MarkdownText(
       override val list: TextStyle = typography.bodySmall
       override val ordered: TextStyle = typography.bodySmall
       override val quote: TextStyle = typography.bodySmall
-      override val link: TextStyle = typography.bodySmall
+      override val table: TextStyle = typography.bodySmall
+      override val textLink = TextLinkStyles(
+        style = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
+        focusedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
+        hoveredStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
+        pressedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
+      )
     },
   )
 }
