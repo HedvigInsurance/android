@@ -93,6 +93,7 @@ import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
 import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
+import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
 import hedvig.resources.R
 import hedvig.resources.Res
@@ -314,7 +315,7 @@ private fun PaymentsContent(
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-        -> {
+          -> {
         }
       }
     }
@@ -407,24 +408,6 @@ private fun PaymentsListItems(
         .padding(vertical = 16.dp)
         .fillMaxWidth(),
     )
-    if (showPayoutButton) {
-      HorizontalDivider(modifier = listItemsSideSpacingModifier)
-      PaymentsListItem(
-        text = "Payout",
-        icon = {
-          Icon(
-            imageVector = HedvigIcons.PaymentOutline,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-          )
-        },
-        modifier = Modifier
-          .clickable(onClick = onPayoutAccountClicked)
-          .then(listItemsSideSpacingModifier)
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
-      )
-    }
     HorizontalDivider(modifier = listItemsSideSpacingModifier)
     PaymentsListItem(
       text = stringResource(Res.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL),
@@ -460,6 +443,24 @@ private fun PaymentsListItems(
             .fillMaxWidth(),
         )
       }
+    }
+    if (showPayoutButton) {
+      HorizontalDivider(modifier = listItemsSideSpacingModifier)
+      PaymentsListItem(
+        text = stringResource(Res.string.PAYOUT_PAGE_HEADING),
+        icon = {
+          Icon(
+            imageVector = HedvigIcons.PaymentOutline,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+        },
+        modifier = Modifier
+          .clickable(onClick = onPayoutAccountClicked)
+          .then(listItemsSideSpacingModifier)
+          .padding(vertical = 16.dp)
+          .fillMaxWidth(),
+      )
     }
   }
 }
