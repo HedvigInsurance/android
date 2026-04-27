@@ -194,19 +194,19 @@ private fun ClaimDetailScreen(
         is ClaimDetailUiState.Content -> {
           val photoCaptureState = rememberPhotoCaptureState(appPackageId = appPackageId) { uri ->
             logcat { "ChatFileState sending photoCaptureState uri:$uri" }
-            onFilesToUploadSelected(listOf(uri.toAndroidUri()), uiState.uploadUri)
+            uiState.uploadUri?.let { onFilesToUploadSelected(listOf(uri.toAndroidUri()), it) }
           }
           val photoPicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickMultipleVisualMedia(),
           ) { resultingUriList: List<Uri> ->
             logcat { "ChatFileState sending photoPicker uris:$resultingUriList" }
-            onFilesToUploadSelected(resultingUriList, uiState.uploadUri)
+            uiState.uploadUri?.let { onFilesToUploadSelected(resultingUriList, it) }
           }
           val filePicker = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.GetMultipleContents(),
           ) { resultingUriList: List<Uri> ->
             logcat { "ChatFileState sending filePicker uris:$resultingUriList" }
-            onFilesToUploadSelected(resultingUriList, uiState.uploadUri)
+            uiState.uploadUri?.let { onFilesToUploadSelected(resultingUriList, it) }
           }
           ClaimDetailContentScreen(
             uiState = uiState,

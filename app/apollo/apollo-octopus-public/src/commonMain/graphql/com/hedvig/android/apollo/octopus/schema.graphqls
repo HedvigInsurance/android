@@ -844,7 +844,7 @@ type Claim {
   This target accepts multipart file uploads, and will automatically attach the uploaded files to the given claim.
   Therefore, the same claim can be refreshed in GraphQL and it should be visible in the `Claim.files` field.
   """
-  targetFileUploadUri: String!
+  targetFileUploadUri: String
   """
   A list of all the member-visible, uploaded files for this claim.
   """

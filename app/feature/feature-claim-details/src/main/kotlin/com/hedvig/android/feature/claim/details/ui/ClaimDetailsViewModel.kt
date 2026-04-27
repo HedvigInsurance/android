@@ -177,7 +177,7 @@ internal sealed interface ClaimDetailUiState {
     val claimStatusCardUiState: ClaimStatusCardUiState,
     val claimStatus: ClaimStatus,
     val claimOutcome: ClaimOutcome,
-    val uploadUri: String,
+    val uploadUri: String?,
     val isUploadingFile: Boolean,
     val uploadError: String?,
     val claimType: String?,
