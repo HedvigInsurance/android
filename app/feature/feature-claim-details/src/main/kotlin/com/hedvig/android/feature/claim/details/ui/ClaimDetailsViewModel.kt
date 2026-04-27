@@ -32,16 +32,24 @@ import kotlinx.datetime.LocalDateTime
 
 internal class ClaimDetailsViewModel(
   claimId: String,
+  isPartnerClaim: Boolean,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
-    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, claimsServiceUploadFileUseCase, downloadPdfUseCase),
+    ClaimDetailPresenter(
+      claimId,
+      isPartnerClaim,
+      getClaimDetailUiStateUseCase,
+      claimsServiceUploadFileUseCase,
+      downloadPdfUseCase,
+    ),
   )
 
 private class ClaimDetailPresenter(
   private val claimId: String,
+  private val isPartnerClaim: Boolean,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
@@ -60,7 +68,7 @@ private class ClaimDetailPresenter(
     LaunchedEffect(loadIteration) {
       isLoading = true
       hasError = false
-      getClaimDetailUiStateUseCase.invoke(claimId).collect { result ->
+      getClaimDetailUiStateUseCase.invoke(claimId, isPartnerClaim).collect { result ->
         isLoading = false
         result.fold(
           ifLeft = {

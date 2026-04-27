@@ -180,8 +180,8 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
-      navigateToClaimDetails = { claimId ->
-        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+      navigateToClaimDetails = { claimId, isPartnerClaim ->
+        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId, isPartnerClaim))
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
@@ -351,8 +351,8 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         claimHistoryGraph(
           navigateUp = navController::navigateUp,
-          navigateToClaimDetails = { claimId ->
-            navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
+          navigateToClaimDetails = { claimId, isPartnerClaim ->
+            navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId, isPartnerClaim))
           },
         )
       },
@@ -383,7 +383,7 @@ internal fun HedvigNavHost(
       navigateToChipId = {
         navController.navigate(ChipIdGraphDestination())
       },
-      languageService = languageService
+      languageService = languageService,
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -422,10 +422,10 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       popBackStackOrFinish = popBackStackOrFinish,
       goHome = {
-          navController.navigate(HomeDestination.Graph) {
-            popUpTo(ChipIdGraphDestination::class) { inclusive = true }
-          }
-      }
+        navController.navigate(HomeDestination.Graph) {
+          popUpTo(ChipIdGraphDestination::class) { inclusive = true }
+        }
+      },
     )
     movingFlowGraph(
       navController = navController,

@@ -23,9 +23,10 @@ val claimDetailsModule = module {
       initialFilesUri = initialFilesUri,
     )
   }
-  viewModel<ClaimDetailsViewModel> { (claimId: String) ->
+  viewModel<ClaimDetailsViewModel> { (claimId: String, isPartnerClaim: Boolean) ->
     ClaimDetailsViewModel(
       claimId = claimId,
+      isPartnerClaim = isPartnerClaim,
       getClaimDetailUiStateUseCase = get<GetClaimDetailUiStateUseCase>(),
       claimsServiceUploadFileUseCase = get<ClaimsServiceUploadFileUseCase>(),
       downloadPdfUseCase = get<DownloadPdfUseCase>(),

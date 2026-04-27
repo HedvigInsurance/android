@@ -156,7 +156,7 @@ internal fun HomeDestination(
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
-  onClaimDetailCardClicked: (String) -> Unit,
+  onClaimDetailCardClicked: (claimId: String, isPartnerClaim: Boolean) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
@@ -206,7 +206,7 @@ private fun HomeScreen(
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
-  onClaimDetailCardClicked: (String) -> Unit,
+  onClaimDetailCardClicked: (claimId: String, isPartnerClaim: Boolean) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
@@ -421,7 +421,7 @@ private fun HomeScreenSuccess(
   pullRefreshState: PullRefreshState,
   toolbarHeight: Dp,
   notificationPermissionState: NotificationPermissionState,
-  onClaimDetailCardClicked: (claimId: String) -> Unit,
+  onClaimDetailCardClicked: (claimId: String, isPartnerClaim: Boolean) -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openClaimFlowSheet: () -> Unit,
@@ -474,7 +474,12 @@ private fun HomeScreenSuccess(
         claimStatusCards = {
           if (uiState.claimStatusCardsData != null) {
             ClaimStatusCards(
-              onClick = onClaimDetailCardClicked,
+              onClick = { claimId ->
+                onClaimDetailCardClicked(
+                  claimId,
+                  claimId in (uiState.claimStatusCardsData.partnerClaimIds),
+                )
+              },
               claimStatusCardsUiState = uiState.claimStatusCardsData.claimStatusCardsUiState,
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
             )
@@ -799,7 +804,7 @@ private fun PreviewHomeScreen(
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         navigateToClaimChat = {},
-        onClaimDetailCardClicked = {},
+        onClaimDetailCardClicked = { _, _ -> },
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},
@@ -831,7 +836,7 @@ private fun PreviewHomeScreenWithError() {
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         navigateToClaimChat = {},
-        onClaimDetailCardClicked = {},
+        onClaimDetailCardClicked = { _, _ -> },
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},
@@ -884,7 +889,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
         navigateToClaimChat = {},
-        onClaimDetailCardClicked = {},
+        onClaimDetailCardClicked = { _, _ -> },
         navigateToConnectPayment = {},
         navigateToHelpCenter = {},
         openUrl = {},

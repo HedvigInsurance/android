@@ -31,7 +31,7 @@ fun NavGraphBuilder.claimDetailsGraph(
   navdestination<ClaimDetailDestination.ClaimOverviewDestination>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimDetails),
   ) {
-    val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
+    val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId, isPartnerClaim) }
     val context = LocalContext.current
     ClaimDetailsDestination(
       viewModel = viewModel,

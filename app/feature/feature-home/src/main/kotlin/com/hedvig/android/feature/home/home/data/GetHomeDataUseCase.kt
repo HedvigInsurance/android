@@ -45,7 +45,6 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
-import octopus.fragment.ClaimFragment
 import octopus.fragment.HomeCrossSellFragment
 
 internal interface GetHomeDataUseCase {
@@ -268,11 +267,20 @@ internal class GetHomeDataUseCaseImpl(
 }
 
 private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
-  val claimStatusCards: NonEmptyList<ClaimFragment> =
-    this.currentMember.claims?.toNonEmptyListOrNull()
-      ?: this.currentMember.claimsActive?.toNonEmptyListOrNull()
-      ?: return null
-  return HomeData.ClaimStatusCardsData(claimStatusCards.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
+  val regularCards =
+    this.currentMember.claims.orEmpty().map(ClaimStatusCardUiState::fromClaimStatusCardsQuery) +
+      this.currentMember.claimsActive.orEmpty().map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
+  val partnerClaims = this.currentMember.partnerClaimsActive
+  val partnerCards = partnerClaims.map(ClaimStatusCardUiState::fromPartnerClaim)
+
+  val allCards = (regularCards + partnerCards)
+    .sortedByDescending { it.submittedDate }
+    .toNonEmptyListOrNull() ?: return null
+
+  return HomeData.ClaimStatusCardsData(
+    claimStatusCardsUiState = allCards,
+    partnerClaimIds = partnerClaims.map { it.id }.toSet(),
+  )
 }
 
 internal data class HomeData(
@@ -290,6 +298,7 @@ internal data class HomeData(
   @Immutable
   data class ClaimStatusCardsData(
     val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
+    val partnerClaimIds: Set<String> = emptySet(),
   )
 
   data class VeryImportantMessage(
