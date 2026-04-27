@@ -2459,6 +2459,8 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  partnerClaimsActive: [PartnerClaim!]!
+  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -3478,6 +3480,7 @@ input MoveToHouseInput {
 }
 type Mutation {
   registerDirectDebit2(clientContext: RegisterDirectDebitClientContext2): DirectDebitResponse2!
+  manuallyChargeMember: Date!
   """
    Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
   """
@@ -3770,6 +3773,22 @@ type Mutation {
   Call this to accept an addon offer and activate addon.
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
+}
+type PartnerClaim {
+  id: ID!
+  externalId: String!
+  exposureDisplayName: String
+  status: ClaimStatus
+  submittedAt: Date
+  payoutAmount: Money
+  associatedTypeOfContract: String
+  claimType: String
+  handlerEmail: String
+  displayItems: [ClaimDisplayItem!]!
+  """
+  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
+  """
+  productVariant: ProductVariant
 }
 type PartnerData {
   sas: SasPartnerData
@@ -4439,6 +4458,7 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
+  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   claimIntentFormFieldSearch(input: ClaimIntentFormFieldSearchInput!): ClaimIntentFormFieldSearchOutput!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
