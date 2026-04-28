@@ -197,6 +197,7 @@ private fun PreviewPayoutAccountOverviewScreen(
         onConnectPayoutMethodClicked = {},
         onRetry = {},
         navigateUp = {},
+        navigateBack = {},
       )
     }
   }
