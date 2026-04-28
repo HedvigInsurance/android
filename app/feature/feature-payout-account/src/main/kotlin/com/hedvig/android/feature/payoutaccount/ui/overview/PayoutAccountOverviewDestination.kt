@@ -33,6 +33,7 @@ import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
+import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.general_back_button
 import hedvig.resources.something_went_wrong
@@ -126,16 +127,26 @@ private fun PayoutAccountContent(
       }
 
       is PayoutAccount.SwishPayout -> {
+        val phoneNumber = currentMethod.phoneNumber.orEmpty()
         PayoutAccountReadOnlyTextField(
           label = "Swish",
-          text = currentMethod.phoneNumber.orEmpty(),
+          text = if (currentMethod.isPending && phoneNumber.isBlank()) {
+            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+          } else {
+            phoneNumber
+          },
         )
       }
 
       is PayoutAccount.Trustly -> {
+        val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
         PayoutAccountReadOnlyTextField(
           label = formatBankAccountLabel("Trustly", currentMethod.bankName),
-          text = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber),
+          text = if (currentMethod.isPending && accountNumber.isBlank()) {
+            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+          } else {
+            accountNumber
+          },
         )
       }
 
@@ -144,9 +155,14 @@ private fun PayoutAccountContent(
       }
 
       is PayoutAccount.BankAccount -> {
+        val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
         PayoutAccountReadOnlyTextField(
           label = formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), currentMethod.bankName),
-          text = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber),
+          text = if (currentMethod.isPending && accountNumber.isBlank()) {
+            stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
+          } else {
+            accountNumber
+          },
         )
       }
     }
@@ -181,7 +197,11 @@ private fun PayoutAccountContent(
 }
 
 @Composable
-private fun PayoutAccountReadOnlyTextField(label: String, text: String, modifier: Modifier = Modifier) {
+private fun PayoutAccountReadOnlyTextField(
+  label: String,
+  text: String,
+  modifier: Modifier = Modifier,
+) {
   HedvigTextField(
     text = text,
     onValueChange = {},
@@ -240,6 +260,14 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
     ),
     Content(
+      currentMethod = PayoutAccount.SwishPayout(phoneNumber = null, isPending = true),
+      availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
+    ),
+    Content(
+      currentMethod = PayoutAccount.SwishPayout(phoneNumber = "070-123 45 67", isPending = true),
+      availablePayoutMethods = listOf(MemberPaymentProvider.SWISH),
+    ),
+    Content(
       currentMethod = PayoutAccount.Trustly(
         clearingNumber = "8327",
         accountNumber = "12345678",
@@ -254,6 +282,24 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
         accountNumber = "1234567",
         bankName = "Nordea",
         isPending = false,
+      ),
+      availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
+    ),
+    Content(
+      currentMethod = PayoutAccount.BankAccount(
+        clearingNumber = null,
+        accountNumber = null,
+        bankName = null,
+        isPending = true,
+      ),
+      availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
+    ),
+    Content(
+      currentMethod = PayoutAccount.BankAccount(
+        clearingNumber = "3300",
+        accountNumber = "1234567",
+        bankName = "Nordea",
+        isPending = true,
       ),
       availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
     ),
