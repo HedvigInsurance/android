@@ -354,6 +354,7 @@ internal fun HedvigNavHost(
       navigateToTrustlyPayout = { builder ->
         navController.navigate(TrustlyDestination, builder)
       },
+      navigateBack = popBackStackOrFinish,
       navigateUp = navController::navigateUp,
     )
     profileGraph(

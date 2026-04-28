@@ -30,6 +30,7 @@ import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.Res
+import hedvig.resources.general_back_button
 import octopus.type.MemberPaymentProvider
 import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
@@ -38,6 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PayoutAccountOverviewDestination(
   viewModel: PayoutAccountOverviewViewModel,
   onConnectPayoutMethodClicked: () -> Unit,
+  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -45,6 +47,7 @@ internal fun PayoutAccountOverviewDestination(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
     onRetry = { viewModel.emit(PayoutAccountOverviewEvent.Retry) },
+    navigateBack = navigateBack,
     navigateUp = navigateUp,
   )
 }
@@ -54,6 +57,7 @@ private fun PayoutAccountOverviewScreen(
   uiState: PayoutAccountOverviewUiState,
   onConnectPayoutMethodClicked: () -> Unit,
   onRetry: () -> Unit,
+  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
@@ -84,6 +88,7 @@ private fun PayoutAccountOverviewScreen(
           currentMethod = uiState.currentMethod,
           availablePayoutMethods = uiState.availablePayoutMethods,
           onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
+          navigateBack = navigateBack,
           modifier = Modifier.weight(1f),
         )
       }
@@ -96,12 +101,23 @@ private fun PayoutAccountContent(
   currentMethod: PayoutAccount?,
   availablePayoutMethods: List<MemberPaymentProvider>,
   onConnectPayoutMethodClicked: () -> Unit,
+  navigateBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     Spacer(Modifier.height(8.dp))
     when (currentMethod) {
-      null -> {}
+      null -> {
+        if (availablePayoutMethods.isEmpty()) {
+          Spacer(Modifier.weight(1f))
+          HedvigErrorSection(
+            title = "todo copy title",
+            subTitle = "todo copy subtitle",
+            buttonText = stringResource(Res.string.general_back_button),
+            onButtonClick = navigateBack,
+          )
+        }
+      }
 
       is PayoutAccount.SwishPayout -> {
         PayoutAccountReadOnlyTextField(label = "Swish", text = currentMethod.phoneNumber.orEmpty())
@@ -126,18 +142,20 @@ private fun PayoutAccountContent(
       }
     }
     Spacer(Modifier.weight(1f))
-    HedvigButton(
-      text = if (currentMethod == null) {
-        stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD)
-      } else {
-        stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
-      },
-      onClick = onConnectPayoutMethodClicked,
-      enabled = true,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
+    if (availablePayoutMethods.isNotEmpty()) {
+      HedvigButton(
+        text = if (currentMethod == null) {
+          stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD)
+        } else {
+          stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
+        },
+        onClick = onConnectPayoutMethodClicked,
+        enabled = true,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
   }
 }

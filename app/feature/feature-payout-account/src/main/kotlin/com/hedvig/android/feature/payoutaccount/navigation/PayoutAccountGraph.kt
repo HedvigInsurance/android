@@ -29,6 +29,7 @@ fun NavGraphBuilder.payoutAccountGraph(
   globalSnackBarState: GlobalSnackBarState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigateToTrustlyPayout: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
+  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   navgraph<PayoutAccountDestination.Graph>(
@@ -47,6 +48,7 @@ fun NavGraphBuilder.payoutAccountGraph(
             ),
           )
         },
+        navigateBack = navigateBack,
         navigateUp = navigateUp,
       )
     }

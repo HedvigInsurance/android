@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payoutaccount.ui.overview
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,7 +43,7 @@ internal class PayoutAccountOverviewPresenter(
   override fun MoleculePresenterScope<PayoutAccountOverviewEvent>.present(
     lastState: PayoutAccountOverviewUiState,
   ): PayoutAccountOverviewUiState {
-    var loadIteration by remember { mutableStateOf(0) }
+    var loadIteration by remember { mutableIntStateOf(0) }
     var uiState by remember { mutableStateOf<PayoutAccountOverviewUiState>(lastState) }
 
     LaunchedEffect(loadIteration) {
