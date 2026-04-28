@@ -82,7 +82,7 @@ internal class EditBankAccountPresenter(
         setupNordeaPayoutUseCase.invoke(currentSave.first, currentSave.second).fold(
           ifLeft = {
             isLoading = false
-            errorMessage = it.message ?: "Something went wrong, please try again"
+            errorMessage = it.message ?: ""
             saveIteration = null
           },
           ifRight = {

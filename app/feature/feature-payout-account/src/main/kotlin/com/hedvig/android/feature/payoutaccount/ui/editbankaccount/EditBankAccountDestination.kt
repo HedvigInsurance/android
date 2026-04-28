@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payoutaccount.ui.editbankaccount
 
+import android.R.attr.priority
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -30,6 +31,7 @@ import hedvig.resources.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL
 import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
+import hedvig.resources.something_went_wrong
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -105,7 +107,7 @@ private fun EditBankAccountScreen(
       exit = shrinkVertically(),
     ) {
       HedvigNotificationCard(
-        message = uiState.errorMessage ?: "",
+        message = uiState.errorMessage?.ifBlank { stringResource(Res.string.something_went_wrong) }.orEmpty(),
         priority = NotificationPriority.Attention,
         modifier = Modifier
           .padding(horizontal = 16.dp)
