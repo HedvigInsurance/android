@@ -24,15 +24,6 @@ internal class GetPayoutAccountUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(): Either<ErrorMessage, PayoutAccountData> = either {
-    return@either PayoutAccountData(
-      currentMethod = FakePayoutAccountStorage.currentMethod,
-      availablePayoutMethods = listOf(
-        MemberPaymentProvider.TRUSTLY,
-        MemberPaymentProvider.NORDEA,
-        MemberPaymentProvider.SWISH,
-        MemberPaymentProvider.INVOICE,
-      ),
-    )
     val result = apolloClient
       .query(GetPayoutMethodsQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)

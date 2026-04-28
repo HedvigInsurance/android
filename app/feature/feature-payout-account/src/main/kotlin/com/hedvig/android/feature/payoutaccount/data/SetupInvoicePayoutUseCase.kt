@@ -16,12 +16,6 @@ internal class SetupInvoicePayoutUseCase(
   private val networkCacheManager: NetworkCacheManager,
 ) {
   suspend fun invoke(): Either<ErrorMessage, Unit> = either {
-    FakePayoutAccountStorage.currentMethod = PayoutAccount.Invoice(
-      delivery = PaymentMethodInvoiceDelivery.KIVRA,
-      email = null,
-      isPending = false,
-    )
-    return@either
     val result = apolloClient
       .mutation(SetupInvoicePayoutMutation())
       .safeExecute(::ErrorMessage)
