@@ -78,7 +78,7 @@ private fun EditBankAccountScreen(
         labelText = buildString {
           append(stringResource(Res.string.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL))
           if (uiState.bankName != null) {
-            append(" ")
+            append(" - ")
             append(uiState.bankName)
           }
         },
