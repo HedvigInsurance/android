@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import com.hedvig.android.feature.payoutaccount.data.SetupNordeaPayoutUseCase
 import com.hedvig.android.feature.payoutaccount.data.bankNameForClearingNumber
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -91,6 +92,17 @@ internal class EditBankAccountPresenter(
             saveIteration = null
           },
         )
+      }
+    }
+
+    LaunchedEffect(clearingNumberState) {
+      snapshotFlow { clearingNumberState.text }.collect {
+        errorMessage = null
+      }
+    }
+    LaunchedEffect(accountNumberState) {
+      snapshotFlow { accountNumberState.text }.collect {
+        errorMessage = null
       }
     }
 
