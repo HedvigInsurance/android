@@ -151,19 +151,30 @@ private fun PayoutAccountContent(
       }
     }
     Spacer(Modifier.weight(1f))
-    if (availablePayoutMethods.isNotEmpty()) {
-      HedvigButton(
-        text = if (currentMethod == null) {
-          stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD)
-        } else {
-          stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
-        },
-        onClick = onConnectPayoutMethodClicked,
-        enabled = true,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+      if (currentMethod?.isPending == true) {
+        HedvigNotificationCard(
+          message = stringResource(Res.string.MY_PAYMENT_UPDATING_MESSAGE),
+          priority = NotificationPriority.Info,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
+      if (availablePayoutMethods.isNotEmpty()) {
+        HedvigButton(
+          text = if (currentMethod == null) {
+            stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD)
+          } else {
+            stringResource(Res.string.CHANGE_PAYOUT_METHOD_BUTTON_LABEL)
+          },
+          onClick = onConnectPayoutMethodClicked,
+          enabled = true,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
     }
     Spacer(Modifier.height(16.dp))
   }
