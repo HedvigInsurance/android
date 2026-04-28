@@ -15,21 +15,25 @@ import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayo
 import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayoutViewModel
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
+import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import octopus.type.MemberPaymentProvider
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.payoutAccountGraph(
   navController: NavController,
   globalSnackBarState: GlobalSnackBarState,
+  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigateToTrustlyPayout: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
   navigateUp: () -> Unit,
 ) {
   navgraph<PayoutAccountDestination.Graph>(
     startDestination = PayoutAccountDestinations.Overview::class,
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout)
   ) {
     navdestination<PayoutAccountDestinations.Overview> {
       val viewModel: PayoutAccountOverviewViewModel = koinViewModel()

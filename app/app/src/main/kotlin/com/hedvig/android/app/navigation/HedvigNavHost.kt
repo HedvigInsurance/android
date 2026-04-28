@@ -350,6 +350,7 @@ internal fun HedvigNavHost(
     payoutAccountGraph(
       navController = navController,
       globalSnackBarState = globalSnackBarState,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToTrustlyPayout = { builder ->
         navController.navigate(TrustlyDestination, builder)
       },
