@@ -183,7 +183,7 @@ private fun ManualChargeSuccessScreen(
         horizontalArrangement = Arrangement.SpaceBetween,
       ) {
         HedvigText(
-          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE), //todo
+          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE),
           color = HedvigTheme.colorScheme.textSecondary,
           style = HedvigTheme.typography.label,
         )

@@ -1,15 +1,5 @@
 query ManualChargeInfo {
   currentMember {
-    futureCharge {
-      ...on MemberCharge {
-        chargeBreakdown {
-          periods {
-            isPreviouslyFailedCharge
-          }
-        }
-      }
-
-    }
     pastCharges {
       ...on MemberCharge {
         id
@@ -20,7 +10,6 @@ query ManualChargeInfo {
         }
       }
     }
-
     paymentInformation {
       status
       chargeMethod {

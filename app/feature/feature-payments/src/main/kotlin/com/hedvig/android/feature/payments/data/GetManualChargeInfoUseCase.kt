@@ -26,15 +26,8 @@ internal interface GetManualChargeInfoUseCase {
 
 internal class GetManualChargeInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ): GetManualChargeInfoUseCase {
   override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo> = either {
-
-    val isFeatureEnabled = featureManager.isFeatureEnabled(Feature.ENABLE_MANUAL_CHARGE).first()
-    if (!isFeatureEnabled) {
-      logcat {"GetManualChargeInfoUseCaseImpl: manual charge FF is off"}
-      raise(ErrorMessage())
-    }
 
     val currentMember = apolloClient.query(ManualChargeInfoQuery())
       .fetchPolicy(NetworkFirst)
@@ -42,26 +35,15 @@ internal class GetManualChargeInfoUseCaseImpl(
       .bind()
       .currentMember
 
-    val isPaymentMethodTrustly = currentMember.paymentInformation.status == MemberPaymentConnectionStatus.ACTIVE &&
-      currentMember.paymentInformation.chargeMethod?.paymentMethod.toChargeMethod() ==
-      MemberPaymentChargeMethod.TRUSTLY
+    val showManualCharge = currentMember.missedChargeIdToChargeManually
 
-    if (!isPaymentMethodTrustly) {
-      logcat {"GetManualChargeInfoUseCaseImpl: payment method not Trustly"}
-      raise(ErrorMessage())
-    }
-
-    val isFailedInUpcomingPayment = currentMember.futureCharge?.chargeBreakdown
-    ?.flatMap { it.periods }
-    ?.any { it.isPreviouslyFailedCharge } == true
-    if (!isFailedInUpcomingPayment) {
-      logcat {"GetManualChargeInfoUseCaseImpl: no failed in upcoming payment"}
+    if (showManualCharge==null) {
+      logcat {"GetManualChargeInfoUseCaseImpl: missedChargeIdToChargeManually is null"}
       raise(ErrorMessage())
     }
 
     val latestFailedPastCharge = currentMember.pastCharges
-      .maxByOrNull { it.date }
-      .takeIf { it?.status == MemberChargeStatus.FAILED }
+      .firstOrNull {it.id == showManualCharge}
 
     if (latestFailedPastCharge==null) {
       logcat {"GetManualChargeInfoUseCaseImpl: latestFailedPastCharge is null"}
@@ -76,7 +58,6 @@ internal class GetManualChargeInfoUseCaseImpl(
       bankDescriptor = currentMember.paymentInformation.chargeMethod?.descriptor
     )
   }
-//TODO: all these flags will be moved to BE
 }
 
 internal data class ManualChargeInfo(

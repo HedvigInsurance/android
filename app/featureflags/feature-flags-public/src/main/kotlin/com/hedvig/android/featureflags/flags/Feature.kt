@@ -22,5 +22,4 @@ enum class Feature(
   ),
   DISABLE_REDEEM_CAMPAIGN("Disables the ability to redeem a campaign code"),
   ENABLE_CLAIM_HISTORY("Enables claim history"),
-  ENABLE_MANUAL_CHARGE("Enables manual self-charge for member in the app payments")
 }

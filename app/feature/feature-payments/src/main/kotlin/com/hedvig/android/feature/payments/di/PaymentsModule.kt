@@ -132,7 +132,6 @@ val paymentsModule = module {
   single<GetManualChargeInfoUseCase> {
     GetManualChargeInfoUseCaseImpl(
       get<ApolloClient>(),
-      get<FeatureManager>(),
     )
   }
 
