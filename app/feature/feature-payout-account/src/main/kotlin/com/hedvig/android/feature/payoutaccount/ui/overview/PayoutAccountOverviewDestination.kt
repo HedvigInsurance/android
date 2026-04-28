@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payoutaccount.ui.overview
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,20 +18,24 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
 import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Content
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
+import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.Res
 import hedvig.resources.general_back_button
+import hedvig.resources.something_went_wrong
 import octopus.type.MemberPaymentProvider
 import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
@@ -111,8 +116,9 @@ private fun PayoutAccountContent(
         if (availablePayoutMethods.isEmpty()) {
           Spacer(Modifier.weight(1f))
           HedvigErrorSection(
-            title = "todo copy title",
-            subTitle = "todo copy subtitle",
+            // todo copy when missing current and possible payout methods
+            title = stringResource(Res.string.something_went_wrong),
+            subTitle = null,
             buttonText = stringResource(Res.string.general_back_button),
             onButtonClick = navigateBack,
           )
@@ -120,7 +126,10 @@ private fun PayoutAccountContent(
       }
 
       is PayoutAccount.SwishPayout -> {
-        PayoutAccountReadOnlyTextField(label = "Swish", text = currentMethod.phoneNumber.orEmpty())
+        PayoutAccountReadOnlyTextField(
+          label = "Swish",
+          text = currentMethod.phoneNumber.orEmpty(),
+        )
       }
 
       is PayoutAccount.Trustly -> {
