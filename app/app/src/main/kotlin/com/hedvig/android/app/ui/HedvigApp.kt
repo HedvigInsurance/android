@@ -39,6 +39,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
@@ -84,6 +85,7 @@ internal fun HedvigApp(
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
+  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     windowSizeClass = windowSizeClass,
@@ -91,6 +93,7 @@ internal fun HedvigApp(
     getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
     featureManager = featureManager,
     navHostController = navHostController,
+    missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
