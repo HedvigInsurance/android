@@ -1,5 +1,6 @@
 query ManualChargeInfo {
   currentMember {
+    missedChargeIdToChargeManually
     pastCharges {
       ...on MemberCharge {
         id
