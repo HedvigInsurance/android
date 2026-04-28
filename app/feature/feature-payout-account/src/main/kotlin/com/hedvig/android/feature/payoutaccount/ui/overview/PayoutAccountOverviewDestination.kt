@@ -109,7 +109,7 @@ private fun PayoutAccountContent(
 
       is PayoutAccount.Trustly -> {
         PayoutAccountReadOnlyTextField(
-          label = formatBankAccountLabel(stringResource(Res.string.PAYMENTS_ACCOUNT), currentMethod.bankName),
+          label = formatBankAccountLabel("Trustly", currentMethod.bankName),
           text = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber),
         )
       }
