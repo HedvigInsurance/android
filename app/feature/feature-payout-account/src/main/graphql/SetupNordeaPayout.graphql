@@ -1,6 +1,6 @@
-mutation SetupNordeaPayout($clearingNumber: String!, $accountNumber: String!) {
+mutation SetupNordeaPayout($accountNumber: String!) {
   paymentMethodSetupNordeaPayout(
-    input: { clearingNumber: $clearingNumber, accountNumber: $accountNumber }
+    input: { accountNumber: $accountNumber }
   ) {
     status
     error {

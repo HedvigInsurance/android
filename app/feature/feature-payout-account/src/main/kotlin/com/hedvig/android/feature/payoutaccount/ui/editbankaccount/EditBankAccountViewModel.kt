@@ -24,7 +24,6 @@ internal class EditBankAccountViewModel(
   setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
 ) : MoleculeViewModel<EditBankAccountEvent, EditBankAccountUiState>(
   EditBankAccountUiState(
-    clearingNumberState = TextFieldState(),
     accountNumberState = TextFieldState(),
     bankName = null,
     isLoading = false,
@@ -41,7 +40,6 @@ internal sealed interface EditBankAccountEvent {
 }
 
 internal data class EditBankAccountUiState(
-  val clearingNumberState: TextFieldState,
   val accountNumberState: TextFieldState,
   val bankName: String?,
   val isLoading: Boolean,
@@ -49,15 +47,10 @@ internal data class EditBankAccountUiState(
   val showSuccessSnackBar: Boolean,
 ) {
   val canSave: Boolean
-    get() = !isLoading &&
-      clearingNumberState.text.length >= 4 &&
-      accountNumberState.text.length in 6..12
+    get() = !isLoading && accountNumberState.text.length in 10..17
 
-  // Swedish clearing numbers are 4 digits for most banks, 5 for Swedbank's 8-series
-  val clearingInputTransformation: InputTransformation = InputTransformation.maxLength(5).digitsOnly()
-
-  // Swedish account numbers are up to 10 digits
-  val accountNumberInputTransformation: InputTransformation = InputTransformation.maxLength(10).digitsOnly()
+  // Combined clearing and account number: 10-17 digits
+  val accountNumberInputTransformation: InputTransformation = InputTransformation.maxLength(17).digitsOnly()
 }
 
 internal class EditBankAccountPresenter(
@@ -67,20 +60,19 @@ internal class EditBankAccountPresenter(
   override fun MoleculePresenterScope<EditBankAccountEvent>.present(
     lastState: EditBankAccountUiState,
   ): EditBankAccountUiState {
-    val clearingNumberState = remember { lastState.clearingNumberState }
     val accountNumberState = remember { lastState.accountNumberState }
-    val bankName = bankNameForClearingNumber(clearingNumberState.text.toString())
+    val bankName = bankNameForClearingNumber(accountNumberState.text.toString().take(4))
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
-    var saveIteration by remember { mutableStateOf<Pair<String, String>?>(null) }
+    var saveIteration by remember { mutableStateOf<String?>(null) }
 
     val currentSave = saveIteration
     if (currentSave != null) {
       LaunchedEffect(currentSave) {
         isLoading = true
         errorMessage = null
-        setupNordeaPayoutUseCase.invoke(currentSave.first, currentSave.second).fold(
+        setupNordeaPayoutUseCase.invoke(currentSave).fold(
           ifLeft = {
             isLoading = false
             errorMessage = it.message ?: ""
@@ -95,11 +87,6 @@ internal class EditBankAccountPresenter(
       }
     }
 
-    LaunchedEffect(clearingNumberState) {
-      snapshotFlow { clearingNumberState.text }.collect {
-        errorMessage = null
-      }
-    }
     LaunchedEffect(accountNumberState) {
       snapshotFlow { accountNumberState.text }.collect {
         errorMessage = null
@@ -110,7 +97,7 @@ internal class EditBankAccountPresenter(
       when (event) {
         EditBankAccountEvent.Save -> {
           if (!isLoading) {
-            saveIteration = clearingNumberState.text.toString() to accountNumberState.text.toString()
+            saveIteration = accountNumberState.text.toString()
           }
         }
 
@@ -121,7 +108,6 @@ internal class EditBankAccountPresenter(
     }
 
     return EditBankAccountUiState(
-      clearingNumberState = clearingNumberState,
       accountNumberState = accountNumberState,
       bankName = bankName,
       isLoading = isLoading,

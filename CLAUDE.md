@@ -442,6 +442,18 @@ dependencies {
 # String resources in app/core/core-resources/
 ```
 
+**IMPORTANT:** String resource XML files (`strings.xml`) are fully managed by Lokalise and regenerated on every `./gradlew downloadStrings` run. **Never add new strings directly to any `strings.xml` file** — they will be overwritten and lost.
+
+When new UI text is needed that does not yet exist as a string resource:
+1. Hardcode the English string directly in the Kotlin/Compose code.
+2. Add a `// TODO: Add "<English text>" / "<Swedish text>" to Lokalise` comment on the same line or the line above.
+
+Example:
+```kotlin
+// TODO: Add "This is some text for feature X" / "Detta är lite text för feature X" to Lokalise
+Text("This is some text for feature X")
+```
+
 ## Debugging
 
 ### Common Issues

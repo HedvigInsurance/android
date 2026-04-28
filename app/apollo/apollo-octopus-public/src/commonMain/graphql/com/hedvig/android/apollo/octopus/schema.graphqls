@@ -2417,6 +2417,9 @@ type LinkInfo {
 type Location {
   street: String
 }
+type ManuallyChargeMemberMutationOutput {
+  userError: UserError
+}
 """
 A 'Member' is the central user-like concept of our platform, referring to someone who has bought insurance
 with Hedvig and is now as we call is a "member".
@@ -2449,6 +2452,11 @@ type Member {
   Payment information for this member.
   """
   paymentInformation: MemberPaymentInformation!
+  """
+  Null if the latest charge was successful or self manual charge is not allowed.
+  Id of the latest charge if it failed and self manual charge allowed.
+  """
+  missedChargeIdToChargeManually: UUID
   paymentMethods: MemberPaymentMethods!
   conversations: [Conversation!]!
   legacyConversation: Conversation
@@ -3480,7 +3488,7 @@ input MoveToHouseInput {
 }
 type Mutation {
   registerDirectDebit2(clientContext: RegisterDirectDebitClientContext2): DirectDebitResponse2!
-  manuallyChargeMember: Date!
+  manuallyChargeMember(dueDate: Date!): ManuallyChargeMemberMutationOutput!
   """
    Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
   """
@@ -3798,7 +3806,7 @@ type PartnerWidgetTrial {
 }
 type PaymentMethodBankAccountDetails {
   """
-   The bank account reference - e.g. clearing number and account number. 
+   The bank account reference - e.g. clearing number + account number. 
   """
   account: String!
   """
@@ -3822,10 +3830,6 @@ type PaymentMethodInvoiceDetails {
   email: String
 }
 input PaymentMethodSetupNordeaPayoutInput {
-  """
-   The clearing number for member's bank account. 
-  """
-  clearingNumber: String!
   """
    The account number for member's bank account. 
   """

@@ -16,9 +16,9 @@ internal class SetupNordeaPayoutUseCase(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
 ) {
-  suspend fun invoke(clearingNumber: String, accountNumber: String): Either<ErrorMessage, Unit> = either {
+  suspend fun invoke(accountNumber: String): Either<ErrorMessage, Unit> = either {
     val result = apolloClient
-      .mutation(SetupNordeaPayoutMutation(clearingNumber = clearingNumber, accountNumber = accountNumber))
+      .mutation(SetupNordeaPayoutMutation(accountNumber = accountNumber))
       .safeExecute(::ErrorMessage)
       .bind()
 

@@ -27,8 +27,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
-import hedvig.resources.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL
-import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
@@ -76,28 +74,18 @@ private fun EditBankAccountScreen(
     Spacer(Modifier.weight(1f))
     Column(Modifier.padding(horizontal = 16.dp)) {
       HedvigTextField(
-        state = uiState.clearingNumberState,
+        state = uiState.accountNumberState,
         labelText = buildString {
-          append(stringResource(Res.string.BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL))
+          // TODO: Add "Clearing and account number" / "Clearing och kontonummer" to Lokalise
+          append("Clearing and account number")
           if (uiState.bankName != null) {
             append(" - ")
             append(uiState.bankName)
           }
         },
         textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        inputTransformation = uiState.clearingInputTransformation,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier.fillMaxWidth(),
-      )
-      Spacer(Modifier.height(4.dp))
-      HedvigTextField(
-        state = uiState.accountNumberState,
-        labelText = stringResource(Res.string.PAYMENTS_ACCOUNT),
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
         inputTransformation = uiState.accountNumberInputTransformation,
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Number,
-        ),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth(),
       )
     }
