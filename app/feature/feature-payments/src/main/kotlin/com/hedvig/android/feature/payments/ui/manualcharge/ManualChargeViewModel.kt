@@ -51,7 +51,7 @@ private class ManualChargePresenter(
     LaunchedEffect(triggerChargeIteration) {
       if (triggerChargeIteration>0) {
         val currentState = screenState as?  ManualChargeUiState.Success ?: return@LaunchedEffect
-        triggerManualCharge.invoke(currentState.manualChargeInfo.missedDueDate).fold(
+        triggerManualCharge.invoke().fold(
           ifLeft = {
             screenState = ManualChargeUiState.Failure(it)
           },

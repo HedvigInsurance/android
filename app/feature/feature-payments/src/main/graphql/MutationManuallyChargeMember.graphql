@@ -1,5 +1,5 @@
-mutation ManuallyChargeMember($dueDate: Date!) {
-  manuallyChargeMember(dueDate: $dueDate) {
+mutation ManuallyChargeMember {
+  manuallyChargeMember {
     userError {
       message
     }

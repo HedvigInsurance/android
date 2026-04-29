@@ -3483,7 +3483,7 @@ input MoveToHouseInput {
 }
 type Mutation {
   registerDirectDebit2(clientContext: RegisterDirectDebitClientContext2): DirectDebitResponse2!
-  manuallyChargeMember(dueDate: Date!): ManuallyChargeMemberMutationOutput!
+  manuallyChargeMember: ManuallyChargeMemberMutationOutput!
   """
    Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
   """

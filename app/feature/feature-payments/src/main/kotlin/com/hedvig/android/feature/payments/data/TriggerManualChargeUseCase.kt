@@ -12,17 +12,17 @@ import kotlinx.datetime.LocalDate
 import octopus.ManuallyChargeMemberMutation
 
 internal interface TriggerManualChargeUseCase {
-  suspend fun invoke(dueDate: LocalDate): Either<ErrorMessage, Unit>
+  suspend fun invoke(): Either<ErrorMessage, Unit>
 }
 
 internal class TriggerManualChargeUseCaseImpl(
   private val apolloClient: ApolloClient
 ): TriggerManualChargeUseCase {
-  override suspend fun invoke(dueDate: LocalDate): Either<ErrorMessage, Unit>  = either {
+  override suspend fun invoke(): Either<ErrorMessage, Unit>  = either {
     val result = apolloClient
-      .mutation(ManuallyChargeMemberMutation(dueDate))
+      .mutation(ManuallyChargeMemberMutation())
       .safeExecute()
-      .mapLeft(::ErrorMessage)
+      .mapLeft { raise(ErrorMessage()) }
       .bind()
 
     if (result.manuallyChargeMember.userError!=null) raise(ErrorMessage(
