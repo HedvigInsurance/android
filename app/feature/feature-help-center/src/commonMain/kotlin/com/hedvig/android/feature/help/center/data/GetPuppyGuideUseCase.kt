@@ -3,10 +3,15 @@ package com.hedvig.android.feature.help.center.data
 import arrow.core.Either
 import arrow.core.right
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
+import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.serialization.Serializable
+import octopus.PuppyGuideQuery
 
 private const val HARDCODE_RESPONSE = true
 
@@ -34,29 +39,28 @@ internal class GetPuppyGuideUseCaseImpl(
         }.right(),
       )
     } else {
-      error("Not implemented yet")
-//      return apolloClient
-//        .query(PuppyGuideQuery())
-//        .fetchPolicy(FetchPolicy.CacheAndNetwork)
-//        .safeFlow(::ErrorMessage)
-//        .map { either ->
-//          either
-//            .onLeft { logcat { "Cannot load PuppyGuideStory: $it" } }
-//            .map { data ->
-//              data.currentMember.puppyGuideStories.map { story ->
-//                PuppyGuideStory(
-//                  categories = story.categories,
-//                  content = story.content,
-//                  image = story.image,
-//                  name = story.name,
-//                  rating = story.rating,
-//                  isRead = story.read,
-//                  subtitle = story.subtitle,
-//                  title = story.title,
-//                )
-//              }
-//            }
-//        }
+      return apolloClient
+        .query(PuppyGuideQuery())
+        .fetchPolicy(FetchPolicy.CacheAndNetwork)
+        .safeFlow(::ErrorMessage)
+        .map { either ->
+          either
+            .onLeft { logcat { "Cannot load PuppyGuideStory: $it" } }
+            .map { data ->
+              data.currentMember.puppyGuideStories.map { story ->
+                PuppyGuideStory(
+                  categories = story.categories,
+                  content = story.content,
+                  image = story.image,
+                  name = story.name,
+                  rating = story.rating,
+                  isRead = story.read,
+                  subtitle = story.subtitle,
+                  title = story.title,
+                )
+              }
+            }
+        }
     }
   }
 }
