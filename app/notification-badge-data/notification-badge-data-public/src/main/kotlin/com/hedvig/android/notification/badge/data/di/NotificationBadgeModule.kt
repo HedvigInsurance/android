@@ -11,8 +11,8 @@ import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNo
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationServiceProvider
 import com.hedvig.android.notification.badge.data.crosssell.home.DemoCrossSellHomeNotificationService
 import com.hedvig.android.notification.badge.data.payment.DemoMissedPaymentNotificationService
-import com.hedvig.android.notification.badge.data.payment.GetMissedPaymentIdUseCase
-import com.hedvig.android.notification.badge.data.payment.GetMissedPaymentIdUseCaseImpl
+import com.hedvig.android.notification.badge.data.payment.GetIfMissedPaymentUseCase
+import com.hedvig.android.notification.badge.data.payment.GetIfMissedPaymentUseCaseImpl
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceImpl
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeStorage
@@ -46,10 +46,10 @@ val notificationBadgeModule = module {
       prodImpl = get<MissedPaymentNotificationServiceImpl>(),
     )
   }
-  single<GetMissedPaymentIdUseCase> {
-    GetMissedPaymentIdUseCaseImpl(get<ApolloClient>())
+  single<GetIfMissedPaymentUseCase> {
+    GetIfMissedPaymentUseCaseImpl(get<ApolloClient>())
   }
   single<MissedPaymentNotificationServiceImpl> {
-    MissedPaymentNotificationServiceImpl(get<GetMissedPaymentIdUseCase>())
+    MissedPaymentNotificationServiceImpl(get<GetIfMissedPaymentUseCase>())
   }
 }

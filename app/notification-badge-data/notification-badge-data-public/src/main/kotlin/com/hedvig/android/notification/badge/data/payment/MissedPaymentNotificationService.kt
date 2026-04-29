@@ -24,9 +24,9 @@ internal class DemoMissedPaymentNotificationService : MissedPaymentNotificationS
 }
 
 internal class MissedPaymentNotificationServiceImpl(
-  private val getMissedPaymentIdUseCase: GetMissedPaymentIdUseCase,
+  private val getIfMissedPaymentUseCase: GetIfMissedPaymentUseCase,
 ) : MissedPaymentNotificationService {
   override fun showRedDotNotification(): Flow<Boolean> {
-    return getMissedPaymentIdUseCase.invoke()
+    return getIfMissedPaymentUseCase.invoke()
   }
 }

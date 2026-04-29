@@ -80,7 +80,6 @@
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Skanna QR-koden med BankID-appen på din telefon, eller logga in med din e-postadress nedan.</string>
   <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Utbetalning till ett svenskt bankkonto</string>
   <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bankkonto</string>
-  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearingnummer</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -607,6 +606,8 @@
   <string name="PAYMENTS_PAYMENT_DUE_INFO">Om du uppdaterar ditt bankkonto nära den %1$s kan det ta några extra dagar innan pengarna dras.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Betalningshistorik</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Betalning pågår</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">Det kan ta upp till 5 bankdagar innan betalningen syns</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Betalningssätt</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Att betala: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">Vi kunde inte dra betalningen från ditt bankkonto. Betala för att undvika avbrott i ditt skydd.</string>
@@ -616,7 +617,7 @@
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT">Se till att det finns tillräckliga medel på kontot för att genomföra betalningen</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY">Betala %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE">Försenad sedan %1$s</string>
-  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">Visa betalningsinformation</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">Visa betalningsdetaljer</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_TITLE">Försenad betalning</string>
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Betalning genomförd</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s dagar</string>

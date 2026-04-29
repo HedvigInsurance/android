@@ -31,5 +31,8 @@ internal sealed interface PaymentsDestinations {
 
   @Serializable
   data object ManualCharge: PaymentsDestinations, Destination
+
+  @Serializable
+  data object ManualChargeSuccess: PaymentsDestinations, Destination
 }
 

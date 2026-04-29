@@ -80,7 +80,6 @@
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
   <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Payout to a Swedish bank account</string>
   <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bank account</string>
-  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing number</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -607,6 +606,8 @@
   <string name="PAYMENTS_PAYMENT_DUE_INFO">If you update your bank account close to the %1$s, the withdrawal might take a few extra days.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Payment history</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Payment in progress</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">It may take up to 5 business days for the charge to appear</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Payment method</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Amount due: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">We couldn\'t collect this payment from your bank account. Pay now to keep your coverage active.</string>

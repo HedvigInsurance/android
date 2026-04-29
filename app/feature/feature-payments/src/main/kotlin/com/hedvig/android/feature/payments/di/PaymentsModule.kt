@@ -126,7 +126,7 @@ val paymentsModule = module {
   }
 
   single<TriggerManualChargeUseCase> {
-    TriggerManualChargeUseCaseImpl()
+    TriggerManualChargeUseCaseImpl(get<ApolloClient>(),)
   }
 
   single<GetManualChargeInfoUseCase> {

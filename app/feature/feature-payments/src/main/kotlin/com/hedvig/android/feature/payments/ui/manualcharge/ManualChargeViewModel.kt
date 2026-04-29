@@ -1,6 +1,13 @@
 package com.hedvig.android.feature.payments.ui.manualcharge
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
@@ -26,8 +33,47 @@ private class ManualChargePresenter(
   override fun MoleculePresenterScope<ManualChargeEvent>.present(
     lastState: ManualChargeUiState,
   ): ManualChargeUiState {
-    // TODO: Implement presenter logic
-    return ManualChargeUiState.Loading
+    var dataLoadIteration by remember { mutableIntStateOf(0) }
+    var screenState by remember { mutableStateOf(lastState) }
+    var triggerChargeIteration by remember { mutableIntStateOf(0) }
+
+    CollectEvents {
+      when (it) {
+        ManualChargeEvent.Retry -> dataLoadIteration++
+        ManualChargeEvent.TriggerCharge -> triggerChargeIteration++
+        ManualChargeEvent.ClearNav -> {
+          val currentState = screenState as?  ManualChargeUiState.Success ?: return@CollectEvents
+          screenState = currentState.copy(navigateToSuccess = null)
+        }
+      }
+    }
+
+    LaunchedEffect(triggerChargeIteration) {
+      if (triggerChargeIteration>0) {
+        val currentState = screenState as?  ManualChargeUiState.Success ?: return@LaunchedEffect
+        triggerManualCharge.invoke(currentState.manualChargeInfo.missedDueDate).fold(
+          ifLeft = {
+            screenState = ManualChargeUiState.Failure(it)
+          },
+          ifRight = {
+            screenState = ManualChargeUiState.Success(currentState.manualChargeInfo, Unit)
+          }
+        )
+      }
+    }
+
+    LaunchedEffect(dataLoadIteration) {
+      screenState = ManualChargeUiState.Loading
+      getManualChargeInfoUseCase.invoke().fold(
+        ifRight = { manualChargeInfo ->
+          screenState = ManualChargeUiState.Success(manualChargeInfo, null)
+        },
+        ifLeft = { failure ->
+          screenState = ManualChargeUiState.Failure(failure)
+        },
+      )
+    }
+    return screenState
   }
 }
 
@@ -35,25 +81,19 @@ internal sealed interface ManualChargeUiState {
   data object Loading : ManualChargeUiState
 
   data class Failure(
-    val reason: ManualChargeFailureReason
+    val error: ErrorMessage
   ) : ManualChargeUiState
 
   data class Success(
-    val manualChargeInfo: ManualChargeInfo
+    val manualChargeInfo: ManualChargeInfo,
+    val navigateToSuccess: Unit?
   ) : ManualChargeUiState
-}
-
-internal interface ManualChargeFailureReason {
-  data object NotAllowed: ManualChargeFailureReason
-  data object GeneralFailure: ManualChargeFailureReason
-  data class UserErrorWithMessage(
-    val message: String
-  ): ManualChargeFailureReason
 }
 
 internal sealed interface ManualChargeEvent {
   data object Retry : ManualChargeEvent
 
-  // TODO: Add events
+  data object TriggerCharge : ManualChargeEvent
+  data object ClearNav : ManualChargeEvent
 }
 

@@ -2527,11 +2527,6 @@ type Member {
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
-  Young Pet Guide stories for the member.
-  Returns a list of educational content stories for young pet owners.
-  """
-  puppyGuideStories: [PuppyGuideStory!]!
-  """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
   """
@@ -3655,8 +3650,10 @@ type Mutation {
   """
   Confirm this PriceIntent, which will use the current data (and likely `ShopSession.customer`) to generate
   `ProductOffers` that can be added to the cart.
+  Optional `attribution` is merged field-by-field over `ShopSession.attribution` for this confirm only (quotes and
+  `PriceIntentConfirmed` events use the merged result).
   """
-  priceIntentConfirm(priceIntentId: UUID!): PriceIntentMutationOutput!
+  priceIntentConfirm(priceIntentId: UUID!, attribution: PriceIntentConfirmAttributionInput): PriceIntentMutationOutput!
   """
   Change the start date of the given `ProductOffer`s by their ID.
   This is used because it's common to want to change the start date AFTER getting the offer.
@@ -3677,10 +3674,6 @@ type Mutation {
   normal `priceIntentDataUpdate` + `priceIntentConfirm` flow.
   """
   productOfferReprice(offerId: UUID!, data: PricingFormData!): ProductOffersMutationOutput!
-  """
-  Mark a young pet guide story as read for a specific member.
-  """
-  puppyGuideEngagement(engagement: PuppyEngagementInput!): PuppyGuideStoryMutationOutput!
   """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
@@ -4024,6 +4017,14 @@ type PriceIntentAnimalBreed {
   displayName: String!
   isMixedBreed: Boolean!
 }
+input PriceIntentConfirmAttributionInput {
+  attributedTo: String
+  initiatedFrom: String
+  userFlow: String
+  flowSource: String
+  experiments: [ShopSessionExperimentInput!]
+  trackingData: JSON
+}
 input PriceIntentCreateInput {
   shopSessionId: UUID!
   """
@@ -4343,6 +4344,11 @@ if the user has input enough information to generate it.
 type ProductRecommendation {
   product: Product!
   offer: ProductOffer
+  """
+  External insurance data from Insurely, available even when no offer could be generated.
+  Null when no Insurely data collection is associated with the session.
+  """
+  externalInsurance: RecommendationExternalInsurance
 }
 type ProductVariant {
   """
@@ -4407,53 +4413,6 @@ type ProductVariantComparisonRow {
   List of covered items for this peril
   """
   covered: [String!]!
-}
-input PuppyEngagementInput {
-  name: String!
-  rating: Int
-  opened: Boolean
-  read: Boolean
-  closed: Boolean
-}
-type PuppyGuideStory {
-  """
-  The unique name/identifier of the story.
-  """
-  name: String!
-  """
-  The display title of the story.
-  """
-  title: String!
-  """
-  The subtitle or description of the story.
-  """
-  subtitle: String!
-  """
-  The main content of the story.
-  """
-  content: String!
-  """
-  The image associated with this story.
-  """
-  image: String!
-  """
-  Categories this story belongs to.
-  """
-  categories: [String!]!
-  """
-  The date when the story was marked as read by the user.
-  """
-  read: Boolean!
-  """
-   The user's rating of the story.
-  """
-  rating: Int
-}
-type PuppyGuideStoryMutationOutput {
-  """
-  Indicates whether the mutation was successful.
-  """
-  success: Boolean!
 }
 type Query {
   """
@@ -4522,6 +4481,32 @@ type Query {
   Call this to get the cost of an addon offer for selected addon(s).
   """
   addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
+}
+type RecommendationExternalInsurance {
+  """
+  Display name of the external insurance product
+  """
+  displayName: String!
+  """
+  The external insurer
+  """
+  insurer: ExternalInsurer!
+  """
+  Monthly price of the external insurance. Null if not available.
+  """
+  price: Money
+  """
+  Contextual subtitle (e.g. address, registration number, pet name)
+  """
+  subtitle: String
+  """
+  Renewal date of the external policy. Null when not provided.
+  """
+  renewalDate: Date
+  """
+  Insurely data collection ID
+  """
+  dataCollectionId: String!
 }
 type RecommendedCrossSell {
   crossSell: CrossSell!

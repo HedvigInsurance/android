@@ -22,6 +22,7 @@ import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toChargeMethod
 import com.hedvig.android.feature.payments.data.toFailedCharge
 import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.logger.logcat
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -55,9 +56,11 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         emitAll(
           apolloClient.query(UpcomingPaymentQuery())
             .fetchPolicy(FetchPolicy.NetworkFirst)
-            .safeFlow(::ErrorMessage)
+            .safeFlow {
+              logcat { "GetUpcomingPaymentUseCaseImpl error: $it" }
+              ErrorMessage()
+            }
             .map { response ->
-
               either {
                 val result = response.bind()
                 val paymentConnection = run {
