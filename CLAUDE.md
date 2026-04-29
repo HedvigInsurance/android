@@ -220,6 +220,43 @@ data-{domain}/
 - Use cases for business logic
 - Room database for local persistence
 
+**Critical architectural rule — never expose GraphQL types in public API:**
+
+GraphQL is an implementation detail of the data layer. Apollo-generated types (anything from the `octopus` package — queries, mutations, fragments, their `.Data` shapes, generated input/enum types, etc.) **must not appear in the signatures of public interfaces, public functions, return types, or public data classes** that other modules consume.
+
+Use cases and repositories should:
+1. Run the GraphQL operation internally (`.query(...)`, `.mutation(...)`, `.safeExecute()`, `.safeFlow()`).
+2. Map the response into a project-owned type (a plain Kotlin `data class`, sealed type, primitive, or `Unit` if only success/failure matters) before returning.
+3. Keep the `octopus.*` import confined to the `internal` impl class only.
+
+This applies even when the GraphQL type happens to be a perfect shape — wrap it. It keeps the rest of the project insulated from schema churn, makes the data source swappable, and prevents GraphQL types from leaking into KMP/iOS-facing APIs where they'd be even more awkward.
+
+Example — wrong:
+```kotlin
+interface SetArticleRatingUseCase {
+  // ❌ exposes Apollo-generated type
+  suspend fun invoke(name: String, rating: Int): Either<ErrorMessage, PuppyGuideEngagementMutation.Data>
+}
+```
+
+Example — right:
+```kotlin
+interface SetArticleRatingUseCase {
+  // ✅ project-owned shape; Unit because callers only care about success/failure
+  suspend fun invoke(name: String, rating: Int): Either<ErrorMessage, Unit>
+}
+
+internal class SetArticleRatingUseCaseImpl(...) : SetArticleRatingUseCase {
+  override suspend fun invoke(...) = either {
+    val data = apolloClient.mutation(PuppyGuideEngagementMutation(...)).safeExecute()
+      .mapLeft { ErrorMessage() }.bind()
+    ensure(data.puppyGuideEngagement.success) { ErrorMessage() }
+  }
+}
+```
+
+When the response carries useful structured data, define a project-owned `data class` next to the use case (or in a shared model file) and map field-by-field in the impl.
+
 ## Technology Stack
 
 ### UI
