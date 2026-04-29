@@ -20,9 +20,9 @@ internal class PuppyArticleViewModel(
   setArticleRatingUseCase: SetArticleRatingUseCase,
   storyName: String,
 ) : MoleculeViewModel<PuppyArticleEvent, PuppyArticleUiState>(
-    presenter = PuppyArticlePresenter(getPuppyGuideUseCase, storyName, setArticleRatingUseCase),
-    initialState = PuppyArticleUiState.Loading,
-  )
+  presenter = PuppyArticlePresenter(getPuppyGuideUseCase, storyName, setArticleRatingUseCase),
+  initialState = PuppyArticleUiState.Loading,
+)
 
 private class PuppyArticlePresenter(
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
@@ -45,21 +45,23 @@ private class PuppyArticlePresenter(
     }
 
     LaunchedEffect(loadIteration) {
-      getPuppyGuideUseCase.invoke().fold(
-        ifLeft = {
-          currentState = PuppyArticleUiState.Failure
-        },
-        ifRight = { stories ->
-          val matchingStory = stories?.firstOrNull { it.name == storyName }
-          currentState = if (matchingStory == null) {
-            PuppyArticleUiState.Failure
-          } else {
-            logcat { "Mariia. Story rating is: ${matchingStory.rating} " }
-            rating = matchingStory.rating
-            PuppyArticleUiState.Success(matchingStory)
-          }
-        },
-      )
+      getPuppyGuideUseCase.invoke().collect { response ->
+        response.fold(
+          ifLeft = {
+            currentState = PuppyArticleUiState.Failure
+          },
+          ifRight = { stories ->
+            val matchingStory = stories?.firstOrNull { it.name == storyName }
+            currentState = if (matchingStory == null) {
+              PuppyArticleUiState.Failure
+            } else {
+              logcat { "Mariia. Story rating is: ${matchingStory.rating} " }
+              rating = matchingStory.rating
+              PuppyArticleUiState.Success(matchingStory)
+            }
+          },
+        )
+      }
     }
 
     LaunchedEffect(rating) {

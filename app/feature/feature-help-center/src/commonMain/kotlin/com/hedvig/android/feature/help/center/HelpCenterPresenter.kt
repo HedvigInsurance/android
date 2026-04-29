@@ -164,7 +164,7 @@ internal class HelpCenterPresenter(
       combine(
         flow = flow { emit(getQuickLinksUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
-        flow3 = flow { emit(getPuppyGuideUseCase.invoke()) },
+        flow3 = getPuppyGuideUseCase.invoke(),
       ) { quickLinks, faq, puppyGuideResult ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
