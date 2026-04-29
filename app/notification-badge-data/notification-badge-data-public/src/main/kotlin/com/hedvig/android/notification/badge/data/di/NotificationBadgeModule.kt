@@ -10,6 +10,11 @@ import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellRecommen
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationServiceImpl
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationServiceProvider
 import com.hedvig.android.notification.badge.data.crosssell.home.DemoCrossSellHomeNotificationService
+import com.hedvig.android.notification.badge.data.payment.DemoMissedPaymentNotificationService
+import com.hedvig.android.notification.badge.data.payment.GetIfMissedPaymentUseCase
+import com.hedvig.android.notification.badge.data.payment.GetIfMissedPaymentUseCaseImpl
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceImpl
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.notification.badge.data.storage.DatastoreNotificationBadgeStorage
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
 import org.koin.dsl.module
@@ -32,5 +37,19 @@ val notificationBadgeModule = module {
 
   single<CrossSellHomeNotificationServiceImpl> {
     CrossSellHomeNotificationServiceImpl(get<CrossSellNotificationBadgeService>(), get<DataStore<Preferences>>())
+  }
+
+  single<MissedPaymentNotificationServiceProvider> {
+    MissedPaymentNotificationServiceProvider(
+      demoManager = get<DemoManager>(),
+      demoImpl = DemoMissedPaymentNotificationService(),
+      prodImpl = get<MissedPaymentNotificationServiceImpl>(),
+    )
+  }
+  single<GetIfMissedPaymentUseCase> {
+    GetIfMissedPaymentUseCaseImpl(get<ApolloClient>())
+  }
+  single<MissedPaymentNotificationServiceImpl> {
+    MissedPaymentNotificationServiceImpl(get<GetIfMissedPaymentUseCase>())
   }
 }

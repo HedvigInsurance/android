@@ -1,0 +1,23 @@
+query ManualChargeInfo {
+  currentMember {
+    missedChargeIdToChargeManually
+    pastCharges {
+      ...on MemberCharge {
+        id
+        date
+        status
+        net {
+          ...MoneyFragment
+        }
+      }
+    }
+    paymentInformation {
+      status
+      chargeMethod {
+        displayName
+        descriptor
+        paymentMethod
+      }
+    }
+  }
+}

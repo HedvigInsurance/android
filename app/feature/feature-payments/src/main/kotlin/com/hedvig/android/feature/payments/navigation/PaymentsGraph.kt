@@ -12,6 +12,9 @@ import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeDestination
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeSuccessDestination
+import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
@@ -20,6 +23,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
@@ -57,7 +61,38 @@ fun NavGraphBuilder.paymentsGraph(
         onMemberPaymentDetailsClicked = dropUnlessResumed {
           navController.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
+        onOpenManualCharge = {
+          navController.navigate(PaymentsDestinations.ManualCharge)
+        },
       )
+    }
+
+    navdestination<PaymentsDestinations.ManualCharge>(
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.manualCharge),
+    ) {
+      val viewModel: ManualChargeViewModel = koinViewModel()
+      ManualChargeDestination(
+        viewModel = viewModel,
+        navigateUp = navController::navigateUp,
+        onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
+          navController.navigate(
+            PaymentsDestinations.Details(
+              chargeId,
+            ),
+          )
+        },
+        onNavigateToSuccess = {
+          navController.navigate(PaymentsDestinations.ManualChargeSuccess) {
+            typedPopUpTo<PaymentsDestinations.ManualCharge> {
+              inclusive = true
+            }
+          }
+        }
+      )
+    }
+
+    navdestination<PaymentsDestinations.ManualChargeSuccess>{
+      ManualChargeSuccessDestination(navController::navigateUp)
     }
 
     navdestination<PaymentsDestinations.Details> {

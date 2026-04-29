@@ -3,13 +3,9 @@ package com.hedvig.android.feature.payments.data
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount.DiscountStatus
-import kotlin.String
-import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.todayIn
 import kotlinx.serialization.Serializable
 import octopus.PaymentHistoryWithDetailsQuery
 import octopus.ShortPaymentHistoryQuery
@@ -47,6 +43,7 @@ internal data class MemberCharge(
   data class FailedCharge(
     val fromDate: LocalDate,
     val toDate: LocalDate,
+    val sum: UiMoney,
   )
 
   internal enum class MemberChargeStatus {
@@ -170,7 +167,8 @@ internal fun MemberChargeFragment.toMemberCharge(
 
 internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
   return when {
-    this?.startsWith("kivra", ignoreCase = true) == true -> MemberPaymentChargeMethod.KIVRA
+    this?.startsWith("kivra", ignoreCase = true) == true ||
+      this?.startsWith("invoice", ignoreCase = true) == true -> MemberPaymentChargeMethod.KIVRA
     this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
     else -> MemberPaymentChargeMethod.UNKNOWN
   }
@@ -183,11 +181,20 @@ internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
 
   val from = previousChargesPeriods.minOfOrNull { it.fromDate }
   val to = previousChargesPeriods.maxOfOrNull { it.toDate }
+  val sum = if (previousChargesPeriods.isNotEmpty()) {
+    UiMoney(
+      previousChargesPeriods.sumOf { it.amount.amount },
+      UiCurrencyCode.fromCurrencyCode(previousChargesPeriods.first().amount.currencyCode),
+    )
+  } else {
+    UiMoney(0.0, UiCurrencyCode.SEK)
+  }
 
   return if (from != null && to != null) {
     MemberCharge.FailedCharge(
       from,
       to,
+      sum,
     )
   } else {
     null

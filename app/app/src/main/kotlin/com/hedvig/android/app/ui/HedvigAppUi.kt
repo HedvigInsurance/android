@@ -44,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.core.TopLevelGraph
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
@@ -65,6 +66,7 @@ internal fun HedvigAppUi(
   logoutUseCase: LogoutUseCase,
 ) {
   val isDemoMode by demoManager.isDemoMode().collectAsState(false)
+  val showPaymentsBadge by hedvigAppState.showPaymentsBadge.collectAsState()
   val globalSnackBarState = rememberGlobalSnackBarState()
   Box(Modifier.fillMaxSize()) {
     Surface(
@@ -76,6 +78,9 @@ internal fun HedvigAppUi(
         topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
         currentDestination = hedvigAppState.currentDestination,
         onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+        getShowNotificationBadge = { graph ->
+          if (graph == TopLevelGraph.Payments) showPaymentsBadge else false
+        },
       ) {
         Box(
           propagateMinConstraints = true,

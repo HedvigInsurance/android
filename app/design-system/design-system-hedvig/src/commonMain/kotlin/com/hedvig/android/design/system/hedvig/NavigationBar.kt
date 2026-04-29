@@ -77,6 +77,7 @@ fun NavigationBar(
   onNavigateToDestination: (TopLevelGraph) -> Unit,
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
   modifier: Modifier = Modifier,
+  getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
 ) {
   val borderColor = NavigationTokens.BorderColor.value
   NavigationContainer(modifier) {
@@ -110,6 +111,7 @@ fun NavigationBar(
             top = NavigationBarTokens.ItemTopPadding,
             bottom = NavigationBarTokens.ItemBottomPadding,
           ),
+          showNotificationBadge = getShowNotificationBadge(destination),
           modifier = Modifier.weight(1f)
             .semantics {
               role = Role.Tab
@@ -128,6 +130,7 @@ fun NavigationRail(
   getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
   isExtraTall: Boolean,
   modifier: Modifier = Modifier,
+  getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
 ) {
   val borderColor = NavigationTokens.BorderColor.value
   NavigationContainer(modifier.fillMaxHeight()) {
@@ -177,6 +180,7 @@ fun NavigationRail(
             top = NavigationRailTokens.ItemTopPadding,
             bottom = NavigationRailTokens.ItemBottomPadding,
           ),
+          showNotificationBadge = getShowNotificationBadge(destination),
           modifier = Modifier.semantics {
             role = Role.Tab
             this.selected = selected
@@ -214,6 +218,7 @@ private fun NavigationItem(
   onClick: () -> Unit,
   itemPaddings: PaddingValues,
   modifier: Modifier = Modifier,
+  showNotificationBadge: Boolean = false,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   var itemWidthPx by remember { mutableIntStateOf(0) }
@@ -236,7 +241,9 @@ private fun NavigationItem(
       .padding(itemPaddings),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    Box {
+    Box(
+      modifier = Modifier.notificationCircle(showNotificationBadge),
+    ) {
       Icon(
         imageVector = icon,
         contentDescription = EmptyContentDescription,

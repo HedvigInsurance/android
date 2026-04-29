@@ -25,6 +25,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.feature.help.center.navigation.helpCenterCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetPermittingDestinations
@@ -62,6 +63,7 @@ internal fun rememberHedvigAppState(
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   navHostController: NavHostController,
+  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   NavigationViewTrackingEffect(navController = navHostController)
@@ -73,6 +75,7 @@ internal fun rememberHedvigAppState(
     settingsDataStore,
     getOnlyHasNonPayingContractsUseCase,
     featureManager,
+    missedPaymentNotificationServiceProvider,
   ) {
     HedvigAppState(
       navController = navHostController,
@@ -81,6 +84,7 @@ internal fun rememberHedvigAppState(
       settingsDataStore = settingsDataStore,
       getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
       featureManager = featureManager,
+      missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
     )
   }
 }
@@ -93,6 +97,7 @@ internal class HedvigAppState(
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
+  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination
@@ -161,6 +166,15 @@ internal class HedvigAppState(
       TopLevelGraph.Profile,
     ),
   )
+
+  val showPaymentsBadge: StateFlow<Boolean> = missedPaymentNotificationServiceProvider
+    .prodImpl
+    .showRedDotNotification()
+    .stateIn(
+      coroutineScope,
+      SharingStarted.WhileSubscribed(5_000),
+      false,
+    )
 
   /**
    * UI logic for navigating to a top level destination in the app. Top level destinations have

@@ -3,6 +3,8 @@ package com.hedvig.android.feature.payments.ui.payments
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,12 +26,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -39,6 +43,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.safeCast
+import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -51,19 +56,23 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
+import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.ui.payments.PaymentsEvent.Retry
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content
@@ -88,6 +97,10 @@ import hedvig.resources.PAYMENTS_MISSED_PAYMENT
 import hedvig.resources.PAYMENTS_NO_PAYMENTS_IN_PROGRESS
 import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
 import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BODY
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BUTTON
+import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
@@ -111,6 +124,7 @@ internal fun PaymentsDestination(
   onPaymentHistoryClicked: () -> Unit,
   onMemberPaymentDetailsClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
+  onOpenManualCharge: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PaymentsScreen(
@@ -121,6 +135,7 @@ internal fun PaymentsDestination(
     onPaymentHistoryClicked = onPaymentHistoryClicked,
     onRetry = { viewModel.emit(Retry) },
     onPaymentDetailsClicked = onMemberPaymentDetailsClicked,
+    onOpenManualCharge = onOpenManualCharge,
   )
 }
 
@@ -132,6 +147,7 @@ private fun PaymentsScreen(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
+  onOpenManualCharge: () -> Unit,
   onRetry: () -> Unit,
 ) {
   val density = LocalDensity.current
@@ -193,6 +209,7 @@ private fun PaymentsScreen(
               onDiscountClicked = onDiscountClicked,
               onPaymentHistoryClicked = onPaymentHistoryClicked,
               onPaymentDetailsClicked = onPaymentDetailsClicked,
+              onOpenManualCharge = onOpenManualCharge,
             )
             Spacer(Modifier.height(16.dp))
           }
@@ -217,6 +234,7 @@ private fun PaymentsContent(
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
+  onOpenManualCharge: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -225,6 +243,20 @@ private fun PaymentsContent(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Spacer(Modifier.height(8.dp))
+    when (val upcomingPaymentInfo = (uiState as? Content)?.upcomingPaymentInfo) {
+      is PaymentFailed -> {
+        if (upcomingPaymentInfo.isManualChargeAllowed != null) {
+          FailedPaymentInfo(
+            amountDue = upcomingPaymentInfo.isManualChargeAllowed.sum.toString(),
+            onReviewPaymentClick = onOpenManualCharge,
+            modifier = Modifier.padding(horizontal = 16.dp)
+          )
+          Spacer(Modifier.height(8.dp))
+        }
+      }
+
+      else -> {}
+    }
     val ongoingCharges = (uiState as? Content)?.ongoingCharges
     if (!ongoingCharges.isNullOrEmpty()) {
       OngoingPaymentCards(
@@ -333,7 +365,10 @@ private fun CardNotConnectedWarningCard(
 }
 
 @Composable
-private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, modifier: Modifier = Modifier) {
+private fun UpcomingPaymentInfoCard(
+  upcomingPaymentInfo: UpcomingPaymentInfo?,
+  modifier: Modifier = Modifier,
+) {
   Box(modifier) {
     when (upcomingPaymentInfo) {
       NoInfo -> {}
@@ -347,14 +382,19 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
 
       is PaymentFailed -> {
         val monthDateFormatter = rememberHedvigMonthDateTimeFormatter()
-        HedvigNotificationCard(
-          priority = NotificationPriority.Attention,
-          message = stringResource(
-            Res.string.PAYMENTS_MISSED_PAYMENT,
-            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
-            monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
-          ),
-        )
+        if (upcomingPaymentInfo.isManualChargeAllowed == null) {
+          Column {
+            HedvigNotificationCard(
+              priority = NotificationPriority.Attention,
+              message = stringResource(
+                Res.string.PAYMENTS_MISSED_PAYMENT,
+                monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
+                monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
+              ),
+              style = NotificationDefaults.InfoCardStyle.Default,
+            )
+          }
+        }
       }
 
       null -> {}
@@ -547,6 +587,84 @@ private fun PaymentCard(
 }
 
 @Composable
+private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Unit, modifier: Modifier = Modifier) {
+  HedvigCard(
+    color = HedvigTheme.colorScheme.fillNegative,
+    modifier = modifier
+      .fillMaxWidth()
+      .border(1.dp, HedvigTheme.colorScheme.borderPrimary,
+        HedvigTheme.shapes.cornerXLarge)
+      .hedvigDropShadow()
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 16.dp),
+    ) {
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Box(
+          modifier = Modifier
+            .background(
+              color = HedvigTheme.colorScheme.signalRedFill,
+              shape = CircleShape,
+            )
+            .padding(8.dp),
+          contentAlignment = Alignment.Center,
+        ) {
+          Icon(
+            imageVector = HedvigIcons.WarningFilled,
+            contentDescription = null,
+            tint = HedvigTheme.colorScheme.signalRedElement,
+            modifier = Modifier.size(24.dp),
+          )
+        }
+        Column(
+          modifier = Modifier
+            .weight(1f),
+          verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+          HedvigText(
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textPrimary,
+          )
+          HedvigText(
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE, amountDue),
+            style = HedvigTheme.typography.label,
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      }
+      Spacer(Modifier.height(8.dp))
+      HedvigText(
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BODY),
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+
+      Spacer(Modifier.height(12.dp))
+      HedvigButton(
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_BUTTON),
+        onClick = onReviewPaymentClick,
+        enabled = true,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+        buttonSize = ButtonDefaults.ButtonSize.Small,
+      )
+    }
+  }
+}
+
+@Composable
 private fun PaymentsListItem(
   text: String,
   icon: @Composable () -> Unit,
@@ -571,6 +689,20 @@ private fun PaymentsListItem(
 
 @Composable
 @HedvigPreview
+private fun PreviewFailedPaymentInfo() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      FailedPaymentInfo(
+        amountDue = "233 kr",
+        {},
+      )
+    }
+  }
+}
+
+
+@Composable
+@HedvigPreview
 private fun PreviewPaymentScreen(
   @PreviewParameter(PaymentsStatePreviewProvider::class) uiState: PaymentsUiState,
 ) {
@@ -579,6 +711,7 @@ private fun PreviewPaymentScreen(
       PaymentsScreen(
         uiState = uiState,
         { _ -> },
+        {},
         {},
         {},
         {},
@@ -648,6 +781,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK),
+          ),
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active(
@@ -677,7 +813,13 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().toLocalDateTime(TimeZone.UTC).date,
           "qrdfgeth",
         ),
-        upcomingPaymentInfo = NoInfo,
+        upcomingPaymentInfo = PaymentFailed(
+          System.now().toLocalDateTime(TimeZone.UTC).date,
+          System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK),
+          ),
+        ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
@@ -710,6 +852,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK),
+          ),
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
@@ -728,6 +873,9 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
+          isManualChargeAllowed = ManualChargeToPrompt(
+            UiMoney(200.0, UiCurrencyCode.SEK),
+          ),
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(

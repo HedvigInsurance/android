@@ -30,6 +30,7 @@ internal fun NavigationSuite(
   currentDestination: NavDestination?,
   onNavigateToTopLevelGraph: (TopLevelGraph) -> Unit,
   modifier: Modifier = Modifier,
+  getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
   content: @Composable RowScope.() -> Unit,
 ) {
   Column(modifier) {
@@ -49,6 +50,7 @@ internal fun NavigationSuite(
           onNavigateToDestination = onNavigateToTopLevelGraph,
           getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
           isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
+          getShowNotificationBadge = getShowNotificationBadge,
         )
       }
       content()
@@ -62,6 +64,7 @@ internal fun NavigationSuite(
         destinations = topLevelGraphs,
         onNavigateToDestination = onNavigateToTopLevelGraph,
         getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
+        getShowNotificationBadge = getShowNotificationBadge,
       )
     }
   }

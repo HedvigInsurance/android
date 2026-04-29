@@ -47,6 +47,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
 import java.util.Locale
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
   private val logoutUseCase: LogoutUseCase by inject()
   private val getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase by inject()
+  private val missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider by inject()
 
   private var navController: NavController? = null
 
@@ -164,6 +166,7 @@ class MainActivity : AppCompatActivity() {
         externalNavigator = externalNavigator,
         logoutUseCase = logoutUseCase,
         getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
+        missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
       )
     }
   }

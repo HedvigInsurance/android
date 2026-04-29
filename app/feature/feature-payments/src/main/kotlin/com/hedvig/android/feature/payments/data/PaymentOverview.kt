@@ -7,6 +7,7 @@ internal data class PaymentOverview(
   val memberChargeShortInfo: MemberChargeShortInfo?,
   val ongoingCharges: List<OngoingCharge>,
   val paymentConnection: PaymentConnection,
+  val isManualChargeAllowed: ManualChargeToPrompt?,
 ) {
   data class OngoingCharge(
     val id: String,
@@ -14,6 +15,10 @@ internal data class PaymentOverview(
     val netAmount: UiMoney,
   )
 }
+
+internal data class ManualChargeToPrompt(
+  val sum: UiMoney,
+)
 
 internal data class MemberChargeShortInfo(
   val netAmount: UiMoney,

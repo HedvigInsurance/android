@@ -6,6 +6,7 @@ internal sealed interface PaymentConnection {
   data class Active(
     val displayName: String?,
     val displayValue: String?,
+    val chargeMethod: MemberPaymentChargeMethod,
   ) : PaymentConnection
 
   data object Pending : PaymentConnection
