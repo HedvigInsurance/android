@@ -91,7 +91,6 @@ import com.hedvig.android.feature.help.center.HelpCenterUiState
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
-import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.feature.help.center.model.QuickAction.MultiSelectExpandedLink
@@ -175,7 +174,7 @@ internal fun HelpCenterHomeDestination(
     reload = {
       viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
     },
-    puppyGuide = uiState.puppyGuide,
+    puppyGuidesExist = uiState.puppyGuidesExist,
     onNavigateToPuppyGuide = onNavigateToPuppyGuide,
   )
 }
@@ -185,7 +184,7 @@ private fun HelpCenterHomeScreen(
   search: HelpCenterUiState.Search?,
   topics: List<FAQTopic>,
   questions: List<FAQItem>,
-  puppyGuide: List<PuppyGuideStory>?,
+  puppyGuidesExist: Boolean,
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topicId: String) -> Unit,
@@ -349,7 +348,7 @@ private fun HelpCenterHomeScreen(
                 showNavigateToInboxButton = showNavigateToInboxButton,
                 onNavigateToInbox = onNavigateToInbox,
                 onNavigateToNewConversation = onNavigateToNewConversation,
-                puppyGuide = puppyGuide,
+                puppyGuidesExist = puppyGuidesExist,
                 onNavigateToPuppyGuide = onNavigateToPuppyGuide,
               )
             } else {
@@ -377,7 +376,7 @@ private fun ContentWithoutSearch(
   topics: List<FAQTopic>,
   onNavigateToTopic: (topicId: String) -> Unit,
   questions: List<FAQItem>,
-  puppyGuide: List<PuppyGuideStory>?,
+  puppyGuidesExist: Boolean,
   onNavigateToQuestion: (questionId: String) -> Unit,
   showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
@@ -391,13 +390,13 @@ private fun ContentWithoutSearch(
     ) {
       Spacer(Modifier.height(32.dp))
       AnimatedContent(
-        puppyGuide != null,
+        puppyGuidesExist,
         contentAlignment = Alignment.Center,
-      ) { puppyGuideAvailable ->
+      ) { puppyGuidesExist ->
         Column(
           Modifier.fillMaxWidth(),
         ) {
-          if (puppyGuideAvailable) {
+          if (puppyGuidesExist) {
             PuppyGuideCard(
               onClick = onNavigateToPuppyGuide,
               modifier = Modifier.padding(horizontal = 16.dp),
@@ -800,18 +799,7 @@ private fun PreviewHelpCenterHomeScreen(
         onUpdateSearchResults = { _, _ -> },
         search = null,
         reload = {},
-        puppyGuide = listOf(
-          PuppyGuideStory(
-            categories = listOf("Food"),
-            content = "some content",
-            image = "",
-            name = "",
-            rating = 5,
-            isRead = false,
-            subtitle = "Subtitle",
-            title = "Title",
-          ),
-        ),
+        puppyGuidesExist = true,
         onNavigateToPuppyGuide = {},
       )
     }
@@ -858,7 +846,7 @@ private fun PreviewQuickLinkAnimations() {
           onUpdateSearchResults = { _, _ -> },
           search = null,
           reload = {},
-          puppyGuide = null,
+          puppyGuidesExist = false,
           onNavigateToPuppyGuide = {},
         )
       }
@@ -889,7 +877,7 @@ private fun PreviewQuickLinkEmptyState() {
         onUpdateSearchResults = { _, _ -> },
         search = null,
         reload = {},
-        puppyGuide = null,
+        puppyGuidesExist = false,
         onNavigateToPuppyGuide = {},
       )
     }

@@ -26,7 +26,6 @@ import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
-import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -63,7 +62,7 @@ internal data class HelpCenterUiState(
   val search: Search?,
   val showNavigateToInboxButton: Boolean,
   val destinationToNavigate: QuickLinkDestination? = null,
-  val puppyGuide: List<PuppyGuideStory>?,
+  val puppyGuidesExist: Boolean,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -184,14 +183,13 @@ internal class HelpCenterPresenter(
         )
         val topics = faq.getOrNull()?.topics ?: listOf()
         val questions = faq.getOrNull()?.commonFAQ ?: listOf()
-        val puppyGuide = puppyGuideResult.getOrNull()
         currentState = currentState.copy(
           topics = topics,
           questions = questions,
           quickLinksUiState = quickLinksUiState,
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
-          puppyGuide = puppyGuide,
+          puppyGuidesExist = puppyGuideResult.getOrNull()?.isNotEmpty() == true,
         )
       }.collect()
     }
