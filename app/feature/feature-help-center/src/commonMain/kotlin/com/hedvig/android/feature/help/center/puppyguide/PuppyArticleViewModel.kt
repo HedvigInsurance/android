@@ -73,10 +73,11 @@ private class PuppyArticlePresenter(
         rating = currentRating,
       ).fold(
         ifLeft = {
+          logcat { "setArticleRatingUseCase rating failed!" }
           // todo: snackbar?
         },
         ifRight = {
-          logcat { "Mariia: rating set!" }
+          logcat { "setArticleRatingUseCase rating set!" }
         },
       )
     }
