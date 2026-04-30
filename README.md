@@ -46,3 +46,25 @@ plugin is used to achieve this. This will run on CI using [this task](./.github/
 `./gradlew :app:lint -Prur.lint.onlyUnusedResources`
 And then
 `./gradlew :app:removeUnusedResourcesDebug`
+
+## Sharing code with iOS via HedvigShared
+
+The `:umbrella` module produces `HedvigShared.xcframework`, the binary that the iOS app (Ugglan) consumes for shared KMP code. In production it's published by the `umbrella.yml` workflow as a Swift Package — see `app/umbrella/build.gradle.kts` for the exported module list.
+
+For mobile devs iterating on shared Kotlin changes locally, Ugglan has a script that builds this XCFramework from your checkout and points its Tuist project at it without touching the published-package config. Check out the android repo as a sibling of `ugglan/`:
+
+```
+<parent>/
+├── android/   ← this repo
+└── ugglan/
+```
+
+Then from `ugglan/`, run `scripts/use-local-umbrella.sh`. See the *Iterating on shared KMP code* section in Ugglan's README for the full flow.
+
+To produce the XCFramework manually from this repo:
+
+```sh
+./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework
+```
+
+The artifact lands at `app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework`.
