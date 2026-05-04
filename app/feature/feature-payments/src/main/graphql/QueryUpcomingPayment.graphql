@@ -21,26 +21,6 @@ query UpcomingPayment {
       defaultPayinMethod {
         ...MemberPaymentMethodFragment
       }
-      chargingDay
-    }
-  }
-}
-
-fragment MemberPaymentMethodFragment on MemberPaymentMethod {
-  provider
-  status
-  isDefault
-  details {
-    ... on PaymentMethodInvoiceDetails {
-      delivery
-      email
-    }
-    ... on PaymentMethodSwishDetails {
-      phoneNumber
-    }
-    ... on PaymentMethodBankAccountDetails {
-      account
-      bank
     }
   }
 }
