@@ -11,6 +11,10 @@ query GetPayinMethodStatus {
     paymentMethods {
       payoutMethods {
         status
+        isDefault
+      }
+      availableMethods {
+        provider
       }
     }
   }

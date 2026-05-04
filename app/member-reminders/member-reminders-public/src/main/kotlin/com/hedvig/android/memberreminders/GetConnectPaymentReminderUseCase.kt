@@ -47,8 +47,9 @@ internal class GetConnectPaymentReminderUseCaseImpl(
       if (payStatus == MemberPaymentConnectionStatus.NEEDS_SETUP) {
         return@either PaymentReminder.ShowConnectPaymentReminder
       }
-      val isMissingPayoutMethod = result.currentMember.paymentMethods.payoutMethods.isEmpty()
-      if (isMissingPayoutMethod) {
+      val hasDefaultPayoutMethod = result.currentMember.paymentMethods.payoutMethods.any { it.isDefault }
+      val hasAvailableMethods = result.currentMember.paymentMethods.availableMethods.isNotEmpty()
+      if (!hasDefaultPayoutMethod && hasAvailableMethods) {
         return@either PaymentReminder.ShowConnectPayoutReminder
       }
       raise(ConnectPaymentReminderError.DomainError.AlreadySetup)
