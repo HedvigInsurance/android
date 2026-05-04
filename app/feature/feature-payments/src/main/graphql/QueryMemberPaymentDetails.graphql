@@ -1,15 +1,13 @@
 query MemberPaymentDetails {
   currentMember {
-    paymentInformation {
-      status
-      chargeMethod {
-        displayName
-        descriptor
-        dueDate
-        mandate
-        paymentMethod
-        paymentProvider
+    paymentMethods {
+      payinMethods {
+        ...MemberPaymentMethodFragment
       }
+      defaultPayinMethod {
+        ...MemberPaymentMethodFragment
+      }
+      chargingDay
     }
   }
 }

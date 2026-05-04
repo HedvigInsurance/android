@@ -6,9 +6,7 @@ import com.hedvig.android.feature.payments.data.Discount
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
-import com.hedvig.android.feature.payments.data.PaymentAccount
 import com.hedvig.android.feature.payments.data.PaymentConnection
-import com.hedvig.android.feature.payments.data.PaymentMethod
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import kotlinx.datetime.LocalDate
@@ -273,11 +271,7 @@ internal val paymentOverViewPreviewData: PaymentOverview
     return PaymentOverview(
       memberChargeShortInfo = memberChargeShortInfo,
       ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
-      paymentConnection = PaymentConnection.Active(
-        paymentMethod = PaymentMethod.NORDEA,
-        chargingDay = 27,
-        account = PaymentAccount.BankAccount("31489*****"),
-      ),
+      paymentConnection = PaymentConnection.Active,
     )
   }
 

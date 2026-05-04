@@ -67,8 +67,6 @@ import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
-import com.hedvig.android.feature.payments.data.PaymentAccount
-import com.hedvig.android.feature.payments.data.PaymentMethod
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.ui.payments.PaymentsEvent.Retry
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content
@@ -639,11 +637,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = NoUpcomingPayment,
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, SEK))),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          paymentMethod = PaymentMethod.NORDEA,
-          chargingDay = 27,
-          account = PaymentAccount.BankAccount("****1234"),
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = true,
       ),
     )
@@ -657,11 +651,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          paymentMethod = PaymentMethod.NORDEA,
-          chargingDay = 27,
-          account = PaymentAccount.BankAccount("****1234"),
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = false,
       ),
     )
@@ -675,11 +665,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = InProgress,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          paymentMethod = PaymentMethod.NORDEA,
-          chargingDay = 27,
-          account = PaymentAccount.BankAccount("****1234"),
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = false,
       ),
     )
@@ -696,11 +682,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          paymentMethod = PaymentMethod.NORDEA,
-          chargingDay = 27,
-          account = PaymentAccount.BankAccount("****1234"),
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = false,
       ),
     )

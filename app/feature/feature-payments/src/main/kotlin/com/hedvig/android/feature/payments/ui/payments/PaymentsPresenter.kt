@@ -12,13 +12,11 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.PaymentAccount
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
 import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
-import com.hedvig.android.feature.payments.data.PaymentMethod
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCase
@@ -115,11 +113,7 @@ private class ShouldShowPayoutPresenter(
 
 private fun PaymentConnection.toConnectedPaymentInfo(): ConnectedPaymentInfo {
   return when (this) {
-    is Active -> ConnectedPaymentInfo.Active(
-      paymentMethod = paymentMethod,
-      chargingDay = chargingDay,
-      account = account,
-    )
+    Active -> ConnectedPaymentInfo.Active
 
     Pending -> ConnectedPaymentInfo.Pending
 
@@ -178,11 +172,7 @@ internal sealed interface PaymentsUiState {
 
       data object Pending : ConnectedPaymentInfo
 
-      data class Active(
-        val paymentMethod: PaymentMethod,
-        val chargingDay: Int?,
-        val account: PaymentAccount?,
-      ) : ConnectedPaymentInfo
+      data object Active : ConnectedPaymentInfo
     }
   }
 }
