@@ -33,7 +33,6 @@ fun NavGraphBuilder.paymentsGraph(
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
-  onOpenChat: () -> Unit,
 ) {
   navgraph<PaymentsDestination.Graph>(
     startDestination = PaymentsDestination.Payments::class,
