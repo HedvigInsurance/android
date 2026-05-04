@@ -80,7 +80,6 @@
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
   <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Payout to a Swedish bank account</string>
   <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bank account</string>
-  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing number</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -607,6 +606,8 @@
   <string name="PAYMENTS_PAYMENT_DUE_INFO">If you update your bank account close to the %1$s, the withdrawal might take a few extra days.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Payment history</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Payment in progress</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">It may take up to 5 business days for the charge to appear</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Payment method</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Amount due: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">We couldn't collect this payment from your bank account. Pay now to keep your coverage active.</string>
@@ -636,6 +637,8 @@
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Instant payout with Swish</string>
   <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Payout via Trustly</string>
   <string name="PAYOUT_MISSING_INFO">You haven’t added a payout method yet. Add one to receive payouts.</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">Connect a payment method first to be able to receive payouts</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_TITLE">No payout method available</string>
   <string name="PAYOUT_PAGE_HEADING">Payout account</string>
   <string name="PAYOUT_SELECT_PAYOUT_METHOD">Choose payout method</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">We need permission to record audio</string>
@@ -1029,6 +1032,7 @@
   <string name="claim_status_not_compensated_support_text">Your claim was covered but unfortunately the compensation is equal or less than the deductible. Please see conversation for more details.</string>
   <string name="claim_status_not_covered_support_text">Your claim was unfortunately not covered. Please see conversation for more details on the decision.</string>
   <string name="claim_status_paid_support_text_short">We got you covered. You should have received the payment by now.</string>
+  <string name="claim_status_partner_support_text">This claim is handled by our external partner Eir by email.\nAlready in contact with them? Reply to your existing email thread to keep all claim details in one conversation.</string>
   <string name="claim_status_submitted_support_text">We have received your claim and will start reviewing it soon.</string>
   <string name="claim_status_uploaded_files_upload_text">Upload photos, receipts or other documents connected to your claim</string>
   <string name="claim_status_appeal_instruction_link_text">Appeal Instruction (SWE)</string>
@@ -1037,6 +1041,7 @@
   <string name="claim_status_detail_chat_button_description">Write a message</string>
   <string name="claim_status_detail_closed">Closed</string>
   <string name="claim_status_detail_documents_title">Claim documents</string>
+  <string name="claim_status_detail_email_view_body">Open email</string>
   <string name="claim_status_detail_info_error_body">The claim audio couldn't be downloaded. Please try again to be able to listen to it.</string>
   <string name="claim_status_detail_info_error_button">Try again</string>
   <string name="claim_status_detail_info_error_title">Downloading error</string>

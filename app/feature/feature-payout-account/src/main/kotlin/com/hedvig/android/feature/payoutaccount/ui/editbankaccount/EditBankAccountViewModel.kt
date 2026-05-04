@@ -23,15 +23,15 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class EditBankAccountViewModel(
   setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
 ) : MoleculeViewModel<EditBankAccountEvent, EditBankAccountUiState>(
-  EditBankAccountUiState(
-    accountNumberState = TextFieldState(),
-    bankName = null,
-    isLoading = false,
-    errorMessage = null,
-    showSuccessSnackBar = false,
-  ),
-  EditBankAccountPresenter(setupNordeaPayoutUseCase),
-)
+    EditBankAccountUiState(
+      accountNumberState = TextFieldState(),
+      bankName = null,
+      isLoading = false,
+      errorMessage = null,
+      showSuccessSnackBar = false,
+    ),
+    EditBankAccountPresenter(setupNordeaPayoutUseCase),
+  )
 
 internal sealed interface EditBankAccountEvent {
   data object Save : EditBankAccountEvent

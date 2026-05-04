@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
+import com.hedvig.android.design.system.hedvig.HedvigInformationSection
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
@@ -31,12 +32,13 @@ import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOvervie
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE
+import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_TITLE
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
+import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
-import hedvig.resources.general_back_button
-import hedvig.resources.something_went_wrong
 import octopus.type.MemberPaymentProvider
 import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
@@ -45,15 +47,15 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PayoutAccountOverviewDestination(
   viewModel: PayoutAccountOverviewViewModel,
   onConnectPayoutMethodClicked: () -> Unit,
-  navigateBack: () -> Unit,
+  navigateToConnectPayment: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PayoutAccountOverviewScreen(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
+    navigateToConnectPayment = navigateToConnectPayment,
     onRetry = { viewModel.emit(PayoutAccountOverviewEvent.Retry) },
-    navigateBack = navigateBack,
     navigateUp = navigateUp,
   )
 }
@@ -62,8 +64,8 @@ internal fun PayoutAccountOverviewDestination(
 private fun PayoutAccountOverviewScreen(
   uiState: PayoutAccountOverviewUiState,
   onConnectPayoutMethodClicked: () -> Unit,
+  navigateToConnectPayment: () -> Unit,
   onRetry: () -> Unit,
-  navigateBack: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
@@ -89,12 +91,23 @@ private fun PayoutAccountOverviewScreen(
         )
       }
 
+      PayoutAccountOverviewUiState.NoPayoutOptions -> {
+        HedvigInformationSection(
+          title = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_TITLE),
+          subTitle = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE),
+          buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+          onButtonClick = navigateToConnectPayment,
+          modifier = Modifier
+            .weight(1f)
+            .wrapContentHeight(),
+        )
+      }
+
       is Content -> {
         PayoutAccountContent(
           currentMethod = uiState.currentMethod,
           availablePayoutMethods = uiState.availablePayoutMethods,
           onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
-          navigateBack = navigateBack,
           modifier = Modifier.weight(1f),
         )
       }
@@ -107,24 +120,12 @@ private fun PayoutAccountContent(
   currentMethod: PayoutAccount?,
   availablePayoutMethods: List<MemberPaymentProvider>,
   onConnectPayoutMethodClicked: () -> Unit,
-  navigateBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
     Spacer(Modifier.height(8.dp))
     when (currentMethod) {
-      null -> {
-        if (availablePayoutMethods.isEmpty()) {
-          Spacer(Modifier.weight(1f))
-          HedvigErrorSection(
-            // todo copy when missing current and possible payout methods
-            title = stringResource(Res.string.something_went_wrong),
-            subTitle = null,
-            buttonText = stringResource(Res.string.general_back_button),
-            onButtonClick = navigateBack,
-          )
-        }
-      }
+      null -> {}
 
       is PayoutAccount.SwishPayout -> {
         val phoneNumber = currentMethod.phoneNumber.orEmpty()
@@ -197,11 +198,7 @@ private fun PayoutAccountContent(
 }
 
 @Composable
-private fun PayoutAccountReadOnlyTextField(
-  label: String,
-  text: String,
-  modifier: Modifier = Modifier,
-) {
+private fun PayoutAccountReadOnlyTextField(label: String, text: String, modifier: Modifier = Modifier) {
   HedvigTextField(
     text = text,
     onValueChange = {},
@@ -235,9 +232,9 @@ private fun PreviewPayoutAccountOverviewScreen(
       PayoutAccountOverviewScreen(
         uiState = uiState,
         onConnectPayoutMethodClicked = {},
+        navigateToConnectPayment = {},
         onRetry = {},
         navigateUp = {},
-        navigateBack = {},
       )
     }
   }
@@ -247,6 +244,7 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
   listOf(
     PayoutAccountOverviewUiState.Loading,
     PayoutAccountOverviewUiState.Error,
+    PayoutAccountOverviewUiState.NoPayoutOptions,
     Content(
       currentMethod = null,
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),

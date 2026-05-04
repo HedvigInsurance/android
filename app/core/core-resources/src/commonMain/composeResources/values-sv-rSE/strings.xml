@@ -80,7 +80,6 @@
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Skanna QR-koden med BankID-appen på din telefon, eller logga in med din e-postadress nedan.</string>
   <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Utbetalning till ett svenskt bankkonto</string>
   <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bankkonto</string>
-  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearingnummer</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Tack för ditt meddelande. Vi svarar så snart som möjligt.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -607,6 +606,8 @@
   <string name="PAYMENTS_PAYMENT_DUE_INFO">Om du uppdaterar ditt bankkonto nära den %1$s kan det ta några extra dagar innan pengarna dras.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Betalningshistorik</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Betalning pågår</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">Det kan ta upp till 5 bankdagar innan betalningen syns</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Betalningssätt</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Att betala: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">Vi kunde inte dra betalningen från ditt bankkonto. Betala för att undvika avbrott i ditt skydd.</string>
@@ -636,6 +637,8 @@
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Snabb utbetalning med Swish</string>
   <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Utbetalning via Trustly</string>
   <string name="PAYOUT_MISSING_INFO">Du har inte lagt till någon utbetalningsmetod än. Lägg till en för att vi ska kunna betala ut till dig.</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">Anslut ett betalsätt först för att kunna ta emot utbetalningar</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_TITLE">Inget utbetalningssätt tillgängligt</string>
   <string name="PAYOUT_PAGE_HEADING">Utbetalningskonto</string>
   <string name="PAYOUT_SELECT_PAYOUT_METHOD">Välj utbetalningsmetod</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">Vi behöver tillåtelse att spela in ljud</string>
@@ -1029,6 +1032,7 @@
   <string name="claim_status_not_compensated_support_text">Din skada täcks, men tyvärr är ersättningen lika stor eller mindre än självrisken. Se konversation för mer information.</string>
   <string name="claim_status_not_covered_support_text">Tyvärr täcks inte din skada. Se konversation för mer information om beslutet.</string>
   <string name="claim_status_paid_support_text_short">Din skada har täckts. Du borde ha fått ersättningen utbetald vid det här laget.</string>
+  <string name="claim_status_partner_support_text">Den här skadan hanteras av vår externa partner Eir via mail.\nRedan i kontakt med dem? Svara i din befintliga mailtråd så att all skadeinformation hålls samlad i en och samma konversation.</string>
   <string name="claim_status_submitted_support_text">Vi har tagit emot din skadeanmälan och kommer snart att börja granska den.</string>
   <string name="claim_status_uploaded_files_upload_text">Ladda upp foton, kvitton eller andra dokument kopplade till din skadeanmälan</string>
   <string name="claim_status_appeal_instruction_link_text">Besvärshänvisning</string>
@@ -1037,6 +1041,7 @@
   <string name="claim_status_detail_chat_button_description">Skriv meddelande</string>
   <string name="claim_status_detail_closed">Stängt</string>
   <string name="claim_status_detail_documents_title">Försäkringsdokument</string>
+  <string name="claim_status_detail_email_view_body">Öppna mail</string>
   <string name="claim_status_detail_info_error_body">Det gick inte att ladda ned din inspelade skadeanmälan. Försök igen för att kunna lyssna på den.</string>
   <string name="claim_status_detail_info_error_button">Försök igen</string>
   <string name="claim_status_detail_info_error_title">Nedladdningsfel</string>

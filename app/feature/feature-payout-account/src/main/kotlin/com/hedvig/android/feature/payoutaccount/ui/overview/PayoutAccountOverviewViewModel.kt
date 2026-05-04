@@ -30,6 +30,8 @@ internal sealed interface PayoutAccountOverviewUiState {
 
   data object Error : PayoutAccountOverviewUiState
 
+  data object NoPayoutOptions : PayoutAccountOverviewUiState
+
   data class Content(
     val currentMethod: PayoutAccount?,
     val availablePayoutMethods: List<MemberPaymentProvider>,
@@ -51,10 +53,14 @@ internal class PayoutAccountOverviewPresenter(
       getPayoutAccountUseCase.invoke().fold(
         ifLeft = { uiState = PayoutAccountOverviewUiState.Error },
         ifRight = { data ->
-          uiState = PayoutAccountOverviewUiState.Content(
-            currentMethod = data.currentMethod,
-            availablePayoutMethods = data.availablePayoutMethods,
-          )
+          uiState = if (data.currentMethod == null && data.availablePayoutMethods.isEmpty()) {
+            PayoutAccountOverviewUiState.NoPayoutOptions
+          } else {
+            PayoutAccountOverviewUiState.Content(
+              currentMethod = data.currentMethod,
+              availablePayoutMethods = data.availablePayoutMethods,
+            )
+          }
         },
       )
     }

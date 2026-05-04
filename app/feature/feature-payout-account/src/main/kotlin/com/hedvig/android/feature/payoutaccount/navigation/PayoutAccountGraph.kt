@@ -28,13 +28,12 @@ fun NavGraphBuilder.payoutAccountGraph(
   navController: NavController,
   globalSnackBarState: GlobalSnackBarState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigateToTrustlyPayout: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
-  navigateBack: () -> Unit,
+  navigateToConnectPayment: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
   navigateUp: () -> Unit,
 ) {
   navgraph<PayoutAccountDestination.Graph>(
     startDestination = PayoutAccountDestinations.Overview::class,
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout)
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout),
   ) {
     navdestination<PayoutAccountDestinations.Overview> {
       val viewModel: PayoutAccountOverviewViewModel = koinViewModel()
@@ -48,7 +47,13 @@ fun NavGraphBuilder.payoutAccountGraph(
             ),
           )
         },
-        navigateBack = navigateBack,
+        navigateToConnectPayment = dropUnlessResumed {
+          navigateToConnectPayment {
+            typedPopUpTo<PayoutAccountDestinations.Overview> {
+              inclusive = true
+            }
+          }
+        },
         navigateUp = navigateUp,
       )
     }
@@ -57,7 +62,7 @@ fun NavGraphBuilder.payoutAccountGraph(
       SelectPayoutMethodDestination(
         availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
         onTrustlySelected = dropUnlessResumed {
-          navigateToTrustlyPayout {
+          navigateToConnectPayment {
             typedPopUpTo<PayoutAccountDestinations.SelectPayoutMethod> {
               inclusive = true
             }
