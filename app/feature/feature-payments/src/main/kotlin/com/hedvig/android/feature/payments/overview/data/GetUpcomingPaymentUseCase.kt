@@ -13,7 +13,9 @@ import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
+import com.hedvig.android.feature.payments.data.PaymentAccount
 import com.hedvig.android.feature.payments.data.PaymentConnection
+import com.hedvig.android.feature.payments.data.PaymentMethod
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
@@ -23,8 +25,14 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
+import octopus.fragment.MemberPaymentMethodFragment
+import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodBankAccountDetailsDetails
+import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodInvoiceDetailsDetails
+import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodSwishDetailsDetails
 import octopus.type.MemberChargeStatus
-import octopus.type.MemberPaymentConnectionStatus
+import octopus.type.MemberPaymentMethodStatus
+import octopus.type.MemberPaymentProvider
+import octopus.type.PaymentMethodInvoiceDelivery
 
 internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
@@ -47,37 +55,63 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
       },
       paymentConnection = run {
-        val paymentInformation = result.currentMember.paymentInformation
-        when (paymentInformation.status) {
-          MemberPaymentConnectionStatus.ACTIVE -> {
+        val paymentMethods = result.currentMember.paymentMethods
+        val payinMethod: MemberPaymentMethodFragment? = paymentMethods.defaultPayinMethod
+          ?: paymentMethods.payinMethods.find { it.isDefault }
+        if (payinMethod == null) {
+          val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
+            .currentMember
+            .activeContracts
+            .filter { it.terminationDueToMissedPayments }
+            .mapNotNull { it.terminationDate }
+            .sorted()
+            .firstOrNull()
+          return@run PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
+        }
+        when (payinMethod.status) {
+          MemberPaymentMethodStatus.ACTIVE -> {
+            val paymentMethod = payinMethod.provider.toPaymentMethod()
+              ?: return@run PaymentConnection.Unknown
             PaymentConnection.Active(
-              displayName = paymentInformation.chargeMethod?.displayName,
-              displayValue = paymentInformation.chargeMethod?.descriptor,
+              paymentMethod = paymentMethod,
+              chargingDay = paymentMethods.chargingDay,
+              account = payinMethod.details?.toPaymentAccount(),
             )
           }
 
-          MemberPaymentConnectionStatus.PENDING -> {
+          MemberPaymentMethodStatus.PENDING -> {
             PaymentConnection.Pending
           }
 
-          MemberPaymentConnectionStatus.NEEDS_SETUP -> {
-            val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
-              .currentMember
-              .activeContracts
-              .filter { it.terminationDueToMissedPayments }
-              .mapNotNull { it.terminationDate }
-              .sorted()
-              .firstOrNull()
-            PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
-          }
-
-          MemberPaymentConnectionStatus.UNKNOWN__ -> {
+          MemberPaymentMethodStatus.UNKNOWN__ -> {
             PaymentConnection.Unknown
           }
         }
       },
     )
   }
+}
+
+private fun MemberPaymentProvider.toPaymentMethod(): PaymentMethod? = when (this) {
+  MemberPaymentProvider.TRUSTLY -> PaymentMethod.TRUSTLY
+  MemberPaymentProvider.SWISH -> PaymentMethod.SWISH
+  MemberPaymentProvider.NORDEA -> PaymentMethod.NORDEA
+  MemberPaymentProvider.INVOICE -> PaymentMethod.INVOICE
+  MemberPaymentProvider.UNKNOWN__ -> null
+}
+
+private fun MemberPaymentMethodFragment.Details.toPaymentAccount(): PaymentAccount? = when (this) {
+  is PaymentMethodInvoiceDetailsDetails -> when (delivery) {
+    PaymentMethodInvoiceDelivery.KIVRA -> PaymentAccount.Kivra
+    PaymentMethodInvoiceDelivery.MAIL -> email?.let(PaymentAccount::Email)
+    PaymentMethodInvoiceDelivery.UNKNOWN__ -> null
+  }
+
+  is PaymentMethodSwishDetailsDetails -> PaymentAccount.PhoneNumber(phoneNumber)
+
+  is PaymentMethodBankAccountDetailsDetails -> PaymentAccount.BankAccount(account)
+
+  else -> null
 }
 
 private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortInfo(

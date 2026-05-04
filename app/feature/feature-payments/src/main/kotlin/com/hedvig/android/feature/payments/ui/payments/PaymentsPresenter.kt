@@ -12,11 +12,13 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.MemberCharge
+import com.hedvig.android.feature.payments.data.PaymentAccount
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
 import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
+import com.hedvig.android.feature.payments.data.PaymentMethod
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCase
@@ -33,6 +35,7 @@ internal class PaymentsPresenter(
   getShouldShowPayoutUseCase: Provider<GetShouldShowPayoutUseCase>,
 ) : MoleculePresenter<PaymentsEvent, PaymentsUiState> {
   private val shouldShowPayoutPresenter = ShouldShowPayoutPresenter(getShouldShowPayoutUseCase)
+
   @Composable
   override fun MoleculePresenterScope<PaymentsEvent>.present(lastState: PaymentsUiState): PaymentsUiState {
     var loadIteration by remember { mutableIntStateOf(0) }
@@ -113,8 +116,9 @@ private class ShouldShowPayoutPresenter(
 private fun PaymentConnection.toConnectedPaymentInfo(): ConnectedPaymentInfo {
   return when (this) {
     is Active -> ConnectedPaymentInfo.Active(
-      displayName = displayName,
-      maskedAccountNumber = displayValue,
+      paymentMethod = paymentMethod,
+      chargingDay = chargingDay,
+      account = account,
     )
 
     Pending -> ConnectedPaymentInfo.Pending
@@ -175,8 +179,9 @@ internal sealed interface PaymentsUiState {
       data object Pending : ConnectedPaymentInfo
 
       data class Active(
-        val displayName: String?,
-        val maskedAccountNumber: String?,
+        val paymentMethod: PaymentMethod,
+        val chargingDay: Int?,
+        val account: PaymentAccount?,
       ) : ConnectedPaymentInfo
     }
   }
