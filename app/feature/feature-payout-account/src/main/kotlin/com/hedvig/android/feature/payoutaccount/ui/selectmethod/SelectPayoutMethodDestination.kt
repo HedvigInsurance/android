@@ -23,6 +23,8 @@ import hedvig.resources.PAYOUT_METHOD_SWISH_DESCRIPTION
 import hedvig.resources.PAYOUT_METHOD_TRUSTLY_DESCRIPTION
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.Res
+import hedvig.resources.swish
+import hedvig.resources.trustly
 import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
@@ -46,7 +48,7 @@ internal fun SelectPayoutMethodDestination(
         when (provider) {
           MemberPaymentProvider.TRUSTLY -> {
             PayoutMethodRow(
-              title = "Trustly",
+              title = stringResource(Res.string.trustly),
               subtitle = stringResource(Res.string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION),
               onClick = onTrustlySelected,
             )
@@ -62,7 +64,7 @@ internal fun SelectPayoutMethodDestination(
 
           MemberPaymentProvider.SWISH -> {
             PayoutMethodRow(
-              title = "Swish",
+              title = stringResource(Res.string.swish),
               subtitle = stringResource(Res.string.PAYOUT_METHOD_SWISH_DESCRIPTION),
               onClick = onSwishSelected,
             )

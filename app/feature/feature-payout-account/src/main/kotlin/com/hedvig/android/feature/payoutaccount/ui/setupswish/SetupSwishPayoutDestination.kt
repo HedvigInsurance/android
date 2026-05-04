@@ -28,6 +28,7 @@ import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
+import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -66,7 +67,7 @@ private fun SetupSwishPayoutScreen(
   }
 
   HedvigScaffold(
-    topAppBarText = "Swish",
+    topAppBarText = stringResource(Res.string.swish),
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {

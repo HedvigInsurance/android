@@ -39,6 +39,7 @@ import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
+import hedvig.resources.swish
 import octopus.type.MemberPaymentProvider
 import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
@@ -130,7 +131,7 @@ private fun PayoutAccountContent(
       is PayoutAccount.SwishPayout -> {
         val phoneNumber = currentMethod.phoneNumber.orEmpty()
         PayoutAccountReadOnlyTextField(
-          label = "Swish",
+          label = stringResource(Res.string.swish),
           text = if (currentMethod.isPending && phoneNumber.isBlank()) {
             stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
           } else {

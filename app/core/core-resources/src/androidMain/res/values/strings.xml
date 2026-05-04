@@ -2,6 +2,8 @@
 <resources>
   <string name="swedish">Svenska</string>
   <string name="english_swedish">English</string>
+  <string name="swish">Swish</string>
+  <string name="trustly">"Trustly"</string>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
   <string name="A11Y_CHARACTER_LIMIT">%1$d of %2$d characters entered</string>
@@ -637,7 +639,7 @@
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Instant payout with Swish</string>
   <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Payout via Trustly</string>
   <string name="PAYOUT_MISSING_INFO">You haven’t added a payout method yet. Add one to receive payouts.</string>
-  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">Connect a payment method first to be able to receive payouts</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">To receive payouts, you need to connect direct debit</string>
   <string name="PAYOUT_NO_PAYOUT_OPTIONS_TITLE">No payout method available</string>
   <string name="PAYOUT_PAGE_HEADING">Payout account</string>
   <string name="PAYOUT_SELECT_PAYOUT_METHOD">Choose payout method</string>
@@ -670,7 +672,7 @@
   <string name="PROFILE_NOTIFICATIONS_STATUS_OFF">Turned off</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_ON">Turned on</string>
   <string name="PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT">Change bank account</string>
-  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect payment</string>
+  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect direct debit</string>
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
@@ -1023,6 +1025,9 @@
   <string name="claim_status_being_handled_support_text">Your claim is being reviewed by one of our insurance specialists. We\'ll get back to you soon with an update.</string>
   <string name="claim_status_being_handled_reopened_support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We\'ll get back to you soon with an update.</string>
   <string name="claim_status_claim_details_button">Show details</string>
+  <string name="claim_status_claim_details_exposure_display_name">Reg. no.</string>
+  <string name="claim_status_claim_details_external_id">Reference number</string>
+  <string name="claim_status_claim_details_handler_email">Email</string>
   <string name="claim_status_claim_details_info_text">Is something missing? Send us a message here in the app.</string>
   <string name="claim_status_claim_details_submitted">Submitted</string>
   <string name="claim_status_claim_details_title">Claim details</string>

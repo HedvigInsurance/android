@@ -2,6 +2,8 @@
 <resources>
   <string name="swedish">Svenska</string>
   <string name="english_swedish">English</string>
+  <string name="swish">Swish</string>
+  <string name="trustly">"Trustly"</string>
   <string name="A11Y_AUDIO_RECORDING">Röstinspelning</string>
   <string name="A11Y_BACK">Tillbaka</string>
   <string name="A11Y_CHARACTER_LIMIT">%1$d av %2$d tecken angivna</string>
@@ -637,8 +639,8 @@
   <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Snabb utbetalning med Swish</string>
   <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Utbetalning via Trustly</string>
   <string name="PAYOUT_MISSING_INFO">Du har inte lagt till någon utbetalningsmetod än. Lägg till en för att vi ska kunna betala ut till dig.</string>
-  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">Anslut ett betalsätt först för att kunna ta emot utbetalningar</string>
-  <string name="PAYOUT_NO_PAYOUT_OPTIONS_TITLE">Inget utbetalningssätt tillgängligt</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">För att kunna få utbetalningar behöver du koppla autogiro</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_TITLE">Ingen utbetalningsmetod tillagd</string>
   <string name="PAYOUT_PAGE_HEADING">Utbetalningskonto</string>
   <string name="PAYOUT_SELECT_PAYOUT_METHOD">Välj utbetalningsmetod</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">Vi behöver tillåtelse att spela in ljud</string>
@@ -1023,6 +1025,9 @@
   <string name="claim_status_being_handled_support_text">Din skadeanmälan granskas av en av våra försäkringsspecialister. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status_being_handled_reopened_support_text">Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status_claim_details_button">Se detaljer</string>
+  <string name="claim_status_claim_details_exposure_display_name">Reg nr</string>
+  <string name="claim_status_claim_details_external_id">Ärendenummer</string>
+  <string name="claim_status_claim_details_handler_email">E-mail</string>
   <string name="claim_status_claim_details_info_text">Saknas något? Skicka ett meddelande till oss här i appen.</string>
   <string name="claim_status_claim_details_submitted">Inskickad</string>
   <string name="claim_status_claim_details_title">Detaljer om skadeanmälan</string>
