@@ -218,23 +218,6 @@ private fun MemberPaymentDetailsSuccessScreen(
       )
       HorizontalDivider()
     }
-    if (uiState.paymentDetails.mandate != null) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(stringResource(id = R.string.PAYMENTS_MANDATE))
-        },
-        endSlot = {
-          HedvigText(
-            text = uiState.paymentDetails.mandate,
-            textAlign = TextAlign.End,
-            modifier = Modifier.fillMaxWidth(),
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        },
-        modifier = Modifier.padding(vertical = 16.dp),
-        spaceBetween = 8.dp,
-      )
-    }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     when {
