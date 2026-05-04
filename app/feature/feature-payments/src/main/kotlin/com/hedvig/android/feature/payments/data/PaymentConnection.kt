@@ -3,10 +3,7 @@ package com.hedvig.android.feature.payments.data
 import kotlinx.datetime.LocalDate
 
 internal sealed interface PaymentConnection {
-  data class Active(
-    val displayName: String?,
-    val displayValue: String?,
-  ) : PaymentConnection
+  data object Active : PaymentConnection
 
   data object Pending : PaymentConnection
 

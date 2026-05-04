@@ -1,0 +1,28 @@
+query GetPayoutMethods {
+  currentMember {
+    paymentMethods {
+      payoutMethods {
+        provider
+        status
+        isDefault
+        details {
+          ... on PaymentMethodBankAccountDetails {
+            account
+            bank
+          }
+          ... on PaymentMethodSwishDetails {
+            phoneNumber
+          }
+          ... on PaymentMethodInvoiceDetails {
+            delivery
+            email
+          }
+        }
+      }
+      availableMethods {
+        provider
+        supportsPayout
+      }
+    }
+  }
+}

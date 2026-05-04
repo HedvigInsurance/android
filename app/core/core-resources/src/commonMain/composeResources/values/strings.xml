@@ -2,6 +2,8 @@
 <resources>
   <string name="swedish">Svenska</string>
   <string name="english_swedish">English</string>
+  <string name="swish">Swish</string>
+  <string name="trustly">"Trustly"</string>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
   <string name="A11Y_CHARACTER_LIMIT">%1$d of %2$d characters entered</string>
@@ -78,10 +80,8 @@
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct.\n\nIf necessary, you’ll be connected to our service team to help you further.\n\nThe details of your insurance are outlined in your insurance letter and terms and conditions.</string>
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI and automated messages</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
-  <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Payout via a Swedish bank account</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Payout to a Swedish bank account</string>
   <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bank account</string>
-  <string name="BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL">Clearing</string>
-  <string name="BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Direct payment via Trustly</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -147,7 +147,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
-  <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change account</string>
+  <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change payout account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!</string>
@@ -608,7 +608,19 @@
   <string name="PAYMENTS_PAYMENT_DUE_INFO">If you update your bank account close to the %1$s, the withdrawal might take a few extra days.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Payment history</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Payment in progress</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">It may take up to 5 business days for the charge to appear</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Payment method</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Amount due: %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">We couldn't collect this payment from your bank account. Pay now to keep your coverage active.</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_BUTTON">Review payment</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY">Pay now to avoid interruption</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE">Payment due</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT">Ensure your account has enough funds to cover this payment</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY">Pay %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE">Overdue since %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">View payment details</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_TITLE">Payment overdue</string>
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Payment successful</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s days</string>
   <string name="PAYMENTS_PERIOD_FULL">Full period</string>
@@ -622,6 +634,13 @@
   <string name="PAYMENTS_UPCOMING_PAYMENT">Upcoming payment</string>
   <string name="PAYMENTS_VALID_UNTIL">Valid until %1$s</string>
   <string name="PAYMENT_HISTORY_TITLE">Payment history</string>
+  <string name="PAYOUT_ADD_PAYOUT_METHOD">Add payout method</string>
+  <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direct payment via Invoice</string>
+  <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Instant payout with Swish</string>
+  <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Payout via Trustly</string>
+  <string name="PAYOUT_MISSING_INFO">You haven’t added a payout method yet. Add one to receive payouts.</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">To receive payouts, you need to connect direct debit</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_TITLE">No payout method available</string>
   <string name="PAYOUT_PAGE_HEADING">Payout account</string>
   <string name="PAYOUT_SELECT_PAYOUT_METHOD">Choose payout method</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">We need permission to record audio</string>
@@ -653,7 +672,7 @@
   <string name="PROFILE_NOTIFICATIONS_STATUS_OFF">Turned off</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_ON">Turned on</string>
   <string name="PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT">Change bank account</string>
-  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect payment</string>
+  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect direct debit</string>
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
@@ -1006,6 +1025,9 @@
   <string name="claim_status_being_handled_support_text">Your claim is being reviewed by one of our insurance specialists. We'll get back to you soon with an update.</string>
   <string name="claim_status_being_handled_reopened_support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We'll get back to you soon with an update.</string>
   <string name="claim_status_claim_details_button">Show details</string>
+  <string name="claim_status_claim_details_exposure_display_name">Reg. no.</string>
+  <string name="claim_status_claim_details_external_id">Reference number</string>
+  <string name="claim_status_claim_details_handler_email">Email</string>
   <string name="claim_status_claim_details_info_text">Is something missing? Send us a message here in the app.</string>
   <string name="claim_status_claim_details_submitted">Submitted</string>
   <string name="claim_status_claim_details_title">Claim details</string>
@@ -1015,6 +1037,7 @@
   <string name="claim_status_not_compensated_support_text">Your claim was covered but unfortunately the compensation is equal or less than the deductible. Please see conversation for more details.</string>
   <string name="claim_status_not_covered_support_text">Your claim was unfortunately not covered. Please see conversation for more details on the decision.</string>
   <string name="claim_status_paid_support_text_short">We got you covered. You should have received the payment by now.</string>
+  <string name="claim_status_partner_support_text">This claim is handled by our external partner Eir by email.\nAlready in contact with them? Reply to your existing email thread to keep all claim details in one conversation.</string>
   <string name="claim_status_submitted_support_text">We have received your claim and will start reviewing it soon.</string>
   <string name="claim_status_uploaded_files_upload_text">Upload photos, receipts or other documents connected to your claim</string>
   <string name="claim_status_appeal_instruction_link_text">Appeal Instruction (SWE)</string>
@@ -1023,6 +1046,7 @@
   <string name="claim_status_detail_chat_button_description">Write a message</string>
   <string name="claim_status_detail_closed">Closed</string>
   <string name="claim_status_detail_documents_title">Claim documents</string>
+  <string name="claim_status_detail_email_view_body">Open email</string>
   <string name="claim_status_detail_info_error_body">The claim audio couldn't be downloaded. Please try again to be able to listen to it.</string>
   <string name="claim_status_detail_info_error_button">Try again</string>
   <string name="claim_status_detail_info_error_title">Downloading error</string>

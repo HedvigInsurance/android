@@ -28,6 +28,7 @@ import com.hedvig.android.composewebview.LoadingState
 import com.hedvig.android.composewebview.WebView
 import com.hedvig.android.composewebview.rememberSaveableWebViewState
 import com.hedvig.android.composewebview.rememberWebViewNavigator
+import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.Button
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
@@ -39,12 +40,12 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyEvent
 import com.hedvig.android.feature.connect.payment.trustly.TrustlyUiState
-import com.hedvig.android.feature.connect.payment.trustly.TrustlyViewModel
 import com.hedvig.android.feature.connect.payment.trustly.data.PreviewTrustlyCallback
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebChromeClient
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebView
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClient
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.common.Destination
 import hedvig.resources.Res
 import hedvig.resources.general_done_button
@@ -59,7 +60,11 @@ import org.jetbrains.compose.resources.stringResource
 data object TrustlyDestination : Destination
 
 @Composable
-internal fun TrustlyDestination(viewModel: TrustlyViewModel, navigateUp: () -> Unit, finishTrustlyFlow: () -> Unit) {
+internal fun TrustlyDestination(
+  viewModel: MoleculeViewModel<TrustlyEvent, TrustlyUiState>,
+  navigateUp: () -> Unit,
+  finishTrustlyFlow: () -> Unit,
+) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   TrustlyScreen(
     uiState = uiState,
@@ -106,10 +111,10 @@ private fun TrustlyScreen(
         )
       }
 
-      TrustlyUiState.FailedToStartSession -> {
+      is TrustlyUiState.FailedToStartSession -> {
         HedvigErrorSection(
           onButtonClick = retryConnectingCard,
-          title = stringResource(Res.string.something_went_wrong),
+          title = uiState.errorMessage.message ?: stringResource(Res.string.something_went_wrong),
           subTitle = null,
         )
       }
@@ -214,13 +219,12 @@ private fun TrustlyPreview(
   }
 }
 
-private class TrustlyUiStateProvider :
-  CollectionPreviewParameterProvider<TrustlyUiState>(
-    listOf(
-      TrustlyUiState.Browsing("", PreviewTrustlyCallback("", "")),
-      TrustlyUiState.Loading,
-      TrustlyUiState.FailedToConnectCard,
-      TrustlyUiState.FailedToStartSession,
-      TrustlyUiState.SucceededInConnectingCard,
-    ),
-  )
+private class TrustlyUiStateProvider : CollectionPreviewParameterProvider<TrustlyUiState>(
+  listOf(
+    TrustlyUiState.Browsing("", PreviewTrustlyCallback("", "")),
+    TrustlyUiState.Loading,
+    TrustlyUiState.FailedToConnectCard,
+    TrustlyUiState.FailedToStartSession(ErrorMessage("preview error message")),
+    TrustlyUiState.SucceededInConnectingCard,
+  ),
+)

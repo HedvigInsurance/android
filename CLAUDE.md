@@ -194,6 +194,7 @@ val applicationModule = module {
 - Use `Provider<T>` when we need a different implementation for the demo mode of the App, which we very rarely do. We always do that using `ProdOrDemoProvider`
 - Each feature/data module has its own DI module
 - Common dependencies (logging, tracking) auto-injected by build plugin
+- When a Presenter or ViewModel needs to call a use case, always inject the use case directly as a typed dependency — never abstract it into an anonymous `suspend () -> T` lambda. If two separate operations are needed (e.g. payin vs payout setup), create two separate, dedicated use case classes and two separate presenters. Do not create a shared interface just to enable reuse through a single presenter.
 
 ### Data Layer
 
@@ -439,6 +440,18 @@ dependencies {
 
 # Translations are managed via Lokalise
 # String resources in app/core/core-resources/
+```
+
+**IMPORTANT:** String resource XML files (`strings.xml`) are fully managed by Lokalise and regenerated on every `./gradlew downloadStrings` run. **Never add new strings directly to any `strings.xml` file** — they will be overwritten and lost.
+
+When new UI text is needed that does not yet exist as a string resource:
+1. Hardcode the English string directly in the Kotlin/Compose code.
+2. Add a `// TODO: Add "<English text>" / "<Swedish text>" to Lokalise` comment on the same line or the line above.
+
+Example:
+```kotlin
+// TODO: Add "This is some text for feature X" / "Detta är lite text för feature X" to Lokalise
+Text("This is some text for feature X")
 ```
 
 ## Debugging

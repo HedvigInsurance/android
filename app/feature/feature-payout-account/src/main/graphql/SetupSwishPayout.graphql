@@ -1,0 +1,8 @@
+mutation SetupSwishPayout($phoneNumber: String!) {
+  paymentMethodSetupSwishPayout(
+    input: { phoneNumber: $phoneNumber }
+  ) {
+    status
+    error { message }
+  }
+}
