@@ -114,7 +114,6 @@ fun NavGraphBuilder.paymentsGraph(
         viewModel,
         onChangeBankAccount = navigateToConnectPayment,
         navigateUp = navController::navigateUp,
-        onOpenChat = onOpenChat,
       )
     }
   }
