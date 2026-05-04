@@ -50,7 +50,7 @@ internal data class EditBankAccountUiState(
     get() = !isLoading && accountNumberState.text.length in 10..17
 
   // Combined clearing and account number: 10-17 digits
-  val accountNumberInputTransformation: InputTransformation = InputTransformation.maxLength(17).digitsOnly()
+  val accountNumberInputTransformation: InputTransformation = InputTransformation.digitsOnly().maxLength(17)
 }
 
 internal class EditBankAccountPresenter(
