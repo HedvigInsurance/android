@@ -26,10 +26,9 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.collectLatest
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(

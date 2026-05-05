@@ -202,7 +202,7 @@ internal class HedvigDeepLinkContainerImpl(
   }
 
   override val manualCharge: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
-    "$baseDeepLinkDomain/manual-charge" //todo: check with other platforms
+    "$baseDeepLinkDomain/manual-charge" // todo: check with other platforms
   }
 }
 

@@ -2,11 +2,11 @@ package com.hedvig.feature.claim.chat.data
 
 import com.hedvig.android.core.uidata.UiFile
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
+import com.hedvig.android.shared.partners.deflect.DeflectData
 import kotlin.jvm.JvmInline
 import kotlin.time.Instant
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import com.hedvig.android.shared.partners.deflect.DeflectData
 
 @JvmInline
 value class ClaimIntentId(val value: String)
@@ -163,10 +163,9 @@ internal sealed interface StepContent {
   @Serializable
   data class Deflect(
     @Contextual
-    val deflectData: DeflectData
+    val deflectData: DeflectData,
   ) : StepContent {
     override val isSkippable: Boolean = false
-
   }
 
   object Unknown : StepContent {

@@ -46,6 +46,8 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigInformationSection
@@ -256,7 +258,7 @@ private fun PaymentsContent(
           FailedPaymentInfo(
             amountDue = upcomingPaymentInfo.isManualChargeAllowed.sum.toString(),
             onReviewPaymentClick = onOpenManualCharge,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
         }
@@ -339,7 +341,7 @@ private fun PaymentsContent(
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-          -> {
+        -> {
         }
       }
     }
@@ -374,10 +376,7 @@ private fun CardNotConnectedWarningCard(
 }
 
 @Composable
-private fun UpcomingPaymentInfoCard(
-  upcomingPaymentInfo: UpcomingPaymentInfo?,
-  modifier: Modifier = Modifier,
-) {
+private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, modifier: Modifier = Modifier) {
   Box(modifier) {
     when (upcomingPaymentInfo) {
       NoInfo -> {}
@@ -621,9 +620,12 @@ private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Uni
     color = HedvigTheme.colorScheme.fillNegative,
     modifier = modifier
       .fillMaxWidth()
-      .border(1.dp, HedvigTheme.colorScheme.borderPrimary,
-        HedvigTheme.shapes.cornerXLarge)
-      .hedvigDropShadow()
+      .border(
+        1.dp,
+        HedvigTheme.colorScheme.borderPrimary,
+        HedvigTheme.shapes.cornerXLarge,
+      )
+      .hedvigDropShadow(),
   ) {
     Column(
       modifier = Modifier
@@ -728,7 +730,6 @@ private fun PreviewFailedPaymentInfo() {
     }
   }
 }
-
 
 @Composable
 @HedvigPreview

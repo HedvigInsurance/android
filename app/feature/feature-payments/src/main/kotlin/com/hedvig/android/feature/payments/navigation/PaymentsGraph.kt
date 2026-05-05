@@ -89,11 +89,11 @@ fun NavGraphBuilder.paymentsGraph(
               inclusive = true
             }
           }
-        }
+        },
       )
     }
 
-    navdestination<PaymentsDestinations.ManualChargeSuccess>{
+    navdestination<PaymentsDestinations.ManualChargeSuccess> {
       ManualChargeSuccessDestination(navController::navigateUp)
     }
 

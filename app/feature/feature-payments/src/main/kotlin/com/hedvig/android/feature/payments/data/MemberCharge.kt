@@ -170,7 +170,9 @@ internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
   return when {
     this?.startsWith("kivra", ignoreCase = true) == true ||
       this?.startsWith("invoice", ignoreCase = true) == true -> MemberPaymentChargeMethod.KIVRA
+
     this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
+
     else -> MemberPaymentChargeMethod.UNKNOWN
   }
 }

@@ -25,7 +25,6 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.feature.help.center.navigation.helpCenterCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetPermittingDestinations
@@ -47,6 +46,7 @@ import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
@@ -219,7 +219,6 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedOut() {
-
     val isLoggingOutFromProfile = navController.currentDestination
       ?.typedHasRoute(destinationToExcludeFromSavingState) ?: false
 
@@ -233,6 +232,7 @@ internal class HedvigAppState(
       }
     }
   }
+
   val darkTheme: Boolean
     @Composable
     get() {

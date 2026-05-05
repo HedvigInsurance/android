@@ -74,7 +74,8 @@ internal fun ManualChargeDestination(
       onNavigateToSuccess()
     },
     onTriggerPayment = {
-      viewModel.emit(ManualChargeEvent.TriggerCharge) }
+      viewModel.emit(ManualChargeEvent.TriggerCharge)
+    },
   )
 }
 
@@ -85,28 +86,32 @@ private fun ManualChargeScreen(
   reload: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onNavigateToSuccess: () -> Unit,
-  onTriggerPayment: () -> Unit
+  onTriggerPayment: () -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
     topAppBarText = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
   ) {
     when (uiState) {
-
       is ManualChargeUiState.Failure -> {
-        val subTitle = if (uiState.error.message!=null) uiState.error.message else
+        val subTitle = if (uiState.error.message != null) {
+          uiState.error.message
+        } else {
           stringResource(Res.string.GENERAL_ERROR_BODY)
-        val buttonText = if (uiState.error.message!=null) stringResource(Res.string.general_close_button) else
+        }
+        val buttonText = if (uiState.error.message != null) {
+          stringResource(Res.string.general_close_button)
+        } else {
           stringResource(Res.string.GENERAL_RETRY)
-        val onButtonClick = if (uiState.error.message!=null) navigateUp else reload
+        }
+        val onButtonClick = if (uiState.error.message != null) navigateUp else reload
 
         HedvigErrorSection(
           onButtonClick = onButtonClick,
           Modifier.weight(1f).fillMaxWidth(),
           subTitle = subTitle,
-          buttonText = buttonText
+          buttonText = buttonText,
         )
-
       }
 
       ManualChargeUiState.Loading -> {
@@ -116,7 +121,7 @@ private fun ManualChargeScreen(
       }
 
       is ManualChargeUiState.Success -> {
-        if (uiState.navigateToSuccess!=null) {
+        if (uiState.navigateToSuccess != null) {
           LaunchedEffect(uiState.navigateToSuccess) {
             onNavigateToSuccess()
           }
@@ -124,7 +129,7 @@ private fun ManualChargeScreen(
           ManualChargeSuccessScreen(
             uiState,
             onNavigateToPaymentDetails = onNavigateToPaymentDetails,
-            onTriggerPayment = onTriggerPayment
+            onTriggerPayment = onTriggerPayment,
           )
         }
       }
@@ -159,7 +164,6 @@ private fun ManualChargeSuccessScreen(
         color = HedvigTheme.colorScheme.borderPrimary,
         shape = HedvigTheme.shapes.cornerXLarge,
       )
-
       .clip(HedvigTheme.shapes.cornerXLarge)
       .padding(16.dp),
   ) {
@@ -189,7 +193,7 @@ private fun ManualChargeSuccessScreen(
         )
       }
     }
-    if (uiState.manualChargeInfo.chargeId!=null) {
+    if (uiState.manualChargeInfo.chargeId != null) {
       HedvigButton(
         text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS),
         onClick = {
@@ -222,8 +226,9 @@ private fun ManualChargeSuccessScreen(
           style = HedvigTheme.typography.label,
         )
       }
-      if (uiState.manualChargeInfo.bankDescriptor!=null &&
-        uiState.manualChargeInfo.bankAccountDisplayValue!=null) {
+      if (uiState.manualChargeInfo.bankDescriptor != null &&
+        uiState.manualChargeInfo.bankAccountDisplayValue != null
+      ) {
         Spacer(Modifier.height(10.dp))
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -281,7 +286,6 @@ private fun ManualChargeSuccessScreen(
         .padding(horizontal = 16.dp),
     )
   }
-
 }
 
 @Composable
@@ -297,9 +301,9 @@ private fun ManualChargeScreenSuccessPreview() {
             amountDue = UiMoney(100.0, UiCurrencyCode.SEK),
             chargeId = "chargeId",
             bankDescriptor = "Bank account",
-            bankAccountDisplayValue = "**** 8324"
+            bankAccountDisplayValue = "**** 8324",
           ),
-          navigateToSuccess = null
+          navigateToSuccess = null,
         ),
         navigateUp = {},
         reload = {},
@@ -346,5 +350,3 @@ private fun ManualChargeScreenFailurePreview() {
     }
   }
 }
-
-

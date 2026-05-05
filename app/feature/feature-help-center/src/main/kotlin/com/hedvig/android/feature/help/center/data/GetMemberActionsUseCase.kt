@@ -104,9 +104,9 @@ private fun MemberActionsQuery.Data.CurrentMember.MemberActions.FirstVetAction.t
   )
 }
 
-private fun  MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDeflect?.toSickAbroadAction():
+private fun MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDeflect?.toSickAbroadAction():
   MemberActionWithDetails.SickAbroadAction? {
-  if (this==null) return null
+  if (this == null) return null
   val partners = if (partners.isNotEmpty()) {
     DeflectData.DeflectPartnerContainer.ExtendedPartnerContainer(
       partners = partners.map { partner ->
@@ -137,20 +137,20 @@ private fun  MemberActionsQuery.Data.CurrentMember.MemberActions.SickAbroadDefle
   }
 
   val deflectData = DeflectData(
-      title = title,
-      infoText = infoText,
-      warningText = warningText,
-      partnersContainer = partners,
-      partnersInfo = partnersInfo?.let {
-        DeflectData.InfoBlock(it.title,it.description)
-      },
-      content = content.let {
-        DeflectData.InfoBlock(it.title,it.description)
-      },
-      faq = faq.map { faqItem ->
-        DeflectData.InfoBlock(faqItem.title,faqItem.description)
-       },
-      buttonText = buttonTitle,
-    )
+    title = title,
+    infoText = infoText,
+    warningText = warningText,
+    partnersContainer = partners,
+    partnersInfo = partnersInfo?.let {
+      DeflectData.InfoBlock(it.title, it.description)
+    },
+    content = content.let {
+      DeflectData.InfoBlock(it.title, it.description)
+    },
+    faq = faq.map { faqItem ->
+      DeflectData.InfoBlock(faqItem.title, faqItem.description)
+    },
+    buttonText = buttonTitle,
+  )
   return MemberActionWithDetails.SickAbroadAction(deflectData)
 }

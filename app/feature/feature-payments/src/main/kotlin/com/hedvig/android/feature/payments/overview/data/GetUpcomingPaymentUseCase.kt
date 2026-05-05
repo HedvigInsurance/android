@@ -75,7 +75,9 @@ internal data class GetUpcomingPaymentUseCaseImpl(
                       .mapNotNull { it.terminationDate }
                       .sorted()
                       .firstOrNull()
-                    return@run PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
+                    return@run PaymentConnection.NeedsSetup(
+                      firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+                    )
                   }
                   when (payinMethod.status) {
                     MemberPaymentMethodStatus.ACTIVE -> PaymentConnection.Active
@@ -87,14 +89,17 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
                 val missedChargeIdToChargeManually: String? = result.currentMember.missedChargeIdToChargeManually
 
-                val isManualChargeAllowed = if (missedChargeIdToChargeManually!=null) {
+                val isManualChargeAllowed = if (missedChargeIdToChargeManually != null) {
                   val failedChargeNet = result.currentMember.pastCharges.firstOrNull {
-                    it.id == missedChargeIdToChargeManually}?.net?.let { net ->
-                      UiMoney.fromMoneyFragment(net)
+                    it.id == missedChargeIdToChargeManually
+                  }?.net?.let { net ->
+                    UiMoney.fromMoneyFragment(net)
                   }
-                  if (failedChargeNet!=null) {
+                  if (failedChargeNet != null) {
                     ManualChargeToPrompt(failedChargeNet)
-                  } else null
+                  } else {
+                    null
+                  }
                 } else {
                   null
                 }

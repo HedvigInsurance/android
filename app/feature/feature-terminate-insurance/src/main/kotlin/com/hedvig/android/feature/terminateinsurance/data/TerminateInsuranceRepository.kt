@@ -5,6 +5,8 @@ import arrow.core.left
 import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
@@ -13,9 +15,6 @@ import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
 import octopus.TerminationSurveyQuery
 import octopus.fragment.TerminationSurveyOptionSuggestionFragment
-import com.apollographql.apollo.cache.normalized.FetchPolicy
-import com.apollographql.apollo.cache.normalized.fetchPolicy
-import com.hedvig.android.logger.logcat
 import octopus.type.TerminationFlowDeleteContractInput
 import octopus.type.TerminationFlowSurveyOptionSuggestionType
 import octopus.type.TerminationFlowTerminateContractInput
