@@ -1,0 +1,19 @@
+query PartnerClaim($claimId: ID!) {
+  partnerClaim(id: $claimId) {
+    id
+    claimType
+    status
+    submittedAt
+    productVariant {
+      displayName
+      documents {
+        type
+        url
+      }
+    }
+    displayItems {
+      displayTitle
+      displayValue
+    }
+  }
+}
