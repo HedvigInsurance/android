@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - develop
-      - feat/pet-chip-id
-      - feature/payment-methods
   workflow_dispatch:
 
 concurrency:

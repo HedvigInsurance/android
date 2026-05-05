@@ -3,7 +3,7 @@
   <string name="swedish">Svenska</string>
   <string name="english_swedish">English</string>
   <string name="swish">Swish</string>
-  <string name="trustly">"Trustly"</string>
+  <string name="trustly">Trustly</string>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
   <string name="A11Y_CHARACTER_LIMIT">%1$d of %2$d characters entered</string>
