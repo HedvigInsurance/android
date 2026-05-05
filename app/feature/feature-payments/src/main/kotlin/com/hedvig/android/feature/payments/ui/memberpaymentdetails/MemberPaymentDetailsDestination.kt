@@ -49,12 +49,18 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.MemberPaymentsDetails
+import com.hedvig.android.feature.payments.data.PaymentAccount
+import com.hedvig.android.feature.payments.data.PaymentMethod
+import com.hedvig.android.placeholder.PlaceholderHighlight
+import com.hedvig.android.placeholder.shimmer
+import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.KIVRA_NOTIFICATION_BOX_TEXT
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.R
 import hedvig.resources.Res
+import hedvig.resources.swish
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -115,9 +121,8 @@ private fun MemberPaymentDetailsSuccessScreen(
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier
-    .padding(horizontal = 16.dp)
-    .verticalScroll(rememberScrollState())) {
+  val paymentDetails = uiState.paymentDetails
+  Column(modifier.padding(horizontal = 16.dp).verticalScroll(rememberScrollState())) {
     val explanationBottomSheetState = rememberHedvigBottomSheetState<PaymentExplanationData>()
     ExplanationBottomSheet(explanationBottomSheetState)
     HorizontalItemsWithMaximumSpaceTaken(
@@ -126,7 +131,7 @@ private fun MemberPaymentDetailsSuccessScreen(
       },
       endSlot = {
         HedvigText(
-          text = uiState.paymentDetails.paymentMethod,
+          text = paymentDetails.paymentMethod.label(),
           textAlign = TextAlign.End,
           modifier = Modifier.fillMaxWidth(),
           color = HedvigTheme.colorScheme.textSecondary,
@@ -137,7 +142,7 @@ private fun MemberPaymentDetailsSuccessScreen(
     )
     HorizontalDivider()
 
-    val dayOfMonth = uiState.paymentDetails.chargingDayInTheMonth
+    val dayOfMonth = paymentDetails.chargingDayInTheMonth
     if (dayOfMonth != null) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
@@ -155,15 +160,11 @@ private fun MemberPaymentDetailsSuccessScreen(
               modifier = Modifier.weight(1f, false),
               color = HedvigTheme.colorScheme.textSecondary,
             )
-            if (uiState.paymentDetails.chargeMethod != MemberPaymentChargeMethod.UNKNOWN) {
-              val dataToShow = when (uiState.paymentDetails.chargeMethod) {
-                MemberPaymentChargeMethod.TRUSTLY -> PaymentExplanationData.Trustly(dayOfMonthFormatted)
-                MemberPaymentChargeMethod.KIVRA -> PaymentExplanationData.Kivra
-                MemberPaymentChargeMethod.UNKNOWN -> PaymentExplanationData.UnKnown
-              }
+            val explanation = paymentDetails.explanationData(dayOfMonthFormatted)
+            if (explanation != null) {
               Spacer(Modifier.width(8.dp))
               IconButton(
-                onClick = { explanationBottomSheetState.show(dataToShow) },
+                onClick = { explanationBottomSheetState.show(explanation) },
                 modifier = Modifier.size(24.dp),
               ) {
                 Icon(
@@ -181,12 +182,13 @@ private fun MemberPaymentDetailsSuccessScreen(
       )
       HorizontalDivider()
     }
-    if (uiState.paymentDetails.displayName != null) {
+    val account = paymentDetails.account
+    if (account is PaymentAccount.BankAccount) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = { HedvigText(stringResource(id = R.string.PAYMENTS_BANK_LABEL)) },
         endSlot = {
           HedvigText(
-            text = uiState.paymentDetails.displayName,
+            text = account.bank,
             textAlign = TextAlign.End,
             modifier = Modifier.fillMaxWidth(),
             color = HedvigTheme.colorScheme.textSecondary,
@@ -197,14 +199,15 @@ private fun MemberPaymentDetailsSuccessScreen(
       )
       HorizontalDivider()
     }
-    if (uiState.paymentDetails.descriptor != null) {
+    val accountLabel = account?.label()
+    if (accountLabel != null) {
       HorizontalItemsWithMaximumSpaceTaken(
         startSlot = {
           HedvigText(stringResource(id = R.string.PAYMENTS_ACCOUNT))
         },
         endSlot = {
           HedvigText(
-            text = uiState.paymentDetails.descriptor,
+            text = accountLabel,
             textAlign = TextAlign.End,
             modifier = Modifier.fillMaxWidth(),
             color = HedvigTheme.colorScheme.textSecondary,
@@ -215,27 +218,10 @@ private fun MemberPaymentDetailsSuccessScreen(
       )
       HorizontalDivider()
     }
-    if (uiState.paymentDetails.mandate != null) {
-      HorizontalItemsWithMaximumSpaceTaken(
-        startSlot = {
-          HedvigText(stringResource(id = R.string.PAYMENTS_MANDATE))
-        },
-        endSlot = {
-          HedvigText(
-            text = uiState.paymentDetails.mandate,
-            textAlign = TextAlign.End,
-            modifier = Modifier.fillMaxWidth(),
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
-        },
-        modifier = Modifier.padding(vertical = 16.dp),
-        spaceBetween = 8.dp,
-      )
-    }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    when (uiState.paymentDetails.chargeMethod) {
-      MemberPaymentChargeMethod.TRUSTLY -> {
+    when {
+      paymentDetails.paymentMethod == PaymentMethod.TRUSTLY -> {
         HedvigButton(
           text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
           onClick = onChangeBankAccount,
@@ -247,7 +233,7 @@ private fun MemberPaymentDetailsSuccessScreen(
         )
       }
 
-      MemberPaymentChargeMethod.KIVRA -> {
+      paymentDetails.paymentMethod == PaymentMethod.INVOICE && account == PaymentAccount.Kivra -> {
         HedvigNotificationCard(
           message = stringResource(Res.string.KIVRA_NOTIFICATION_BOX_TEXT),
           priority = NotificationDefaults.NotificationPriority.Info,
@@ -257,20 +243,44 @@ private fun MemberPaymentDetailsSuccessScreen(
           ),
         )
       }
-
-      MemberPaymentChargeMethod.UNKNOWN -> {}
     }
 
     Spacer(Modifier.height(16.dp))
   }
 }
 
+@Composable
+private fun PaymentMethod.label(): String = when (this) {
+  PaymentMethod.TRUSTLY -> stringResource(R.string.PAYMENTS_AUTOGIRO_LABEL)
+
+  PaymentMethod.NORDEA -> stringResource(R.string.BANK_PAYOUT_METHOD_CARD_TITLE)
+
+  PaymentMethod.INVOICE -> stringResource(R.string.PAYMENTS_INVOICE)
+
+  PaymentMethod.SWISH -> stringResource(Res.string.swish)
+}
+
+@Composable
+private fun PaymentAccount.label(): String = when (this) {
+  PaymentAccount.Kivra -> "Kivra"
+
+  is PaymentAccount.Email -> email
+
+  is PaymentAccount.PhoneNumber -> phoneNumber
+
+  is PaymentAccount.BankAccount -> account
+}
+
+private fun MemberPaymentsDetails.explanationData(dayOfMonthFormatted: String): PaymentExplanationData? = when {
+  paymentMethod == PaymentMethod.TRUSTLY -> PaymentExplanationData.Trustly(dayOfMonthFormatted)
+  paymentMethod == PaymentMethod.INVOICE && account == PaymentAccount.Kivra -> PaymentExplanationData.Kivra
+  else -> null
+}
+
 private sealed interface PaymentExplanationData {
   data object Kivra : PaymentExplanationData
 
   data class Trustly(val dueDate: String) : PaymentExplanationData
-
-  data object UnKnown : PaymentExplanationData
 }
 
 @Composable
@@ -278,8 +288,7 @@ private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<PaymentExp
   HedvigBottomSheet(sheetState) { data ->
     val text = when (data) {
       PaymentExplanationData.Kivra -> stringResource(R.string.KIVRA_PAYMENT_INFO)
-      is PaymentExplanationData.Trustly -> stringResource(id = R.string.PAYMENTS_PAYMENT_DUE_INFO, data.dueDate)
-      PaymentExplanationData.UnKnown -> ""
+      is PaymentExplanationData.Trustly -> stringResource(R.string.PAYMENTS_PAYMENT_DUE_INFO, data.dueDate)
     }
     HedvigText(
       text = text,
@@ -359,32 +368,23 @@ private class MemberPaymentDetailsUiStatePreviewParameterProvider() :
       MemberPaymentDetailsUiState.Loading,
       MemberPaymentDetailsUiState.Success(
         paymentDetails = MemberPaymentsDetails(
+          paymentMethod = PaymentMethod.TRUSTLY,
           chargingDayInTheMonth = 28,
-          descriptor = "description",
-          displayName = "displayName",
-          mandate = "hedvig mandate",
-          paymentMethod = "bankgiro",
-          chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
+          account = PaymentAccount.BankAccount(account = "12345-67890", bank = "Nordea"),
         ),
       ),
       MemberPaymentDetailsUiState.Success(
         paymentDetails = MemberPaymentsDetails(
+          paymentMethod = PaymentMethod.INVOICE,
           chargingDayInTheMonth = 28,
-          descriptor = "description",
-          displayName = "displayName",
-          mandate = "hedvig mandate",
-          paymentMethod = "Faktura",
-          chargeMethod = MemberPaymentChargeMethod.KIVRA,
+          account = PaymentAccount.Kivra,
         ),
       ),
       MemberPaymentDetailsUiState.Success(
         paymentDetails = MemberPaymentsDetails(
+          paymentMethod = PaymentMethod.SWISH,
           chargingDayInTheMonth = 28,
-          descriptor = "description",
-          displayName = "displayName",
-          mandate = "hedvig mandate",
-          paymentMethod = "bankgiro",
-          chargeMethod = MemberPaymentChargeMethod.UNKNOWN,
+          account = PaymentAccount.PhoneNumber("0701234567"),
         ),
       ),
     ),

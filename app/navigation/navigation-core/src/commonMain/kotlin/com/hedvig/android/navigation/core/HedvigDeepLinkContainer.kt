@@ -43,6 +43,7 @@ interface HedvigDeepLinkContainer {
   val directDebit: List<String> // Same as connectPayment but to support an old link to it
   val eurobonus: List<String> // The destination allowing to edit your current Eurobonus (SAS) number
   val payments: List<String> // The payments screen, showing the payments history and the upcoming payment information
+  val payout: List<String> // Payout connection overview screen, can see existing options and change/add payout options
   val deleteAccount: List<String> // The screen where the member may request for their account data to be GDPR wiped
 
   // The screen where one can change their contact information, like their email and phone.
@@ -141,6 +142,7 @@ internal class HedvigDeepLinkContainerImpl(
     "$baseDeepLinkDomain/eurobonus"
   }
   override val payments: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain -> "$baseDeepLinkDomain/payments" }
+  override val payout: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain -> "$baseDeepLinkDomain/payout" }
   override val deleteAccount: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/delete-account"
   }
@@ -200,39 +202,40 @@ internal class HedvigDeepLinkContainerImpl(
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
   get() = listOf(
-    home.first(),
+    carAddon.first(),
+    carAddonWithContractId.first(),
+    changeTierWithContractId.first(),
+    changeTierWithoutContractId.first(),
+    chat.first(),
+    claimDetails.first(),
+    claimFlow.first(),
+    connectPayment.first(),
+    contactInfo.first(),
+    contract.first(),
+    contractWithoutContractId.first(),
+    conversation.first(),
+    deleteAccount.first(),
+    directDebit.first(),
+    editCoInsured.first(),
+    editCoInsuredWithoutContractId.first(),
+    editCoOwners.first(),
+    eurobonus.first(),
+    forever.first(),
     helpCenter.first(),
     helpCenterCommonTopic.first(),
     helpCenterQuestion.first(),
-    insurances.first(),
-    contract.first(),
-    contractWithoutContractId.first(),
-    editCoInsured.first(),
-    editCoInsuredWithoutContractId.first(),
-    terminateInsurance.first(),
-    forever.first(),
-    profile.first(),
-    connectPayment.first(),
-    directDebit.first(),
-    eurobonus.first(),
-    payments.first(),
-    deleteAccount.first(),
-    contactInfo.first(),
-    chat.first(),
+    home.first(),
     inbox.first(),
-    conversation.first(),
-    travelAddon.first(),
-    travelCertificate.first(),
-    changeTierWithoutContractId.first(),
-    changeTierWithContractId.first(),
-    claimDetails.first(),
     insuranceEvidence.first(),
-    claimFlow.first(),
+    insurances.first(),
     moveContract.first(),
-    editCoOwners.first(),
-    carAddon.first(),
-    carAddonWithContractId.first(),
-    travelAddonWithContractId.first(),
-    petIdWithoutContractId.first(),
+    payments.first(),
+    payout.first(),
     petIdWithContractId.first(),
-    )
+    petIdWithoutContractId.first(),
+    profile.first(),
+    terminateInsurance.first(),
+    travelAddon.first(),
+    travelAddonWithContractId.first(),
+    travelCertificate.first(),
+  )

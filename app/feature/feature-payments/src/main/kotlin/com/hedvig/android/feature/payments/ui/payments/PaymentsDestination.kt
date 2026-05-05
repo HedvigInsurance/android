@@ -60,6 +60,7 @@ import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.PaymentOutline
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
@@ -90,6 +91,7 @@ import hedvig.resources.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE
 import hedvig.resources.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
+import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
 import hedvig.resources.R
 import hedvig.resources.Res
@@ -109,6 +111,7 @@ internal fun PaymentsDestination(
   onPaymentClicked: (id: String?) -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onMemberPaymentDetailsClicked: () -> Unit,
   onChangeBankAccount: () -> Unit,
 ) {
@@ -119,6 +122,7 @@ internal fun PaymentsDestination(
     onChangeBankAccount = onChangeBankAccount,
     onDiscountClicked = onDiscountClicked,
     onPaymentHistoryClicked = onPaymentHistoryClicked,
+    onPayoutAccountClicked = onPayoutAccountClicked,
     onRetry = { viewModel.emit(Retry) },
     onPaymentDetailsClicked = onMemberPaymentDetailsClicked,
   )
@@ -131,6 +135,7 @@ private fun PaymentsScreen(
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
   onRetry: () -> Unit,
 ) {
@@ -192,6 +197,7 @@ private fun PaymentsScreen(
               onChangeBankAccount = onChangeBankAccount,
               onDiscountClicked = onDiscountClicked,
               onPaymentHistoryClicked = onPaymentHistoryClicked,
+              onPayoutAccountClicked = onPayoutAccountClicked,
               onPaymentDetailsClicked = onPaymentDetailsClicked,
             )
             Spacer(Modifier.height(16.dp))
@@ -216,6 +222,7 @@ private fun PaymentsContent(
   onChangeBankAccount: () -> Unit,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -277,7 +284,9 @@ private fun PaymentsContent(
       uiState,
       onDiscountClicked = onDiscountClicked,
       onPaymentHistoryClicked = onPaymentHistoryClicked,
+      onPayoutAccountClicked = onPayoutAccountClicked,
       onPaymentDetailsClicked = onPaymentDetailsClicked,
+      showPayoutButton = (uiState as? Content)?.showPayoutButton == true,
     )
     if (uiState is Content) {
       when (uiState.connectedPaymentInfo) {
@@ -367,7 +376,9 @@ private fun PaymentsListItems(
   uiState: PaymentsUiState,
   onDiscountClicked: () -> Unit,
   onPaymentHistoryClicked: () -> Unit,
+  onPayoutAccountClicked: () -> Unit,
   onPaymentDetailsClicked: () -> Unit,
+  showPayoutButton: Boolean,
 ) {
   val listItemsSideSpacingModifier = Modifier
     .padding(horizontal = 16.dp)
@@ -424,6 +435,24 @@ private fun PaymentsListItems(
             .fillMaxWidth(),
         )
       }
+    }
+    if (showPayoutButton) {
+      HorizontalDivider(modifier = listItemsSideSpacingModifier)
+      PaymentsListItem(
+        text = stringResource(Res.string.PAYOUT_PAGE_HEADING),
+        icon = {
+          Icon(
+            imageVector = HedvigIcons.PaymentOutline,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+          )
+        },
+        modifier = Modifier
+          .clickable(onClick = onPayoutAccountClicked)
+          .then(listItemsSideSpacingModifier)
+          .padding(vertical = 16.dp)
+          .fillMaxWidth(),
+      )
     }
   }
 }
@@ -584,6 +613,7 @@ private fun PreviewPaymentScreen(
         {},
         {},
         {},
+        {},
       )
     }
   }
@@ -599,10 +629,8 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPayment = NoUpcomingPayment,
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, SEK))),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          "Card",
-          "****1234",
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
+        showPayoutButton = true,
       ),
     )
     add(
@@ -615,10 +643,8 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          "Card",
-          "****1234",
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
+        showPayoutButton = false,
       ),
     )
     add(
@@ -631,10 +657,8 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = InProgress,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          "Card",
-          "****1234",
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
+        showPayoutButton = false,
       ),
     )
     add(
@@ -650,10 +674,8 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.Active(
-          "Card",
-          "****1234",
-        ),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
+        showPayoutButton = false,
       ),
     )
     add(
@@ -667,6 +689,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Pending,
+        showPayoutButton = false,
       ),
     )
     add(
@@ -682,6 +705,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -697,6 +721,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           null,
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -715,6 +740,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
+        showPayoutButton = false,
       ),
     )
     add(
@@ -733,6 +759,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
+        showPayoutButton = false,
       ),
     )
   },

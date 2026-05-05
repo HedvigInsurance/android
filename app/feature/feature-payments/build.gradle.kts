@@ -9,16 +9,13 @@ hedvig {
   compose()
 }
 
-android {
-  testOptions.unitTests.isReturnDefaultValues = true
-}
-
 dependencies {
   implementation(libs.androidx.compose.foundation)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
+  implementation(libs.jetbrains.compose.foundation)
   implementation(libs.jetbrains.compose.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.navigation.compose)
