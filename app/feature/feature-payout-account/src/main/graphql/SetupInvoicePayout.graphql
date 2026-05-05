@@ -1,0 +1,8 @@
+mutation SetupInvoicePayout {
+  paymentMethodSetupInvoicePayin {
+    status
+    error {
+      message
+    }
+  }
+}

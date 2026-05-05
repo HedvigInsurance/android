@@ -1,0 +1,10 @@
+mutation SetupNordeaPayout($accountNumber: String!) {
+  paymentMethodSetupNordeaPayout(
+    input: { accountNumber: $accountNumber }
+  ) {
+    status
+    error {
+      message
+    }
+  }
+}

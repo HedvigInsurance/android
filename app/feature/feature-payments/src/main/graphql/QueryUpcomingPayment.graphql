@@ -24,15 +24,12 @@ query UpcomingPayment {
         ...MoneyFragment
       }
     }
-    paymentInformation {
-      status
-      chargeMethod {
-        displayName
-        descriptor
-        dueDate
-        mandate
-        paymentMethod
-        paymentProvider
+    paymentMethods {
+      payinMethods {
+        ...MemberPaymentMethodFragment
+      }
+      defaultPayinMethod {
+        ...MemberPaymentMethodFragment
       }
     }
   }
@@ -73,7 +70,7 @@ fragment MemberChargeFragment on MemberCharge {
   }
   status
   carriedAdjustment {
-   ...MoneyFragment
+    ...MoneyFragment
   }
   settlementAdjustment {
     ...MoneyFragment

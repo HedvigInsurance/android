@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.1.3"
+    versionName = "14.2.1"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -207,6 +207,7 @@ dependencies {
   implementation(projects.featureMovingflow)
 
   implementation(projects.featureRemoveAddons)
+  implementation(projects.featurePayoutAccount)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
   implementation(projects.featureTerminateInsurance)

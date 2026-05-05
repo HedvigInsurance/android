@@ -279,8 +279,6 @@ internal val paymentOverViewPreviewData: PaymentOverview
       memberChargeShortInfo = memberChargeShortInfo,
       ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
       paymentConnection = PaymentConnection.Active(
-        displayName = "Nordea",
-        displayValue = "31489*****",
         chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
       ),
       isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
