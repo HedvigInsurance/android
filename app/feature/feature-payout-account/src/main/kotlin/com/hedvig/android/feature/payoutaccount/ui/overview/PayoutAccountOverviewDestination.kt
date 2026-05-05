@@ -32,6 +32,7 @@ import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOvervie
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
+import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_TITLE
 import hedvig.resources.PAYOUT_PAGE_HEADING
@@ -40,6 +41,7 @@ import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.swish
+import hedvig.resources.trustly
 import octopus.type.MemberPaymentProvider
 import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
@@ -143,7 +145,7 @@ private fun PayoutAccountContent(
       is PayoutAccount.Trustly -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
         PayoutAccountReadOnlyTextField(
-          label = formatBankAccountLabel("Trustly", currentMethod.bankName),
+          label = formatBankAccountLabel(stringResource(Res.string.trustly), currentMethod.bankName),
           text = if (currentMethod.isPending && accountNumber.isBlank()) {
             stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
           } else {
@@ -153,7 +155,10 @@ private fun PayoutAccountContent(
       }
 
       is PayoutAccount.Invoice -> {
-        PayoutAccountReadOnlyTextField(label = "Account", text = "Invoice")
+        PayoutAccountReadOnlyTextField(
+          stringResource(Res.string.PAYMENTS_ACCOUNT),
+          stringResource(Res.string.PAYMENTS_INVOICE),
+        )
       }
 
       is PayoutAccount.BankAccount -> {

@@ -274,7 +274,7 @@ abstract class DownloadStringsTask @Inject constructor(
       |  <string name="swedish">Svenska</string>
       |  <string name="english_swedish">English</string>
       |  <string name="swish">Swish</string>
-      |  <string name="trustly">"Trustly"</string>
+      |  <string name="trustly">Trustly</string>
       """.trimMargin("|")
     )
   }

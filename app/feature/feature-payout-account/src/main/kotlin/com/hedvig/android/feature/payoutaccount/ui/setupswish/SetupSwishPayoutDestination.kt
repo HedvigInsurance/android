@@ -28,6 +28,7 @@ import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
+import hedvig.resources.general_save_button
 import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
 
@@ -100,7 +101,7 @@ private fun SetupSwishPayoutScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Save",
+      text = stringResource(Res.string.general_save_button),
       onClick = onSave,
       enabled = !uiState.isLoading && uiState.phoneNumberState.text.length >= 10,
       isLoading = uiState.isLoading,

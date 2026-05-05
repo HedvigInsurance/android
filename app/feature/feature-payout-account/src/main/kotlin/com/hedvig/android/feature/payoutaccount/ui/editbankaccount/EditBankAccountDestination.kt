@@ -27,6 +27,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
+import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.Res
 import hedvig.resources.general_save_button
 import hedvig.resources.something_went_wrong
@@ -76,8 +77,7 @@ private fun EditBankAccountScreen(
       HedvigTextField(
         state = uiState.accountNumberState,
         labelText = buildString {
-          // TODO: Add "Clearing and account number" / "Clearing och kontonummer" to Lokalise
-          append("Clearing and account number")
+          append(stringResource(Res.string.PAYMENTS_ACCOUNT))
           if (uiState.bankName != null) {
             append(" - ")
             append(uiState.bankName)
