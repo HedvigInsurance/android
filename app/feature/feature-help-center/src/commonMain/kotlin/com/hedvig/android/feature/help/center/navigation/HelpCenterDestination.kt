@@ -34,7 +34,7 @@ internal sealed interface HelpCenterDestinations {
 
   @Serializable
   data class Emergency(
-    val deflectData: DeflectData
+    val deflectData: DeflectData,
   ) : HelpCenterDestinations, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(typeOf<DeflectData>())

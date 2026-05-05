@@ -32,10 +32,7 @@ fun PuppyGuideViewController(
 }
 
 @Suppress("unused", "FunctionName") // Used from iOS
-fun PuppyArticleViewController(
-  storyName: String,
-  navigateUp: () -> Unit,
-): UIViewController {
+fun PuppyArticleViewController(storyName: String, navigateUp: () -> Unit): UIViewController {
   return ComposeUIViewController {
     HedvigTheme {
       val imageLoader = koinInject<ImageLoader>()

@@ -20,9 +20,9 @@ internal class PuppyArticleViewModel(
   setArticleRatingUseCase: SetArticleRatingUseCase,
   storyName: String,
 ) : MoleculeViewModel<PuppyArticleEvent, PuppyArticleUiState>(
-  presenter = PuppyArticlePresenter(getPuppyGuideUseCase, storyName, setArticleRatingUseCase),
-  initialState = PuppyArticleUiState.Loading,
-)
+    presenter = PuppyArticlePresenter(getPuppyGuideUseCase, storyName, setArticleRatingUseCase),
+    initialState = PuppyArticleUiState.Loading,
+  )
 
 private class PuppyArticlePresenter(
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,

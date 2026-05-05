@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.SharingStarted
 internal class PuppyGuideViewModel(
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
 ) : MoleculeViewModel<PuppyGuideEvent, PuppyGuideUiState>(
-  presenter = PuppyGuidePresenter(getPuppyGuideUseCase),
-  initialState = PuppyGuideUiState.Loading,
-  sharingStarted = SharingStarted.WhileSubscribed(),
-)
+    presenter = PuppyGuidePresenter(getPuppyGuideUseCase),
+    initialState = PuppyGuideUiState.Loading,
+    sharingStarted = SharingStarted.WhileSubscribed(),
+  )
 
 private class PuppyGuidePresenter(
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,

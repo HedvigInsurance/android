@@ -151,7 +151,7 @@ internal class GetQuickLinksUseCaseImpl(
         add(
           StandaloneQuickLink(
             quickLinkDestination = InnerHelpCenterDestination.QuickLinkSickAbroad(
-              deflectData
+              deflectData,
             ),
             titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
@@ -260,7 +260,7 @@ sealed interface QuickLinkDestination {
 
 internal sealed interface InnerHelpCenterDestination : QuickLinkDestination {
   data class QuickLinkSickAbroad(
-    val deflectData: DeflectData
+    val deflectData: DeflectData,
   ) : InnerHelpCenterDestination
 
   data class FirstVet(

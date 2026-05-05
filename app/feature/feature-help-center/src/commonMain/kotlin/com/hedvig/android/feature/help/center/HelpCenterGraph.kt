@@ -39,7 +39,7 @@ fun NavGraphBuilder.helpCenterGraph(
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   tryToDialPhone: (String) -> Unit,
-  imageLoader: ImageLoader
+  imageLoader: ImageLoader,
 ) {
   navgraph<HelpCenterDestination>(
     startDestination = HelpCenterDestinations.HelpCenter::class,
@@ -148,7 +148,7 @@ fun NavGraphBuilder.helpCenterGraph(
         openUrl = openUrl,
         tryToDialPhone = tryToDialPhone,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        imageLoader = imageLoader
+        imageLoader = imageLoader,
       )
     }
 
@@ -159,7 +159,7 @@ fun NavGraphBuilder.helpCenterGraph(
         onNavigateUp = navController::navigateUp,
         onNavigateToArticle = { story ->
           with(navController) {
-           navigate(
+            navigate(
               HelpCenterDestinations.PuppyGuideArticle(
                 story.name,
               ),

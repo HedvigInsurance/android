@@ -7,16 +7,12 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.model.*
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownTypography
-import com.mikepenz.markdown.model.*
 
 @Composable
-actual fun MarkdownText(
-  markdown: String,
-  modifier: Modifier,
-  withArticleStyle: Boolean,
-) {
+actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: Boolean) {
   val colors = HedvigTheme.colorScheme
   val typography = HedvigTheme.typography
 
