@@ -2,25 +2,26 @@ package com.hedvig.android.feature.help.center.puppyguide
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -107,6 +109,7 @@ private fun PuppyGuideScreen(
     }
 
     PuppyGuideUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
+
     is PuppyGuideUiState.Success -> PuppyGuideSuccessScreen(
       uiState,
       onNavigateUp = onNavigateUp,
@@ -145,7 +148,6 @@ private fun PuppyGuideSuccessScreen(
 
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
-    modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
   ) {
     Column(
       Modifier.fillMaxSize(),
@@ -154,15 +156,23 @@ private fun PuppyGuideSuccessScreen(
         title = "",
         onClick = onNavigateUp,
       )
+      val horizontalInsetsPadding = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Horizontal)
+        .asPaddingValues()
+      val bottomInsetsPadding = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Bottom)
+        .asPaddingValues()
+      val sectionContentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsetsPadding
 
       LazyColumn(
         state = listState,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = bottomInsetsPadding,
       ) {
         item {
-          Column {
+          Column(
+            modifier = Modifier.padding(sectionContentPadding),
+          ) {
             Spacer(modifier = Modifier.height(8.dp))
             Column(
               horizontalAlignment = Alignment.CenterHorizontally,
@@ -196,22 +206,28 @@ private fun PuppyGuideSuccessScreen(
           ) {
             Column {
               GuideCategoriesRow(
-                categories,
+                categories = categories,
+                contentPadding = sectionContentPadding,
                 onCategoryClick = {
                   selectedCategory = it
                 },
               )
-              Spacer(modifier = Modifier.height(24.dp))
+              Spacer(modifier = Modifier.height(8.dp))
             }
           }
         }
 
+        item {
+          Spacer(modifier = Modifier.height(16.dp))
+        }
+
         items(categories) { cat ->
           CategoryWithArticlesSection(
-            cat,
+            category = cat,
             stories = uiState.stories.filter { it.categories.contains(cat) },
             onNavigateToArticle = onNavigateToArticle,
             imageLoader = imageLoader,
+            contentPadding = sectionContentPadding,
           )
         }
       }
@@ -220,19 +236,25 @@ private fun PuppyGuideSuccessScreen(
 }
 
 @Composable
-private fun GuideCategoriesRow(categories: List<String>, onCategoryClick: (String) -> Unit) {
-  Row(Modifier.horizontalScroll(rememberScrollState())) {
-    categories.forEach {
+private fun GuideCategoriesRow(
+  categories: List<String>,
+  contentPadding: PaddingValues,
+  onCategoryClick: (String) -> Unit,
+) {
+  LazyRow(
+    contentPadding = contentPadding,
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    items(categories) { category ->
       HedvigButton(
-        text = it,
+        text = category,
         enabled = true,
         buttonSize = ButtonDefaults.ButtonSize.Medium,
         buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
         onClick = {
-          onCategoryClick(it)
+          onCategoryClick(category)
         },
       )
-      Spacer(Modifier.width(8.dp))
     }
   }
 }
@@ -243,6 +265,7 @@ private fun CategoryWithArticlesSection(
   stories: List<PuppyGuideStory>,
   onNavigateToArticle: (PuppyGuideStory) -> Unit,
   imageLoader: ImageLoader,
+  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier) {
@@ -251,14 +274,15 @@ private fun CategoryWithArticlesSection(
       fontStyle = HedvigTheme.typography.headlineSmall.fontStyle,
       fontSize = HedvigTheme.typography.headlineSmall.fontSize,
       fontFamily = HedvigTheme.typography.headlineSmall.fontFamily,
+      modifier = Modifier.padding(contentPadding),
     )
     Spacer(Modifier.height(12.dp))
-    Row(
+    LazyRow(
       horizontalArrangement = Arrangement.spacedBy(24.dp),
-      modifier = Modifier.horizontalScroll(rememberScrollState()),
+      contentPadding = contentPadding,
     ) {
       val size = 148.dp
-      stories.forEach { story ->
+      items(stories) { story ->
         ArticleItem(
           story = story,
           onNavigateToArticle = onNavigateToArticle,

@@ -1,19 +1,21 @@
 package com.hedvig.android.feature.help.center.puppyguide
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -31,8 +33,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
 import coil3.ImageLoader
+import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -111,23 +113,21 @@ private fun PuppyArticleSuccessScreen(
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  Surface(
-    color = HedvigTheme.colorScheme.backgroundPrimary,
-    modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing),
-  ) {
-    Column(
-      Modifier
-        .fillMaxSize(),
-    ) {
+  Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+    Column(Modifier.fillMaxSize()) {
       TopAppBarWithBack(
         title = "",
         onClick = navigateUp,
       )
+      val horizontalInsetsPadding = WindowInsets.safeDrawing
+        .only(WindowInsetsSides.Horizontal)
+        .asPaddingValues()
       Column(
         modifier = Modifier
-          .padding(horizontal = 16.dp)
           .fillMaxWidth()
-          .verticalScroll(rememberScrollState()),
+          .verticalScroll(rememberScrollState())
+          .padding(horizontalInsetsPadding)
+          .padding(horizontal = 16.dp),
       ) {
         Spacer(modifier = Modifier.height(8.dp))
         Column(
@@ -176,6 +176,7 @@ private fun PuppyArticleSuccessScreen(
           selectedRating = uiState.story.rating,
         )
         Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
     }
   }
