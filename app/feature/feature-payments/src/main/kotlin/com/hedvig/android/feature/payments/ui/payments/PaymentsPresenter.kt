@@ -13,7 +13,6 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
 import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
