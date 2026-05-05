@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationEventHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -307,7 +308,7 @@ private fun HelpCenterHomeScreen(
                   quickLinksForSearch = (
                     quickLinksUiState as?
                       HelpCenterUiState.QuickLinkUiState.QuickLinks
-                    )?.quickLinks ?: listOf(),
+                  )?.quickLinks ?: listOf(),
                   questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
                 )
                 onUpdateSearchResults(it, results)
@@ -398,7 +399,7 @@ private fun ContentWithoutSearch(
         ) {
           if (puppyGuidesExist) {
             PuppyGuideCard(
-              onClick = onNavigateToPuppyGuide,
+              onClick = dropUnlessResumed { onNavigateToPuppyGuide() },
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           } else {
