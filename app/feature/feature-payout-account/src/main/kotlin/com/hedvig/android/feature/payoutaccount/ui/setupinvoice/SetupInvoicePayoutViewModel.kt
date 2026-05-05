@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payoutaccount.ui.setupinvoice
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +41,7 @@ internal class SetupInvoicePayoutPresenter(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
-    var connectIteration by remember { mutableStateOf(0) }
+    var connectIteration by remember { mutableIntStateOf(0) }
     var shouldConnect by remember { mutableStateOf(false) }
 
     if (shouldConnect) {
