@@ -38,7 +38,7 @@ fun HelpCenterViewController(
           onNavigateToNewConversation = onNavigateToNewConversation,
           openUrl = openUrl,
           tryToDialPhone = tryToDialPhone,
-          imageLoader = imageLoader
+          imageLoader = imageLoader,
         )
       }
     }
@@ -64,6 +64,7 @@ private object NoOpHedvigDeepLinkContainer : HedvigDeepLinkContainer {
   override val directDebit: List<String> = emptyList()
   override val eurobonus: List<String> = emptyList()
   override val payments: List<String> = emptyList()
+  override val payout: List<String> = emptyList()
   override val deleteAccount: List<String> = emptyList()
   override val contactInfo: List<String> = emptyList()
   override val chat: List<String> = emptyList()
