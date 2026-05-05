@@ -5,6 +5,7 @@ import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -91,6 +92,7 @@ internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
           tierName = "STANDARD",
           existingAddons = emptyList(),
           availableAddons = emptyList(),
+          chipId = ChipIdState.NotRequired,
         ),
       ).right(),
     )

@@ -52,6 +52,7 @@ import com.hedvig.android.crosssells.CrossSellItemPlaceholder
 import com.hedvig.android.crosssells.CrossSellsSection
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.FlowType
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.contract.ContractType
@@ -689,6 +690,7 @@ private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
     UiMoney(89.0, UiCurrencyCode.SEK),
     discounts = emptyList(),
   ),
+  chipId = ChipIdState.NotRequired,
 )
 
 private val previewInsurance = EstablishedInsuranceContract(
@@ -737,4 +739,5 @@ private val previewInsurance = EstablishedInsuranceContract(
   supportsTierChange = true,
   existingAddons = emptyList(),
   availableAddons = emptyList(),
+  chipId = ChipIdState.Missing,
 )

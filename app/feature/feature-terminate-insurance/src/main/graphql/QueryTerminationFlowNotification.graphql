@@ -1,0 +1,8 @@
+query TerminationFlowNotification($input: TerminationFlowNotificationInput!) {
+  currentMember {
+    terminationNotification(input: $input) {
+      message
+      type
+    }
+  }
+}

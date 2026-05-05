@@ -534,8 +534,6 @@ private fun SearchResults(
   }
 }
 
-
-
 private val QuickLinksSectionEnterTransition = fadeIn() + expandVertically(
   animationSpec = spring(
     stiffness = Spring.StiffnessLow,

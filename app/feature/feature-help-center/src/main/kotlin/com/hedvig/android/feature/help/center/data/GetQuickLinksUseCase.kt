@@ -14,6 +14,7 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
 import hedvig.resources.CONTRACT_COOWNER
 import hedvig.resources.EDIT_COOWNER_SUBTITLE
@@ -141,14 +142,12 @@ internal class GetQuickLinksUseCase(
           ),
         )
       }
-      if (memberActionOptions.sickAbroadAction?.partners?.isNotEmpty() == true) {
-        val deflectPartner = memberActionOptions.sickAbroadAction.partners[0]
+      if (memberActionOptions.sickAbroadAction!=null) {
+        val deflectData = memberActionOptions.sickAbroadAction.deflectData
         add(
           StandaloneQuickLink(
             quickLinkDestination = InnerHelpCenterDestination.QuickLinkSickAbroad(
-              emergencyNumber = deflectPartner.phoneNumber,
-              emergencyUrl = deflectPartner.url,
-              preferredPartnerImageHeight = deflectPartner.preferredImageHeight,
+              deflectData
             ),
             titleRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_TITLE,
             hintTextRes = Res.string.HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE,
@@ -163,7 +162,10 @@ private fun createEditCoInsuredQuickLink(
   coInsuredContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
 ): StandaloneQuickLink? {
   return when {
-    coInsuredContracts.isEmpty() -> null
+    coInsuredContracts.isEmpty() -> {
+      null
+    }
+
     coInsuredContracts.size == 1 -> {
       val contract = coInsuredContracts.first()
       if (contract.coInsured?.any { it.hasMissingInfo } == true) {
@@ -180,11 +182,14 @@ private fun createEditCoInsuredQuickLink(
         )
       }
     }
-    else -> StandaloneQuickLink(
-      titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
-      hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
-      quickLinkDestination = ChooseInsuranceForEditCoInsured,
-    )
+
+    else -> {
+      StandaloneQuickLink(
+        titleRes = Res.string.HC_QUICK_ACTIONS_EDIT_COINSURED,
+        hintTextRes = Res.string.HC_QUICK_ACTIONS_CO_INSURED_SUBTITLE,
+        quickLinkDestination = ChooseInsuranceForEditCoInsured,
+      )
+    }
   }
 }
 
@@ -192,7 +197,10 @@ private fun createEditCoOwnersQuickLink(
   coOwnerContracts: List<AvailableSelfServiceOnContractsQuery.Data.CurrentMember.ActiveContract>,
 ): StandaloneQuickLink? {
   return when {
-    coOwnerContracts.isEmpty() -> null
+    coOwnerContracts.isEmpty() -> {
+      null
+    }
+
     coOwnerContracts.size == 1 -> {
       val contract = coOwnerContracts.first()
       if (contract.coOwners?.any { it.hasMissingInfo } == true) {
@@ -209,11 +217,14 @@ private fun createEditCoOwnersQuickLink(
         )
       }
     }
-    else -> StandaloneQuickLink(
-      titleRes = Res.string.EDIT_COOWNER_TITLE,
-      hintTextRes = Res.string.EDIT_COOWNER_SUBTITLE,
-      quickLinkDestination = ChooseInsuranceForEditCoOwners,
-    )
+
+    else -> {
+      StandaloneQuickLink(
+        titleRes = Res.string.EDIT_COOWNER_TITLE,
+        hintTextRes = Res.string.EDIT_COOWNER_SUBTITLE,
+        quickLinkDestination = ChooseInsuranceForEditCoOwners,
+      )
+    }
   }
 }
 
@@ -245,9 +256,7 @@ sealed interface QuickLinkDestination {
 
 internal sealed interface InnerHelpCenterDestination : QuickLinkDestination {
   data class QuickLinkSickAbroad(
-    val emergencyNumber: String?,
-    val emergencyUrl: String?,
-    val preferredPartnerImageHeight: Int?,
+    val deflectData: DeflectData
   ) : InnerHelpCenterDestination
 
   data class FirstVet(

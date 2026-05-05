@@ -43,6 +43,7 @@ interface HedvigDeepLinkContainer {
   val directDebit: List<String> // Same as connectPayment but to support an old link to it
   val eurobonus: List<String> // The destination allowing to edit your current Eurobonus (SAS) number
   val payments: List<String> // The payments screen, showing the payments history and the upcoming payment information
+  val payout: List<String> // Payout connection overview screen, can see existing options and change/add payout options
   val deleteAccount: List<String> // The screen where the member may request for their account data to be GDPR wiped
 
   // The screen where one can change their contact information, like their email and phone.
@@ -69,6 +70,16 @@ interface HedvigDeepLinkContainer {
   // the screen where member can start moving flow to change address
   // for their home insurance
   val moveContract: List<String>
+
+  /**
+   * Builds a deep link with the right prefix for the current app flavor, being provided a [suffix] which is everything
+   * that comes after `/` which follows the base deeplink domain
+   */
+  fun buildDeepLink(suffix: String): String
+
+  val petIdWithoutContractId: List<String>
+
+  val petIdWithContractId: List<String>
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -131,6 +142,7 @@ internal class HedvigDeepLinkContainerImpl(
     "$baseDeepLinkDomain/eurobonus"
   }
   override val payments: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain -> "$baseDeepLinkDomain/payments" }
+  override val payout: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain -> "$baseDeepLinkDomain/payout" }
   override val deleteAccount: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/delete-account"
   }
@@ -175,37 +187,55 @@ internal class HedvigDeepLinkContainerImpl(
   override val moveContract: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/move-contract"
   }
+
+  override fun buildDeepLink(suffix: String): String {
+    return "${baseDeepLinkDomains.first()}/$suffix"
+  }
+
+  override val petIdWithoutContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/pet-id"
+  }
+  override val petIdWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/pet-id?contractId={contractId}"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
   get() = listOf(
-    home.first(),
+    carAddon.first(),
+    carAddonWithContractId.first(),
+    changeTierWithContractId.first(),
+    changeTierWithoutContractId.first(),
+    chat.first(),
+    claimDetails.first(),
+    claimFlow.first(),
+    connectPayment.first(),
+    contactInfo.first(),
+    contract.first(),
+    contractWithoutContractId.first(),
+    conversation.first(),
+    deleteAccount.first(),
+    directDebit.first(),
+    editCoInsured.first(),
+    editCoInsuredWithoutContractId.first(),
+    editCoOwners.first(),
+    eurobonus.first(),
+    forever.first(),
     helpCenter.first(),
     helpCenterCommonTopic.first(),
     helpCenterQuestion.first(),
-    insurances.first(),
-    contract.first(),
-    contractWithoutContractId.first(),
-    editCoInsured.first(),
-    editCoInsuredWithoutContractId.first(),
-    terminateInsurance.first(),
-    forever.first(),
-    profile.first(),
-    connectPayment.first(),
-    directDebit.first(),
-    eurobonus.first(),
-    payments.first(),
-    deleteAccount.first(),
-    contactInfo.first(),
-    chat.first(),
+    home.first(),
     inbox.first(),
-    conversation.first(),
-    travelAddon.first(),
-    travelCertificate.first(),
-    changeTierWithoutContractId.first(),
-    changeTierWithContractId.first(),
-    claimDetails.first(),
     insuranceEvidence.first(),
-    claimFlow.first(),
+    insurances.first(),
     moveContract.first(),
+    payments.first(),
+    payout.first(),
+    petIdWithContractId.first(),
+    petIdWithoutContractId.first(),
+    profile.first(),
+    terminateInsurance.first(),
+    travelAddon.first(),
+    travelAddonWithContractId.first(),
+    travelCertificate.first(),
   )

@@ -50,21 +50,19 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextDisplay
 import com.hedvig.android.design.system.hedvig.freetext.FreeTextOverlay
-import com.hedvig.android.feature.terminateinsurance.data.InfoType
+import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.DowngradePriceByChangingTier
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.Redirect
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.UpdateAddress
-import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion.Known.Action.UpgradeCoverageByChangingTier
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
+import hedvig.resources.CHANGE_TIER_BUTTON_TITLE
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.Res
+import hedvig.resources.SUMMARY_SCREEN_LEARN_MORE_BUTTON
 import hedvig.resources.TERMINATION_NO_TIER_QUOTES_SUBTITLE
+import hedvig.resources.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS
+import hedvig.resources.TERMINATION_OFFER_TITLE
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_HINT
 import hedvig.resources.TERMINATION_SURVEY_FEEDBACK_POPOVER_HINT
-import hedvig.resources.TERMINATION_SURVEY_SUBTITLE
 import hedvig.resources.general_close_button
 import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong
@@ -77,7 +75,7 @@ internal fun TerminationSurveyDestination(
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToNextStep: (step: TerminateInsuranceStep) -> Unit,
+  navigateToNextStep: (SurveyNavigationStep.NavigateToNextTerminationStep) -> Unit,
   navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
   redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
@@ -95,7 +93,7 @@ internal fun TerminationSurveyDestination(
       when (nextStep) {
         is SurveyNavigationStep.NavigateToNextTerminationStep -> {
           viewModel.emit(TerminationSurveyEvent.ClearNextStep)
-          navigateToNextStep(nextStep.step)
+          navigateToNextStep(nextStep)
         }
 
         SurveyNavigationStep.NavigateToSubOptions -> {
@@ -191,7 +189,7 @@ private fun TerminationSurveyScreen(
         }
         FlowHeading(
           title,
-          stringResource(Res.string.TERMINATION_SURVEY_SUBTITLE),
+          stringResource(Res.string.TERMINATION_OFFER_TITLE),
           modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.weight(1f))
@@ -288,11 +286,11 @@ private fun SelectedSurveyInfoBox(
       selectedReason != null &&
       selectedReason.suggestion != null &&
       !selectedReason.isDisabled &&
-      selectedReason.suggestion is SurveyOptionSuggestion.Known
+      selectedReason.suggestion.type !in SuggestionType.DEFLECT_TYPES + SuggestionType.UNKNOWN
     ) {
       Column {
         val suggestion = selectedReason.suggestion
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
           buttonLoading = actionButtonLoading,
           modifier = Modifier
@@ -309,34 +307,32 @@ private fun SelectedSurveyInfoBox(
               }
             }
           },
-          priority = when (suggestion.infoType) {
-            InfoType.INFO -> NotificationPriority.Info
-            InfoType.OFFER -> NotificationPriority.Campaign
-            InfoType.UNKNOWN -> NotificationPriority.InfoInline
+          priority = when (suggestion.type) {
+            SuggestionType.INFO -> NotificationPriority.Info
+            else -> NotificationPriority.Campaign
           },
-          style = when (suggestion) {
-            is SurveyOptionSuggestion.Known.Action -> InfoCardStyle.Button(
-              buttonText = suggestion.buttonTitle,
-              onButtonClick = when (suggestion) {
-                is DowngradePriceByChangingTier -> {
-                  tryToDowngradePrice
-                }
-
-                is UpdateAddress -> {
-                  dropUnlessResumed { navigateToMovingFlow() }
-                }
-
-                is UpgradeCoverageByChangingTier -> {
-                  tryToUpgradeCoverage
-                }
-
-                is Redirect -> {
-                  { openUrl(suggestion.url) }
-                }
-              },
+          style = when (suggestion.type) {
+            SuggestionType.UPDATE_ADDRESS -> InfoCardStyle.Button(
+              buttonText = stringResource(Res.string.TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS),
+              onButtonClick = dropUnlessResumed { navigateToMovingFlow() },
             )
 
-            is SurveyOptionSuggestion.Known.Info -> InfoCardStyle.Default
+            SuggestionType.DOWNGRADE_PRICE -> InfoCardStyle.Button(
+              buttonText = stringResource(Res.string.CHANGE_TIER_BUTTON_TITLE),
+              onButtonClick = tryToDowngradePrice,
+            )
+
+            SuggestionType.UPGRADE_COVERAGE -> InfoCardStyle.Button(
+              buttonText = stringResource(Res.string.CHANGE_TIER_BUTTON_TITLE),
+              onButtonClick = tryToUpgradeCoverage,
+            )
+
+            SuggestionType.REDIRECT -> InfoCardStyle.Button(
+              buttonText = stringResource(Res.string.SUMMARY_SCREEN_LEARN_MORE_BUTTON),
+              onButtonClick = { suggestion.url?.let { openUrl(it) } },
+            )
+
+            else -> InfoCardStyle.Default
           },
         )
         Spacer(modifier = (Modifier.height(4.dp)))
@@ -357,7 +353,7 @@ private fun ColumnScope.SelectedSurveyTextDisplay(
   val showTextEntry: (TerminationSurveyOption?) -> Boolean = { reason ->
     reason != null &&
       !reason.isDisabled &&
-      reason.feedBackRequired
+      reason.feedbackRequired
   }
   AnimatedContent(
     targetState = selectedReason,
@@ -474,7 +470,7 @@ private val previewReason1 = TerminationSurveyOption(
       title = "I'm moving in with someone else",
       subOptions = listOf(),
       suggestion = null,
-      feedBackRequired = false,
+      feedbackRequired = false,
       listIndex = 0,
     ),
     TerminationSurveyOption(
@@ -482,7 +478,7 @@ private val previewReason1 = TerminationSurveyOption(
       title = "I'm moving abroad",
       subOptions = listOf(),
       suggestion = null,
-      feedBackRequired = false,
+      feedbackRequired = false,
       listIndex = 1,
     ),
     TerminationSurveyOption(
@@ -490,15 +486,16 @@ private val previewReason1 = TerminationSurveyOption(
       title = "Other",
       subOptions = listOf(),
       suggestion = null,
-      feedBackRequired = true,
+      feedbackRequired = true,
       listIndex = 2,
     ),
   ),
-  suggestion = SurveyOptionSuggestion.Known.Info(
-    "Why don't you try this: go to [Move to a new address](https://hedvig.page.link/home) here in the app, then proceed from there as you see fit",
-    infoType = InfoType.OFFER,
+  suggestion = SurveyOptionSuggestion(
+    type = SuggestionType.INFO,
+    description = "Why don't you try this: go to Move to a new address here in the app",
+    url = null,
   ),
-  feedBackRequired = true,
+  feedbackRequired = true,
   listIndex = 0,
 )
 
@@ -507,7 +504,7 @@ private val previewReason2 = TerminationSurveyOption(
   title = "I got a better offer elsewhere",
   subOptions = listOf(),
   suggestion = null,
-  feedBackRequired = true,
+  feedbackRequired = true,
   listIndex = 1,
 )
 
@@ -520,7 +517,7 @@ private val previewReason3 = TerminationSurveyOption(
       title = "I am dissatisfied with the coverage",
       subOptions = listOf(),
       suggestion = null,
-      feedBackRequired = true,
+      feedbackRequired = true,
       listIndex = 0,
     ),
     TerminationSurveyOption(
@@ -528,16 +525,15 @@ private val previewReason3 = TerminationSurveyOption(
       title = "I am dissatisfied with the service",
       subOptions = listOf(),
       suggestion = null,
-      feedBackRequired = true,
+      feedbackRequired = true,
       listIndex = 1,
     ),
   ),
-  suggestion = Redirect(
-    "http://www.google.com",
-    "Do this action instead",
-    "Click here to do it",
-    infoType = InfoType.OFFER,
+  suggestion = SurveyOptionSuggestion(
+    type = SuggestionType.REDIRECT,
+    description = "Do this action instead",
+    url = "http://www.google.com",
   ),
-  feedBackRequired = false,
+  feedbackRequired = false,
   listIndex = 3,
 )

@@ -43,6 +43,7 @@ dependencies {
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.uiEmergency)
+  implementation(projects.partnersDeflect)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

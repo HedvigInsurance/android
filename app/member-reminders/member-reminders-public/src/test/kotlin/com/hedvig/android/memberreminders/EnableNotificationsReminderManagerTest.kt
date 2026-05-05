@@ -124,6 +124,7 @@ private val TestHedvigBuildConstants = object : HedvigBuildConstants {
   override val urlBaseWeb: String = ""
   override val urlOdyssey: String = ""
   override val urlHedvigGateway: String = ""
+  override val urlAuthService: String = ""
   override val urlBotService: String = ""
   override val urlClaimsService: String = ""
   override val deepLinkHosts: List<String> = listOf("")

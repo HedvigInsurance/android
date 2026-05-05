@@ -3,6 +3,7 @@ package com.hedvig.android.feature.help.center
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
@@ -33,6 +34,7 @@ fun NavGraphBuilder.helpCenterGraph(
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   tryToDialPhone: (String) -> Unit,
+  imageLoader: ImageLoader
 ) {
   navgraph<HelpCenterDestination>(
     startDestination = HelpCenterDestinations.HelpCenter::class,
@@ -64,9 +66,7 @@ fun NavGraphBuilder.helpCenterGraph(
                 is QuickLinkSickAbroad -> {
                   navController.navigate(
                     Emergency(
-                      destination.emergencyNumber,
-                      destination.emergencyUrl,
-                      destination.preferredPartnerImageHeight,
+                      destination.deflectData,
                     ),
                   )
                 }
@@ -128,14 +128,14 @@ fun NavGraphBuilder.helpCenterGraph(
         navigateBack = navController::popBackStack,
       )
     }
-    navdestination<Emergency> {
+    navdestination<Emergency>(HelpCenterDestinations.Emergency) {
       EmergencyDestination(
-        emergencyNumber = emergencyNumber,
-        emergencyUrl = emergencyUrl,
-        preferredPartnerImageHeight = preferredPartnerImageHeight,
+        deflect = deflectData,
         navigateUp = navController::navigateUp,
         openUrl = openUrl,
         tryToDialPhone = tryToDialPhone,
+        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+        imageLoader = imageLoader
       )
     }
   }

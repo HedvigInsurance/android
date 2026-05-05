@@ -22,5 +22,4 @@ enum class Feature(
   ),
   DISABLE_REDEEM_CAMPAIGN("Disables the ability to redeem a campaign code"),
   ENABLE_CLAIM_HISTORY("Disables the ability to redeem a campaign code"),
-  ENABLE_NEW_CLAIMS_FLOW("Enable the experimental claim chat flow, replacing the conventional claim flow"),
 }

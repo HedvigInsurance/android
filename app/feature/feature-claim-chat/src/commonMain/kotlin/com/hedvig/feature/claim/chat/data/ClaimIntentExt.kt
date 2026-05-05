@@ -2,11 +2,11 @@ package com.hedvig.feature.claim.chat.data
 
 import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
-import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.design.system.hedvig.DatePickerUiState
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.shared.partners.deflect.DeflectData
 import kotlinx.datetime.LocalDate
 import octopus.fragment.AudioRecordingFragment
 import octopus.fragment.ClaimIntentFragment
@@ -29,12 +29,16 @@ internal fun ClaimIntentMutationOutputFragment.toClaimIntent(locale: CommonLocal
   return with(raise) {
     when {
       userError != null -> {
-        logcat {"toClaimIntent: user error: ${userError.message}"}
+        logcat { "toClaimIntent: user error: ${userError.message}" }
         raise(ClaimChatErrorMessage.GeneralError)
       }
-      intent != null -> intent.toClaimIntent(locale)
+
+      intent != null -> {
+        intent.toClaimIntent(locale)
+      }
+
       else -> {
-        logcat {"toClaimIntent: no data"}
+        logcat { "toClaimIntent: no data" }
         raise(ClaimChatErrorMessage.GeneralError)
       }
     }
@@ -130,13 +134,14 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
     }
 
     is DeflectionFragment -> {
-      fun DeflectionInfoBlockFragment.toInfoBlock(): StepContent.Deflect.InfoBlock {
-        return StepContent.Deflect.InfoBlock(title, description)
+      fun DeflectionInfoBlockFragment.toInfoBlock(): DeflectData.InfoBlock {
+        return DeflectData.InfoBlock(title, description)
       }
+
       val partners = if (partners.isNotEmpty()) {
-        StepContent.Deflect.DeflectPartnerContainer.ExtendedPartnerContainer(
+        DeflectData.DeflectPartnerContainer.ExtendedPartnerContainer(
           partners = partners.map { partner ->
-            StepContent.Deflect.DeflectPartnerContainer.ExtendedPartner(
+            DeflectData.DeflectPartnerContainer.ExtendedPartner(
               id = partner.id,
               imageUrl = partner.imageUrl,
               phoneNumber = partner.phoneNumber,
@@ -149,9 +154,9 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
           },
         )
       } else if (simplePartners.isNotEmpty()) {
-        StepContent.Deflect.DeflectPartnerContainer.SimplePartnerContainer(
+        DeflectData.DeflectPartnerContainer.SimplePartnerContainer(
           partners = simplePartners.map { partner ->
-            StepContent.Deflect.DeflectPartnerContainer.SimplePartner(
+            DeflectData.DeflectPartnerContainer.SimplePartner(
               url = partner.url,
               urlButtonTitle = partner.urlButtonTitle,
             )
@@ -163,15 +168,17 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
       }
 
       StepContent.Deflect(
-        title = title,
-        infoText = infoText,
-        warningText = warningText,
-        partnersContainer = partners,
-        partnersInfo = partnersInfo?.toInfoBlock(),
-        content = content.toInfoBlock(),
-        faq = faq.map { it.toInfoBlock() },
-        buttonText = buttonTitle,
-      )
+        deflectData = DeflectData(
+          title = title,
+          infoText = infoText,
+          warningText = warningText,
+          partnersContainer = partners,
+          partnersInfo = partnersInfo?.toInfoBlock(),
+          content = content.toInfoBlock(),
+          faq = faq.map { it.toInfoBlock() },
+          buttonText = buttonTitle,
+        ),
+        )
     }
 
     else -> {
@@ -202,14 +209,38 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
       maxValue = field.maxValue,
       minValue = field.minValue,
       type = when (field.type) {
-        ClaimIntentStepContentFormFieldType.TEXT -> StepContent.Form.FieldType.TEXT
-        ClaimIntentStepContentFormFieldType.DATE -> StepContent.Form.FieldType.DATE
-        ClaimIntentStepContentFormFieldType.NUMBER -> StepContent.Form.FieldType.NUMBER
-        ClaimIntentStepContentFormFieldType.SINGLE_SELECT -> StepContent.Form.FieldType.SINGLE_SELECT
-        ClaimIntentStepContentFormFieldType.MULTI_SELECT -> StepContent.Form.FieldType.MULTI_SELECT
-        ClaimIntentStepContentFormFieldType.BINARY -> StepContent.Form.FieldType.BINARY
-        ClaimIntentStepContentFormFieldType.PHONE_NUMBER -> StepContent.Form.FieldType.NUMBER
-        ClaimIntentStepContentFormFieldType.SEARCH -> StepContent.Form.FieldType.SEARCH
+        ClaimIntentStepContentFormFieldType.TEXT -> {
+          StepContent.Form.FieldType.TEXT
+        }
+
+        ClaimIntentStepContentFormFieldType.DATE -> {
+          StepContent.Form.FieldType.DATE
+        }
+
+        ClaimIntentStepContentFormFieldType.NUMBER -> {
+          StepContent.Form.FieldType.NUMBER
+        }
+
+        ClaimIntentStepContentFormFieldType.SINGLE_SELECT -> {
+          StepContent.Form.FieldType.SINGLE_SELECT
+        }
+
+        ClaimIntentStepContentFormFieldType.MULTI_SELECT -> {
+          StepContent.Form.FieldType.MULTI_SELECT
+        }
+
+        ClaimIntentStepContentFormFieldType.BINARY -> {
+          StepContent.Form.FieldType.BINARY
+        }
+
+        ClaimIntentStepContentFormFieldType.PHONE_NUMBER -> {
+          StepContent.Form.FieldType.NUMBER
+        }
+
+        ClaimIntentStepContentFormFieldType.SEARCH -> {
+          StepContent.Form.FieldType.SEARCH
+        }
+
         ClaimIntentStepContentFormFieldType.UNKNOWN__ -> {
           logcat { "FormFragment.Field: Unknown field type" }
           raise(ClaimChatErrorMessage.NeedsUpdate)
@@ -241,9 +272,9 @@ private fun List<FormFragment.Field>.toFields(locale: CommonLocale): List<StepCo
         StepContent.Form.SearchData(
           suggestedQuery = it.suggestedQuery,
           modalTitle = it.modalTitle,
-          modalSubtitle = it.modalSubtitle
+          modalSubtitle = it.modalSubtitle,
         )
-      }
+      },
     )
   }
 }
@@ -272,13 +303,13 @@ private fun ClaimIntentFragment.CreatedClaim.toClaimIntentOutcome(): ClaimIntent
   )
 }
 
-internal sealed interface ClaimChatErrorMessage: ErrorMessage {
-  data object GeneralError: ClaimChatErrorMessage {
+internal sealed interface ClaimChatErrorMessage : ErrorMessage {
+  data object GeneralError : ClaimChatErrorMessage {
     override val message = null
     override val throwable = null
   }
 
-  data object NeedsUpdate: ClaimChatErrorMessage {
+  data object NeedsUpdate : ClaimChatErrorMessage {
     override val message = null
     override val throwable = null
   }

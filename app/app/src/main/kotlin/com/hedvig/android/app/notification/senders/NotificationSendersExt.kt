@@ -10,4 +10,8 @@ internal fun RemoteMessage?.titleFromCustomerIoData(): String? {
 internal fun RemoteMessage.bodyFromCustomerIoData(): String? {
   return this?.data?.get("body")
 }
+
+internal fun RemoteMessage.linkFromCustomerIoData(): String? {
+  return this?.data?.get("link")
+}
 // endregion

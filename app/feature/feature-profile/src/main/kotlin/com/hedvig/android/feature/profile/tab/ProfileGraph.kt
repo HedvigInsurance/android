@@ -6,8 +6,9 @@ import androidx.navigation.NavGraphBuilder
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
+import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
-import com.hedvig.android.feature.profile.aboutapp.AboutAppDestination
+import com.hedvig.android.feature.profile.aboutapp.InformationDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
 import com.hedvig.android.feature.profile.certificates.CertificatesDestination
@@ -16,12 +17,14 @@ import com.hedvig.android.feature.profile.contactinfo.ContactInfoDestination
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
+
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations.Certificates
 import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -29,12 +32,15 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.profileGraph(
-  nestedGraphs: NavGraphBuilder.() -> Unit,
   settingsDestinationNestedGraphs: NavGraphBuilder.() -> Unit,
+  nestedGraphs: NavGraphBuilder.() -> Unit,
+  globalSnackBarState: GlobalSnackBarState,
   navController: NavController,
+  popBackStackOrFinish: () -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
   navigateToDeleteAccountFeature: () -> Unit,
   navigateToClaimHistory: () -> Unit,
@@ -43,6 +49,8 @@ fun NavGraphBuilder.profileGraph(
   onNavigateToTravelCertificate: () -> Unit,
   onNavigateToInsuranceEvidence: () -> Unit,
   openUrl: (String) -> Unit,
+  navigateToChipId: () -> Unit,
+  languageService: LanguageService,
 ) {
   navgraph<ProfileDestination.Graph>(
     startDestination = ProfileDestination.Profile::class,
@@ -62,7 +70,7 @@ fun NavGraphBuilder.profileGraph(
           navController.navigate(ProfileDestination.ContactInfo)
         },
         navigateToAboutApp = dropUnlessResumed {
-          navController.navigate(ProfileDestinations.AboutApp)
+          navController.navigate(ProfileDestinations.Information)
         },
         navigateToSettings = dropUnlessResumed {
           navController.navigate(ProfileDestinations.SettingsGraph)
@@ -71,6 +79,7 @@ fun NavGraphBuilder.profileGraph(
           navController.navigate(Certificates)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+        navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
         navigateToAddMissingInfo = dropUnlessResumed { contractId: String, type: CoInsuredFlowType ->
           navigateToAddMissingInfo(contractId, type)
         },
@@ -80,8 +89,10 @@ fun NavGraphBuilder.profileGraph(
         onNavigateToNewConversation = dropUnlessResumed {
           onNavigateToNewConversation()
         },
+        navigateToChipId = navigateToChipId,
       )
     }
+
     navdestination<ProfileDestinations.Eurobonus>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.eurobonus),
     ) {
@@ -97,12 +108,14 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: ContactInfoViewModel = koinViewModel()
       ContactInfoDestination(
         viewModel = viewModel,
+        globalSnackBarState = globalSnackBarState,
         navigateUp = navController::navigateUp,
+        popBackStack = popBackStackOrFinish,
       )
     }
-    navdestination<ProfileDestinations.AboutApp> {
+    navdestination<ProfileDestinations.Information> {
       val viewModel: AboutAppViewModel = koinViewModel()
-      AboutAppDestination(
+      InformationDestination(
         viewModel = viewModel,
         onBackPressed = navController::navigateUp,
         showOpenSourceLicenses = dropUnlessResumed {
@@ -110,6 +123,8 @@ fun NavGraphBuilder.profileGraph(
         },
         navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         hedvigBuildConstants = hedvigBuildConstants,
+        languageService = languageService,
+        openUrl = openUrl,
       )
     }
     navdestination<ProfileDestinations.Licenses> {

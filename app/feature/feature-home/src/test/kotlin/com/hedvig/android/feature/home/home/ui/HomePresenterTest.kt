@@ -21,7 +21,6 @@ import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
-import com.hedvig.android.featureflags.test.FakeFeatureManager
 import com.hedvig.android.memberreminders.MemberReminder
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.molecule.test.test
@@ -61,7 +60,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -89,7 +87,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -115,7 +112,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -176,7 +172,6 @@ internal class HomePresenterTest {
           chatAction = HomeTopBarAction.ChatAction,
           hasUnseenChatMessages = false,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = false,
           isProduction = false,
         ),
       )
@@ -190,7 +185,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -229,7 +223,6 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = false,
           isProduction = false,
         ),
       )
@@ -243,7 +236,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -268,7 +260,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -306,7 +297,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -341,7 +331,6 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = false,
           isProduction = false,
         ),
       )
@@ -355,7 +344,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -397,7 +385,6 @@ internal class HomePresenterTest {
           firstVetAction = HomeTopBarAction.FirstVetAction(listOf(firstVet)),
           crossSellsAction = null,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = false,
           isProduction = false,
         ),
       )
@@ -411,7 +398,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -456,7 +442,6 @@ internal class HomePresenterTest {
               (true, 1L),
           ),
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = false,
           isProduction = false,
         ),
       )
@@ -470,7 +455,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -504,7 +488,6 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = false,
           isProduction = false,
         ),
       )
@@ -518,7 +501,6 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      FakeFeatureManager(false),
       backgroundScope,
       false,
     )
@@ -552,7 +534,6 @@ internal class HomePresenterTest {
           firstVetAction = null,
           crossSellsAction = null,
           addonBannerInfo = null,
-          isExperimentalClaimChatEnabled = false,
           isProduction = false,
         ),
       )

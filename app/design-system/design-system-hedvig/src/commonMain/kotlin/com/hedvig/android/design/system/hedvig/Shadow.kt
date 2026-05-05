@@ -11,9 +11,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Modifier.hedvigDropShadow(
-  shape: Shape = HedvigTheme.shapes.cornerLarge
-): Modifier {
+fun Modifier.hedvigDropShadow(shape: Shape = HedvigTheme.shapes.cornerLarge): Modifier {
   return this.then(
     if (isSystemInDarkTheme()) {
       Modifier

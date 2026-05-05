@@ -5,11 +5,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
+import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -22,23 +22,25 @@ fun NavGraphBuilder.homeGraph(
   navController: NavController,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  navigateToOldClaimFlow: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToHelpCenter: () -> Unit,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,
+  navigateToChipIdScreen: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
   navgraph<HomeDestination.Graph>(
     startDestination = HomeDestination.Home::class,
   ) {
     navdestination<HomeDestination.Home>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home,hedvigDeepLinkContainer.claimFlow),
+      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home, hedvigDeepLinkContainer.claimFlow),
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
@@ -53,10 +55,11 @@ fun NavGraphBuilder.homeGraph(
           navigateToClaimDetails(claimId)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
-        navigateToOldClaimFlow = dropUnlessResumed { navigateToOldClaimFlow() },
+        navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
         navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
         navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
         openUrl = openUrl,
+        openCrossSellUrl = openCrossSellUrl,
         openAppSettings = openAppSettings,
         navigateToFirstVet = dropUnlessResumed { sections ->
           navController.navigate(HomeDestination.FirstVet(sections))
@@ -65,6 +68,7 @@ fun NavGraphBuilder.homeGraph(
           navigateToContactInfo()
         },
         imageLoader = imageLoader,
+        navigateToChipId = navigateToChipIdScreen,
       )
     }
     navdestination<HomeDestination.FirstVet>(

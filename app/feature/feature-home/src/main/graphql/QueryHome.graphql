@@ -8,11 +8,21 @@ query Home($claimsHistoryFlag: Boolean!) {
     }
     terminatedContracts {
       id
+      currentAgreement {
+        productVariant {
+          typeOfContract
+        }
+      }
     }
     pendingContracts {
       id
       externalInsuranceCancellationHandledByHedvig
       exposureDisplayName
+
+        productVariant {
+          typeOfContract
+        }
+
     }
     importantMessages {
       id
@@ -57,7 +67,13 @@ query Home($claimsHistoryFlag: Boolean!) {
       }
     }
     activeContracts {
+      id
       masterInceptionDate
+      currentAgreement {
+        productVariant {
+          typeOfContract
+        }
+      }
     }
   }
 }

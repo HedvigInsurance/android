@@ -17,8 +17,10 @@ import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -175,7 +177,7 @@ internal class GetHomeDataUseCaseImpl(
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
           crossSells = crossSells,
-          travelBannerInfo = travelBannerInfo?.firstOrNull(), // todo: check for CAR_ADDON LATER!
+          travelBannerInfo = travelBannerInfo?.firstOrNull(),
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }

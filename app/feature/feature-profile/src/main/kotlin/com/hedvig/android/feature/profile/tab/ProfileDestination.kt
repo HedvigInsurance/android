@@ -83,6 +83,7 @@ import com.hedvig.android.pullrefresh.rememberPullRefreshState
 import hedvig.resources.GENERAL_YES
 import hedvig.resources.LOGOUT_BUTTON
 import hedvig.resources.PROFILE_ABOUT_ROW
+import hedvig.resources.PROFILE_INFO_LABEL
 import hedvig.resources.PROFILE_LOGOUT_DIALOG_MESSAGE
 import hedvig.resources.PROFILE_MY_INFO_ROW_TITLE
 import hedvig.resources.PROFILE_TITLE
@@ -103,11 +104,13 @@ internal fun ProfileDestination(
   navigateToSettings: () -> Unit,
   navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   viewModel: ProfileViewModel,
+  navigateToChipId: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -121,12 +124,14 @@ internal fun ProfileDestination(
     navigateToSettings = navigateToSettings,
     navigateToCertificates = navigateToCertificates,
     navigateToConnectPayment = navigateToConnectPayment,
+    navigateToConnectPayout = navigateToConnectPayout,
     navigateToAddMissingInfo = navigateToAddMissingInfo,
     openAppSettings = openAppSettings,
     openUrl = openUrl,
     snoozeNotificationPermission = { viewModel.emit(ProfileUiEvent.SnoozeNotificationPermission) },
     onLogout = { viewModel.emit(ProfileUiEvent.Logout) },
     onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateToChipId = navigateToChipId,
   )
 }
 
@@ -142,12 +147,14 @@ private fun ProfileScreen(
   navigateToSettings: () -> Unit,
   navigateToCertificates: () -> Unit,
   navigateToConnectPayment: () -> Unit,
+  navigateToConnectPayout: () -> Unit,
   navigateToAddMissingInfo: (contractId: String, CoInsuredFlowType) -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   snoozeNotificationPermission: () -> Unit,
   onLogout: () -> Unit,
+  navigateToChipId: () -> Unit,
 ) {
   val systemBarInsetTopDp = with(LocalDensity.current) {
     WindowInsets.systemBars.getTop(this).toDp()
@@ -218,6 +225,7 @@ private fun ProfileScreen(
         MemberReminderCards(
           memberReminders = memberReminders,
           navigateToConnectPayment = navigateToConnectPayment,
+          navigateToConnectPayout = navigateToConnectPayout,
           navigateToAddMissingInfo = navigateToAddMissingInfo,
           openUrl = openUrl,
           notificationPermissionState = notificationPermissionState,
@@ -226,6 +234,7 @@ private fun ProfileScreen(
           modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets.insets = it },
           onNavigateToNewConversation = onNavigateToNewConversation,
           navigateToContactInfo = navigateToContactInfo,
+          navigateToChipId = navigateToChipId,
         )
         if (memberReminders.isNotEmpty()) {
           Spacer(Modifier.height(16.dp))
@@ -365,7 +374,7 @@ private fun ColumnScope.ProfileItemRows(
     )
   }
   ProfileRow(
-    title = stringResource(Res.string.PROFILE_ABOUT_ROW),
+    title = stringResource(Res.string.PROFILE_INFO_LABEL),
     icon = HedvigIcons.InfoOutline,
     onClick = navigateToAboutApp,
     isLoading = false,

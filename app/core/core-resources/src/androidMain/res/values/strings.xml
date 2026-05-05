@@ -2,6 +2,8 @@
 <resources>
   <string name="swedish">Svenska</string>
   <string name="english_swedish">English</string>
+  <string name="swish">Swish</string>
+  <string name="trustly">"Trustly"</string>
   <string name="A11Y_AUDIO_RECORDING">Voice recording</string>
   <string name="A11Y_BACK">Back</string>
   <string name="A11Y_CHARACTER_LIMIT">%1$d of %2$d characters entered</string>
@@ -10,6 +12,7 @@
     <item quantity="one">You have %d eligible insurance.</item>
     <item quantity="other">You have %d eligible insurances.</item>
   </plurals>
+  <string name="A11Y_OF">of</string>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
   <string name="A11Y_SCROLL_DOWN">Scroll to bottom</string>
@@ -77,6 +80,8 @@
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TEXT">We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct.\n\nIf necessary, you’ll be connected to our service team to help you further.\n\nThe details of your insurance are outlined in your insurance letter and terms and conditions.</string>
   <string name="AUTOMATED_MESSAGE_INFO_SHEET_TITLE">AI and automated messages</string>
   <string name="BANKID_MISSING_MESSAGE_GEN_AUTH">Scan the QR-code with the BankID app on the phone where it’s installed or log in with email using the button below.</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_DESCRIPTION">Payout to a Swedish bank account</string>
+  <string name="BANK_PAYOUT_METHOD_CARD_TITLE">Bank account</string>
   <string name="BOT_SERVICE_STATUS_REPLY_AFTER_LUNCH">Hej - just nu har vi lunch-stängt i chatten. Vi svarar så fort vi kan när vi öppnar igen klockan 13.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_ASAP">Thank you for reaching out to us. We will answer as soon as possible.</string>
   <string name="BOT_SERVICE_STATUS_REPLY_WHEN_OPEN">Hej - just nu är chatten stängd. Vi svarar så fort vi kan när vi öppnar.</string>
@@ -142,6 +147,7 @@
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR">Please enter year of construction</string>
   <string name="CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL">Year of construction</string>
   <string name="CHANGE_ADDRESS_YOU_PLUS">You + %1$d</string>
+  <string name="CHANGE_PAYOUT_METHOD_BUTTON_LABEL">Change payout account</string>
   <string name="CHANGE_TIER_BUTTON_TITLE">Change coverage level</string>
   <string name="CHATBOT_TALK_TO_HUMAN_BUTTON_TITLE">Talk to a human</string>
   <string name="CHATBOT_TALK_TO_HUMAN_TEXT">If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!</string>
@@ -167,6 +173,12 @@
   <string name="CHAT_TITLE">Messages</string>
   <string name="CHAT_UPLOAD_PRESS_SEND_LABEL">Send</string>
   <string name="CHECKOUT_TITLE">Checkout</string>
+  <string name="CHIP_ID_LABEL">ID-number</string>
+  <string name="CHIP_ID_MISSING_BUTTON">Add ID</string>
+  <string name="CHIP_ID_MISSING_MESSAGE">We are missing your pet’s ID-number</string>
+  <string name="CHIP_ID_NO_INSURANCES">You’ve already added the ID-number for all your pets</string>
+  <string name="CHIP_ID_TOP_TITLE">Update ID-number</string>
+  <string name="CHIP_ID_WRONG_INPUT">ID-number needs to be exactly 15 digits</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_BODY">Don’t miss out on important information for your claim</string>
   <string name="CLAIMS_ACTIVATE_NOTIFICATIONS_CTA">Enable notifications</string>
   <string name="CLAIMS_CASE">Case</string>
@@ -209,6 +221,7 @@
   <string name="CLAIMS_USE_TEXT_INSTEAD">Describe using text</string>
   <string name="CLAIMS_YOUR_CLAIM">Your claim</string>
   <string name="CLAIM_CHAT_AUDIO_RECORDING_LABEL">Voice recording</string>
+  <string name="CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE">Other item</string>
   <string name="CLAIM_CHAT_DATE_AND_LOCATION_HINT">If you don\'t know the exact date, enter an approximate date.</string>
   <string name="CLAIM_CHAT_EDIT_ANSWER_BUTTON">Edit answer</string>
   <string name="CLAIM_CHAT_EDIT_EXPLANATION">Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.</string>
@@ -261,6 +274,7 @@
   <string name="CONFIRM_AND_PROCEED_BUTTON">Confirm and proceed</string>
   <string name="CONFIRM_CHANGES_SUBTITLE">Please note that your changes will be effective on %s.</string>
   <string name="CONFIRM_CHANGES_TITLE">Confirm changes</string>
+  <string name="CONTACT_INFO_CHANGES_SAVED">Changes saved</string>
   <string name="CONTINUE_TO_SURVEY_BUTTON">Continue to survey</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE">Valid until %1$s</string>
   <string name="CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW">Valid until tomorrow</string>
@@ -499,8 +513,12 @@
   <string name="INVALID_NATIONAL_IDENTITY_NUMBER">Invalid National Identity Number</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_BODY">We first try to repair your %1$s, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$d\u0025** of the purchase price **%3$d SEK**, i.e **%4$d SEK**.</string>
   <string name="KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE">Valuation</string>
-  <string name="KIVRA_NOTIFICATION_BOX_TEXT">You can’t change the payment method right now. Contact us for help.</string>
+  <string name="KIVRA_NOTIFICATION_BOX_TEXT">Do you want to pay your insurance via direct debit and enable quick payouts in the event of claims?</string>
   <string name="KIVRA_PAYMENT_INFO">The invoice is sent to your Kivra inbox 14 days before the due date each month.</string>
+  <string name="LEGAL_A11Y">Accessibility</string>
+  <string name="LEGAL_CATEGORY_LABEL">Legal</string>
+  <string name="LEGAL_INFORMATION">Legal information</string>
+  <string name="LEGAL_PRIVACY_POLICY">Privacy policy</string>
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
@@ -590,7 +608,19 @@
   <string name="PAYMENTS_PAYMENT_DUE_INFO">If you update your bank account close to the %1$s, the withdrawal might take a few extra days.</string>
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Payment history</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Payment in progress</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">It may take up to 5 business days for the charge to appear</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Payment method</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Amount due: %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">We couldn\'t collect this payment from your bank account. Pay now to keep your coverage active.</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_BUTTON">Review payment</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY">Pay now to avoid interruption</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE">Payment due</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT">Ensure your account has enough funds to cover this payment</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY">Pay %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE">Overdue since %1$s</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">View payment details</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_TITLE">Payment overdue</string>
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Payment successful</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s days</string>
   <string name="PAYMENTS_PERIOD_FULL">Full period</string>
@@ -604,6 +634,15 @@
   <string name="PAYMENTS_UPCOMING_PAYMENT">Upcoming payment</string>
   <string name="PAYMENTS_VALID_UNTIL">Valid until %1$s</string>
   <string name="PAYMENT_HISTORY_TITLE">Payment history</string>
+  <string name="PAYOUT_ADD_PAYOUT_METHOD">Add payout method</string>
+  <string name="PAYOUT_METHOD_INVOICE_DESCRIPTION">Direct payment via Invoice</string>
+  <string name="PAYOUT_METHOD_SWISH_DESCRIPTION">Instant payout with Swish</string>
+  <string name="PAYOUT_METHOD_TRUSTLY_DESCRIPTION">Payout via Trustly</string>
+  <string name="PAYOUT_MISSING_INFO">You haven’t added a payout method yet. Add one to receive payouts.</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE">To receive payouts, you need to connect direct debit</string>
+  <string name="PAYOUT_NO_PAYOUT_OPTIONS_TITLE">No payout method available</string>
+  <string name="PAYOUT_PAGE_HEADING">Payout account</string>
+  <string name="PAYOUT_SELECT_PAYOUT_METHOD">Choose payout method</string>
   <string name="PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE">We need permission to record audio</string>
   <string name="PERMISSION_DIALOG_TITLE">Needs permission</string>
   <string name="PHONE_NUMBER_ROW_TITLE">Phone</string>
@@ -621,17 +660,19 @@
   <string name="PROFILE_DELETE_ACCOUNT_FAILED">We can\'t delete your account right now</string>
   <string name="PROFILE_DELETE_ACCOUNT_FAILED_LABEL">In order to delete your account you need to have your open claims settled and not have any active insurances. Please reach out to our service team via message in the app.</string>
   <string name="PROFILE_FOREVER_TITLE">Hedvig Forever</string>
+  <string name="PROFILE_INFO_LABEL">Information</string>
   <string name="PROFILE_LOGOUT_DIALOG_MESSAGE">Are you sure you want to log out?</string>
   <string name="PROFILE_MY_INFO_EMAIL_LABEL">Email</string>
   <string name="PROFILE_MY_INFO_INVALID_EMAIL">Invalid email</string>
   <string name="PROFILE_MY_INFO_REVIEW_INFO_CARD">Make sure your contact info is up to date, so we can reach you if needed.</string>
   <string name="PROFILE_MY_INFO_ROW_TITLE">Contact</string>
+  <string name="PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY">Changes saved</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL">That does not appear to be a valid email</string>
   <string name="PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER">That does not appear to be a valid phone number</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_OFF">Turned off</string>
   <string name="PROFILE_NOTIFICATIONS_STATUS_ON">Turned on</string>
   <string name="PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT">Change bank account</string>
-  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect payment</string>
+  <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON">Connect direct debit</string>
   <string name="PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE">Connect payment</string>
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Travel certificates</string>
   <string name="PROFILE_TITLE">Your profile</string>
@@ -779,6 +820,7 @@
   <string name="TALKBACK_CHAT_MESSAGE_FILE" formatted="false">At %s, %s sent a file with type: %s, double tap to open.</string>
   <string name="TALKBACK_CHAT_MESSAGE_GIF" formatted="false">At %s, %s sent a GIF picture.</string>
   <string name="TALKBACK_CHAT_MESSAGE_TEXT" formatted="false">At %s, %s said: %s</string>
+  <string name="TALKBACK_CLAIM_CHAT_YOUR_ANSWER">Your answer: </string>
   <string name="TALKBACK_CLAIM_STATUS">Claim status: %s</string>
   <string name="TALKBACK_CLAIM_STATUS_CARD">Information about your claim</string>
   <string name="TALKBACK_CONVERSATION_DESCRIPTION" formatted="false">Conversation about %s. Last message at %s.</string>
@@ -806,6 +848,7 @@
   <string name="TALKBACK_OPTION_SELECTED">Option selected</string>
   <string name="TALKBACK_PER_MONTH">%s per month</string>
   <string name="TALKBACK_PINCH_TO_ZOOM">Pinch to zoom</string>
+  <string name="TALKBACK_PLAYBACK_BUTTON_STATE">Play recording. Button.</string>
   <string name="TALKBACK_PLUS_DESCRIPTION">Increase</string>
   <string name="TALKBACK_PREVIOUSLY">Previously %1$s</string>
   <string name="TALKBACK_PREVIOUS_VALUE">Previously: %1$s</string>
@@ -837,6 +880,11 @@
   <string name="TERMINATION_BUTTON">Cancel insurance</string>
   <string name="TERMINATION_DATE_TEXT">Select termination date</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_ABOUT">We’ll send a cancellation confirmation within a few days. If you don’t get it after 5 days, feel free to contact us.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_DECOM">If you’ve decommissioned your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION">Once your car is registered as active with Transportstyrelsen, your insurance will be updated automatically to your previous coverage.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED">If you’ve scrapped your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE">Since your car has been scrapped, your insurance will be automatically cancelled.</string>
+  <string name="TERMINATION_FLOW_AUTO_CANCEL_SOLD">If you’ve sold your car, we’ll cancel your insurance automatically. We receive this information directly from Transportstyrelsen.</string>
   <string name="TERMINATION_FLOW_AUTO_CANCEL_TITLE">We’ll cancel your insurance automatically</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO">You’ll receive a confirmation email within a few days, where you can see your new price.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE">What it costs</string>
@@ -845,10 +893,12 @@
   <string name="TERMINATION_FLOW_AUTO_DECOM_INFO">If you’ve decommissioned your car through Transportstyrelsen, your insurance will automatically switch to decommission insurance.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION">If you don’t want to keep your decommission insurance, you can cancel it below.</string>
   <string name="TERMINATION_FLOW_AUTO_DECOM_TITLE">Your insurance will switch to decommission insurance</string>
+  <string name="TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE">We’ll update your insurance automatically</string>
   <string name="TERMINATION_FLOW_CANCELLATION_TITLE">Cancel insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TEXT">You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab \"Payments\" here in the app.</string>
   <string name="TERMINATION_FLOW_CANCEL_INFO_TITLE">Cancelling your insurance</string>
   <string name="TERMINATION_FLOW_CANCEL_INSURANCE_BUTTON">Cancel insurance</string>
+  <string name="TERMINATION_FLOW_CAR_BACK_TITLE">Your car is back on the road</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_INFO">Please note that you can only cancel one insurance at a time</string>
   <string name="TERMINATION_FLOW_CHOOSE_CONTRACT_SUBTITLE">Select the insurance you want to cancel</string>
   <string name="TERMINATION_FLOW_CONFIRMATION">Your insurance will be cancelled directly</string>
@@ -862,6 +912,7 @@
   <string name="TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT">If there is a gap in your insurance, you may not receive future help or compensation. Make sure that you always have an active insurance.</string>
   <string name="TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE">Important information</string>
   <string name="TERMINATION_FLOW_I_UNDERSTAND_TEXT">I understand</string>
+  <string name="TERMINATION_FLOW_LEARN_MORE">Learn more</string>
   <string name="TERMINATION_FLOW_NEXT_PAYMENT">Next payment</string>
   <string name="TERMINATION_FLOW_NOT_ELIGIBLE">You need our help to cancel your insurance. Send us a message to get further help.</string>
   <string name="TERMINATION_FLOW_NOT_ELIGIBLE_BUTTON">Send message</string>
@@ -974,6 +1025,9 @@
   <string name="claim_status_being_handled_support_text">Your claim is being reviewed by one of our insurance specialists. We\'ll get back to you soon with an update.</string>
   <string name="claim_status_being_handled_reopened_support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We\'ll get back to you soon with an update.</string>
   <string name="claim_status_claim_details_button">Show details</string>
+  <string name="claim_status_claim_details_exposure_display_name">Reg. no.</string>
+  <string name="claim_status_claim_details_external_id">Reference number</string>
+  <string name="claim_status_claim_details_handler_email">Email</string>
   <string name="claim_status_claim_details_info_text">Is something missing? Send us a message here in the app.</string>
   <string name="claim_status_claim_details_submitted">Submitted</string>
   <string name="claim_status_claim_details_title">Claim details</string>
@@ -983,6 +1037,7 @@
   <string name="claim_status_not_compensated_support_text">Your claim was covered but unfortunately the compensation is equal or less than the deductible. Please see conversation for more details.</string>
   <string name="claim_status_not_covered_support_text">Your claim was unfortunately not covered. Please see conversation for more details on the decision.</string>
   <string name="claim_status_paid_support_text_short">We got you covered. You should have received the payment by now.</string>
+  <string name="claim_status_partner_support_text">This claim is handled by our external partner Eir by email.\nAlready in contact with them? Reply to your existing email thread to keep all claim details in one conversation.</string>
   <string name="claim_status_submitted_support_text">We have received your claim and will start reviewing it soon.</string>
   <string name="claim_status_uploaded_files_upload_text">Upload photos, receipts or other documents connected to your claim</string>
   <string name="claim_status_appeal_instruction_link_text">Appeal Instruction (SWE)</string>
@@ -991,6 +1046,7 @@
   <string name="claim_status_detail_chat_button_description">Write a message</string>
   <string name="claim_status_detail_closed">Closed</string>
   <string name="claim_status_detail_documents_title">Claim documents</string>
+  <string name="claim_status_detail_email_view_body">Open email</string>
   <string name="claim_status_detail_info_error_body">The claim audio couldn\'t be downloaded. Please try again to be able to listen to it.</string>
   <string name="claim_status_detail_info_error_button">Try again</string>
   <string name="claim_status_detail_info_error_title">Downloading error</string>

@@ -40,7 +40,6 @@ import hedvig.resources.PAYMENTS_NO_HISTORY_DATA
 import hedvig.resources.PAYMENT_HISTORY_TITLE
 import hedvig.resources.Res
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

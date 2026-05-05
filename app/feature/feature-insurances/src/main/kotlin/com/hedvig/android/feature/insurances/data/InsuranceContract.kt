@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.data
 import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.AddonVariant
@@ -37,6 +38,8 @@ sealed interface InsuranceContract {
 
   val basePremium: UiMoney
 
+  val chipId: ChipIdState
+
   data class EstablishedInsuranceContract(
     override val id: String,
     override val displayName: String,
@@ -56,6 +59,7 @@ sealed interface InsuranceContract {
     override val tierName: String?,
     override val existingAddons: List<ContractAddon>,
     override val availableAddons: List<AvailableAddon>,
+    override val chipId: ChipIdState,
   ) : InsuranceContract {
     override val productVariant: ProductVariant = currentInsuranceAgreement.productVariant
     override val displayItems: List<DisplayItem> = currentInsuranceAgreement.displayItems
@@ -81,6 +85,7 @@ sealed interface InsuranceContract {
     override val addons: List<Addon>?,
     override val cost: MonthlyCost,
     override val basePremium: UiMoney,
+    override val chipId: ChipIdState,
   ) : InsuranceContract {
     override val coInsured: List<InsuranceAgreement.CoInsured> = listOf()
     override val coOwners: List<InsuranceAgreement.CoInsured> = listOf()

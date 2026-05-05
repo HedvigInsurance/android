@@ -116,8 +116,8 @@ internal fun AddCoInsuredBottomSheetContent(
       },
       textAlign = TextAlign.Center,
       modifier = Modifier
-          .fillMaxWidth()
-          .semantics { heading() },
+        .fillMaxWidth()
+        .semantics { heading() },
     )
     Spacer(Modifier.height(24.dp))
     if (bottomSheetState.canPickExistingCoInsured() && bottomSheetState.selectableCoInsured != null) {
@@ -354,8 +354,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-            .weight(1f)
-            .defaultMinSize(minHeight = 64.dp),
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
       Spacer(Modifier.width(4.dp))
       HedvigTextField(
@@ -371,8 +371,8 @@ private fun ManualInputFields(
           keyboardType = KeyboardType.Text,
         ),
         modifier = Modifier
-            .weight(1f)
-            .defaultMinSize(minHeight = 64.dp),
+          .weight(1f)
+          .defaultMinSize(minHeight = 64.dp),
       )
     }
     AnimatedVisibility(

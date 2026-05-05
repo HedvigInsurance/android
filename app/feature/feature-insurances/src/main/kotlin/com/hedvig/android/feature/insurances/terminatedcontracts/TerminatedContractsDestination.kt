@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -178,6 +179,7 @@ private class PreviewTerminatedContractsUiStateProvider :
             supportsTierChange = false,
             existingAddons = emptyList(),
             availableAddons = emptyList(),
+            chipId = ChipIdState.Missing,
           ),
         ),
       ),

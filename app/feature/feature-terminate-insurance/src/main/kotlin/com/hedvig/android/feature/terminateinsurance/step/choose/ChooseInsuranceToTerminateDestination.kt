@@ -32,7 +32,7 @@ import com.hedvig.android.design.system.hedvig.RadioOption
 import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.a11y.FlowHeading
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
+import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyData
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.Res
 import hedvig.resources.TERMINATION_FLOW_CANCEL_INFO_TEXT
@@ -50,7 +50,7 @@ internal fun ChooseInsuranceToTerminateDestination(
   navigateUp: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   closeTerminationFlow: () -> Unit,
-  navigateToNextStep: (step: TerminateInsuranceStep, terminatableInsurance: TerminatableInsurance) -> Unit,
+  navigateToNextStep: (surveyData: TerminationSurveyData, terminatableInsurance: TerminatableInsurance) -> Unit,
 ) {
   val uiState: ChooseInsuranceToTerminateStepUiState by viewModel.uiState.collectAsStateWithLifecycle()
   LaunchedEffect(uiState) {

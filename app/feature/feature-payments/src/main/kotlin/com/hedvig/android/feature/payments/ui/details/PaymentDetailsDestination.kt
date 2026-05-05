@@ -246,7 +246,7 @@ private fun MemberChargeDetailsScreen(
                 MemberPaymentChargeMethod.KIVRA -> stringResource(Res.string.PAYMENTS_IN_PROGRESS_KIVRA)
                 MemberPaymentChargeMethod.UNKNOWN -> null
               }
-              if (message!=null) {
+              if (message != null) {
                 HedvigNotificationCard(
                   message = message,
                   style = NotificationDefaults.InfoCardStyle.Default,
@@ -286,11 +286,13 @@ private fun MemberChargeDetailsScreen(
               when (uiState.paymentDetails.memberCharge.chargeMethod) {
                 MemberPaymentChargeMethod.TRUSTLY,
                 MemberPaymentChargeMethod.KIVRA,
-                  -> {
+                -> {
                   val textToShow: String =
-                    if (uiState.paymentDetails.memberCharge.chargeMethod == MemberPaymentChargeMethod.TRUSTLY)
-                      stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION) else
+                    if (uiState.paymentDetails.memberCharge.chargeMethod == MemberPaymentChargeMethod.TRUSTLY) {
+                      stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION)
+                    } else {
                       stringResource(Res.string.KIVRA_PAYMENT_INFO)
+                    }
                   Icon(
                     imageVector = HedvigIcons.InfoFilled,
                     tint = HedvigTheme.colorScheme.fillSecondary,
@@ -359,7 +361,7 @@ private fun MemberChargeDetailsScreen(
           when (val chargeMethod = uiState.paymentDetails.memberCharge.chargeMethod) {
             MemberPaymentChargeMethod.TRUSTLY,
             MemberPaymentChargeMethod.KIVRA,
-              -> {
+            -> {
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {
                   HedvigText(stringResource(Res.string.PAYMENTS_PAYMENT_METHOD))
@@ -409,7 +411,7 @@ private fun MemberChargeDetailsScreen(
                 HorizontalDivider()
               }
 
-              if (paymentsInfo.displayName!=null) {
+              if (paymentsInfo.displayName != null) {
                 HorizontalItemsWithMaximumSpaceTaken(
                   startSlot = { HedvigText(stringResource(Res.string.PAYMENTS_BANK_LABEL)) },
                   endSlot = {
@@ -479,13 +481,11 @@ private fun PaymentDetailsScreenPreview(
       MemberChargeDetailsScreen(
         uiState = PaymentDetailsUiState.Success(
           PaymentDetails(
-            memberCharge =  when (withPaymentInfo) {
+            memberCharge = when (withPaymentInfo) {
               TripleCase.FIRST -> paymentDetailsPreviewData
-
               TripleCase.SECOND -> paymentDetailsKivraPreviewData
-
               TripleCase.THIRD -> paymentDetailsPreviewData
-            } ,
+            },
             pastCharges = chargeHistoryPreviewData,
             paymentsInfo = when (withPaymentInfo) {
               TripleCase.FIRST -> PaymentDetails.PaymentsInfo.Active(

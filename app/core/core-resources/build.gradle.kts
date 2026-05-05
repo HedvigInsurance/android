@@ -30,15 +30,6 @@ lokalise {
   }
 }
 
-// https://issuetracker.google.com/issues/463591200
-//android {
-//  namespace = "hedvig.resources"
-//
-//  defaultConfig {
-//    vectorDrawables.useSupportLibrary = true
-//  }
-//}
-
 kotlin {
   androidLibrary {
     namespace = "hedvig.resources"

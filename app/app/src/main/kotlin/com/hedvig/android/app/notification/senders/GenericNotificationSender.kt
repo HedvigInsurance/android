@@ -4,11 +4,14 @@ import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.PendingIntentCompat
+import androidx.core.net.toUri
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
@@ -20,6 +23,7 @@ class GenericNotificationSender(
   private val context: Context,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
+  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
   private val id = AtomicInteger(100)
@@ -30,10 +34,14 @@ class GenericNotificationSender(
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val title = remoteMessage.titleFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_TITLE]
     val body = remoteMessage.bodyFromCustomerIoData() ?: remoteMessage.data[DATA_MESSAGE_BODY]
+    val link = remoteMessage.linkFromCustomerIoData()
+    logcat(tag = "GenericNotificationSender") { "Generic notification got data:${remoteMessage.data}" }
     val pendingIntent = PendingIntentCompat.getActivity(
       context,
       0,
-      buildConstants.intentForNotification(deepLinkUri = null),
+      buildConstants.intentForNotification(
+        deepLinkUri = link?.let { hedvigDeepLinkContainer.buildDeepLink(link).toUri() },
+      ),
       PendingIntent.FLAG_UPDATE_CURRENT,
       false,
     )

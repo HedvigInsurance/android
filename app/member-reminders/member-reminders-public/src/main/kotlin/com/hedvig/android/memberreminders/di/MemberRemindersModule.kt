@@ -14,6 +14,8 @@ import com.hedvig.android.memberreminders.GetContactInfoUpdateIsNeededUseCase
 import com.hedvig.android.memberreminders.GetContactInfoUpdateIsNeededUseCaseImpl
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.GetMemberRemindersUseCaseImpl
+import com.hedvig.android.memberreminders.GetMissingChipIdReminderUseCase
+import com.hedvig.android.memberreminders.GetMissingChipIdReminderUseCaseImpl
 import com.hedvig.android.memberreminders.GetNeedsCoInsuredInfoRemindersUseCase
 import com.hedvig.android.memberreminders.GetNeedsCoInsuredInfoRemindersUseCaseImpl
 import com.hedvig.android.memberreminders.GetUpcomingRenewalRemindersUseCase
@@ -44,6 +46,11 @@ val memberRemindersModule = module {
       get<FeatureManager>(),
     )
   }
+  single<GetMissingChipIdReminderUseCase> {
+    GetMissingChipIdReminderUseCaseImpl(
+      get<ApolloClient>(),
+    )
+  }
   single<GetMemberRemindersUseCase> {
     GetMemberRemindersUseCaseImpl(
       get<EnableNotificationsReminderSnoozeManager>(),
@@ -51,6 +58,7 @@ val memberRemindersModule = module {
       get<GetUpcomingRenewalRemindersUseCase>(),
       get<GetNeedsCoInsuredInfoRemindersUseCase>(),
       get<GetContactInfoUpdateIsNeededUseCase>(),
+      get<GetMissingChipIdReminderUseCase>(),
     )
   }
   single<GetContactInfoUpdateIsNeededUseCase> {

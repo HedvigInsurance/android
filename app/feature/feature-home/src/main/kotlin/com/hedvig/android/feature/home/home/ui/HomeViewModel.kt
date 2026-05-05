@@ -4,7 +4,6 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import kotlinx.coroutines.CoroutineScope
@@ -14,7 +13,6 @@ internal class HomeViewModel(
   seenImportantMessagesStorage: SeenImportantMessagesStorage,
   crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   applicationScope: CoroutineScope,
-  featureManager: FeatureManager,
   hedvigBuildConstants: HedvigBuildConstants,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
@@ -22,7 +20,6 @@ internal class HomeViewModel(
       getHomeDataUseCaseProvider,
       seenImportantMessagesStorage,
       crossSellHomeNotificationServiceProvider,
-      featureManager,
       applicationScope,
       hedvigBuildConstants.isProduction,
     ),

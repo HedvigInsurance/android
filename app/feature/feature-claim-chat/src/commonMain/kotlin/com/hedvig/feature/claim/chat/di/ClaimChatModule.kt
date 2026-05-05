@@ -53,7 +53,7 @@ val claimChatModule = module {
 
   single<FormFieldSearchUseCase> {
     FormFieldSearchUseCaseImpl(
-      get<ApolloClient>()
+      get<ApolloClient>(),
     )
   }
 

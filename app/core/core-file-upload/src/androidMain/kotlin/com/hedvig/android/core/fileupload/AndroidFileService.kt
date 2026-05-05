@@ -28,14 +28,18 @@ class AndroidFileService(
     val androidUri = uri.toAndroidUri()
 
     if (androidUri.scheme == ContentResolver.SCHEME_CONTENT) {
-      val cursor = contentResolver.query(androidUri, null, null, null, null)
-      cursor.use { c ->
-        if (c?.moveToFirst() == true) {
-          val columnIndex = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-          if (columnIndex >= 0) {
-            return c.getString(columnIndex)
+      try {
+        val cursor = contentResolver.query(androidUri, null, null, null, null)
+        cursor.use { c ->
+          if (c?.moveToFirst() == true) {
+            val columnIndex = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (columnIndex >= 0) {
+              return c.getString(columnIndex)
+            }
           }
         }
+      } catch (e: SecurityException) {
+        logcat { "Failed to query content provider for filename: ${e.message}" }
       }
     }
 
@@ -71,16 +75,21 @@ class AndroidFileService(
       it.statSize
     } ?: -1
 
-    val sizeFromCursor = contentResolver.query(
-      androidUri,
-      arrayOf(OpenableColumns.SIZE),
-      null,
-      null,
-      null,
-    )?.use { cursor ->
-      val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-      if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else null
-    } ?: -1
+    val sizeFromCursor = try {
+      contentResolver.query(
+        androidUri,
+        arrayOf(OpenableColumns.SIZE),
+        null,
+        null,
+        null,
+      )?.use { cursor ->
+        val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+        if (cursor.moveToFirst()) cursor.getLong(sizeIndex) else null
+      } ?: -1
+    } catch (e: SecurityException) {
+      logcat { "Failed to query content provider for file size: ${e.message}" }
+      -1
+    }
 
     logcat { "getFileSize for uri:$androidUri | statSize:$statSize | contentSize:$sizeFromCursor" }
     return max(statSize, sizeFromCursor)

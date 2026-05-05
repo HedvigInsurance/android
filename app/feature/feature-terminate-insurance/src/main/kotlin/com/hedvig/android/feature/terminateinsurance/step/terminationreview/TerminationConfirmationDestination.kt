@@ -52,9 +52,6 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
-import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceStep
-import com.hedvig.android.feature.terminateinsurance.data.TerminationNotification
-import com.hedvig.android.feature.terminateinsurance.data.TerminationNotificationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
@@ -67,6 +64,7 @@ import hedvig.resources.TERMINATION_BUTTON
 import hedvig.resources.TERMINATION_FLOW_CONFIRMATION
 import hedvig.resources.TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION
 import hedvig.resources.TERMINATION_FLOW_CONFIRM_BUTTON
+import hedvig.resources.TERMINATION_FLOW_DATE_FIELD_TEXT
 import hedvig.resources.TERMINATION_FLOW_SUMMARY_SUBTITLE
 import hedvig.resources.TERMINATION_KEEP_INSURANCE_BUTTON
 import hedvig.resources.general_close_button
@@ -77,16 +75,15 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun TerminationConfirmationDestination(
   viewModel: TerminationConfirmationViewModel,
-  navigateToNextStep: (TerminateInsuranceStep) -> Unit,
   onContinue: () -> Unit,
+  navigateToSuccess: (LocalDate?) -> Unit,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val nextStep = uiState.nextStep
-  LaunchedEffect(nextStep) {
-    if (nextStep == null) return@LaunchedEffect
-    navigateToNextStep(nextStep)
+  LaunchedEffect(uiState.terminationSuccess) {
+    val success = uiState.terminationSuccess ?: return@LaunchedEffect
+    navigateToSuccess(success.terminationDate)
   }
 
   TerminationConfirmationScreen(
@@ -104,7 +101,8 @@ private fun TerminationConfirmationScreen(
   navigateBack: () -> Unit,
   closeTerminationFlow: () -> Unit,
 ) {
-  val isSubmittingTerminationOrNavigatingForward = uiState.isSubmittingContractTermination || uiState.nextStep != null
+  val isSubmittingTerminationOrNavigatingForward =
+    uiState.isSubmittingContractTermination || uiState.terminationSuccess != null
   if (isSubmittingTerminationOrNavigatingForward) {
     HedvigFullScreenCenterAlignedLinearProgress(
       title = stringResource(Res.string.TERMINATE_CONTRACT_TERMINATING_PROGRESS),
@@ -114,7 +112,8 @@ private fun TerminationConfirmationScreen(
       type = uiState.terminationType,
       insuranceInfo = uiState.insuranceInfo,
       extraCoverageItems = uiState.extraCoverageItems,
-      notification = uiState.notification,
+      notificationMessage = uiState.notificationMessage,
+      userError = uiState.userError,
       navigateUp = navigateBack,
       closeTerminationFlow = closeTerminationFlow,
       onContinue = onContinue,
@@ -128,7 +127,8 @@ private fun AreYouSureScreen(
   type: TerminationType,
   insuranceInfo: TerminationGraphParameters,
   extraCoverageItems: List<ExtraCoverageItem>,
-  notification: TerminationNotification?,
+  notificationMessage: String?,
+  userError: String?,
   navigateUp: () -> Unit,
   closeTerminationFlow: () -> Unit,
   onContinue: () -> Unit,
@@ -147,14 +147,10 @@ private fun AreYouSureScreen(
       Modifier.padding(horizontal = 16.dp),
     )
     Spacer(Modifier.weight(1f).heightIn(min = 8.dp))
-    if (notification != null) {
+    if (userError != null) {
       HedvigNotificationCard(
-        message = notification.message,
-        priority = when (notification.type) {
-          TerminationNotificationType.Info -> NotificationDefaults.NotificationPriority.Info
-          TerminationNotificationType.Attention -> NotificationDefaults.NotificationPriority.Attention
-          TerminationNotificationType.Unknown -> NotificationDefaults.NotificationPriority.Info
-        },
+        message = userError,
+        priority = NotificationDefaults.NotificationPriority.Attention,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
@@ -164,6 +160,27 @@ private fun AreYouSureScreen(
       extraCoverageItems = extraCoverageItems,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
+    if (type is Termination) {
+      val dateTimeFormatter = rememberHedvigDateTimeFormatter()
+      Spacer(Modifier.height(4.dp))
+      HedvigCard(modifier.padding(horizontal = 16.dp)) {
+        Column(Modifier.padding(16.dp)) {
+          HedvigText(
+            stringResource(Res.string.TERMINATION_FLOW_DATE_FIELD_TEXT),
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+          HedvigText(dateTimeFormatter.format(type.terminationDate))
+        }
+      }
+    }
+    if (notificationMessage != null) {
+      Spacer(Modifier.height(4.dp))
+      HedvigNotificationCard(
+        message = notificationMessage,
+        priority = NotificationDefaults.NotificationPriority.Info,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(Res.string.TERMINATION_BUTTON),
@@ -321,12 +338,9 @@ private fun PreviewTerminationConfirmationScreen(
           extraCoverageItems = List(if (withExtraCoverage) 2 else 0) {
             ExtraCoverageItem(displayName = "displayName#$it", displayValue = "displayValue#$it")
           },
-          notification = TerminationNotification(
-            message = "Your insurance will be deactivated when you no longer have two insurances with us",
-            type = TerminationNotificationType.Attention,
-          ),
-          nextStep = null,
-          errorMessage = null,
+          notificationMessage = "Your insurance will be deactivated when you no longer have two insurances with us",
+          terminationSuccess = null,
+          userError = null,
           isSubmittingContractTermination = isLoading,
         ),
         onContinue = {},

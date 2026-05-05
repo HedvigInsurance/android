@@ -455,19 +455,6 @@ type AvailableAddon {
   """
   description: String!
 }
-type AvailablePaymentMethodsResponse {
-  paymentMethodsResponse: PaymentMethodsResponse!
-}
-input BrowserInfo {
-  userAgent: String!
-  acceptHeader: String!
-  language: String!
-  colorDepth: Int!
-  screenHeight: Int!
-  screenWidth: Int!
-  timeZoneOffset: Int!
-  javaEnabled: Boolean!
-}
 """
 Yearly savings from bundle discount
 """
@@ -480,6 +467,41 @@ type BundleYearlySavings {
   Whether the bundle discount covers the full period (true) or has pending/future items (false)
   """
   bundleDiscountCoversFullPeriod: Boolean!
+}
+"""
+SHA-256-hashed user data for Facebook Conversions API (CAPI).
+All non-null field values are hex-encoded SHA-256 hashes of the normalized plaintext.
+Normalization follows https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/customer-information-parameters
+"""
+type CapiUserData {
+  """
+  Hashed email (em)
+  """
+  em: String!
+  """
+  Hashed Gmail-normalized email, only present for Gmail addresses (gem)
+  """
+  gem: String
+  """
+  Hashed first name (fn)
+  """
+  fn: String!
+  """
+  Hashed last name (ln)
+  """
+  ln: String!
+  """
+  Hashed postal/zip code, null if unavailable (zp)
+  """
+  zp: String
+  """
+  Hashed city, null if unavailable (ct)
+  """
+  ct: String
+  """
+  Hashed country code, e.g. 'se' (co)
+  """
+  co: String!
 }
 type CarItemNotification {
   message: String!
@@ -820,7 +842,6 @@ type ChatMessageTextAction {
   url: Url!
   title: String!
 }
-scalar CheckoutPaymentsAction
 type Claim {
   id: ID!
   """
@@ -1077,6 +1098,7 @@ type ClaimIntentStepContentFormFieldOption {
   title: String!
   subtitle: String
   imageUrl: String
+  isCustomSearchEntry: Boolean!
   value: ClaimIntentStepContentFormFieldValue!
 }
 type ClaimIntentStepContentFormFieldSearchData {
@@ -1320,6 +1342,10 @@ type Contract {
   Reuses ContractCoInsured type, for now.
   """
   coOwners: [ContractCoOwner!]
+  """
+  Checks if petId is missing on the current or upcoming agreement.
+  """
+  isMissingPetId: Boolean!
   """
   User messages to show due to self change is blocked.
   """
@@ -1696,15 +1722,15 @@ returned as ExtendedItemDiscount
 """
 type ExtendedItemDiscount {
   """
-   General discount information 
+  General discount information
   """
   itemDiscount: ItemDiscount!
   """
-   Monthly reduction applied by the discount. It's a negative number 
+  Monthly reduction applied by the discount. It's a negative number
   """
   amount: Money!
   """
-   Whether discount is on a pending state or not 
+  Whether discount is on a pending state or not
   """
   isPending: Boolean!
 }
@@ -1736,6 +1762,11 @@ type ExternalInsurer {
   id: ID!
   displayName: String!
   insurelyId: String
+}
+type FetchedExternalInsurance {
+  displayName: String!
+  subtitle: String
+  insurer: ExternalInsurer!
 }
 type FirstVetAction {
   sections: [FirstVetSection!]!
@@ -2192,24 +2223,6 @@ enum FlowTerminationNotificationType {
   INFO
   WARNING
 }
-enum FlowTerminationOfferAction {
-  UPDATE_ADDRESS
-  CHANGE_TIER
-}
-input FlowTerminationOfferInput {
-  """
-  This has no significance and is ignored by the backend. It exists to satisfy some codegen limitations
-  """
-  confirmed: Boolean!
-}
-type FlowTerminationOfferStep implements FlowStep {
-  id: ID!
-  title: String!
-  description: String!
-  buttonTitle: String!
-  skipButtonTitle: String!
-  action: FlowTerminationOfferAction!
-}
 input FlowTerminationStartInput {
   contractId: ID!
   supportedSteps: [String!]
@@ -2245,9 +2258,9 @@ interface FlowTerminationSurveyOptionSuggestion {
 }
 type FlowTerminationSurveyOptionSuggestionAction implements FlowTerminationSurveyOptionSuggestion {
   id: ID!
-  action: FlowTerminationSurveyRedirectAction! @deprecated(reason: "Use FlowTerminationOfferStep instead")
-  description: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
-  buttonTitle: String! @deprecated(reason: "Use FlowTerminationOfferStep instead")
+  action: FlowTerminationSurveyRedirectAction!
+  description: String!
+  buttonTitle: String!
   infoType: FlowTerminationSurveyOptionSuggestionInfoType!
 }
 type FlowTerminationSurveyOptionSuggestionInfo implements FlowTerminationSurveyOptionSuggestion {
@@ -2404,6 +2417,9 @@ type LinkInfo {
 type Location {
   street: String
 }
+type ManuallyChargeMemberMutationOutput {
+  userError: UserError
+}
 """
 A 'Member' is the central user-like concept of our platform, referring to someone who has bought insurance
 with Hedvig and is now as we call is a "member".
@@ -2436,6 +2452,12 @@ type Member {
   Payment information for this member.
   """
   paymentInformation: MemberPaymentInformation!
+  """
+  Null if the latest charge was successful or self manual charge is not allowed.
+  Id of the latest charge if it failed and self manual charge allowed.
+  """
+  missedChargeIdToChargeManually: UUID
+  paymentMethods: MemberPaymentMethods!
   conversations: [Conversation!]!
   legacyConversation: Conversation
   """
@@ -2445,6 +2467,8 @@ type Member {
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
+  partnerClaimsActive: [PartnerClaim!]!
+  partnerClaimsHistory: [PartnerClaim!]!
   firstName: String!
   lastName: String!
   ssn: String
@@ -2462,8 +2486,7 @@ type Member {
   """
    Get contract info during termination flow. Null if no message to display. 
   """
-  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification
-  hasActivePaymentConnection: Boolean! @deprecated(reason: "Use `paymentInformation.status` instead")
+  terminationFlowNotification(input: TerminationFlowNotificationInput!): FlowTerminationNotification @deprecated(reason: "Use Query.Member.terminationNotification instead")
   """
   Current bundle discount information for this member's non terminated contracts (active, future or pending).
   Returns null for members that have a contract configuration that don't enable bundle discount.
@@ -2504,6 +2527,11 @@ type Member {
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
+  Young Pet Guide stories for the member.
+  Returns a list of educational content stories for young pet owners.
+  """
+  puppyGuideStories: [PuppyGuideStory!]!
+  """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
   """
@@ -2522,6 +2550,10 @@ type Member {
   isEligibleToMakeClaim: Boolean!
   memberActions: MemberActions
   """
+   Get contract info during termination flow. Null if no message to display. 
+  """
+  terminationNotification(input: TerminationFlowNotificationInput!): TerminationFlowNotification
+  """
   Call this to get the info to show banner.
   If empty list is returned then member is not eligible for the addon.
   """
@@ -2535,10 +2567,15 @@ type Member {
 type MemberActions {
   memberId: ID!
   """
+  Returns a deflection to emergency partners if the member has an active contract that includes travel insurance coverage.
+  Reuses the ClaimIntentStepContentDeflection type for convenience.
+  """
+  sickAbroadDeflect: ClaimIntentStepContentDeflection
+  """
   Indicates that the member should review their phone number or add if it is missing.
   """
   isContactInfoUpdateNeeded: Boolean!
-  sickAbroadAction: SickAbroadAction
+  sickAbroadAction: SickAbroadAction @deprecated(reason: "Use sickAbroadDeflect instead")
   """
   Indicate whether the travel certificate option should be displayed.
   """
@@ -2657,7 +2694,7 @@ enum MemberChargeStatus {
   """
   SUCCESS
   """
-  The charge is pending that means either has been send to payment-service or to the payment provider
+  The charge is pending that means either has been send to the payment provider
   """
   PENDING
   """
@@ -2734,6 +2771,36 @@ type MemberMutationOutput {
   member: Member
   userError: UserError
 }
+type MemberPaymentAvailablePaymentMethod {
+  """
+   Payment provider, eg Trustly, Swish, Nordea, Kivra etc. 
+  """
+  provider: MemberPaymentProvider!
+  """
+   True if the member can set up this payment method for payin. 
+  """
+  supportsPayin: Boolean!
+  """
+   True if the member can set up this payment method for payout. 
+  """
+  supportsPayout: Boolean!
+  """
+  True if this method is already ACTIVE for member and can be chosen as default directly without setup, false if
+  this is a new payment method that the member has not yet set up.
+  If this is true, then the `details` field will be populated with the payment method details. If this is false, then
+  the `details` field will be null since the member has not yet set up this payment method.
+  If true then this method can be set up as default directly by calling `paymentMethodSetDefaultPayin` or
+  `paymentMethodSetDefaultPayout` mutation depending on if it's a payin or payout method. If false, then the
+  corresponding mutation for setting up this payment method should be called, eg. `paymentMethodSetupTrustly`,
+  `paymentMethodSetupSwishPayin` etc.
+  """
+  isActive: Boolean!
+  """
+  For already connected and ACTIVE methods, ie isActive=true, specific details of the actual connection - e.g. a bank
+  account reference, phone number for swish, or email/kivra for invoice.
+  """
+  details: PaymentMethodDetails
+}
 type MemberPaymentChargeMethodInfo {
   """
   An abstract display name of the connection - usually like the name of the bank you are connected to.
@@ -2802,6 +2869,101 @@ type MemberPaymentInformation {
   A payment connection info
   """
   chargeMethod: MemberPaymentChargeMethodInfo
+}
+type MemberPaymentMethod {
+  """
+  Payment provider, eg Trustly, Swish, Nordea, Kivra etc.
+  This is used as the "identifier" of the payment method since there can only be one ACTIVE or PENDING payment method
+  per provider.
+  """
+  provider: MemberPaymentProvider!
+  """
+  The payment method status - ACTIVE, PENDING.
+  If ACTIVE, the payment method is ready to use for payins or payouts depending on if it's a payin or payout method.
+  If PENDING, the payment method has been set up but is still awaiting activation and cannot be used for payins or
+  payouts until then. Once activated, the status will change to ACTIVE.
+  """
+  status: MemberPaymentMethodStatus!
+  """
+  This is 'true' for only one of the members ACTIVE methods which is the default payment method that will be used for
+  charging or payout the member. For PENDING methods, this can also be 'true' if the member has chosen to set up this
+  payment method as default during the setup process.
+  """
+  isDefault: Boolean!
+  """
+  Specific details of the actual connection if method is ACTIVE - e.g. a bank account reference, phone number for swish,
+  or email/kivra for invoice. If method is PENDING, then this field will be null since the member has not yet set up
+  this payment method.
+  """
+  details: PaymentMethodDetails
+}
+type MemberPaymentMethods {
+  """
+  List of all member's ACTIVE and PENDING payment payin methods.
+  A member can have multiple ACTIVE payment methods with these constraints:
+  - Only one ACTIVE payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  - Only one ACTIVE payment method can be default at a time.
+  A member can have multiple PENDING payment methods with these constraints:
+  - Only one PENDING payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  So there can exist max two payment methods per provider, one ACTIVE and one PENDING.
+  If a PENDING payment method has isDefault=true, then it will become the default ACTIVE payment method once activated.
+  """
+  payinMethods: [MemberPaymentMethod!]!
+  """
+  List of all member's ACTIVE and PENDING payment payout methods.
+  A member can have multiple ACTIVE payment methods with these constraints:
+  - Only one ACTIVE payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  - Only one ACTIVE payment method can be default at a time.
+  A member can have multiple PENDING payment methods with these constraints:
+  - Only one PENDING payment method per provider, eg. one Trustly, one Swish, one Nordea etc.
+  So there can exist max two payment methods per provider, one ACTIVE and one PENDING.
+  If a PENDING payment method has isDefault=true, then it will become the default ACTIVE payment method once activated.
+  """
+  payoutMethods: [MemberPaymentMethod!]!
+  """
+  The default payment method to use for payins if any.
+  Note that there can exist a PENDING payment method in `payinMethods` list with `isDefault`=true, in that case this default
+  payment method will be replaced by it once the pending method is activated.
+  """
+  defaultPayinMethod: MemberPaymentMethod
+  """
+  The default payment method to use for payouts if any.
+  Note that there can exist a PENDING payment method in `payoutMethods` list with `isDefault`=true, in that case this default
+  payment method will be replaced by it once the pending method is activated.
+  """
+  defaultPayoutMethod: MemberPaymentMethod
+  """
+  The available payment methods that the member can choose from when setting up a new payment method.
+  This list can include both payment methods that the member has already set up and new payment methods that the
+  member has not yet set up but are available to them. For already set up payment methods, the `isActive` field will
+  be true and the `details` field will be populated with the payment method details. For new payment methods that the
+  member has not yet set up, the `isActive` field will be false and the `details` field will be null.
+  If member picks a new payment method to set up, the corresponding mutation for setting up that payment method should
+  be called, eg. `paymentMethodSetupTrustly`, `paymentMethodSetupSwishPayin` etc.
+  If member picks an already set up payment method to set up as default, then `paymentMethodSetDefaultPayin` or
+  `paymentMethodSetDefaultPayout` mutation should be called depending on if it's a payin or payout method.
+  """
+  availableMethods: [MemberPaymentAvailablePaymentMethod!]!
+  """
+   The date of the month when member's premium will be charged (or due if invoice) 
+  """
+  chargingDay: Int
+}
+enum MemberPaymentMethodStatus {
+  """
+  The payment connection is active and can be used for payins or payouts.
+  """
+  ACTIVE
+  """
+  The payment connection has been partially set up but is awaiting activation.
+  """
+  PENDING
+}
+enum MemberPaymentProvider {
+  TRUSTLY
+  SWISH
+  NORDEA
+  INVOICE
 }
 type MemberReferral {
   """
@@ -2919,6 +3081,13 @@ enum MidtermChangeIntentState {
   INITIATED
   COMPLETED
 }
+type MidtermChangePetIdActivationDate {
+  """
+  Activation date of the MTA agreement.
+  """
+  activationDate: Date!
+}
+union MidtermChangePetIdOutput = MidtermChangePetIdActivationDate|UserError
 type MidtermChangePriceDetailItem {
   displayName: String!
   displayValue: String!
@@ -3319,6 +3488,37 @@ input MoveToHouseInput {
 }
 type Mutation {
   registerDirectDebit2(clientContext: RegisterDirectDebitClientContext2): DirectDebitResponse2!
+  manuallyChargeMember(dueDate: Date!): ManuallyChargeMemberMutationOutput!
+  """
+   Setup invoice payment method for the member. Kivra will be used as the provider if supported, else mail. 
+  """
+  paymentMethodSetupInvoicePayin: PaymentMethodSetupOutput!
+  """
+   Setup Trustly payment payin and payout method for the member. Requires member consent via redirect to Trustly URL in response.
+  """
+  paymentMethodSetupTrustly(input: PaymentMethodSetupTrustlyInput!): PaymentMethodSetupOutput!
+  """
+   Setup direct bank payout method for the member. 
+  """
+  paymentMethodSetupNordeaPayout(input: PaymentMethodSetupNordeaPayoutInput!): PaymentMethodSetupOutput!
+  """
+   Setup Swish payout method for the member. 
+  """
+  paymentMethodSetupSwishPayout(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  """
+   Setup Swish payin method for the member. Requires member consent in Swish app. 
+  """
+  paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
+  """
+  A member can have multiple ACTIVE payment methods where one of those is default. This mutation changes the
+  members default payment method for charging to any of his/hers other active payment methods.
+  """
+  paymentMethodSetDefaultPayin(provider: MemberPaymentProvider!): UserError
+  """
+  A member can have multiple ACTIVE payment methods where one of those is default. This mutation changes the
+  members default payment method for payouts to any of his/hers other active payment methods.
+  """
+  paymentMethodSetDefaultPayout(provider: MemberPaymentProvider!): UserError
   """
   Start a conversation. This is effectively creating one, but with two slight differences from a regular
   "create something"-mutation:
@@ -3400,20 +3600,11 @@ type Mutation {
   flowClaimSingleItemNext(input: FlowClaimSingleItemInput!, context: FlowContext!): Flow!
   flowClaimSummaryNext(input: FlowClaimSummaryInput!, context: FlowContext!): Flow!
   flowClaimSingleItemCheckoutNext(input: FlowClaimSingleItemCheckoutInput!, context: FlowContext!): Flow!
-  flowTerminationStart(input: FlowTerminationStartInput!, context: FlowContext): Flow!
-  flowTerminationDateNext(input: FlowTerminationDateInput!, context: FlowContext!): Flow!
-  flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow!
-  flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow!
-  flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow!
-  flowTerminationOfferNext(input: FlowTerminationOfferInput!, context: FlowContext!): Flow!
-  """
-  Tokenize payment details per member in order to be used in future and returns the status
-  """
-  tokenizePaymentDetails2(req: TokenizationRequest): TokenizationResponse
-  """
-  Handle payment redirection, required for 3D Secure verification on cards
-  """
-  submitAdyenRedirection2(req: SubmitAdyenRedirectionRequest): SubmitAdyenRedirectionResponse!
+  flowTerminationStart(input: FlowTerminationStartInput!, context: FlowContext): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationDateNext(input: FlowTerminationDateInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationDeletionNext(input: FlowTerminationDeletionInput, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationSurveyNext(input: FlowTerminationSurveyInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
+  flowTerminationCarAutoDecomNext(input: FlowTerminationCarAutoDecomInput!, context: FlowContext!): Flow! @deprecated(reason: "Use Query.terminationSurvey instead")
   travelCertificateCreate(input: TravelCertificateCreateInput!): TravelCertificate!
   """
   The document includes details of the member’s home insurance,
@@ -3456,7 +3647,7 @@ type Mutation {
   Update the raw insurance-related data for this `PriceIntent`. This data is mostly related to the insured object
   itself, and not the "holder" of the insurance.
   """
-  priceIntentDataUpdate(priceIntentId: UUID!, data: PricingFormData!): PriceIntentMutationOutput!
+  priceIntentDataUpdate(priceIntentId: UUID!, data: PricingFormData!, applySuggestedData: Boolean): PriceIntentMutationOutput!
   """
   Associate a specific Insurely `dataCollectionId` from lookup-service with this PriceIntent.
   """
@@ -3478,6 +3669,18 @@ type Mutation {
   - sending `addonIds = []` will unselect all addons
   """
   productOfferAddonsSelect(productOfferId: UUID!, addonIds: [UUID!]!): ProductOffersMutationOutput!
+  """
+  Reprice an existing product offer with updated data. Merges the provided data with the offer's
+  existing `priceIntentData`, creates a new underwriter quote matching the original variant,
+  and replaces the offer.
+  Useful for recommendation offers that don't have a `priceIntentId` and therefore can't use the
+  normal `priceIntentDataUpdate` + `priceIntentConfirm` flow.
+  """
+  productOfferReprice(offerId: UUID!, data: PricingFormData!): ProductOffersMutationOutput!
+  """
+  Mark a young pet guide story as read for a specific member.
+  """
+  puppyGuideEngagement(engagement: PuppyEngagementInput!): PuppyGuideStoryMutationOutput!
   """
   Update the customer of the shop session. Only non-null fields will be changed.
   Can trigger automatic lookup of other information.
@@ -3551,9 +3754,15 @@ type Mutation {
   """
   midtermChangeIntentCommit(intentId: ID!): MidtermChangeIntentMutationOutput!
   """
+  Called to change the Pet-Id of a cat/dog contract. Creates a midterm change without price change and commits it.
+  """
+  midtermChangePetId(contractId: ID!, petId: String!): MidtermChangePetIdOutput!
+  """
   Call this to confirm removal of selected addon(s).
   """
   addonRemoveConfirm(contractId: ID!, addonIds: [ID!]!): UserError
+  terminateContract(input: TerminationFlowTerminateContractInput!): TerminationFlowContractMutationOutput!
+  deleteContract(input: TerminationFlowDeleteContractInput!): TerminationFlowContractMutationOutput!
   """
   Call this to get addon quotes with price etc to show in the offer page.
   Call this when starting the add/upgrade addon flow.
@@ -3573,14 +3782,113 @@ type Mutation {
   """
   upsellTravelAddonActivate(quoteId: ID!, addonId: ID!): UpsellTravelAddonActivationOutput!
 }
+type PartnerClaim {
+  id: ID!
+  externalId: String!
+  exposureDisplayName: String
+  status: ClaimStatus
+  submittedAt: Date
+  payoutAmount: Money
+  associatedTypeOfContract: String
+  claimType: String
+  handlerEmail: String
+  displayItems: [ClaimDisplayItem!]!
+  """
+  Terms & conditions for the claim found using claims contractId and dateOfOccurrence, otherwise null.
+  """
+  productVariant: ProductVariant
+}
 type PartnerData {
   sas: SasPartnerData
 }
 type PartnerWidgetTrial {
   trialContract: TrialContract!
 }
-scalar PaymentMethodDetails
-scalar PaymentMethodsResponse
+type PaymentMethodBankAccountDetails {
+  """
+   The bank account reference - e.g. clearing number + account number. 
+  """
+  account: String!
+  """
+   The name of the bank - e.g. Nordea, SEB, Handelsbanken. 
+  """
+  bank: String!
+}
+union PaymentMethodDetails = PaymentMethodInvoiceDetails|PaymentMethodSwishDetails|PaymentMethodBankAccountDetails
+enum PaymentMethodInvoiceDelivery {
+  KIVRA
+  MAIL
+}
+type PaymentMethodInvoiceDetails {
+  """
+   How email is delivered - e.g. Kivra or mail. 
+  """
+  delivery: PaymentMethodInvoiceDelivery!
+  """
+   The email address where the invoice is sent in case delivery is set to MAIL. 
+  """
+  email: String
+}
+input PaymentMethodSetupNordeaPayoutInput {
+  """
+   The account number for member's bank account. 
+  """
+  accountNumber: String!
+}
+type PaymentMethodSetupOutput {
+  """
+   The status of the setup process. If FAILED the reason for failure can be found in the `error` field. 
+  """
+  status: PaymentMethodSetupStatus!
+  """
+   The order id for the payment method setup order if SUCCESSFUL. 
+  """
+  orderId: ID
+  """
+   Url to redirect the member to if any. 
+  """
+  url: String
+  """
+   An error message. Only sat if the setup process failed. 
+  """
+  error: UserError
+}
+enum PaymentMethodSetupStatus {
+  """
+   The payment method setup process is completed and the payment method is ready to use. 
+  """
+  ACTIVE
+  """
+   The payment method setup process is still ongoing. 
+  """
+  PENDING
+  """
+   The payment method setup process has failed. 
+  """
+  FAILED
+}
+input PaymentMethodSetupSwishInput {
+  """
+   The Swish mobile number to use for payout or payin. 
+  """
+  phoneNumber: String!
+}
+input PaymentMethodSetupTrustlyInput {
+  """
+   The URL to redirect the member back to after a successful setup after Trustly onboarding. 
+  """
+  successUrl: String!
+  """
+   The URL to redirect the member back to after a failed setup after Trustly onboarding. 
+  """
+  failureUrl: String!
+}
+type PaymentMethodSwishDetails {
+  """
+   The Swish phone number. 
+  """
+  phoneNumber: String!
+}
 """
 A pending contract is a proto-contract that has yet to become a fully fledged insurance. It usually means it is meant
 to be activated when an existing external insurance has been cancelled (switching).
@@ -3665,11 +3973,11 @@ type PriceIntent {
   """
   product: Product!
   """
-  Submitted user form data.
+  UI-safe masked form data. PII fields (street, zipCode, city) are always masked.
   """
   data: PricingFormData!
   """
-  Data submitted in other places or inferred from other data points
+  Masked, uncommitted form data from automatic lookup (e.g. SPAR address, trial data). PII fields are masked the same way as 'data'.
   """
   suggestedData: PricingFormData!
   """
@@ -3697,6 +4005,15 @@ type PriceIntent {
   When 'true' it means user has gone trough Insurely flow with that price intent
   """
   hasCollectedInsurelyData: Boolean!
+  """
+  List of external insurances fetched via Insurely that correspond to products Hedvig offers.
+  Null when no Insurely data collection has been associated with this price intent.
+  """
+  fetchedExternalInsurances: [FetchedExternalInsurance!]
+  """
+  When 'true' all required form data has been provided and the price intent can be confirmed.
+  """
+  isReadyToConfirm: Boolean!
 }
 enum PriceIntentAnimal {
   CAT
@@ -3857,7 +4174,7 @@ type ProductOffer {
   """
   priceIntentId: UUID
   """
-  The form data used to generate the offer
+  UI-safe masked form data used to generate the offer. PII fields (street, zipCode, city) are masked when address came from registration address lookup.
   """
   priceIntentData: PricingFormData!
   """
@@ -3918,20 +4235,6 @@ type ProductOfferAddon {
   """
   isSelected: Boolean!
 }
-type ProductOfferAddonCost {
-  """
-  The ID of the addon
-  """
-  addonId: UUID!
-  """
-  Gross cost of the addon.
-  """
-  grossCost: Money!
-  """
-  Net cost of the addon.
-  """
-  netCost: Money!
-}
 """
 Bundle discount information for a product offer
 """
@@ -3967,10 +4270,6 @@ type ProductOfferCost {
   """
   discounts: [ItemDiscount!]! @deprecated(reason: "Use 'discountsV2' instead")
   discountsV2: [ExtendedItemDiscount!]!
-  """
-  Collection of costs for addons that affect an item.
-  """
-  addonCosts: [ProductOfferAddonCost!]!
 }
 type ProductOfferDeductible {
   displayName: String!
@@ -4022,6 +4321,14 @@ type ProductOfferPriceMatch {
   externalPrice: Money!
   externalInsurer: ExternalInsurer!
   priceReduction: Money!
+  """
+  Renewal date of the external insurer's policy. Null when not provided by the external insurer.
+  """
+  renewalDate: Date
+  """
+  External insurer's product name/coverage label.
+  """
+  externalInsuranceName: String
 }
 type ProductOffersMutationOutput {
   productOffers: [ProductOffer!]!
@@ -4101,6 +4408,53 @@ type ProductVariantComparisonRow {
   """
   covered: [String!]!
 }
+input PuppyEngagementInput {
+  name: String!
+  rating: Int
+  opened: Boolean
+  read: Boolean
+  closed: Boolean
+}
+type PuppyGuideStory {
+  """
+  The unique name/identifier of the story.
+  """
+  name: String!
+  """
+  The display title of the story.
+  """
+  title: String!
+  """
+  The subtitle or description of the story.
+  """
+  subtitle: String!
+  """
+  The main content of the story.
+  """
+  content: String!
+  """
+  The image associated with this story.
+  """
+  image: String!
+  """
+  Categories this story belongs to.
+  """
+  categories: [String!]!
+  """
+  The date when the story was marked as read by the user.
+  """
+  read: Boolean!
+  """
+   The user's rating of the story.
+  """
+  rating: Int
+}
+type PuppyGuideStoryMutationOutput {
+  """
+  Indicates whether the mutation was successful.
+  """
+  success: Boolean!
+}
 type Query {
   """
   Return a conversation for a given ID.
@@ -4108,6 +4462,7 @@ type Query {
   """
   conversation(id: UUID!): Conversation
   claim(id: ID!): Claim
+  partnerClaim(id: ID!): PartnerClaim
   claimIntent(id: ID!): ClaimIntent!
   claimIntentFormFieldSearch(input: ClaimIntentFormFieldSearchInput!): ClaimIntentFormFieldSearchOutput!
   personalInformation(input: PersonalInformationInput!): PersonalInformation
@@ -4118,10 +4473,6 @@ type Query {
   currentMember: Member!
   entrypointGroups(type: EntrypointType!): [EntrypointGroup!]!
   entrypointSearch(input: EntrypointSearchInput): [Entrypoint!]!
-  """
-  Returns all the available payments methods before the client requests a tokenization
-  """
-  availablePaymentMethods2: AvailablePaymentMethodsResponse!
   shopSession(id: UUID!): ShopSession!
   carTrial(contractId: UUID!): TrialExtension
   """
@@ -4166,6 +4517,7 @@ type Query {
   Cost for selected configuration of removed addon offer
   """
   addonRemoveOfferCost(contractId: ID!, addonIds: [ID!]!): ItemCost!
+  terminationSurvey(contractId: UUID!): TerminationFlowSurvey!
   """
   Call this to get the cost of an addon offer for selected addon(s).
   """
@@ -4366,6 +4718,11 @@ type ShopSessionCustomer {
   """
   ssn: String
   """
+  The customer's email address. Only available for new members.
+  Returns null for existing/returning members to protect their PII.
+  """
+  email: String
+  """
   The list of fields that need to be added in order to sign properly.
   Can be updated through `Mutation.shopSessionCustomerUpdate`.
   """
@@ -4414,6 +4771,12 @@ type ShopSessionOutcome {
   Note that this will not contain and `PendingContract`s.
   """
   createdContracts: [Contract!]!
+  """
+  Pre-hashed Facebook CAPI user data (SHA-256 hex, lowercase) for this signed session.
+  Fields follow Meta's Conversions API customer information parameter spec.
+  Requires authentication (inherits MemberAccessible from the outcome).
+  """
+  capiUserData: CapiUserData!
 }
 type ShopSessionSigning {
   id: UUID!
@@ -4511,13 +4874,6 @@ type StoryblokImageAsset {
   src: String!
   alt: String
 }
-input SubmitAdyenRedirectionRequest {
-  md: String!
-  pares: String!
-}
-type SubmitAdyenRedirectionResponse {
-  resultCode: String!
-}
 """
 Represents a case of switching, pointing towards a soon-to-be insurance Contract on our platform.
 If it is not completed, it can be by calling `Mutation.switcherCaseComplete`.
@@ -4533,33 +4889,73 @@ type SwitcherCaseMutationOutput {
   switcherCase: SwitcherCase
   userError: UserError
 }
+union TerminationFlowAction = TerminationFlowActionTerminateWithDate|TerminationFlowActionDeleteInsurance
+type TerminationFlowActionDeleteInsurance {
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowActionTerminateWithDate {
+  minDate: Date!
+  maxDate: Date!
+  extraCoverage: [TerminationFlowExtraCoverageItem!]!
+}
+type TerminationFlowContractMutationOutput {
+  contract: Contract
+  userError: UserError
+}
+input TerminationFlowDeleteContractInput {
+  contractId: ID!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
+}
+type TerminationFlowExtraCoverageItem {
+  displayName: String!
+  displayValue: String
+}
+type TerminationFlowNotification {
+  message: String!
+  type: TerminationFlowNotificationType!
+}
 input TerminationFlowNotificationInput {
   contractId: ID!
   terminationDate: Date!
 }
-enum TokenizationChannel {
-  ANDROID
-  IOS
-  WEB
+enum TerminationFlowNotificationType {
+  INFO
+  WARNING
 }
-input TokenizationRequest {
-  paymentMethodDetails: PaymentMethodDetails!
-  channel: TokenizationChannel!
-  browserInfo: BrowserInfo
-  returnUrl: String!
+type TerminationFlowSurvey {
+  options: [TerminationFlowSurveyOption!]!
+  action: TerminationFlowAction!
 }
-union TokenizationResponse = TokenizationResponseFinished|TokenizationResponseAction
-type TokenizationResponseAction {
-  action: CheckoutPaymentsAction!
+type TerminationFlowSurveyOption {
+  id: ID!
+  title: String!
+  subOptions: [TerminationFlowSurveyOption!]!
+  feedbackRequired: Boolean!
+  suggestion: TerminationFlowSurveyOptionSuggestion
 }
-type TokenizationResponseFinished {
-  resultCode: String!
-  tokenizationResult: TokenizationResultType!
+type TerminationFlowSurveyOptionSuggestion {
+  type: TerminationFlowSurveyOptionSuggestionType!
+  description: String!
+  url: String
 }
-enum TokenizationResultType {
-  COMPLETED
-  PENDING
-  FAILED
+enum TerminationFlowSurveyOptionSuggestionType {
+  UPDATE_ADDRESS
+  UPGRADE_COVERAGE
+  DOWNGRADE_PRICE
+  REDIRECT
+  INFO
+  AUTO_CANCEL_SOLD
+  AUTO_CANCEL_SCRAPPED
+  AUTO_DECOMMISSION
+  AUTO_CANCEL_DECOMMISSION
+  CAR_ALREADY_DECOMMISSION
+}
+input TerminationFlowTerminateContractInput {
+  contractId: ID!
+  terminationDate: Date!
+  terminationSurveyOptionId: ID!
+  terminationComment: String
 }
 type TotalCost {
   monthlyGross: Money!

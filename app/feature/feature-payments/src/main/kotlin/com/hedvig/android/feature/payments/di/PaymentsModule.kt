@@ -15,6 +15,10 @@ import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCase
 import com.hedvig.android.feature.payments.data.GetPaymentsHistoryUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCaseImpl
+import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCase
+import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCaseDemo
+import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCaseImpl
+import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCaseProvider
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCase
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseDemo
 import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCaseImpl
@@ -67,6 +71,7 @@ val paymentsModule = module {
   viewModel<PaymentsViewModel> {
     PaymentsViewModel(
       get<GetUpcomingPaymentUseCaseProvider>(),
+      get<GetShouldShowPayoutUseCaseProvider>(),
     )
   }
 
@@ -115,5 +120,20 @@ val paymentsModule = module {
     GetUpcomingPaymentUseCaseDemo(
       clock = get<Clock>(),
     )
+  }
+  single<GetShouldShowPayoutUseCaseProvider> {
+    GetShouldShowPayoutUseCaseProvider(
+      demoManager = get<DemoManager>(),
+      demoImpl = get<GetShouldShowPayoutUseCaseDemo>(),
+      prodImpl = get<GetShouldShowPayoutUseCaseImpl>(),
+    )
+  }
+  single<GetShouldShowPayoutUseCaseImpl> {
+    GetShouldShowPayoutUseCaseImpl(
+      get<ApolloClient>(),
+    )
+  }
+  single<GetShouldShowPayoutUseCaseDemo> {
+    GetShouldShowPayoutUseCaseDemo()
   }
 }

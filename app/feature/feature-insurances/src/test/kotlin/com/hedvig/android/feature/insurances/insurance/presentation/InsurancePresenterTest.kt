@@ -22,6 +22,7 @@ import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.FlowType
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.CrossSell
@@ -97,6 +98,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing,
     ),
     EstablishedInsuranceContract(
       id = "contractId#2",
@@ -144,6 +146,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     ),
   )
   private val terminatedContracts: List<EstablishedInsuranceContract> = listOf(
@@ -193,6 +196,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     ),
     EstablishedInsuranceContract(
       id = "contractId#4",
@@ -240,6 +244,7 @@ internal class InsurancePresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     ),
   )
   private val validCrossSells: CrossSellResult = CrossSellResult(

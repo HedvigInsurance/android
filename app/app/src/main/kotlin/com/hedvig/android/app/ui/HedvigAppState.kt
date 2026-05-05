@@ -34,6 +34,7 @@ import com.hedvig.android.feature.insurances.navigation.insurancesCrossSellBotto
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
+import com.hedvig.android.feature.profile.navigation.destinationToExcludeFromSavingState
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.featureflags.FeatureManager
@@ -196,6 +197,7 @@ internal class HedvigAppState(
    */
   fun navigateToLoggedIn() {
     navController.navigate(RootGraph) {
+      restoreState = true
       typedPopUpTo<LoginDestination> {
         inclusive = true
       }
@@ -203,16 +205,20 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedOut() {
+
+    val isLoggingOutFromProfile = navController.currentDestination
+      ?.typedHasRoute(destinationToExcludeFromSavingState) ?: false
+
     for (entry in TopLevelGraph.entries) {
       navController.typedClearBackStack(entry.destination)
     }
     navController.navigate(LoginDestination) {
       typedPopUpTo<RootGraph> {
         inclusive = true
+        saveState = !isLoggingOutFromProfile
       }
     }
   }
-
   val darkTheme: Boolean
     @Composable
     get() {

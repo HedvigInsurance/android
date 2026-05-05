@@ -26,6 +26,7 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
+  implementation(projects.dataContract)
   implementation(projects.dataPayingMember)
   implementation(projects.featureFlagsPublic)
 

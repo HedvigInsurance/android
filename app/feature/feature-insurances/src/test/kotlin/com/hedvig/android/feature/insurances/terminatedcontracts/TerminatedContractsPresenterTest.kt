@@ -10,6 +10,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -233,6 +234,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
       EstablishedInsuranceContract(
         "contractId2",
@@ -280,6 +282,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
     )
 
@@ -329,6 +332,7 @@ class TerminatedContractsPresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     )
 
     private val activeInsurances = listOf(
@@ -378,6 +382,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
       EstablishedInsuranceContract(
         "contractId4",
@@ -425,6 +430,7 @@ class TerminatedContractsPresenterTest {
         tierName = "STANDARD",
         existingAddons = emptyList(),
         availableAddons = emptyList(),
+        chipId = ChipIdState.Missing
       ),
     )
   }

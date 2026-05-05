@@ -10,6 +10,7 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ChipIdState
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
@@ -290,6 +291,7 @@ class ContractDetailPresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     )
 
     private val insuranceWithTerminationDate = EstablishedInsuranceContract(
@@ -338,6 +340,7 @@ class ContractDetailPresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
+      chipId = ChipIdState.Missing
     )
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, EstablishedInsuranceContract>>()

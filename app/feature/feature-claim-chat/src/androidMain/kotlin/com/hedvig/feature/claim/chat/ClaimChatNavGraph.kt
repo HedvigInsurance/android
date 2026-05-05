@@ -85,12 +85,12 @@ fun NavGraphBuilder.claimChatGraph(
       appPackageId = appPackageId,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
-      openPlayStore = openPlayStore
+      openPlayStore = openPlayStore,
     )
   }
   navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
     ClaimOutcomeDeflectDestination(
-      deflect = deflect,
+      deflect = deflect.deflectData,
       imageLoader = imageLoader,
       navigateUp = navController::navigateUp,
       openUrl = openUrl,

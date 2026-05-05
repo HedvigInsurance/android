@@ -3,7 +3,8 @@ on:
   push:
     branches:
       - develop
-      - feat/claim-chat-search
+      - feat/pet-chip-id
+      - feature/payment-methods
   workflow_dispatch:
 
 concurrency:
