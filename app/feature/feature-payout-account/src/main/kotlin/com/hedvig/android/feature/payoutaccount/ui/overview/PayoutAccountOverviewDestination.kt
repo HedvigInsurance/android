@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
@@ -33,6 +36,7 @@ import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.PAYMENTS_INVOICE
+import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE
 import hedvig.resources.PAYOUT_NO_PAYOUT_OPTIONS_TITLE
 import hedvig.resources.PAYOUT_PAGE_HEADING
@@ -128,7 +132,16 @@ private fun PayoutAccountContent(
   Column(modifier) {
     Spacer(Modifier.height(8.dp))
     when (currentMethod) {
-      null -> {}
+      null -> {
+        if (availablePayoutMethods.isNotEmpty()) {
+          Spacer(Modifier.weight(1f))
+          EmptyState(
+            text = stringResource(Res.string.PAYOUT_MISSING_INFO),
+            description = null,
+            iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
+          )
+        }
+      }
 
       is PayoutAccount.SwishPayout -> {
         val phoneNumber = currentMethod.phoneNumber.orEmpty()
