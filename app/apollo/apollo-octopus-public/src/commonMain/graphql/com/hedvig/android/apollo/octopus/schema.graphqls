@@ -3501,7 +3501,7 @@ type Mutation {
   """
   paymentMethodSetupSwishPayout(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
   """
-   Setup Swish payin method for the member. Requires member consent in Swish app. 
+   Setup Swish payin method for the member. Requires member consent in Swish app.
   """
   paymentMethodSetupSwishPayin(input: PaymentMethodSetupSwishInput!): PaymentMethodSetupOutput!
   """
@@ -3650,10 +3650,8 @@ type Mutation {
   """
   Confirm this PriceIntent, which will use the current data (and likely `ShopSession.customer`) to generate
   `ProductOffers` that can be added to the cart.
-  Optional `attribution` is merged field-by-field over `ShopSession.attribution` for this confirm only (quotes and
-  `PriceIntentConfirmed` events use the merged result).
   """
-  priceIntentConfirm(priceIntentId: UUID!, attribution: PriceIntentConfirmAttributionInput): PriceIntentMutationOutput!
+  priceIntentConfirm(priceIntentId: UUID!): PriceIntentMutationOutput!
   """
   Change the start date of the given `ProductOffer`s by their ID.
   This is used because it's common to want to change the start date AFTER getting the offer.
@@ -3799,7 +3797,7 @@ type PartnerWidgetTrial {
 }
 type PaymentMethodBankAccountDetails {
   """
-   The bank account reference - e.g. clearing number + account number. 
+   The bank account reference - e.g. clearing number + account number.
   """
   account: String!
   """
@@ -3834,11 +3832,11 @@ type PaymentMethodSetupOutput {
   """
   status: PaymentMethodSetupStatus!
   """
-   The order id for the payment method setup order if SUCCESSFUL. 
+   The order id for the payment method setup order if SUCCESSFUL.
   """
   orderId: ID
   """
-   Url to redirect the member to if any. 
+   Url to redirect the member to if any.
   """
   url: String
   """
@@ -4016,14 +4014,6 @@ type PriceIntentAnimalBreed {
   id: ID!
   displayName: String!
   isMixedBreed: Boolean!
-}
-input PriceIntentConfirmAttributionInput {
-  attributedTo: String
-  initiatedFrom: String
-  userFlow: String
-  flowSource: String
-  experiments: [ShopSessionExperimentInput!]
-  trackingData: JSON
 }
 input PriceIntentCreateInput {
   shopSessionId: UUID!
@@ -4482,6 +4472,9 @@ type Query {
   """
   addonOfferCost(quoteId: ID!, selectedAddonIds: [ID!]!): ItemCost!
 }
+"""
+External insurance details used to recommend a matching Hedvig product, even when no offer has been generated yet.
+"""
 type RecommendationExternalInsurance {
   """
   Display name of the external insurance product
@@ -4496,9 +4489,9 @@ type RecommendationExternalInsurance {
   """
   price: Money
   """
-  Contextual subtitle (e.g. address, registration number, pet name)
+  Insured object (e.g. address, registration number, pet name)
   """
-  subtitle: String
+  insuredObject: String
   """
   Renewal date of the external policy. Null when not provided.
   """

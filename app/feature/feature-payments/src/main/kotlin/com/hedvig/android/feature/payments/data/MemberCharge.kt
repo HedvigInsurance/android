@@ -3,8 +3,10 @@ package com.hedvig.android.feature.payments.data
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount.DiscountStatus
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
+import kotlinx.datetime.plus
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.serialization.Serializable
 import octopus.PaymentHistoryWithDetailsQuery
@@ -71,7 +73,7 @@ internal data class MemberCharge(
       val isPreviouslyFailedCharge: Boolean,
     ) {
       val description: Description? = when {
-        fromDate.dayOfMonth == 1 && toDate.isLastDayOfMonth() -> {
+        fromDate.day == 1 && toDate.isLastDayOfMonth() -> {
           Description.FullPeriod
         }
 
@@ -202,5 +204,5 @@ internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
 }
 
 fun LocalDate.isLastDayOfMonth(): Boolean {
-  return toJavaLocalDate().lengthOfMonth() == dayOfMonth
+  return plus(1, DateTimeUnit.DAY).day == 1
 }

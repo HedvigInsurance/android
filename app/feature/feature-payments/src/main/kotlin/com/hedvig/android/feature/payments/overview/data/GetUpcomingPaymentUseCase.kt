@@ -39,7 +39,7 @@ import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
 import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
-import octopus.type.MemberPaymentConnectionStatus
+import octopus.type.MemberPaymentMethodStatus
 
 internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Flow<Either<ErrorMessage, PaymentOverview>>
@@ -63,6 +63,38 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             .map { response ->
               either {
                 val result = response.bind()
+
+
+
+                PaymentOverview(
+                  memberChargeShortInfo = result.currentMember.futureCharge?.toMemberChargeShortInfo(),
+                  ongoingCharges = result.currentMember.ongoingCharges.mapNotNull {
+                    val id = it.id ?: return@mapNotNull null
+                    OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
+                  },
+                  paymentConnection = run {
+                    val paymentMethods = result.currentMember.paymentMethods
+                    val payinMethod = paymentMethods.defaultPayinMethod
+                      ?: paymentMethods.payinMethods.find { it.isDefault }
+                    if (payinMethod == null) {
+                      val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
+                        .currentMember
+                        .activeContracts
+                        .filter { it.terminationDueToMissedPayments }
+                        .mapNotNull { it.terminationDate }
+                        .sorted()
+                        .firstOrNull()
+                      return@run PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
+                    }
+                    when (payinMethod.status) {
+                      MemberPaymentMethodStatus.ACTIVE -> PaymentConnection.Active
+                      MemberPaymentMethodStatus.PENDING -> PaymentConnection.Pending
+                      MemberPaymentMethodStatus.UNKNOWN__ -> PaymentConnection.Unknown
+                    }
+                  },
+                )
+
+
                 val paymentConnection = run {
                   val paymentInformation = result.currentMember.paymentInformation
                   when (paymentInformation.status) {
