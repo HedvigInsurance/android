@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import octopus.PuppyGuideQuery
 
-private const val HARDCODE_RESPONSE = true
-
 interface GetPuppyGuideUseCase {
   fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>?>>
 }
@@ -25,45 +23,28 @@ internal class GetPuppyGuideUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetPuppyGuideUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>?>> {
-    if (HARDCODE_RESPONSE) {
-      return flowOf(
-        List(5) {
-          PuppyGuideStory(
-            categories = List(3) { "category#$it" },
-            content = "content",
-            image = "image",
-            name = "name",
-            rating = 4,
-            isRead = false,
-            subtitle = "subtitle",
-            title = "title",
-          )
-        }.right(),
-      )
-    } else {
-      return apolloClient
-        .query(PuppyGuideQuery())
-        .fetchPolicy(FetchPolicy.CacheAndNetwork)
-        .safeFlow(::ErrorMessage)
-        .map { either ->
-          either
-            .onLeft { logcat { "Cannot load PuppyGuideStory: $it" } }
-            .map { data ->
-              data.currentMember.puppyGuideStories.map { story ->
-                PuppyGuideStory(
-                  categories = story.categories,
-                  content = story.content,
-                  image = story.image,
-                  name = story.name,
-                  rating = story.rating,
-                  isRead = story.read,
-                  subtitle = story.subtitle,
-                  title = story.title,
-                )
-              }
+    return apolloClient
+      .query(PuppyGuideQuery())
+      .fetchPolicy(FetchPolicy.CacheAndNetwork)
+      .safeFlow(::ErrorMessage)
+      .map { either ->
+        either
+          .onLeft { logcat { "Cannot load PuppyGuideStory: $it" } }
+          .map { data ->
+            data.currentMember.puppyGuideStories.map { story ->
+              PuppyGuideStory(
+                categories = story.categories,
+                content = story.content,
+                image = story.image,
+                name = story.name,
+                rating = story.rating,
+                isRead = story.read,
+                subtitle = story.subtitle,
+                title = story.title,
+              )
             }
-        }
-    }
+          }
+      }
   }
 }
 
