@@ -276,12 +276,14 @@ private fun PaymentsContent(
     }
     val upcomingPayment = (uiState as? Content)?.upcomingPayment
     if (upcomingPayment == NoUpcomingPayment) {
-      HedvigInformationSection(
-        stringResource(Res.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS),
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
+      if (ongoingCharges.isNullOrEmpty()) {
+        HedvigInformationSection(
+          stringResource(Res.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS),
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
     } else {
       PaymentAmountCard(
         upcomingPayment = upcomingPayment as? UpcomingPayment.Content,
@@ -800,7 +802,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
       Content(
         isRetrying = false,
         upcomingPayment = UpcomingPayment.Content(
-          UiMoney(100.0, SEK),
+          UiMoney(400.0, SEK),
           System.now().toLocalDateTime(TimeZone.UTC).date,
           "pwe",
         ),
@@ -841,9 +843,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          isManualChargeAllowed = ManualChargeToPrompt(
-            UiMoney(200.0, UiCurrencyCode.SEK),
-          ),
+          isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
@@ -879,9 +879,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          isManualChargeAllowed = ManualChargeToPrompt(
-            UiMoney(200.0, UiCurrencyCode.SEK),
-          ),
+          isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
@@ -901,9 +899,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         upcomingPaymentInfo = PaymentFailed(
           System.now().toLocalDateTime(TimeZone.UTC).date,
           System.now().minus(30.days).toLocalDateTime(TimeZone.UTC).date,
-          isManualChargeAllowed = ManualChargeToPrompt(
-            UiMoney(200.0, UiCurrencyCode.SEK),
-          ),
+          isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
