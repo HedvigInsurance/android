@@ -32,6 +32,10 @@ internal class GetManualChargeInfoUseCaseImpl(
 
     val showManualCharge = currentMember.missedChargeIdToChargeManually
 
+    val showCancellationWarning =
+      currentMember.activeContracts
+        .any { it.terminationDueToMissedPayments && it.terminationDate != null }
+
     if (showManualCharge == null) {
       logcat { "GetManualChargeInfoUseCaseImpl: missedChargeIdToChargeManually is null" }
       raise(ErrorMessage())
@@ -51,6 +55,7 @@ internal class GetManualChargeInfoUseCaseImpl(
       amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
       bankAccountDisplayValue = currentMember.paymentInformation.chargeMethod?.displayName,
       bankDescriptor = currentMember.paymentInformation.chargeMethod?.descriptor,
+      showCancellationWarning = showCancellationWarning
     )
   }
 }
@@ -61,4 +66,5 @@ internal data class ManualChargeInfo(
   val amountDue: UiMoney,
   val bankDescriptor: String?,
   val bankAccountDisplayValue: String?,
+  val showCancellationWarning: Boolean
 )

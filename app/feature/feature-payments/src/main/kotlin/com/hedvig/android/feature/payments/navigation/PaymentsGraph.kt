@@ -83,8 +83,10 @@ fun NavGraphBuilder.paymentsGraph(
             ),
           )
         },
-        onNavigateToSuccess = {
-          navController.navigate(PaymentsDestinations.ManualChargeSuccess) {
+        onNavigateToSuccess = { showCancellationWarning ->
+          navController.navigate(PaymentsDestinations.ManualChargeSuccess(
+            showCancellationWarning = showCancellationWarning
+          )) {
             typedPopUpTo<PaymentsDestinations.ManualCharge> {
               inclusive = true
             }
@@ -94,7 +96,9 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     navdestination<PaymentsDestinations.ManualChargeSuccess>{
-      ManualChargeSuccessDestination(navController::navigateUp)
+      ManualChargeSuccessDestination(
+        this.showCancellationWarning,
+        navController::navigateUp)
     }
 
     navdestination<PaymentsDestinations.Details> {

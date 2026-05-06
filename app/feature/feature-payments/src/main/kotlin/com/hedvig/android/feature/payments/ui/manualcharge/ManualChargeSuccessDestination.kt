@@ -12,16 +12,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import hedvig.resources.MANUAL_CHARGE_CANCELLATION_WARNING
 import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS
 import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION
 import hedvig.resources.Res
@@ -29,7 +34,10 @@ import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ManualChargeSuccessDestination(popBackStack: () -> Unit) {
+internal fun ManualChargeSuccessDestination(
+  showCancellationWarning: Boolean,
+  popBackStack: () -> Unit,
+) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -48,10 +56,22 @@ internal fun ManualChargeSuccessDestination(popBackStack: () -> Unit) {
       description = stringResource(
         Res.string.PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION,
       ),
-      iconStyle = SUCCESS,
+      iconStyle = if (showCancellationWarning)
+        EmptyStateDefaults.EmptyStateIconStyle.SUCCESS_WITH_WARNING
+      else SUCCESS,
       buttonStyle = NoButton,
     )
-    Spacer(Modifier.weight(1f))
+    Column(Modifier.weight(1f)) {
+      if (showCancellationWarning) {
+        Spacer(Modifier.height(32.dp))
+        HedvigNotificationCard(
+          message = stringResource(Res.string.MANUAL_CHARGE_CANCELLATION_WARNING),
+          priority = NotificationDefaults.NotificationPriority.AttentionRound,
+          modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(16.dp))
+      }
+    }
     HedvigTextButton(
       stringResource(Res.string.general_close_button),
       onClick = dropUnlessResumed { popBackStack() },
@@ -64,6 +84,13 @@ internal fun ManualChargeSuccessDestination(popBackStack: () -> Unit) {
 
 @HedvigPreview
 @Composable
-private fun ManualChargeSuccessDestinationPreview() {
-  ManualChargeSuccessDestination({})
+private fun ManualChargeSuccessDestinationPreview(
+  @PreviewParameter(
+    BooleanCollectionPreviewParameterProvider::class,
+  ) showCancellationWarning: Boolean,
+) {
+  ManualChargeSuccessDestination(
+    showCancellationWarning,
+    {},
+  )
 }

@@ -522,6 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
+  <string name="MANUAL_CHARGE_CANCELLATION_WARNING">To reactivate your insurance from cancellation, reach out to the Hedvig Service Team after the charge has appeared on your account</string>
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Review contact info</string>
   <string name="MISSING_CONTACT_INFO_CARD_TEXT">Make sure we have the right contact info in case we need to reach you.</string>

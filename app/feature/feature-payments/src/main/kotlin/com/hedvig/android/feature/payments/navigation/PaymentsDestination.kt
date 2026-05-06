@@ -33,6 +33,8 @@ internal sealed interface PaymentsDestinations {
   data object ManualCharge: PaymentsDestinations, Destination
 
   @Serializable
-  data object ManualChargeSuccess: PaymentsDestinations, Destination
+  data class ManualChargeSuccess(
+    val showCancellationWarning: Boolean
+  ): PaymentsDestinations, Destination
 }
 

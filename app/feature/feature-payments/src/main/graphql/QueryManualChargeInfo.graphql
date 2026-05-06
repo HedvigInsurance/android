@@ -19,5 +19,9 @@ query ManualChargeInfo {
         paymentMethod
       }
     }
+    activeContracts {
+      terminationDueToMissedPayments
+      terminationDate
+    }
   }
 }

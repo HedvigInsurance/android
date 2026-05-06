@@ -522,6 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
+  <string name="MANUAL_CHARGE_CANCELLATION_WARNING">För att återaktivera din försäkring efter avslut, kontakta Hedvig Service Team när betalningen har registrerats på ditt konto</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
   <string name="MISSING_CONTACT_INFO_CARD_TEXT">Se till att vi har rätt kontaktuppgifter ifall vi behöver nå dig.</string>

@@ -18,8 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -27,12 +29,14 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
@@ -42,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormat
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
+import hedvig.resources.MANUAL_CHARGE_CANCELLATION_WARNING
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT
@@ -60,7 +65,7 @@ internal fun ManualChargeDestination(
   viewModel: ManualChargeViewModel,
   navigateUp: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
-  onNavigateToSuccess: () -> Unit,
+  onNavigateToSuccess: (Boolean) -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -69,9 +74,9 @@ internal fun ManualChargeDestination(
     navigateUp = navigateUp,
     reload = { viewModel.emit(ManualChargeEvent.Retry) },
     onNavigateToPaymentDetails = onNavigateToPaymentDetails,
-    onNavigateToSuccess = {
+    onNavigateToSuccess = { showCancellationWarning ->
       viewModel.emit(ManualChargeEvent.ClearNav)
-      onNavigateToSuccess()
+      onNavigateToSuccess(showCancellationWarning)
     },
     onTriggerPayment = {
       viewModel.emit(ManualChargeEvent.TriggerCharge) }
@@ -84,7 +89,7 @@ private fun ManualChargeScreen(
   navigateUp: () -> Unit,
   reload: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
-  onNavigateToSuccess: () -> Unit,
+  onNavigateToSuccess: (Boolean) -> Unit,
   onTriggerPayment: () -> Unit
 ) {
   HedvigScaffold(
@@ -118,7 +123,7 @@ private fun ManualChargeScreen(
       is ManualChargeUiState.Success -> {
         if (uiState.navigateToSuccess!=null) {
           LaunchedEffect(uiState.navigateToSuccess) {
-            onNavigateToSuccess()
+            onNavigateToSuccess(uiState.manualChargeInfo.showCancellationWarning)
           }
         } else {
           ManualChargeSuccessScreen(
@@ -140,154 +145,170 @@ private fun ManualChargeSuccessScreen(
 ) {
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   val dateTimeFormatterWithYear = rememberHedvigDateTimeFormatter()
-  Column(
-    modifier = Modifier
-      .padding(
-        top = 8.dp,
-        start = 16.dp,
-        end = 16.dp,
-        bottom = 16.dp,
-      )
-      .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge)
-      .fillMaxWidth()
-      .background(
-        color = HedvigTheme.colorScheme.backgroundPrimary,
-        shape = HedvigTheme.shapes.cornerXLarge,
-      )
-      .border(
-        width = 1.dp,
-        color = HedvigTheme.colorScheme.borderPrimary,
-        shape = HedvigTheme.shapes.cornerXLarge,
-      )
+  Column {
 
-      .clip(HedvigTheme.shapes.cornerXLarge)
-      .padding(16.dp),
-  ) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 16.dp),
-      verticalAlignment = Alignment.Top,
-    ) {
-      Icon(
-        imageVector = HedvigIcons.WarningFilled,
-        contentDescription = null,
-        tint = HedvigTheme.colorScheme.signalRedElement,
-        modifier = Modifier.size(40.dp),
-      )
-      Spacer(modifier = Modifier.width(12.dp))
-      Column(modifier = Modifier.weight(1f)) {
-        HedvigText(
-          text = stringResource(
-            Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE,
-            dateTimeFormatter.format(uiState.manualChargeInfo.missedDueDate),
-          ),
-        )
-        HedvigText(
-          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY),
-          color = HedvigTheme.colorScheme.textSecondary,
-        )
-      }
-    }
-    if (uiState.manualChargeInfo.chargeId!=null) {
-      HedvigButton(
-        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS),
-        onClick = {
-          onNavigateToPaymentDetails(uiState.manualChargeInfo.chargeId)
-        },
-        enabled = true,
-        modifier = Modifier.fillMaxWidth(),
-        buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
-        buttonSize = ButtonDefaults.ButtonSize.Medium,
-        border = HedvigTheme.colorScheme.borderPrimary,
-      )
-    }
-    Spacer(modifier = Modifier.height(16.dp))
+
     Column(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier
+        .padding(
+          top = 8.dp,
+          start = 16.dp,
+          end = 16.dp,
+          bottom = 16.dp,
+        )
+        .hedvigDropShadow(HedvigTheme.shapes.cornerXLarge)
+        .fillMaxWidth()
+        .background(
+          color = HedvigTheme.colorScheme.backgroundPrimary,
+          shape = HedvigTheme.shapes.cornerXLarge,
+        )
+        .border(
+          width = 1.dp,
+          color = HedvigTheme.colorScheme.borderPrimary,
+          shape = HedvigTheme.shapes.cornerXLarge,
+        )
+
+        .clip(HedvigTheme.shapes.cornerXLarge)
+        .padding(16.dp),
     ) {
       Row(
         modifier = Modifier
-          .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+          .fillMaxWidth()
+          .padding(bottom = 16.dp),
+        verticalAlignment = Alignment.Top,
       ) {
-        HedvigText(
-          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE),
-          color = HedvigTheme.colorScheme.textSecondary,
-          style = HedvigTheme.typography.label,
+        Icon(
+          imageVector = HedvigIcons.WarningFilled,
+          contentDescription = null,
+          tint = HedvigTheme.colorScheme.signalRedElement,
+          modifier = Modifier.size(40.dp),
         )
-        HedvigText(
-          text = dateTimeFormatterWithYear.format(uiState.manualChargeInfo.missedDueDate),
-          color = HedvigTheme.colorScheme.textSecondary,
-          style = HedvigTheme.typography.label,
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+          HedvigText(
+            text = stringResource(
+              Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE,
+              dateTimeFormatter.format(uiState.manualChargeInfo.missedDueDate),
+            ),
+          )
+          HedvigText(
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY),
+            color = HedvigTheme.colorScheme.textSecondary,
+          )
+        }
+      }
+      if (uiState.manualChargeInfo.chargeId != null) {
+        HedvigButton(
+          text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS),
+          onClick = {
+            onNavigateToPaymentDetails(uiState.manualChargeInfo.chargeId)
+          },
+          enabled = true,
+          modifier = Modifier.fillMaxWidth(),
+          buttonStyle = ButtonDefaults.ButtonStyle.Ghost,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
+          border = HedvigTheme.colorScheme.borderPrimary,
         )
       }
-      if (uiState.manualChargeInfo.bankDescriptor!=null &&
-        uiState.manualChargeInfo.bankAccountDisplayValue!=null) {
-        Spacer(Modifier.height(10.dp))
+      Spacer(modifier = Modifier.height(16.dp))
+      Column(
+        modifier = Modifier.fillMaxWidth(),
+      ) {
         Row(
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier
+            .fillMaxWidth(),
           horizontalArrangement = Arrangement.SpaceBetween,
         ) {
           HedvigText(
-            text = uiState.manualChargeInfo.bankDescriptor,
+            text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE),
             color = HedvigTheme.colorScheme.textSecondary,
             style = HedvigTheme.typography.label,
           )
           HedvigText(
-            text = uiState.manualChargeInfo.bankAccountDisplayValue,
+            text = dateTimeFormatterWithYear.format(uiState.manualChargeInfo.missedDueDate),
             color = HedvigTheme.colorScheme.textSecondary,
             style = HedvigTheme.typography.label,
           )
         }
+        if (uiState.manualChargeInfo.bankDescriptor != null &&
+          uiState.manualChargeInfo.bankAccountDisplayValue != null
+        ) {
+          Spacer(Modifier.height(10.dp))
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+          ) {
+            HedvigText(
+              text = uiState.manualChargeInfo.bankDescriptor,
+              color = HedvigTheme.colorScheme.textSecondary,
+              style = HedvigTheme.typography.label,
+            )
+            HedvigText(
+              text = uiState.manualChargeInfo.bankAccountDisplayValue,
+              color = HedvigTheme.colorScheme.textSecondary,
+              style = HedvigTheme.typography.label,
+            )
+          }
+        }
       }
-    }
 
-    Spacer(modifier = Modifier.height(16.dp))
-    HorizontalDivider()
-    Spacer(modifier = Modifier.height(16.dp))
+      Spacer(modifier = Modifier.height(16.dp))
+      HorizontalDivider()
+      Spacer(modifier = Modifier.height(16.dp))
 
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 16.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      HedvigText(
-        text = stringResource(Res.string.payment_details_receipt_card_total),
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(bottom = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        HedvigText(
+          text = stringResource(Res.string.payment_details_receipt_card_total),
+        )
+        HedvigText(
+          text = uiState.manualChargeInfo.amountDue.toString(),
+          textAlign = TextAlign.End,
+        )
+      }
+
+      HedvigButton(
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
+        onClick = onTriggerPayment,
+        enabled = true,
+        modifier = Modifier.fillMaxWidth(),
       )
+
+      Spacer(modifier = Modifier.height(8.dp))
       HedvigText(
-        text = uiState.manualChargeInfo.amountDue.toString(),
-        textAlign = TextAlign.End,
+        text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT),
+        color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+        textAlign = TextAlign.Center,
+        style = HedvigTheme.typography.label,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
     }
-
-    HedvigButton(
-      text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
-      onClick = onTriggerPayment,
-      enabled = true,
-      modifier = Modifier.fillMaxWidth(),
-    )
-
-    Spacer(modifier = Modifier.height(8.dp))
-    HedvigText(
-      text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT),
-      color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-      textAlign = TextAlign.Center,
-      style = HedvigTheme.typography.label,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
+    if (uiState.manualChargeInfo.showCancellationWarning) {
+      HedvigNotificationCard(
+        message = stringResource(Res.string.MANUAL_CHARGE_CANCELLATION_WARNING),
+        priority = NotificationDefaults.NotificationPriority.AttentionRound,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
   }
-
 }
 
 @Composable
 @Preview
 @HedvigPreview
-private fun ManualChargeScreenSuccessPreview() {
+private fun ManualChargeScreenSuccessPreview(
+  @PreviewParameter(
+    BooleanCollectionPreviewParameterProvider::class,
+  ) showCancellationWarning: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ManualChargeScreen(
@@ -297,9 +318,10 @@ private fun ManualChargeScreenSuccessPreview() {
             amountDue = UiMoney(100.0, UiCurrencyCode.SEK),
             chargeId = "chargeId",
             bankDescriptor = "Bank account",
-            bankAccountDisplayValue = "**** 8324"
+            bankAccountDisplayValue = "**** 8324",
+            showCancellationWarning = showCancellationWarning
           ),
-          navigateToSuccess = null
+          navigateToSuccess = null,
         ),
         navigateUp = {},
         reload = {},

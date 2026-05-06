@@ -56,7 +56,10 @@ private class ManualChargePresenter(
             screenState = ManualChargeUiState.Failure(it)
           },
           ifRight = {
-            screenState = ManualChargeUiState.Success(currentState.manualChargeInfo, Unit)
+            screenState = ManualChargeUiState.Success(
+              manualChargeInfo = currentState.manualChargeInfo,
+              navigateToSuccess = Unit
+            )
           }
         )
       }
@@ -66,7 +69,10 @@ private class ManualChargePresenter(
       screenState = ManualChargeUiState.Loading
       getManualChargeInfoUseCase.invoke().fold(
         ifRight = { manualChargeInfo ->
-          screenState = ManualChargeUiState.Success(manualChargeInfo, null)
+          screenState = ManualChargeUiState.Success(
+            manualChargeInfo = manualChargeInfo,
+            null,
+          )
         },
         ifLeft = { failure ->
           screenState = ManualChargeUiState.Failure(failure)
