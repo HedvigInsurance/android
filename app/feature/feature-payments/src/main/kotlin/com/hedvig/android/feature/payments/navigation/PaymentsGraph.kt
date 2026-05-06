@@ -37,6 +37,7 @@ fun NavGraphBuilder.paymentsGraph(
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
+  openConversation: () -> Unit,
 ) {
   navgraph<PaymentsDestination.Graph>(
     startDestination = PaymentsDestination.Payments::class,
@@ -91,7 +92,8 @@ fun NavGraphBuilder.paymentsGraph(
               inclusive = true
             }
           }
-        }
+        },
+        openConversation =  openConversation
       )
     }
 

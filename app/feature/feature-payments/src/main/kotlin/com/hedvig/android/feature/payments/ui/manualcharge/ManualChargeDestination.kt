@@ -55,6 +55,7 @@ import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.claim_status_detail_chat_button_description
 import hedvig.resources.general_close_button
 import hedvig.resources.payment_details_receipt_card_total
 import kotlinx.datetime.LocalDate
@@ -66,6 +67,7 @@ internal fun ManualChargeDestination(
   navigateUp: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onNavigateToSuccess: (Boolean) -> Unit,
+  openConversation: ()-> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -79,7 +81,8 @@ internal fun ManualChargeDestination(
       onNavigateToSuccess(showCancellationWarning)
     },
     onTriggerPayment = {
-      viewModel.emit(ManualChargeEvent.TriggerCharge) }
+      viewModel.emit(ManualChargeEvent.TriggerCharge) },
+    openConversation = openConversation
   )
 }
 
@@ -88,6 +91,7 @@ private fun ManualChargeScreen(
   uiState: ManualChargeUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
+  openConversation: ()-> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onNavigateToSuccess: (Boolean) -> Unit,
   onTriggerPayment: () -> Unit
@@ -101,9 +105,9 @@ private fun ManualChargeScreen(
       is ManualChargeUiState.Failure -> {
         val subTitle = if (uiState.error.message!=null) uiState.error.message else
           stringResource(Res.string.GENERAL_ERROR_BODY)
-        val buttonText = if (uiState.error.message!=null) stringResource(Res.string.general_close_button) else
+        val buttonText = if (uiState.error.message!=null) stringResource(Res.string.claim_status_detail_chat_button_description) else
           stringResource(Res.string.GENERAL_RETRY)
-        val onButtonClick = if (uiState.error.message!=null) navigateUp else reload
+        val onButtonClick = if (uiState.error.message!=null) openConversation else reload
 
         HedvigErrorSection(
           onButtonClick = onButtonClick,
@@ -328,6 +332,7 @@ private fun ManualChargeScreenSuccessPreview(
         {},
         {},
         {},
+        {}
       )
     }
   }
@@ -346,6 +351,7 @@ private fun ManualChargeScreenLoadingPreview() {
         {},
         {},
         {},
+        {}
       )
     }
   }
@@ -354,16 +360,23 @@ private fun ManualChargeScreenLoadingPreview() {
 @Composable
 @Preview
 @HedvigPreview
-private fun ManualChargeScreenFailurePreview() {
+private fun ManualChargeScreenFailurePreview(
+  @PreviewParameter(
+    BooleanCollectionPreviewParameterProvider::class,
+  ) hasUserError: Boolean,
+) {
   HedvigTheme {
     Surface {
       ManualChargeScreen(
-        uiState = ManualChargeUiState.Failure(ErrorMessage("Payment method not allowed")),
+        uiState = ManualChargeUiState.Failure(ErrorMessage(
+          message = if (hasUserError) "Cannot charge the failed payment since there have been some changes. " +
+            "The new amount will be included in the upcoming payment." else null )),
         navigateUp = {},
         reload = {},
         {},
         {},
         {},
+        {}
       )
     }
   }
