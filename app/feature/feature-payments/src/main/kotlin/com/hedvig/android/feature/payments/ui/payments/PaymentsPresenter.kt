@@ -29,6 +29,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
@@ -50,7 +51,7 @@ internal class PaymentsPresenter(
 
     LaunchedEffect(loadIteration) {
       paymentOverviewResult = null
-      paymentOverviewResult = getUpcomingPaymentUseCase.provide().invoke()
+      paymentOverviewResult = getUpcomingPaymentUseCase.provide().invoke().firstOrNull() //todo: check
     }
 
     val shouldShowPayout = shouldShowPayoutPresenter.present(loadIteration)

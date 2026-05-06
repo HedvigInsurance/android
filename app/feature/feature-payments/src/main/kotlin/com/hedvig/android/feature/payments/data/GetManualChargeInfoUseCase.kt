@@ -11,14 +11,9 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
-import kotlinx.coroutines.flow.first
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.ManualChargeInfoQuery
-import octopus.type.MemberChargeStatus
-import com.hedvig.android.logger.logcat
-import octopus.type.MemberPaymentConnectionStatus
 
 internal interface GetManualChargeInfoUseCase {
   suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo>
@@ -26,7 +21,7 @@ internal interface GetManualChargeInfoUseCase {
 
 internal class GetManualChargeInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
-): GetManualChargeInfoUseCase {
+) : GetManualChargeInfoUseCase {
   override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo> = either {
 
     val currentMember = apolloClient.query(ManualChargeInfoQuery())
@@ -37,16 +32,16 @@ internal class GetManualChargeInfoUseCaseImpl(
 
     val showManualCharge = currentMember.missedChargeIdToChargeManually
 
-    if (showManualCharge==null) {
-      logcat {"GetManualChargeInfoUseCaseImpl: missedChargeIdToChargeManually is null"}
+    if (showManualCharge == null) {
+      logcat { "GetManualChargeInfoUseCaseImpl: missedChargeIdToChargeManually is null" }
       raise(ErrorMessage())
     }
 
     val latestFailedPastCharge = currentMember.pastCharges
-      .firstOrNull {it.id == showManualCharge}
+      .firstOrNull { it.id == showManualCharge }
 
-    if (latestFailedPastCharge==null) {
-      logcat {"GetManualChargeInfoUseCaseImpl: latestFailedPastCharge is null"}
+    if (latestFailedPastCharge == null) {
+      logcat { "GetManualChargeInfoUseCaseImpl: latestFailedPastCharge is null" }
       raise(ErrorMessage())
     }
 
@@ -55,7 +50,7 @@ internal class GetManualChargeInfoUseCaseImpl(
       missedDueDate = latestFailedPastCharge.date,
       amountDue = UiMoney.fromMoneyFragment(latestFailedPastCharge.net),
       bankAccountDisplayValue = currentMember.paymentInformation.chargeMethod?.displayName,
-      bankDescriptor = currentMember.paymentInformation.chargeMethod?.descriptor
+      bankDescriptor = currentMember.paymentInformation.chargeMethod?.descriptor,
     )
   }
 }
@@ -65,5 +60,5 @@ internal data class ManualChargeInfo(
   val missedDueDate: LocalDate,
   val amountDue: UiMoney,
   val bankDescriptor: String?,
-  val bankAccountDisplayValue: String?
+  val bankAccountDisplayValue: String?,
 )

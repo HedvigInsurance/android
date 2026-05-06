@@ -7,33 +7,19 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
-import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection
-import com.hedvig.android.feature.payments.data.PaymentConnection.Active
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
-import com.hedvig.android.feature.payments.data.toChargeMethod
 import com.hedvig.android.feature.payments.data.toFailedCharge
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.logger.logcat
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.isActive
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
@@ -42,121 +28,64 @@ import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
 
 internal interface GetUpcomingPaymentUseCase {
-  suspend fun invoke(): Flow<Either<ErrorMessage, PaymentOverview>>
+  suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
 }
 
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
-  val featureManager: FeatureManager,
   val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
-  override suspend fun invoke(): Flow<Either<ErrorMessage, PaymentOverview>> {
-    return flow {
-      while (currentCoroutineContext().isActive) {
-        emitAll(
-          apolloClient.query(UpcomingPaymentQuery())
-            .fetchPolicy(FetchPolicy.NetworkFirst)
-            .safeFlow {
-              logcat { "GetUpcomingPaymentUseCaseImpl error: $it" }
-              ErrorMessage()
-            }
-            .map { response ->
-              either {
-                val result = response.bind()
+  override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
+    val result = apolloClient.query(UpcomingPaymentQuery())
+      .fetchPolicy(FetchPolicy.NetworkFirst)
+      .safeExecute(::ErrorMessage)
+      .bind()
 
+    val missedChargeIdToChargeManually: String? = result.currentMember.missedChargeIdToChargeManually
 
-
-                PaymentOverview(
-                  memberChargeShortInfo = result.currentMember.futureCharge?.toMemberChargeShortInfo(),
-                  ongoingCharges = result.currentMember.ongoingCharges.mapNotNull {
-                    val id = it.id ?: return@mapNotNull null
-                    OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
-                  },
-                  paymentConnection = run {
-                    val paymentMethods = result.currentMember.paymentMethods
-                    val payinMethod = paymentMethods.defaultPayinMethod
-                      ?: paymentMethods.payinMethods.find { it.isDefault }
-                    if (payinMethod == null) {
-                      val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
-                        .currentMember
-                        .activeContracts
-                        .filter { it.terminationDueToMissedPayments }
-                        .mapNotNull { it.terminationDate }
-                        .sorted()
-                        .firstOrNull()
-                      return@run PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
-                    }
-                    when (payinMethod.status) {
-                      MemberPaymentMethodStatus.ACTIVE -> PaymentConnection.Active
-                      MemberPaymentMethodStatus.PENDING -> PaymentConnection.Pending
-                      MemberPaymentMethodStatus.UNKNOWN__ -> PaymentConnection.Unknown
-                    }
-                  },
-                )
-
-
-                val paymentConnection = run {
-                  val paymentInformation = result.currentMember.paymentInformation
-                  when (paymentInformation.status) {
-                    MemberPaymentConnectionStatus.ACTIVE -> {
-                      PaymentConnection.Active(
-                        displayName = paymentInformation.chargeMethod?.displayName,
-                        displayValue = paymentInformation.chargeMethod?.descriptor,
-                        chargeMethod = paymentInformation.chargeMethod?.paymentMethod.toChargeMethod(),
-                      )
-                    }
-
-                    MemberPaymentConnectionStatus.PENDING -> {
-                      PaymentConnection.Pending
-                    }
-
-                    MemberPaymentConnectionStatus.NEEDS_SETUP -> {
-                      val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
-                        .currentMember
-                        .activeContracts
-                        .filter { it.terminationDueToMissedPayments }
-                        .mapNotNull { it.terminationDate }
-                        .sorted()
-                        .firstOrNull()
-                      PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
-                    }
-
-                    MemberPaymentConnectionStatus.UNKNOWN__ -> {
-                      PaymentConnection.Unknown
-                    }
-                  }
-                }
-                val memberChargeShortInfo = result.currentMember.futureCharge?.toMemberChargeShortInfo()
-
-                val missedChargeIdToChargeManually: String? = result.currentMember.missedChargeIdToChargeManually
-
-                val isManualChargeAllowed = if (missedChargeIdToChargeManually!=null) {
-                  val failedChargeNet = result.currentMember.pastCharges.firstOrNull {
-                    it.id == missedChargeIdToChargeManually}?.net?.let { net ->
-                      UiMoney.fromMoneyFragment(net)
-                  }
-                  if (failedChargeNet!=null) {
-                    ManualChargeToPrompt(failedChargeNet)
-                  } else null
-                } else {
-                  null
-                }
-
-                PaymentOverview(
-                  memberChargeShortInfo = memberChargeShortInfo,
-                  ongoingCharges = result.currentMember.ongoingCharges.mapNotNull {
-                    val id = it.id ?: return@mapNotNull null
-                    OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
-                  },
-                  isManualChargeAllowed = isManualChargeAllowed,
-                  paymentConnection = paymentConnection,
-                )
-              }
-            },
-        )
-        delay(3.seconds)
+    val isManualChargeAllowed = if (missedChargeIdToChargeManually != null) {
+      val failedChargeNet = result.currentMember.pastCharges.firstOrNull {
+        it.id == missedChargeIdToChargeManually
+      }?.net?.let { net ->
+        UiMoney.fromMoneyFragment(net)
       }
+      if (failedChargeNet != null) {
+        ManualChargeToPrompt(failedChargeNet)
+      } else null
+    } else {
+      null
     }
+
+    PaymentOverview(
+      memberChargeShortInfo = result.currentMember.futureCharge?.toMemberChargeShortInfo(),
+      ongoingCharges = result.currentMember.ongoingCharges.mapNotNull {
+        val id = it.id ?: return@mapNotNull null
+        OngoingCharge(id, it.date, UiMoney.fromMoneyFragment(it.net))
+      },
+      paymentConnection = run {
+        val paymentMethods = result.currentMember.paymentMethods
+        val payinMethod = paymentMethods.defaultPayinMethod
+          ?: paymentMethods.payinMethods.find { it.isDefault }
+        if (payinMethod == null) {
+          val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
+            .currentMember
+            .activeContracts
+            .filter { it.terminationDueToMissedPayments }
+            .mapNotNull { it.terminationDate }
+            .sorted()
+            .firstOrNull()
+          return@run PaymentConnection.NeedsSetup(
+            firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+          )
+        }
+        when (payinMethod.status) {
+          MemberPaymentMethodStatus.ACTIVE -> PaymentConnection.Active
+          MemberPaymentMethodStatus.PENDING -> PaymentConnection.Pending
+          MemberPaymentMethodStatus.UNKNOWN__ -> PaymentConnection.Unknown
+        }
+      },
+      isManualChargeAllowed = isManualChargeAllowed,
+    )
   }
 }
 
@@ -177,20 +106,18 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
 internal class GetUpcomingPaymentUseCaseDemo(
   private val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
-  override suspend fun invoke(): Flow<Either<ErrorMessage, PaymentOverview>> {
-    return flowOf(
-      PaymentOverview(
-        MemberChargeShortInfo(
-          netAmount = UiMoney(100.0, UiCurrencyCode.SEK),
-          id = "id",
-          status = MemberCharge.MemberChargeStatus.SUCCESS,
-          dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,
-          failedCharge = null,
-        ),
-        emptyList(),
-        PaymentConnection.Unknown,
-        isManualChargeAllowed = null,
-      ).right(),
-    )
+  override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> {
+    return PaymentOverview(
+      MemberChargeShortInfo(
+        netAmount = UiMoney(100.0, UiCurrencyCode.SEK),
+        id = "id",
+        status = MemberCharge.MemberChargeStatus.SUCCESS,
+        dueDate = (clock.now() + 10.days).toLocalDateTime(TimeZone.UTC).date,
+        failedCharge = null,
+      ),
+      emptyList(),
+      PaymentConnection.Unknown,
+      isManualChargeAllowed = null,
+    ).right()
   }
 }

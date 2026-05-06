@@ -620,6 +620,8 @@
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY">Pay %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE">Overdue since %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">View payment details</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_MISSING_SUBTITLE">No overdue payments</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_MISSING_TITLE">Payments up to date</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_TITLE">Payment overdue</string>
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Payment successful</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s days</string>
