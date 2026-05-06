@@ -127,24 +127,8 @@ private fun PuppyGuideSuccessScreen(
   imageLoader: ImageLoader,
 ) {
   val categories = uiState.stories.flatMap { it.categories }.toSet().toList()
-  var selectedCategory by remember { mutableStateOf<String?>(null) }
   val listState = rememberLazyListState()
   val scope = rememberCoroutineScope()
-
-  LaunchedEffect(selectedCategory) {
-    selectedCategory?.let { cat ->
-      val index = categories.indexOf(cat)
-      if (index >= 0) {
-        // Negative offset to scroll less and avoid sticky header covering the title
-        scope.launch {
-          listState.animateScrollToItem(
-            index + 2,
-            scrollOffset = -200, // todo: wtf
-          )
-        }
-      }
-    }
-  }
 
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -208,8 +192,16 @@ private fun PuppyGuideSuccessScreen(
               GuideCategoriesRow(
                 categories = categories,
                 contentPadding = sectionContentPadding,
-                onCategoryClick = {
-                  selectedCategory = it
+                onCategoryClick = onClick@{ category ->
+                  val index = categories.indexOf(category)
+                  if (index == -1) return@onClick
+                  scope.launch {
+                    listState.animateScrollToItem(
+                      index + 2,
+                      // Negative offset to scroll less and avoid sticky header covering the title
+                      scrollOffset = -200, // todo: wtf
+                    )
+                  }
                 },
               )
               Spacer(modifier = Modifier.height(8.dp))
