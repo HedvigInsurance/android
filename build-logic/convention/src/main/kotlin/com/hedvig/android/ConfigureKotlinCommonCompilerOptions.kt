@@ -30,7 +30,6 @@ private fun commonFreeCompilerArgs(): List<String> {
   return listOf(
     "-Xcontext-parameters",
     "-Xexpect-actual-classes",
-    "-Xwhen-guards",
     "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
     "-opt-in=androidx.compose.animation.ExperimentalSharedTransitionApi",
     "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
