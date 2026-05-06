@@ -338,7 +338,7 @@ private fun ManualChargeScreenSuccessPreview(
 @HedvigPreview
 private fun ManualChargeScreenLoadingPreview() {
   HedvigTheme {
-    Surface {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       ManualChargeScreen(
         uiState = ManualChargeUiState.Loading,
         navigateUp = {},

@@ -17,15 +17,19 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateButtonStyle.NoButton
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults.EmptyStateIconStyle.SUCCESS
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTextButton
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.MANUAL_CHARGE_CANCELLATION_WARNING
 import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS
 import hedvig.resources.PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION
@@ -63,7 +67,7 @@ internal fun ManualChargeSuccessDestination(
     )
     Column(Modifier.weight(1f)) {
       if (showCancellationWarning) {
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
         HedvigNotificationCard(
           message = stringResource(Res.string.MANUAL_CHARGE_CANCELLATION_WARNING),
           priority = NotificationDefaults.NotificationPriority.AttentionRound,
@@ -72,11 +76,13 @@ internal fun ManualChargeSuccessDestination(
         Spacer(Modifier.height(16.dp))
       }
     }
-    HedvigTextButton(
+    HedvigButton(
       stringResource(Res.string.general_close_button),
       onClick = dropUnlessResumed { popBackStack() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary
     )
     Spacer(Modifier.height(16.dp))
   }
@@ -89,8 +95,12 @@ private fun ManualChargeSuccessDestinationPreview(
     BooleanCollectionPreviewParameterProvider::class,
   ) showCancellationWarning: Boolean,
 ) {
-  ManualChargeSuccessDestination(
-    showCancellationWarning,
-    {},
-  )
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ManualChargeSuccessDestination(
+        showCancellationWarning,
+        {},
+      )
+    }
+  }
 }
