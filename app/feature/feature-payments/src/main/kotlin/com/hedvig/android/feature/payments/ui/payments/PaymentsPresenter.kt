@@ -51,7 +51,7 @@ internal class PaymentsPresenter(
 
     LaunchedEffect(loadIteration) {
       paymentOverviewResult = null
-      paymentOverviewResult = getUpcomingPaymentUseCase.provide().invoke().firstOrNull() //todo: check
+      paymentOverviewResult = getUpcomingPaymentUseCase.provide().invoke()
     }
 
     val shouldShowPayout = shouldShowPayoutPresenter.present(loadIteration)
