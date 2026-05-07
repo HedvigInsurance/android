@@ -724,6 +724,7 @@ private fun PreviewHomeScreen(
                 claimType = "Broken item",
                 insuranceDisplayName = "Home Insurance Homeowner",
                 submittedDate = Instant.parse("2024-05-01T00:00:00Z"),
+                isPartnerClaim = false,
               ),
             ),
           ),

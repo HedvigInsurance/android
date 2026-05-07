@@ -138,6 +138,7 @@ private fun PreviewClaimStatusCard() {
         claimType = "Broken item",
         insuranceDisplayName = null,
         submittedDate = Instant.parse("2024-05-31T00:00:50Z"),
+        isPartnerClaim = false,
       )
       ClaimStatusCard(claimStatusData, {})
     }
