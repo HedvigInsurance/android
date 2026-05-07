@@ -49,30 +49,11 @@ And then
 
 ## Sharing code with iOS via HedvigShared
 
-The `:umbrella` module produces the binary that the iOS app (Ugglan) consumes for shared KMP code — see `app/umbrella/build.gradle.kts` for the exported module list. There are two distribution paths:
+The `:umbrella` module produces the binary the iOS app consumes for shared KMP code — exported module list in `app/umbrella/build.gradle.kts`. Two distribution paths:
 
-- **Production**: `assembleHedvigSharedReleaseXCFramework` builds a multi-slice `HedvigShared.xcframework` (iosArm64 + iosSimulatorArm64) and the `umbrella.yml` workflow publishes it as a Swift Package. Slow round-trip (~25 min in CI) but produces the artifact CI consumes.
-- **Local dev** (iOS-side fast loop): `embedAndSignAppleFrameworkForXcode` builds *only* the slice Xcode is currently asking for. Invoked by Ugglan as a pre-build phase. ~5–10s per Kotlin change.
+- **Production**: `umbrella.yml` runs `:umbrella:assembleHedvigSharedReleaseXCFramework` and publishes the resulting multi-slice XCFramework as a Swift Package (~25 min round-trip).
+- **Local dev**: Ugglan's `scripts/use-local-umbrella.sh` flips its Tuist project so a pre-build phase calls `:umbrella:embedAndSignAppleFrameworkForXcode` from a sibling `android/` checkout on every Xcode build (~5–10s per Kotlin change). See the *Iterating on shared KMP code* section in Ugglan's README.
 
-Check out the android repo as a sibling of `ugglan/`:
+(`:umbrella:embedAndSignAppleFrameworkForXcode` only works from an Xcode build phase — it reads `CONFIGURATION`, `SDK_NAME`, `ARCHS`, `BUILT_PRODUCTS_DIR` from the env.)
 
-```
-<parent>/
-├── android/   ← this repo
-└── ugglan/
-```
-
-From `ugglan/`, run `scripts/use-local-umbrella.sh` to enable local mode. See the *Iterating on shared KMP code* section in Ugglan's README for the full flow.
-
-To produce the XCFramework manually from this repo (the artifact CI publishes):
-
-```sh
-./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework
-```
-
-Output: `app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework`. This is what `umbrella.yml` runs in CI.
-
-`:umbrella:embedAndSignAppleFrameworkForXcode` exists too but it's not a manual command — it expects Xcode-set env vars (`CONFIGURATION`, `SDK_NAME`, `ARCHS`, `BUILT_PRODUCTS_DIR`, …) and is only useful when invoked from an Xcode build phase. That's how Ugglan's local mode runs it.
-
-### Heads-up for KMP/Compose contributors
-the umbrella module is `isStatic = true`, and Compose Multiplatform's iOS resource reader uses `Bundle.main` to find resources at `<App>.app/compose-resources/composeResources/...`. In Ugglan's multi-target Tuist setup, the resources end up bundled inside `CoreDependencies.framework` instead of at the app bundle root, so `ugglan/scripts/post-build-action.sh` lifts them out at post-build time. If you add new compose resources to a shared module, that path is what serves them at runtime.
+`:umbrella` is `isStatic = true`. Compose Resources you add to shared modules land at `<App>.app/compose-resources/composeResources/...` on iOS via `ugglan/scripts/post-build-action.sh` — that script is the source of truth for the iOS bundle layout.
