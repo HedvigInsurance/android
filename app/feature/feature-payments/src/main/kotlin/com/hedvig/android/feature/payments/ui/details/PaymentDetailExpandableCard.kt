@@ -66,7 +66,6 @@ import hedvig.resources.TALKBACK_EXPANDABLE_CLICK_LABEL_EXPAND
 import hedvig.resources.TALKBACK_EXPANDABLE_STATE_COLLAPSED
 import hedvig.resources.TALKBACK_EXPANDABLE_STATE_EXPANDED
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

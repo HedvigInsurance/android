@@ -10,10 +10,16 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.MemberPaymentDetailsQuery
+import octopus.fragment.MemberPaymentMethodFragment
+import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodBankAccountDetailsDetails
+import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodInvoiceDetailsDetails
+import octopus.fragment.MemberPaymentMethodFragment.PaymentMethodSwishDetailsDetails
+import octopus.type.MemberPaymentMethodStatus
+import octopus.type.MemberPaymentProvider
+import octopus.type.PaymentMethodInvoiceDelivery
 
 internal interface GetMemberPaymentsDetailsUseCase {
   suspend fun invoke(): Either<ErrorMessage, MemberPaymentsDetails>
@@ -31,30 +37,51 @@ internal class GetMemberPaymentsDetailsUseCaseImpl(
           logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase returned error: $it" }
         }
         .bind()
-      val chargeMethod = result.currentMember.paymentInformation.chargeMethod
-      if (chargeMethod == null) {
-        logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase chargeMethod is null" }
+      val paymentMethods = result.currentMember.paymentMethods
+      val payinMethod = paymentMethods.defaultPayinMethod
+        ?: paymentMethods.payinMethods.find { it.isDefault && it.status == MemberPaymentMethodStatus.ACTIVE }
+      if (payinMethod == null) {
+        logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase no active default payin method" }
         raise(ErrorMessage())
       }
-      with(chargeMethod) {
-        MemberPaymentsDetails(
-          chargingDayInTheMonth = dueDate,
-          descriptor = descriptor,
-          displayName = displayName,
-          mandate = mandate,
-          paymentMethod = paymentMethod,
-          chargeMethod = paymentProvider.toChargeMethod(),
-        )
+      val paymentMethod = payinMethod.provider.toPaymentMethod()
+      if (paymentMethod == null) {
+        logcat(LogPriority.WARN) { "GetMemberPaymentsDetailsUseCase unknown provider: ${payinMethod.provider}" }
+        raise(ErrorMessage())
       }
+      MemberPaymentsDetails(
+        paymentMethod = paymentMethod,
+        chargingDayInTheMonth = paymentMethods.chargingDay,
+        account = payinMethod.details?.toPaymentAccount(),
+      )
     }
   }
 }
 
-data class MemberPaymentsDetails(
+internal data class MemberPaymentsDetails(
+  val paymentMethod: PaymentMethod,
   val chargingDayInTheMonth: Int?,
-  val descriptor: String?,
-  val displayName: String?,
-  val mandate: String?,
-  val paymentMethod: String,
-  val chargeMethod: MemberPaymentChargeMethod,
+  val account: PaymentAccount?,
 )
+
+private fun MemberPaymentProvider.toPaymentMethod(): PaymentMethod? = when (this) {
+  MemberPaymentProvider.TRUSTLY -> PaymentMethod.TRUSTLY
+  MemberPaymentProvider.SWISH -> PaymentMethod.SWISH
+  MemberPaymentProvider.NORDEA -> PaymentMethod.NORDEA
+  MemberPaymentProvider.INVOICE -> PaymentMethod.INVOICE
+  MemberPaymentProvider.UNKNOWN__ -> null
+}
+
+private fun MemberPaymentMethodFragment.Details.toPaymentAccount(): PaymentAccount? = when (this) {
+  is PaymentMethodInvoiceDetailsDetails -> when (delivery) {
+    PaymentMethodInvoiceDelivery.KIVRA -> PaymentAccount.Kivra
+    PaymentMethodInvoiceDelivery.MAIL -> email?.let(PaymentAccount::Email)
+    PaymentMethodInvoiceDelivery.UNKNOWN__ -> null
+  }
+
+  is PaymentMethodSwishDetailsDetails -> PaymentAccount.PhoneNumber(phoneNumber)
+
+  is PaymentMethodBankAccountDetailsDetails -> PaymentAccount.BankAccount(account, bank)
+
+  else -> null
+}
