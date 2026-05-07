@@ -14,7 +14,6 @@ data class ClaimStatusCardUiState(
   val submittedDate: Instant?,
   val pillTypes: List<ClaimPillType>,
   val claimProgressItemsUiState: List<ClaimProgressSegment>,
-  val isPartnerClaim: Boolean,
 ) {
   companion object {
     fun fromPartnerClaim(claim: PartnerClaimFragment): ClaimStatusCardUiState {
@@ -25,7 +24,6 @@ data class ClaimStatusCardUiState(
         submittedDate = claim.submittedAt?.atStartOfDayIn(TimeZone.UTC),
         pillTypes = ClaimPillType.fromPartnerClaim(claim.status),
         claimProgressItemsUiState = ClaimProgressSegment.fromPartnerClaim(claim.status),
-        isPartnerClaim = true,
       )
     }
 
@@ -37,7 +35,6 @@ data class ClaimStatusCardUiState(
         submittedDate = claim.submittedAt,
         pillTypes = ClaimPillType.fromClaimFragment(claim),
         claimProgressItemsUiState = ClaimProgressSegment.fromClaimFragment(claim),
-        isPartnerClaim = false,
       )
     }
   }

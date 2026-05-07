@@ -935,7 +935,6 @@ private fun PreviewClaimDetailScreen(
                 ClaimProgressSegment.SegmentType.ACTIVE,
               ),
             ),
-            isPartnerClaim = false,
           ),
           claimStatus = ClaimDetailUiState.Content.ClaimStatus.CLOSED,
           claimOutcome = ClaimDetailUiState.Content.ClaimOutcome.PAID,
