@@ -37,28 +37,24 @@ internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
   private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
 ) {
-  fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
-    return flow {
-      var hasEmittedRegularSuccess = false
-      var resolvedAsPartner = false
-      while (currentCoroutineContext().isActive) {
-        if (resolvedAsPartner) {
-          emitAll(partnerQueryFlow(claimId))
-        } else {
-          queryFlow(claimId).collect { result ->
-            if (!hasEmittedRegularSuccess && result == Either.Left(Error.NoClaimFound)) {
-              resolvedAsPartner = true
-            } else {
-              if (result.isRight()) hasEmittedRegularSuccess = true
-              emit(result)
-            }
-          }
-          if (resolvedAsPartner) {
-            emitAll(partnerQueryFlow(claimId))
-          }
-        }
-        delay(POLL_INTERVAL)
+  fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> = flow {
+    // First iteration: try the regular endpoint. A NoClaimFound here means this
+    // is a partner claim — fall back to the partner endpoint and remember that
+    // choice for the polling loop below.
+    var fellBackToPartner = false
+    queryFlow(claimId).collect { result ->
+      if (result == Either.Left(Error.NoClaimFound)) {
+        fellBackToPartner = true
+      } else {
+        emit(result)
       }
+    }
+    if (fellBackToPartner) emitAll(partnerQueryFlow(claimId))
+
+    val pollEndpoint = if (fellBackToPartner) ::partnerQueryFlow else ::queryFlow
+    while (currentCoroutineContext().isActive) {
+      delay(POLL_INTERVAL)
+      emitAll(pollEndpoint(claimId))
     }
   }
 
