@@ -37,7 +37,12 @@ internal class ClaimDetailsViewModel(
   downloadPdfUseCase: DownloadPdfUseCase,
 ) : MoleculeViewModel<ClaimDetailsEvent, ClaimDetailUiState>(
     ClaimDetailUiState.Loading,
-    ClaimDetailPresenter(claimId, getClaimDetailUiStateUseCase, claimsServiceUploadFileUseCase, downloadPdfUseCase),
+    ClaimDetailPresenter(
+      claimId,
+      getClaimDetailUiStateUseCase,
+      claimsServiceUploadFileUseCase,
+      downloadPdfUseCase,
+    ),
   )
 
 private class ClaimDetailPresenter(
@@ -191,6 +196,9 @@ internal sealed interface ClaimDetailUiState {
     val isUploadingFilesEnabled: Boolean,
     val infoText: String?,
     val displayItems: List<DisplayItem>,
+    val externalId: String?,
+    val handlerEmail: String?,
+    val isPartnerClaim: Boolean,
   ) : ClaimDetailUiState {
     val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
 

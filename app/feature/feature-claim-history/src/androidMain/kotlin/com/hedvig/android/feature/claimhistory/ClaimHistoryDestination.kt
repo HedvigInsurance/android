@@ -108,7 +108,10 @@ private fun ClaimHistoryScreen(
           .fillMaxWidth(),
       )
 
-      is ClaimHistoryUiState.Content -> ClaimHistoryContent(uiState, navigateToClaimDetails)
+      is ClaimHistoryUiState.Content -> ClaimHistoryContent(
+        uiState,
+        navigateToClaimDetails,
+      )
     }
   }
 }
@@ -134,18 +137,17 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
           text = claim.claimType ?: stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
           style = HedvigTheme.typography.bodySmall,
         )
-        HedvigText(
-          buildString {
-            append(stringResource(Res.string.claim_status_claim_details_submitted))
-            append(" ")
-            append(
-              hedvigDateTimeFormatter.format(
-                claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()),
-              ),
-            )
-          },
-          style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
-        )
+        val submittedAt = claim.submittedAt
+        if (submittedAt != null) {
+          HedvigText(
+            buildString {
+              append(stringResource(Res.string.claim_status_claim_details_submitted))
+              append(" ")
+              append(hedvigDateTimeFormatter.format(submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())))
+            },
+            style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
+          )
+        }
       }
     },
     {
@@ -213,7 +215,7 @@ private class ClaimHistoryUiStateCollectionPreviewParameterProvider :
             id = it.toString(),
             claimType = "$it",
             outcome = ClaimHistory.ClaimOutcome.entries[it],
-            submittedAt = Instant.fromEpochMilliseconds(100),
+            submittedAt = if (it == 0) null else Instant.fromEpochMilliseconds(100),
           )
         }.toNonEmptyListOrThrow(),
       ),
