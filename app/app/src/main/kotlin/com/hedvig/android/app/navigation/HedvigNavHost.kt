@@ -396,7 +396,7 @@ internal fun HedvigNavHost(
       navigateToChipId = {
         navController.navigate(ChipIdGraphDestination())
       },
-      languageService = languageService
+      languageService = languageService,
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

@@ -9,6 +9,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import octopus.ClaimsHistoryQuery
 import octopus.type.ClaimOutcome
 
@@ -21,30 +23,30 @@ internal class GetClaimsHistoryUseCase(
       .safeFlow(::ErrorMessage)
       .map { result ->
         either {
-          result
-            .bind()
-            .currentMember
-            .claimsHistory
-            .map { history ->
-              ClaimHistory(
-                id = history.id,
-                claimType = history.claimType,
-                submittedAt = history.submittedAt,
-                outcome = when (history.outcome) {
-                  ClaimOutcome.PAID -> ClaimHistory.ClaimOutcome.PAID
-
-                  ClaimOutcome.NOT_COMPENSATED -> ClaimHistory.ClaimOutcome.NOT_COMPENSATED
-
-                  ClaimOutcome.NOT_COVERED -> ClaimHistory.ClaimOutcome.NOT_COVERED
-
-                  ClaimOutcome.UNRESPONSIVE -> ClaimHistory.ClaimOutcome.UNRESPONSIVE
-
-                  ClaimOutcome.UNKNOWN__,
-                  null,
-                  -> ClaimHistory.ClaimOutcome.UNKNOWN
-                },
-              )
-            }
+          val data = result.bind()
+          val regularClaims = data.currentMember.claimsHistory.map { history ->
+            ClaimHistory(
+              id = history.id,
+              claimType = history.claimType,
+              submittedAt = history.submittedAt,
+              outcome = when (history.outcome) {
+                ClaimOutcome.PAID -> ClaimHistory.ClaimOutcome.PAID
+                ClaimOutcome.NOT_COMPENSATED -> ClaimHistory.ClaimOutcome.NOT_COMPENSATED
+                ClaimOutcome.NOT_COVERED -> ClaimHistory.ClaimOutcome.NOT_COVERED
+                ClaimOutcome.UNRESPONSIVE -> ClaimHistory.ClaimOutcome.UNRESPONSIVE
+                ClaimOutcome.UNKNOWN__, null -> ClaimHistory.ClaimOutcome.UNKNOWN
+              },
+            )
+          }
+          val partnerClaims = data.currentMember.partnerClaimsHistory.map { history ->
+            ClaimHistory(
+              id = history.id,
+              claimType = history.claimType,
+              submittedAt = history.submittedAt?.atStartOfDayIn(TimeZone.UTC),
+              outcome = ClaimHistory.ClaimOutcome.UNKNOWN,
+            )
+          }
+          (regularClaims + partnerClaims).sortedWith(compareByDescending(nullsLast()) { it.submittedAt })
         }
       }
   }
@@ -54,8 +56,8 @@ internal data class ClaimHistory(
   val id: String,
   // Title, of fall back to "Claim"
   val claimType: String?,
-  // Subtitle uses this date to show when the claim was submitted
-  val submittedAt: Instant,
+  // Subtitle uses this date to show when the claim was submitted; null for partner claims with no submission date.
+  val submittedAt: Instant?,
   val outcome: ClaimOutcome?,
 ) {
   enum class ClaimOutcome {
