@@ -37,13 +37,25 @@ internal class GetClaimDetailUiStateUseCase(
   private val apolloClient: ApolloClient,
   private val crossSellAfterClaimClosedRepository: CrossSellAfterClaimClosedRepository,
 ) {
-  fun invoke(claimId: String, isPartnerClaim: Boolean = false): Flow<Either<Error, ClaimDetailUiState.Content>> {
+  fun invoke(claimId: String): Flow<Either<Error, ClaimDetailUiState.Content>> {
     return flow {
+      var hasEmittedRegularSuccess = false
+      var resolvedAsPartner = false
       while (currentCoroutineContext().isActive) {
-        if (isPartnerClaim) {
+        if (resolvedAsPartner) {
           emitAll(partnerQueryFlow(claimId))
         } else {
-          emitAll(queryFlow(claimId))
+          queryFlow(claimId).collect { result ->
+            if (!hasEmittedRegularSuccess && result == Either.Left(Error.NoClaimFound)) {
+              resolvedAsPartner = true
+            } else {
+              if (result.isRight()) hasEmittedRegularSuccess = true
+              emit(result)
+            }
+          }
+          if (resolvedAsPartner) {
+            emitAll(partnerQueryFlow(claimId))
+          }
         }
         delay(POLL_INTERVAL)
       }
@@ -120,6 +132,9 @@ internal class GetClaimDetailUiStateUseCase(
       displayItems = claim.displayItems.map {
         DisplayItem.fromStrings(it.displayTitle, it.displayValue)
       },
+      externalId = claim.externalId,
+      handlerEmail = claim.handlerEmail,
+      isPartnerClaim = true,
     )
   }
 
@@ -209,6 +224,9 @@ internal class GetClaimDetailUiStateUseCase(
       displayItems = claim.displayItems.map {
         DisplayItem.fromStrings(it.displayTitle, it.displayValue)
       },
+      externalId = null,
+      handlerEmail = null,
+      isPartnerClaim = false,
     )
   }
 

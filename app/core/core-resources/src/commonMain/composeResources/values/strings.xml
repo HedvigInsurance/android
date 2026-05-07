@@ -1006,6 +1006,8 @@
   <string name="claim_status_being_handled_support_text">Your claim is being reviewed by one of our insurance specialists. We'll get back to you soon with an update.</string>
   <string name="claim_status_being_handled_reopened_support_text">We have reopened your claim and one of our insurance specialists is reviewing it. We'll get back to you soon with an update.</string>
   <string name="claim_status_claim_details_button">Show details</string>
+  <string name="claim_status_claim_details_external_id">Reference number</string>
+  <string name="claim_status_claim_details_handler_email">Email</string>
   <string name="claim_status_claim_details_info_text">Is something missing? Send us a message here in the app.</string>
   <string name="claim_status_claim_details_submitted">Submitted</string>
   <string name="claim_status_claim_details_title">Claim details</string>

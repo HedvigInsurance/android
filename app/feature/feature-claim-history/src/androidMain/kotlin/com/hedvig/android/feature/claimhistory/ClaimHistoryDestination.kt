@@ -59,7 +59,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ClaimHistoryDestination(
   claimHistoryViewModel: ClaimHistoryViewModel,
   navigateUp: () -> Unit,
-  navigateToClaimDetails: (String, Boolean) -> Unit,
+  navigateToClaimDetails: (String) -> Unit,
 ) {
   val uiState by claimHistoryViewModel.uiState.collectAsStateWithLifecycle()
   ClaimHistoryScreen(
@@ -74,7 +74,7 @@ internal fun ClaimHistoryDestination(
 private fun ClaimHistoryScreen(
   uiState: ClaimHistoryUiState,
   navigateUp: () -> Unit,
-  navigateToClaimDetails: (String, Boolean) -> Unit,
+  navigateToClaimDetails: (String) -> Unit,
   reload: () -> Unit,
 ) {
   HedvigScaffold(
@@ -120,7 +120,7 @@ private fun ClaimHistoryScreen(
 @Composable
 private fun ColumnScope.ClaimHistoryContent(
   uiState: ClaimHistoryUiState.Content,
-  navigateToClaimDetails: (String, Boolean) -> Unit,
+  navigateToClaimDetails: (String) -> Unit,
 ) {
   uiState.claims.forEachIndexed { index, claim ->
     ClaimHistoryItem(index, claim, navigateToClaimDetails)
@@ -128,7 +128,7 @@ private fun ColumnScope.ClaimHistoryContent(
 }
 
 @Composable
-private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDetails: (String, Boolean) -> Unit) {
+private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDetails: (String) -> Unit) {
   val hedvigDateTimeFormatter = rememberHedvigDateTimeFormatter()
   HorizontalItemsWithMaximumSpaceTaken(
     {
@@ -137,18 +137,17 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
           text = claim.claimType ?: stringResource(Res.string.CHAT_CONVERSATION_CLAIM_TITLE),
           style = HedvigTheme.typography.bodySmall,
         )
-        HedvigText(
-          buildString {
-            append(stringResource(Res.string.claim_status_claim_details_submitted))
-            append(" ")
-            append(
-              hedvigDateTimeFormatter.format(
-                claim.submittedAt.toLocalDateTime(TimeZone.currentSystemDefault()),
-              ),
-            )
-          },
-          style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
-        )
+        val submittedAt = claim.submittedAt
+        if (submittedAt != null) {
+          HedvigText(
+            buildString {
+              append(stringResource(Res.string.claim_status_claim_details_submitted))
+              append(" ")
+              append(hedvigDateTimeFormatter.format(submittedAt.toLocalDateTime(TimeZone.currentSystemDefault())))
+            },
+            style = HedvigTheme.typography.label.copy(color = HedvigTheme.colorScheme.textSecondary),
+          )
+        }
       }
     },
     {
@@ -182,7 +181,7 @@ private fun ClaimHistoryItem(index: Int, claim: ClaimHistory, navigateToClaimDet
       .fillMaxWidth()
       .clickable(
         onClick = dropUnlessResumed {
-          navigateToClaimDetails(claim.id, claim.isPartnerClaim)
+          navigateToClaimDetails(claim.id)
         },
       )
       .horizontalDivider(DividerPosition.Top, show = index != 0, horizontalPadding = 18.dp)
@@ -200,7 +199,7 @@ private fun PreviewClaimHistoryScreen(
       ClaimHistoryScreen(
         uiState = uiState,
         {},
-        { _, _ -> },
+        {},
         {},
       )
     }
@@ -216,8 +215,7 @@ private class ClaimHistoryUiStateCollectionPreviewParameterProvider :
             id = it.toString(),
             claimType = "$it",
             outcome = ClaimHistory.ClaimOutcome.entries[it],
-            submittedAt = Instant.fromEpochMilliseconds(100),
-            isPartnerClaim = false,
+            submittedAt = if (it == 0) null else Instant.fromEpochMilliseconds(100),
           )
         }.toNonEmptyListOrThrow(),
       ),

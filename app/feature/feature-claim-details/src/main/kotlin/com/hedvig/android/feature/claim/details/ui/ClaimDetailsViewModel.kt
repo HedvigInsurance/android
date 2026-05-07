@@ -32,7 +32,6 @@ import kotlinx.datetime.LocalDateTime
 
 internal class ClaimDetailsViewModel(
   claimId: String,
-  isPartnerClaim: Boolean,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
@@ -40,7 +39,6 @@ internal class ClaimDetailsViewModel(
     ClaimDetailUiState.Loading,
     ClaimDetailPresenter(
       claimId,
-      isPartnerClaim,
       getClaimDetailUiStateUseCase,
       claimsServiceUploadFileUseCase,
       downloadPdfUseCase,
@@ -49,7 +47,6 @@ internal class ClaimDetailsViewModel(
 
 private class ClaimDetailPresenter(
   private val claimId: String,
-  private val isPartnerClaim: Boolean,
   private val getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   private val claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   private val downloadPdfUseCase: DownloadPdfUseCase,
@@ -68,7 +65,7 @@ private class ClaimDetailPresenter(
     LaunchedEffect(loadIteration) {
       isLoading = true
       hasError = false
-      getClaimDetailUiStateUseCase.invoke(claimId, isPartnerClaim).collect { result ->
+      getClaimDetailUiStateUseCase.invoke(claimId).collect { result ->
         isLoading = false
         result.fold(
           ifLeft = {
@@ -199,6 +196,9 @@ internal sealed interface ClaimDetailUiState {
     val isUploadingFilesEnabled: Boolean,
     val infoText: String?,
     val displayItems: List<DisplayItem>,
+    val externalId: String?,
+    val handlerEmail: String?,
+    val isPartnerClaim: Boolean,
   ) : ClaimDetailUiState {
     val claimIsInUndeterminedState: Boolean = claimStatus == CLOSED && claimOutcome == UNKNOWN
 

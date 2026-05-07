@@ -180,8 +180,8 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },
-      navigateToClaimDetails = { claimId, isPartnerClaim ->
-        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId, isPartnerClaim))
+      navigateToClaimDetails = { claimId ->
+        navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
       },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
@@ -351,8 +351,8 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         claimHistoryGraph(
           navigateUp = navController::navigateUp,
-          navigateToClaimDetails = { claimId, isPartnerClaim ->
-            navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId, isPartnerClaim))
+          navigateToClaimDetails = { claimId ->
+            navController.navigate(ClaimDetailDestination.ClaimOverviewDestination(claimId))
           },
         )
       },

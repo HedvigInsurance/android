@@ -6,7 +6,6 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -37,19 +36,17 @@ internal class GetClaimsHistoryUseCase(
                 ClaimOutcome.UNRESPONSIVE -> ClaimHistory.ClaimOutcome.UNRESPONSIVE
                 ClaimOutcome.UNKNOWN__, null -> ClaimHistory.ClaimOutcome.UNKNOWN
               },
-              isPartnerClaim = false,
             )
           }
           val partnerClaims = data.currentMember.partnerClaimsHistory.map { history ->
             ClaimHistory(
               id = history.id,
               claimType = history.claimType,
-              submittedAt = history.submittedAt?.atStartOfDayIn(TimeZone.UTC) ?: Clock.System.now(),
+              submittedAt = history.submittedAt?.atStartOfDayIn(TimeZone.UTC),
               outcome = ClaimHistory.ClaimOutcome.UNKNOWN,
-              isPartnerClaim = true,
             )
           }
-          (regularClaims + partnerClaims).sortedByDescending { it.submittedAt }
+          (regularClaims + partnerClaims).sortedWith(compareByDescending(nullsLast()) { it.submittedAt })
         }
       }
   }
@@ -59,10 +56,9 @@ internal data class ClaimHistory(
   val id: String,
   // Title, of fall back to "Claim"
   val claimType: String?,
-  // Subtitle uses this date to show when the claim was submitted
-  val submittedAt: Instant,
+  // Subtitle uses this date to show when the claim was submitted; null for partner claims with no submission date.
+  val submittedAt: Instant?,
   val outcome: ClaimOutcome?,
-  val isPartnerClaim: Boolean,
 ) {
   enum class ClaimOutcome {
     PAID,
