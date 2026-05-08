@@ -8,6 +8,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.apollo.ErrorMessage
+import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
 import octopus.ManuallyChargeMemberMutation
 
@@ -22,7 +23,10 @@ internal class TriggerManualChargeUseCaseImpl(
     val result = apolloClient
       .mutation(ManuallyChargeMemberMutation())
       .safeExecute()
-      .mapLeft { raise(ErrorMessage()) }
+      .mapLeft {
+        logcat { "TriggerManualChargeUseCase error: $it" }
+        raise(ErrorMessage())
+      }
       .bind()
 
     if (result.manuallyChargeMember.userError!=null) raise(ErrorMessage(
