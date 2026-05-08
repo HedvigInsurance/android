@@ -7,7 +7,6 @@ import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.mikepenz.markdown.compose.Markdown
-import com.mikepenz.markdown.model.*
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownTypography
 

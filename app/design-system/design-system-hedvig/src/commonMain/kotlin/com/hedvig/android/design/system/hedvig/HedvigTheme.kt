@@ -27,7 +27,7 @@ private fun HedvigTheme(
   val selectionColors = rememberTextSelectionColors(colorScheme)
   CompositionLocalProvider(
     LocalColorScheme provides colorScheme,
-    LocalIndication provides ripple(),
+    LocalIndication provides defaultIndication(),
     LocalShapes provides shapes,
     LocalTextSelectionColors provides selectionColors,
     LocalTypography provides typography,

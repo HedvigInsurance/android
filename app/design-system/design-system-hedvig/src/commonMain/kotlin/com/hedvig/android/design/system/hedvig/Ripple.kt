@@ -41,6 +41,12 @@ fun ripple(
 
 fun noopRipple(): Indication = NoopIndication
 
+/**
+ * The platform-appropriate touch indication used by [HedvigTheme].
+ * Android uses [ripple]; iOS uses [noopRipple] because UIKit interactions don't show a ripple.
+ */
+internal expect fun defaultIndication(): Indication
+
 @Suppress("unused")
 @Stable
 internal fun ripple(color: ColorProducer, bounded: Boolean = true, radius: Dp = Dp.Unspecified): IndicationNodeFactory {
