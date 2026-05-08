@@ -610,7 +610,7 @@
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Betalningshistorik</string>
   <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Betalning pågår</string>
-  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">Det kan ta upp till 5 bankdagar innan betalningen syns</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">Det kan ta upp till 5 bankdagar innan betalningen registreras</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Betalningssätt</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Att betala: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">Vi kunde inte dra betalningen från ditt bankkonto. Betala för att undvika avbrott i ditt skydd.</string>
@@ -712,6 +712,7 @@
   <string name="SEARCH_PLACEHOLDER">Sök</string>
   <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Välj den försäkring du vill uppdatera</string>
   <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
+  <string name="SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE">Betalningen kan inte genomföras</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Språk</string>
   <string name="SETTINGS_LOGIN_ROW">Logga in</string>
   <string name="SETTINGS_NOTIFICATIONS_TITLE">Notiser</string>

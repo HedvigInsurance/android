@@ -610,7 +610,7 @@
   <string name="PAYMENTS_PAYMENT_FAILED">This payment failed and was added to your payment on %1$s.</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Payment history</string>
   <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Payment in progress</string>
-  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">It may take up to 5 business days for the charge to appear</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">It may take up to 5 business days for the charge to process</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Payment method</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Amount due: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">We couldn\'t collect this payment from your bank account. Pay now to keep your coverage active.</string>
@@ -712,6 +712,7 @@
   <string name="SEARCH_PLACEHOLDER">Search</string>
   <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Select the insurance you want to edit</string>
   <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
+  <string name="SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE">Payment can\'t be charged</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Language</string>
   <string name="SETTINGS_LOGIN_ROW">Login</string>
   <string name="SETTINGS_NOTIFICATIONS_TITLE">Notifications</string>

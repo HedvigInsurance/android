@@ -56,9 +56,10 @@ import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE
 import hedvig.resources.claim_status_detail_chat_button_description
-import hedvig.resources.general_close_button
 import hedvig.resources.payment_details_receipt_card_total
+import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
@@ -68,7 +69,7 @@ internal fun ManualChargeDestination(
   navigateUp: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onNavigateToSuccess: (Boolean) -> Unit,
-  openConversation: ()-> Unit,
+  openConversation: () -> Unit,
 ) {
   val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -82,8 +83,9 @@ internal fun ManualChargeDestination(
       onNavigateToSuccess(showCancellationWarning)
     },
     onTriggerPayment = {
-      viewModel.emit(ManualChargeEvent.TriggerCharge) },
-    openConversation = openConversation
+      viewModel.emit(ManualChargeEvent.TriggerCharge)
+    },
+    openConversation = openConversation,
   )
 }
 
@@ -92,10 +94,10 @@ private fun ManualChargeScreen(
   uiState: ManualChargeUiState,
   navigateUp: () -> Unit,
   reload: () -> Unit,
-  openConversation: ()-> Unit,
+  openConversation: () -> Unit,
   onNavigateToPaymentDetails: (chargeId: String) -> Unit,
   onNavigateToSuccess: (Boolean) -> Unit,
-  onTriggerPayment: () -> Unit
+  onTriggerPayment: () -> Unit,
 ) {
   HedvigScaffold(
     navigateUp = navigateUp,
@@ -104,17 +106,24 @@ private fun ManualChargeScreen(
     when (uiState) {
 
       is ManualChargeUiState.Failure -> {
-        val subTitle = if (uiState.error.message!=null) uiState.error.message else
+        val title = if (uiState.error.message != null)
+          stringResource(Res.string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE) else
+          stringResource(Res.string.something_went_wrong)
+        val subTitle = if (uiState.error.message != null) uiState.error.message else
           stringResource(Res.string.GENERAL_ERROR_BODY)
-        val buttonText = if (uiState.error.message!=null) stringResource(Res.string.claim_status_detail_chat_button_description) else
+        val buttonText = if (uiState.error.message != null)
+          stringResource(Res.string.claim_status_detail_chat_button_description) else
           stringResource(Res.string.GENERAL_RETRY)
-        val onButtonClick = if (uiState.error.message!=null) openConversation else reload
+        val onButtonClick = if (uiState.error.message != null) openConversation else reload
 
         HedvigErrorSection(
           onButtonClick = onButtonClick,
-          Modifier.weight(1f).fillMaxWidth(),
+          Modifier
+            .weight(1f)
+            .fillMaxWidth(),
           subTitle = subTitle,
-          buttonText = buttonText
+          buttonText = buttonText,
+          title = title,
         )
 
       }
@@ -126,7 +135,7 @@ private fun ManualChargeScreen(
       }
 
       is ManualChargeUiState.Success -> {
-        if (uiState.navigateToSuccess!=null) {
+        if (uiState.navigateToSuccess != null) {
           LaunchedEffect(uiState.navigateToSuccess) {
             onNavigateToSuccess(uiState.manualChargeInfo.showCancellationWarning)
           }
@@ -134,7 +143,7 @@ private fun ManualChargeScreen(
           ManualChargeSuccessScreen(
             uiState,
             onNavigateToPaymentDetails = onNavigateToPaymentDetails,
-            onTriggerPayment = onTriggerPayment
+            onTriggerPayment = onTriggerPayment,
           )
         }
       }
@@ -280,7 +289,7 @@ private fun ManualChargeSuccessScreen(
         text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
         onClick = onTriggerPayment,
         enabled = true,
-        buttonSize =  ButtonDefaults.ButtonSize.Medium,
+        buttonSize = ButtonDefaults.ButtonSize.Medium,
         modifier = Modifier.fillMaxWidth(),
       )
 
@@ -299,7 +308,9 @@ private fun ManualChargeSuccessScreen(
       HedvigNotificationCard(
         message = stringResource(Res.string.MANUAL_CHARGE_CANCELLATION_WARNING),
         priority = NotificationDefaults.NotificationPriority.AttentionRound,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
     }
@@ -324,7 +335,7 @@ private fun ManualChargeScreenSuccessPreview(
             chargeId = "chargeId",
             bankDescriptor = "**** 8324",
             bankAccountDisplayValue = "Swedbank",
-            showCancellationWarning = showCancellationWarning
+            showCancellationWarning = showCancellationWarning,
           ),
           navigateToSuccess = null,
         ),
@@ -333,7 +344,7 @@ private fun ManualChargeScreenSuccessPreview(
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }
@@ -352,7 +363,7 @@ private fun ManualChargeScreenLoadingPreview() {
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }
@@ -369,15 +380,18 @@ private fun ManualChargeScreenFailurePreview(
   HedvigTheme {
     Surface {
       ManualChargeScreen(
-        uiState = ManualChargeUiState.Failure(ErrorMessage(
-          message = if (hasUserError) "Cannot charge the failed payment since there have been some changes. " +
-            "The new amount will be included in the upcoming payment." else null )),
+        uiState = ManualChargeUiState.Failure(
+          ErrorMessage(
+            message = if (hasUserError) "Cannot charge the failed payment since there have been some changes. " +
+              "The new amount will be included in the upcoming payment." else null,
+          ),
+        ),
         navigateUp = {},
         reload = {},
         {},
         {},
         {},
-        {}
+        {},
       )
     }
   }

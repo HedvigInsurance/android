@@ -33,6 +33,7 @@ import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
+import com.hedvig.android.featureflags.FeatureManager
 import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -134,6 +135,7 @@ val paymentsModule = module {
   single<GetManualChargeInfoUseCase> {
     GetManualChargeInfoUseCaseImpl(
       get<ApolloClient>(),
+      get<FeatureManager>()
     )
   }
 
