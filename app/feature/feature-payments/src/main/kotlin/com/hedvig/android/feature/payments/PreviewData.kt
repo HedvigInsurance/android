@@ -156,7 +156,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
-    chargeMethod = MemberPaymentChargeMethod.KIVRA,
+    chargeMethod = MemberPaymentChargeMethod.INVOICE,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -258,7 +258,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
-    chargeMethod = MemberPaymentChargeMethod.KIVRA,
+    chargeMethod = MemberPaymentChargeMethod.INVOICE,
   ),
 )
 
@@ -318,7 +318,7 @@ internal val paymentDetailsPreviewData = MemberCharge(
   chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
 )
 
-internal val paymentDetailsKivraPreviewData = MemberCharge(
+internal val paymentDetailsINVOICEPreviewData = MemberCharge(
   grossAmount = UiMoney(280.0, UiCurrencyCode.SEK),
   netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
   id = "123",
@@ -346,5 +346,5 @@ internal val paymentDetailsKivraPreviewData = MemberCharge(
   referralDiscount = referralDiscountPreviewData,
   carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
   settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
-  chargeMethod = MemberPaymentChargeMethod.KIVRA,
+  chargeMethod = MemberPaymentChargeMethod.INVOICE,
 )

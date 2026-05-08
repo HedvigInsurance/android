@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
@@ -57,11 +56,10 @@ import com.hedvig.android.feature.payments.chargeHistoryPreviewData
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentDetails
-import com.hedvig.android.feature.payments.paymentDetailsKivraPreviewData
+import com.hedvig.android.feature.payments.paymentDetailsINVOICEPreviewData
 import com.hedvig.android.feature.payments.paymentDetailsPreviewData
 import com.hedvig.android.feature.payments.ui.discounts.DiscountRow
 import com.hedvig.android.feature.payments.ui.discounts.ForeverExplanationBottomSheet
-import com.hedvig.android.logger.logcat
 import hedvig.resources.KIVRA_PAYMENT_INFO
 import hedvig.resources.PAYMENTS_ACCOUNT
 import hedvig.resources.PAYMENTS_AUTOGIRO_LABEL
@@ -243,7 +241,7 @@ private fun MemberChargeDetailsScreen(
             MemberCharge.MemberChargeStatus.PENDING -> {
               val message = when (uiState.paymentDetails.memberCharge.chargeMethod) {
                 MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_IN_PROGRESS)
-                MemberPaymentChargeMethod.KIVRA -> stringResource(Res.string.PAYMENTS_IN_PROGRESS_KIVRA)
+                MemberPaymentChargeMethod.INVOICE -> stringResource(Res.string.PAYMENTS_IN_PROGRESS_KIVRA)
                 MemberPaymentChargeMethod.UNKNOWN -> null
               }
               if (message != null) {
@@ -285,7 +283,7 @@ private fun MemberChargeDetailsScreen(
             endSlot = {
               when (uiState.paymentDetails.memberCharge.chargeMethod) {
                 MemberPaymentChargeMethod.TRUSTLY,
-                MemberPaymentChargeMethod.KIVRA,
+                MemberPaymentChargeMethod.INVOICE,
                 -> {
                   val textToShow: String =
                     if (uiState.paymentDetails.memberCharge.chargeMethod == MemberPaymentChargeMethod.TRUSTLY) {
@@ -360,7 +358,7 @@ private fun MemberChargeDetailsScreen(
 
           when (val chargeMethod = uiState.paymentDetails.memberCharge.chargeMethod) {
             MemberPaymentChargeMethod.TRUSTLY,
-            MemberPaymentChargeMethod.KIVRA,
+            MemberPaymentChargeMethod.INVOICE,
             -> {
               HorizontalItemsWithMaximumSpaceTaken(
                 startSlot = {
@@ -369,7 +367,7 @@ private fun MemberChargeDetailsScreen(
                 endSlot = {
                   val text = when (chargeMethod) {
                     MemberPaymentChargeMethod.TRUSTLY -> stringResource(Res.string.PAYMENTS_AUTOGIRO_LABEL)
-                    MemberPaymentChargeMethod.KIVRA -> stringResource(Res.string.PAYMENTS_INVOICE)
+                    MemberPaymentChargeMethod.INVOICE -> stringResource(Res.string.PAYMENTS_INVOICE)
                     else -> ""
                   }
                   HedvigText(
@@ -483,7 +481,7 @@ private fun PaymentDetailsScreenPreview(
           PaymentDetails(
             memberCharge = when (withPaymentInfo) {
               TripleCase.FIRST -> paymentDetailsPreviewData
-              TripleCase.SECOND -> paymentDetailsKivraPreviewData
+              TripleCase.SECOND -> paymentDetailsINVOICEPreviewData
               TripleCase.THIRD -> paymentDetailsPreviewData
             },
             pastCharges = chargeHistoryPreviewData,

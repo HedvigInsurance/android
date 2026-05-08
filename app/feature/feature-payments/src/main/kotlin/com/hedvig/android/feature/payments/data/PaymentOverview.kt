@@ -30,6 +30,6 @@ internal data class MemberChargeShortInfo(
 
 enum class MemberPaymentChargeMethod {
   TRUSTLY,
-  KIVRA,
+  INVOICE,
   UNKNOWN,
 }

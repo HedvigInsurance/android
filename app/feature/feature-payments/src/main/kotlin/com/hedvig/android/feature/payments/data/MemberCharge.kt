@@ -7,7 +7,6 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.serialization.Serializable
 import octopus.PaymentHistoryWithDetailsQuery
 import octopus.ShortPaymentHistoryQuery
@@ -170,7 +169,7 @@ internal fun MemberChargeFragment.toMemberCharge(
 internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
   return when {
     this?.startsWith("kivra", ignoreCase = true) == true ||
-      this?.startsWith("invoice", ignoreCase = true) == true -> MemberPaymentChargeMethod.KIVRA
+      this?.startsWith("invoice", ignoreCase = true) == true -> MemberPaymentChargeMethod.INVOICE
     this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
     else -> MemberPaymentChargeMethod.UNKNOWN
   }
