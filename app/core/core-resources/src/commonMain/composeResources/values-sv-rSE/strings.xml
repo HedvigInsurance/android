@@ -522,7 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
-  <string name="MANUAL_CHARGE_CANCELLATION_WARNING">För att återaktivera din försäkring efter avslut, kontakta Hedvig Service Team när betalningen har registrerats på ditt konto</string>
+  <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
   <string name="MISSING_CONTACT_INFO_CARD_TEXT">Se till att vi har rätt kontaktuppgifter ifall vi behöver nå dig.</string>
@@ -1028,9 +1028,9 @@
   <string name="claim_status_being_handled_support_text">Din skadeanmälan granskas av en av våra försäkringsspecialister. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status_being_handled_reopened_support_text">Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status_claim_details_button">Se detaljer</string>
-  <string name="claim_status_claim_details_exposure_display_name">Reg nr</string>
+  <string name="claim_status_claim_details_exposure_display_name">Registreringsnummer</string>
   <string name="claim_status_claim_details_external_id">Ärendenummer</string>
-  <string name="claim_status_claim_details_handler_email">E-mail</string>
+  <string name="claim_status_claim_details_handler_email">Mail för ärende</string>
   <string name="claim_status_claim_details_info_text">Saknas något? Skicka ett meddelande till oss här i appen.</string>
   <string name="claim_status_claim_details_submitted">Inskickad</string>
   <string name="claim_status_claim_details_title">Detaljer om skadeanmälan</string>
@@ -1040,7 +1040,7 @@
   <string name="claim_status_not_compensated_support_text">Din skada täcks, men tyvärr är ersättningen lika stor eller mindre än självrisken. Se konversation för mer information.</string>
   <string name="claim_status_not_covered_support_text">Tyvärr täcks inte din skada. Se konversation för mer information om beslutet.</string>
   <string name="claim_status_paid_support_text_short">Din skada har täckts. Du borde ha fått ersättningen utbetald vid det här laget.</string>
-  <string name="claim_status_partner_support_text">Den här skadan hanteras av vår externa partner Eir via mail.\nRedan i kontakt med dem? Svara i din befintliga mailtråd så att all skadeinformation hålls samlad i en och samma konversation.</string>
+  <string name="claim_status_partner_support_text">Våra bilspecialister på Eir hanterar din skadeanmälan via mail.\n\nNär de har gått igenom ärendet får du en bekräftelse via mail. Behöver du komma i kontakt kring din anmälan, svara i samma e-posttråd.</string>
   <string name="claim_status_submitted_support_text">Vi har tagit emot din skadeanmälan och kommer snart att börja granska den.</string>
   <string name="claim_status_uploaded_files_upload_text">Ladda upp foton, kvitton eller andra dokument kopplade till din skadeanmälan</string>
   <string name="claim_status_appeal_instruction_link_text">Besvärshänvisning</string>

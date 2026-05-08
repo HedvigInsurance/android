@@ -44,6 +44,7 @@ import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.rememberHedvigMonthDateTimeFormatter
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
+import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.MANUAL_CHARGE_CANCELLATION_WARNING
@@ -234,8 +235,7 @@ private fun ManualChargeSuccessScreen(
             style = HedvigTheme.typography.label,
           )
         }
-        if (uiState.manualChargeInfo.bankDescriptor != null &&
-          uiState.manualChargeInfo.bankAccountDisplayValue != null
+        if (uiState.manualChargeInfo.bankDescriptor != null
         ) {
           Spacer(Modifier.height(10.dp))
           Row(
@@ -243,12 +243,12 @@ private fun ManualChargeSuccessScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
           ) {
             HedvigText(
-              text = uiState.manualChargeInfo.bankDescriptor,
+              text = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
               color = HedvigTheme.colorScheme.textSecondary,
               style = HedvigTheme.typography.label,
             )
             HedvigText(
-              text = uiState.manualChargeInfo.bankAccountDisplayValue,
+              text = uiState.manualChargeInfo.bankDescriptor,
               color = HedvigTheme.colorScheme.textSecondary,
               style = HedvigTheme.typography.label,
             )
@@ -280,6 +280,7 @@ private fun ManualChargeSuccessScreen(
         text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
         onClick = onTriggerPayment,
         enabled = true,
+        buttonSize =  ButtonDefaults.ButtonSize.Medium,
         modifier = Modifier.fillMaxWidth(),
       )
 
@@ -321,8 +322,8 @@ private fun ManualChargeScreenSuccessPreview(
             missedDueDate = LocalDate(2026, 1, 15),
             amountDue = UiMoney(100.0, UiCurrencyCode.SEK),
             chargeId = "chargeId",
-            bankDescriptor = "Bank account",
-            bankAccountDisplayValue = "**** 8324",
+            bankDescriptor = "**** 8324",
+            bankAccountDisplayValue = "Swedbank",
             showCancellationWarning = showCancellationWarning
           ),
           navigateToSuccess = null,
