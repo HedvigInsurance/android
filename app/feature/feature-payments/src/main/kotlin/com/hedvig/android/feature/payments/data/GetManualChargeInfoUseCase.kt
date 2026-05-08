@@ -11,7 +11,11 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 import octopus.ManualChargeInfoQuery
 
@@ -21,8 +25,16 @@ internal interface GetManualChargeInfoUseCase {
 
 internal class GetManualChargeInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) : GetManualChargeInfoUseCase {
   override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo> = either {
+
+    val isFeatureFlagOn = featureManager.isFeatureEnabled(Feature.ENABLE_MANUAL_CHARGE).firstOrNull() ?: false
+
+    if (!isFeatureFlagOn) {
+      logcat { "ENABLE_MANUAL_CHARGE flag is off" }
+      raise(ErrorMessage())
+    }
 
     val currentMember = apolloClient.query(ManualChargeInfoQuery())
       .fetchPolicy(NetworkFirst)

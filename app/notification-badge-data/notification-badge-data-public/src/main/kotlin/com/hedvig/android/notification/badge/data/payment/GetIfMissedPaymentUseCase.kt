@@ -1,16 +1,20 @@
 package com.hedvig.android.notification.badge.data.payment
 
+import arrow.core.raise.context.raise
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
@@ -22,9 +26,17 @@ interface GetIfMissedPaymentUseCase {
 
 internal class GetIfMissedPaymentUseCaseImpl(
   private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager
 ) : GetIfMissedPaymentUseCase {
   override fun invoke(): Flow<Boolean> {
     return flow {
+      val isFeatureFlagOn = featureManager.isFeatureEnabled(Feature.ENABLE_MANUAL_CHARGE).firstOrNull() ?: false
+      if (!isFeatureFlagOn) {
+        logcat { "ENABLE_MANUAL_CHARGE flag is off" }
+        emit(false)
+        return@flow
+      }
+
       while (currentCoroutineContext().isActive) {
         emitAll(
           apolloClient
@@ -46,7 +58,7 @@ internal class GetIfMissedPaymentUseCaseImpl(
               )
             },
         )
-        delay(5.seconds)
+        delay(15.seconds)
       }
     }
   }
