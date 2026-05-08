@@ -41,7 +41,7 @@ fun ripple(
   }
 }
 
-fun noopRipple(): Indication = NoopIndication
+fun noopRipple(): IndicationNodeFactory = NoopIndication
 
 /**
  * iOS has no ripple — UIKit doesn't show one and Compose's ripple looks foreign there.
