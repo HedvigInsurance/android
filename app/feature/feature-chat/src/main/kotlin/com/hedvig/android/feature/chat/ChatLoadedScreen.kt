@@ -298,7 +298,7 @@ private fun ChatLoadedScreen(
           onCloseCLick = onCloseBannerClick,
           modifier = Modifier
             .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
             .drawWithContent {
               drawContent()
               drawLine(
