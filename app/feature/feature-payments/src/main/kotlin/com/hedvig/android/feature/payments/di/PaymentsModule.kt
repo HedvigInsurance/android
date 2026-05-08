@@ -58,6 +58,7 @@ val paymentsModule = module {
     GetUpcomingPaymentUseCaseImpl(
       apolloClient = get<ApolloClient>(),
       clock = get<Clock>(),
+      featureManager = get<FeatureManager>()
     )
   }
   single<GetDiscountsOverviewUseCase> {
@@ -120,6 +121,7 @@ val paymentsModule = module {
     GetUpcomingPaymentUseCaseImpl(
       get<ApolloClient>(),
       clock = get<Clock>(),
+      featureManager = get<FeatureManager>()
     )
   }
   single<GetUpcomingPaymentUseCaseDemo> {

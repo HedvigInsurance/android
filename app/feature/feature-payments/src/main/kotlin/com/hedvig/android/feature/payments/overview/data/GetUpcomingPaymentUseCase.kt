@@ -18,8 +18,11 @@ import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.UpcomingPaymentQuery
@@ -34,14 +37,20 @@ internal interface GetUpcomingPaymentUseCase {
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
+  val featureManager: FeatureManager
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
-    val result = apolloClient.query(UpcomingPaymentQuery())
+
+    val isFeatureFlagOn = featureManager.isFeatureEnabled(Feature.ENABLE_MANUAL_CHARGE).firstOrNull() ?: false
+
+    val result = apolloClient.query(UpcomingPaymentQuery(isFeatureFlagOn))
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
       .bind()
 
-    val missedChargeIdToChargeManually: String? = result.currentMember.missedChargeIdToChargeManually
+
+    val missedChargeIdToChargeManually: String? = if (isFeatureFlagOn)
+      result.currentMember.missedChargeIdToChargeManually else null
 
     val isManualChargeAllowed = if (missedChargeIdToChargeManually != null) {
       val failedChargeNet = result.currentMember.pastCharges.firstOrNull {
