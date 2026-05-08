@@ -1,0 +1,25 @@
+fragment PartnerClaimFragment on PartnerClaim {
+  id
+  externalId
+  exposureDisplayName
+  status
+  submittedAt
+  payoutAmount {
+    ...MoneyFragment
+  }
+  associatedTypeOfContract
+  claimType
+  handlerEmail
+  displayItems {
+    displayTitle
+    displayValue
+  }
+  productVariant {
+    typeOfContract
+    displayName
+    documents {
+      type
+      url
+    }
+  }
+}

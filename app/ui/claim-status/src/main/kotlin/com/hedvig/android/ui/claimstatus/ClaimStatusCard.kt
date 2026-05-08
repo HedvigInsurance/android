@@ -94,24 +94,30 @@ fun ClaimStatusCardContent(uiState: ClaimStatusCardUiState, modifier: Modifier =
       style = HedvigTheme.typography.bodySmall,
       modifier = Modifier.padding(horizontal = 2.dp),
     )
-    val subtext = if (uiState.insuranceDisplayName != null) {
-      uiState.insuranceDisplayName
-    } else {
-      val formattedDate = HedvigDateTimeFormatterDefaults
-        .dateMonthAndYear(getLocale())
-        .format(
-          uiState.submittedDate.toLocalDateTime(
-            TimeZone.currentSystemDefault(),
-          ),
-        )
-      "${stringResource(Res.string.claim_status_detail_submitted)} $formattedDate"
+    val subtext = when {
+      uiState.insuranceDisplayName != null -> {
+        uiState.insuranceDisplayName
+      }
+
+      uiState.submittedDate != null -> {
+        val formattedDate = HedvigDateTimeFormatterDefaults
+          .dateMonthAndYear(getLocale())
+          .format(uiState.submittedDate.toLocalDateTime(TimeZone.currentSystemDefault()))
+        "${stringResource(Res.string.claim_status_detail_submitted)} $formattedDate"
+      }
+
+      else -> {
+        null
+      }
     }
-    HedvigText(
-      text = subtext,
-      style = HedvigTheme.typography.label,
-      color = HedvigTheme.colorScheme.textSecondary,
-      modifier = Modifier.padding(horizontal = 2.dp),
-    )
+    if (subtext != null) {
+      HedvigText(
+        text = subtext,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.padding(horizontal = 2.dp),
+      )
+    }
     Spacer(Modifier.height(18.dp))
     ClaimProgressRow(claimProgressItemsUiState = uiState.claimProgressItemsUiState)
   }
