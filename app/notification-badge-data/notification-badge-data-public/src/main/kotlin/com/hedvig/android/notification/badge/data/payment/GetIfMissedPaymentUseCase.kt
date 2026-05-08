@@ -13,7 +13,6 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -38,26 +37,32 @@ internal class GetIfMissedPaymentUseCaseImpl(
       }
 
       while (currentCoroutineContext().isActive) {
-        emitAll(
-          apolloClient
-            .query(MissedPaymentQuery())
-            .fetchPolicy(FetchPolicy.CacheAndNetwork)
-            .safeFlow {
-              logcat { "GetIfMissedPaymentUseCaseImpl error: $it" }
-              ErrorMessage()
-            }
-            .map { result ->
-              result.fold(
-                {
-                  logcat { "GetIfMissedPaymentUseCaseImpl: error when loading missed payment: $it" }
-                  false
-                },
-                { data ->
-                  data.currentMember.missedChargeIdToChargeManually != null
-                },
-              )
-            },
-        )
+        val hasMissedPayment = apolloClient
+          .query(MissedPaymentQuery())
+          .fetchPolicy(FetchPolicy.CacheAndNetwork)
+          .safeFlow {
+            logcat { "GetIfMissedPaymentUseCaseImpl error: $it" }
+            ErrorMessage()
+          }
+          .map { result ->
+            result.fold(
+              {
+                logcat { "GetIfMissedPaymentUseCaseImpl: error when loading missed payment: $it" }
+                false
+              },
+              { data ->
+                data.currentMember.missedChargeIdToChargeManually != null
+              },
+            )
+          }
+          .firstOrNull() ?: false
+
+        emit(hasMissedPayment)
+
+        if (!hasMissedPayment) {
+          break
+        }
+
         delay(15.seconds)
       }
     }
