@@ -109,7 +109,7 @@ fun HedvigNotificationCard(
 ) {
   val padding = if (withIcon) paddingWithIcon else paddingNoIcon
   val description = when (priority) {
-    Attention, Error, Info -> stringResource(Res.string.TALKBACK_NOTIFICATION_CARD)
+    Attention, NotificationPriority.AttentionRound, Error, Info -> stringResource(Res.string.TALKBACK_NOTIFICATION_CARD)
     Campaign, InfoInline, NeutralToast, FancyInfo -> ""
   }
 
@@ -287,6 +287,28 @@ object NotificationDefaults {
         @Composable
         get() =
           HedvigIcons.WarningFilled
+
+      override val buttonStyle: ButtonDefaults.ButtonStyle
+        get() = SecondaryAlt
+    }
+
+    data object AttentionRound : NotificationPriority {
+      override val colors: NotificationColors
+        @Composable
+        get() = with(HedvigTheme.colorScheme) {
+          remember(this) {
+            NotificationColors(
+              containerColor = fromToken(SignalAmberFill),
+              borderColor = fromToken(SignalAmberFill),
+              textColor = fromToken(SignalAmberText),
+              iconColor = fromToken(SignalAmberElement),
+            )
+          }
+        }
+      override val icon: ImageVector
+        @Composable
+        get() =
+          HedvigIcons.InfoFilled
 
       override val buttonStyle: ButtonDefaults.ButtonStyle
         get() = SecondaryAlt

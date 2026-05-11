@@ -11,6 +11,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
@@ -35,10 +36,27 @@ internal data class GetUpcomingPaymentUseCaseImpl(
   val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
+
     val result = apolloClient.query(UpcomingPaymentQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
       .bind()
+
+    val missedChargeIdToChargeManually: String? =
+      result.currentMember.missedChargeIdToChargeManually
+
+    val isManualChargeAllowed = if (missedChargeIdToChargeManually != null) {
+      val failedChargeNet = result.currentMember.pastCharges.firstOrNull {
+        it.id == missedChargeIdToChargeManually
+      }?.net?.let { net ->
+        UiMoney.fromMoneyFragment(net)
+      }
+      if (failedChargeNet != null) {
+        ManualChargeToPrompt(failedChargeNet)
+      } else null
+    } else {
+      null
+    }
 
     PaymentOverview(
       memberChargeShortInfo = result.currentMember.futureCharge?.toMemberChargeShortInfo(),
@@ -58,7 +76,9 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             .mapNotNull { it.terminationDate }
             .sorted()
             .firstOrNull()
-          return@run PaymentConnection.NeedsSetup(firstKnownTerminationDateForContractTerminatedDueToMissedPayments)
+          return@run PaymentConnection.NeedsSetup(
+            firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+          )
         }
         when (payinMethod.status) {
           MemberPaymentMethodStatus.ACTIVE -> PaymentConnection.Active
@@ -66,6 +86,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
           MemberPaymentMethodStatus.UNKNOWN__ -> PaymentConnection.Unknown
         }
       },
+      isManualChargeAllowed = isManualChargeAllowed,
     )
   }
 }
@@ -98,6 +119,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
       ),
       emptyList(),
       PaymentConnection.Unknown,
+      isManualChargeAllowed = null,
     ).right()
   }
 }

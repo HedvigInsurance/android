@@ -11,8 +11,10 @@ import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
+import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
 import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
@@ -24,8 +26,10 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import com.hedvig.android.feature.payments.ui.payments.PaymentsUiState.Content.ConnectedPaymentInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import kotlinx.coroutines.flow.collectLatest
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
@@ -75,6 +79,7 @@ internal class PaymentsPresenter(
               return@run PaymentsUiState.Content.UpcomingPaymentInfo.PaymentFailed(
                 failedPaymentStartDate = failedCharge.fromDate,
                 failedPaymentEndDate = failedCharge.toDate,
+                isManualChargeAllowed = paymentOverview.isManualChargeAllowed,
               )
             }
             PaymentsUiState.Content.UpcomingPaymentInfo.NoInfo
@@ -160,6 +165,7 @@ internal sealed interface PaymentsUiState {
       data class PaymentFailed(
         val failedPaymentStartDate: LocalDate,
         val failedPaymentEndDate: LocalDate,
+        val isManualChargeAllowed: ManualChargeToPrompt?,
       ) : UpcomingPaymentInfo
     }
 

@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - develop
+      - feat/manual-charge
   workflow_dispatch:
 
 concurrency:

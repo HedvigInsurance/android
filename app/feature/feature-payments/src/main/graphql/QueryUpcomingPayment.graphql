@@ -1,5 +1,15 @@
 query UpcomingPayment {
   currentMember {
+    missedChargeIdToChargeManually
+    pastCharges {
+      ...on MemberCharge {
+        id
+        status
+        net {
+          ...MoneyFragment
+        }
+      }
+    }
     activeContracts {
       terminationDueToMissedPayments
       terminationDate
