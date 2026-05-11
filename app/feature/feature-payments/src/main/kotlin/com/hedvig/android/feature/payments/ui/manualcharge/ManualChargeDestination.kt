@@ -288,9 +288,10 @@ private fun ManualChargeSuccessScreen(
       HedvigButton(
         text = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY, uiState.manualChargeInfo.amountDue),
         onClick = onTriggerPayment,
-        enabled = true,
+        enabled = !uiState.payButtonLoading,
         buttonSize = ButtonDefaults.ButtonSize.Medium,
         modifier = Modifier.fillMaxWidth(),
+        isLoading = uiState.payButtonLoading
       )
 
       Spacer(modifier = Modifier.height(8.dp))

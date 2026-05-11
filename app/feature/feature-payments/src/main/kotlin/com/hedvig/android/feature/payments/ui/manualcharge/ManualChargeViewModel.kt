@@ -51,6 +51,7 @@ private class ManualChargePresenter(
     LaunchedEffect(triggerChargeIteration) {
       if (triggerChargeIteration>0) {
         val currentState = screenState as?  ManualChargeUiState.Success ?: return@LaunchedEffect
+        screenState = currentState.copy(payButtonLoading = true)
         triggerManualCharge.invoke().fold(
           ifLeft = {
             screenState = ManualChargeUiState.Failure(it)
@@ -92,7 +93,8 @@ internal sealed interface ManualChargeUiState {
 
   data class Success(
     val manualChargeInfo: ManualChargeInfo,
-    val navigateToSuccess: Unit?
+    val navigateToSuccess: Unit?,
+    val payButtonLoading: Boolean = false
   ) : ManualChargeUiState
 }
 
