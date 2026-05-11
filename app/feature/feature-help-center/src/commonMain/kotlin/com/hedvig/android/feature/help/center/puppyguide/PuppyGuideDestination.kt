@@ -58,7 +58,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import hedvig.resources.PUPPY_GUIDE_INFO
@@ -136,9 +135,9 @@ private fun PuppyGuideSuccessScreen(
     Column(
       Modifier.fillMaxSize(),
     ) {
-      TopAppBarWithBack(
+      PuppyTopAppBar(
         title = "",
-        onClick = onNavigateUp,
+        onBack = onNavigateUp,
       )
       val horizontalInsetsPadding = WindowInsets.safeDrawing
         .only(WindowInsetsSides.Horizontal)

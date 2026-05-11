@@ -46,7 +46,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
@@ -115,9 +114,9 @@ private fun PuppyArticleSuccessScreen(
 ) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
-      TopAppBarWithBack(
+      PuppyTopAppBar(
         title = "",
-        onClick = navigateUp,
+        onBack = navigateUp,
       )
       val horizontalInsetsPadding = WindowInsets.safeDrawing
         .only(WindowInsetsSides.Horizontal)
