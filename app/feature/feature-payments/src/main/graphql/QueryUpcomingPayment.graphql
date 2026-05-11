@@ -1,8 +1,6 @@
-query UpcomingPayment(
-  $manualChargeEnabled: Boolean!
-) {
+query UpcomingPayment {
   currentMember {
-    missedChargeIdToChargeManually @include(if: $manualChargeEnabled)
+    missedChargeIdToChargeManually
     pastCharges {
       ...on MemberCharge {
         id

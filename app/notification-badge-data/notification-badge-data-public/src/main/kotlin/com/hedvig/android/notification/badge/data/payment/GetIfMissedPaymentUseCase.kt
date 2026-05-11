@@ -25,17 +25,9 @@ interface GetIfMissedPaymentUseCase {
 
 internal class GetIfMissedPaymentUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager
 ) : GetIfMissedPaymentUseCase {
   override fun invoke(): Flow<Boolean> {
     return flow {
-      val isFeatureFlagOn = featureManager.isFeatureEnabled(Feature.ENABLE_MANUAL_CHARGE).firstOrNull() ?: false
-      if (!isFeatureFlagOn) {
-        logcat { "ENABLE_MANUAL_CHARGE flag is off" }
-        emit(false)
-        return@flow
-      }
-
       while (currentCoroutineContext().isActive) {
         val hasMissedPayment = apolloClient
           .query(MissedPaymentQuery())

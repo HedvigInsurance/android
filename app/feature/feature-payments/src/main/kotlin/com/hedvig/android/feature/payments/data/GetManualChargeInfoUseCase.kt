@@ -24,16 +24,8 @@ internal interface GetManualChargeInfoUseCase {
 
 internal class GetManualChargeInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val featureManager: FeatureManager,
 ) : GetManualChargeInfoUseCase {
   override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo> = either {
-
-    val isFeatureFlagOn = featureManager.isFeatureEnabled(Feature.ENABLE_MANUAL_CHARGE).firstOrNull() ?: false
-
-    if (!isFeatureFlagOn) {
-      logcat { "ENABLE_MANUAL_CHARGE flag is off" }
-      raise(ErrorMessage())
-    }
 
     val currentMember = apolloClient.query(ManualChargeInfoQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)

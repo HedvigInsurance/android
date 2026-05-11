@@ -48,7 +48,7 @@ val notificationBadgeModule = module {
     )
   }
   single<GetIfMissedPaymentUseCase> {
-    GetIfMissedPaymentUseCaseImpl(get<ApolloClient>(), get<FeatureManager>())
+    GetIfMissedPaymentUseCaseImpl(get<ApolloClient>())
   }
   single<MissedPaymentNotificationServiceImpl> {
     MissedPaymentNotificationServiceImpl(get<GetIfMissedPaymentUseCase>())
