@@ -89,33 +89,21 @@ internal class AndroidAudioRecordingManager(
     }
 
     player = MediaPlayer().apply {
-      try {
-        setDataSource(filePath)
-        setOnPreparedListener {
-          onStateUpdate(
-            AudioRecordingStepState.AudioRecording.Playback(
-              filePath = filePath,
-              isPlaying = false,
-              isPrepared = true,
-              hasError = false,
-            ),
-          )
-        }
-        setOnCompletionListener {
-          // Playback completed
-        }
-        prepare()
-      } catch (e: Exception) {
+      setDataSource(filePath)
+      setOnPreparedListener {
         onStateUpdate(
           AudioRecordingStepState.AudioRecording.Playback(
             filePath = filePath,
             isPlaying = false,
-            isPrepared = false,
-            hasError = true,
+            isPrepared = true,
+            hasError = false,
           ),
         )
-        cleanupPlayer()
       }
+      setOnCompletionListener {
+        // Playback completed
+      }
+      prepare()
     }
   }
 
