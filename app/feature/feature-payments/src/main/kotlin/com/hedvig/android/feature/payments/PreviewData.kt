@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payments
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.Discount
+import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
@@ -98,6 +99,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      sum = UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -131,6 +133,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -153,7 +156,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
-    chargeMethod = MemberPaymentChargeMethod.KIVRA,
+    chargeMethod = MemberPaymentChargeMethod.INVOICE,
   ),
   MemberCharge(
     grossAmount = UiMoney(200.0, UiCurrencyCode.SEK),
@@ -164,6 +167,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -197,6 +201,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -230,6 +235,7 @@ internal val chargeHistoryPreviewData = listOf(
     failedCharge = MemberCharge.FailedCharge(
       fromDate = LocalDate.fromEpochDays(200),
       toDate = LocalDate.fromEpochDays(201),
+      UiMoney(200.0, UiCurrencyCode.SEK),
     ),
     chargeBreakdowns = listOf(
       MemberCharge.ChargeBreakdown(
@@ -252,7 +258,7 @@ internal val chargeHistoryPreviewData = listOf(
     carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
     referralDiscount = referralDiscountPreviewData,
-    chargeMethod = MemberPaymentChargeMethod.KIVRA,
+    chargeMethod = MemberPaymentChargeMethod.INVOICE,
   ),
 )
 
@@ -266,12 +272,14 @@ internal val paymentOverViewPreviewData: PaymentOverview
       failedCharge = MemberCharge.FailedCharge(
         fromDate = LocalDate.fromEpochDays(200),
         toDate = LocalDate.fromEpochDays(201),
+        sum = UiMoney(200.0, UiCurrencyCode.SEK),
       ),
     )
     return PaymentOverview(
       memberChargeShortInfo = memberChargeShortInfo,
       ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, UiCurrencyCode.SEK))),
       paymentConnection = PaymentConnection.Active,
+      isManualChargeAllowed = ManualChargeToPrompt(UiMoney(200.0, UiCurrencyCode.SEK)),
     )
   }
 
@@ -284,6 +292,7 @@ internal val paymentDetailsPreviewData = MemberCharge(
   failedCharge = MemberCharge.FailedCharge(
     fromDate = LocalDate.fromEpochDays(200),
     toDate = LocalDate.fromEpochDays(201),
+    sum = UiMoney(200.0, UiCurrencyCode.SEK),
   ),
   chargeBreakdowns = listOf(
     MemberCharge.ChargeBreakdown(
@@ -309,7 +318,7 @@ internal val paymentDetailsPreviewData = MemberCharge(
   chargeMethod = MemberPaymentChargeMethod.TRUSTLY,
 )
 
-internal val paymentDetailsKivraPreviewData = MemberCharge(
+internal val paymentDetailsINVOICEPreviewData = MemberCharge(
   grossAmount = UiMoney(280.0, UiCurrencyCode.SEK),
   netAmount = UiMoney(200.0, UiCurrencyCode.SEK),
   id = "123",
@@ -337,5 +346,5 @@ internal val paymentDetailsKivraPreviewData = MemberCharge(
   referralDiscount = referralDiscountPreviewData,
   carriedAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
   settlementAdjustment = UiMoney(200.0, UiCurrencyCode.SEK),
-  chargeMethod = MemberPaymentChargeMethod.KIVRA,
+  chargeMethod = MemberPaymentChargeMethod.INVOICE,
 )

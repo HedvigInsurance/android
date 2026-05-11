@@ -522,6 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
+  <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
   <string name="MISSING_CONTACT_INFO_CARD_TEXT">Se till att vi har rätt kontaktuppgifter ifall vi behöver nå dig.</string>
@@ -609,7 +610,7 @@
   <string name="PAYMENTS_PAYMENT_FAILED">Denna betalning misslyckades och lades till i din betalning den %1$s .</string>
   <string name="PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL">Betalningshistorik</string>
   <string name="PAYMENTS_PAYMENT_IN_PROGRESS">Betalning pågår</string>
-  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">Det kan ta upp till 5 bankdagar innan betalningen syns</string>
+  <string name="PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION">Det kan ta upp till 5 bankdagar innan betalningen registreras</string>
   <string name="PAYMENTS_PAYMENT_METHOD">Betalningssätt</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE">Att betala: %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_BODY">Vi kunde inte dra betalningen från ditt bankkonto. Betala för att undvika avbrott i ditt skydd.</string>
@@ -620,6 +621,8 @@
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY">Betala %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE">Försenad sedan %1$s</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS">Visa betalningsdetaljer</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_MISSING_SUBTITLE">Inga försenade betalningar</string>
+  <string name="PAYMENTS_PAYMENT_OVERDUE_MISSING_TITLE">Allt är betalt</string>
   <string name="PAYMENTS_PAYMENT_OVERDUE_TITLE">Försenad betalning</string>
   <string name="PAYMENTS_PAYMENT_SUCCESSFUL">Betalning genomförd</string>
   <string name="PAYMENTS_PERIOD_DAYS">%1$s dagar</string>
@@ -709,6 +712,7 @@
   <string name="SEARCH_PLACEHOLDER">Sök</string>
   <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION">Välj den försäkring du vill uppdatera</string>
   <string name="SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE">Select insurance</string>
+  <string name="SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE">Betalningen kan inte genomföras</string>
   <string name="SETTINGS_LANGUAGE_TITLE">Språk</string>
   <string name="SETTINGS_LOGIN_ROW">Logga in</string>
   <string name="SETTINGS_NOTIFICATIONS_TITLE">Notiser</string>
@@ -1025,9 +1029,9 @@
   <string name="claim_status_being_handled_support_text">Din skadeanmälan granskas av en av våra försäkringsspecialister. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status_being_handled_reopened_support_text">Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.</string>
   <string name="claim_status_claim_details_button">Se detaljer</string>
-  <string name="claim_status_claim_details_exposure_display_name">Reg nr</string>
+  <string name="claim_status_claim_details_exposure_display_name">Registreringsnummer</string>
   <string name="claim_status_claim_details_external_id">Ärendenummer</string>
-  <string name="claim_status_claim_details_handler_email">E-mail</string>
+  <string name="claim_status_claim_details_handler_email">Mail för ärende</string>
   <string name="claim_status_claim_details_info_text">Saknas något? Skicka ett meddelande till oss här i appen.</string>
   <string name="claim_status_claim_details_submitted">Inskickad</string>
   <string name="claim_status_claim_details_title">Detaljer om skadeanmälan</string>
@@ -1037,7 +1041,7 @@
   <string name="claim_status_not_compensated_support_text">Din skada täcks, men tyvärr är ersättningen lika stor eller mindre än självrisken. Se konversation för mer information.</string>
   <string name="claim_status_not_covered_support_text">Tyvärr täcks inte din skada. Se konversation för mer information om beslutet.</string>
   <string name="claim_status_paid_support_text_short">Din skada har täckts. Du borde ha fått ersättningen utbetald vid det här laget.</string>
-  <string name="claim_status_partner_support_text">Den här skadan hanteras av vår externa partner Eir via mail.\nRedan i kontakt med dem? Svara i din befintliga mailtråd så att all skadeinformation hålls samlad i en och samma konversation.</string>
+  <string name="claim_status_partner_support_text">Våra bilspecialister på Eir hanterar din skadeanmälan via mail.\n\nNär de har gått igenom ärendet får du en bekräftelse via mail. Behöver du komma i kontakt kring din anmälan, svara i samma e-posttråd.</string>
   <string name="claim_status_submitted_support_text">Vi har tagit emot din skadeanmälan och kommer snart att börja granska den.</string>
   <string name="claim_status_uploaded_files_upload_text">Ladda upp foton, kvitton eller andra dokument kopplade till din skadeanmälan</string>
   <string name="claim_status_appeal_instruction_link_text">Besvärshänvisning</string>

@@ -75,6 +75,19 @@ internal class AndroidAudioRecordingManager(
 
     cleanupRecorder()
 
+    val file = File(filePath)
+    if (!file.exists()) {
+      onStateUpdate(
+        AudioRecordingStepState.AudioRecording.Playback(
+          filePath = filePath,
+          isPlaying = false,
+          isPrepared = false,
+          hasError = true,
+        ),
+      )
+      return
+    }
+
     player = MediaPlayer().apply {
       setDataSource(filePath)
       setOnPreparedListener {

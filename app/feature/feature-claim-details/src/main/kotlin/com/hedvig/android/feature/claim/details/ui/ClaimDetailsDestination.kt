@@ -1,6 +1,10 @@
 package com.hedvig.android.feature.claim.details.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,10 +38,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
 import com.eygraber.uri.toAndroidUri
@@ -110,6 +116,8 @@ import hedvig.resources.claim_outcome_unresponsive_support_text
 import hedvig.resources.claim_status_appeal_instruction_link_text
 import hedvig.resources.claim_status_being_handled_reopened_support_text
 import hedvig.resources.claim_status_being_handled_support_text
+import hedvig.resources.claim_status_claim_details_external_id
+import hedvig.resources.claim_status_claim_details_handler_email
 import hedvig.resources.claim_status_claim_details_info_text
 import hedvig.resources.claim_status_claim_details_title
 import hedvig.resources.claim_status_detail_add_files
@@ -120,10 +128,12 @@ import hedvig.resources.claim_status_detail_uploaded_files_info_title
 import hedvig.resources.claim_status_not_compensated_support_text
 import hedvig.resources.claim_status_not_covered_support_text
 import hedvig.resources.claim_status_paid_support_text_short
+import hedvig.resources.claim_status_partner_support_text
 import hedvig.resources.claim_status_submitted_support_text
 import hedvig.resources.claim_status_uploaded_files_upload_text
 import hedvig.resources.general_close_button
 import hedvig.resources.general_error
+import hedvig.resources.referrals_active__toast_text
 import hedvig.resources.something_went_wrong
 import hedvig.resources.travel_certificate_downloading_error
 import java.io.File
@@ -380,12 +390,11 @@ private fun NonDynamicGrid(
 }
 
 @Composable
-internal fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
+private fun ExplanationBottomSheet(sheetState: HedvigBottomSheetState<Unit>) {
   HedvigBottomSheet(sheetState) { _ ->
     HedvigText(
       text = stringResource(Res.string.claim_status_claim_details_info_text),
-      modifier = Modifier
-        .fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth(),
     )
     Spacer(Modifier.height(32.dp))
     HedvigTextButton(
@@ -423,7 +432,7 @@ private fun BeforeGridContent(
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
           if (!uiState.claimIsInUndeterminedState) {
             HedvigText(
-              text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome),
+              text = statusParagraphText(uiState.claimStatus, uiState.claimOutcome, uiState.isPartnerClaim),
               style = HedvigTheme.typography.bodySmall,
             )
           }
@@ -504,29 +513,38 @@ private fun BeforeGridContent(
       .fillMaxWidth()
       .padding(horizontal = 2.dp),
   )
-  Spacer(Modifier.height(24.dp))
-  HedvigText(
-    stringResource(Res.string.claim_status_detail_uploaded_files_info_title),
-    Modifier.padding(horizontal = 2.dp),
+  PartnerInfoRows(
+    externalId = uiState.externalId,
+    handlerEmail = uiState.handlerEmail,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 2.dp),
   )
-  Spacer(Modifier.height(8.dp))
-  when (uiState.submittedContent) {
-    is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
-      ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
-    }
-
-    is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
-      HedvigCard(Modifier.fillMaxWidth()) {
-        HedvigText(
-          uiState.submittedContent.text,
-          Modifier.padding(16.dp),
-        )
+  if (uiState.submittedContent != null || uiState.files.isNotEmpty()) {
+    Spacer(Modifier.height(24.dp))
+    HedvigText(
+      stringResource(Res.string.claim_status_detail_uploaded_files_info_title),
+      Modifier.padding(horizontal = 2.dp),
+    )
+    Spacer(Modifier.height(8.dp))
+    when (uiState.submittedContent) {
+      is ClaimDetailUiState.Content.SubmittedContent.Audio -> {
+        ClaimDetailHedvigAudioPlayerItem(uiState.submittedContent.signedAudioURL)
       }
-    }
 
-    else -> {}
+      is ClaimDetailUiState.Content.SubmittedContent.FreeText -> {
+        HedvigCard(Modifier.fillMaxWidth()) {
+          HedvigText(
+            uiState.submittedContent.text,
+            Modifier.padding(16.dp),
+          )
+        }
+      }
+
+      else -> {}
+    }
+    Spacer(Modifier.height(8.dp))
   }
-  Spacer(Modifier.height(8.dp))
 }
 
 @Composable
@@ -701,6 +719,18 @@ private fun DocumentCard(title: String) {
 private fun statusParagraphText(
   claimStatus: ClaimDetailUiState.Content.ClaimStatus,
   claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
+  isPartnerClaim: Boolean,
+): String {
+  if (isPartnerClaim && claimStatus != ClaimDetailUiState.Content.ClaimStatus.CLOSED) {
+    return stringResource(Res.string.claim_status_partner_support_text)
+  }
+  return regularStatusParagraphText(claimStatus, claimOutcome)
+}
+
+@Composable
+private fun regularStatusParagraphText(
+  claimStatus: ClaimDetailUiState.Content.ClaimStatus,
+  claimOutcome: ClaimDetailUiState.Content.ClaimOutcome,
 ): String = when (claimStatus) {
   ClaimDetailUiState.Content.ClaimStatus.CREATED -> {
     stringResource(Res.string.claim_status_submitted_support_text)
@@ -753,6 +783,53 @@ private fun ClaimDetailHedvigAudioPlayerItem(signedAudioUrl: SignedAudioUrl, mod
     val audioPlayer = rememberAudioPlayer(playableAudioSource = PlayableAudioSource.RemoteUrl(signedAudioUrl))
     HedvigAudioPlayer(audioPlayer = audioPlayer)
   }
+}
+
+@Composable
+private fun PartnerInfoRows(externalId: String?, handlerEmail: String?, modifier: Modifier = Modifier) {
+  if (externalId.isNullOrBlank() && handlerEmail.isNullOrBlank()) return
+  val context = LocalContext.current
+  val copiedToast = stringResource(Res.string.referrals_active__toast_text)
+  CompositionLocalProvider(LocalContentColor provides HedvigTheme.colorScheme.textSecondary) {
+    Column(modifier) {
+      if (!externalId.isNullOrBlank()) {
+        CopyableRow(
+          title = stringResource(Res.string.claim_status_claim_details_external_id),
+          value = externalId,
+          onCopy = { context.copyToClipboardAndShowToast(externalId, copiedToast) },
+        )
+      }
+      if (!handlerEmail.isNullOrBlank()) {
+        CopyableRow(
+          title = stringResource(Res.string.claim_status_claim_details_handler_email),
+          value = handlerEmail,
+          onCopy = { context.copyToClipboardAndShowToast(handlerEmail, copiedToast) },
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun CopyableRow(title: String, value: String, onCopy: () -> Unit) {
+  HorizontalItemsWithMaximumSpaceTaken(
+    spaceBetween = 8.dp,
+    modifier = Modifier.clickable(onClick = onCopy),
+    startSlot = {
+      HedvigText(text = title)
+    },
+    endSlot = {
+      HedvigText(
+        text = value,
+        textAlign = TextAlign.End,
+      )
+    },
+  )
+}
+
+private fun Context.copyToClipboardAndShowToast(text: String, toast: String) {
+  getSystemService<ClipboardManager>()?.setPrimaryClip(ClipData.newPlainText(null, text))
+  Toast.makeText(this, toast, Toast.LENGTH_SHORT).show()
 }
 
 @Composable
@@ -888,6 +965,9 @@ private fun PreviewClaimDetailScreen(
             DisplayItem("Type", Text("Respiratory disorder")),
             DisplayItem("Submitted", Text("2025-02-03")),
           ),
+          externalId = "EIR-2026-000123",
+          handlerEmail = "claims@eir.se",
+          isPartnerClaim = true,
         ),
         openUrl = {},
         imageLoader = rememberPreviewImageLoader(),

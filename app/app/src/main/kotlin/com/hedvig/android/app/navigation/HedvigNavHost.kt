@@ -346,6 +346,9 @@ internal fun HedvigNavHost(
       navigateToPayoutAccount = { navController.navigate(PayoutAccountDestination.Graph) },
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
+      openConversation = {
+        navigateToNewConversation()
+      }
     )
     payoutAccountGraph(
       navController = navController,
@@ -396,7 +399,7 @@ internal fun HedvigNavHost(
       navigateToChipId = {
         navController.navigate(ChipIdGraphDestination())
       },
-      languageService = languageService
+      languageService = languageService,
     )
     cbmChatGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,

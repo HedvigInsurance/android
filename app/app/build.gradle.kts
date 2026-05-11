@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.2.3"
+    versionName = "14.2.4"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -190,7 +190,6 @@ dependencies {
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
-
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
