@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.demomode.DemoManager
-import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellRecommendationIdUseCase
 import com.hedvig.android.notification.badge.data.crosssell.GetCrossSellRecommendationIdUseCaseImpl

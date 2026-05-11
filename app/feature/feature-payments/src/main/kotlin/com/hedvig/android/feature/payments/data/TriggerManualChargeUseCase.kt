@@ -7,9 +7,7 @@ import arrow.core.raise.context.raise
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.logger.logcat
-import kotlinx.datetime.LocalDate
 import octopus.ManuallyChargeMemberMutation
 
 internal interface TriggerManualChargeUseCase {
@@ -17,9 +15,9 @@ internal interface TriggerManualChargeUseCase {
 }
 
 internal class TriggerManualChargeUseCaseImpl(
-  private val apolloClient: ApolloClient
-): TriggerManualChargeUseCase {
-  override suspend fun invoke(): Either<ErrorMessage, Unit>  = either {
+  private val apolloClient: ApolloClient,
+) : TriggerManualChargeUseCase {
+  override suspend fun invoke(): Either<ErrorMessage, Unit> = either {
     val result = apolloClient
       .mutation(ManuallyChargeMemberMutation())
       .safeExecute()
@@ -29,8 +27,10 @@ internal class TriggerManualChargeUseCaseImpl(
       }
       .bind()
 
-    if (result.manuallyChargeMember.userError!=null) raise(ErrorMessage(
-      result.manuallyChargeMember.userError.message
-    )) else Unit
+    if (result.manuallyChargeMember.userError != null) raise(
+      ErrorMessage(
+        result.manuallyChargeMember.userError.message,
+      ),
+    ) else Unit
   }
 }

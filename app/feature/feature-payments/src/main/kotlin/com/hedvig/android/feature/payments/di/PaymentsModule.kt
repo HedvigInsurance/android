@@ -19,7 +19,6 @@ import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCase
 import com.hedvig.android.feature.payments.overview.data.GetForeverInformationUseCaseImpl
-import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCase
 import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCaseDemo
 import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCaseImpl
 import com.hedvig.android.feature.payments.overview.data.GetShouldShowPayoutUseCaseProvider
@@ -33,7 +32,6 @@ import com.hedvig.android.feature.payments.ui.history.PaymentHistoryViewModel
 import com.hedvig.android.feature.payments.ui.manualcharge.ManualChargeViewModel
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
-import com.hedvig.android.featureflags.FeatureManager
 import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -129,7 +127,7 @@ val paymentsModule = module {
   }
 
   single<TriggerManualChargeUseCase> {
-    TriggerManualChargeUseCaseImpl(get<ApolloClient>(),)
+    TriggerManualChargeUseCaseImpl(get<ApolloClient>())
   }
 
   single<GetManualChargeInfoUseCase> {

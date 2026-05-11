@@ -11,10 +11,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
-import com.hedvig.android.featureflags.FeatureManager
-import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 import octopus.ManualChargeInfoQuery
 

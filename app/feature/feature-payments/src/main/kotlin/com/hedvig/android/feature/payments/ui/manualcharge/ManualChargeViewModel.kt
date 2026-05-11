@@ -8,18 +8,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.GetManualChargeInfoUseCase
 import com.hedvig.android.feature.payments.data.ManualChargeInfo
 import com.hedvig.android.feature.payments.data.TriggerManualChargeUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import kotlinx.datetime.LocalDate
 
 internal class ManualChargeViewModel(
   getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
-  triggerManualCharge: TriggerManualChargeUseCase
+  triggerManualCharge: TriggerManualChargeUseCase,
 ) : MoleculeViewModel<ManualChargeEvent, ManualChargeUiState>(
   initialState = ManualChargeUiState.Loading,
   presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge),
@@ -27,7 +25,7 @@ internal class ManualChargeViewModel(
 
 private class ManualChargePresenter(
   private val getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
-  private val triggerManualCharge: TriggerManualChargeUseCase
+  private val triggerManualCharge: TriggerManualChargeUseCase,
 ) : MoleculePresenter<ManualChargeEvent, ManualChargeUiState> {
   @Composable
   override fun MoleculePresenterScope<ManualChargeEvent>.present(
@@ -42,15 +40,15 @@ private class ManualChargePresenter(
         ManualChargeEvent.Retry -> dataLoadIteration++
         ManualChargeEvent.TriggerCharge -> triggerChargeIteration++
         ManualChargeEvent.ClearNav -> {
-          val currentState = screenState as?  ManualChargeUiState.Success ?: return@CollectEvents
+          val currentState = screenState as? ManualChargeUiState.Success ?: return@CollectEvents
           screenState = currentState.copy(navigateToSuccess = null)
         }
       }
     }
 
     LaunchedEffect(triggerChargeIteration) {
-      if (triggerChargeIteration>0) {
-        val currentState = screenState as?  ManualChargeUiState.Success ?: return@LaunchedEffect
+      if (triggerChargeIteration > 0) {
+        val currentState = screenState as? ManualChargeUiState.Success ?: return@LaunchedEffect
         screenState = currentState.copy(payButtonLoading = true)
         triggerManualCharge.invoke().fold(
           ifLeft = {
@@ -59,9 +57,9 @@ private class ManualChargePresenter(
           ifRight = {
             screenState = ManualChargeUiState.Success(
               manualChargeInfo = currentState.manualChargeInfo,
-              navigateToSuccess = Unit
+              navigateToSuccess = Unit,
             )
-          }
+          },
         )
       }
     }
@@ -88,13 +86,13 @@ internal sealed interface ManualChargeUiState {
   data object Loading : ManualChargeUiState
 
   data class Failure(
-    val error: ErrorMessage
+    val error: ErrorMessage,
   ) : ManualChargeUiState
 
   data class Success(
     val manualChargeInfo: ManualChargeInfo,
     val navigateToSuccess: Unit?,
-    val payButtonLoading: Boolean = false
+    val payButtonLoading: Boolean = false,
   ) : ManualChargeUiState
 }
 
