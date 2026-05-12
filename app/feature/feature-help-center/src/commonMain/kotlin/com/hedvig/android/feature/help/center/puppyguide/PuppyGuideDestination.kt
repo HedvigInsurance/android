@@ -23,12 +23,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +54,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.blockSwipeBackOnIos
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import hedvig.resources.PUPPY_GUIDE_INFO
@@ -233,6 +230,7 @@ private fun GuideCategoriesRow(
   onCategoryClick: (String) -> Unit,
 ) {
   LazyRow(
+    modifier = Modifier.blockSwipeBackOnIos(),
     contentPadding = contentPadding,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
@@ -269,6 +267,7 @@ private fun CategoryWithArticlesSection(
     )
     Spacer(Modifier.height(12.dp))
     LazyRow(
+      modifier = Modifier.blockSwipeBackOnIos(),
       horizontalArrangement = Arrangement.spacedBy(24.dp),
       contentPadding = contentPadding,
     ) {
