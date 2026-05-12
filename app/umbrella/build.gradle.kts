@@ -20,6 +20,7 @@ kotlin {
     projects.authlib,
     projects.coreBuildConstants,
     projects.coreDatastorePublic,
+    projects.designSystemApi,
     projects.featureFlags,
     projects.featureHelpCenter,
     projects.loggingPublic,

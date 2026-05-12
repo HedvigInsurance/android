@@ -2,7 +2,7 @@ package com.hedvig.android.feature.help.center.ui
 
 import coil3.ImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigComposeUIViewController
-import com.hedvig.android.design.system.hedvig.IosSwipeBackController
+import com.hedvig.android.design.system.hedvig.api.IosSwipeBackController
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination

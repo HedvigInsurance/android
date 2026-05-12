@@ -8,14 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.window.ComposeUIViewController
+import com.hedvig.android.design.system.hedvig.api.IosSwipeBackController
 import platform.UIKit.UIViewController
-
-// Implemented by Swift. While a pointer is down on a marked region we
-// disable the system swipe-back so Compose's horizontal scroll can win;
-// on touch end we re-enable it.
-interface IosSwipeBackController {
-  fun setSwipeBackEnabled(isEnabled: Boolean)
-}
 
 private val LocalIosSwipeBackController = staticCompositionLocalOf<IosSwipeBackController?> { null }
 
@@ -38,8 +32,8 @@ actual fun Modifier.blockSwipeBackOnIos(): Modifier {
     awaitPointerEventScope {
       while (true) {
         awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
-        controller.setSwipeBackEnabled(false)
         try {
+          controller.setSwipeBackEnabled(false)
           do {
             val event = awaitPointerEvent(PointerEventPass.Initial)
             if (event.changes.none { it.pressed }) break
