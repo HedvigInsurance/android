@@ -5,11 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -115,6 +120,7 @@ private fun PuppyGuideScreen(
   }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PuppyGuideSuccessScreen(
   uiState: PuppyGuideUiState.Success,
@@ -122,7 +128,7 @@ private fun PuppyGuideSuccessScreen(
   onNavigateUp: () -> Unit,
   imageLoader: ImageLoader,
 ) {
-  val categories = uiState.stories.flatMap { it.categories }.toSet().toList()
+  val categories = remember(uiState.stories) { uiState.stories.flatMap { it.categories }.toSet().toList() }
   val listState = rememberLazyListState()
   val scope = rememberCoroutineScope()
 
@@ -132,22 +138,28 @@ private fun PuppyGuideSuccessScreen(
     Column(
       Modifier.fillMaxSize(),
     ) {
+      val consumedWindowInsets = remember { MutableWindowInsets() }
       PuppyTopAppBar(
         title = "",
         onBack = onNavigateUp,
+        Modifier.onSizeChanged {
+          consumedWindowInsets.insets = WindowInsets(top = it.height)
+        },
       )
       val horizontalInsetsPadding = WindowInsets.safeDrawing
         .only(WindowInsetsSides.Horizontal)
         .asPaddingValues()
-      val bottomInsetsPadding = WindowInsets.safeDrawing
-        .only(WindowInsetsSides.Bottom)
+      val verticalInsetsPadding = WindowInsets
+        .safeDrawing
+        .exclude(consumedWindowInsets)
+        .only(WindowInsetsSides.Vertical)
         .asPaddingValues()
       val sectionContentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsetsPadding
 
       LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = bottomInsetsPadding,
+        contentPadding = verticalInsetsPadding,
       ) {
         item {
           Column(

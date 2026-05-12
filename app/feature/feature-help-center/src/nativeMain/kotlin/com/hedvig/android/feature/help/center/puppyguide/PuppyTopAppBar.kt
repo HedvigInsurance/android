@@ -11,5 +11,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 internal actual fun PuppyTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier) {
-  Spacer(modifier.windowInsetsTopHeight(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)))
+  // implemented as spacing on the content for iOS since the top app bar is implemented natively
+  //  Spacer(modifier.windowInsetsTopHeight(WindowInsets.safeDrawing.only(WindowInsetsSides.Top)))
+  Spacer(modifier)
 }

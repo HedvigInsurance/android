@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -49,7 +48,6 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
-import com.hedvig.android.logger.logcat
 import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
