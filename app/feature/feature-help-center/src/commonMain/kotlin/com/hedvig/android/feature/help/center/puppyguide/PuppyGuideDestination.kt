@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -191,12 +193,22 @@ private fun PuppyGuideSuccessScreen(
           }
         }
 
-        stickyHeader {
+        stickyHeader(key = CategoriesStickyHeaderKey) {
+          val density = LocalDensity.current
+          val topInsetPx = with(density) { verticalInsetsPadding.calculateTopPadding().roundToPx() }
+          val stickyTopPadding by remember(listState, topInsetPx) {
+            derivedStateOf {
+              val info = listState.layoutInfo.visibleItemsInfo
+                .firstOrNull { it.key == CategoriesStickyHeaderKey }
+              val padPx = if (info == null) 0 else (-info.offset).coerceIn(0, topInsetPx)
+              with(density) { padPx.toDp() }
+            }
+          }
           Surface(
             color = HedvigTheme.colorScheme.backgroundPrimary,
             modifier = Modifier.fillMaxWidth(),
           ) {
-            Column {
+            Column(modifier = Modifier.padding(top = stickyTopPadding)) {
               GuideCategoriesRow(
                 categories = categories,
                 contentPadding = sectionContentPadding,
@@ -377,6 +389,8 @@ private fun PuppyArticleScreenAnimations(
     }
   }
 }
+
+private const val CategoriesStickyHeaderKey = "puppyGuideCategoriesStickyHeader"
 
 private class PuppyGuideUiStatePreviewProvider :
   CollectionPreviewParameterProvider<PuppyGuideUiState>(
