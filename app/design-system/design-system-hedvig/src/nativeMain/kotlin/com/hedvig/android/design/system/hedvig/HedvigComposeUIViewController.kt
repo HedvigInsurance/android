@@ -19,6 +19,18 @@ interface IosSwipeBackController {
 
 private val LocalIosSwipeBackController = staticCompositionLocalOf<IosSwipeBackController?> { null }
 
+@Suppress("FunctionName")
+fun HedvigComposeUIViewController(
+  swipeBackController: IosSwipeBackController,
+  content: @Composable () -> Unit,
+): UIViewController = ComposeUIViewController {
+  HedvigTheme {
+    CompositionLocalProvider(LocalIosSwipeBackController provides swipeBackController) {
+      content()
+    }
+  }
+}
+
 @Composable
 actual fun Modifier.blockSwipeBackOnIos(): Modifier {
   val controller = LocalIosSwipeBackController.current ?: return this

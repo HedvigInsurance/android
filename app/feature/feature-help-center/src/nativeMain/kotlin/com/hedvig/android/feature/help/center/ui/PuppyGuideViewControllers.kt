@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.help.center.ui
 
-import androidx.compose.ui.window.ComposeUIViewController
 import coil3.ImageLoader
-import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HedvigComposeUIViewController
+import com.hedvig.android.design.system.hedvig.IosSwipeBackController
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
@@ -16,32 +16,33 @@ import platform.UIKit.UIViewController
 fun PuppyGuideViewController(
   onNavigateUp: () -> Unit,
   onNavigateToArticle: (storyName: String) -> Unit,
+  swipeBackController: IosSwipeBackController,
 ): UIViewController {
-  return ComposeUIViewController {
-    HedvigTheme {
-      val imageLoader = koinInject<ImageLoader>()
-      val viewModel = koinViewModel<PuppyGuideViewModel>()
-      PuppyGuideDestination(
-        viewModel = viewModel,
-        onNavigateUp = onNavigateUp,
-        imageLoader = imageLoader,
-        onNavigateToArticle = { story -> onNavigateToArticle(story.name) },
-      )
-    }
+  return HedvigComposeUIViewController(swipeBackController) {
+    val imageLoader = koinInject<ImageLoader>()
+    val viewModel = koinViewModel<PuppyGuideViewModel>()
+    PuppyGuideDestination(
+      viewModel = viewModel,
+      onNavigateUp = onNavigateUp,
+      imageLoader = imageLoader,
+      onNavigateToArticle = { story -> onNavigateToArticle(story.name) },
+    )
   }
 }
 
 @Suppress("unused", "FunctionName") // Used from iOS
-fun PuppyArticleViewController(storyName: String, navigateUp: () -> Unit): UIViewController {
-  return ComposeUIViewController {
-    HedvigTheme {
-      val imageLoader = koinInject<ImageLoader>()
-      val viewModel = koinViewModel<PuppyArticleViewModel> { parametersOf(storyName) }
-      PuppyArticleDestination(
-        viewModel = viewModel,
-        navigateUp = navigateUp,
-        imageLoader = imageLoader,
-      )
-    }
+fun PuppyArticleViewController(
+  storyName: String,
+  navigateUp: () -> Unit,
+  swipeBackController: IosSwipeBackController,
+): UIViewController {
+  return HedvigComposeUIViewController(swipeBackController) {
+    val imageLoader = koinInject<ImageLoader>()
+    val viewModel = koinViewModel<PuppyArticleViewModel> { parametersOf(storyName) }
+    PuppyArticleDestination(
+      viewModel = viewModel,
+      navigateUp = navigateUp,
+      imageLoader = imageLoader,
+    )
   }
 }
