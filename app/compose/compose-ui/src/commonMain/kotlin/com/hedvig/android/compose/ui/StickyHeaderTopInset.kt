@@ -9,25 +9,23 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 
 /**
- * Computes the top padding to apply to a `stickyHeader`'s inner content so that, when stuck,
- * its visible content lands [topContentPadding] below the LazyColumn's outer top edge instead
- * of *at* it.
+ * For a LazyColumn whose content scrolls behind a translucent system bar (so its
+ * `contentPadding.top` is the bar's inset), a `stickyHeader` will pin against the screen
+ * edge and end up behind the bar. Apply the returned Dp as `Modifier.padding(top = ...)` on
+ * the sticky's inner content to keep it visible just below the bar instead.
  *
- * Compose pins a stuck header at offset = `-beforeContentPadding`
- * (LazyLayoutStickyItems.kt:98 in compose-foundation), which puts its visible top edge at the
- * LazyColumn's outer top edge regardless of `contentPadding.top`. When the LazyColumn has a
- * top contentPadding so content can scroll behind a translucent system bar, this means the
- * stuck header lands behind that bar. Apply the returned value as `Modifier.padding(top = ...)`
- * on the sticky header's inner content (inside any background-painting `Surface`) to push it
- * back down to the post-contentPadding line; the transition through natural→stuck is smooth.
+ * ```
+ * stickyHeader(key = HeaderKey) {
+ *   val top = rememberStickyHeaderTopInset(listState, HeaderKey, contentPadding.calculateTopPadding())
+ *   Surface(modifier = Modifier.fillMaxWidth()) {
+ *     Column(modifier = Modifier.padding(top = top)) { /* header content */ }
+ *   }
+ * }
+ * ```
  *
- * When [topContentPadding] is 0 the returned value is always 0, so it's safe to leave wired
- * up on platforms (like Android) where the top app bar already consumed the inset.
- *
- * @param listState The LazyColumn's state.
- * @param stickyHeaderKey The same key passed to `stickyHeader(key = ...)`, needed to find the
- *   header's measured offset in `listState.layoutInfo.visibleItemsInfo`.
- * @param topContentPadding The top value of the LazyColumn's `contentPadding`.
+ * Returns `0.dp` when [topContentPadding] is `0.dp`, so it's a no-op on screens where the
+ * top bar is drawn by Compose (Android) and only does work on screens where the list scrolls
+ * behind the top bar.
  */
 @Composable
 fun rememberStickyHeaderTopInset(
@@ -36,11 +34,11 @@ fun rememberStickyHeaderTopInset(
   topContentPadding: Dp,
 ): Dp {
   val density = LocalDensity.current
-  val topInsetPx = with(density) { topContentPadding.roundToPx() }
-  val offsetPx by remember(listState, stickyHeaderKey, topInsetPx) {
+  val topContentPaddingPx = with(density) { topContentPadding.roundToPx() }
+  val offsetPx by remember(listState, stickyHeaderKey, topContentPaddingPx) {
     derivedStateOf {
       val info = listState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == stickyHeaderKey }
-      if (info == null) 0 else (-info.offset).coerceIn(0, topInsetPx)
+      if (info == null) 0 else (-info.offset).coerceIn(0, topContentPaddingPx)
     }
   }
   return with(density) { offsetPx.toDp() }
