@@ -17,30 +17,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.halilibo.richtext.commonmark.CommonMarkdownParseOptions
-import com.halilibo.richtext.commonmark.Markdown
-import com.halilibo.richtext.ui.RichTextStyle
-import com.halilibo.richtext.ui.string.RichTextStringStyle
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.design.system.hedvig.DividerPosition
@@ -54,8 +43,6 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightS
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
-import com.hedvig.android.design.system.hedvig.ProvideTextStyle
-import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.datepicker.formatInstantForTalkBack
@@ -264,51 +251,22 @@ private fun ConversationCard(
           },
         )
         val message = when (latestMessage) {
-          is Text -> latestMessage.text
+          is Text -> latestMessage.text.markdownToPlainText()
           is File -> stringResource(Res.string.CHAT_SENT_A_FILE)
           is Unknown -> stringResource(Res.string.CHAT_SENT_A_MESSAGE)
         }
-        val textColor = if (conversation.hasNewMessages) {
-          HedvigTheme.colorScheme.textPrimary
-        } else {
-          HedvigTheme.colorScheme.textSecondary
-        }
-        val previewTextStyle = HedvigTheme.typography.label.copy(color = textColor)
-        // The card itself is clickable and opens the conversation, any link inside the message
-        // preview should do the same rather than launch its own URL, so we redirect link taps
-        // through LocalUriHandler and strip the link styling so the text is plain text instead.
-        val redirectingUriHandler = remember(conversation.conversationId, onConversationClick) {
-          object : UriHandler {
-            override fun openUri(uri: String) {
-              onConversationClick(conversation.conversationId)
-            }
-          }
-        }
-        CompositionLocalProvider(LocalUriHandler provides redirectingUriHandler) {
-          ProvideTextStyle(previewTextStyle) {
-            val simpleTextStyle = SpanStyle(
-              color = textColor,
-              textDecoration = TextDecoration.None,
+        HedvigText(
+          text = "$sender: $message",
+          style = if (conversation.hasNewMessages) {
+            HedvigTheme.typography.label
+          } else {
+            HedvigTheme.typography.label.copy(
+              color = HedvigTheme.colorScheme.textSecondary,
             )
-            RichText(
-              style = RichTextStyle.Default.copy(
-                stringStyle = RichTextStringStyle(
-                  linkStyle = TextLinkStyles(
-                    style = simpleTextStyle,
-                    focusedStyle = simpleTextStyle,
-                    hoveredStyle = simpleTextStyle,
-                    pressedStyle = simpleTextStyle,
-                  ),
-                ),
-              ),
-            ) {
-              Markdown(
-                content = "$sender: $message",
-                markdownParseOptions = CommonMarkdownParseOptions(autolink = false),
-              )
-            }
-          }
-        }
+          },
+          overflow = TextOverflow.Ellipsis,
+          maxLines = 1,
+        )
       }
     }
   }
