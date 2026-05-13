@@ -44,6 +44,7 @@ internal data class MemberCharge(
   data class FailedCharge(
     val fromDate: LocalDate,
     val toDate: LocalDate,
+    val sum: UiMoney,
   )
 
   internal enum class MemberChargeStatus {
@@ -167,7 +168,8 @@ internal fun MemberChargeFragment.toMemberCharge(
 
 internal fun String?.toChargeMethod(): MemberPaymentChargeMethod {
   return when {
-    this?.startsWith("kivra", ignoreCase = true) == true -> MemberPaymentChargeMethod.KIVRA
+    this?.startsWith("kivra", ignoreCase = true) == true ||
+      this?.startsWith("invoice", ignoreCase = true) == true -> MemberPaymentChargeMethod.INVOICE
     this?.startsWith("trustly", ignoreCase = true) == true -> MemberPaymentChargeMethod.TRUSTLY
     else -> MemberPaymentChargeMethod.UNKNOWN
   }
@@ -180,11 +182,20 @@ internal fun MemberChargeFragment.toFailedCharge(): MemberCharge.FailedCharge? {
 
   val from = previousChargesPeriods.minOfOrNull { it.fromDate }
   val to = previousChargesPeriods.maxOfOrNull { it.toDate }
+  val sum = if (previousChargesPeriods.isNotEmpty()) {
+    UiMoney(
+      previousChargesPeriods.sumOf { it.amount.amount },
+      UiCurrencyCode.fromCurrencyCode(previousChargesPeriods.first().amount.currencyCode),
+    )
+  } else {
+    UiMoney(0.0, UiCurrencyCode.SEK)
+  }
 
   return if (from != null && to != null) {
     MemberCharge.FailedCharge(
       from,
       to,
+      sum,
     )
   } else {
     null

@@ -346,6 +346,9 @@ internal fun HedvigNavHost(
       navigateToPayoutAccount = { navController.navigate(PayoutAccountDestination.Graph) },
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
+      openConversation = {
+        navigateToNewConversation()
+      }
     )
     payoutAccountGraph(
       navController = navController,

@@ -80,6 +80,8 @@ interface HedvigDeepLinkContainer {
   val petIdWithoutContractId: List<String>
 
   val petIdWithContractId: List<String>
+
+  val manualCharge: List<String>
 }
 
 internal class HedvigDeepLinkContainerImpl(
@@ -198,6 +200,10 @@ internal class HedvigDeepLinkContainerImpl(
   override val petIdWithContractId: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/pet-id?contractId={contractId}"
   }
+
+  override val manualCharge: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/manual-charge"
+  }
 }
 
 val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
@@ -228,6 +234,7 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     inbox.first(),
     insuranceEvidence.first(),
     insurances.first(),
+    manualCharge.first(),
     moveContract.first(),
     payments.first(),
     payout.first(),

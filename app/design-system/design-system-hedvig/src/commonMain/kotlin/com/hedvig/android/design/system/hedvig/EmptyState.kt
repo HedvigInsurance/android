@@ -138,6 +138,16 @@ private fun ColumnScope.EmptyStateIcon(iconStyle: EmptyStateIconStyle) {
     }
 
     NO_ICON -> {}
+
+    EmptyStateIconStyle.SUCCESS_WITH_WARNING -> {
+      Icon(
+        HedvigIcons.CheckFilled,
+        null,
+        tint = emptyStateColors.errorIconColor,
+        modifier = sizeModifier,
+      )
+      Spacer(Modifier.height(16.dp))
+    }
   }
 }
 
@@ -151,6 +161,7 @@ object EmptyStateDefaults {
     SUCCESS,
     BANK_ID,
     NO_ICON,
+    SUCCESS_WITH_WARNING
   }
 
   sealed class EmptyStateButtonStyle {

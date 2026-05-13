@@ -37,7 +37,7 @@ dependencies {
   implementation(projects.dataPayingMember)
   implementation(projects.dataSettingsDatastorePublic)
   implementation(projects.designSystemHedvig)
-  implementation(projects.featureFlags)
+  implementation(projects.featureFlagsPublic)
   implementation(projects.foreverUi)
   implementation(projects.languageCore)
   implementation(projects.languageData)
