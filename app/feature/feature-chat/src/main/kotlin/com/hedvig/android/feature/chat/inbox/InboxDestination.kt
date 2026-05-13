@@ -251,7 +251,7 @@ private fun ConversationCard(
           },
         )
         val message = when (latestMessage) {
-          is Text -> latestMessage.text
+          is Text -> latestMessage.text.stripMarkdownForPreview()
           is File -> stringResource(Res.string.CHAT_SENT_A_FILE)
           is Unknown -> stringResource(Res.string.CHAT_SENT_A_MESSAGE)
         }
@@ -271,6 +271,23 @@ private fun ConversationCard(
     }
   }
 }
+
+// Inbox previews are single-line and non-interactive, so we strip markdown rather than render it —
+// links should still be clickable inside the conversation, not from the list.
+private fun String.stripMarkdownForPreview(): String {
+  return this
+    .replace(markdownImageRegex, "")
+    .replace(markdownLinkRegex, "$1")
+    .replace(markdownBoldRegex, "$2")
+    .replace(markdownItalicRegex, "$2")
+    .replace(markdownInlineCodeRegex, "$1")
+}
+
+private val markdownImageRegex = Regex("""!\[[^]]*]\([^)]*\)""")
+private val markdownLinkRegex = Regex("""\[([^]]+)]\([^)]*\)""")
+private val markdownBoldRegex = Regex("""(\*\*|__)(.+?)\1""")
+private val markdownItalicRegex = Regex("""(?<![*_\w])([*_])([^*_\n]+)\1(?![*_\w])""")
+private val markdownInlineCodeRegex = Regex("""`([^`\n]+)`""")
 
 @HedvigPreview
 @PreviewFontScale
@@ -321,7 +338,7 @@ private val mockInboxConversation1 = InboxConversation(
   conversationId = "1",
   header = Header.ClaimConversation("claimType"),
   latestMessage = Text(
-    "Please tell us more about how the phone broke.",
+    "You can find more details [here](https://hedvig.com/details).",
     Sender.HEDVIG,
     Clock.System.now(),
   ),
