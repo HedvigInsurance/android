@@ -251,7 +251,7 @@ private fun ConversationCard(
           },
         )
         val message = when (latestMessage) {
-          is Text -> latestMessage.text
+          is Text -> latestMessage.text.markdownToPlainText()
           is File -> stringResource(Res.string.CHAT_SENT_A_FILE)
           is Unknown -> stringResource(Res.string.CHAT_SENT_A_MESSAGE)
         }
@@ -321,7 +321,7 @@ private val mockInboxConversation1 = InboxConversation(
   conversationId = "1",
   header = Header.ClaimConversation("claimType"),
   latestMessage = Text(
-    "Please tell us more about how the phone broke.",
+    "You can find more details [here](https://hedvig.com/details).",
     Sender.HEDVIG,
     Clock.System.now(),
   ),
