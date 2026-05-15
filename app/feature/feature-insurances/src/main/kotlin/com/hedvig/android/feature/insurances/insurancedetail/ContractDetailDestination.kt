@@ -504,6 +504,7 @@ private fun PreviewContractDetailScreen() {
             existingAddons = emptyList(),
             availableAddons = emptyList(),
             chipId = ChipIdState.Missing,
+            supportsTermination = true,
           ),
           true,
         ),
