@@ -17,6 +17,7 @@ fun PuppyGuideViewController(
   onNavigateUp: () -> Unit,
   onNavigateToArticle: (storyName: String) -> Unit,
   swipeBackController: IosSwipeBackController,
+  onScrollOffsetChanged: (Float) -> Unit,
 ): UIViewController {
   return HedvigComposeUIViewController(swipeBackController) {
     val imageLoader = koinInject<ImageLoader>()
@@ -26,6 +27,7 @@ fun PuppyGuideViewController(
       onNavigateUp = onNavigateUp,
       imageLoader = imageLoader,
       onNavigateToArticle = { story -> onNavigateToArticle(story.name) },
+      onScrollOffsetChanged = onScrollOffsetChanged,
     )
   }
 }
@@ -35,6 +37,7 @@ fun PuppyArticleViewController(
   storyName: String,
   navigateUp: () -> Unit,
   swipeBackController: IosSwipeBackController,
+  onScrollOffsetChanged: (Float) -> Unit,
 ): UIViewController {
   return HedvigComposeUIViewController(swipeBackController) {
     val imageLoader = koinInject<ImageLoader>()
@@ -43,6 +46,7 @@ fun PuppyArticleViewController(
       viewModel = viewModel,
       navigateUp = navigateUp,
       imageLoader = imageLoader,
+      onScrollOffsetChanged = onScrollOffsetChanged,
     )
   }
 }
