@@ -25,7 +25,7 @@ internal class UnleashFeatureFlagProvider(
 
           Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured")
 
-          Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", true)
+          Feature.HELP_CENTER -> !hedvigUnleashClient.client.isEnabled("disable_help_center")
 
           Feature.TRAVEL_ADDON -> hedvigUnleashClient.client.isEnabled("enable_addons")
 
