@@ -52,7 +52,7 @@ data class TerminatableInsurance(
 private fun ContractsToTerminateQuery.Data.CurrentMember.toInsurancesForCancellation(): List<TerminatableInsurance> {
   val active = activeContracts
     .filter {
-      it.terminationDate == null
+      it.supportsTermination
     }
     .map {
       TerminatableInsurance(
