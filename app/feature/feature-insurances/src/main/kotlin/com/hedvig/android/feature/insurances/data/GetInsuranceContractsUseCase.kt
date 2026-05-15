@@ -13,9 +13,7 @@ import com.hedvig.android.core.common.formatName
 import com.hedvig.android.core.common.formatSsn
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ChipIdState
-import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractId
-import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.display.items.DisplayItem
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
@@ -126,24 +124,24 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
   contractHolderSSN: String?,
 ): PendingInsuranceContract {
   return PendingInsuranceContract(
-    id = this.id,
-    tierName = this.productVariant.displayNameTier,
-    displayName = this.productVariant.displayName,
-    contractHolderDisplayName = contractHolderDisplayName,
-    contractHolderSSN = contractHolderSSN,
-    exposureDisplayName = exposureDisplayName,
-    productVariant = this.productVariant.toProductVariant(),
-    displayItems = this.displayItems.map { it.toDisplayItem() },
-    addons = this.addons?.map {
-      Addon(
-        it.addonVariant.toAddonVariant(),
-        premium = UiMoney.fromMoneyFragment(it.premium),
-      )
-    },
-    cost = this.cost.toMonthlyCost(),
-    basePremium = UiMoney.fromMoneyFragment(this.basePremium),
-    chipId = ChipIdState.NotRequired,
-    supportsTermination = supportsTermination
+      id = this.id,
+      tierName = this.productVariant.displayNameTier,
+      displayName = this.productVariant.displayName,
+      contractHolderDisplayName = contractHolderDisplayName,
+      contractHolderSSN = contractHolderSSN,
+      exposureDisplayName = exposureDisplayName,
+      productVariant = this.productVariant.toProductVariant(),
+      displayItems = this.displayItems.map { it.toDisplayItem() },
+      addons = this.addons?.map {
+          Addon(
+              it.addonVariant.toAddonVariant(),
+              premium = UiMoney.fromMoneyFragment(it.premium),
+          )
+      },
+      cost = this.cost.toMonthlyCost(),
+      basePremium = UiMoney.fromMoneyFragment(this.basePremium),
+      chipId = ChipIdState.NotRequired,
+      supportsTermination = supportsTermination,
   )
 }
 
@@ -267,7 +265,7 @@ private fun AgreementCreationCause.toCreationCause() = when (this) {
 
   AgreementCreationCause.UNKNOWN,
   AgreementCreationCause.UNKNOWN__,
-  -> InsuranceAgreement.CreationCause.UNKNOWN
+    -> InsuranceAgreement.CreationCause.UNKNOWN
 }
 
 private fun ContractCoInsuredFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(
