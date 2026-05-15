@@ -19,7 +19,7 @@ internal class UnleashFeatureFlagProvider(
 
           Feature.PAYMENT_SCREEN -> hedvigUnleashClient.client.isEnabled("payment_screen")
 
-          Feature.TERMINATION_FLOW -> hedvigUnleashClient.client.isEnabled("termination_flow", true)
+          Feature.TERMINATION_FLOW -> !hedvigUnleashClient.client.isEnabled("disable_termination_flow")
 
           Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary")
 
