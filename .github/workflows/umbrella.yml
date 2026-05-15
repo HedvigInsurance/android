@@ -6,6 +6,7 @@ on:
       - develop
       - feat/help-center-kmp
       - feat/puppy-guide-kmp
+      - feat/puppy-guide-kmp-track-scroll-offset
   workflow_dispatch:
 
 concurrency:
