@@ -7,6 +7,7 @@ import com.hedvig.android.core.datastore.di.dataStoreModule
 import com.hedvig.android.data.conversations.di.dataConversationsModule
 import com.hedvig.android.feature.help.center.di.helpCenterModule
 import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.language.di.languageModule
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.permission.di.noopPermissionModule
@@ -18,11 +19,12 @@ fun initKoin(
   accessTokenFetcher: AccessTokenFetcher,
   deviceIdFetcher: DeviceIdFetcher,
   featureManager: FeatureManager,
+  languageStorage: LanguageStorage,
   appBuildConfig: AppBuildConfig,
 ) {
   startKoin {
     modules(
-      iosPlatformModule(accessTokenFetcher, deviceIdFetcher, featureManager),
+      iosPlatformModule(accessTokenFetcher, deviceIdFetcher, featureManager, languageStorage),
       sharedModule(appBuildConfig),
       dataStoreModule,
       languageModule,

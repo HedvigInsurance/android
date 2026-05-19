@@ -6,6 +6,7 @@ import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.language.LanguageStorage
 import com.hedvig.android.network.clients.AccessTokenFetcher
 import io.ktor.client.HttpClient
 import org.koin.core.module.Module
@@ -21,6 +22,7 @@ internal fun iosPlatformModule(
   accessTokenFetcher: AccessTokenFetcher,
   deviceIdFetcher: DeviceIdFetcher,
   featureManager: FeatureManager,
+  languageStorage: LanguageStorage,
 ) = module {
   single<AccessTokenFetcher> {
     accessTokenFetcher
@@ -30,6 +32,9 @@ internal fun iosPlatformModule(
   }
   single<FeatureManager> {
     featureManager
+  }
+  single<LanguageStorage> {
+    languageStorage
   }
   single<ImageLoader> {
     ImageLoader.Builder(PlatformContext.INSTANCE)

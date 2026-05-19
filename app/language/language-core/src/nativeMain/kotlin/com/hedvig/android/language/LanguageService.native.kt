@@ -1,22 +1,25 @@
 package com.hedvig.android.language
 
 import com.hedvig.android.core.locale.CommonLocale
+import platform.Foundation.NSLocale
 
-// todo ios
-internal class NativeLanguageService : LanguageService {
+internal class NativeLanguageService(
+  private val storage: LanguageStorage,
+) : LanguageService {
   override fun setLanguage(language: Language) {
-
+    storage.setLanguageTag(language.toBcp47Format())
   }
 
   override fun getSelectedLanguage(): Language? {
-    return Language.EN_SE
+    return storage.getSelectedLanguageTag()?.let(Language::from)
   }
 
   override fun getLanguage(): Language {
-    return Language.EN_SE
+    val languageTag = storage.getCurrentLanguageTag()
+    return Language.from(languageTag)
   }
 
   override fun getLocale(): CommonLocale {
-    return CommonLocale(Language.EN_SE.toBcp47Format())
+    return NSLocale(localeIdentifier = storage.getCurrentLanguageTag())
   }
 }

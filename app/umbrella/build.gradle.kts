@@ -23,6 +23,7 @@ kotlin {
     projects.designSystemApi,
     projects.featureFlags,
     projects.featureHelpCenter,
+    projects.languageCore,
     projects.loggingPublic,
     projects.networkClients,
     projects.shareddi,

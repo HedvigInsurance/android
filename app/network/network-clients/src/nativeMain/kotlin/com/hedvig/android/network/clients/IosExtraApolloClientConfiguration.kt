@@ -9,6 +9,5 @@ internal class IosExtraApolloClientConfiguration(
   override fun configure(builder: ApolloClient.Builder): ApolloClient.Builder {
     return builder
       .addInterceptor(iosAuthTokenInterceptor)
-      .httpEngine(DefaultHttpEngine())
   }
 }
