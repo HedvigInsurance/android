@@ -10,7 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownPadding
@@ -107,7 +106,7 @@ actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: 
     colors = markdownColors,
     typography = markdownTypography,
     padding = object : MarkdownPadding {
-      override val block: Dp = 4.dp
+      override val block: Dp = 6.dp
       override val blockQuote: PaddingValues = PaddingValues(0.dp)
       override val blockQuoteBar: PaddingValues.Absolute = PaddingValues.Absolute(0.dp)
       override val blockQuoteText: PaddingValues = PaddingValues(0.dp)
