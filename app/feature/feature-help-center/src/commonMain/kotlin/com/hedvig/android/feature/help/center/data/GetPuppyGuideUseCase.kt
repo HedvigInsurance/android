@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.help.center.data
 
 import arrow.core.Either
-import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
@@ -10,7 +9,6 @@ import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import octopus.PuppyGuideQuery
