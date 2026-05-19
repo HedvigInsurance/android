@@ -23,8 +23,10 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -65,6 +68,7 @@ internal fun PuppyArticleDestination(
   viewModel: PuppyArticleViewModel,
   navigateUp: () -> Unit,
   imageLoader: ImageLoader,
+  onScrollOffsetChanged: (Float) -> Unit = {},
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   PuppyArticleScreen(
@@ -77,6 +81,7 @@ internal fun PuppyArticleDestination(
     onRatingClick = {
       viewModel.emit(PuppyArticleEvent.RatingClick(it))
     },
+    onScrollOffsetChanged = onScrollOffsetChanged,
   )
 }
 
@@ -87,6 +92,7 @@ private fun PuppyArticleScreen(
   onReload: () -> Unit,
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
+  onScrollOffsetChanged: (Float) -> Unit,
 ) {
   when (uiState) {
     PuppyArticleUiState.Failure -> HedvigScaffold(
@@ -105,6 +111,7 @@ private fun PuppyArticleScreen(
       navigateUp = navigateUp,
       imageLoader = imageLoader,
       onRatingClick = onRatingClick,
+      onScrollOffsetChanged = onScrollOffsetChanged,
     )
   }
 }
@@ -116,6 +123,7 @@ private fun PuppyArticleSuccessScreen(
   navigateUp: () -> Unit,
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
+  onScrollOffsetChanged: (Float) -> Unit,
 ) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
@@ -130,10 +138,15 @@ private fun PuppyArticleSuccessScreen(
       val horizontalInsetsPadding = WindowInsets.safeDrawing
         .only(WindowInsetsSides.Horizontal)
         .asPaddingValues()
+      val scrollState = rememberScrollState()
+      val density = LocalDensity.current
+      LaunchedEffect(scrollState, density, onScrollOffsetChanged) {
+        snapshotFlow { with(density) { scrollState.value.toDp().value } }.collect(onScrollOffsetChanged)
+      }
       Column(
         modifier = Modifier
           .fillMaxWidth()
-          .verticalScroll(rememberScrollState())
+          .verticalScroll(scrollState)
           .padding(horizontalInsetsPadding)
           .padding(horizontal = 16.dp),
       ) {
@@ -270,6 +283,7 @@ private fun PuppyArticleScreenPreview(
         onReload = {},
         onRatingClick = {},
         imageLoader = rememberPreviewImageLoader(),
+        onScrollOffsetChanged = {},
       )
     }
   }

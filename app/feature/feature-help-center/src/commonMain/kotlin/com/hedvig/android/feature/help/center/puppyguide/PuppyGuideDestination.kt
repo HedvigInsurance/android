@@ -26,9 +26,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -78,6 +81,7 @@ internal fun PuppyGuideDestination(
   onNavigateUp: () -> Unit,
   imageLoader: ImageLoader,
   onNavigateToArticle: (PuppyGuideStory) -> Unit,
+  onScrollOffsetChanged: (Float) -> Unit = {},
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -89,6 +93,7 @@ internal fun PuppyGuideDestination(
       viewModel.emit(PuppyGuideEvent.Reload)
     },
     imageLoader = imageLoader,
+    onScrollOffsetChanged = onScrollOffsetChanged,
   )
 }
 
@@ -99,6 +104,7 @@ private fun PuppyGuideScreen(
   onNavigateUp: () -> Unit,
   reload: () -> Unit,
   imageLoader: ImageLoader,
+  onScrollOffsetChanged: (Float) -> Unit,
 ) {
   when (uiState) {
     PuppyGuideUiState.Failure -> HedvigScaffold(
@@ -117,6 +123,7 @@ private fun PuppyGuideScreen(
       onNavigateUp = onNavigateUp,
       onNavigateToArticle = onNavigateToArticle,
       imageLoader = imageLoader,
+      onScrollOffsetChanged = onScrollOffsetChanged,
     )
   }
 }
@@ -128,10 +135,18 @@ private fun PuppyGuideSuccessScreen(
   onNavigateToArticle: (PuppyGuideStory) -> Unit,
   onNavigateUp: () -> Unit,
   imageLoader: ImageLoader,
+  onScrollOffsetChanged: (Float) -> Unit,
 ) {
   val categories = remember(uiState.stories) { uiState.stories.flatMap { it.categories }.toSet().toList() }
   val listState = rememberLazyListState()
   val scope = rememberCoroutineScope()
+  val density = LocalDensity.current
+  LaunchedEffect(listState, density, onScrollOffsetChanged) {
+    snapshotFlow {
+      if (listState.firstVisibleItemIndex > 0) 200f
+      else with(density) { listState.firstVisibleItemScrollOffset.toDp().value }
+    }.collect(onScrollOffsetChanged)
+  }
 
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
@@ -379,6 +394,7 @@ private fun PuppyArticleScreenAnimations(
         {},
         reload = {},
         imageLoader = rememberPreviewImageLoader(),
+        onScrollOffsetChanged = {},
       )
     }
   }
