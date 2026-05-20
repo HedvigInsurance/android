@@ -46,15 +46,6 @@ fun NavGraphBuilder.payinAccountGraph(
           )
         },
         navigateUp = navigateUp,
-        onTrustlySelected = dropUnlessResumed {
-          navigateToConnectTrustly {
-            typedPopUpTo<PayinAccountDestinations.SelectPayinMethod> {
-              inclusive = true
-            }
-          }
-        },
-        onSwishSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupSwishPayin) },
-        onInvoiceSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupInvoicePayin) },
       )
     }
 

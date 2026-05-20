@@ -8,6 +8,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import octopus.GetPayinMethodsQuery
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodBankAccountDetails
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodInvoiceDetails
@@ -25,6 +26,7 @@ internal class GetPayinAccountUseCase(
   private val apolloClient: ApolloClient,
 ) {
   suspend fun invoke(): Either<ErrorMessage, PayinAccountData> = either {
+    logcat { "Mariia: GetPayinAccountUseCase launching" }
     val result = apolloClient
       .query(GetPayinMethodsQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)
@@ -59,7 +61,7 @@ internal class GetPayinAccountUseCase(
         MemberPaymentProvider.INVOICE -> {
           val invoiceDetails = method.details?.asPaymentMethodInvoiceDetails()
           PayinAccount.Invoice(
-            delivery = invoiceDetails?.delivery,
+            delivery = invoiceDetails?.delivery?.toDeliveryString(),
             email = invoiceDetails?.email,
             isPending = isPending,
             isDefault = method.isDefault
@@ -76,10 +78,12 @@ internal class GetPayinAccountUseCase(
       .filter { it.supportsPayin }
       .map { it.provider }
 
-    PayinAccountData(
+    val finalResult = PayinAccountData(
       currentMethods = currentMethods,
       availablePayinMethods = availablePayinMethods,
     )
+    logcat { "Mariia: GetPayinAccountUseCase finalResult: $finalResult" }
+    finalResult
   }
 }
 
@@ -123,9 +127,18 @@ internal sealed interface PayinAccount {
   ) : PayinAccount
 
   data class Invoice(
-    val delivery: PaymentMethodInvoiceDelivery?,
+    val delivery: String?,
     val email: String?,
     override val isPending: Boolean,
     override val isDefault: Boolean,
   ) : PayinAccount
+}
+
+private fun PaymentMethodInvoiceDelivery?.toDeliveryString(): String? {
+  return when(this) {
+    PaymentMethodInvoiceDelivery.KIVRA -> "Kivra" //todo
+    PaymentMethodInvoiceDelivery.MAIL -> "Email" //todo
+    PaymentMethodInvoiceDelivery.UNKNOWN__ -> ""
+    else -> null
+  }
 }
