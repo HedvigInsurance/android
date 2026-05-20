@@ -31,8 +31,8 @@ internal sealed interface PayinAccountOverviewUiState {
   data object Error : PayinAccountOverviewUiState
 
   data class Content(
-    val currentMethod: PayinAccount?,
-    val availablePayoutMethods: List<MemberPaymentProvider>,
+    val currentMethods: List<PayinAccount>,
+    val availablePayinMethods: List<MemberPaymentProvider>,
   ) : PayinAccountOverviewUiState
 }
 
@@ -52,8 +52,8 @@ internal class PayinAccountOverviewPresenter(
         ifLeft = { uiState = PayinAccountOverviewUiState.Error },
         ifRight = { data ->
           uiState = PayinAccountOverviewUiState.Content(
-              currentMethod = data.currentMethod,
-              availablePayoutMethods = data.availablePayinMethods,
+              currentMethods = data.currentMethods,
+              availablePayinMethods = data.availablePayinMethods,
             )
 
         },

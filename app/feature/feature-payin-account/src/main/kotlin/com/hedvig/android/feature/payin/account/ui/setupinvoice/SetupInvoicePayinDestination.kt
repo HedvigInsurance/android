@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payin.account.ui.setupinvoice
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
@@ -70,8 +73,17 @@ private fun SetupInvoicePayinScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     //todo: some text here??
-    Column (Modifier.weight(1f)) {
-      HedvigText("You can choose invoice as you pay-in")
+    Column(
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      HedvigText("You can choose invoice as your billing method. " +
+        "You will then get a monthly invoice via Kivra or email if you don't have Kivra account.",
+        textAlign = TextAlign.Center)
     }
     AnimatedVisibility(
       visible = uiState.errorMessage != null,
@@ -89,7 +101,7 @@ private fun SetupInvoicePayinScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Connect", //todo
+      text = "Set invoice as billing method", //todo
       onClick = onConnect,
       enabled = !uiState.isLoading,
       isLoading = uiState.isLoading,
@@ -111,10 +123,10 @@ private fun PreviewPayoutAccountOverviewScreen() {
         uiState = SetupInvoicePayinUiState(
           false,
           null,
-          showSuccessSnackBar = false
+          showSuccessSnackBar = false,
         ),
         globalSnackBarState = GlobalSnackBarState(),
-        {}, {} ,{}
+        {}, {}, {},
       )
     }
   }

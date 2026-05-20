@@ -12,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_DESCRIPTION
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
 import hedvig.resources.PAYMENTS_INVOICE
@@ -37,7 +39,7 @@ internal fun SelectPayinMethodDestination(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD), //todo
+    topAppBarText = "Select billing method to add", //todo
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -48,7 +50,7 @@ internal fun SelectPayinMethodDestination(
           MemberPaymentProvider.TRUSTLY -> {
             PayinMethodRow(
               title = stringResource(Res.string.trustly),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION), //todo
+              subtitle = "Connect your bank via Trustly", //todo
               onClick = onTrustlySelected,
             )
           }
@@ -56,7 +58,7 @@ internal fun SelectPayinMethodDestination(
           MemberPaymentProvider.SWISH -> {
             PayinMethodRow(
               title = stringResource(Res.string.swish),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_SWISH_DESCRIPTION), //todo
+              subtitle = "Monthly auto-payments through Swish", //todo
               onClick = onSwishSelected,
             )
           }
@@ -88,6 +90,25 @@ private fun PayinMethodRow(title: String, subtitle: String, onClick: () -> Unit,
       HedvigText(
         text = subtitle,
         color = HedvigTheme.colorScheme.textSecondary,
+      )
+    }
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun PreviewSelectPayinMethodScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SelectPayinMethodDestination(
+        availableProviders = listOf(
+          MemberPaymentProvider.SWISH,
+          MemberPaymentProvider.INVOICE,
+        ),
+        onTrustlySelected = {},
+        onSwishSelected = {},
+        onInvoiceSelected = {},
+        navigateUp = {},
       )
     }
   }

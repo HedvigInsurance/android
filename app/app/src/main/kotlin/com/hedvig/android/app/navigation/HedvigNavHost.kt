@@ -68,6 +68,8 @@ import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.SelectContractForMoving
 import com.hedvig.android.feature.movingflow.movingFlowGraph
+import com.hedvig.android.feature.payin.account.navigation.PayinAccountDestination
+import com.hedvig.android.feature.payin.account.navigation.payinAccountGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountDestination
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountGraph
@@ -110,6 +112,9 @@ internal fun HedvigNavHost(
   val navController = hedvigAppState.navController
 
   fun navigateToConnectPayment(builder: NavOptionsBuilder.() -> Unit = {}) {
+    navController.navigate(PayinAccountDestination.Graph, builder)
+  }
+  fun navigateToConnectTrustly(builder: NavOptionsBuilder.() -> Unit = {}) {
     navController.navigate(TrustlyDestination, builder)
   }
   val navigateToInbox = {
@@ -355,6 +360,13 @@ internal fun HedvigNavHost(
       globalSnackBarState = globalSnackBarState,
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectPayment = ::navigateToConnectPayment,
+      navigateUp = navController::navigateUp,
+    )
+    payinAccountGraph(
+      navController = navController,
+      globalSnackBarState = globalSnackBarState,
+      hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+      navigateToConnectTrustly = ::navigateToConnectTrustly,
       navigateUp = navController::navigateUp,
     )
     profileGraph(

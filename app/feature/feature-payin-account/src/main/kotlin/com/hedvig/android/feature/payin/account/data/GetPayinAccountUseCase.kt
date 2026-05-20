@@ -17,7 +17,7 @@ import octopus.type.MemberPaymentProvider
 import octopus.type.PaymentMethodInvoiceDelivery
 
 internal data class PayinAccountData(
-  val currentMethod: PayinAccount?,
+  val currentMethods: List<PayinAccount>,
   val availablePayinMethods: List<MemberPaymentProvider>,
 )
 
@@ -32,14 +32,17 @@ internal class GetPayinAccountUseCase(
       .bind()
 
     val paymentMethods = result.currentMember.paymentMethods
-    val defaultPayoutMethod = paymentMethods.payinMethods.firstOrNull { it.isDefault }
-    // todo. Return the other, non-default payin methods when we can switch to them
-    val currentMethod = defaultPayoutMethod?.let { method ->
+
+    val currentMethods: List<PayinAccount> = paymentMethods.payinMethods.mapNotNull { method ->
       val isPending = method.status == MemberPaymentMethodStatus.PENDING
       when (method.provider) {
         MemberPaymentProvider.SWISH -> {
           val phoneNumber = method.details?.asPaymentMethodSwishDetails()?.phoneNumber
-          PayinAccount.SwishPayin(phoneNumber = phoneNumber, isPending = isPending)
+          PayinAccount.SwishPayin(
+            phoneNumber = phoneNumber,
+            isPending = isPending,
+            isDefault = method.isDefault,
+          )
         }
 
         MemberPaymentProvider.TRUSTLY -> {
@@ -49,6 +52,7 @@ internal class GetPayinAccountUseCase(
             accountNumber = accountNumber,
             bankName = bankName,
             isPending = isPending,
+            isDefault = method.isDefault
           )
         }
 
@@ -58,6 +62,7 @@ internal class GetPayinAccountUseCase(
             delivery = invoiceDetails?.delivery,
             email = invoiceDetails?.email,
             isPending = isPending,
+            isDefault = method.isDefault
           )
         }
 
@@ -67,13 +72,13 @@ internal class GetPayinAccountUseCase(
       }
     }
 
-    val availablePayoutMethods = paymentMethods.availableMethods
+    val availablePayinMethods = paymentMethods.availableMethods
       .filter { it.supportsPayin }
       .map { it.provider }
 
     PayinAccountData(
-      currentMethod = currentMethod,
-      availablePayinMethods = availablePayoutMethods,
+      currentMethods = currentMethods,
+      availablePayinMethods = availablePayinMethods,
     )
   }
 }
@@ -101,22 +106,26 @@ private fun parseBankAccountDetails(
 
 internal sealed interface PayinAccount {
   val isPending: Boolean
+  val isDefault: Boolean
 
   data class Trustly(
     val clearingNumber: String?,
     val accountNumber: String?,
     val bankName: String?,
     override val isPending: Boolean,
+    override val isDefault: Boolean,
   ) : PayinAccount
 
   data class SwishPayin(
     val phoneNumber: String?,
     override val isPending: Boolean,
+    override val isDefault: Boolean,
   ) : PayinAccount
 
   data class Invoice(
     val delivery: PaymentMethodInvoiceDelivery?,
     val email: String?,
     override val isPending: Boolean,
+    override val isDefault: Boolean,
   ) : PayinAccount
 }

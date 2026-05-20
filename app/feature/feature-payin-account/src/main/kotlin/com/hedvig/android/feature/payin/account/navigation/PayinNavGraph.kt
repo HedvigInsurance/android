@@ -26,12 +26,12 @@ fun NavGraphBuilder.payinAccountGraph(
   navController: NavController,
   globalSnackBarState: GlobalSnackBarState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigateToConnectPayment: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
+  navigateToConnectTrustly: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
   navigateUp: () -> Unit,
 ) {
   navgraph<PayinAccountDestination.Graph>(
     startDestination = PayinAccountDestinations.Overview::class,
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout),
+    deepLinks = navDeepLinks(hedvigDeepLinkContainer.connectPayment),
   ) {
     navdestination<PayinAccountDestinations.Overview> {
       val viewModel: PayinAccountOverviewViewModel = koinViewModel()
@@ -41,11 +41,20 @@ fun NavGraphBuilder.payinAccountGraph(
           val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
           navController.navigate(
             PayinAccountDestinations.SelectPayinMethod(
-              availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
+              availableProviders = content?.availablePayinMethods?.map { it.rawValue } ?: emptyList(),
             ),
           )
         },
         navigateUp = navigateUp,
+        onTrustlySelected = dropUnlessResumed {
+          navigateToConnectTrustly {
+            typedPopUpTo<PayinAccountDestinations.SelectPayinMethod> {
+              inclusive = true
+            }
+          }
+        },
+        onSwishSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupSwishPayin) },
+        onInvoiceSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupInvoicePayin) },
       )
     }
 
@@ -53,7 +62,7 @@ fun NavGraphBuilder.payinAccountGraph(
       SelectPayinMethodDestination(
         availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
         onTrustlySelected = dropUnlessResumed {
-          navigateToConnectPayment {
+          navigateToConnectTrustly {
             typedPopUpTo<PayinAccountDestinations.SelectPayinMethod> {
               inclusive = true
             }
