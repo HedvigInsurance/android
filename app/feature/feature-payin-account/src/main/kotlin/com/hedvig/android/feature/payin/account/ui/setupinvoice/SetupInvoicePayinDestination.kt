@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SetupInvoicePayinDestination(
-  viewModel: SetupInvoicePayoutViewModel,
+  viewModel: SetupInvoicePayinViewModel,
   globalSnackBarState: GlobalSnackBarState,
   onSuccessfullyConnected: () -> Unit,
   navigateUp: () -> Unit,

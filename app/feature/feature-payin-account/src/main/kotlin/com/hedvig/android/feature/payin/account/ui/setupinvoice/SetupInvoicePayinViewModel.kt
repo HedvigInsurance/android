@@ -7,17 +7,17 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.payoutaccount.data.SetupInvoicePayoutUseCase
+import com.hedvig.android.feature.payin.account.data.SetupInvoicePayinUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
-internal class SetupInvoicePayoutViewModel(
-  setupInvoicePayoutUseCase: SetupInvoicePayoutUseCase,
+internal class SetupInvoicePayinViewModel(
+  setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
 ) : MoleculeViewModel<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState>(
-    SetupInvoicePayoutUiState(false, null, false),
-    SetupInvoicePayoutPresenter(setupInvoicePayoutUseCase),
-  )
+  SetupInvoicePayoutUiState(false, null, false),
+  SetupInvoicePayoutPresenter(setupInvoicePayinUseCase),
+)
 
 internal sealed interface SetupInvoicePayoutEvent {
   data object Connect : SetupInvoicePayoutEvent
@@ -32,7 +32,7 @@ internal data class SetupInvoicePayoutUiState(
 )
 
 internal class SetupInvoicePayoutPresenter(
-  private val setupInvoicePayoutUseCase: SetupInvoicePayoutUseCase,
+  private val  setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
 ) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState> {
   @Composable
   override fun MoleculePresenterScope<SetupInvoicePayoutEvent>.present(
@@ -48,7 +48,7 @@ internal class SetupInvoicePayoutPresenter(
       LaunchedEffect(connectIteration) {
         isLoading = true
         errorMessage = null
-        setupInvoicePayoutUseCase.invoke().fold(
+        setupInvoicePayinUseCase.invoke().fold(
           ifLeft = {
             isLoading = false
             errorMessage = it.message ?: "Something went wrong, please try again"

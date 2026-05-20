@@ -1,4 +1,4 @@
-mutation SetupInvoicePayout {
+mutation SetupInvoicePayin {
   paymentMethodSetupInvoicePayin {
     status
     error {

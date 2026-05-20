@@ -9,7 +9,7 @@ import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOvervie
 import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewUiState
 import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewViewModel
 import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinDestination
-import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayoutViewModel
+import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -83,7 +83,7 @@ fun NavGraphBuilder.payinAccountGraph(
     }
 
     navdestination<PayinAccountDestinations.SetupInvoicePayin> {
-      val viewModel: SetupInvoicePayoutViewModel = koinViewModel()
+      val viewModel: SetupInvoicePayinViewModel = koinViewModel()
       SetupInvoicePayinDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,

@@ -7,8 +7,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import octopus.SetupInvoicePayoutMutation
-import octopus.type.PaymentMethodInvoiceDelivery
+import octopus.SetupInvoicePayinMutation
 import octopus.type.PaymentMethodSetupStatus
 
 internal class SetupInvoicePayoutUseCase(
@@ -17,7 +16,7 @@ internal class SetupInvoicePayoutUseCase(
 ) {
   suspend fun invoke(): Either<ErrorMessage, Unit> = either {
     val result = apolloClient
-      .mutation(SetupInvoicePayoutMutation())
+      .mutation(SetupInvoicePayinMutation())
       .safeExecute(::ErrorMessage)
       .bind()
 
