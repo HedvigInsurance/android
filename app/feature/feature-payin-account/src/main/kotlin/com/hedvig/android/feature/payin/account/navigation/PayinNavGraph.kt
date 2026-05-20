@@ -5,11 +5,14 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
-import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewDestination
-import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewUiState
-import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewViewModel
+import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewDestination
+import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewUiState
+import com.hedvig.android.feature.payin.account.ui.overview.PayinAccountOverviewViewModel
+import com.hedvig.android.feature.payin.account.ui.selectmethod.SelectPayinMethodDestination
 import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinDestination
 import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinViewModel
+import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinDestination
+import com.hedvig.android.feature.payin.account.ui.setupswish.SetupSwishPayinViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -31,11 +34,11 @@ fun NavGraphBuilder.payinAccountGraph(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout),
   ) {
     navdestination<PayinAccountDestinations.Overview> {
-      val viewModel: PayoutAccountOverviewViewModel = koinViewModel()
-      PayoutAccountOverviewDestination(
+      val viewModel: PayinAccountOverviewViewModel = koinViewModel()
+      PayinAccountOverviewDestination(
         viewModel = viewModel,
         onConnectPayoutMethodClicked = dropUnlessResumed {
-          val content = viewModel.uiState.value as? PayoutAccountOverviewUiState.Content
+          val content = viewModel.uiState.value as? PayinAccountOverviewUiState.Content
           navController.navigate(
             PayinAccountDestinations.SelectPayinMethod(
               availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
@@ -54,7 +57,7 @@ fun NavGraphBuilder.payinAccountGraph(
     }
 
     navdestination<PayinAccountDestinations.SelectPayinMethod> {
-      SelectPayoutMethodDestination(
+      SelectPayinMethodDestination(
         availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
         onTrustlySelected = dropUnlessResumed {
           navigateToConnectPayment {
@@ -63,7 +66,6 @@ fun NavGraphBuilder.payinAccountGraph(
             }
           }
         },
-        onNordeaSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.EditBankAccount) },
         onSwishSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupSwishPayin) },
         onInvoiceSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupInvoicePayin) },
         navigateUp = navController::navigateUp,
@@ -71,8 +73,8 @@ fun NavGraphBuilder.payinAccountGraph(
     }
 
     navdestination<PayinAccountDestinations.SetupSwishPayin> {
-      val viewModel: SetupSwishPayoutViewModel = koinViewModel()
-      SetupSwishPayoutDestination(
+      val viewModel: SetupSwishPayinViewModel = koinViewModel()
+      SetupSwishPayinDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
         onSuccessfullyConnected = {

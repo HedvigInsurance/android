@@ -103,9 +103,13 @@ private fun PreviewPayoutAccountOverviewScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SetupInvoicePayoutScreen(
-        uiState = SetupInvoicePayoutUiState(false, null),
+        uiState = SetupInvoicePayoutUiState(
+          false,
+          null,
+          showSuccessSnackBar = false
+        ),
         globalSnackBarState = GlobalSnackBarState(),
-        {}
+        {}, {} ,{}
       )
     }
   }

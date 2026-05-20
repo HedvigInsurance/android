@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -30,8 +29,6 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
-import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState.Content
 import hedvig.resources.CHANGE_PAYOUT_METHOD_BUTTON_LABEL
 import hedvig.resources.MY_PAYMENT_UPDATING_MESSAGE
 import hedvig.resources.PAYMENTS_ACCOUNT
@@ -51,8 +48,8 @@ import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun PayoutAccountOverviewDestination(
-  viewModel: PayoutAccountOverviewViewModel,
+internal fun PayinAccountOverviewDestination(
+  viewModel: PayinAccountOverviewViewModel,
   onConnectPayoutMethodClicked: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateUp: () -> Unit,
@@ -62,14 +59,14 @@ internal fun PayoutAccountOverviewDestination(
     uiState = uiState,
     onConnectPayoutMethodClicked = onConnectPayoutMethodClicked,
     navigateToConnectPayment = navigateToConnectPayment,
-    onRetry = { viewModel.emit(PayoutAccountOverviewEvent.Retry) },
+    onRetry = { viewModel.emit(PayinAccountOverviewEvent.Retry) },
     navigateUp = navigateUp,
   )
 }
 
 @Composable
 private fun PayoutAccountOverviewScreen(
-  uiState: PayoutAccountOverviewUiState,
+  uiState: PayinAccountOverviewUiState,
   onConnectPayoutMethodClicked: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   onRetry: () -> Unit,
@@ -81,7 +78,7 @@ private fun PayoutAccountOverviewScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     when (uiState) {
-      PayoutAccountOverviewUiState.Loading -> {
+      PayinAccountOverviewUiState.Loading -> {
         HedvigFullScreenCenterAlignedProgressDebounced(
           Modifier
             .weight(1f)
@@ -89,7 +86,7 @@ private fun PayoutAccountOverviewScreen(
         )
       }
 
-      PayoutAccountOverviewUiState.Error -> {
+      PayinAccountOverviewUiState.Error -> {
         HedvigErrorSection(
           onButtonClick = onRetry,
           modifier = Modifier
@@ -98,7 +95,7 @@ private fun PayoutAccountOverviewScreen(
         )
       }
 
-      PayoutAccountOverviewUiState.NoPayoutOptions -> {
+      PayinAccountOverviewUiState.NoPayinOptions -> {
         HedvigInformationSection(
           title = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_TITLE),
           subTitle = stringResource(Res.string.PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE),
@@ -244,7 +241,7 @@ private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: Stri
 @Composable
 @HedvigPreview
 private fun PreviewPayoutAccountOverviewScreen(
-  @PreviewParameter(PayoutAccountOverviewUiStateProvider::class) uiState: PayoutAccountOverviewUiState,
+  @PreviewParameter(PayoutAccountOverviewUiStateProvider::class) uiState: PayinAccountOverviewUiState,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
@@ -259,11 +256,11 @@ private fun PreviewPayoutAccountOverviewScreen(
   }
 }
 
-private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterProvider<PayoutAccountOverviewUiState>(
+private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterProvider<PayinAccountOverviewUiState>(
   listOf(
-    PayoutAccountOverviewUiState.Loading,
-    PayoutAccountOverviewUiState.Error,
-    PayoutAccountOverviewUiState.NoPayoutOptions,
+    PayinAccountOverviewUiState.Loading,
+    PayinAccountOverviewUiState.Error,
+    PayinAccountOverviewUiState.NoPayinOptions,
     Content(
       currentMethod = null,
       availablePayoutMethods = listOf(MemberPaymentProvider.SWISH, MemberPaymentProvider.TRUSTLY),
