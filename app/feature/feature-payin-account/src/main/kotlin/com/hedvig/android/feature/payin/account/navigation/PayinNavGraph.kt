@@ -1,18 +1,15 @@
-package com.hedvig.android.feature.payoutaccount.navigation
+package com.hedvig.android.feature.payin.account.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
-import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountDestination
-import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountViewModel
-import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewDestination
-import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewUiState
-import com.hedvig.android.feature.payoutaccount.ui.overview.PayoutAccountOverviewViewModel
-import com.hedvig.android.feature.payoutaccount.ui.selectmethod.SelectPayoutMethodDestination
-import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
-import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
+import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewDestination
+import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewUiState
+import com.hedvig.android.feature.payin.account.ui.overview.PayoutAccountOverviewViewModel
+import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayinDestination
+import com.hedvig.android.feature.payin.account.ui.setupinvoice.SetupInvoicePayoutViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -22,32 +19,32 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import octopus.type.MemberPaymentProvider
 import org.koin.compose.viewmodel.koinViewModel
 
-fun NavGraphBuilder.payoutAccountGraph(
+fun NavGraphBuilder.payinAccountGraph(
   navController: NavController,
   globalSnackBarState: GlobalSnackBarState,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigateToConnectPayment: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
   navigateUp: () -> Unit,
 ) {
-  navgraph<PayoutAccountDestination.Graph>(
-    startDestination = PayoutAccountDestinations.Overview::class,
+  navgraph<PayinAccountDestination.Graph>(
+    startDestination = PayinAccountDestinations.Overview::class,
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout),
   ) {
-    navdestination<PayoutAccountDestinations.Overview> {
+    navdestination<PayinAccountDestinations.Overview> {
       val viewModel: PayoutAccountOverviewViewModel = koinViewModel()
       PayoutAccountOverviewDestination(
         viewModel = viewModel,
         onConnectPayoutMethodClicked = dropUnlessResumed {
           val content = viewModel.uiState.value as? PayoutAccountOverviewUiState.Content
           navController.navigate(
-            PayoutAccountDestinations.SelectPayoutMethod(
+            PayinAccountDestinations.SelectPayinMethod(
               availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
             ),
           )
         },
         navigateToConnectPayment = dropUnlessResumed {
           navigateToConnectPayment {
-            typedPopUpTo<PayoutAccountDestinations.Overview> {
+            typedPopUpTo<PayinAccountDestinations.Overview> {
               inclusive = true
             }
           }
@@ -56,41 +53,42 @@ fun NavGraphBuilder.payoutAccountGraph(
       )
     }
 
-    navdestination<PayoutAccountDestinations.SelectPayoutMethod> {
+    navdestination<PayinAccountDestinations.SelectPayinMethod> {
       SelectPayoutMethodDestination(
         availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
         onTrustlySelected = dropUnlessResumed {
           navigateToConnectPayment {
-            typedPopUpTo<PayoutAccountDestinations.SelectPayoutMethod> {
+            typedPopUpTo<PayinAccountDestinations.SelectPayinMethod> {
               inclusive = true
             }
           }
         },
-        onNordeaSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.EditBankAccount) },
-        onSwishSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupSwishPayout) },
+        onNordeaSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.EditBankAccount) },
+        onSwishSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupSwishPayin) },
+        onInvoiceSelected = dropUnlessResumed { navController.navigate(PayinAccountDestinations.SetupInvoicePayin) },
         navigateUp = navController::navigateUp,
       )
     }
 
-    navdestination<PayoutAccountDestinations.EditBankAccount> {
-      val viewModel: EditBankAccountViewModel = koinViewModel()
-      EditBankAccountDestination(
-        viewModel = viewModel,
-        globalSnackBarState = globalSnackBarState,
-        onSuccessfullyConnected = {
-          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
-        },
-        navigateUp = navController::navigateUp,
-      )
-    }
-
-    navdestination<PayoutAccountDestinations.SetupSwishPayout> {
+    navdestination<PayinAccountDestinations.SetupSwishPayin> {
       val viewModel: SetupSwishPayoutViewModel = koinViewModel()
       SetupSwishPayoutDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
         onSuccessfullyConnected = {
-          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+          navController.typedPopBackStack<PayinAccountDestinations.SelectPayinMethod>(inclusive = true)
+        },
+        navigateUp = navController::navigateUp,
+      )
+    }
+
+    navdestination<PayinAccountDestinations.SetupInvoicePayin> {
+      val viewModel: SetupInvoicePayoutViewModel = koinViewModel()
+      SetupInvoicePayinDestination(
+        viewModel = viewModel,
+        globalSnackBarState = globalSnackBarState,
+        onSuccessfullyConnected = {
+          navController.typedPopBackStack<PayinAccountDestinations.SelectPayinMethod>(inclusive = true)
         },
         navigateUp = navController::navigateUp,
       )

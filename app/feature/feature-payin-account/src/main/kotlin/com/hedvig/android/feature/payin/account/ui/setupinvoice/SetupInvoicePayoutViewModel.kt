@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payoutaccount.ui.setupinvoice
+package com.hedvig.android.feature.payin.account.ui.setupinvoice
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payoutaccount.ui.setupinvoice
+package com.hedvig.android.feature.payin.account.ui.setupinvoice
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -17,15 +17,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SetupInvoicePayoutDestination(
+internal fun SetupInvoicePayinDestination(
   viewModel: SetupInvoicePayoutViewModel,
   globalSnackBarState: GlobalSnackBarState,
   onSuccessfullyConnected: () -> Unit,
@@ -90,5 +93,20 @@ private fun SetupInvoicePayoutScreen(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+
+@Composable
+@HedvigPreview
+private fun PreviewPayoutAccountOverviewScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SetupInvoicePayoutScreen(
+        uiState = SetupInvoicePayoutUiState(false, null),
+        globalSnackBarState = GlobalSnackBarState(),
+        {}
+      )
+    }
   }
 }

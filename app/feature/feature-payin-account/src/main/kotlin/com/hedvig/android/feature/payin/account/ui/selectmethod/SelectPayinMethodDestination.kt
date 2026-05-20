@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payoutaccount.ui.selectmethod
+package com.hedvig.android.feature.payin.account.ui.selectmethod
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,15 +29,15 @@ import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SelectPayoutMethodDestination(
+internal fun SelectPayinMethodDestination(
   availableProviders: List<MemberPaymentProvider>,
   onTrustlySelected: () -> Unit,
-  onNordeaSelected: () -> Unit,
   onSwishSelected: () -> Unit,
+  onInvoiceSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD),
+    topAppBarText = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD), //todo
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -46,26 +46,26 @@ internal fun SelectPayoutMethodDestination(
       for (provider in availableProviders) {
         when (provider) {
           MemberPaymentProvider.TRUSTLY -> {
-            PayoutMethodRow(
+            PayinMethodRow(
               title = stringResource(Res.string.trustly),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION),
+              subtitle = stringResource(Res.string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION), //todo
               onClick = onTrustlySelected,
             )
           }
 
-          MemberPaymentProvider.NORDEA -> {
-            PayoutMethodRow(
-              title = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
-              subtitle = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_DESCRIPTION),
-              onClick = onNordeaSelected,
+          MemberPaymentProvider.SWISH -> {
+            PayinMethodRow(
+              title = stringResource(Res.string.swish),
+              subtitle = stringResource(Res.string.PAYOUT_METHOD_SWISH_DESCRIPTION), //todo
+              onClick = onSwishSelected,
             )
           }
 
-          MemberPaymentProvider.SWISH -> {
-            PayoutMethodRow(
-              title = stringResource(Res.string.swish),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_SWISH_DESCRIPTION),
-              onClick = onSwishSelected,
+          MemberPaymentProvider.INVOICE -> {
+            PayinMethodRow(
+              title = stringResource(Res.string.PAYMENTS_INVOICE),
+              subtitle = stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION), //todo
+              onClick = onInvoiceSelected,
             )
           }
 
@@ -78,7 +78,7 @@ internal fun SelectPayoutMethodDestination(
 }
 
 @Composable
-private fun PayoutMethodRow(title: String, subtitle: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun PayinMethodRow(title: String, subtitle: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
     onClick = onClick,
     modifier = modifier.fillMaxWidth(),
