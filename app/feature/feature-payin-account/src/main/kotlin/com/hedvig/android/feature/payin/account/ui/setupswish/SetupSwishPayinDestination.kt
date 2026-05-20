@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,10 +21,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
+import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
+import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.Surface
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res
@@ -112,5 +116,26 @@ private fun SetupSwishPayoutScreen(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(16.dp))
+  }
+}
+
+@Composable
+@HedvigPreview
+private fun PreviewSetupSwishPayinScreen() {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      SetupSwishPayoutScreen(
+        uiState = SetupSwishPayoutUiState(
+          phoneNumberState = TextFieldState(),
+          isLoading = false,
+          errorMessage = null,
+          showSuccessSnackBar = false,
+        ),
+        globalSnackBarState = GlobalSnackBarState(),
+        onSave = {},
+        showedSnackBar = {},
+        navigateUp = {},
+      )
+    }
   }
 }

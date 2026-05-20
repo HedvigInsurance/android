@@ -14,9 +14,9 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class SetupInvoicePayinViewModel(
   setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
-) : MoleculeViewModel<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState>(
-  SetupInvoicePayoutUiState(false, null, false),
-  SetupInvoicePayoutPresenter(setupInvoicePayinUseCase),
+) : MoleculeViewModel<SetupInvoicePayoutEvent, SetupInvoicePayinUiState>(
+  SetupInvoicePayinUiState(false, null, false),
+  SetupInvoicePayinPresenter(setupInvoicePayinUseCase),
 )
 
 internal sealed interface SetupInvoicePayoutEvent {
@@ -25,19 +25,19 @@ internal sealed interface SetupInvoicePayoutEvent {
   data object ShowedSnackBar : SetupInvoicePayoutEvent
 }
 
-internal data class SetupInvoicePayoutUiState(
+internal data class SetupInvoicePayinUiState(
   val isLoading: Boolean,
   val errorMessage: String?,
   val showSuccessSnackBar: Boolean,
 )
 
-internal class SetupInvoicePayoutPresenter(
+internal class SetupInvoicePayinPresenter(
   private val  setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
-) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState> {
+) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayinUiState> {
   @Composable
   override fun MoleculePresenterScope<SetupInvoicePayoutEvent>.present(
-    lastState: SetupInvoicePayoutUiState,
-  ): SetupInvoicePayoutUiState {
+    lastState: SetupInvoicePayinUiState,
+  ): SetupInvoicePayinUiState {
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
@@ -78,7 +78,7 @@ internal class SetupInvoicePayoutPresenter(
       }
     }
 
-    return SetupInvoicePayoutUiState(
+    return SetupInvoicePayinUiState(
       isLoading = isLoading,
       errorMessage = errorMessage,
       showSuccessSnackBar = showSuccessSnackBar,

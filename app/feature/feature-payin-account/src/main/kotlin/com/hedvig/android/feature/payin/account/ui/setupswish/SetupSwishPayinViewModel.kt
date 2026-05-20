@@ -9,17 +9,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.payin.account.data.SetupSwishPayinUseCase
-import com.hedvig.android.feature.payoutaccount.data.SetupSwishPayoutUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class SetupSwishPayinViewModel(
-  setupSwishPayoutUseCase: SetupSwishPayoutUseCase,
+  setupSwishPayoutUseCase: SetupSwishPayinUseCase,
 ) : MoleculeViewModel<SetupSwishPayoutEvent, SetupSwishPayoutUiState>(
-    SetupSwishPayoutUiState(TextFieldState(), false, null, false),
-    SetupSwishPayoutPresenter(setupSwishPayoutUseCase),
-  )
+  SetupSwishPayoutUiState(TextFieldState(), false, null, false),
+  SetupSwishPayoutPresenter(setupSwishPayoutUseCase),
+)
 
 internal sealed interface SetupSwishPayoutEvent {
   data object Save : SetupSwishPayoutEvent
@@ -52,7 +51,7 @@ internal class SetupSwishPayoutPresenter(
       LaunchedEffect(currentSave) {
         isLoading = true
         errorMessage = null
-        setupSwishPayoutUseCase.invoke(currentSave).fold(
+        setupSwishPayoutUseCase.invoke().fold(
           ifLeft = {
             isLoading = false
             errorMessage = it

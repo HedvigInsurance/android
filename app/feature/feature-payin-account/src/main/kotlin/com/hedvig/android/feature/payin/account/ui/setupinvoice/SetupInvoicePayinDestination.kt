@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payin.account.ui.setupinvoice
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
@@ -35,7 +37,7 @@ internal fun SetupInvoicePayinDestination(
   navigateUp: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  SetupInvoicePayoutScreen(
+  SetupInvoicePayinScreen(
     uiState = uiState,
     globalSnackBarState = globalSnackBarState,
     onConnect = { viewModel.emit(SetupInvoicePayoutEvent.Connect) },
@@ -48,8 +50,8 @@ internal fun SetupInvoicePayinDestination(
 }
 
 @Composable
-private fun SetupInvoicePayoutScreen(
-  uiState: SetupInvoicePayoutUiState,
+private fun SetupInvoicePayinScreen(
+  uiState: SetupInvoicePayinUiState,
   globalSnackBarState: GlobalSnackBarState,
   onConnect: () -> Unit,
   showedSnackBar: () -> Unit,
@@ -67,7 +69,10 @@ private fun SetupInvoicePayoutScreen(
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
-    Spacer(Modifier.weight(1f))
+    //todo: some text here??
+    Column (Modifier.weight(1f)) {
+      HedvigText("You can choose invoice as you pay-in")
+    }
     AnimatedVisibility(
       visible = uiState.errorMessage != null,
       enter = expandVertically(),
@@ -84,7 +89,7 @@ private fun SetupInvoicePayoutScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Connect",
+      text = "Connect", //todo
       onClick = onConnect,
       enabled = !uiState.isLoading,
       isLoading = uiState.isLoading,
@@ -102,8 +107,8 @@ private fun SetupInvoicePayoutScreen(
 private fun PreviewPayoutAccountOverviewScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      SetupInvoicePayoutScreen(
-        uiState = SetupInvoicePayoutUiState(
+      SetupInvoicePayinScreen(
+        uiState = SetupInvoicePayinUiState(
           false,
           null,
           showSuccessSnackBar = false

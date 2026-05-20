@@ -10,13 +10,15 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.GetPayinMethodsQuery
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodBankAccountDetails
+import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodInvoiceDetails
 import octopus.GetPayinMethodsQuery.Data.CurrentMember.PaymentMethods.PayinMethod.Details.Companion.asPaymentMethodSwishDetails
 import octopus.type.MemberPaymentMethodStatus
 import octopus.type.MemberPaymentProvider
+import octopus.type.PaymentMethodInvoiceDelivery
 
 internal data class PayinAccountData(
   val currentMethod: PayinAccount?,
-  val availablePayoutMethods: List<MemberPaymentProvider>,
+  val availablePayinMethods: List<MemberPaymentProvider>,
 )
 
 internal class GetPayinAccountUseCase(
@@ -50,6 +52,15 @@ internal class GetPayinAccountUseCase(
           )
         }
 
+        MemberPaymentProvider.INVOICE -> {
+          val invoiceDetails = method.details?.asPaymentMethodInvoiceDetails()
+          PayinAccount.Invoice(
+            delivery = invoiceDetails?.delivery,
+            email = invoiceDetails?.email,
+            isPending = isPending,
+          )
+        }
+
         else -> {
           null
         }
@@ -62,7 +73,7 @@ internal class GetPayinAccountUseCase(
 
     PayinAccountData(
       currentMethod = currentMethod,
-      availablePayoutMethods = availablePayoutMethods,
+      availablePayinMethods = availablePayoutMethods,
     )
   }
 }
@@ -100,6 +111,12 @@ internal sealed interface PayinAccount {
 
   data class SwishPayin(
     val phoneNumber: String?,
+    override val isPending: Boolean,
+  ) : PayinAccount
+
+  data class Invoice(
+    val delivery: PaymentMethodInvoiceDelivery?,
+    val email: String?,
     override val isPending: Boolean,
   ) : PayinAccount
 }
