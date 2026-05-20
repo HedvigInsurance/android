@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - develop
-      - feature/cio-backed-deep-links
+      - feat/in-app-apartment-purchase
   workflow_dispatch:
 
 concurrency:
