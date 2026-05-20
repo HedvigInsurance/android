@@ -33,9 +33,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -214,6 +216,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
+    val hapticFeedback = LocalHapticFeedback.current
     val ratings = listOf(1, 2, 3, 4, 5)
     Row(
       horizontalArrangement = Arrangement.SpaceAround,
@@ -224,6 +227,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
         HedvigCard(
           modifier = Modifier.weight(1f),
           onClick = {
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
             onRatingClick(rating)
           },
           color = if (isSelectedRating) {

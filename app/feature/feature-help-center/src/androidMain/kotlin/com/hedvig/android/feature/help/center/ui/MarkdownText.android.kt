@@ -37,3 +37,8 @@ actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: 
     Markdown(content = markdown)
   }
 }
+
+@Composable
+actual fun PerformHapticFeedback(intensity: HapticIntensity) {
+  // TODO: Implement Android haptic feedback
+}

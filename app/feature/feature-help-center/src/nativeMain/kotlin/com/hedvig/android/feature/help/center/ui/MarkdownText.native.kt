@@ -118,3 +118,8 @@ actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: 
     },
   )
 }
+
+@Composable
+actual fun PerformHapticFeedback(intensity: HapticIntensity) {
+  // TODO: Implement native (iOS) haptic feedback
+}
