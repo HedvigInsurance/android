@@ -45,13 +45,6 @@ fun NavGraphBuilder.payinAccountGraph(
             ),
           )
         },
-        navigateToConnectPayment = dropUnlessResumed {
-          navigateToConnectPayment {
-            typedPopUpTo<PayinAccountDestinations.Overview> {
-              inclusive = true
-            }
-          }
-        },
         navigateUp = navigateUp,
       )
     }
