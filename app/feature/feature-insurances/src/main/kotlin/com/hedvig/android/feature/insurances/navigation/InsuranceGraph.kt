@@ -1,5 +1,9 @@
 package com.hedvig.android.feature.insurances.navigation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -10,6 +14,7 @@ import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
+import com.hedvig.android.feature.insurances.insurance.HomePickerDialog
 import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
@@ -58,6 +63,7 @@ fun NavGraphBuilder.insuranceGraph(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
+      var showHomePicker by rememberSaveable { mutableStateOf(false) }
       val viewModel: InsuranceViewModel = koinViewModel()
       InsuranceDestination(
         viewModel = viewModel,
@@ -76,20 +82,28 @@ fun NavGraphBuilder.insuranceGraph(
               onNavigateToHousePurchase("SE_VACATION_HOME")
             }
 
-            "car-insurance" in lower || "bilforsakring" in lower -> {
-              onNavigateToCarPurchase("SE_CAR")
-            }
-
-            "pet-insurance" in lower || "djurforsakring" in lower -> {
-              onNavigateToPetPurchase()
+            "villaforsakring" in lower || "home-insurance/house" in lower -> {
+              onNavigateToHousePurchase("SE_HOUSE")
             }
 
             "bostadsratt" in lower || "home-insurance/homeowner" in lower -> {
               onNavigateToApartmentPurchase("SE_APARTMENT_BRF")
             }
 
-            "hyresratt" in lower || "home-insurance" in lower || "hemforsakring" in lower -> {
+            "hyresratt" in lower || "home-insurance/rental" in lower -> {
               onNavigateToApartmentPurchase("SE_APARTMENT_RENT")
+            }
+
+            "hemforsakring" in lower || "home-insurance" in lower -> {
+              showHomePicker = true
+            }
+
+            "car-insurance" in lower || "bilforsakring" in lower -> {
+              onNavigateToCarPurchase("SE_CAR")
+            }
+
+            "pet-insurance" in lower || "djurforsakring" in lower -> {
+              onNavigateToPetPurchase()
             }
 
             else -> {
@@ -106,6 +120,23 @@ fun NavGraphBuilder.insuranceGraph(
           onNavigateToAddonPurchaseFlow(ids, null)
         },
       )
+      if (showHomePicker) {
+        HomePickerDialog(
+          onDismiss = { showHomePicker = false },
+          onSelectApartmentRent = {
+            showHomePicker = false
+            onNavigateToApartmentPurchase("SE_APARTMENT_RENT")
+          },
+          onSelectApartmentBrf = {
+            showHomePicker = false
+            onNavigateToApartmentPurchase("SE_APARTMENT_BRF")
+          },
+          onSelectVilla = {
+            showHomePicker = false
+            onNavigateToHousePurchase("SE_HOUSE")
+          },
+        )
+      }
     }
     navdestination<InsurancesDestinations.InsuranceContractDetail>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.contract),
