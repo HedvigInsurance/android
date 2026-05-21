@@ -3,6 +3,7 @@ package com.hedvig.android.feature.payin.account.data
 import arrow.core.Either
 import arrow.core.raise.context.bind
 import arrow.core.raise.context.either
+import arrow.core.raise.context.raise
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
@@ -24,7 +25,12 @@ internal class SetupSwishPayinUseCaseImpl(
   override suspend fun invoke(phoneNumber: String): Either<ErrorMessage, SetupSwishResponse> = either {
     val result = apolloClient
       .mutation(SetupSwishPayinMutation(PaymentMethodSetupSwishInput(phoneNumber)))
-      .safeExecute(::ErrorMessage)
+      .safeExecute {
+        logcat {
+          "Mariia: SetupSwishPayinMutation error: $it"
+        }
+        raise(ErrorMessage())
+      }
       .bind()
 
     val output = result.paymentMethodSetupSwishPayin
