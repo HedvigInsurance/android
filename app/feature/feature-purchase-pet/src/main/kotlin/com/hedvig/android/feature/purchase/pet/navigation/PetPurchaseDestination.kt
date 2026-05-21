@@ -4,11 +4,12 @@ import com.hedvig.android.navigation.common.Destination
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PetPurchaseGraphDestination(
-  val productName: String,
-) : Destination
+data object PetPurchaseGraphDestination : Destination
 
 internal sealed interface PetPurchaseDestination {
   @Serializable
-  data object Form : PetPurchaseDestination, Destination
+  data object SpeciesPicker : PetPurchaseDestination, Destination
+
+  @Serializable
+  data class Form(val productName: String) : PetPurchaseDestination, Destination
 }

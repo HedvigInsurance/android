@@ -22,11 +22,12 @@ import com.hedvig.android.feature.purchase.common.ui.sign.SigningViewModel
 import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryDestination
 import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryViewModel
 import com.hedvig.android.feature.purchase.pet.navigation.PetPurchaseDestination.Form
+import com.hedvig.android.feature.purchase.pet.navigation.PetPurchaseDestination.SpeciesPicker
 import com.hedvig.android.feature.purchase.pet.ui.form.PetFormDestination
 import com.hedvig.android.feature.purchase.pet.ui.form.PetFormViewModel
+import com.hedvig.android.feature.purchase.pet.ui.picker.PetSpeciesPickerDestination
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -37,16 +38,24 @@ fun NavGraphBuilder.petPurchaseNavGraph(
   finishApp: () -> Unit,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) {
-  navgraph<PetPurchaseGraphDestination>(startDestination = Form::class) {
+  navgraph<PetPurchaseGraphDestination>(startDestination = SpeciesPicker::class) {
+    navdestination<SpeciesPicker> {
+      PetSpeciesPickerDestination(
+        navigateUp = dropUnlessResumed { popBackStack() },
+        onSpeciesSelected = { productName ->
+          navController.navigate(Form(productName))
+        },
+      )
+    }
+
     navdestination<Form> { backStackEntry ->
-      val graphRoute = navController
-        .getRouteFromBackStack<PetPurchaseGraphDestination>(backStackEntry)
+      val route = backStackEntry.toRoute<Form>()
       val viewModel: PetFormViewModel = koinViewModel {
-        parametersOf(graphRoute.productName)
+        parametersOf(route.productName)
       }
       PetFormDestination(
         viewModel = viewModel,
-        navigateUp = dropUnlessResumed { popBackStack() },
+        navigateUp = dropUnlessResumed { navController.popBackStack() },
         onOffersReceived = { shopSessionId, offers ->
           navController.navigate(
             SelectTier(

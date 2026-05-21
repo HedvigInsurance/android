@@ -43,7 +43,7 @@ fun NavGraphBuilder.insuranceGraph(
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   onNavigateToApartmentPurchase: (productName: String) -> Unit,
   onNavigateToCarPurchase: (productName: String) -> Unit,
-  onNavigateToPetPurchase: (productName: String) -> Unit,
+  onNavigateToPetPurchase: () -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -75,14 +75,8 @@ fun NavGraphBuilder.insuranceGraph(
               onNavigateToCarPurchase("SE_CAR")
             }
 
-            // TODO: verify against actual cross-sell URLs (storyblok / staging)
-            "dog-insurance" in lower || "hundforsakring" in lower -> {
-              onNavigateToPetPurchase("SE_PET_DOG")
-            }
-
-            // TODO: verify against actual cross-sell URLs (storyblok / staging)
-            "cat-insurance" in lower || "kattforsakring" in lower -> {
-              onNavigateToPetPurchase("SE_PET_CAT")
+            "pet-insurance" in lower || "djurforsakring" in lower -> {
+              onNavigateToPetPurchase()
             }
 
             "bostadsratt" in lower || "home-insurance/homeowner" in lower -> {

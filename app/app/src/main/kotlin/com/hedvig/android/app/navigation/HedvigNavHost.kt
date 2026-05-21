@@ -339,8 +339,8 @@ internal fun HedvigNavHost(
       onNavigateToCarPurchase = { productName ->
         navController.navigate(CarPurchaseGraphDestination(productName))
       },
-      onNavigateToPetPurchase = { productName ->
-        navController.navigate(PetPurchaseGraphDestination(productName))
+      onNavigateToPetPurchase = {
+        navController.navigate(PetPurchaseGraphDestination)
       },
     )
     foreverGraph(
