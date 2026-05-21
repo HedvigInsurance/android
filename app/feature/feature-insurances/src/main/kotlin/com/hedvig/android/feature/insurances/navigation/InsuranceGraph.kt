@@ -42,6 +42,7 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   onNavigateToApartmentPurchase: (productName: String) -> Unit,
+  onNavigateToCarPurchase: (productName: String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -62,8 +63,21 @@ fun NavGraphBuilder.insuranceGraph(
           navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
         onCrossSellClick = dropUnlessResumed { url: String ->
-          // Hardcoded for testing: route all cross-sells to in-app purchase
-          onNavigateToApartmentPurchase("SE_APARTMENT_RENT")
+          val decoded = try {
+            URLDecoder.decode(url, "UTF-8")
+          } catch (_: Exception) {
+            url
+          }
+          val lower = decoded.lowercase()
+          when {
+            "car-insurance" in lower || "bilforsakring" in lower ->
+              onNavigateToCarPurchase("SE_CAR")
+            "bostadsratt" in lower || "home-insurance/homeowner" in lower ->
+              onNavigateToApartmentPurchase("SE_APARTMENT_BRF")
+            "hyresratt" in lower || "home-insurance" in lower || "hemforsakring" in lower ->
+              onNavigateToApartmentPurchase("SE_APARTMENT_RENT")
+            else -> openUrl(url)
+          }
         },
         navigateToCancelledInsurances = dropUnlessResumed {
           navController.navigate(InsurancesDestinations.TerminatedInsurances)
@@ -123,16 +137,3 @@ fun NavGraphBuilder.insuranceGraph(
   }
 }
 
-private fun parseApartmentProductFromUrl(url: String): String? {
-  val decodedUrl = try {
-    URLDecoder.decode(url, "UTF-8")
-  } catch (_: Exception) {
-    url
-  }
-  val lowerUrl = decodedUrl.lowercase()
-  return when {
-    lowerUrl.contains("hyresratt") || lowerUrl.contains("home-insurance/rental") -> "SE_APARTMENT_RENT"
-    lowerUrl.contains("bostadsratt") || lowerUrl.contains("home-insurance/homeowner") -> "SE_APARTMENT_BRF"
-    else -> null
-  }
-}
