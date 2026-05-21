@@ -38,6 +38,7 @@ import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE
 import hedvig.resources.HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE
 import hedvig.resources.HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE
+import hedvig.resources.MANAGE_BILLING_METHODS_BUTTON
 import hedvig.resources.Res
 import kotlinx.coroutines.flow.first
 import octopus.AvailableSelfServiceOnContractsQuery
@@ -118,7 +119,7 @@ internal class GetQuickLinksUseCase(
           StandaloneQuickLink(
             quickLinkDestination = QuickLinkDestination.OuterDestination.QuickLinkConnectPayment,
             titleRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_TITLE,
-            hintTextRes = Res.string.HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE,
+            hintTextRes = Res.string.MANAGE_BILLING_METHODS_BUTTON, //todo!!!
           ),
         )
       }

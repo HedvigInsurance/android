@@ -493,7 +493,7 @@ internal fun HedvigNavHost(
           }
 
           QuickLinkConnectPayment -> {
-            TrustlyDestination
+            PayinAccountDestination.Graph
           }
 
           QuickLinkTermination -> {

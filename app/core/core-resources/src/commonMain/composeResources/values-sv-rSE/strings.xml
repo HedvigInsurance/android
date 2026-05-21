@@ -522,6 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
+  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your billing methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
@@ -680,7 +681,7 @@
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Reseintyg</string>
   <string name="PROFILE_TITLE">Din profil</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Se guider</string>
-  <string name="PUPPY_GUIDE_INFO">I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.</string>
+  <string name="PUPPY_GUIDE_INFO">I Valpguiden får du svar på de vanligaste frågorna som rör valpens första tid.</string>
   <string name="PUPPY_GUIDE_LABEL">Utvalda guider</string>
   <string name="PUPPY_GUIDE_LABEL_READ">Läst</string>
   <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Inte hjälpsam</string>
@@ -1366,6 +1367,7 @@
   <string name="referrals_intro_screen_title">Du är inbjuden</string>
   <string name="referrals_notification_feature_added_title">Hedvig Forever</string>
   <string name="referrals_notification_feature_added_description">You’ve been officially invited to Hedvig Forever and can now invite your friends with your unique code</string>
+  <string name="resume_shopping">Återuppta handlingen</string>
   <string name="sas_integration_connect_your_eurobonus">Koppla ditt EuroBonus</string>
   <string name="sas_integration_connect_your_number">Lägg till ditt nummer</string>
   <string name="sas_integration_info">Du tjänar 100 poäng per månad för varje aktiv försäkring du har hos Hedvig</string>

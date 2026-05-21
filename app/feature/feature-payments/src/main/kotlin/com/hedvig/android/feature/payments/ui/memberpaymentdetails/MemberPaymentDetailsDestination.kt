@@ -56,6 +56,7 @@ import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.KIVRA_NOTIFICATION_BOX_TEXT
+import hedvig.resources.MANAGE_BILLING_METHODS_BUTTON
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.R
 import hedvig.resources.Res
@@ -221,7 +222,7 @@ private fun MemberPaymentDetailsSuccessScreen(
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Manage payment methods",//todo
+      text = stringResource(Res.string.MANAGE_BILLING_METHODS_BUTTON),//todo
       onClick = onChangeBankAccount,
       enabled = true,
       buttonStyle = ButtonDefaults.ButtonStyle.Secondary,

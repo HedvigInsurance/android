@@ -522,6 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
+  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your billing methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Activate your coverage again by contacting us once your payment has been processed</string>
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Review contact info</string>
@@ -1366,6 +1367,7 @@
   <string name="referrals_intro_screen_title">You’re invited</string>
   <string name="referrals_notification_feature_added_title">Hedvig Forever</string>
   <string name="referrals_notification_feature_added_description">You’ve been officially invited to Hedvig Forever and can now invite your friends with your unique code</string>
+  <string name="resume_shopping">Resume shopping</string>
   <string name="sas_integration_connect_your_eurobonus">Connect your EuroBonus</string>
   <string name="sas_integration_connect_your_number">Connect your number</string>
   <string name="sas_integration_info">You earn 100 points per month for each active insurance you have with Hedvig</string>
