@@ -1,5 +1,6 @@
 package com.hedvig.android.design.system.hedvig
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -37,6 +38,7 @@ import com.hedvig.android.design.system.hedvig.icon.CheckFilled
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.InfoFilled
 import com.hedvig.android.design.system.hedvig.icon.WarningFilled
+import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.design.system.hedvig.tokens.EmptyStateTokens
 
 @Composable
@@ -148,6 +150,15 @@ private fun ColumnScope.EmptyStateIcon(iconStyle: EmptyStateIconStyle) {
       )
       Spacer(Modifier.height(16.dp))
     }
+
+    EmptyStateIconStyle.SWISH -> {
+      Image(
+        HedvigIcons.Swish,
+        null,
+        modifier = Modifier.size(48.dp),
+      )
+      Spacer(Modifier.height(16.dp))
+    }
   }
 }
 
@@ -161,7 +172,9 @@ object EmptyStateDefaults {
     SUCCESS,
     BANK_ID,
     NO_ICON,
-    SUCCESS_WITH_WARNING
+    SUCCESS_WITH_WARNING,
+
+    SWISH
   }
 
   sealed class EmptyStateButtonStyle {

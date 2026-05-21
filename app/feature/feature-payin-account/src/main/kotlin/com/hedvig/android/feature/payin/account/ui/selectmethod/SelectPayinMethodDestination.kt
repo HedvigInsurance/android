@@ -39,7 +39,7 @@ internal fun SelectPayinMethodDestination(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = "Select billing method to add", //todo
+    topAppBarText = "Select billing method to add", // todo
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -50,7 +50,7 @@ internal fun SelectPayinMethodDestination(
           MemberPaymentProvider.TRUSTLY -> {
             PayinMethodRow(
               title = stringResource(Res.string.trustly),
-              subtitle = "Connect your bank via Trustly", //todo
+              subtitle = "Connect your bank via Trustly", // todo
               onClick = onTrustlySelected,
             )
           }
@@ -58,7 +58,7 @@ internal fun SelectPayinMethodDestination(
           MemberPaymentProvider.SWISH -> {
             PayinMethodRow(
               title = stringResource(Res.string.swish),
-              subtitle = "Monthly auto-payments through Swish", //todo
+              subtitle = "Monthly auto-payments through Swish", // todo
               onClick = onSwishSelected,
             )
           }
@@ -66,7 +66,7 @@ internal fun SelectPayinMethodDestination(
           MemberPaymentProvider.INVOICE -> {
             PayinMethodRow(
               title = stringResource(Res.string.PAYMENTS_INVOICE),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION), //todo
+              subtitle = stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION), // todo
               onClick = onInvoiceSelected,
             )
           }

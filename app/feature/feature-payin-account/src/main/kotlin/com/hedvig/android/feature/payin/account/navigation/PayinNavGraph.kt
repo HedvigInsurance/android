@@ -78,7 +78,7 @@ fun NavGraphBuilder.payinAccountGraph(
         openUrl = {
           navController.typedPopBackStack<PayinAccountDestinations.SelectPayinMethod>(inclusive = true)
           openUrl(it)
-        }
+        },
       )
     }
 

@@ -55,7 +55,7 @@ internal class GetPayinAccountUseCase(
             accountNumber = accountNumber,
             bankName = bankName,
             isPending = isPending,
-            isDefault = isDefault
+            isDefault = isDefault,
           )
         }
 
@@ -65,7 +65,7 @@ internal class GetPayinAccountUseCase(
             delivery = invoiceDetails?.delivery?.toDeliveryString(),
             email = invoiceDetails?.email,
             isPending = isPending,
-            isDefault = isDefault
+            isDefault = isDefault,
           )
         }
 
@@ -136,10 +136,15 @@ internal sealed interface PayinAccount {
 }
 
 private fun PaymentMethodInvoiceDelivery?.toDeliveryString(): String? {
-  return when(this) {
-    PaymentMethodInvoiceDelivery.KIVRA -> "Kivra" //todo
-    PaymentMethodInvoiceDelivery.MAIL -> "Email" //todo
+  return when (this) {
+    PaymentMethodInvoiceDelivery.KIVRA -> "Kivra"
+
+    // todo
+    PaymentMethodInvoiceDelivery.MAIL -> "Email"
+
+    // todo
     PaymentMethodInvoiceDelivery.UNKNOWN__ -> ""
+
     else -> null
   }
 }

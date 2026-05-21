@@ -72,7 +72,7 @@ private fun PayinAccountOverviewScreen(
   setAsDefaultPayinMethod: (MemberPaymentProvider) -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = "Billing account", //todo!
+    topAppBarText = "Billing account", // todo!
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -125,14 +125,16 @@ private fun PayoutAccountContent(
       if (availablePayinMethods.isNotEmpty()) {
         Spacer(Modifier.weight(1f))
         EmptyState(
-          text = "You haven’t added a billing method yet. Add one to pay for your insurance.", //todo
+          text = "You haven’t added a billing method yet. Add one to pay for your insurance.", // todo
           description = null,
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
         )
       }
     } else {
-      HedvigText("Active billing methods",//todo
-        modifier = Modifier.padding(horizontal = 16.dp))
+      HedvigText(
+        "Active billing methods", // todo
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
       Spacer(Modifier.height(16.dp))
       Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -154,14 +156,14 @@ private fun PayoutAccountContent(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.SWISH,
-                isPending = method.isPending
+                isPending = method.isPending,
               )
             }
 
             is PayinAccount.Trustly -> {
               val accountNumber = formatBankAccountNumber(method.clearingNumber, method.accountNumber, method.bankName)
               CurrentPayinMethodRow(
-                label = "Autogiro", //todo
+                label = "Autogiro", // todo
                 text = if (method.isPending && accountNumber.isBlank()) {
                   stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
                 } else {
@@ -173,7 +175,7 @@ private fun PayoutAccountContent(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.TRUSTLY,
-                isPending = method.isPending
+                isPending = method.isPending,
               )
             }
 
@@ -187,7 +189,7 @@ private fun PayoutAccountContent(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.INVOICE,
-                isPending = method.isPending
+                isPending = method.isPending,
               )
             }
           }
@@ -213,7 +215,7 @@ private fun PayoutAccountContent(
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
       if (currentMethods.any { it.isPending }) {
         HedvigNotificationCard(
-          message = "You have just added or changed a billing method, it will appear here soon.", //todo
+          message = "You have just added or changed a billing method, it will appear here soon.", // todo
           priority = NotificationPriority.Info,
           modifier = Modifier
             .fillMaxWidth()
@@ -222,7 +224,7 @@ private fun PayoutAccountContent(
       }
       if (availablePayinMethods.isNotEmpty()) {
         HedvigButton(
-          text = "Add a billing method", //todo!
+          text = "Add a billing method", // todo!
           onClick = onConnectPayinMethodClicked,
           enabled = true,
           modifier = Modifier
@@ -268,7 +270,7 @@ private fun CurrentPayinMethodRow(
         ) {
           if (isDefault) {
             HighlightLabel(
-              labelText = "Default", //todo
+              labelText = "Default", // todo
               size = HighlightLabelDefaults.HighLightSize.Small,
               color = HighlightLabelDefaults.HighlightColor.Green(
                 HighlightLabelDefaults.HighlightShade.LIGHT,
@@ -278,7 +280,7 @@ private fun CurrentPayinMethodRow(
             if (!isPending) {
               HedvigButtonGhostWithBorder(
                 size = ButtonDefaults.ButtonSize.Small,
-                text = "Choose as default", //todo
+                text = "Choose as default", // todo
                 onClick = onClick,
                 isLoading = loadingDefaultProvider,
               )

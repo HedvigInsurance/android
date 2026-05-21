@@ -3,26 +3,42 @@ package com.hedvig.android.feature.payin.account.ui.setupswish
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.simulateHotReload
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
@@ -62,11 +78,14 @@ internal fun SetupSwishPayinDestination(
       onSuccessfullyConnected()
     },
     navigateUp = navigateUp,
-    openUrl = openUrl
+    openUrl = openUrl,
+    updateText = {
+      viewModel.emit(SetupSwishPayoutEvent.UpdateText(it))
+    },
   )
 }
 
-//todo fetch payment methods continuously to see if it already not in pending state
+// todo fetch payment methods continuously to see if it already not in pending state
 
 @Composable
 private fun SetupSwishPayoutScreen(
@@ -76,7 +95,9 @@ private fun SetupSwishPayoutScreen(
   showedSnackBar: () -> Unit,
   navigateUp: () -> Unit,
   openUrl: (String) -> Unit,
+  updateText: (String) -> Unit,
 ) {
+  val focusManager = LocalFocusManager.current
   val changesSaved = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
     if (!uiState.showSuccessSnackBar) return@LaunchedEffect
@@ -98,54 +119,130 @@ private fun SetupSwishPayoutScreen(
         iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
       )
     }
-    if (uiState.successUrl!=null) {
+    AnimatedVisibility(uiState.successUrl != null) {
+      if (uiState.successUrl != null)
       Column(
-        modifier= Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
       ) {
         EmptyState(
           text = "The process started",
-          description = "Please confirm in Swish app",
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-          iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SUCCESS_WITH_WARNING,
+          description = "Please give your approval in the Swish app",
+          modifier = Modifier.fillMaxWidth(),
+          iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SWISH,
         )
         Spacer(Modifier.height(16.dp))
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          QRCode(
+            token = uiState.successUrl,
+            modifier = Modifier
+              .size(180.dp),
+          )
+        }
+        Spacer(Modifier.height(32.dp))
         HedvigButton(
           "Open Swish",
           enabled = true,
           onClick = {
             openUrl(uiState.successUrl)
-          }
+          },
+          buttonStyle = ButtonDefaults.ButtonStyle.PrimaryAlt,
+          buttonSize = ButtonDefaults.ButtonSize.Medium,
         )
       }
-
     }
     Spacer(Modifier.weight(1f))
-    Column(Modifier.padding(horizontal = 16.dp)) {
-      HedvigTextField(
-        state = uiState.phoneNumberState,
-        labelText = stringResource(Res.string.ODYSSEY_PHONE_NUMBER_LABEL),
-        textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
-        keyboardOptions = KeyboardOptions(
-          keyboardType = KeyboardType.Phone,
-        ),
-        modifier = Modifier.fillMaxWidth(),
-      )
+    AnimatedVisibility(uiState.successUrl == null) {
+      Column {
+        Spacer(Modifier.height(16.dp))
+        Column(Modifier.padding(horizontal = 16.dp)) {
+          var input by remember { mutableStateOf(uiState.phoneNumber) }
+          val mask = "000-000-00-00"
+          val maskColor = HedvigTheme.colorScheme.textTertiary
+          val visualTransformation = ChipIdVisualTransformation(mask, maskColor)
+          val interactionSource = remember { MutableInteractionSource() }
+          HedvigTextField(
+            text = input,
+            labelText = stringResource(Res.string.ODYSSEY_PHONE_NUMBER_LABEL),
+            textFieldSize = HedvigTextFieldDefaults.TextFieldSize.Medium,
+            keyboardOptions = KeyboardOptions(
+              keyboardType = KeyboardType.Phone,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            visualTransformation = visualTransformation,
+            errorState = HedvigTextFieldDefaults.ErrorState.NoError,
+            interactionSource = interactionSource,
+            onValueChange = {
+              if (it.length <= 15) {
+                updateText(it)
+                input = it
+              }
+            },
+          )
+        }
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          text = stringResource(Res.string.general_save_button),
+          onClick = {
+            focusManager.clearFocus()
+            onSave()
+          },
+          enabled = !uiState.isLoading &&
+            uiState.phoneNumber.length >= 8 &&
+            uiState.phoneNumber.length <= 15,
+          isLoading = uiState.isLoading,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        )
+      }
     }
 
     Spacer(Modifier.height(16.dp))
-    HedvigButton(
-      text = stringResource(Res.string.general_save_button),
-      onClick = onSave,
-      enabled = !uiState.isLoading &&
-        uiState.phoneNumberState.text.length >= 10 &&
-        uiState.successUrl==null,
-      isLoading = uiState.isLoading,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    )
-    Spacer(Modifier.height(16.dp))
+  }
+}
+
+private class ChipIdVisualTransformation(
+  private val mask: String,
+  private val maskColor: Color,
+) : VisualTransformation {
+  override fun filter(text: AnnotatedString): TransformedText {
+    val trimmed = if (text.text.length >= 15) text.text.substring(0..14) else text.text
+
+    val annotatedString = buildAnnotatedString {
+      for (i in trimmed.indices) {
+        append(trimmed[i])
+        if (i in listOf(2, 5, 7)) {
+          append("-")
+        }
+      }
+      withStyle(SpanStyle(color = maskColor)) {
+        append(mask.takeLast((mask.length - length).coerceAtLeast(0)))
+      }
+    }
+
+    val personalNumberOffsetTranslator = object : OffsetMapping {
+      override fun originalToTransformed(offset: Int): Int {
+        return when {
+          offset <= 2 -> offset
+          offset <= 5 -> offset + 1
+          offset <= 7 -> offset + 2
+          else -> offset + 3
+        }
+      }
+
+      override fun transformedToOriginal(offset: Int): Int {
+        return when {
+          offset <= 3 -> offset
+          offset <= 7 -> offset - 1
+          offset <= 10 -> offset - 2
+          else -> offset - 3
+        }.coerceAtMost(text.length)
+      }
+    }
+    return TransformedText(annotatedString, personalNumberOffsetTranslator)
   }
 }
 
@@ -162,39 +259,39 @@ private fun PreviewSetupSwishPayinScreen(
         onSave = {},
         showedSnackBar = {},
         navigateUp = {},
-        {}
+        {},
+        {},
       )
     }
   }
 }
 
-
 private class SetupSwishPayinUiStateProvider : CollectionPreviewParameterProvider<SetupSwishPayoutUiState>(
   listOf(
     SetupSwishPayoutUiState(
-      phoneNumberState = TextFieldState("287334432273"),
+      phoneNumber = "287334432273",
       isLoading = false,
       error = null,
       showSuccessSnackBar = false,
     ),
     SetupSwishPayoutUiState(
-      phoneNumberState = TextFieldState(),
+      phoneNumber = "",
       isLoading = false,
       error = ErrorMessage(),
       showSuccessSnackBar = false,
     ),
     SetupSwishPayoutUiState(
-      phoneNumberState = TextFieldState("837286428"),
+      phoneNumber = "837286428",
       isLoading = true,
       error = null,
       showSuccessSnackBar = false,
     ),
     SetupSwishPayoutUiState(
-      phoneNumberState = TextFieldState("83728644428"),
+      phoneNumber = "83728644428",
       isLoading = false,
       error = null,
       showSuccessSnackBar = false,
-      successUrl = "hwdjhew"
-    )
+      successUrl = "hwdjhew",
+    ),
   ),
 )

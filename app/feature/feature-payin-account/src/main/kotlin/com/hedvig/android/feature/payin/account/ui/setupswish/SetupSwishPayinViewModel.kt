@@ -17,30 +17,31 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class SetupSwishPayinViewModel(
   setupSwishPayoutUseCase: SetupSwishPayinUseCase,
 ) : MoleculeViewModel<SetupSwishPayoutEvent, SetupSwishPayoutUiState>(
-  SetupSwishPayoutUiState(
-    phoneNumberState = TextFieldState(),
-    isLoading = false,
-    error = null,
-    showSuccessSnackBar = false,
-    successUrl = null
-  ),
-  SetupSwishPayoutPresenter(setupSwishPayoutUseCase),
-)
+    SetupSwishPayoutUiState(
+      phoneNumber = "",
+      isLoading = false,
+      error = null,
+      showSuccessSnackBar = false,
+      successUrl = null,
+    ),
+    SetupSwishPayoutPresenter(setupSwishPayoutUseCase),
+  )
 
 internal sealed interface SetupSwishPayoutEvent {
   data object Save : SetupSwishPayoutEvent
 
   data object ShowedSnackBar : SetupSwishPayoutEvent
+
+  data class UpdateText(val newText: String) : SetupSwishPayoutEvent
 }
 
-internal data class SetupSwishPayoutUiState (
-    val showSuccessSnackBar: Boolean,
-    val successUrl: String? = null,
-    val phoneNumberState: TextFieldState,
-    val isLoading: Boolean,
-    val error: ErrorMessage?,
-    val resultIsPending: Boolean = false
-
+internal data class SetupSwishPayoutUiState(
+  val showSuccessSnackBar: Boolean,
+  val successUrl: String? = null,
+  val phoneNumber: String,
+  val isLoading: Boolean,
+  val error: ErrorMessage?,
+  val resultIsPending: Boolean = false,
 )
 
 internal class SetupSwishPayoutPresenter(
@@ -50,7 +51,7 @@ internal class SetupSwishPayoutPresenter(
   override fun MoleculePresenterScope<SetupSwishPayoutEvent>.present(
     lastState: SetupSwishPayoutUiState,
   ): SetupSwishPayoutUiState {
-    val phoneNumberState = remember { lastState.phoneNumberState }
+    var phoneNumberState by remember { mutableStateOf(lastState.phoneNumber) }
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<ErrorMessage?>(null) }
     var showSuccessSnackBar by remember { mutableStateOf(false) }
@@ -61,12 +62,11 @@ internal class SetupSwishPayoutPresenter(
 
     val currentSave = saveIteration
     if (currentSave != null) {
-      val currentState = uiState
       LaunchedEffect(currentSave) {
         isLoading = true
         errorMessage = null
         resultIsPending = false
-        setupSwishPayoutUseCase.invoke(phoneNumberState.text.toString()).fold(
+        setupSwishPayoutUseCase.invoke(phoneNumberState).fold(
           ifLeft = {
             isLoading = false
             errorMessage = it
@@ -75,14 +75,16 @@ internal class SetupSwishPayoutPresenter(
           ifRight = { result ->
             isLoading = false
             saveIteration = null
-            when(result) {
+            when (result) {
               is SetupSwishResponse.Failure -> {
                 errorMessage = result.error
               }
+
               is SetupSwishResponse.Pending -> {
                 urlToRedirect = result.url
                 resultIsPending = true
               }
+
               is SetupSwishResponse.Success -> {
                 showSuccessSnackBar = true
                 urlToRedirect = result.url
@@ -97,22 +99,26 @@ internal class SetupSwishPayoutPresenter(
       when (event) {
         SetupSwishPayoutEvent.Save -> {
           if (!isLoading) {
-            saveIteration = phoneNumberState.text.toString()
+            saveIteration = phoneNumberState
           }
         }
 
         SetupSwishPayoutEvent.ShowedSnackBar -> {
           showSuccessSnackBar = false
         }
+
+        is SetupSwishPayoutEvent.UpdateText -> {
+          phoneNumberState = event.newText
+        }
       }
     }
 
     return SetupSwishPayoutUiState(
-      phoneNumberState = phoneNumberState,
+      phoneNumber = phoneNumberState,
       isLoading = isLoading,
       error = errorMessage,
       showSuccessSnackBar = showSuccessSnackBar,
-      successUrl = urlToRedirect
+      successUrl = urlToRedirect,
     )
   }
 }

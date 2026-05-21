@@ -15,9 +15,9 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 internal class SetupInvoicePayinViewModel(
   setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
 ) : MoleculeViewModel<SetupInvoicePayoutEvent, SetupInvoicePayinUiState>(
-  SetupInvoicePayinUiState(false, null, false),
-  SetupInvoicePayinPresenter(setupInvoicePayinUseCase),
-)
+    SetupInvoicePayinUiState(false, null, false),
+    SetupInvoicePayinPresenter(setupInvoicePayinUseCase),
+  )
 
 internal sealed interface SetupInvoicePayoutEvent {
   data object Connect : SetupInvoicePayoutEvent
@@ -32,7 +32,7 @@ internal data class SetupInvoicePayinUiState(
 )
 
 internal class SetupInvoicePayinPresenter(
-  private val  setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
+  private val setupInvoicePayinUseCase: SetupInvoicePayinUseCase,
 ) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayinUiState> {
   @Composable
   override fun MoleculePresenterScope<SetupInvoicePayoutEvent>.present(

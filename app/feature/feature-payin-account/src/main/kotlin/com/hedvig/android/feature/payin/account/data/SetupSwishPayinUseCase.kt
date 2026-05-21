@@ -13,7 +13,6 @@ import octopus.SetupSwishPayinMutation
 import octopus.type.PaymentMethodSetupStatus
 import octopus.type.PaymentMethodSetupSwishInput
 
-
 internal interface SetupSwishPayinUseCase {
   suspend fun invoke(phoneNumber: String): Either<ErrorMessage, SetupSwishResponse>
 }
@@ -36,7 +35,6 @@ internal class SetupSwishPayinUseCaseImpl(
         }
         networkCacheManager.clearCache()
         SetupSwishResponse.Success(output.url)
-
       }
 
       PaymentMethodSetupStatus.PENDING -> {
@@ -58,9 +56,10 @@ internal class SetupSwishPayinUseCaseImpl(
   }
 }
 
-
 internal sealed interface SetupSwishResponse {
   data class Failure(val error: ErrorMessage) : SetupSwishResponse
+
   data class Success(val url: String?) : SetupSwishResponse
+
   data class Pending(val url: String?) : SetupSwishResponse
 }

@@ -19,16 +19,16 @@ import octopus.type.MemberPaymentProvider
 
 internal class PayinAccountOverviewViewModel(
   getPayinAccountUseCase: GetPayinAccountUseCase,
-  setAsDefaultUseCase: SetAsDefaultUseCase
+  setAsDefaultUseCase: SetAsDefaultUseCase,
 ) : MoleculeViewModel<PayinAccountOverviewEvent, PayinAccountOverviewUiState>(
-  PayinAccountOverviewUiState.Loading,
-  PayinAccountOverviewPresenter(getPayinAccountUseCase, setAsDefaultUseCase),
-)
+    PayinAccountOverviewUiState.Loading,
+    PayinAccountOverviewPresenter(getPayinAccountUseCase, setAsDefaultUseCase),
+  )
 
 internal sealed interface PayinAccountOverviewEvent {
   data object Retry : PayinAccountOverviewEvent
 
-  data class SetDefaultMethod(val provider: MemberPaymentProvider): PayinAccountOverviewEvent
+  data class SetDefaultMethod(val provider: MemberPaymentProvider) : PayinAccountOverviewEvent
 }
 
 internal sealed interface PayinAccountOverviewUiState {
@@ -39,14 +39,14 @@ internal sealed interface PayinAccountOverviewUiState {
   data class Content(
     val currentMethods: List<PayinAccount>,
     val availablePayinMethods: List<MemberPaymentProvider>,
-    val loadingDefaultProvider: MemberPaymentProvider? =null,
-    val setDefaultProviderError: ErrorMessage? = null
+    val loadingDefaultProvider: MemberPaymentProvider? = null,
+    val setDefaultProviderError: ErrorMessage? = null,
   ) : PayinAccountOverviewUiState
 }
 
 internal class PayinAccountOverviewPresenter(
   private val getPayinAccountUseCase: GetPayinAccountUseCase,
-  private val setAsDefaultUseCase: SetAsDefaultUseCase
+  private val setAsDefaultUseCase: SetAsDefaultUseCase,
 ) : MoleculePresenter<PayinAccountOverviewEvent, PayinAccountOverviewUiState> {
   @Composable
   override fun MoleculePresenterScope<PayinAccountOverviewEvent>.present(
@@ -62,25 +62,24 @@ internal class PayinAccountOverviewPresenter(
         ifLeft = { uiState = PayinAccountOverviewUiState.Error },
         ifRight = { data ->
           uiState = PayinAccountOverviewUiState.Content(
-              currentMethods = data.currentMethods,
-              availablePayinMethods = data.availablePayinMethods,
-            )
-
+            currentMethods = data.currentMethods,
+            availablePayinMethods = data.availablePayinMethods,
+          )
         },
       )
     }
 
     LaunchedEffect(providerToSetAsDefault) {
       val provider = providerToSetAsDefault
-      if (provider!=null) {
+      if (provider != null) {
         logcat { "Mariia: Starting LaunchedEffect(providerToSetAsDefault) with provider: $provider" }
-        val currentState = uiState as?  PayinAccountOverviewUiState.Content ?: return@LaunchedEffect
+        val currentState = uiState as? PayinAccountOverviewUiState.Content ?: return@LaunchedEffect
         uiState = currentState.copy(loadingDefaultProvider = provider)
         setAsDefaultUseCase.invoke(provider).fold(
           ifLeft = {
             providerToSetAsDefault = null
             uiState = currentState.copy(setDefaultProviderError = it)
-                   },
+          },
           ifRight = { data ->
             providerToSetAsDefault = null
             uiState = PayinAccountOverviewUiState.Content(
@@ -94,9 +93,12 @@ internal class PayinAccountOverviewPresenter(
 
     CollectEvents { event ->
       when (event) {
-        PayinAccountOverviewEvent.Retry -> loadIteration++
+        PayinAccountOverviewEvent.Retry -> {
+          loadIteration++
+        }
+
         is PayinAccountOverviewEvent.SetDefaultMethod -> {
-          val currentState = uiState as?  PayinAccountOverviewUiState.Content ?: return@CollectEvents
+          val currentState = uiState as? PayinAccountOverviewUiState.Content ?: return@CollectEvents
           uiState = currentState.copy(setDefaultProviderError = null)
           providerToSetAsDefault = event.provider
         }

@@ -72,18 +72,20 @@ private fun SetupInvoicePayinScreen(
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
-    //todo: some text here??
+    // todo: some text here??
     Column(
       modifier = Modifier
         .weight(1f)
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
       verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      HedvigText("You can choose invoice as your billing method. " +
-        "You will then get a monthly invoice via Kivra or email if you don't have Kivra account.",
-        textAlign = TextAlign.Center)
+      HedvigText(
+        "You can choose invoice as your billing method. " +
+          "You will then get a monthly invoice via Kivra or email if you don't have Kivra account.",
+        textAlign = TextAlign.Center,
+      )
     }
     AnimatedVisibility(
       visible = uiState.errorMessage != null,
@@ -101,7 +103,7 @@ private fun SetupInvoicePayinScreen(
     }
     Spacer(Modifier.height(16.dp))
     HedvigButton(
-      text = "Set invoice as billing method", //todo
+      text = "Set invoice as billing method", // todo
       onClick = onConnect,
       enabled = !uiState.isLoading,
       isLoading = uiState.isLoading,
@@ -112,7 +114,6 @@ private fun SetupInvoicePayinScreen(
     Spacer(Modifier.height(16.dp))
   }
 }
-
 
 @Composable
 @HedvigPreview
@@ -126,7 +127,9 @@ private fun PreviewPayoutAccountOverviewScreen() {
           showSuccessSnackBar = false,
         ),
         globalSnackBarState = GlobalSnackBarState(),
-        {}, {}, {},
+        {},
+        {},
+        {},
       )
     }
   }

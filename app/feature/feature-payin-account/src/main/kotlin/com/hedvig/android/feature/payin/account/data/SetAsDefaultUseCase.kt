@@ -16,7 +16,6 @@ internal interface SetAsDefaultUseCase {
   suspend fun invoke(provider: MemberPaymentProvider): Either<ErrorMessage, PayinAccountData>
 }
 
-
 internal class SetAsDefaultUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getPayinAccountUseCase: GetPayinAccountUseCase,
@@ -26,7 +25,7 @@ internal class SetAsDefaultUseCaseImpl(
       logcat { "Mariia: Starting SetAsDefaultUseCaseImpl with provider: $provider" }
       apolloClient
         .mutation(SetAsDefaultPayinMutation(provider))
-        .safeExecute(::ErrorMessage) //tosdoL user safeExecuteAllowingPartialResponses
+        .safeExecute(::ErrorMessage) // tosdoL user safeExecuteAllowingPartialResponses
         .fold(
           ifLeft = {
             logcat { "Mariia: SetAsDefaultUseCaseImpl error: $it" }

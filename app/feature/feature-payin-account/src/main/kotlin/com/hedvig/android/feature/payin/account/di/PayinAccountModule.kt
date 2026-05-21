@@ -31,7 +31,7 @@ val payinAccountModule = module {
   viewModel<PayinAccountOverviewViewModel> {
     PayinAccountOverviewViewModel(
       get<GetPayinAccountUseCase>(),
-    get<SetAsDefaultUseCase>(),
+      get<SetAsDefaultUseCase>(),
     )
   }
 }
