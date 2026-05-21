@@ -220,30 +220,15 @@ private fun MemberPaymentDetailsSuccessScreen(
     }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    when {
-      paymentDetails.paymentMethod == PaymentMethod.TRUSTLY -> {
-        HedvigButton(
-          text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-          onClick = onChangeBankAccount,
-          enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-          modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      }
-
-      paymentDetails.paymentMethod == PaymentMethod.INVOICE && account == PaymentAccount.Kivra -> {
-        HedvigNotificationCard(
-          message = stringResource(Res.string.KIVRA_NOTIFICATION_BOX_TEXT),
-          priority = NotificationDefaults.NotificationPriority.Info,
-          style = NotificationDefaults.InfoCardStyle.Button(
-            buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
-            onButtonClick = onChangeBankAccount,
-          ),
-        )
-      }
-    }
+    HedvigButton(
+      text = "Manage payment methods",//todo
+      onClick = onChangeBankAccount,
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      modifier = Modifier
+        .fillMaxWidth()
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    )
 
     Spacer(Modifier.height(16.dp))
   }
