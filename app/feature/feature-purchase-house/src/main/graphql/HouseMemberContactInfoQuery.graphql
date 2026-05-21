@@ -1,0 +1,7 @@
+query HouseMemberContactInfo {
+  currentMember {
+    id
+    ssn
+    email
+  }
+}

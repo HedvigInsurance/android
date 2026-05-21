@@ -1,0 +1,5 @@
+mutation HousePriceIntentCreate($shopSessionId: UUID!, $productName: String!) {
+  priceIntentCreate(input: { shopSessionId: $shopSessionId, productName: $productName }) {
+    id
+  }
+}
