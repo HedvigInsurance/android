@@ -138,6 +138,7 @@ import hedvig.resources.home_tab_welcome_title_without_name
 import hedvig.resources.important_message_hide
 import hedvig.resources.important_message_read_more
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
@@ -161,7 +162,7 @@ internal fun HomeDestination(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  onCrossSellClick: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -184,7 +185,7 @@ internal fun HomeDestination(
     navigateToConnectPayout = navigateToConnectPayout,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
-    openCrossSellUrl = openCrossSellUrl,
+    onCrossSellClick = onCrossSellClick,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
@@ -213,7 +214,7 @@ private fun HomeScreen(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  onCrossSellClick: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
@@ -236,7 +237,7 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
-    onCrossSellClick = openCrossSellUrl,
+    onCrossSellClick = onCrossSellClick,
     imageLoader = imageLoader,
   )
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -284,6 +285,7 @@ private fun HomeScreen(
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
+            onCrossSellClick = onCrossSellClick,
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
@@ -382,8 +384,8 @@ private fun ColumnScope.CrossSellsTooltip(uiState: Success, setEpochDayWhenLastT
       if (shouldSetEpochDayWhenLastToolTipShown) {
         val today = Clock.System.now().toLocalDateTime(
           TimeZone.currentSystemDefault(),
-        ).date.toEpochDays().toLong()
-        delay(5000)
+        ).date.toEpochDays()
+        delay(5.seconds)
         setEpochDayWhenLastToolTipShown(today)
       }
     }
@@ -432,6 +434,7 @@ private fun HomeScreenSuccess(
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
+  onCrossSellClick: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -810,7 +813,7 @@ private fun PreviewHomeScreen(
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        onCrossSellClick = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -843,7 +846,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        onCrossSellClick = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -897,7 +900,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         openUrl = {},
-        openCrossSellUrl = {},
+        onCrossSellClick = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},

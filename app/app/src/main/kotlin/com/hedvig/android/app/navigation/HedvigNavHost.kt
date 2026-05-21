@@ -98,7 +98,7 @@ internal fun HedvigNavHost(
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openUrl: (String) -> Unit,
-  openCrossSellUrl: (String) -> Unit,
+  openAuthenticatedWebUrl: (String) -> Unit,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -212,7 +212,7 @@ internal fun HedvigNavHost(
       },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
-      openCrossSellUrl = openCrossSellUrl,
+      openAuthenticatedWebUrl = openAuthenticatedWebUrl,
       navController = navController,
       navigateToContactInfo = {
         navController.navigate(ContactInfo)
@@ -273,7 +273,7 @@ internal fun HedvigNavHost(
       },
       navController = navController,
       openUrl = openUrl,
-      openCrossSellUrl = openCrossSellUrl,
+      openCrossSellUrl = openAuthenticatedWebUrl,
       onNavigateToNewConversation = {
         navigateToNewConversation()
       },

@@ -115,12 +115,12 @@ internal fun HedvigApp(
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
       val scope = rememberCoroutineScope()
-      val openCrossSellUrl: (String) -> Unit = { url ->
-        openCrossSellUrl(scope, getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, url)
+      val openAuthenticatedWebUrl: (String) -> Unit = { url ->
+        openAuthenticatedWebUrl(scope, getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, url)
       }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = openCrossSellUrl,
+        onCrossSellClick = openAuthenticatedWebUrl,
         imageLoader,
 //        onNavigateToAddonPurchaseFlow = { insuranceIds ->
 //          navHostController.navigate(
@@ -142,7 +142,7 @@ internal fun HedvigApp(
             externalNavigator = externalNavigator,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             openUrl = deepLinkFirstUriHandler::openUri,
-            openCrossSellUrl = openCrossSellUrl,
+            openAuthenticatedWebUrl = openAuthenticatedWebUrl,
             finishApp = finishApp,
             imageLoader = imageLoader,
             languageService = languageService,
@@ -157,7 +157,7 @@ internal fun HedvigApp(
   }
 }
 
-private fun openCrossSellUrl(
+private fun openAuthenticatedWebUrl(
   scope: CoroutineScope,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
   deepLinkFirstUriHandler: DeepLinkFirstUriHandler,
