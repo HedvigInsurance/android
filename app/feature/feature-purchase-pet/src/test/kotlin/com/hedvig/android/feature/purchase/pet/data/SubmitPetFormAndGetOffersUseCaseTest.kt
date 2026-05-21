@@ -2,6 +2,7 @@ package com.hedvig.android.feature.purchase.pet.data
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.apollographql.apollo.annotations.ApolloExperimental
 import com.apollographql.apollo.testing.registerTestResponse
@@ -10,6 +11,7 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isLeft
+import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -17,6 +19,8 @@ import octopus.PetPriceIntentConfirmMutation
 import octopus.PetPriceIntentDataUpdateMutation
 import octopus.type.buildPriceIntent
 import octopus.type.buildPriceIntentMutationOutput
+import octopus.type.buildProductOffer
+import octopus.type.buildProductVariant
 import octopus.type.buildUserError
 import org.junit.Rule
 import org.junit.Test
@@ -125,6 +129,126 @@ class SubmitPetFormAndGetOffersUseCaseTest {
 
     val sut = SubmitPetFormAndGetOffersUseCaseImpl(apolloClient)
     val result = sut.invoke(cat)
+    assertThat(result).isLeft().prop(ErrorMessage::message).isEqualTo("stop here")
+  }
+
+  @OptIn(ApolloExperimental::class)
+  @Test
+  fun `happy path returns PetOffers mapped from fragment`() = runTest {
+    val apolloClient = testApolloClientRule.apolloClient.apply {
+      registerTestResponse(
+        operation = PetPriceIntentDataUpdateMutation(
+          priceIntentId = sampleInput.priceIntentId,
+          data = buildExpectedFormData(sampleInput),
+        ),
+        data = PetPriceIntentDataUpdateMutation.Data(OctopusFakeResolver) {
+          priceIntentDataUpdate = buildPriceIntentMutationOutput { userError = null }
+        },
+      )
+      registerTestResponse(
+        operation = PetPriceIntentConfirmMutation(priceIntentId = sampleInput.priceIntentId),
+        data = PetPriceIntentConfirmMutation.Data(OctopusFakeResolver) {
+          priceIntentConfirm = buildPriceIntentMutationOutput {
+            userError = null
+            priceIntent = buildPriceIntent {
+              id = sampleInput.priceIntentId
+              offers = listOf(
+                buildProductOffer {
+                  variant = buildProductVariant { displayName = "Dog Basic" }
+                },
+              )
+            }
+          }
+        },
+      )
+    }
+
+    val sut = SubmitPetFormAndGetOffersUseCaseImpl(apolloClient)
+    val result = sut.invoke(sampleInput)
+    assertThat(result).isRight().prop(PetOffers::productDisplayName).isEqualTo("Dog Basic")
+  }
+
+  @OptIn(ApolloExperimental::class)
+  @Test
+  fun `userError from confirm returns ErrorMessage with backend message`() = runTest {
+    val apolloClient = testApolloClientRule.apolloClient.apply {
+      registerTestResponse(
+        operation = PetPriceIntentDataUpdateMutation(
+          priceIntentId = sampleInput.priceIntentId,
+          data = buildExpectedFormData(sampleInput),
+        ),
+        data = PetPriceIntentDataUpdateMutation.Data(OctopusFakeResolver) {
+          priceIntentDataUpdate = buildPriceIntentMutationOutput { userError = null }
+        },
+      )
+      registerTestResponse(
+        operation = PetPriceIntentConfirmMutation(priceIntentId = sampleInput.priceIntentId),
+        data = PetPriceIntentConfirmMutation.Data(OctopusFakeResolver) {
+          priceIntentConfirm = buildPriceIntentMutationOutput {
+            userError = buildUserError { message = "Confirmation failed" }
+          }
+        },
+      )
+    }
+
+    val sut = SubmitPetFormAndGetOffersUseCaseImpl(apolloClient)
+    val result = sut.invoke(sampleInput)
+    assertThat(result).isLeft().prop(ErrorMessage::message).isEqualTo("Confirmation failed")
+  }
+
+  @OptIn(ApolloExperimental::class)
+  @Test
+  fun `empty offers list returns generic ErrorMessage`() = runTest {
+    val apolloClient = testApolloClientRule.apolloClient.apply {
+      registerTestResponse(
+        operation = PetPriceIntentDataUpdateMutation(
+          priceIntentId = sampleInput.priceIntentId,
+          data = buildExpectedFormData(sampleInput),
+        ),
+        data = PetPriceIntentDataUpdateMutation.Data(OctopusFakeResolver) {
+          priceIntentDataUpdate = buildPriceIntentMutationOutput { userError = null }
+        },
+      )
+      registerTestResponse(
+        operation = PetPriceIntentConfirmMutation(priceIntentId = sampleInput.priceIntentId),
+        data = PetPriceIntentConfirmMutation.Data(OctopusFakeResolver) {
+          priceIntentConfirm = buildPriceIntentMutationOutput {
+            userError = null
+            priceIntent = buildPriceIntent {
+              id = sampleInput.priceIntentId
+              offers = listOf()
+            }
+          }
+        },
+      )
+    }
+
+    val sut = SubmitPetFormAndGetOffersUseCaseImpl(apolloClient)
+    val result = sut.invoke(sampleInput)
+    assertThat(result).isLeft().prop(ErrorMessage::message).isNull()
+  }
+
+  @OptIn(ApolloExperimental::class)
+  @Test
+  fun `non-mixed breed submits singleton breeds list`() = runTest {
+    val nonMixed = sampleInput.copy(isMixedBreed = false, breedId = "DOG_LABRADOR")
+    val apolloClient = testApolloClientRule.apolloClient.apply {
+      registerTestResponse(
+        operation = PetPriceIntentDataUpdateMutation(
+          priceIntentId = nonMixed.priceIntentId,
+          data = buildExpectedFormData(nonMixed), // breeds = listOf("DOG_LABRADOR")
+        ),
+        data = PetPriceIntentDataUpdateMutation.Data(OctopusFakeResolver) {
+          priceIntentDataUpdate = buildPriceIntentMutationOutput {
+            userError = buildUserError { message = "stop here" }
+          }
+        },
+      )
+    }
+
+    val sut = SubmitPetFormAndGetOffersUseCaseImpl(apolloClient)
+    val result = sut.invoke(nonMixed)
+    // The update mutation matched the expected payload, confirming breeds=["DOG_LABRADOR"] was sent.
     assertThat(result).isLeft().prop(ErrorMessage::message).isEqualTo("stop here")
   }
 }
