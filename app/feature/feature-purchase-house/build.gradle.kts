@@ -1,0 +1,40 @@
+plugins {
+  id("hedvig.android.library")
+  id("hedvig.gradle.plugin")
+}
+
+hedvig {
+  apollo("octopus")
+  serialization()
+  compose()
+}
+
+android {
+  testOptions.unitTests.isReturnDefaultValues = true
+}
+
+dependencies {
+  api(libs.androidx.navigation.common)
+
+  implementation(libs.androidx.navigation.compose)
+  implementation(libs.arrow.core)
+  implementation(libs.arrow.fx)
+  implementation(libs.jetbrains.lifecycle.runtime.compose)
+  implementation(libs.koin.composeViewModel)
+  implementation(libs.koin.core)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(projects.apolloCore)
+  implementation(projects.apolloOctopusPublic)
+  implementation(projects.composeUi)
+  implementation(projects.coreCommonPublic)
+  implementation(projects.coreResources)
+  implementation(projects.coreUiData)
+  implementation(projects.dataCrossSellAfterFlow)
+  implementation(projects.designSystemHedvig)
+  implementation(projects.purchaseCommon)
+  implementation(projects.moleculePublic)
+  implementation(projects.navigationCommon)
+  implementation(projects.navigationCompose)
+  implementation(projects.navigationComposeTyped)
+  implementation(projects.navigationCore)
+}
