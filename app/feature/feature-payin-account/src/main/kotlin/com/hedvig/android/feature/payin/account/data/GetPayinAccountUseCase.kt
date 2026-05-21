@@ -37,13 +37,14 @@ internal class GetPayinAccountUseCase(
 
     val currentMethods: List<PayinAccount> = paymentMethods.payinMethods.mapNotNull { method ->
       val isPending = method.status == MemberPaymentMethodStatus.PENDING
+      val isDefault = !isPending && method.isDefault
       when (method.provider) {
         MemberPaymentProvider.SWISH -> {
           val phoneNumber = method.details?.asPaymentMethodSwishDetails()?.phoneNumber
           PayinAccount.SwishPayin(
             phoneNumber = phoneNumber,
             isPending = isPending,
-            isDefault = method.isDefault,
+            isDefault = isDefault,
           )
         }
 
@@ -54,7 +55,7 @@ internal class GetPayinAccountUseCase(
             accountNumber = accountNumber,
             bankName = bankName,
             isPending = isPending,
-            isDefault = method.isDefault
+            isDefault = isDefault
           )
         }
 
@@ -64,7 +65,7 @@ internal class GetPayinAccountUseCase(
             delivery = invoiceDetails?.delivery?.toDeliveryString(),
             email = invoiceDetails?.email,
             isPending = isPending,
-            isDefault = method.isDefault
+            isDefault = isDefault
           )
         }
 

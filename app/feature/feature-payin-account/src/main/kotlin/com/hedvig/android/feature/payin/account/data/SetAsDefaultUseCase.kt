@@ -36,6 +36,7 @@ internal class SetAsDefaultUseCaseImpl(
           ifRight = { result ->
             val userError = result.paymentMethodSetDefaultPayin?.message
             if (userError != null) {
+              logcat { "Mariia: SetAsDefaultUseCaseImpl userError not null: $userError" }
               raise(ErrorMessage(userError))
             }
             logcat { "Mariia: SetAsDefaultUseCaseImpl launching getPayinAccountUseCase" }

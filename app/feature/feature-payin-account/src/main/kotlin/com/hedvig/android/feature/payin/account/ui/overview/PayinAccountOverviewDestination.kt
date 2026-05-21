@@ -154,6 +154,7 @@ private fun PayoutAccountContent(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.SWISH,
+                isPending = method.isPending
               )
             }
 
@@ -172,6 +173,7 @@ private fun PayoutAccountContent(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.TRUSTLY,
+                isPending = method.isPending
               )
             }
 
@@ -185,6 +187,7 @@ private fun PayoutAccountContent(
                 },
                 modifier = Modifier.padding(horizontal = 16.dp),
                 loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.INVOICE,
+                isPending = method.isPending
               )
             }
           }
@@ -237,6 +240,7 @@ private fun CurrentPayinMethodRow(
   label: String,
   text: String,
   isDefault: Boolean,
+  isPending: Boolean,
   loadingDefaultProvider: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -271,12 +275,14 @@ private fun CurrentPayinMethodRow(
               ),
             )
           } else {
-            HedvigButtonGhostWithBorder(
-              size = ButtonDefaults.ButtonSize.Small,
-              text = "Choose as default", //todo
-              onClick = onClick,
-              isLoading = loadingDefaultProvider,
-            )
+            if (!isPending) {
+              HedvigButtonGhostWithBorder(
+                size = ButtonDefaults.ButtonSize.Small,
+                text = "Choose as default", //todo
+                onClick = onClick,
+                isLoading = loadingDefaultProvider,
+              )
+            }
           }
         }
       },
