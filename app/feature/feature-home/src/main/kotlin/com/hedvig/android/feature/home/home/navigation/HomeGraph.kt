@@ -59,7 +59,7 @@ fun NavGraphBuilder.homeGraph(
         navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
         navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
         openUrl = openUrl,
-        onCrossSellClick = openAuthenticatedWebUrl,
+        openAuthenticatedWebUrl = openAuthenticatedWebUrl,
         openAppSettings = openAppSettings,
         navigateToFirstVet = dropUnlessResumed { sections ->
           navController.navigate(HomeDestination.FirstVet(sections))

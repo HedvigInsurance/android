@@ -169,12 +169,23 @@ internal class GetHomeDataUseCaseImpl(
         val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions
           .filter { it.display.validTo > clock.now() }
           .map { session ->
+            // Pick the first pillow we can find from the cart entries first, falling back to
+            // confirmed price intents. Both walk the same `Product.pillowImage` source.
+            // Cart and price-intent paths get different generated Apollo nested types, so we
+            // map each branch to ImageAsset before merging.
+            val pillowFromCart = session.cart.items
+              .firstNotNullOfOrNull { it.productOffer.product.pillowImage }
+              ?.let { ImageAsset(id = it.id, src = it.src, description = it.alt) }
+            val pillowFromPriceIntent = session.priceIntents
+              .firstNotNullOfOrNull { it.product.pillowImage }
+              ?.let { ImageAsset(id = it.id, src = it.src, description = it.alt) }
             HomeData.OngoingShopSession(
               id = session.id.toString(),
               title = session.display.title,
               subtitle = session.display.subtitle,
               resumeUrl = session.display.resumeUrl,
               validTo = session.display.validTo,
+              pillowImage = pillowFromCart ?: pillowFromPriceIntent,
             )
           }
         HomeData(
@@ -312,6 +323,7 @@ internal data class HomeData(
     val subtitle: String?,
     val resumeUrl: String,
     val validTo: kotlin.time.Instant,
+    val pillowImage: ImageAsset?,
   )
 
   @Immutable

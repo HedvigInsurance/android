@@ -45,6 +45,7 @@ internal fun HomeLayout(
   fullScreenSize: IntSize,
   welcomeMessage: @Composable @UiComposable () -> Unit,
   claimStatusCards: @Composable @UiComposable () -> Unit,
+  ongoingShopSessionCards: @Composable @UiComposable () -> Unit,
   veryImportantMessages: @Composable @UiComposable () -> Unit,
   memberReminderCards: @Composable @UiComposable () -> Unit,
   startClaimButton: @Composable @UiComposable () -> Unit,
@@ -57,6 +58,7 @@ internal fun HomeLayout(
     content = {
       Box(Modifier.layoutId(HomeLayoutContent.WelcomeMessage)) { welcomeMessage() }
       Box(Modifier.layoutId(HomeLayoutContent.ClaimStatusCards)) { claimStatusCards() }
+      Box(Modifier.layoutId(HomeLayoutContent.OngoingShopSessionCards)) { ongoingShopSessionCards() }
       Box(Modifier.layoutId(HomeLayoutContent.VeryImportantMessages)) { veryImportantMessages() }
       Box(Modifier.layoutId(HomeLayoutContent.MemberReminderCards)) { memberReminderCards() }
       Box(Modifier.layoutId(HomeLayoutContent.StartClaimButton)) { startClaimButton() }
@@ -75,6 +77,8 @@ internal fun HomeLayout(
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.WelcomeMessage }!!.measure(constraints)
     val claimStatusCardsPlaceable: Placeable =
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.ClaimStatusCards }!!.measure(constraints)
+    val ongoingShopSessionCardsPlaceable: Placeable =
+      measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.OngoingShopSessionCards }!!.measure(constraints)
     val veryImportantMessagesPlaceable: Placeable =
       measurables.fastFirstOrNull { it.layoutId == HomeLayoutContent.VeryImportantMessages }!!.measure(constraints)
     val memberReminderCardsPlaceable: Placeable =
@@ -89,6 +93,14 @@ internal fun HomeLayout(
       if (claimStatusCardsPlaceable.height > 0) {
         add(FixedSizePlaceable(0, 24.dp.roundToPx()))
         add(claimStatusCardsPlaceable)
+      }
+      if (ongoingShopSessionCardsPlaceable.height > 0) {
+        // Use 24dp gap when there are no claim cards (so the shop session cards sit where
+        // claim cards would have); fall back to a tighter 16dp gap when they appear below
+        // claim cards.
+        val precedingGap = if (claimStatusCardsPlaceable.height == 0) 24.dp else 16.dp
+        add(FixedSizePlaceable(0, precedingGap.roundToPx()))
+        add(ongoingShopSessionCardsPlaceable)
       }
     }
 
@@ -179,6 +191,7 @@ private fun Placeable.PlacementScope.placeAsColumn(
 private enum class HomeLayoutContent {
   WelcomeMessage,
   ClaimStatusCards,
+  OngoingShopSessionCards,
   MemberReminderCards,
   StartClaimButton,
   HelpCenterButton,
@@ -317,6 +330,7 @@ private fun PreviewHomeLayout(
       )
     },
     claimStatusCards = claimStatusCards,
+    ongoingShopSessionCards = {},
     veryImportantMessages = veryImportantMessages,
     memberReminderCards = memberReminderCards,
     startClaimButton = {

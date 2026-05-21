@@ -162,7 +162,7 @@ internal fun HomeDestination(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  openAuthenticatedWebUrl: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -185,7 +185,7 @@ internal fun HomeDestination(
     navigateToConnectPayout = navigateToConnectPayout,
     navigateToHelpCenter = navigateToHelpCenter,
     openUrl = openUrl,
-    onCrossSellClick = onCrossSellClick,
+    openAuthenticatedWebUrl = openAuthenticatedWebUrl,
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
@@ -214,7 +214,7 @@ private fun HomeScreen(
   navigateToConnectPayout: () -> Unit,
   navigateToHelpCenter: () -> Unit,
   openUrl: (String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  openAuthenticatedWebUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
@@ -237,7 +237,7 @@ private fun HomeScreen(
   CrossSellBottomSheet(
     state = crossSellBottomSheetState,
     markCrossSellsNotificationAsSeen = markCrossSellsNotificationAsSeen,
-    onCrossSellClick = onCrossSellClick,
+    onCrossSellClick = openAuthenticatedWebUrl,
     imageLoader = imageLoader,
   )
   val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
@@ -285,12 +285,13 @@ private fun HomeScreen(
             openClaimFlowSheet = startClaimBottomSheetState::show,
             openAppSettings = openAppSettings,
             openUrl = openUrl,
-            onCrossSellClick = onCrossSellClick,
+            openAuthenticatedWebUrl = openAuthenticatedWebUrl,
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
+            imageLoader = imageLoader,
           )
         }
       }
@@ -434,12 +435,13 @@ private fun HomeScreenSuccess(
   openClaimFlowSheet: () -> Unit,
   openAppSettings: () -> Unit,
   openUrl: (String) -> Unit,
-  onCrossSellClick: (String) -> Unit,
+  openAuthenticatedWebUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
   navigateToChipIdScreen: () -> Unit,
+  imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
   val isInPreview = LocalInspectionMode.current
@@ -487,6 +489,17 @@ private fun HomeScreenSuccess(
               contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
             )
           }
+        },
+        ongoingShopSessionCards = {
+          OngoingShopSessionCards(
+            sessions = uiState.ongoingShopSessions,
+            // The resume URL is intentionally public — anyone with a shopSessionId can reach the
+            // retargeting flow (this is how CRM emails work). So we just open it as a plain URL,
+            // no app-to-web auth handover needed.
+            onSessionClick = { session -> openUrl(session.resumeUrl) },
+            imageLoader = imageLoader,
+            contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
+          )
         },
         veryImportantMessages = {
           ImportantMessages(
@@ -802,6 +815,7 @@ private fun PreviewHomeScreen(
             flowType = FlowType.APP_TRAVEL_PLUS_SELL_OR_UPGRADE,
           ),
           isProduction = true,
+          ongoingShopSessions = emptyList(),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -813,7 +827,7 @@ private fun PreviewHomeScreen(
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         openUrl = {},
-        onCrossSellClick = {},
+        openAuthenticatedWebUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -846,7 +860,7 @@ private fun PreviewHomeScreenWithError() {
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         openUrl = {},
-        onCrossSellClick = {},
+        openAuthenticatedWebUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
@@ -889,6 +903,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           chatAction = null,
           addonBannerInfo = null,
           isProduction = true,
+          ongoingShopSessions = emptyList(),
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
@@ -900,7 +915,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         navigateToConnectPayout = {},
         navigateToHelpCenter = {},
         openUrl = {},
-        onCrossSellClick = {},
+        openAuthenticatedWebUrl = {},
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},

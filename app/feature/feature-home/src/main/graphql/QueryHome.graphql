@@ -97,6 +97,30 @@ fragment OngoingShopSessionFragment on ShopSession {
     resumeUrl
     validTo
   }
+  cart {
+    items {
+      productOffer {
+        product {
+          id
+          pillowImage {
+            id
+            src
+            alt
+          }
+        }
+      }
+    }
+  }
+  priceIntents(filters: { uniqueConfirmed: true }) {
+    product {
+      id
+      pillowImage {
+        id
+        src
+        alt
+      }
+    }
+  }
 }
 
 fragment HomeCrossSellFragment on CrossSell {
