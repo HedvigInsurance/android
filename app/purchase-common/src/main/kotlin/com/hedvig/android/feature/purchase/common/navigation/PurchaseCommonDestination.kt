@@ -38,9 +38,6 @@ sealed interface PurchaseCommonDestination {
   data class Success(
     val startDate: String?,
   ) : PurchaseCommonDestination, Destination
-
-  @Serializable
-  data object Failure : PurchaseCommonDestination, Destination
 }
 
 @Serializable

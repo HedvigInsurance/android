@@ -9,7 +9,6 @@ import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.feature.purchase.car.navigation.CarPurchaseDestination.Form
 import com.hedvig.android.feature.purchase.car.ui.form.CarFormDestination
 import com.hedvig.android.feature.purchase.car.ui.form.CarFormViewModel
-import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Failure
 import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.SelectTier
 import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Signing
 import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Success
@@ -17,7 +16,6 @@ import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDesti
 import com.hedvig.android.feature.purchase.common.navigation.SelectTierParameters
 import com.hedvig.android.feature.purchase.common.navigation.SummaryParameters
 import com.hedvig.android.feature.purchase.common.navigation.TierOfferData
-import com.hedvig.android.feature.purchase.common.ui.failure.PurchaseFailureDestination
 import com.hedvig.android.feature.purchase.common.ui.offer.SelectTierDestination
 import com.hedvig.android.feature.purchase.common.ui.offer.SelectTierViewModel
 import com.hedvig.android.feature.purchase.common.ui.sign.SigningDestination
