@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.purchase.apartment.data
+package com.hedvig.android.feature.purchase.common.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -7,10 +7,10 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import octopus.ApartmentCartEntriesAddMutation
-import octopus.ApartmentStartSignMutation
+import octopus.PurchaseCartEntriesAddMutation
+import octopus.PurchaseStartSignMutation
 
-internal interface AddToCartAndStartSignUseCase {
+interface AddToCartAndStartSignUseCase {
   suspend fun invoke(shopSessionId: String, offerId: String): Either<ErrorMessage, SigningStart>
 }
 
@@ -20,7 +20,7 @@ internal class AddToCartAndStartSignUseCaseImpl(
   override suspend fun invoke(shopSessionId: String, offerId: String): Either<ErrorMessage, SigningStart> {
     return either {
       val cartResult = apolloClient
-        .mutation(ApartmentCartEntriesAddMutation(shopSessionId = shopSessionId, offerIds = listOf(offerId)))
+        .mutation(PurchaseCartEntriesAddMutation(shopSessionId = shopSessionId, offerIds = listOf(offerId)))
         .safeExecute()
         .fold(
           ifLeft = {
@@ -35,7 +35,7 @@ internal class AddToCartAndStartSignUseCaseImpl(
       }
 
       val signResult = apolloClient
-        .mutation(ApartmentStartSignMutation(shopSessionId = shopSessionId))
+        .mutation(PurchaseStartSignMutation(shopSessionId = shopSessionId))
         .safeExecute()
         .fold(
           ifLeft = {

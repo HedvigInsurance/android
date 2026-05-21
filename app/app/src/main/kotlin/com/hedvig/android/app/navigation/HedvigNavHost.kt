@@ -4,11 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
+import androidx.navigation.toRoute
 import coil3.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
@@ -16,6 +18,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.ContractId
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
@@ -68,6 +71,10 @@ import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.tab.profileGraph
+import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseGraphDestination
+import com.hedvig.android.feature.purchase.apartment.navigation.apartmentPurchaseNavGraph
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination
+import com.hedvig.android.feature.purchase.common.ui.success.PurchaseSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateGraphDestination
@@ -76,17 +83,15 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.mp.KoinPlatform
 import com.hedvig.feature.claim.chat.ClaimChatDestination
 import com.hedvig.feature.claim.chat.claimChatGraph
-import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
-import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseGraphDestination
-import com.hedvig.android.feature.purchase.apartment.navigation.apartmentPurchaseNavGraph
 import com.hedvig.feature.remove.addons.AddonRemoveGraphDestination
 import com.hedvig.feature.remove.addons.removeAddonsNavGraph
+import org.koin.mp.KoinPlatform
 
 @Composable
 internal fun HedvigNavHost(
@@ -488,6 +493,15 @@ internal fun HedvigNavHost(
       finishApp = finishApp,
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
     )
+    navdestination<PurchaseCommonDestination.Success> { backStackEntry ->
+      val route = backStackEntry.toRoute<PurchaseCommonDestination.Success>()
+      PurchaseSuccessDestination(
+        startDate = route.startDate,
+        close = dropUnlessResumed {
+          if (!navController.popBackStack()) finishApp()
+        },
+      )
+    }
     removeAddonsNavGraph(
       navController = hedvigAppState.navController,
       onNavigateToNewConversation = {

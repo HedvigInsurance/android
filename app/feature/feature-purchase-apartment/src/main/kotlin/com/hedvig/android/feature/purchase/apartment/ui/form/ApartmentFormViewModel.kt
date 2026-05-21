@@ -35,6 +35,8 @@ internal sealed interface ApartmentFormEvent {
   data object ClearNavigation : ApartmentFormEvent
 
   data object Retry : ApartmentFormEvent
+
+  data object DismissError : ApartmentFormEvent
 }
 
 internal data class ApartmentFormState(
@@ -98,6 +100,10 @@ private class ApartmentFormPresenter(
           } else {
             currentState = currentState.copy(submitError = null)
           }
+        }
+
+        ApartmentFormEvent.DismissError -> {
+          currentState = currentState.copy(submitError = null)
         }
       }
     }

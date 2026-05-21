@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.purchase.apartment.ui.sign
+package com.hedvig.android.feature.purchase.common.ui.sign
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -21,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,14 +30,17 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.QRCodeWriter
+import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.logger.LogPriority
@@ -47,11 +49,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-internal fun SigningDestination(
-  viewModel: SigningViewModel,
-  navigateToSuccess: (startDate: String?) -> Unit,
-  navigateToFailure: () -> Unit,
-) {
+fun SigningDestination(viewModel: SigningViewModel, navigateToSuccess: (startDate: String?) -> Unit) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
   val canOpenBankId = remember { canBankIdAppHandleUri(context) }
@@ -64,11 +62,8 @@ internal fun SigningDestination(
         hasNavigated = true
         navigateToSuccess(state.startDate)
       }
-      is SigningUiState.Failed -> {
-        hasNavigated = true
-        navigateToFailure()
-      }
-      is SigningUiState.Polling -> {}
+
+      else -> {}
     }
   }
 
@@ -80,65 +75,63 @@ internal fun SigningDestination(
           context.startActivity(Intent(Intent.ACTION_VIEW, bankIdUri))
           viewModel.emit(SigningEvent.BankIdOpened)
         }
-        HedvigFullScreenCenterAlignedProgress()
-      } else if (!canOpenBankId) {
-        QrCodeSigningScreen(
-          liveQrCodeData = state.liveQrCodeData,
-          onOpenBankId = {
-            val bankIdUri = Uri.parse("https://app.bankid.com/?autostarttoken=${state.autoStartToken}&redirect=null")
-            context.startActivity(Intent(Intent.ACTION_VIEW, bankIdUri))
-            viewModel.emit(SigningEvent.BankIdOpened)
-          },
+      }
+      Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      ) {
+        Spacer(Modifier.weight(1f))
+        if (state.liveQrCodeData != null) {
+          QRCode(
+            data = state.liveQrCodeData,
+            modifier = Modifier.size(180.dp),
+          )
+        } else {
+          HedvigFullScreenCenterAlignedProgress()
+        }
+        Spacer(Modifier.height(32.dp))
+        HedvigText(
+          text = "Signera med BankID",
+          style = HedvigTheme.typography.headlineMedium,
+          textAlign = TextAlign.Center,
         )
-      } else {
-        HedvigFullScreenCenterAlignedProgress()
+        HedvigText(
+          text = "Skanna QR-koden med BankID-appen",
+          style = HedvigTheme.typography.bodyMedium,
+          color = HedvigTheme.colorScheme.textSecondary,
+          textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.weight(1f))
+        if (canOpenBankId) {
+          HedvigButton(
+            text = "\u00d6ppna BankID",
+            onClick = {
+              val bankIdUri =
+                Uri.parse("https://app.bankid.com/?autostarttoken=${state.autoStartToken}&redirect=null")
+              context.startActivity(Intent(Intent.ACTION_VIEW, bankIdUri))
+              viewModel.emit(SigningEvent.BankIdOpened)
+            },
+            enabled = true,
+            buttonSize = Large,
+            modifier = Modifier.fillMaxWidth(),
+          )
+          Spacer(Modifier.height(16.dp))
+        }
       }
     }
 
-    is SigningUiState.Success,
-    is SigningUiState.Failed,
-    -> HedvigFullScreenCenterAlignedProgress()
-  }
-}
-
-@Composable
-private fun QrCodeSigningScreen(liveQrCodeData: String?, onOpenBankId: () -> Unit) {
-  HedvigScaffold(navigateUp = {}) {
-    Spacer(Modifier.weight(1f))
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-    ) {
-      HedvigText(
-        text = "Logga in med BankID",
-        style = HedvigTheme.typography.headlineMedium,
-      )
-      Spacer(Modifier.height(8.dp))
-      HedvigText(
-        text = "Skanna QR-koden med BankID-appen på en annan enhet",
-        style = HedvigTheme.typography.bodyMedium,
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-      Spacer(Modifier.height(24.dp))
-      if (liveQrCodeData != null) {
-        QRCode(
-          data = liveQrCodeData,
-          modifier = Modifier.size(200.dp),
-        )
-      } else {
-        HedvigFullScreenCenterAlignedProgress()
-      }
-      Spacer(Modifier.height(24.dp))
-      HedvigButton(
-        text = "\u00d6ppna BankID",
-        onClick = onOpenBankId,
-        enabled = true,
-        modifier = Modifier.fillMaxWidth(),
+    is SigningUiState.Failed -> {
+      HedvigErrorSection(
+        onButtonClick = { viewModel.emit(SigningEvent.Retry) },
       )
     }
-    Spacer(Modifier.weight(1f))
+
+    is SigningUiState.Success -> {
+      HedvigFullScreenCenterAlignedProgress()
+    }
   }
 }
 

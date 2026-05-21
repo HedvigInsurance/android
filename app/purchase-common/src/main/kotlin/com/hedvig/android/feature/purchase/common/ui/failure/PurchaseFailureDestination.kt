@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.purchase.apartment.ui.failure
+package com.hedvig.android.feature.purchase.common.ui.failure
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,7 +9,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 
 @Composable
-internal fun PurchaseFailureDestination(onRetry: () -> Unit, close: () -> Unit) {
+fun PurchaseFailureDestination(onRetry: () -> Unit, close: () -> Unit) {
   HedvigScaffold(
     navigateUp = close,
     topAppBarActionType = TopAppBarActionType.CLOSE,

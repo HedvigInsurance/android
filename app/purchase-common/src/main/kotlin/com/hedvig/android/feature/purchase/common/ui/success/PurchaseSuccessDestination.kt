@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.purchase.apartment.ui.success
+package com.hedvig.android.feature.purchase.common.ui.success
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +18,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 
 @Composable
-internal fun PurchaseSuccessDestination(startDate: String?, close: () -> Unit) {
+fun PurchaseSuccessDestination(startDate: String?, close: () -> Unit) {
   HedvigScaffold(
     navigateUp = close,
     topAppBarActionType = TopAppBarActionType.CLOSE,
@@ -26,7 +26,7 @@ internal fun PurchaseSuccessDestination(startDate: String?, close: () -> Unit) {
   ) {
     Spacer(Modifier.weight(1f))
     HedvigText(
-      text = "Din försäkring är klar!",
+      text = "Din f\u00f6rs\u00e4kring \u00e4r klar!",
       style = HedvigTheme.typography.headlineMedium,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
@@ -41,7 +41,7 @@ internal fun PurchaseSuccessDestination(startDate: String?, close: () -> Unit) {
     }
     Spacer(Modifier.weight(1f))
     HedvigButton(
-      text = "Stäng",
+      text = "St\u00e4ng",
       modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
       buttonStyle = Primary,
       buttonSize = Large,

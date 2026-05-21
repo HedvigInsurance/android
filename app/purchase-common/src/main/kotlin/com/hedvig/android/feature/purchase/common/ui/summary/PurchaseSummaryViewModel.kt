@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.purchase.apartment.ui.summary
+package com.hedvig.android.feature.purchase.common.ui.summary
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,14 +7,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.feature.purchase.apartment.data.AddToCartAndStartSignUseCase
-import com.hedvig.android.feature.purchase.apartment.navigation.SigningParameters
-import com.hedvig.android.feature.purchase.apartment.navigation.SummaryParameters
+import com.hedvig.android.feature.purchase.common.data.AddToCartAndStartSignUseCase
+import com.hedvig.android.feature.purchase.common.navigation.SigningParameters
+import com.hedvig.android.feature.purchase.common.navigation.SummaryParameters
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
-internal class PurchaseSummaryViewModel(
+class PurchaseSummaryViewModel(
   summaryParameters: SummaryParameters,
   addToCartAndStartSignUseCase: AddToCartAndStartSignUseCase,
 ) : MoleculeViewModel<PurchaseSummaryEvent, PurchaseSummaryUiState>(
@@ -22,7 +22,7 @@ internal class PurchaseSummaryViewModel(
       params = summaryParameters,
       isSubmitting = false,
       signingToNavigate = null,
-      navigateToFailure = false,
+      submitError = null,
     ),
     presenter = PurchaseSummaryPresenter(
       summaryParameters,
@@ -30,7 +30,7 @@ internal class PurchaseSummaryViewModel(
     ),
   )
 
-internal class PurchaseSummaryPresenter(
+class PurchaseSummaryPresenter(
   private val summaryParameters: SummaryParameters,
   private val addToCartAndStartSignUseCase: AddToCartAndStartSignUseCase,
 ) : MoleculePresenter<PurchaseSummaryEvent, PurchaseSummaryUiState> {
@@ -41,7 +41,7 @@ internal class PurchaseSummaryPresenter(
     var confirmIteration by remember { mutableIntStateOf(0) }
     var isSubmitting by remember { mutableStateOf(lastState.isSubmitting) }
     var signingToNavigate by remember { mutableStateOf(lastState.signingToNavigate) }
-    var navigateToFailure by remember { mutableStateOf(lastState.navigateToFailure) }
+    var submitError by remember { mutableStateOf(lastState.submitError) }
 
     CollectEvents { event ->
       when (event) {
@@ -51,7 +51,11 @@ internal class PurchaseSummaryPresenter(
 
         PurchaseSummaryEvent.ClearNavigation -> {
           signingToNavigate = null
-          navigateToFailure = false
+          submitError = null
+        }
+
+        PurchaseSummaryEvent.DismissError -> {
+          submitError = null
         }
       }
     }
@@ -63,9 +67,9 @@ internal class PurchaseSummaryPresenter(
           summaryParameters.shopSessionId,
           summaryParameters.selectedOffer.offerId,
         ).fold(
-          ifLeft = {
+          ifLeft = { error ->
             isSubmitting = false
-            navigateToFailure = true
+            submitError = error.message ?: "N\u00e5got gick fel"
           },
           ifRight = { signingStart ->
             isSubmitting = false
@@ -83,20 +87,22 @@ internal class PurchaseSummaryPresenter(
       params = summaryParameters,
       isSubmitting = isSubmitting,
       signingToNavigate = signingToNavigate,
-      navigateToFailure = navigateToFailure,
+      submitError = submitError,
     )
   }
 }
 
-internal data class PurchaseSummaryUiState(
+data class PurchaseSummaryUiState(
   val params: SummaryParameters,
   val isSubmitting: Boolean,
   val signingToNavigate: SigningParameters?,
-  val navigateToFailure: Boolean,
+  val submitError: String?,
 )
 
-internal sealed interface PurchaseSummaryEvent {
+sealed interface PurchaseSummaryEvent {
   data object Confirm : PurchaseSummaryEvent
 
   data object ClearNavigation : PurchaseSummaryEvent
+
+  data object DismissError : PurchaseSummaryEvent
 }

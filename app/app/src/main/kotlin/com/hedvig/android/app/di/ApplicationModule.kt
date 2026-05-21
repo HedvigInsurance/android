@@ -63,7 +63,6 @@ import com.hedvig.android.datadog.core.di.datadogModule
 import com.hedvig.android.datadog.demo.tracking.di.datadogDemoTrackingModule
 import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
 import com.hedvig.android.feature.addon.purchase.di.addonPurchaseModule
-import com.hedvig.android.feature.purchase.apartment.di.apartmentPurchaseModule
 import com.hedvig.android.feature.change.tier.di.chooseTierModule
 import com.hedvig.android.feature.chat.di.chatModule
 import com.hedvig.android.feature.claim.details.di.claimDetailsModule
@@ -80,6 +79,8 @@ import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.movingflow.di.movingFlowModule
 import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
+import com.hedvig.android.feature.purchase.apartment.di.apartmentPurchaseModule
+import com.hedvig.android.feature.purchase.common.di.purchaseCommonModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.featureflags.di.featureManagerModule
@@ -346,6 +347,7 @@ val applicationModule = module {
       notificationModule,
       paymentsModule,
       profileModule,
+      purchaseCommonModule,
       settingsDatastoreModule,
       sharedModule(AndroidBuildConfig()),
       sharedPreferencesModule,

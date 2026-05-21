@@ -1,4 +1,4 @@
-query ApartmentShopSessionSigning($signingId: UUID!) {
+query PurchaseShopSessionSigning($signingId: UUID!) {
   shopSessionSigning(id: $signingId) {
     id
     status

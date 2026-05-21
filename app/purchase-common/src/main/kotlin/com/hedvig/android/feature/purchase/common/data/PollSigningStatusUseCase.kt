@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.purchase.apartment.data
+package com.hedvig.android.feature.purchase.common.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -9,10 +9,10 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import octopus.ApartmentShopSessionSigningQuery
+import octopus.PurchaseShopSessionSigningQuery
 import octopus.type.ShopSessionSigningStatus
 
-internal interface PollSigningStatusUseCase {
+interface PollSigningStatusUseCase {
   suspend fun invoke(signingId: String): Either<ErrorMessage, SigningPollResult>
 }
 
@@ -22,7 +22,7 @@ internal class PollSigningStatusUseCaseImpl(
   override suspend fun invoke(signingId: String): Either<ErrorMessage, SigningPollResult> {
     return either {
       apolloClient
-        .query(ApartmentShopSessionSigningQuery(signingId = signingId))
+        .query(PurchaseShopSessionSigningQuery(signingId = signingId))
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .safeExecute()
         .fold(

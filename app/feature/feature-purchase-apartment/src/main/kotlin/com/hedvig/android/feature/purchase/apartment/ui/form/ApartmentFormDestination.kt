@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -50,7 +51,6 @@ internal fun ApartmentFormDestination(
   }
   HedvigScaffold(
     navigateUp = navigateUp,
-    topAppBarText = "Hemförsäkring",
   ) {
     when {
       uiState.isLoadingSession -> {
@@ -69,6 +69,13 @@ internal fun ApartmentFormDestination(
         var livingSpace by remember { mutableStateOf("") }
         var numberCoInsured by remember { mutableIntStateOf(0) }
 
+        if (uiState.submitError != null) {
+          ErrorDialog(
+            title = "N\u00e5got gick fel",
+            message = uiState.submitError,
+            onDismiss = { viewModel.emit(ApartmentFormEvent.DismissError) },
+          )
+        }
         ApartmentFormContent(
           street = street,
           zipCode = zipCode,
@@ -94,7 +101,6 @@ internal fun ApartmentFormDestination(
               ),
             )
           },
-          onRetry = { viewModel.emit(ApartmentFormEvent.Retry) },
         )
       }
     }
@@ -116,7 +122,6 @@ private fun ApartmentFormContent(
   onLivingSpaceChanged: (String) -> Unit,
   onNumberCoInsuredChanged: (Int) -> Unit,
   onSubmit: () -> Unit,
-  onRetry: () -> Unit,
 ) {
   Column(
     modifier = Modifier
@@ -219,7 +224,6 @@ private fun PreviewApartmentFormEmpty() {
         onLivingSpaceChanged = {},
         onNumberCoInsuredChanged = {},
         onSubmit = {},
-        onRetry = {},
       )
     }
   }
@@ -244,7 +248,6 @@ private fun PreviewApartmentFormFilled() {
         onLivingSpaceChanged = {},
         onNumberCoInsuredChanged = {},
         onSubmit = {},
-        onRetry = {},
       )
     }
   }
@@ -269,7 +272,6 @@ private fun PreviewApartmentFormWithErrors() {
         onLivingSpaceChanged = {},
         onNumberCoInsuredChanged = {},
         onSubmit = {},
-        onRetry = {},
       )
     }
   }

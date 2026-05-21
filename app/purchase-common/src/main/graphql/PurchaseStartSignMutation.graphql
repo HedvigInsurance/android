@@ -1,4 +1,4 @@
-mutation ApartmentStartSign($shopSessionId: UUID!) {
+mutation PurchaseStartSign($shopSessionId: UUID!) {
   shopSessionStartSign(shopSessionId: $shopSessionId) {
     signing {
       id

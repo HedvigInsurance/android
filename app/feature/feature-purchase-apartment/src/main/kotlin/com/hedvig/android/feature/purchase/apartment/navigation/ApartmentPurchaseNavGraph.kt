@@ -6,22 +6,25 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.toRoute
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
-import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseDestination.Failure
 import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseDestination.Form
-import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseDestination.SelectTier
-import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseDestination.Signing
-import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseDestination.Success
-import com.hedvig.android.feature.purchase.apartment.navigation.ApartmentPurchaseDestination.Summary
-import com.hedvig.android.feature.purchase.apartment.ui.failure.PurchaseFailureDestination
 import com.hedvig.android.feature.purchase.apartment.ui.form.ApartmentFormDestination
 import com.hedvig.android.feature.purchase.apartment.ui.form.ApartmentFormViewModel
-import com.hedvig.android.feature.purchase.apartment.ui.offer.SelectTierDestination
-import com.hedvig.android.feature.purchase.apartment.ui.offer.SelectTierViewModel
-import com.hedvig.android.feature.purchase.apartment.ui.sign.SigningDestination
-import com.hedvig.android.feature.purchase.apartment.ui.sign.SigningViewModel
-import com.hedvig.android.feature.purchase.apartment.ui.success.PurchaseSuccessDestination
-import com.hedvig.android.feature.purchase.apartment.ui.summary.PurchaseSummaryDestination
-import com.hedvig.android.feature.purchase.apartment.ui.summary.PurchaseSummaryViewModel
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Failure
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.SelectTier
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Signing
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Success
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Summary
+import com.hedvig.android.feature.purchase.common.navigation.SelectTierParameters
+import com.hedvig.android.feature.purchase.common.navigation.SummaryParameters
+import com.hedvig.android.feature.purchase.common.navigation.TierOfferData
+import com.hedvig.android.feature.purchase.common.ui.failure.PurchaseFailureDestination
+import com.hedvig.android.feature.purchase.common.ui.offer.SelectTierDestination
+import com.hedvig.android.feature.purchase.common.ui.offer.SelectTierViewModel
+import com.hedvig.android.feature.purchase.common.ui.sign.SigningDestination
+import com.hedvig.android.feature.purchase.common.ui.sign.SigningViewModel
+import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryDestination
+import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryViewModel
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
@@ -97,7 +100,6 @@ fun NavGraphBuilder.apartmentPurchaseNavGraph(
         viewModel = viewModel,
         navigateUp = dropUnlessResumed { navController.popBackStack() },
         navigateToSigning = { params -> navController.navigate(Signing(params)) },
-        navigateToFailure = dropUnlessResumed { navController.navigate(Failure) },
       )
     }
 
@@ -116,27 +118,7 @@ fun NavGraphBuilder.apartmentPurchaseNavGraph(
             typedPopUpTo<ApartmentPurchaseGraphDestination>({ inclusive = true })
           }
         },
-        navigateToFailure = dropUnlessResumed { navController.navigate(Failure) },
       )
     }
-
-    navdestination<Failure> {
-      PurchaseFailureDestination(
-        onRetry = dropUnlessResumed { navController.popBackStack() },
-        close = dropUnlessResumed {
-          if (!navController.typedPopBackStack<ApartmentPurchaseGraphDestination>(inclusive = true)) finishApp()
-        },
-      )
-    }
-  }
-
-  navdestination<Success> { backStackEntry ->
-    val route = backStackEntry.toRoute<Success>()
-    PurchaseSuccessDestination(
-      startDate = route.startDate,
-      close = dropUnlessResumed {
-        if (!navController.popBackStack()) finishApp()
-      },
-    )
   }
 }

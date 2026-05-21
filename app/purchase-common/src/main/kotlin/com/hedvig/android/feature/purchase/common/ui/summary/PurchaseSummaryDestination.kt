@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.purchase.apartment.ui.summary
+package com.hedvig.android.feature.purchase.common.ui.summary
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
+import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -24,16 +25,15 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.feature.purchase.apartment.navigation.SigningParameters
-import com.hedvig.android.feature.purchase.apartment.navigation.SummaryParameters
-import com.hedvig.android.feature.purchase.apartment.navigation.TierOfferData
+import com.hedvig.android.feature.purchase.common.navigation.SigningParameters
+import com.hedvig.android.feature.purchase.common.navigation.SummaryParameters
+import com.hedvig.android.feature.purchase.common.navigation.TierOfferData
 
 @Composable
-internal fun PurchaseSummaryDestination(
+fun PurchaseSummaryDestination(
   viewModel: PurchaseSummaryViewModel,
   navigateUp: () -> Unit,
   navigateToSigning: (SigningParameters) -> Unit,
-  navigateToFailure: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -43,10 +43,12 @@ internal fun PurchaseSummaryDestination(
     navigateToSigning(signing)
   }
 
-  LaunchedEffect(uiState.navigateToFailure) {
-    if (!uiState.navigateToFailure) return@LaunchedEffect
-    viewModel.emit(PurchaseSummaryEvent.ClearNavigation)
-    navigateToFailure()
+  if (uiState.submitError != null) {
+    ErrorDialog(
+      title = "N\u00e5got gick fel",
+      message = uiState.submitError,
+      onDismiss = { viewModel.emit(PurchaseSummaryEvent.DismissError) },
+    )
   }
 
   PurchaseSummaryScreen(
@@ -163,7 +165,7 @@ private fun PreviewPurchaseSummary() {
           selectedOffer = TierOfferData(
             offerId = "1",
             tierDisplayName = "Hem Standard",
-            tierDescription = "Vår mest populära försäkring",
+            tierDescription = "V\u00e5r mest popul\u00e4ra f\u00f6rs\u00e4kring",
             grossAmount = 139.0,
             grossCurrencyCode = "SEK",
             netAmount = 118.0,
@@ -173,7 +175,7 @@ private fun PreviewPurchaseSummary() {
             deductibleDisplayName = "1 500 kr",
             hasDiscount = true,
           ),
-          productDisplayName = "Hemförsäkring Hyresrätt",
+          productDisplayName = "Hemf\u00f6rs\u00e4kring Hyresr\u00e4tt",
         ),
         isSubmitting = false,
         navigateUp = {},
