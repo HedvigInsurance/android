@@ -1366,6 +1366,7 @@
   <string name="referrals_intro_screen_title">You’re invited</string>
   <string name="referrals_notification_feature_added_title">Hedvig Forever</string>
   <string name="referrals_notification_feature_added_description">You’ve been officially invited to Hedvig Forever and can now invite your friends with your unique code</string>
+  <string name="resume_shopping">Resume shopping</string>
   <string name="sas_integration_connect_your_eurobonus">Connect your EuroBonus</string>
   <string name="sas_integration_connect_your_number">Connect your number</string>
   <string name="sas_integration_info">You earn 100 points per month for each active insurance you have with Hedvig</string>

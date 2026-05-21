@@ -917,6 +917,20 @@ Root type expressing the entire flow for members trying to report a new claim.
 """
 type ClaimIntent {
   id: ID!
+  """
+  The time this was started.
+  """
+  createdAt: DateTime!
+  """
+  All steps that have been taken before the current step. These typically include "current value" data.
+  WARNING: Only query these once when resuming an old intent, as they can be quite expensive to compute.
+  They effectively need to perform all the work of rendering every previous step all at once, which we should
+  generally avoid when going through the flow normally.
+  """
+  previousSteps: [ClaimIntentStep!]!
+  """
+  The current step.
+  """
   currentStep: ClaimIntentStep
   """
   A value between 0.0 and 1.0 that indicates roughly how far along the submission
@@ -993,6 +1007,14 @@ type ClaimIntentStepContentAudioRecording {
   uploadUri: String!
   freeTextMinLength: Int!
   freeTextMaxLength: Int!
+  """
+  URL of the audio uploaded by the user.
+  """
+  currentAudioUrl: Url
+  """
+  Free text submitted by the user.
+  """
+  currentFreeText: String
   isSkippable: Boolean!
 }
 """
@@ -1038,7 +1060,16 @@ type ClaimIntentStepContentFileUpload {
   The relative URI towards where one should upload the files.
   """
   uploadUri: String!
+  """
+  Current files uploaded by the user.
+  """
+  currentFiles: [ClaimIntentStepContentFileUploadFile!]!
   isSkippable: Boolean!
+}
+type ClaimIntentStepContentFileUploadFile {
+  url: Url!
+  contentType: String!
+  fileName: String!
 }
 """
 A form step is one that contains a form in the shape of a list of "fields".
@@ -1081,6 +1112,10 @@ type ClaimIntentStepContentFormField {
   If there are default values, they will show up in this array. Empty means no default value.
   """
   defaultValues: [ClaimIntentStepContentFormFieldValue!]!
+  """
+  These are the values that the user has submitted for this field.
+  """
+  currentValues: [ClaimIntentStepContentFormFieldValue!]!
   """
   If type is SEARCH, then this will be present.
   """
@@ -1136,9 +1171,22 @@ It can be seen as a special-case form with nicer rendering.
 Submitted using `Mutation.claimIntentSubmitSelect`.
 """
 type ClaimIntentStepContentSelect {
+  """
+  Selectable options.
+  """
   options: [ClaimIntentStepContentSelectOption!]!
+  """
+  Visual style of this selection.
+  """
   style: ClaimIntentStepContentSelectStyle!
+  """
+  Pre-filled default value.
+  """
   defaultSelectedId: ID
+  """
+  Currently selected value by the user.
+  """
+  currentSelectedId: ID
   isSkippable: Boolean!
 }
 """
@@ -1331,6 +1379,10 @@ type Contract {
   Whether or not this contract can be changed through the 'ChangeTier' API.
   """
   supportsChangeTier: Boolean!
+  """
+  Whether or not this contract can be terminated by user
+  """
+  supportsTermination: Boolean!
   """
   Current state of co-insured including upcoming changes.
   If current agreement doesn't support co-insured, this is null
@@ -2464,6 +2516,11 @@ type Member {
   List of members FAQ
   """
   memberFAQ: MemberFAQ!
+  """
+  Returns the most recent claim intent for this member, that can be "resumed" by querying `ClaimIntent.previousSteps`.
+  Will return `null` if the server considers it too old to be resumed.
+  """
+  resumableClaimIntent: ClaimIntent
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
@@ -2526,6 +2583,11 @@ type Member {
   - SMART_X_SELL (requires flowSource): Focused recommendation OR all options
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
+  """
+  Shop sessions started by this member that have not yet been signed and are not expired.
+  Ordered by most recent activity first.
+  """
+  ongoingShopSessions: [ShopSession!]!
   """
   Young Pet Guide stories for the member.
   Returns a list of educational content stories for young pet owners.
@@ -3933,6 +3995,10 @@ type PendingContract {
   """
   externalInsuranceCancellationHandledByHedvig: Boolean!
   """
+  Whether or not this contract can be terminated by user
+  """
+  supportsTermination: Boolean!
+  """
   List of addons on the agreement.
   """
   addons: [Addon!]!
@@ -4674,6 +4740,11 @@ type ShopSession {
   """
   cart: Cart!
   """
+  Display-ready summary of this session for surfacing it in member-facing lists
+  (e.g. the Hedvig mobile app's home screen).
+  """
+  display: ShopSessionDisplay!
+  """
   The outcome of a signed shop-session. Requires authentication.
   """
   outcome: ShopSessionOutcome
@@ -4807,6 +4878,41 @@ input ShopSessionCustomerUpdateInput {
   phoneNumber: String
   firstName: String
   lastName: String
+}
+type ShopSessionDisplay {
+  """
+  Short title summarizing the session's products, e.g. "Home + Accident".
+  Falls back to a generic locale-appropriate label when no products are present.
+  """
+  title: String!
+  """
+  Optional secondary line with insured-object info, e.g. "Studio apartment, Stockholm".
+  Null when no insured-object data is available.
+  """
+  subtitle: String
+  """
+  Total monthly net price across cart items plus confirmed price intents.
+  Null when no priced offers exist in the session.
+  """
+  monthlyNet: Money
+  """
+  Most recent activity timestamp on this session.
+  Used for sorting; clients can also display it relatively (e.g. "2 days ago").
+  """
+  lastActivityAt: DateTime!
+  """
+  Absolute URL to open in a browser to resume this session. Mirrors the URL
+  pattern of `ShopSession.urls.retargeting`, which is the existing entry point
+  for the smart-routing resume flow (cart → checkout, single price intent →
+  product page, etc.). Mobile clients pass this URL as the `next` parameter to
+  racoon's app-to-web auth handover endpoint.
+  """
+  resumeUrl: String!
+  """
+  Mirrors the underlying session's `validTo`. Clients can use this to hide
+  cards that expire between refreshes.
+  """
+  validTo: DateTime!
 }
 """
 A/B testing experiment configuration for shop sessions.
