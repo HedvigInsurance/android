@@ -19,36 +19,39 @@ import com.hedvig.android.design.system.hedvig.TopAppBarActionType
 
 @Composable
 fun PurchaseSuccessDestination(startDate: String?, close: () -> Unit) {
-  HedvigScaffold(
-    navigateUp = close,
-    topAppBarActionType = TopAppBarActionType.CLOSE,
-    itemsColumnHorizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    Spacer(Modifier.weight(1f))
-    HedvigText(
-      text = "Din f\u00f6rs\u00e4kring \u00e4r klar!",
-      style = HedvigTheme.typography.headlineMedium,
-      modifier = Modifier.padding(horizontal = 16.dp),
-    )
-    if (startDate != null) {
-      Spacer(Modifier.height(8.dp))
+  val headline = "Din f\u00f6rs\u00e4kring \u00e4r klar!"
+  PurchaseSuccessAnimation(message = headline) {
+    HedvigScaffold(
+      navigateUp = close,
+      topAppBarActionType = TopAppBarActionType.CLOSE,
+      itemsColumnHorizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Spacer(Modifier.weight(1f))
       HedvigText(
-        text = "Startdatum: $startDate",
-        style = HedvigTheme.typography.bodySmall,
-        color = HedvigTheme.colorScheme.textSecondary,
+        text = headline,
+        style = HedvigTheme.typography.headlineMedium,
         modifier = Modifier.padding(horizontal = 16.dp),
       )
+      if (startDate != null) {
+        Spacer(Modifier.height(8.dp))
+        HedvigText(
+          text = "Startdatum: $startDate",
+          style = HedvigTheme.typography.bodySmall,
+          color = HedvigTheme.colorScheme.textSecondary,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+      }
+      Spacer(Modifier.weight(1f))
+      HedvigButton(
+        text = "St\u00e4ng",
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        buttonStyle = Primary,
+        buttonSize = Large,
+        enabled = true,
+        onClick = close,
+      )
+      Spacer(Modifier.height(16.dp))
     }
-    Spacer(Modifier.weight(1f))
-    HedvigButton(
-      text = "St\u00e4ng",
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-      buttonStyle = Primary,
-      buttonSize = Large,
-      enabled = true,
-      onClick = close,
-    )
-    Spacer(Modifier.height(16.dp))
   }
 }
 

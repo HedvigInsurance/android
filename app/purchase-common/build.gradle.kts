@@ -7,6 +7,7 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  androidResources()
 }
 
 android {
@@ -24,6 +25,7 @@ dependencies {
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.media3.exoplayer)
   implementation(libs.zXing)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
