@@ -26,7 +26,7 @@ internal class SetAsDefaultUseCaseImpl(
       logcat { "Mariia: Starting SetAsDefaultUseCaseImpl with provider: $provider" }
       apolloClient
         .mutation(SetAsDefaultPayinMutation(provider))
-        .safeExecute(::ErrorMessage)
+        .safeExecute(::ErrorMessage) //tosdoL user safeExecuteAllowingPartialResponses
         .fold(
           ifLeft = {
             logcat { "Mariia: SetAsDefaultUseCaseImpl error: $it" }

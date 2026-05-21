@@ -368,6 +368,7 @@ internal fun HedvigNavHost(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
       navigateToConnectTrustly = ::navigateToConnectTrustly,
       navigateUp = navController::navigateUp,
+      openUrl = openUrl
     )
     profileGraph(
       settingsDestinationNestedGraphs = {

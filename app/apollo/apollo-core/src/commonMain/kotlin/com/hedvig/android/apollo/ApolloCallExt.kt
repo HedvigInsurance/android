@@ -20,6 +20,7 @@ import com.hedvig.android.apollo.ApolloOperationError.OperationError
 import com.hedvig.android.apollo.ApolloOperationError.OperationException
 import com.hedvig.android.apollo.parseResponse
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.logger.logcat
 import kotlin.jvm.JvmInline
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -127,6 +128,7 @@ private fun <D : Operation.Data> IorRaise<Nel<ApolloOperationError>>.parseRespon
     }
     raise(OperationException(exception))
   }
+  logcat{"Mariia: apollo parseResponse data: $data errors: $errors"}
   return iorFromErrorsAndData(errors.mapToOperationErrors(), data).bind()
 }
 
@@ -136,6 +138,7 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
     if (error.extensionErrorType() == ExtensionErrorType.Unauthenticated) {
       OperationError.Unathenticated
     } else {
+      logcat{"Mariia: apollo mapToOperationErrors error: $error"}
       OperationError.Other(
         buildString {
           append(error.message)
@@ -175,9 +178,18 @@ private fun <D : Operation.Data> iorFromErrorsAndData(
   data: D?,
 ): Ior<Nel<ApolloOperationError>, D> {
   return when {
-    errors != null && data != null -> Ior.Both(errors, data)
-    errors != null -> Ior.Left(errors)
-    data != null -> Ior.Right(data)
+    errors != null && data != null -> {
+      logcat{"Mariia: apollo iorFromErrorsAndData Ior.Both. data: $data errors: $errors"}
+      Ior.Both(errors, data)
+    }
+    errors != null -> {
+      logcat{"Mariia: apollo iorFromErrorsAndData Ior.Left"}
+      Ior.Left(errors)
+    }
+    data != null -> {
+      logcat{"Mariia: apollo iorFromErrorsAndData Ior.Right"}
+      Ior.Right(data)
+    }
     else -> error("Non compliant server")
   }
 }

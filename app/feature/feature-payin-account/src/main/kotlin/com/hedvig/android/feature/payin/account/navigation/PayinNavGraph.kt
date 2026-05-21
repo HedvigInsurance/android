@@ -28,6 +28,7 @@ fun NavGraphBuilder.payinAccountGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   navigateToConnectTrustly: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
   navigateUp: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   navgraph<PayinAccountDestination.Graph>(
     startDestination = PayinAccountDestinations.Overview::class,
@@ -74,6 +75,10 @@ fun NavGraphBuilder.payinAccountGraph(
           navController.typedPopBackStack<PayinAccountDestinations.SelectPayinMethod>(inclusive = true)
         },
         navigateUp = navController::navigateUp,
+        openUrl = {
+          navController.typedPopBackStack<PayinAccountDestinations.SelectPayinMethod>(inclusive = true)
+          openUrl(it)
+        }
       )
     }
 

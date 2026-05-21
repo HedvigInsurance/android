@@ -14,10 +14,17 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.simulateHotReload
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.design.system.hedvig.EmptyState
+import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
@@ -33,6 +40,7 @@ import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION
 import hedvig.resources.general_save_button
+import hedvig.resources.something_went_wrong
 import hedvig.resources.swish
 import org.jetbrains.compose.resources.stringResource
 
@@ -42,6 +50,7 @@ internal fun SetupSwishPayinDestination(
   globalSnackBarState: GlobalSnackBarState,
   onSuccessfullyConnected: () -> Unit,
   navigateUp: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SetupSwishPayoutScreen(
@@ -53,6 +62,7 @@ internal fun SetupSwishPayinDestination(
       onSuccessfullyConnected()
     },
     navigateUp = navigateUp,
+    openUrl = openUrl
   )
 }
 
@@ -65,6 +75,7 @@ private fun SetupSwishPayoutScreen(
   onSave: () -> Unit,
   showedSnackBar: () -> Unit,
   navigateUp: () -> Unit,
+  openUrl: (String) -> Unit,
 ) {
   val changesSaved = stringResource(Res.string.CONTACT_INFO_CHANGES_SAVED)
   LaunchedEffect(uiState.showSuccessSnackBar) {
@@ -79,6 +90,37 @@ private fun SetupSwishPayoutScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     Spacer(Modifier.weight(1f))
+    if (uiState.error != null) {
+      EmptyState(
+        text = stringResource(Res.string.something_went_wrong),
+        description = uiState.error.message,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
+      )
+    }
+    if (uiState.successUrl!=null) {
+      Column(
+        modifier= Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        EmptyState(
+          text = "The process started",
+          description = "Please confirm in Swish app",
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+          iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SUCCESS_WITH_WARNING,
+        )
+        Spacer(Modifier.height(16.dp))
+        HedvigButton(
+          "Open Swish",
+          enabled = true,
+          onClick = {
+            openUrl(uiState.successUrl)
+          }
+        )
+      }
+
+    }
+    Spacer(Modifier.weight(1f))
     Column(Modifier.padding(horizontal = 16.dp)) {
       HedvigTextField(
         state = uiState.phoneNumberState,
@@ -90,26 +132,14 @@ private fun SetupSwishPayoutScreen(
         modifier = Modifier.fillMaxWidth(),
       )
     }
-    AnimatedVisibility(
-      visible = uiState.errorMessage != null,
-      enter = expandVertically(),
-      exit = shrinkVertically(),
-    ) {
-      HedvigNotificationCard(
-        message = uiState.errorMessage?.message
-          ?: stringResource(Res.string.TIER_FLOW_COMMIT_PROCESSING_ERROR_DESCRIPTION),
-        priority = NotificationPriority.Attention,
-        modifier = Modifier
-          .padding(horizontal = 16.dp)
-          .padding(top = 4.dp)
-          .fillMaxWidth(),
-      )
-    }
+
     Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = stringResource(Res.string.general_save_button),
       onClick = onSave,
-      enabled = !uiState.isLoading && uiState.phoneNumberState.text.length >= 10,
+      enabled = !uiState.isLoading &&
+        uiState.phoneNumberState.text.length >= 10 &&
+        uiState.successUrl==null,
       isLoading = uiState.isLoading,
       modifier = Modifier
         .fillMaxWidth()
@@ -121,21 +151,50 @@ private fun SetupSwishPayoutScreen(
 
 @Composable
 @HedvigPreview
-private fun PreviewSetupSwishPayinScreen() {
+private fun PreviewSetupSwishPayinScreen(
+  @PreviewParameter(SetupSwishPayinUiStateProvider::class) uiState: SetupSwishPayoutUiState,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       SetupSwishPayoutScreen(
-        uiState = SetupSwishPayoutUiState(
-          phoneNumberState = TextFieldState(),
-          isLoading = false,
-          errorMessage = null,
-          showSuccessSnackBar = false,
-        ),
+        uiState = uiState,
         globalSnackBarState = GlobalSnackBarState(),
         onSave = {},
         showedSnackBar = {},
         navigateUp = {},
+        {}
       )
     }
   }
 }
+
+
+private class SetupSwishPayinUiStateProvider : CollectionPreviewParameterProvider<SetupSwishPayoutUiState>(
+  listOf(
+    SetupSwishPayoutUiState(
+      phoneNumberState = TextFieldState("287334432273"),
+      isLoading = false,
+      error = null,
+      showSuccessSnackBar = false,
+    ),
+    SetupSwishPayoutUiState(
+      phoneNumberState = TextFieldState(),
+      isLoading = false,
+      error = ErrorMessage(),
+      showSuccessSnackBar = false,
+    ),
+    SetupSwishPayoutUiState(
+      phoneNumberState = TextFieldState("837286428"),
+      isLoading = true,
+      error = null,
+      showSuccessSnackBar = false,
+    ),
+    SetupSwishPayoutUiState(
+      phoneNumberState = TextFieldState("83728644428"),
+      isLoading = false,
+      error = null,
+      showSuccessSnackBar = false,
+      successUrl = "hwdjhew"
+    )
+  ),
+)
