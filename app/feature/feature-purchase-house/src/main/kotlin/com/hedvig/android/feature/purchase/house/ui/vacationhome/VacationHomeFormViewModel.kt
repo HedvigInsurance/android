@@ -30,15 +30,18 @@ internal class VacationHomeFormViewModel(
   )
 
 internal sealed interface VacationHomeFormEvent {
+  data class UpdateMultipleOwners(val value: Boolean) : VacationHomeFormEvent
+
+  data class UpdateHasWaterConnected(val value: Boolean) : VacationHomeFormEvent
+
+  data class UpdateIsSubleted(val value: Boolean) : VacationHomeFormEvent
+
   data class SubmitForm(
     val street: String,
     val zipCode: String,
-    val multipleOwners: Boolean?,
     val yearOfConstruction: String,
     val livingSpace: String,
-    val hasWaterConnected: Boolean?,
     val numberOfBathrooms: Int,
-    val isSubleted: Boolean?,
   ) : VacationHomeFormEvent
 
   data object ClearNavigation : VacationHomeFormEvent
@@ -49,6 +52,9 @@ internal sealed interface VacationHomeFormEvent {
 }
 
 internal data class VacationHomeFormState(
+  val multipleOwners: Boolean? = null,
+  val hasWaterConnected: Boolean? = null,
+  val isSubleted: Boolean? = null,
   val streetError: String? = null,
   val zipCodeError: String? = null,
   val multipleOwnersError: String? = null,
@@ -85,36 +91,30 @@ private class VacationHomeFormPresenter(
 
     CollectEvents { event ->
       when (event) {
+        is VacationHomeFormEvent.UpdateMultipleOwners -> {
+          currentState = currentState.copy(multipleOwners = event.value, multipleOwnersError = null)
+        }
+
+        is VacationHomeFormEvent.UpdateHasWaterConnected -> {
+          currentState = currentState.copy(hasWaterConnected = event.value, hasWaterConnectedError = null)
+        }
+
+        is VacationHomeFormEvent.UpdateIsSubleted -> {
+          currentState = currentState.copy(isSubleted = event.value, isSubletedError = null)
+        }
+
         is VacationHomeFormEvent.SubmitForm -> {
-          val errors = validate(
-            street = event.street,
-            zipCode = event.zipCode,
-            multipleOwners = event.multipleOwners,
-            yearOfConstruction = event.yearOfConstruction,
-            livingSpace = event.livingSpace,
-            hasWaterConnected = event.hasWaterConnected,
-            isSubleted = event.isSubleted,
+          val errors = validate(event, currentState)
+          currentState = currentState.copy(
+            streetError = errors.streetError,
+            zipCodeError = errors.zipCodeError,
+            multipleOwnersError = errors.multipleOwnersError,
+            yearOfConstructionError = errors.yearOfConstructionError,
+            livingSpaceError = errors.livingSpaceError,
+            hasWaterConnectedError = errors.hasWaterConnectedError,
+            isSubletedError = errors.isSubletedError,
           )
-          if (errors.hasErrors()) {
-            currentState = currentState.copy(
-              streetError = errors.streetError,
-              zipCodeError = errors.zipCodeError,
-              multipleOwnersError = errors.multipleOwnersError,
-              yearOfConstructionError = errors.yearOfConstructionError,
-              livingSpaceError = errors.livingSpaceError,
-              hasWaterConnectedError = errors.hasWaterConnectedError,
-              isSubletedError = errors.isSubletedError,
-            )
-          } else {
-            currentState = currentState.copy(
-              streetError = null,
-              zipCodeError = null,
-              multipleOwnersError = null,
-              yearOfConstructionError = null,
-              livingSpaceError = null,
-              hasWaterConnectedError = null,
-              isSubletedError = null,
-            )
+          if (!errors.hasErrors()) {
             pendingSubmit = event
             submitIteration++
           }
@@ -155,11 +155,11 @@ private class VacationHomeFormPresenter(
     LaunchedEffect(submitIteration) {
       val submit = pendingSubmit ?: return@LaunchedEffect
       val session = sessionAndIntent ?: return@LaunchedEffect
-      val multipleOwners = submit.multipleOwners ?: return@LaunchedEffect
+      val multipleOwners = currentState.multipleOwners ?: return@LaunchedEffect
       val yearOfConstruction = submit.yearOfConstruction.toIntOrNull() ?: return@LaunchedEffect
       val livingSpace = submit.livingSpace.toIntOrNull() ?: return@LaunchedEffect
-      val hasWaterConnected = submit.hasWaterConnected ?: return@LaunchedEffect
-      val isSubleted = submit.isSubleted ?: return@LaunchedEffect
+      val hasWaterConnected = currentState.hasWaterConnected ?: return@LaunchedEffect
+      val isSubleted = currentState.isSubleted ?: return@LaunchedEffect
       pendingSubmit = null
       currentState = currentState.copy(isSubmitting = true, submitError = null)
       submitVacationHomeFormAndGetOffersUseCase.invoke(
@@ -215,35 +215,41 @@ private data class ValidationErrors(
     isSubletedError != null
 }
 
-private fun validate(
-  street: String,
-  zipCode: String,
-  multipleOwners: Boolean?,
-  yearOfConstruction: String,
-  livingSpace: String,
-  hasWaterConnected: Boolean?,
-  isSubleted: Boolean?,
-): ValidationErrors {
+private fun validate(event: VacationHomeFormEvent.SubmitForm, state: VacationHomeFormState): ValidationErrors {
   val currentYear = LocalDate.now().year
   return ValidationErrors(
-    streetError = if (street.isBlank()) "Ange en adress" else null,
+    // TODO: Add "Enter an address" / "Ange en adress" to Lokalise
+    streetError = if (event.street.isBlank()) "Enter an address" else null,
     zipCodeError = when {
-      zipCode.length != 5 -> "Ange ett giltigt postnummer (5 siffror)"
-      !zipCode.all { it.isDigit() } -> "Postnumret får bara innehålla siffror"
+      // TODO: Add "Enter a valid zip code (5 digits)" / "Ange ett giltigt postnummer (5 siffror)" to Lokalise
+      event.zipCode.length != 5 -> "Enter a valid zip code (5 digits)"
+
+      // TODO: Add "Zip code must contain only digits" / "Postnumret får bara innehålla siffror" to Lokalise
+      !event.zipCode.all { it.isDigit() } -> "Zip code must contain only digits"
+
       else -> null
     },
-    multipleOwnersError = if (multipleOwners == null) "Välj ett alternativ" else null,
-    yearOfConstructionError = when (val year = yearOfConstruction.toIntOrNull()) {
-      null -> "Ange byggår"
-      !in 1700..currentYear -> "Ange ett giltigt byggår"
+    // TODO: Add "Choose an option" / "Välj ett alternativ" to Lokalise
+    multipleOwnersError = if (state.multipleOwners == null) "Choose an option" else null,
+    yearOfConstructionError = when (val year = event.yearOfConstruction.toIntOrNull()) {
+      // TODO: Add "Enter year of construction" / "Ange byggår" to Lokalise
+      null -> "Enter year of construction"
+
+      // TODO: Add "Enter a valid year of construction" / "Ange ett giltigt byggår" to Lokalise
+      !in 1700..currentYear -> "Enter a valid year of construction"
+
       else -> null
     },
-    livingSpaceError = when (val space = livingSpace.toIntOrNull()) {
-      null -> "Ange boyta"
-      !in 1..Int.MAX_VALUE -> "Ange en giltig boyta"
+    livingSpaceError = when (val space = event.livingSpace.toIntOrNull()) {
+      // TODO: Add "Enter living space" / "Ange boyta" to Lokalise
+      null -> "Enter living space"
+
+      // TODO: Add "Enter a valid living space" / "Ange en giltig boyta" to Lokalise
+      !in 1..Int.MAX_VALUE -> "Enter a valid living space"
+
       else -> null
     },
-    hasWaterConnectedError = if (hasWaterConnected == null) "Välj ett alternativ" else null,
-    isSubletedError = if (isSubleted == null) "Välj ett alternativ" else null,
+    hasWaterConnectedError = if (state.hasWaterConnected == null) "Choose an option" else null,
+    isSubletedError = if (state.isSubleted == null) "Choose an option" else null,
   )
 }
