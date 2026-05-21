@@ -22,6 +22,7 @@ dependencies {
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)
   implementation(libs.koin.core)
+  implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
