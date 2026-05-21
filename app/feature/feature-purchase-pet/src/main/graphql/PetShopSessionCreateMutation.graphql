@@ -1,0 +1,5 @@
+mutation PetShopSessionCreate($countryCode: CountryCode!) {
+  shopSessionCreate(input: { countryCode: $countryCode }) {
+    id
+  }
+}

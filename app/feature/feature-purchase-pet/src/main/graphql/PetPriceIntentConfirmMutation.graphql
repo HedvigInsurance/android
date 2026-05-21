@@ -1,0 +1,13 @@
+mutation PetPriceIntentConfirm($priceIntentId: UUID!) {
+  priceIntentConfirm(priceIntentId: $priceIntentId) {
+    priceIntent {
+      id
+      offers {
+        ...PetProductOfferFragment
+      }
+    }
+    userError {
+      message
+    }
+  }
+}
