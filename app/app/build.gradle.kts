@@ -157,16 +157,15 @@ dependencies {
   implementation(projects.coreBuildConstants)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDatastorePublic)
-  implementation(projects.coreRive)
   implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)
   implementation(projects.coreIcons)
   implementation(projects.coreResources)
+  implementation(projects.coreRive)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)
   implementation(projects.dataChangetier)
   implementation(projects.dataChat)
-
   implementation(projects.dataContract)
   implementation(projects.dataConversations)
   implementation(projects.dataCrossSellAfterClaimClosed)
@@ -185,6 +184,7 @@ dependencies {
   implementation(projects.featureAddonPurchase)
   implementation(projects.featurePurchaseApartment)
   implementation(projects.featurePurchaseCar)
+  implementation(projects.featurePurchaseHouse)
   implementation(projects.featurePurchasePet)
   implementation(projects.purchaseCommon)
   implementation(projects.featureChat)
@@ -192,7 +192,6 @@ dependencies {
   implementation(projects.featureClaimChat)
   implementation(projects.featureClaimDetails)
   implementation(projects.featureClaimHistory)
-
   implementation(projects.featureConnectPaymentTrustly)
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
@@ -207,10 +206,12 @@ dependencies {
   implementation(projects.featureInsurances)
   implementation(projects.featureLogin)
   implementation(projects.featureMovingflow)
-
-  implementation(projects.featureRemoveAddons)
   implementation(projects.featurePayments)
   implementation(projects.featureProfile)
+  implementation(projects.featurePurchaseApartment)
+  implementation(projects.featurePurchaseCar)
+  implementation(projects.featurePurchaseHouse)
+  implementation(projects.featureRemoveAddons)
   implementation(projects.featureTerminateInsurance)
   implementation(projects.featureTravelCertificate)
   implementation(projects.foreverUi)
@@ -220,7 +221,6 @@ dependencies {
   implementation(projects.languageMigration)
   implementation(projects.loggingDeviceModel)
   implementation(projects.loggingPublic)
-  implementation(projects.permissionCore)
   implementation(projects.memberRemindersPublic)
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)
@@ -230,6 +230,8 @@ dependencies {
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.notificationCore)
   implementation(projects.notificationFirebase)
+  implementation(projects.permissionCore)
+  implementation(projects.purchaseCommon)
   implementation(projects.shareddi)
   implementation(projects.theme)
   implementation(projects.tierComparison)
@@ -237,12 +239,12 @@ dependencies {
   implementation(projects.trackingDatadog)
   implementation(projects.uiForceUpgrade)
 
+  debugImplementation(libs.androidx.compose.uiTooling)
+  debugImplementation(projects.featureImpersonation)
+
   // OkHttp for ProGuard rules only - not available at compile time
   runtimeOnly(platform(libs.okhttp.bom))
   runtimeOnly(libs.okhttp.core)
-
-  debugImplementation(libs.androidx.compose.uiTooling)
-  debugImplementation(projects.featureImpersonation)
 
   debugRuntimeOnly(libs.androidx.compose.uiTestManifest)
 }
