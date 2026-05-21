@@ -178,12 +178,7 @@ private data class ValidationErrors(
     zipCodeError != null
 }
 
-private fun validate(
-  registrationNumber: String,
-  mileage: Int?,
-  street: String,
-  zipCode: String,
-): ValidationErrors {
+private fun validate(registrationNumber: String, mileage: Int?, street: String, zipCode: String): ValidationErrors {
   return ValidationErrors(
     registrationNumberError = when {
       registrationNumber.isBlank() -> "Ange registreringsnummer"

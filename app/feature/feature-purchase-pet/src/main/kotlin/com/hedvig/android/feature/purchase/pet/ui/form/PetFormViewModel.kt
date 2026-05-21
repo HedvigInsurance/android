@@ -53,7 +53,9 @@ internal sealed interface PetFormEvent {
   ) : PetFormEvent
 
   data object ClearNavigation : PetFormEvent
+
   data object Retry : PetFormEvent
+
   data object DismissError : PetFormEvent
 }
 
@@ -149,6 +151,7 @@ private class PetFormPresenter(
       val breedsResult = results[1] as arrow.core.Either<*, *>
 
       val session = sessionResult.fold(ifLeft = { null }, ifRight = { it as SessionAndIntent })
+
       @Suppress("UNCHECKED_CAST")
       val breeds = breedsResult.fold(ifLeft = { null }, ifRight = { it as List<Breed> })
 
@@ -225,8 +228,14 @@ private data class ValidationErrors(
   val zipCodeError: String?,
 ) {
   fun hasErrors(): Boolean = listOf(
-    nameError, breedError, birthDateError, genderError,
-    isNeuteredError, speciesAnswerError, streetError, zipCodeError,
+    nameError,
+    breedError,
+    birthDateError,
+    genderError,
+    isNeuteredError,
+    speciesAnswerError,
+    streetError,
+    zipCodeError,
   ).any { it != null }
 }
 
@@ -251,7 +260,13 @@ private fun validate(event: PetFormEvent.SubmitForm, isCat: Boolean): Validation
     else -> null
   }
   return ValidationErrors(
-    nameError, breedError, birthDateError, genderError,
-    isNeuteredError, speciesAnswerError, streetError, zipCodeError,
+    nameError,
+    breedError,
+    birthDateError,
+    genderError,
+    isNeuteredError,
+    speciesAnswerError,
+    streetError,
+    zipCodeError,
   )
 }

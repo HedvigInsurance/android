@@ -66,9 +66,11 @@ internal fun PetFormDestination(
   HedvigScaffold(navigateUp = navigateUp) {
     when {
       uiState.isLoadingSession -> HedvigFullScreenCenterAlignedProgress()
+
       uiState.loadSessionError -> HedvigErrorSection(
         onButtonClick = { viewModel.emit(PetFormEvent.Retry) },
       )
+
       else -> PetFormBody(
         uiState = uiState,
         onSubmit = { event -> viewModel.emit(event) },

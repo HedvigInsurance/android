@@ -81,8 +81,8 @@ import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.profile.di.profileModule
 import com.hedvig.android.feature.purchase.apartment.di.apartmentPurchaseModule
 import com.hedvig.android.feature.purchase.car.di.carPurchaseModule
-import com.hedvig.android.feature.purchase.pet.di.petPurchaseModule
 import com.hedvig.android.feature.purchase.common.di.purchaseCommonModule
+import com.hedvig.android.feature.purchase.pet.di.petPurchaseModule
 import com.hedvig.android.feature.terminateinsurance.di.terminateInsuranceModule
 import com.hedvig.android.feature.travelcertificate.di.travelCertificateModule
 import com.hedvig.android.featureflags.di.featureManagerModule
