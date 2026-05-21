@@ -77,6 +77,8 @@ import com.hedvig.android.feature.purchase.car.navigation.CarPurchaseGraphDestin
 import com.hedvig.android.feature.purchase.car.navigation.carPurchaseNavGraph
 import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination
 import com.hedvig.android.feature.purchase.common.ui.success.PurchaseSuccessDestination
+import com.hedvig.android.feature.purchase.pet.navigation.PetPurchaseGraphDestination
+import com.hedvig.android.feature.purchase.pet.navigation.petPurchaseNavGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateGraphDestination
@@ -337,6 +339,9 @@ internal fun HedvigNavHost(
       onNavigateToCarPurchase = { productName ->
         navController.navigate(CarPurchaseGraphDestination(productName))
       },
+      onNavigateToPetPurchase = { productName ->
+        navController.navigate(PetPurchaseGraphDestination(productName))
+      },
     )
     foreverGraph(
       hedvigDeepLinkContainer = hedvigDeepLinkContainer,
@@ -499,6 +504,12 @@ internal fun HedvigNavHost(
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
     )
     carPurchaseNavGraph(
+      navController = navController,
+      popBackStack = popBackStackOrFinish,
+      finishApp = finishApp,
+      crossSellAfterFlowRepository = crossSellAfterFlowRepository,
+    )
+    petPurchaseNavGraph(
       navController = navController,
       popBackStack = popBackStackOrFinish,
       finishApp = finishApp,

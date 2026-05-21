@@ -43,6 +43,7 @@ fun NavGraphBuilder.insuranceGraph(
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   onNavigateToApartmentPurchase: (productName: String) -> Unit,
   onNavigateToCarPurchase: (productName: String) -> Unit,
+  onNavigateToPetPurchase: (productName: String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -70,13 +71,31 @@ fun NavGraphBuilder.insuranceGraph(
           }
           val lower = decoded.lowercase()
           when {
-            "car-insurance" in lower || "bilforsakring" in lower ->
+            "car-insurance" in lower || "bilforsakring" in lower -> {
               onNavigateToCarPurchase("SE_CAR")
-            "bostadsratt" in lower || "home-insurance/homeowner" in lower ->
+            }
+
+            // TODO: verify against actual cross-sell URLs (storyblok / staging)
+            "dog-insurance" in lower || "hundforsakring" in lower -> {
+              onNavigateToPetPurchase("SE_PET_DOG")
+            }
+
+            // TODO: verify against actual cross-sell URLs (storyblok / staging)
+            "cat-insurance" in lower || "kattforsakring" in lower -> {
+              onNavigateToPetPurchase("SE_PET_CAT")
+            }
+
+            "bostadsratt" in lower || "home-insurance/homeowner" in lower -> {
               onNavigateToApartmentPurchase("SE_APARTMENT_BRF")
-            "hyresratt" in lower || "home-insurance" in lower || "hemforsakring" in lower ->
+            }
+
+            "hyresratt" in lower || "home-insurance" in lower || "hemforsakring" in lower -> {
               onNavigateToApartmentPurchase("SE_APARTMENT_RENT")
-            else -> openUrl(url)
+            }
+
+            else -> {
+              openUrl(url)
+            }
           }
         },
         navigateToCancelledInsurances = dropUnlessResumed {
@@ -136,4 +155,3 @@ fun NavGraphBuilder.insuranceGraph(
     }
   }
 }
-
