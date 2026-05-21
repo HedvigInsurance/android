@@ -44,6 +44,7 @@ fun NavGraphBuilder.insuranceGraph(
   onNavigateToApartmentPurchase: (productName: String) -> Unit,
   onNavigateToCarPurchase: (productName: String) -> Unit,
   onNavigateToPetPurchase: () -> Unit,
+  onNavigateToHousePurchase: (productName: String) -> Unit,
 ) {
   navgraph<InsurancesDestination.Graph>(
     startDestination = InsurancesDestination.Insurances::class,
@@ -71,6 +72,10 @@ fun NavGraphBuilder.insuranceGraph(
           }
           val lower = decoded.lowercase()
           when {
+            "fritidshusforsakring" in lower || "vacation-home" in lower -> {
+              onNavigateToHousePurchase("SE_VACATION_HOME")
+            }
+
             "car-insurance" in lower || "bilforsakring" in lower -> {
               onNavigateToCarPurchase("SE_CAR")
             }
