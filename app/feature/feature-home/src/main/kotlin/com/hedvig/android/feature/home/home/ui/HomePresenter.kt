@@ -139,6 +139,7 @@ internal class HomePresenter(
           crossSellsAction = successData.crossSellsAction,
           addonBannerInfo = successData.addonBannerInfo,
           isProduction = isProduction,
+          ongoingShopSessions = successData.ongoingShopSessions,
         )
       }
     }
@@ -176,6 +177,7 @@ internal sealed interface HomeUiState {
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     val addonBannerInfo: AddonBannerInfo?,
     val isProduction: Boolean,
+    val ongoingShopSessions: List<HomeData.OngoingShopSession>,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
   ) : HomeUiState
@@ -196,6 +198,7 @@ private data class SuccessData(
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
   val addonBannerInfo: AddonBannerInfo?,
+  val ongoingShopSessions: List<HomeData.OngoingShopSession>,
 ) {
   companion object {
     fun fromLastState(lastState: HomeUiState): SuccessData? {
@@ -211,6 +214,7 @@ private data class SuccessData(
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
         addonBannerInfo = lastState.addonBannerInfo,
+        ongoingShopSessions = lastState.ongoingShopSessions,
       )
     }
 
@@ -259,6 +263,7 @@ private data class SuccessData(
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
         addonBannerInfo = homeData.travelBannerInfo,
+        ongoingShopSessions = homeData.ongoingShopSessions,
       )
     }
   }

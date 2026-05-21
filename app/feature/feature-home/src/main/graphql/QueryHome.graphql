@@ -78,6 +78,24 @@ query Home($claimsHistoryFlag: Boolean!) {
         }
       }
     }
+    ongoingShopSessions {
+      ...OngoingShopSessionFragment
+    }
+  }
+}
+
+fragment OngoingShopSessionFragment on ShopSession {
+  id
+  display {
+    title
+    subtitle
+    monthlyNet {
+      amount
+      currencyCode
+    }
+    lastActivityAt
+    resumeUrl
+    validTo
   }
 }
 

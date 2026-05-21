@@ -27,6 +27,7 @@ import com.hedvig.android.molecule.test.test
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
+import kotlin.collections.listOf
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -142,6 +143,7 @@ internal class HomePresenterTest {
           crossSells = CrossSellSheetData(testCrossSell, listOf()),
           firstVetSections = listOf(),
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -173,6 +175,7 @@ internal class HomePresenterTest {
           hasUnseenChatMessages = false,
           addonBannerInfo = null,
           isProduction = false,
+          ongoingShopSessions = emptyList(),
         ),
       )
     }
@@ -206,6 +209,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -224,6 +228,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          ongoingShopSessions = emptyList(),
         ),
       )
     }
@@ -281,6 +286,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           crossSells = CrossSellSheetData(null, listOf()),
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem())
@@ -316,6 +322,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -332,6 +339,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          ongoingShopSessions = emptyList(),
         ),
       )
     }
@@ -370,6 +378,7 @@ internal class HomePresenterTest {
           ),
           showHelpCenter = false,
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -386,6 +395,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          ongoingShopSessions = emptyList(),
         ),
       )
     }
@@ -423,6 +433,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -443,6 +454,7 @@ internal class HomePresenterTest {
           ),
           addonBannerInfo = null,
           isProduction = false,
+          ongoingShopSessions = emptyList(),
         ),
       )
     }
@@ -473,6 +485,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -489,6 +502,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          ongoingShopSessions = emptyList(),
         ),
       )
     }
@@ -519,6 +533,7 @@ internal class HomePresenterTest {
           firstVetSections = listOf(),
           showHelpCenter = false,
           travelBannerInfo = null,
+          ongoingShopSessions = emptyList(),
         ).right(),
       )
       assertThat(awaitItem()).isEqualTo(
@@ -535,6 +550,7 @@ internal class HomePresenterTest {
           crossSellsAction = null,
           addonBannerInfo = null,
           isProduction = false,
+          ongoingShopSessions = emptyList(),
         ),
       )
     }
@@ -561,6 +577,7 @@ internal class HomePresenterTest {
     firstVetSections = listOf(),
     crossSells = CrossSellSheetData(null, emptyList()),
     travelBannerInfo = null,
+    ongoingShopSessions = emptyList(),
   )
 }
 

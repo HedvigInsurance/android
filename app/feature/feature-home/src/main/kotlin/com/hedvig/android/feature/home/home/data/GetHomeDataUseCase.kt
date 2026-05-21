@@ -166,6 +166,17 @@ internal class GetHomeDataUseCaseImpl(
             )
           } ?: emptyList()
         val travelBannerInfo = travelBannerInfo.getOrNull()
+        val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions
+          .filter { it.display.validTo > clock.now() }
+          .map { session ->
+            HomeData.OngoingShopSession(
+              id = session.id.toString(),
+              title = session.display.title,
+              subtitle = session.display.subtitle,
+              resumeUrl = session.display.resumeUrl,
+              validTo = session.display.validTo,
+            )
+          }
         HomeData(
           contractStatus = contractStatus,
           claimStatusCardsData = homeQueryData.claimStatusCards(),
@@ -177,6 +188,7 @@ internal class GetHomeDataUseCaseImpl(
           firstVetSections = firstVetActions,
           crossSells = crossSells,
           travelBannerInfo = travelBannerInfo?.firstOrNull(),
+          ongoingShopSessions = ongoingShopSessions,
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
@@ -292,7 +304,16 @@ internal data class HomeData(
   val firstVetSections: List<FirstVetSection>,
   val crossSells: CrossSellSheetData,
   val travelBannerInfo: AddonBannerInfo?,
+  val ongoingShopSessions: List<OngoingShopSession>,
 ) {
+  data class OngoingShopSession(
+    val id: String,
+    val title: String,
+    val subtitle: String?,
+    val resumeUrl: String,
+    val validTo: kotlin.time.Instant,
+  )
+
   @Immutable
   data class ClaimStatusCardsData(
     val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,

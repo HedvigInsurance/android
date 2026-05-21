@@ -54,6 +54,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         ),
       ),
       travelBannerInfo = null,
+      ongoingShopSessions = emptyList(),
     ).right(),
   )
 }
