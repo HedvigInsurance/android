@@ -41,13 +41,18 @@ internal class PetFormViewModel(
   )
 
 internal sealed interface PetFormEvent {
+  data class UpdateBreed(val value: Breed) : PetFormEvent
+
+  data class UpdateBirthDate(val value: LocalDate) : PetFormEvent
+
+  data class UpdateGender(val value: PetGender) : PetFormEvent
+
+  data class UpdateIsNeutered(val value: Boolean) : PetFormEvent
+
+  data class UpdateSpeciesAnswer(val value: Boolean) : PetFormEvent
+
   data class SubmitForm(
     val name: String,
-    val breed: Breed?,
-    val birthDate: LocalDate?,
-    val gender: PetGender?,
-    val isNeutered: Boolean?,
-    val speciesAnswer: Boolean?,
     val street: String,
     val zipCode: String,
   ) : PetFormEvent
@@ -67,6 +72,11 @@ internal data class PetFormState(
   val breeds: List<Breed> = emptyList(),
   val isSubmitting: Boolean = false,
   val submitError: String? = null,
+  val selectedBreed: Breed? = null,
+  val birthDate: LocalDate? = null,
+  val gender: PetGender? = null,
+  val isNeutered: Boolean? = null,
+  val speciesAnswer: Boolean? = null,
   val nameError: String? = null,
   val breedError: String? = null,
   val birthDateError: String? = null,
@@ -102,8 +112,14 @@ private class PetFormPresenter(
 
     CollectEvents { event ->
       when (event) {
+        is PetFormEvent.UpdateBreed -> currentState = currentState.copy(selectedBreed = event.value, breedError = null)
+        is PetFormEvent.UpdateBirthDate -> currentState = currentState.copy(birthDate = event.value, birthDateError = null)
+        is PetFormEvent.UpdateGender -> currentState = currentState.copy(gender = event.value, genderError = null)
+        is PetFormEvent.UpdateIsNeutered -> currentState = currentState.copy(isNeutered = event.value, isNeuteredError = null)
+        is PetFormEvent.UpdateSpeciesAnswer -> currentState = currentState.copy(speciesAnswer = event.value, speciesAnswerError = null)
+
         is PetFormEvent.SubmitForm -> {
-          val errors = validate(event, isCat)
+          val errors = validate(event, currentState)
           currentState = currentState.copy(
             nameError = errors.nameError,
             breedError = errors.breedError,
@@ -120,9 +136,7 @@ private class PetFormPresenter(
           }
         }
 
-        PetFormEvent.ClearNavigation -> {
-          currentState = currentState.copy(offersToNavigate = null)
-        }
+        PetFormEvent.ClearNavigation -> currentState = currentState.copy(offersToNavigate = null)
 
         PetFormEvent.Retry -> {
           if (sessionAndIntent == null) {
@@ -133,9 +147,7 @@ private class PetFormPresenter(
           }
         }
 
-        PetFormEvent.DismissError -> {
-          currentState = currentState.copy(submitError = null)
-        }
+        PetFormEvent.DismissError -> currentState = currentState.copy(submitError = null)
       }
     }
 
@@ -170,11 +182,11 @@ private class PetFormPresenter(
     LaunchedEffect(submitIteration) {
       val submit = pendingSubmit ?: return@LaunchedEffect
       val session = sessionAndIntent ?: return@LaunchedEffect
-      val breed = submit.breed ?: return@LaunchedEffect
-      val birthDate = submit.birthDate ?: return@LaunchedEffect
-      val gender = submit.gender ?: return@LaunchedEffect
-      val isNeutered = submit.isNeutered ?: return@LaunchedEffect
-      val speciesAnswer = submit.speciesAnswer ?: return@LaunchedEffect
+      val breed = currentState.selectedBreed ?: return@LaunchedEffect
+      val birthDate = currentState.birthDate ?: return@LaunchedEffect
+      val gender = currentState.gender ?: return@LaunchedEffect
+      val isNeutered = currentState.isNeutered ?: return@LaunchedEffect
+      val speciesAnswer = currentState.speciesAnswer ?: return@LaunchedEffect
       pendingSubmit = null
       currentState = currentState.copy(isSubmitting = true, submitError = null)
 
@@ -239,24 +251,24 @@ private data class ValidationErrors(
   ).any { it != null }
 }
 
-private fun validate(event: PetFormEvent.SubmitForm, isCat: Boolean): ValidationErrors {
+private fun validate(submit: PetFormEvent.SubmitForm, state: PetFormState): ValidationErrors {
   // TODO: Add "Enter a name" / "Ange ett namn" to Lokalise
-  val nameError = if (event.name.isBlank()) "Enter a name" else null
+  val nameError = if (submit.name.isBlank()) "Enter a name" else null
   // TODO: Add "Choose a breed" / "Välj en ras" to Lokalise
-  val breedError = if (event.breed == null) "Choose a breed" else null
+  val breedError = if (state.selectedBreed == null) "Choose a breed" else null
   // TODO: Add "Choose a birth date" / "Välj födelsedatum" to Lokalise
-  val birthDateError = if (event.birthDate == null) "Choose a birth date" else null
+  val birthDateError = if (state.birthDate == null) "Choose a birth date" else null
   // TODO: Add "Choose a gender" / "Välj kön" to Lokalise
-  val genderError = if (event.gender == null) "Choose a gender" else null
+  val genderError = if (state.gender == null) "Choose a gender" else null
   // TODO: Add "Answer this question" / "Besvara frågan" to Lokalise
-  val isNeuteredError = if (event.isNeutered == null) "Answer this question" else null
-  val speciesAnswerError = if (event.speciesAnswer == null) "Answer this question" else null
+  val isNeuteredError = if (state.isNeutered == null) "Answer this question" else null
+  val speciesAnswerError = if (state.speciesAnswer == null) "Answer this question" else null
   // TODO: Add "Enter an address" / "Ange en adress" to Lokalise
-  val streetError = if (event.street.isBlank()) "Enter an address" else null
+  val streetError = if (submit.street.isBlank()) "Enter an address" else null
   // TODO: Add "Enter a valid zip code (5 digits)" / "Ange ett giltigt postnummer (5 siffror)" to Lokalise
   val zipCodeError = when {
-    event.zipCode.length != 5 -> "Enter a valid zip code (5 digits)"
-    !event.zipCode.all { it.isDigit() } -> "Enter a valid zip code (5 digits)"
+    submit.zipCode.length != 5 -> "Enter a valid zip code (5 digits)"
+    !submit.zipCode.all { it.isDigit() } -> "Enter a valid zip code (5 digits)"
     else -> null
   }
   return ValidationErrors(

@@ -34,6 +34,10 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTextField
 import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.RadioGroup
+import com.hedvig.android.design.system.hedvig.RadioGroupStyle
+import com.hedvig.android.design.system.hedvig.RadioOption
+import com.hedvig.android.design.system.hedvig.RadioOptionId
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
@@ -73,8 +77,7 @@ internal fun PetFormDestination(
 
       else -> PetFormBody(
         uiState = uiState,
-        onSubmit = { event -> viewModel.emit(event) },
-        onDismissError = { viewModel.emit(PetFormEvent.DismissError) },
+        onEvent = { event -> viewModel.emit(event) },
       )
     }
   }
@@ -83,15 +86,9 @@ internal fun PetFormDestination(
 @Composable
 private fun PetFormBody(
   uiState: PetFormState,
-  onSubmit: (PetFormEvent.SubmitForm) -> Unit,
-  onDismissError: () -> Unit,
+  onEvent: (PetFormEvent) -> Unit,
 ) {
   var name by rememberSaveable { mutableStateOf("") }
-  var selectedBreed: Breed? by remember { mutableStateOf(null) }
-  var birthDate: LocalDate? by remember { mutableStateOf(null) }
-  var gender: PetGender? by remember { mutableStateOf(null) }
-  var isNeutered: Boolean? by remember { mutableStateOf(null) }
-  var speciesAnswer: Boolean? by remember { mutableStateOf(null) }
   var street by rememberSaveable { mutableStateOf("") }
   var zipCode by rememberSaveable { mutableStateOf("") }
 
@@ -100,7 +97,7 @@ private fun PetFormBody(
       // TODO: Add "Something went wrong" / "Något gick fel" to Lokalise
       title = "Something went wrong",
       message = uiState.submitError,
-      onDismiss = onDismissError,
+      onDismiss = { onEvent(PetFormEvent.DismissError) },
     )
   }
 
@@ -108,36 +105,27 @@ private fun PetFormBody(
     isCat = uiState.isCat,
     breeds = uiState.breeds,
     name = name,
-    selectedBreed = selectedBreed,
-    birthDate = birthDate,
-    gender = gender,
-    isNeutered = isNeutered,
-    speciesAnswer = speciesAnswer,
+    selectedBreed = uiState.selectedBreed,
+    birthDate = uiState.birthDate,
+    gender = uiState.gender,
+    isNeutered = uiState.isNeutered,
+    speciesAnswer = uiState.speciesAnswer,
     street = street,
     zipCode = zipCode,
     errors = uiState,
     isSubmitting = uiState.isSubmitting,
     onNameChanged = { name = it },
-    onBreedSelected = { selectedBreed = it },
-    onBirthDateSelected = { birthDate = it },
-    onGenderSelected = { gender = it },
-    onIsNeuteredSelected = { isNeutered = it },
-    onSpeciesAnswerSelected = { speciesAnswer = it },
+    onBreedSelected = { onEvent(PetFormEvent.UpdateBreed(it)) },
+    onBirthDateSelected = { onEvent(PetFormEvent.UpdateBirthDate(it)) },
+    onGenderSelected = { onEvent(PetFormEvent.UpdateGender(it)) },
+    onIsNeuteredSelected = { onEvent(PetFormEvent.UpdateIsNeutered(it)) },
+    onSpeciesAnswerSelected = { onEvent(PetFormEvent.UpdateSpeciesAnswer(it)) },
     onStreetChanged = { street = it },
-    onZipCodeChanged = { value -> if (value.all { it.isDigit() } && value.length <= 5) zipCode = value },
+    onZipCodeChanged = { value ->
+      if (value.all { it.isDigit() } && value.length <= 5) zipCode = value
+    },
     onSubmit = {
-      onSubmit(
-        PetFormEvent.SubmitForm(
-          name = name,
-          breed = selectedBreed,
-          birthDate = birthDate,
-          gender = gender,
-          isNeutered = isNeutered,
-          speciesAnswer = speciesAnswer,
-          street = street,
-          zipCode = zipCode,
-        ),
-      )
+      onEvent(PetFormEvent.SubmitForm(name = name, street = street, zipCode = zipCode))
     },
   )
 }
@@ -207,28 +195,29 @@ private fun PetFormContent(
         isEnabled = !isSubmitting,
       )
 
-      GenderDropdown(
-        isCat = isCat,
-        selected = gender,
-        onSelected = onGenderSelected,
-        hasError = errors.genderError != null,
+      // TODO: Add "Gender" / "Kön" to Lokalise
+      // TODO: Add "Male" / "Hane" to Lokalise
+      // TODO: Add "Female" / "Hona" to Lokalise
+      RadioChoiceRow(
+        label = "Gender",
+        selectedId = gender?.name,
+        options = listOf("MALE" to "Male", "FEMALE" to "Female"),
+        onSelected = { id -> onGenderSelected(PetGender.valueOf(id)) },
         errorText = errors.genderError,
         isEnabled = !isSubmitting,
       )
 
-      YesNoDropdown(
-        // TODO: Add "Is your pet neutered?" / "Är ditt husdjur kastrerat?" to Lokalise
+      // TODO: Add "Is your pet neutered?" / "Är ditt husdjur kastrerat?" to Lokalise
+      RadioChoiceRow(
         label = "Is your pet neutered?",
-        // TODO: Add "Select an option" / "Välj ett alternativ" to Lokalise
-        hint = "Select an option",
-        selected = isNeutered,
-        onSelected = onIsNeuteredSelected,
-        hasError = errors.isNeuteredError != null,
+        selectedId = isNeutered?.toString(),
+        options = yesNoOptions(),
+        onSelected = { id -> onIsNeuteredSelected(id.toBoolean()) },
         errorText = errors.isNeuteredError,
         isEnabled = !isSubmitting,
       )
 
-      YesNoDropdown(
+      RadioChoiceRow(
         label = if (isCat) {
           // TODO: Add "Does your cat have outside access?" / "Har din katt utomhustillgång?" to Lokalise
           "Does your cat have outside access?"
@@ -236,10 +225,9 @@ private fun PetFormContent(
           // TODO: Add "Have you owned a dog before?" / "Har du haft hund tidigare?" to Lokalise
           "Have you owned a dog before?"
         },
-        hint = "Select an option",
-        selected = speciesAnswer,
-        onSelected = onSpeciesAnswerSelected,
-        hasError = errors.speciesAnswerError != null,
+        selectedId = speciesAnswer?.toString(),
+        options = yesNoOptions(),
+        onSelected = { id -> onSpeciesAnswerSelected(id.toBoolean()) },
         errorText = errors.speciesAnswerError,
         isEnabled = !isSubmitting,
       )
@@ -311,80 +299,37 @@ private fun BreedDropdown(
 }
 
 @Composable
-private fun GenderDropdown(
-  isCat: Boolean,
-  selected: PetGender?,
-  onSelected: (PetGender) -> Unit,
-  hasError: Boolean,
+private fun RadioChoiceRow(
+  label: String,
+  selectedId: String?,
+  options: List<Pair<String, String>>,
+  onSelected: (String) -> Unit,
   errorText: String?,
   isEnabled: Boolean,
 ) {
-  val options = listOf(
-    PetGender.MALE to if (isCat) {
-      // TODO: Add "Male (cat)" / "Hane" to Lokalise
-      "Male"
-    } else {
-      // TODO: Add "Male (dog)" / "Hane" to Lokalise
-      "Male"
-    },
-    PetGender.FEMALE to if (isCat) {
-      // TODO: Add "Female (cat)" / "Hona" to Lokalise
-      "Female"
-    } else {
-      // TODO: Add "Female (dog)" / "Tik" to Lokalise
-      "Female"
-    },
-  )
-  val selectedIndex = selected?.let { options.indexOfFirst { (gender, _) -> gender == it } }?.takeIf { it >= 0 }
-  DropdownWithDialog(
-    style = DropdownStyle.Label(
-      items = options.map { SimpleDropdownItem(it.second) },
-      // TODO: Add "Gender" / "Kön" to Lokalise
-      label = "Gender",
-    ),
-    size = DropdownSize.Medium,
-    // TODO: Add "Choose gender" / "Välj kön" to Lokalise
-    hintText = "Choose gender",
-    chosenItemIndex = selectedIndex,
-    onItemChosen = { index -> onSelected(options[index].first) },
-    onSelectorClick = {},
-    isEnabled = isEnabled,
-    hasError = hasError,
-    errorText = errorText,
-    modifier = Modifier.fillMaxWidth(),
-  )
+  Column(modifier = Modifier.fillMaxWidth()) {
+    RadioGroup(
+      options = options.map { (id, text) -> RadioOption(RadioOptionId(id), text) },
+      selectedOption = selectedId?.let(::RadioOptionId),
+      onRadioOptionSelected = { id -> onSelected(id.id) },
+      style = RadioGroupStyle.Labeled.HorizontalFlow(label = label),
+      enabled = isEnabled,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    if (errorText != null) {
+      HedvigText(
+        text = errorText,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
+    }
+  }
 }
 
-@Composable
-private fun YesNoDropdown(
-  label: String,
-  hint: String,
-  selected: Boolean?,
-  onSelected: (Boolean) -> Unit,
-  hasError: Boolean,
-  errorText: String?,
-  isEnabled: Boolean,
-) {
-  // TODO: Add "Yes" / "Ja" to Lokalise
-  // TODO: Add "No" / "Nej" to Lokalise
-  val options = listOf(true to "Yes", false to "No")
-  val selectedIndex = selected?.let { options.indexOfFirst { (value, _) -> value == it } }?.takeIf { it >= 0 }
-  DropdownWithDialog(
-    style = DropdownStyle.Label(
-      items = options.map { SimpleDropdownItem(it.second) },
-      label = label,
-    ),
-    size = DropdownSize.Medium,
-    hintText = hint,
-    chosenItemIndex = selectedIndex,
-    onItemChosen = { index -> onSelected(options[index].first) },
-    onSelectorClick = {},
-    isEnabled = isEnabled,
-    hasError = hasError,
-    errorText = errorText,
-    modifier = Modifier.fillMaxWidth(),
-  )
-}
+// TODO: Add "Yes" / "Ja" to Lokalise
+// TODO: Add "No" / "Nej" to Lokalise
+private fun yesNoOptions(): List<Pair<String, String>> = listOf("true" to "Yes", "false" to "No")
 
 @Composable
 private fun BirthDatePicker(
@@ -431,32 +376,35 @@ private fun BirthDatePicker(
       },
     )
   }
-  HedvigCard(
-    onClick = { if (isEnabled) showDialog = true },
-    shape = HedvigTheme.shapes.cornerLarge,
-    modifier = Modifier.fillMaxWidth(),
-  ) {
-    Column(Modifier.padding(16.dp)) {
-      HedvigText(
-        // TODO: Add "Birth date" / "Födelsedatum" to Lokalise
-        text = "Birth date",
-        style = HedvigTheme.typography.label,
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
-      HedvigText(
-        text = birthDate?.toString() ?: run {
-          // TODO: Add "Select date" / "Välj datum" to Lokalise
-          "Select date"
-        },
-        style = HedvigTheme.typography.bodyMedium,
-      )
-      if (hasError && errorText != null) {
+  Column(modifier = Modifier.fillMaxWidth()) {
+    HedvigCard(
+      onClick = { if (isEnabled) showDialog = true },
+      shape = HedvigTheme.shapes.cornerLarge,
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
         HedvigText(
-          text = errorText,
+          // TODO: Add "Birth date" / "Födelsedatum" to Lokalise
+          text = "Birth date",
           style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.signalRedText,
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+        HedvigText(
+          text = birthDate?.toString() ?: run {
+            // TODO: Add "Select date" / "Välj datum" to Lokalise
+            "Select date"
+          },
+          style = HedvigTheme.typography.bodySmall,
         )
       }
+    }
+    if (hasError && errorText != null) {
+      HedvigText(
+        text = errorText,
+        style = HedvigTheme.typography.label,
+        color = HedvigTheme.colorScheme.textSecondary,
+        modifier = Modifier.padding(horizontal = 16.dp),
+      )
     }
   }
 }
