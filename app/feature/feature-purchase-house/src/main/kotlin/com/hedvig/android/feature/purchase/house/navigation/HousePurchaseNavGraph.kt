@@ -1,0 +1,120 @@
+package com.hedvig.android.feature.purchase.house.navigation
+
+import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.toRoute
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
+import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.SelectTier
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Signing
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Success
+import com.hedvig.android.feature.purchase.common.navigation.PurchaseCommonDestination.Summary
+import com.hedvig.android.feature.purchase.common.navigation.SelectTierParameters
+import com.hedvig.android.feature.purchase.common.navigation.SummaryParameters
+import com.hedvig.android.feature.purchase.common.navigation.TierOfferData
+import com.hedvig.android.feature.purchase.common.ui.offer.SelectTierDestination
+import com.hedvig.android.feature.purchase.common.ui.offer.SelectTierViewModel
+import com.hedvig.android.feature.purchase.common.ui.sign.SigningDestination
+import com.hedvig.android.feature.purchase.common.ui.sign.SigningViewModel
+import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryDestination
+import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryViewModel
+import com.hedvig.android.feature.purchase.house.navigation.HousePurchaseDestination.Form
+import com.hedvig.android.feature.purchase.house.ui.vacationhome.VacationHomeFormDestination
+import com.hedvig.android.feature.purchase.house.ui.vacationhome.VacationHomeFormViewModel
+import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
+import com.hedvig.android.navigation.compose.typedPopUpTo
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
+
+fun NavGraphBuilder.housePurchaseNavGraph(
+  navController: NavController,
+  popBackStack: () -> Unit,
+  finishApp: () -> Unit,
+  crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
+) {
+  navgraph<HousePurchaseGraphDestination>(
+    startDestination = Form::class,
+  ) {
+    navdestination<Form> { backStackEntry ->
+      val graphRoute = navController
+        .getRouteFromBackStack<HousePurchaseGraphDestination>(backStackEntry)
+      val viewModel: VacationHomeFormViewModel = koinViewModel {
+        parametersOf(graphRoute.productName)
+      }
+      VacationHomeFormDestination(
+        viewModel = viewModel,
+        navigateUp = dropUnlessResumed { popBackStack() },
+        onOffersReceived = { shopSessionId, offers ->
+          navController.navigate(
+            SelectTier(
+              SelectTierParameters(
+                shopSessionId = shopSessionId,
+                offers = offers.offers.map { offer ->
+                  TierOfferData(
+                    offerId = offer.offerId,
+                    tierDisplayName = offer.tierDisplayName,
+                    tierDescription = offer.tierDescription,
+                    grossAmount = offer.grossPrice.amount,
+                    grossCurrencyCode = offer.grossPrice.currencyCode.name,
+                    netAmount = offer.netPrice.amount,
+                    netCurrencyCode = offer.netPrice.currencyCode.name,
+                    usps = offer.usps,
+                    exposureDisplayName = offer.exposureDisplayName,
+                    deductibleDisplayName = offer.deductibleDisplayName,
+                    hasDiscount = offer.hasDiscount,
+                  )
+                },
+                productDisplayName = offers.productDisplayName,
+              ),
+            ),
+          )
+        },
+      )
+    }
+
+    navdestination<SelectTier>(SelectTier) { backStackEntry ->
+      val route = backStackEntry.toRoute<SelectTier>()
+      val viewModel: SelectTierViewModel = koinViewModel {
+        parametersOf(route.params)
+      }
+      SelectTierDestination(
+        viewModel = viewModel,
+        navigateUp = dropUnlessResumed { navController.popBackStack() },
+        onContinueToSummary = { params -> navController.navigate(Summary(params)) },
+      )
+    }
+
+    navdestination<Summary>(Summary) { backStackEntry ->
+      val route = backStackEntry.toRoute<Summary>()
+      val viewModel: PurchaseSummaryViewModel = koinViewModel {
+        parametersOf(route.params)
+      }
+      PurchaseSummaryDestination(
+        viewModel = viewModel,
+        navigateUp = dropUnlessResumed { navController.popBackStack() },
+        navigateToSigning = { params -> navController.navigate(Signing(params)) },
+      )
+    }
+
+    navdestination<Signing>(Signing) { backStackEntry ->
+      val route = backStackEntry.toRoute<Signing>()
+      val viewModel: SigningViewModel = koinViewModel {
+        parametersOf(route.params)
+      }
+      SigningDestination(
+        viewModel = viewModel,
+        navigateToSuccess = { startDate ->
+          crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
+            CrossSellInfoType.Purchase,
+          )
+          navController.navigate(Success(startDate)) {
+            typedPopUpTo<HousePurchaseGraphDestination>({ inclusive = true })
+          }
+        },
+      )
+    }
+  }
+}
