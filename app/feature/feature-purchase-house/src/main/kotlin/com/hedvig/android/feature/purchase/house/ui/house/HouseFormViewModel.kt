@@ -104,7 +104,9 @@ private class HouseFormPresenter(
           }
         }
 
-        HouseFormEvent.ClearNavigation -> currentState = currentState.copy(offersToNavigate = null)
+        HouseFormEvent.ClearNavigation -> {
+          currentState = currentState.copy(offersToNavigate = null)
+        }
 
         HouseFormEvent.Retry -> {
           if (sessionAndIntent == null) {
@@ -115,7 +117,9 @@ private class HouseFormPresenter(
           }
         }
 
-        HouseFormEvent.DismissError -> currentState = currentState.copy(submitError = null)
+        HouseFormEvent.DismissError -> {
+          currentState = currentState.copy(submitError = null)
+        }
       }
     }
 
@@ -200,29 +204,37 @@ private fun validate(event: HouseFormEvent.SubmitForm, state: HouseFormState): V
     zipCodeError = when {
       // TODO: Add "Enter a valid zip code (5 digits)" / "Ange ett giltigt postnummer (5 siffror)" to Lokalise
       event.zipCode.length != 5 -> "Enter a valid zip code (5 digits)"
+
       // TODO: Add "Zip code must contain only digits" / "Postnumret får bara innehålla siffror" to Lokalise
       !event.zipCode.all { it.isDigit() } -> "Zip code must contain only digits"
+
       else -> null
     },
     livingSpaceError = when (val space = event.livingSpace.toIntOrNull()) {
       // TODO: Add "Enter living space" / "Ange boyta" to Lokalise
       null -> "Enter living space"
+
       // TODO: Add "Enter a valid living space" / "Ange en giltig boyta" to Lokalise
       !in 1..Int.MAX_VALUE -> "Enter a valid living space"
+
       else -> null
     },
     ancillaryAreaError = when (val area = event.ancillaryArea.toIntOrNull()) {
       // TODO: Add "Enter ancillary area" / "Ange biyta" to Lokalise
       null -> "Enter ancillary area"
+
       // TODO: Add "Enter a valid ancillary area" / "Ange en giltig biyta" to Lokalise
       !in 0..Int.MAX_VALUE -> "Enter a valid ancillary area"
+
       else -> null
     },
     yearOfConstructionError = when (val year = event.yearOfConstruction.toIntOrNull()) {
       // TODO: Add "Enter year of construction" / "Ange byggår" to Lokalise
       null -> "Enter year of construction"
+
       // TODO: Add "Enter a valid year of construction" / "Ange ett giltigt byggår" to Lokalise
       !in 1700..currentYear -> "Enter a valid year of construction"
+
       else -> null
     },
     // TODO: Add "Choose an option" / "Välj ett alternativ" to Lokalise

@@ -19,7 +19,10 @@ import com.hedvig.android.feature.purchase.common.ui.sign.SigningDestination
 import com.hedvig.android.feature.purchase.common.ui.sign.SigningViewModel
 import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryDestination
 import com.hedvig.android.feature.purchase.common.ui.summary.PurchaseSummaryViewModel
+import com.hedvig.android.feature.purchase.house.data.HouseOffers
 import com.hedvig.android.feature.purchase.house.navigation.HousePurchaseDestination.Form
+import com.hedvig.android.feature.purchase.house.ui.house.HouseFormDestination
+import com.hedvig.android.feature.purchase.house.ui.house.HouseFormViewModel
 import com.hedvig.android.feature.purchase.house.ui.vacationhome.VacationHomeFormDestination
 import com.hedvig.android.feature.purchase.house.ui.vacationhome.VacationHomeFormViewModel
 import com.hedvig.android.navigation.compose.navdestination
@@ -41,13 +44,8 @@ fun NavGraphBuilder.housePurchaseNavGraph(
     navdestination<Form> { backStackEntry ->
       val graphRoute = navController
         .getRouteFromBackStack<HousePurchaseGraphDestination>(backStackEntry)
-      val viewModel: VacationHomeFormViewModel = koinViewModel {
-        parametersOf(graphRoute.productName)
-      }
-      VacationHomeFormDestination(
-        viewModel = viewModel,
-        navigateUp = dropUnlessResumed { popBackStack() },
-        onOffersReceived = { shopSessionId, offers ->
+      val onOffersReceivedToSelectTier: (shopSessionId: String, offers: HouseOffers) -> Unit =
+        { shopSessionId, offers ->
           navController.navigate(
             SelectTier(
               SelectTierParameters(
@@ -71,8 +69,30 @@ fun NavGraphBuilder.housePurchaseNavGraph(
               ),
             ),
           )
-        },
-      )
+        }
+      when (graphRoute.productName) {
+        "SE_VACATION_HOME" -> {
+          val viewModel: VacationHomeFormViewModel = koinViewModel { parametersOf(graphRoute.productName) }
+          VacationHomeFormDestination(
+            viewModel = viewModel,
+            navigateUp = dropUnlessResumed { popBackStack() },
+            onOffersReceived = onOffersReceivedToSelectTier,
+          )
+        }
+
+        "SE_HOUSE" -> {
+          val viewModel: HouseFormViewModel = koinViewModel { parametersOf(graphRoute.productName) }
+          HouseFormDestination(
+            viewModel = viewModel,
+            navigateUp = dropUnlessResumed { popBackStack() },
+            onOffersReceived = onOffersReceivedToSelectTier,
+          )
+        }
+
+        else -> {
+          error("Unknown productName for HousePurchaseGraph: ${graphRoute.productName}")
+        }
+      }
     }
 
     navdestination<SelectTier>(SelectTier) { backStackEntry ->
