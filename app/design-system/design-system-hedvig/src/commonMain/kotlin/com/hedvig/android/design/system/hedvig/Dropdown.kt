@@ -102,7 +102,10 @@ fun DropdownWithDialog(
         color = dropdownColors.containerColor(false).value,
         shape = size.shape,
       ) {
-        Column(Modifier.verticalScroll(rememberScrollState())) {
+        Column(
+          modifier = Modifier.verticalScroll(rememberScrollState()),
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
           style.items.forEachIndexed { index, item ->
             DropdownOption(
               item = item,

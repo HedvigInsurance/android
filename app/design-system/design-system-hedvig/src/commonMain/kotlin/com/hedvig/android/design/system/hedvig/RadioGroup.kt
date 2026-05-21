@@ -273,7 +273,7 @@ private fun RadioGroup(
 ) {
   Box(modifier) {
     if (style.style is RadioGroupStyle.Labeled) {
-      RadioSurface(style, colors) {
+      RadioSurface(style, colors, modifier = Modifier.fillMaxWidth()) {
         Column {
           HedvigText(
             text = style.style.label,
