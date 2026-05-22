@@ -11,6 +11,7 @@ import com.hedvig.android.feature.purchase.house.data.CreateHouseSessionAndPrice
 import com.hedvig.android.feature.purchase.house.data.HouseOffers
 import com.hedvig.android.feature.purchase.house.data.SessionAndIntent
 import com.hedvig.android.feature.purchase.house.data.SubmitVacationHomeFormAndGetOffersUseCase
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.ExtraBuildingInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -36,6 +37,10 @@ internal sealed interface VacationHomeFormEvent {
 
   data class UpdateIsSubleted(val value: Boolean) : VacationHomeFormEvent
 
+  data class AddExtraBuilding(val building: ExtraBuildingInfo) : VacationHomeFormEvent
+
+  data class RemoveExtraBuilding(val building: ExtraBuildingInfo) : VacationHomeFormEvent
+
   data class SubmitForm(
     val street: String,
     val zipCode: String,
@@ -55,6 +60,7 @@ internal data class VacationHomeFormState(
   val multipleOwners: Boolean? = null,
   val hasWaterConnected: Boolean? = null,
   val isSubleted: Boolean? = null,
+  val extraBuildings: List<ExtraBuildingInfo> = emptyList(),
   val streetError: String? = null,
   val zipCodeError: String? = null,
   val multipleOwnersError: String? = null,
@@ -101,6 +107,16 @@ private class VacationHomeFormPresenter(
 
         is VacationHomeFormEvent.UpdateIsSubleted -> {
           currentState = currentState.copy(isSubleted = event.value, isSubletedError = null)
+        }
+
+        is VacationHomeFormEvent.AddExtraBuilding -> {
+          currentState = currentState.copy(extraBuildings = currentState.extraBuildings + event.building)
+        }
+
+        is VacationHomeFormEvent.RemoveExtraBuilding -> {
+          currentState = currentState.copy(
+            extraBuildings = currentState.extraBuildings.filterNot { it == event.building },
+          )
         }
 
         is VacationHomeFormEvent.SubmitForm -> {
@@ -174,6 +190,7 @@ private class VacationHomeFormPresenter(
         hasWaterConnected = hasWaterConnected,
         numberOfBathrooms = submit.numberOfBathrooms,
         isSubleted = isSubleted,
+        extraBuildings = currentState.extraBuildings,
       ).fold(
         ifLeft = { error ->
           currentState = currentState.copy(

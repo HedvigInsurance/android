@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.ExtraBuildingInfo
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import octopus.HousePriceIntentConfirmMutation
@@ -25,6 +26,7 @@ internal interface SubmitVacationHomeFormAndGetOffersUseCase {
     hasWaterConnected: Boolean,
     numberOfBathrooms: Int,
     isSubleted: Boolean,
+    extraBuildings: List<ExtraBuildingInfo>,
   ): Either<ErrorMessage, HouseOffers>
 }
 
@@ -43,6 +45,7 @@ internal class SubmitVacationHomeFormAndGetOffersUseCaseImpl(
     hasWaterConnected: Boolean,
     numberOfBathrooms: Int,
     isSubleted: Boolean,
+    extraBuildings: List<ExtraBuildingInfo>,
   ): Either<ErrorMessage, HouseOffers> {
     return either {
       val formData = buildMap<String, Any> {
@@ -56,7 +59,16 @@ internal class SubmitVacationHomeFormAndGetOffersUseCaseImpl(
         put("hasWaterConnected", hasWaterConnected)
         put("numberOfBathrooms", numberOfBathrooms)
         put("isSubleted", isSubleted)
-        put("extraBuildings", emptyList<Map<String, Any>>())
+        put(
+          "extraBuildings",
+          extraBuildings.map { building ->
+            mapOf(
+              "type" to building.type,
+              "area" to building.area,
+              "hasWaterConnected" to building.hasWaterConnected,
+            )
+          },
+        )
       }
 
       val updateResult = apolloClient

@@ -38,6 +38,9 @@ import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Mediu
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.house.data.HouseOffers
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.ExtraBuildingInfo
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.ExtraBuildingsSection
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.allExtraBuildingTypes
 
 @Composable
 internal fun VacationHomeFormDestination(
@@ -95,6 +98,7 @@ private fun VacationHomeFormBody(uiState: VacationHomeFormState, onEvent: (Vacat
     multipleOwners = uiState.multipleOwners,
     hasWaterConnected = uiState.hasWaterConnected,
     isSubleted = uiState.isSubleted,
+    extraBuildings = uiState.extraBuildings,
     errors = uiState,
     isSubmitting = uiState.isSubmitting,
     onStreetChanged = { street = it },
@@ -109,6 +113,8 @@ private fun VacationHomeFormBody(uiState: VacationHomeFormState, onEvent: (Vacat
     onMultipleOwnersSelected = { onEvent(VacationHomeFormEvent.UpdateMultipleOwners(it)) },
     onHasWaterConnectedSelected = { onEvent(VacationHomeFormEvent.UpdateHasWaterConnected(it)) },
     onIsSubletedSelected = { onEvent(VacationHomeFormEvent.UpdateIsSubleted(it)) },
+    onAddExtraBuilding = { onEvent(VacationHomeFormEvent.AddExtraBuilding(it)) },
+    onRemoveExtraBuilding = { onEvent(VacationHomeFormEvent.RemoveExtraBuilding(it)) },
     onSubmit = {
       onEvent(
         VacationHomeFormEvent.SubmitForm(
@@ -133,6 +139,7 @@ private fun VacationHomeFormContent(
   multipleOwners: Boolean?,
   hasWaterConnected: Boolean?,
   isSubleted: Boolean?,
+  extraBuildings: List<ExtraBuildingInfo>,
   errors: VacationHomeFormState,
   isSubmitting: Boolean,
   onStreetChanged: (String) -> Unit,
@@ -143,6 +150,8 @@ private fun VacationHomeFormContent(
   onMultipleOwnersSelected: (Boolean) -> Unit,
   onHasWaterConnectedSelected: (Boolean) -> Unit,
   onIsSubletedSelected: (Boolean) -> Unit,
+  onAddExtraBuilding: (ExtraBuildingInfo) -> Unit,
+  onRemoveExtraBuilding: (ExtraBuildingInfo) -> Unit,
   onSubmit: () -> Unit,
 ) {
   Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
@@ -253,6 +262,15 @@ private fun VacationHomeFormContent(
       )
     }
     Spacer(Modifier.height(16.dp))
+    ExtraBuildingsSection(
+      extraBuildings = extraBuildings,
+      allowedExtraBuildings = allExtraBuildingTypes,
+      onAddBuilding = onAddExtraBuilding,
+      onRemoveBuilding = onRemoveExtraBuilding,
+      enabled = !isSubmitting,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
     HedvigButton(
       // TODO: Add "Calculate price" / "Beräkna pris" to Lokalise
       text = "Calculate price",
@@ -320,6 +338,7 @@ private fun PreviewVacationHomeFormEmpty() {
         multipleOwners = null,
         hasWaterConnected = null,
         isSubleted = null,
+        extraBuildings = emptyList(),
         errors = VacationHomeFormState(),
         isSubmitting = false,
         onStreetChanged = {},
@@ -330,6 +349,8 @@ private fun PreviewVacationHomeFormEmpty() {
         onMultipleOwnersSelected = {},
         onHasWaterConnectedSelected = {},
         onIsSubletedSelected = {},
+        onAddExtraBuilding = {},
+        onRemoveExtraBuilding = {},
         onSubmit = {},
       )
     }
@@ -350,6 +371,7 @@ private fun PreviewVacationHomeFormFilled() {
         multipleOwners = false,
         hasWaterConnected = true,
         isSubleted = false,
+        extraBuildings = emptyList(),
         errors = VacationHomeFormState(),
         isSubmitting = false,
         onStreetChanged = {},
@@ -360,6 +382,8 @@ private fun PreviewVacationHomeFormFilled() {
         onMultipleOwnersSelected = {},
         onHasWaterConnectedSelected = {},
         onIsSubletedSelected = {},
+        onAddExtraBuilding = {},
+        onRemoveExtraBuilding = {},
         onSubmit = {},
       )
     }
@@ -380,6 +404,7 @@ private fun PreviewVacationHomeFormErrors() {
         multipleOwners = null,
         hasWaterConnected = null,
         isSubleted = null,
+        extraBuildings = emptyList(),
         errors = VacationHomeFormState(
           streetError = "Enter an address",
           zipCodeError = "Enter a valid zip code (5 digits)",
@@ -398,6 +423,8 @@ private fun PreviewVacationHomeFormErrors() {
         onMultipleOwnersSelected = {},
         onHasWaterConnectedSelected = {},
         onIsSubletedSelected = {},
+        onAddExtraBuilding = {},
+        onRemoveExtraBuilding = {},
         onSubmit = {},
       )
     }
