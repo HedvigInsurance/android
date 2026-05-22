@@ -23,6 +23,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.icon.BankAccount
+import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Link
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
@@ -66,7 +67,7 @@ internal fun SelectPayoutMethodDestination(
           MemberPaymentProvider.NORDEA -> {
             PayoutMethodRow(
               title = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
-              subtitle = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_DESCRIPTION),
+              subtitle = "Payout to a bank account",  //todo: removed BANK_PAYOUT_METHOD_CARD_DESCRIPTION for demo
               onClick = onNordeaSelected,
               provider = provider,
             )
@@ -119,7 +120,7 @@ private fun PayoutMethodRow(
         )
 
         MemberPaymentProvider.NORDEA -> Icon(
-          HedvigIcons.BankAccount,
+          HedvigIcons.Card,
           null, //todo
           modifier = Modifier.size(32.dp),
         )
