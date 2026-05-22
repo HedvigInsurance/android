@@ -136,11 +136,19 @@ private fun SetupSwishPayoutScreen(
         Column(
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          QRCode(
-            token = uiState.successUrl,
-            modifier = Modifier
-              .size(180.dp),
-          )
+          Surface(
+            color = Color.White,
+            shape = HedvigTheme.shapes.cornerMedium,
+            border = HedvigTheme.colorScheme.borderPrimary,
+            modifier = Modifier.padding(16.dp),
+          ) {
+            QRCode(
+              token = uiState.successUrl,
+              modifier = Modifier
+                .size(180.dp)
+                .padding(16.dp),
+            )
+          }
         }
         Spacer(Modifier.height(32.dp))
         HedvigButton(
