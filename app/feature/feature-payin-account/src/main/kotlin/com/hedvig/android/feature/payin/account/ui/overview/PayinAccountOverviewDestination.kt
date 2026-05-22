@@ -46,6 +46,7 @@ import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payin.account.data.PayinAccount
 import com.hedvig.android.feature.payin.account.data.toDeliveryString
+import com.hedvig.android.logger.logcat
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
@@ -314,7 +315,7 @@ private fun CurrentPayinMethodRow(
             if (!isPending) {
               HedvigButtonGhostWithBorder(
                 size = ButtonDefaults.ButtonSize.Small,
-                text = "Choose as default", // todo
+                text = "Set as default", // todo
                 onClick = {
                   onClick(provider)
                 },
@@ -330,8 +331,14 @@ private fun CurrentPayinMethodRow(
 }
 
 private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: String?, bankName: String?): String {
+  logcat { "Mariia: clearingNumber: $clearingNumber accountNumber: $accountNumber bankName: $bankName" }
+//  return when {
+//    clearingNumber != null && accountNumber != null && bankName != null -> "$bankName $clearingNumber-$accountNumber"
+//    clearingNumber != null && bankName != null -> "$bankName $clearingNumber"
+//    else -> clearingNumber.orEmpty()
+//  }
   return when {
-    clearingNumber != null && accountNumber != null && bankName != null -> "$bankName $clearingNumber-$accountNumber"
+    bankName != null -> bankName
     else -> clearingNumber.orEmpty()
   }
 }
