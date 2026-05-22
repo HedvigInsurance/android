@@ -90,35 +90,18 @@ fragment OngoingShopSessionFragment on ShopSession {
     title
     subtitle
     monthlyNet {
-      amount
-      currencyCode
+      ...MoneyFragment
+    }
+    monthlyGross {
+      ...MoneyFragment
     }
     lastActivityAt
     resumeUrl
     validTo
-  }
-  cart {
-    items {
-      productOffer {
-        product {
-          id
-          pillowImage {
-            id
-            src
-            alt
-          }
-        }
-      }
-    }
-  }
-  priceIntents(filters: { uniqueConfirmed: true }) {
-    product {
+    pillowImage {
       id
-      pillowImage {
-        id
-        src
-        alt
-      }
+      src
+      alt
     }
   }
 }

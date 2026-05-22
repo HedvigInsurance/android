@@ -938,6 +938,10 @@ type ClaimIntent {
   """
   progress: Float
   """
+  A short summary of the contents of this flow. Null when the flow is completely new (typically pre triage).
+  """
+  displayName: String
+  """
   The created claim of this intent.
   Once this value is returned, the intent is effectively over, and no steps
   can be produced or interacted with.
@@ -978,7 +982,7 @@ type ClaimIntentSourceMessage {
   text: String!
 }
 input ClaimIntentStartInput {
-  developmentFlow: Boolean
+  developmentFlow: Boolean @deprecated(reason: "Unused")
 }
 """
 Represents a single step in the claim submission flow.
@@ -1063,7 +1067,7 @@ type ClaimIntentStepContentFileUpload {
   """
   Current files uploaded by the user.
   """
-  currentFiles: [ClaimIntentStepContentFileUploadFile!]!
+  currentFiles: [ClaimIntentStepContentFileUploadFile!]
   isSkippable: Boolean!
 }
 type ClaimIntentStepContentFileUploadFile {
@@ -1180,13 +1184,13 @@ type ClaimIntentStepContentSelect {
   """
   style: ClaimIntentStepContentSelectStyle!
   """
-  Pre-filled default value.
-  """
-  defaultSelectedId: ID
-  """
   Currently selected value by the user.
   """
   currentSelectedId: ID
+  """
+  Pre-filled default value.
+  """
+  defaultSelectedId: ID
   isSkippable: Boolean!
 }
 """
@@ -4881,8 +4885,9 @@ input ShopSessionCustomerUpdateInput {
 }
 type ShopSessionDisplay {
   """
-  Short title summarizing the session's products, e.g. "Home + Accident".
-  Falls back to a generic locale-appropriate label when no products are present.
+  Title summarizing the session's products, e.g. "Car Insurance Full" for a single
+  product or "Home + Accident" when several products are in play. Uses each product's
+  full localized display name (tier-specific where applicable).
   """
   title: String!
   """
@@ -4891,28 +4896,35 @@ type ShopSessionDisplay {
   """
   subtitle: String
   """
-  Total monthly net price across cart items plus confirmed price intents.
-  Null when no priced offers exist in the session.
+  Effective monthly price after any campaign/bundle discounts.
+  Null when the session has no priced offers in the cart.
   """
   monthlyNet: Money
   """
+  Original monthly price before any campaign/bundle discounts.
+  Null under the same conditions as `monthlyNet`.
+  """
+  monthlyGross: Money
+  """
   Most recent activity timestamp on this session.
-  Used for sorting; clients can also display it relatively (e.g. "2 days ago").
+  Used for sorting or displaying it relatively (e.g. "2 days ago").
   """
   lastActivityAt: DateTime!
   """
-  Absolute URL to open in a browser to resume this session. Mirrors the URL
-  pattern of `ShopSession.urls.retargeting`, which is the existing entry point
-  for the smart-routing resume flow (cart → checkout, single price intent →
-  product page, etc.). Mobile clients pass this URL as the `next` parameter to
-  racoon's app-to-web auth handover endpoint.
+  Absolute URL to open in a browser to resume this session. Clients open it
+  directly in the device browser, no auth is required.
   """
   resumeUrl: String!
   """
-  Mirrors the underlying session's `validTo`. Clients can use this to hide
-  cards that expire between refreshes.
+  Mirrors the underlying session's `validTo`. Clients can use this to hide cards
+  that are expired.
   """
   validTo: DateTime!
+  """
+  Pillow image of the primary product in the session, suitable as a card icon.
+  Null when no product is yet associated with the session.
+  """
+  pillowImage: StoryblokImageAsset
 }
 """
 A/B testing experiment configuration for shop sessions.

@@ -11,6 +11,7 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
@@ -169,23 +170,17 @@ internal class GetHomeDataUseCaseImpl(
         val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions
           .filter { it.display.validTo > clock.now() }
           .map { session ->
-            // Pick the first pillow we can find from the cart entries first, falling back to
-            // confirmed price intents. Both walk the same `Product.pillowImage` source.
-            // Cart and price-intent paths get different generated Apollo nested types, so we
-            // map each branch to ImageAsset before merging.
-            val pillowFromCart = session.cart.items
-              .firstNotNullOfOrNull { it.productOffer.product.pillowImage }
-              ?.let { ImageAsset(id = it.id, src = it.src, description = it.alt) }
-            val pillowFromPriceIntent = session.priceIntents
-              .firstNotNullOfOrNull { it.product.pillowImage }
-              ?.let { ImageAsset(id = it.id, src = it.src, description = it.alt) }
             HomeData.OngoingShopSession(
               id = session.id.toString(),
               title = session.display.title,
               subtitle = session.display.subtitle,
               resumeUrl = session.display.resumeUrl,
               validTo = session.display.validTo,
-              pillowImage = pillowFromCart ?: pillowFromPriceIntent,
+              pillowImage = session.display.pillowImage?.let {
+                ImageAsset(id = it.id, src = it.src, description = it.alt)
+              },
+              monthlyNet = session.display.monthlyNet?.let(UiMoney::fromMoneyFragment),
+              monthlyGross = session.display.monthlyGross?.let(UiMoney::fromMoneyFragment),
             )
           }
         HomeData(
@@ -324,6 +319,8 @@ internal data class HomeData(
     val resumeUrl: String,
     val validTo: kotlin.time.Instant,
     val pillowImage: ImageAsset?,
+    val monthlyNet: UiMoney?,
+    val monthlyGross: UiMoney?,
   )
 
   @Immutable
