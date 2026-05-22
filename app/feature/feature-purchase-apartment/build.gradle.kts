@@ -1,6 +1,7 @@
 plugins {
   id("hedvig.android.library")
   id("hedvig.gradle.plugin")
+  alias(libs.plugins.composeScreenshot)
 }
 
 hedvig {
@@ -11,6 +12,7 @@ hedvig {
 
 android {
   testOptions.unitTests.isReturnDefaultValues = true
+  experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
@@ -39,6 +41,10 @@ dependencies {
   implementation(projects.navigationCompose)
   implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
+
+  screenshotTestImplementation(libs.androidx.compose.uiTooling)
+  screenshotTestImplementation(libs.androidx.compose.uiToolingPreview)
+  screenshotTestImplementation(libs.composeScreenshotValidationApi)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

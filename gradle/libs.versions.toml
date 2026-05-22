@@ -10,6 +10,7 @@ lintGradlePlugin = "9.0.0"
 
 # gradlePlugin versions
 androidGradlePlugin = "9.0.0"
+composeScreenshot = "0.0.1-alpha15"
 apollo = "4.4.1"
 apolloAdapters = "0.7.0"
 apolloEngineKtor = "0.1.1"
@@ -112,6 +113,7 @@ androidx-compose-materialIconsCore = { module = "androidx.compose.material:mater
 androidx-compose-materialRipple = { module = "androidx.compose.material:material-ripple" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-ui-alpha" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-ui-alpha" }
+composeScreenshotValidationApi = { module = "com.android.tools.screenshot:screenshot-validation-api", version.ref = "composeScreenshot" }
 androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-ui-alpha" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidx-datastore" }
@@ -270,6 +272,7 @@ appIconBannerGenerator = { id = "com.starter.easylauncher", version.ref = "easyl
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 composeJetbrainsCompilerGradlePlugin = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
 composeKotlinCompilerGradlePlugin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+composeScreenshot = { id = "com.android.compose.screenshot", version.ref = "composeScreenshot" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
 datadog = { id = "com.datadoghq.dd-sdk-android-gradle-plugin", version.ref = "datadogPlugin" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }

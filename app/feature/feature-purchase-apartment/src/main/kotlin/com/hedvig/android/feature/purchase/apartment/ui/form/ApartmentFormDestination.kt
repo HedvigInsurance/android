@@ -108,7 +108,7 @@ internal fun ApartmentFormDestination(
 }
 
 @Composable
-private fun ApartmentFormContent(
+internal fun ApartmentFormContent(
   street: String,
   zipCode: String,
   livingSpace: String,
