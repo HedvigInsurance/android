@@ -150,7 +150,7 @@ private fun SetupSwishPayoutScreen(
             )
           }
         }
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
         HedvigButton(
           "Open Swish",
           enabled = true,
