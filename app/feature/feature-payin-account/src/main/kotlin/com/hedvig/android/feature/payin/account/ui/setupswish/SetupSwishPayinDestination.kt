@@ -126,8 +126,8 @@ private fun SetupSwishPayoutScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
         EmptyState(
-          text = "The process started",
-          description = "Please give your approval in the Swish app",
+          text = "Please give your approval in the Swish app",
+          description = null,
           modifier = Modifier.fillMaxWidth(),
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.SWISH,
         )

@@ -1,14 +1,18 @@
 package com.hedvig.android.feature.payin.account.ui.selectmethod
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -16,14 +20,14 @@ import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import hedvig.resources.BANK_PAYOUT_METHOD_CARD_DESCRIPTION
-import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
+import com.hedvig.android.design.system.hedvig.icon.Autogiro
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
+import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYOUT_METHOD_INVOICE_DESCRIPTION
-import hedvig.resources.PAYOUT_METHOD_SWISH_DESCRIPTION
-import hedvig.resources.PAYOUT_METHOD_TRUSTLY_DESCRIPTION
-import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
 import hedvig.resources.Res
 import hedvig.resources.swish
 import hedvig.resources.trustly
@@ -46,33 +50,12 @@ internal fun SelectPayinMethodDestination(
     Spacer(Modifier.height(8.dp))
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       for (provider in availableProviders) {
-        when (provider) {
-          MemberPaymentProvider.TRUSTLY -> {
-            PayinMethodRow(
-              title = stringResource(Res.string.trustly),
-              subtitle = "Connect your bank via Trustly", // todo
-              onClick = onTrustlySelected,
-            )
-          }
-
-          MemberPaymentProvider.SWISH -> {
-            PayinMethodRow(
-              title = stringResource(Res.string.swish),
-              subtitle = "Monthly auto-payments through Swish", // todo
-              onClick = onSwishSelected,
-            )
-          }
-
-          MemberPaymentProvider.INVOICE -> {
-            PayinMethodRow(
-              title = stringResource(Res.string.PAYMENTS_INVOICE),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION), // todo
-              onClick = onInvoiceSelected,
-            )
-          }
-
-          else -> {}
-        }
+        PayinMethodRow(
+          provider = provider,
+          onTrustlySelected = onTrustlySelected,
+          onSwishSelected = onSwishSelected,
+          onInvoiceSelected = onInvoiceSelected,
+        )
       }
     }
     Spacer(Modifier.height(16.dp))
@@ -80,17 +63,81 @@ internal fun SelectPayinMethodDestination(
 }
 
 @Composable
-private fun PayinMethodRow(title: String, subtitle: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun PayinMethodRow(
+  provider: MemberPaymentProvider,
+  onTrustlySelected: () -> Unit,
+  onSwishSelected: () -> Unit,
+  onInvoiceSelected: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   HedvigCard(
-    onClick = onClick,
+    onClick = {
+      when (provider) {
+        MemberPaymentProvider.TRUSTLY -> {
+          onTrustlySelected()
+        }
+
+        MemberPaymentProvider.SWISH -> {
+          onSwishSelected()
+        }
+
+        MemberPaymentProvider.INVOICE -> {
+          onInvoiceSelected()
+        }
+
+        else -> {}
+    }
+    },
     modifier = modifier.fillMaxWidth(),
   ) {
-    Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-      HedvigText(text = title)
-      HedvigText(
-        text = subtitle,
-        color = HedvigTheme.colorScheme.textSecondary,
-      )
+    Row(
+      modifier = Modifier.padding(horizontal = 16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      when (provider) {
+        MemberPaymentProvider.TRUSTLY -> Icon(
+          HedvigIcons.Autogiro,
+          null, //todo
+          modifier = Modifier.size(32.dp),
+        )
+
+        MemberPaymentProvider.SWISH -> Image(
+          HedvigIcons.Swish,
+          null,  //todo
+          modifier = Modifier.size(32.dp),
+        )
+
+        MemberPaymentProvider.INVOICE -> Image(
+          HedvigIcons.Kivra,
+          null,  //todo
+          modifier = Modifier.size(32.dp),
+        )
+
+        else -> {}
+      }
+
+      Spacer(Modifier.width(16.dp))
+      Column(Modifier.padding(vertical = 12.dp)) {
+        HedvigText(
+          text = when (provider) {
+            MemberPaymentProvider.TRUSTLY -> "Autogiro" // todo
+            MemberPaymentProvider.SWISH -> stringResource(Res.string.swish)
+            MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYMENTS_INVOICE)
+            else -> ""
+          },
+        )
+        HedvigText(
+          text = when (provider) {
+            MemberPaymentProvider.TRUSTLY -> "Connect your bank via Trustly" // todo
+            MemberPaymentProvider.SWISH -> "Monthly auto-payments via Swish" // todo
+            MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION)
+            else -> ""
+          },
+          color = HedvigTheme.colorScheme.textSecondary,
+        )
+      }
+
+
     }
   }
 }
@@ -104,6 +151,7 @@ private fun PreviewSelectPayinMethodScreen() {
         availableProviders = listOf(
           MemberPaymentProvider.SWISH,
           MemberPaymentProvider.INVOICE,
+          MemberPaymentProvider.TRUSTLY,
         ),
         onTrustlySelected = {},
         onSwishSelected = {},
