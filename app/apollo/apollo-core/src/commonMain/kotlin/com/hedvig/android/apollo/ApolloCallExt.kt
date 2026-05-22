@@ -128,7 +128,6 @@ private fun <D : Operation.Data> IorRaise<Nel<ApolloOperationError>>.parseRespon
     }
     raise(OperationException(exception))
   }
-  logcat{"Mariia: apollo parseResponse data: $data errors: $errors"}
   return iorFromErrorsAndData(errors.mapToOperationErrors(), data).bind()
 }
 
@@ -138,7 +137,6 @@ private fun List<Error>?.mapToOperationErrors(): Nel<ApolloOperationError>? {
     if (error.extensionErrorType() == ExtensionErrorType.Unauthenticated) {
       OperationError.Unathenticated
     } else {
-      logcat{"Mariia: apollo mapToOperationErrors error: $error"}
       OperationError.Other(
         buildString {
           append(error.message)
@@ -179,15 +177,12 @@ private fun <D : Operation.Data> iorFromErrorsAndData(
 ): Ior<Nel<ApolloOperationError>, D> {
   return when {
     errors != null && data != null -> {
-      logcat{"Mariia: apollo iorFromErrorsAndData Ior.Both. data: $data errors: $errors"}
       Ior.Both(errors, data)
     }
     errors != null -> {
-      logcat{"Mariia: apollo iorFromErrorsAndData Ior.Left"}
       Ior.Left(errors)
     }
     data != null -> {
-      logcat{"Mariia: apollo iorFromErrorsAndData Ior.Right"}
       Ior.Right(data)
     }
     else -> error("Non compliant server")
