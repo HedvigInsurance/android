@@ -159,7 +159,7 @@ private fun PayoutAccountContent(
                 text = if (method.isPending && phoneNumber.isBlank()) {
                   stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
                 } else {
-                  phoneNumber
+                  formatSwishPhoneNumber(phoneNumber)
                 },
                 isDefault = method.isDefault,
                 onClick = setAsDefaultPayinMethod,
@@ -292,7 +292,7 @@ private fun CurrentPayinMethodRow(
           Column {
             HedvigText(text = label)
             HedvigText(
-              text = text,
+              text = text ,
               color = HedvigTheme.colorScheme.textSecondary,
             )
           }
@@ -329,6 +329,20 @@ private fun CurrentPayinMethodRow(
     )
   }
 }
+
+internal fun formatSwishPhoneNumber(phoneNumber: String): String {
+  val digits = phoneNumber.take(15)
+  val sb = StringBuilder()
+  for (i in digits.indices) {
+    sb.append(digits[i])
+    if (i in setOf(2, 5, 7)
+      ) {
+      sb.append("-")
+    }
+  }
+  return sb.toString()
+}
+
 
 private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: String?, bankName: String?): String {
   logcat { "Mariia: clearingNumber: $clearingNumber accountNumber: $accountNumber bankName: $bankName" }

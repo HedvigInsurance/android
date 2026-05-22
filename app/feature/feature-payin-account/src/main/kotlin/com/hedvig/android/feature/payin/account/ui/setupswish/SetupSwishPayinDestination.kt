@@ -51,6 +51,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTextFieldDefaults
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.feature.payin.account.ui.overview.formatSwishPhoneNumber
 import hedvig.resources.CONTACT_INFO_CHANGES_SAVED
 import hedvig.resources.ODYSSEY_PHONE_NUMBER_LABEL
 import hedvig.resources.Res
@@ -212,12 +213,7 @@ private class ChipIdVisualTransformation(
     val trimmed = if (text.text.length >= 15) text.text.substring(0..14) else text.text
 
     val annotatedString = buildAnnotatedString {
-      for (i in trimmed.indices) {
-        append(trimmed[i])
-        if (i in listOf(2, 5, 7)) {
-          append("-")
-        }
-      }
+      append(formatSwishPhoneNumber(trimmed))
       withStyle(SpanStyle(color = maskColor)) {
         append(mask.takeLast((mask.length - length).coerceAtLeast(0)))
       }
