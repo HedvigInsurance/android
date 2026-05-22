@@ -120,7 +120,7 @@ private fun PayinMethodRow(
       Column(Modifier.padding(vertical = 12.dp)) {
         HedvigText(
           text = when (provider) {
-            MemberPaymentProvider.TRUSTLY -> "Autogiro" // todo
+            MemberPaymentProvider.TRUSTLY -> "Direct debit" // todo
             MemberPaymentProvider.SWISH -> stringResource(Res.string.swish)
             MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYMENTS_INVOICE)
             else -> ""

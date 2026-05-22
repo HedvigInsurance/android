@@ -173,7 +173,7 @@ private fun PayoutAccountContent(
             is PayinAccount.Trustly -> {
               val accountNumber = formatBankAccountNumber(method.clearingNumber, method.accountNumber, method.bankName)
               CurrentPayinMethodRow(
-                label = "Autogiro", // todo
+                label = "Direct debit", // todo
                 text = if (method.isPending && accountNumber.isBlank()) {
                   stringResource(Res.string.REFERRAL_PENDING_STATUS_LABEL)
                 } else {
