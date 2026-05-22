@@ -115,6 +115,7 @@ class SelectTierPresenter(
             shopSessionId = params.shopSessionId,
             selectedOffer = selectedOffer,
             productDisplayName = params.productDisplayName,
+            contractGroup = params.contractGroup,
           )
         }
 

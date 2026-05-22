@@ -1,19 +1,25 @@
 package com.hedvig.android.feature.purchase.common.ui.summary
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.hedvig.android.data.contract.ContractGroup
+import com.hedvig.android.data.contract.pillowResource
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonStyle.Primary
 import com.hedvig.android.design.system.hedvig.ErrorDialog
@@ -28,6 +34,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.common.navigation.SigningParameters
 import com.hedvig.android.feature.purchase.common.navigation.SummaryParameters
 import com.hedvig.android.feature.purchase.common.navigation.TierOfferData
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun PurchaseSummaryDestination(
@@ -60,7 +67,7 @@ fun PurchaseSummaryDestination(
 }
 
 @Composable
-private fun PurchaseSummaryScreen(
+fun PurchaseSummaryScreen(
   params: SummaryParameters,
   isSubmitting: Boolean,
   navigateUp: () -> Unit,
@@ -68,7 +75,19 @@ private fun PurchaseSummaryScreen(
 ) {
   HedvigScaffold(navigateUp) {
     val offer = params.selectedOffer
-    HedvigCard(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 24.dp),
+      contentAlignment = Alignment.Center,
+    ) {
+      Image(
+        painter = painterResource(params.contractGroup.pillowResource()),
+        contentDescription = null,
+        modifier = Modifier.size(128.dp),
+      )
+    }
+    HedvigCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
       Column(modifier = Modifier.padding(16.dp)) {
         HedvigText(
           text = params.productDisplayName,
@@ -176,6 +195,7 @@ private fun PreviewPurchaseSummary() {
             hasDiscount = true,
           ),
           productDisplayName = "Hemf\u00f6rs\u00e4kring Hyresr\u00e4tt",
+          contractGroup = ContractGroup.RENTAL,
         ),
         isSubmitting = false,
         navigateUp = {},

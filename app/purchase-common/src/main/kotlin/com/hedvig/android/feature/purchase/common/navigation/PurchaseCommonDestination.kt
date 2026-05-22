@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.purchase.common.navigation
 
+import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import kotlin.reflect.KType
@@ -63,6 +64,7 @@ data class SelectTierParameters(
   val shopSessionId: String,
   val offers: List<TierOfferData>,
   val productDisplayName: String,
+  val contractGroup: ContractGroup,
 )
 
 @Serializable
@@ -70,6 +72,7 @@ data class SummaryParameters(
   val shopSessionId: String,
   val selectedOffer: TierOfferData,
   val productDisplayName: String,
+  val contractGroup: ContractGroup,
 )
 
 @Serializable

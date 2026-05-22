@@ -77,6 +77,7 @@ fun NavGraphBuilder.petPurchaseNavGraph(
                   )
                 },
                 productDisplayName = offers.productDisplayName,
+                contractGroup = offers.contractGroup,
               ),
             ),
           )

@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.purchase.apartment.data
 
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
 
 internal data class SessionAndIntent(
   val shopSessionId: String,
@@ -9,6 +10,7 @@ internal data class SessionAndIntent(
 
 internal data class ApartmentOffers(
   val productDisplayName: String,
+  val contractGroup: ContractGroup,
   val offers: List<ApartmentTierOffer>,
 )
 

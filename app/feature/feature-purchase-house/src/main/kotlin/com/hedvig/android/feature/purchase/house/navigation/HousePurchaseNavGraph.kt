@@ -68,6 +68,7 @@ fun NavGraphBuilder.housePurchaseNavGraph(
                   )
                 },
                 productDisplayName = offers.productDisplayName,
+                contractGroup = offers.contractGroup,
               ),
             ),
           )

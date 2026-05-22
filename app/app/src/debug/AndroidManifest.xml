@@ -21,5 +21,10 @@
 <!--      android:exported="true"-->
 <!--      android:permission="@null"-->
 <!--      tools:replace="android:permission" />-->
+
+    <activity
+      android:name="com.hedvig.android.app.debug.MockPurchaseSummaryActivity"
+      android:exported="true"
+      android:label="Mock Purchase Summary" />
   </application>
 </manifest>

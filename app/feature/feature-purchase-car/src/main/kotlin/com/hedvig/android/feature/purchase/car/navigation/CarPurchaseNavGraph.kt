@@ -71,6 +71,7 @@ fun NavGraphBuilder.carPurchaseNavGraph(
                   )
                 },
                 productDisplayName = offers.productDisplayName,
+                contractGroup = offers.contractGroup,
               ),
             ),
           )

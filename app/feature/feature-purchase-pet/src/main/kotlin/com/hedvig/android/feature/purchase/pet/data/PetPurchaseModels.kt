@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.purchase.pet.data
 
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.ContractGroup
 
 internal const val PRODUCT_NAME_DOG = "SE_PET_DOG"
 internal const val PRODUCT_NAME_CAT = "SE_PET_CAT"
@@ -20,6 +21,7 @@ internal data class Breed(
 
 internal data class PetOffers(
   val productDisplayName: String,
+  val contractGroup: ContractGroup,
   val offers: List<PetTierOffer>,
 )
 

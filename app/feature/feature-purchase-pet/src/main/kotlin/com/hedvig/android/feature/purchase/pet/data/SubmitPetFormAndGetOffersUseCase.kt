@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import kotlinx.datetime.LocalDate
@@ -90,6 +91,7 @@ internal class SubmitPetFormAndGetOffersUseCaseImpl(
 
       PetOffers(
         productDisplayName = offers.first().variant.displayName,
+        contractGroup = offers.first().variant.typeOfContract.toContractGroup(),
         offers = offers.map { it.toTierOffer() },
       )
     }

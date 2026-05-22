@@ -15,6 +15,7 @@ android {
 
 dependencies {
   api(libs.androidx.navigation.common)
+  api(projects.dataContract)
 
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
