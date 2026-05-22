@@ -7,6 +7,7 @@ import arrow.core.raise.context.raise
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.logger.logcat
 import octopus.SetAsDefaultPayinMutation
@@ -22,25 +23,26 @@ internal class SetAsDefaultUseCaseImpl(
 ) : SetAsDefaultUseCase {
   override suspend fun invoke(provider: MemberPaymentProvider): Either<ErrorMessage, PayinAccountData> {
     return either {
-      logcat { "Mariia: Starting SetAsDefaultUseCaseImpl with provider: $provider" }
       apolloClient
         .mutation(SetAsDefaultPayinMutation(provider))
-        .safeExecute(::ErrorMessage) // tosdoL user safeExecuteAllowingPartialResponses
+        .safeExecuteAllowingPartialResponses()
         .fold(
-          ifLeft = {
-            logcat { "Mariia: SetAsDefaultUseCaseImpl error: $it" }
-            logcat { "SetAsDefaultUseCaseImpl error: $it" }
+          fa = { error ->
+            logcat { "SetAsDefaultUseCaseImpl error: $error" }
             raise(ErrorMessage())
           },
-          ifRight = { result ->
+          fb = { result ->
             val userError = result.paymentMethodSetDefaultPayin?.message
             if (userError != null) {
-              logcat { "Mariia: SetAsDefaultUseCaseImpl userError not null: $userError" }
+              logcat { "SetAsDefaultUseCaseImpl userError not null: $userError" }
               raise(ErrorMessage(userError))
             }
-            logcat { "Mariia: SetAsDefaultUseCaseImpl launching getPayinAccountUseCase" }
             getPayinAccountUseCase.invoke().bind()
           },
+          fab = {errors, _ ->
+            logcat { "SetAsDefaultUseCaseImpl data with errors: $errors" }
+            raise(ErrorMessage())
+          }
         )
     }
   }
