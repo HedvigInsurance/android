@@ -184,9 +184,10 @@ private fun SetupSwishPayoutScreen(
             errorState = HedvigTextFieldDefaults.ErrorState.NoError,
             interactionSource = interactionSource,
             onValueChange = {
-              if (it.length <= 15) {
-                updateText(it)
-                input = it
+              val digitsOnly = it.filter { char -> char.isDigit() }
+              if (digitsOnly.length <= 15) {
+                updateText(digitsOnly)
+                input = digitsOnly
               }
             },
           )

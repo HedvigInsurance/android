@@ -83,7 +83,7 @@ private fun PayinAccountOverviewScreen(
   setAsDefaultPayinMethod: (MemberPaymentProvider) -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = "Billing account", // todo!
+    topAppBarText = "Payment account", // todo!
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
@@ -143,7 +143,7 @@ private fun PayoutAccountContent(
       }
     } else {
       HedvigText(
-        "Active billing methods", // todo
+        "Connected payment methods", // todo
         modifier = Modifier.padding(horizontal = 16.dp),
       )
       Spacer(Modifier.height(16.dp))
@@ -232,7 +232,7 @@ private fun PayoutAccountContent(
       }
       if (availablePayinMethods.isNotEmpty()) {
         HedvigButton(
-          text = "Add a billing method", // todo!
+          text = "Add a payment method", // todo!
           onClick = onConnectPayinMethodClicked,
           enabled = true,
           modifier = Modifier
@@ -386,7 +386,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(
         PayinAccount.SwishPayin(
-          phoneNumber = "070-123 45 67",
+          phoneNumber = "0701234567",
           isPending = false,
           isDefault = true,
         ),
@@ -396,7 +396,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
     PayinAccountOverviewUiState.Content(
       currentMethods = listOf(
         PayinAccount.SwishPayin(
-          phoneNumber = "070-123 45 67",
+          phoneNumber = "0701234567",
           isPending = false,
           isDefault = true,
         ),
@@ -417,7 +417,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isDefault = true,
         ),
         PayinAccount.SwishPayin(
-          phoneNumber = "070-123 45 67",
+          phoneNumber = "0701234567",
           isPending = false,
           isDefault = false,
         ),
@@ -435,7 +435,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isDefault = true,
         ),
         PayinAccount.SwishPayin(
-          phoneNumber = "070-123 45 67",
+          phoneNumber = "0701234567",
           isPending = false,
           isDefault = false,
         ),
@@ -458,7 +458,7 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           isDefault = true,
         ),
         PayinAccount.SwishPayin(
-          phoneNumber = "070-123 45 67",
+          phoneNumber = "0701234567",
           isPending = false,
           isDefault = false,
         ),
