@@ -38,6 +38,9 @@ import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperSize.Mediu
 import com.hedvig.android.design.system.hedvig.StepperDefaults.StepperStyle.Labeled
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.purchase.house.data.HouseOffers
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.ExtraBuildingInfo
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.ExtraBuildingsSection
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.allExtraBuildingTypes
 
 @Composable
 internal fun HouseFormDestination(
@@ -97,6 +100,7 @@ private fun HouseFormBody(uiState: HouseFormState, onEvent: (HouseFormEvent) -> 
     yearOfConstruction = yearOfConstruction,
     numberOfBathrooms = numberOfBathrooms,
     isSubleted = uiState.isSubleted,
+    extraBuildings = uiState.extraBuildings,
     errors = uiState,
     isSubmitting = uiState.isSubmitting,
     onStreetChanged = { street = it },
@@ -113,6 +117,8 @@ private fun HouseFormBody(uiState: HouseFormState, onEvent: (HouseFormEvent) -> 
     },
     onNumberOfBathroomsChanged = { numberOfBathrooms = it },
     onIsSubletedSelected = { onEvent(HouseFormEvent.UpdateIsSubleted(it)) },
+    onAddExtraBuilding = { onEvent(HouseFormEvent.AddExtraBuilding(it)) },
+    onRemoveExtraBuilding = { onEvent(HouseFormEvent.RemoveExtraBuilding(it)) },
     onSubmit = {
       onEvent(
         HouseFormEvent.SubmitForm(
@@ -139,6 +145,7 @@ private fun HouseFormContent(
   yearOfConstruction: String,
   numberOfBathrooms: Int,
   isSubleted: Boolean?,
+  extraBuildings: List<ExtraBuildingInfo>,
   errors: HouseFormState,
   isSubmitting: Boolean,
   onStreetChanged: (String) -> Unit,
@@ -149,6 +156,8 @@ private fun HouseFormContent(
   onYearOfConstructionChanged: (String) -> Unit,
   onNumberOfBathroomsChanged: (Int) -> Unit,
   onIsSubletedSelected: (Boolean) -> Unit,
+  onAddExtraBuilding: (ExtraBuildingInfo) -> Unit,
+  onRemoveExtraBuilding: (ExtraBuildingInfo) -> Unit,
   onSubmit: () -> Unit,
 ) {
   Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
@@ -253,6 +262,15 @@ private fun HouseFormContent(
       )
     }
     Spacer(Modifier.height(16.dp))
+    ExtraBuildingsSection(
+      extraBuildings = extraBuildings,
+      allowedExtraBuildings = allExtraBuildingTypes,
+      onAddBuilding = onAddExtraBuilding,
+      onRemoveBuilding = onRemoveExtraBuilding,
+      enabled = !isSubmitting,
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
     HedvigButton(
       // TODO: Add "Calculate price" / "Beräkna pris" to Lokalise
       text = "Calculate price",
@@ -320,6 +338,7 @@ private fun PreviewHouseFormEmpty() {
         yearOfConstruction = "",
         numberOfBathrooms = 1,
         isSubleted = null,
+        extraBuildings = emptyList(),
         errors = HouseFormState(),
         isSubmitting = false,
         onStreetChanged = {},
@@ -330,6 +349,8 @@ private fun PreviewHouseFormEmpty() {
         onYearOfConstructionChanged = {},
         onNumberOfBathroomsChanged = {},
         onIsSubletedSelected = {},
+        onAddExtraBuilding = {},
+        onRemoveExtraBuilding = {},
         onSubmit = {},
       )
     }
@@ -350,6 +371,7 @@ private fun PreviewHouseFormFilled() {
         yearOfConstruction = "1985",
         numberOfBathrooms = 2,
         isSubleted = false,
+        extraBuildings = emptyList(),
         errors = HouseFormState(),
         isSubmitting = false,
         onStreetChanged = {},
@@ -360,6 +382,8 @@ private fun PreviewHouseFormFilled() {
         onYearOfConstructionChanged = {},
         onNumberOfBathroomsChanged = {},
         onIsSubletedSelected = {},
+        onAddExtraBuilding = {},
+        onRemoveExtraBuilding = {},
         onSubmit = {},
       )
     }
@@ -380,6 +404,7 @@ private fun PreviewHouseFormErrors() {
         yearOfConstruction = "1500",
         numberOfBathrooms = 1,
         isSubleted = null,
+        extraBuildings = emptyList(),
         errors = HouseFormState(
           streetError = "Enter an address",
           zipCodeError = "Enter a valid zip code (5 digits)",
@@ -397,6 +422,8 @@ private fun PreviewHouseFormErrors() {
         onYearOfConstructionChanged = {},
         onNumberOfBathroomsChanged = {},
         onIsSubletedSelected = {},
+        onAddExtraBuilding = {},
+        onRemoveExtraBuilding = {},
         onSubmit = {},
       )
     }

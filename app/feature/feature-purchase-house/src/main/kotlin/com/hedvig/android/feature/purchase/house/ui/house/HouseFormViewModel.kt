@@ -11,6 +11,7 @@ import com.hedvig.android.feature.purchase.house.data.CreateHouseSessionAndPrice
 import com.hedvig.android.feature.purchase.house.data.HouseOffers
 import com.hedvig.android.feature.purchase.house.data.SessionAndIntent
 import com.hedvig.android.feature.purchase.house.data.SubmitHouseFormAndGetOffersUseCase
+import com.hedvig.android.feature.purchase.house.ui.extrabuildings.ExtraBuildingInfo
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -32,6 +33,10 @@ internal class HouseFormViewModel(
 internal sealed interface HouseFormEvent {
   data class UpdateIsSubleted(val value: Boolean) : HouseFormEvent
 
+  data class AddExtraBuilding(val building: ExtraBuildingInfo) : HouseFormEvent
+
+  data class RemoveExtraBuilding(val building: ExtraBuildingInfo) : HouseFormEvent
+
   data class SubmitForm(
     val street: String,
     val zipCode: String,
@@ -51,6 +56,7 @@ internal sealed interface HouseFormEvent {
 
 internal data class HouseFormState(
   val isSubleted: Boolean? = null,
+  val extraBuildings: List<ExtraBuildingInfo> = emptyList(),
   val streetError: String? = null,
   val zipCodeError: String? = null,
   val livingSpaceError: String? = null,
@@ -86,6 +92,16 @@ private class HouseFormPresenter(
       when (event) {
         is HouseFormEvent.UpdateIsSubleted -> {
           currentState = currentState.copy(isSubleted = event.value, isSubletedError = null)
+        }
+
+        is HouseFormEvent.AddExtraBuilding -> {
+          currentState = currentState.copy(extraBuildings = currentState.extraBuildings + event.building)
+        }
+
+        is HouseFormEvent.RemoveExtraBuilding -> {
+          currentState = currentState.copy(
+            extraBuildings = currentState.extraBuildings.filterNot { it == event.building },
+          )
         }
 
         is HouseFormEvent.SubmitForm -> {
@@ -157,6 +173,7 @@ private class HouseFormPresenter(
         yearOfConstruction = yearOfConstruction,
         numberOfBathrooms = submit.numberOfBathrooms,
         isSubleted = isSubleted,
+        extraBuildings = currentState.extraBuildings,
       ).fold(
         ifLeft = { error ->
           currentState = currentState.copy(
