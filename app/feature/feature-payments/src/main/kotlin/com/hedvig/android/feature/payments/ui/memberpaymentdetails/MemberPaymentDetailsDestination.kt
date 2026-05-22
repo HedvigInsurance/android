@@ -95,7 +95,8 @@ private fun MemberPaymentDetailsScreen(
     when (uiState) {
       MemberPaymentDetailsUiState.Failure -> {
         HedvigErrorSection(
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            .weight(1f),
           onButtonClick = retry,
           buttonText = stringResource(R.string.GENERAL_RETRY),
         )

@@ -32,6 +32,7 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigNotificationCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
@@ -100,6 +101,8 @@ private fun PayinAccountOverviewScreen(
         HedvigErrorSection(
           onButtonClick = onRetry,
           modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
             .weight(1f)
             .wrapContentHeight(),
         )
@@ -139,6 +142,7 @@ private fun PayoutAccountContent(
           text = "You haven’t added a billing method yet. Add one to pay for your insurance.", // todo
           description = null,
           iconStyle = EmptyStateDefaults.EmptyStateIconStyle.INFO,
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
         )
       }
     } else {
@@ -358,7 +362,7 @@ private fun formatBankAccountNumber(clearingNumber: String?, accountNumber: Stri
 }
 
 @Composable
-@HedvigPreview
+@HedvigShortMultiScreenPreview
 private fun PreviewPayinAccountOverviewScreen(
   @PreviewParameter(PayinAccountOverviewUiStateProvider::class) uiState: PayinAccountOverviewUiState,
 ) {
