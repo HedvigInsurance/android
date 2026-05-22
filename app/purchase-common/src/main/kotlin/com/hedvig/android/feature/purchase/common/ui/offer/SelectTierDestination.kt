@@ -104,7 +104,7 @@ private fun SelectTierContent(
       onRevertDeductible = onRevertDeductible,
       modifier = Modifier.padding(horizontal = 16.dp),
     )
-    Spacer(Modifier.weight(1f))
+    Spacer(Modifier.height(16.dp))
     HedvigButton(
       text = "Forts\u00e4tt",
       onClick = dropUnlessResumed { onContinue() },
