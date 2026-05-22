@@ -30,7 +30,6 @@ import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.PAYOUT_METHOD_INVOICE_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.swish
-import hedvig.resources.trustly
 import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
@@ -86,7 +85,7 @@ private fun PayinMethodRow(
         }
 
         else -> {}
-    }
+      }
     },
     modifier = modifier.fillMaxWidth(),
   ) {

@@ -1,6 +1,5 @@
 package com.hedvig.android.design.system.hedvig.icon
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
@@ -16,7 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 
 val HedvigIcons.BankAccount: ImageVector
   get() {
@@ -28,7 +26,7 @@ val HedvigIcons.BankAccount: ImageVector
       defaultWidth = 48.dp,
       defaultHeight = 48.dp,
       viewportWidth = 48f,
-      viewportHeight = 48f
+      viewportHeight = 48f,
     ).apply {
       path(fill = SolidColor(Color.Black)) {
         moveTo(30.867f, 6.531f)

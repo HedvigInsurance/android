@@ -22,18 +22,12 @@ import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.Autogiro
 import com.hedvig.android.design.system.hedvig.icon.BankAccount
-import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.Link
-import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
-import com.hedvig.android.design.system.hedvig.icon.flag.FlagSweden
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_DESCRIPTION
 import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
-import hedvig.resources.PAYMENTS_INVOICE
-import hedvig.resources.PAYOUT_METHOD_INVOICE_DESCRIPTION
 import hedvig.resources.PAYOUT_METHOD_SWISH_DESCRIPTION
 import hedvig.resources.PAYOUT_METHOD_TRUSTLY_DESCRIPTION
 import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
@@ -65,7 +59,7 @@ internal fun SelectPayoutMethodDestination(
               title = stringResource(Res.string.trustly),
               subtitle = stringResource(Res.string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION),
               onClick = onTrustlySelected,
-              provider = provider
+              provider = provider,
             )
           }
 
@@ -74,7 +68,7 @@ internal fun SelectPayoutMethodDestination(
               title = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
               subtitle = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_DESCRIPTION),
               onClick = onNordeaSelected,
-              provider = provider
+              provider = provider,
             )
           }
 
@@ -83,7 +77,7 @@ internal fun SelectPayoutMethodDestination(
               title = stringResource(Res.string.swish),
               subtitle = stringResource(Res.string.PAYOUT_METHOD_SWISH_DESCRIPTION),
               onClick = onSwishSelected,
-              provider = provider
+              provider = provider,
             )
           }
 
