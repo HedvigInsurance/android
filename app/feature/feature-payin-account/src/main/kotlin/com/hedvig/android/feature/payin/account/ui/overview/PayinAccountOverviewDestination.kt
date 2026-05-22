@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payin.account.ui.overview
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,15 +37,22 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HighlightLabel
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.icon.Autogiro
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
+import com.hedvig.android.design.system.hedvig.icon.colored.Swish
 import com.hedvig.android.feature.payin.account.data.PayinAccount
+import com.hedvig.android.feature.payin.account.data.toDeliveryString
 import hedvig.resources.PAYMENTS_INVOICE
 import hedvig.resources.REFERRAL_PENDING_STATUS_LABEL
 import hedvig.resources.Res
 import hedvig.resources.something_went_wrong
 import hedvig.resources.swish
 import octopus.type.MemberPaymentProvider
+import octopus.type.PaymentMethodInvoiceDelivery
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -151,12 +161,11 @@ private fun PayoutAccountContent(
                   phoneNumber
                 },
                 isDefault = method.isDefault,
-                onClick = {
-                  setAsDefaultPayinMethod(MemberPaymentProvider.SWISH)
-                },
+                onClick = setAsDefaultPayinMethod,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.SWISH,
+                loadingDefaultProvider = loadingDefaultProvider,
                 isPending = method.isPending,
+                provider = MemberPaymentProvider.SWISH,
               )
             }
 
@@ -170,26 +179,24 @@ private fun PayoutAccountContent(
                   accountNumber
                 },
                 isDefault = method.isDefault,
-                onClick = {
-                  setAsDefaultPayinMethod(MemberPaymentProvider.TRUSTLY)
-                },
+                onClick = setAsDefaultPayinMethod,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.TRUSTLY,
+                loadingDefaultProvider = loadingDefaultProvider,
                 isPending = method.isPending,
+                provider = MemberPaymentProvider.TRUSTLY,
               )
             }
 
             is PayinAccount.Invoice -> {
               CurrentPayinMethodRow(
                 stringResource(Res.string.PAYMENTS_INVOICE),
-                method.delivery ?: "",
+                method.delivery?.toDeliveryString() ?: "",
                 isDefault = method.isDefault,
-                onClick = {
-                  setAsDefaultPayinMethod(MemberPaymentProvider.INVOICE)
-                },
+                onClick = setAsDefaultPayinMethod,
                 modifier = Modifier.padding(horizontal = 16.dp),
-                loadingDefaultProvider = loadingDefaultProvider == MemberPaymentProvider.INVOICE,
+                loadingDefaultProvider = loadingDefaultProvider,
                 isPending = method.isPending,
+                provider = MemberPaymentProvider.INVOICE,
               )
             }
           }
@@ -243,8 +250,9 @@ private fun CurrentPayinMethodRow(
   text: String,
   isDefault: Boolean,
   isPending: Boolean,
-  loadingDefaultProvider: Boolean,
-  onClick: () -> Unit,
+  loadingDefaultProvider: MemberPaymentProvider?,
+  onClick: (MemberPaymentProvider) -> Unit,
+  provider: MemberPaymentProvider,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
@@ -255,12 +263,38 @@ private fun CurrentPayinMethodRow(
         .fillMaxWidth()
         .padding(horizontal = 16.dp, vertical = 12.dp),
       startSlot = {
-        Column {
-          HedvigText(text = label)
-          HedvigText(
-            text = text,
-            color = HedvigTheme.colorScheme.textSecondary,
-          )
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          when (provider) {
+            MemberPaymentProvider.TRUSTLY -> Icon(
+              HedvigIcons.Autogiro,
+              null, //todo
+              modifier = Modifier.size(32.dp),
+            )
+
+            MemberPaymentProvider.SWISH -> Image(
+              HedvigIcons.Swish,
+              null,  //todo
+              modifier = Modifier.size(32.dp),
+            )
+
+            MemberPaymentProvider.INVOICE ->  Image(
+              HedvigIcons.Kivra,
+              null,  //todo
+              modifier = Modifier.size(32.dp),
+            )
+            else -> {}
+          }
+
+          Spacer(Modifier.width(16.dp))
+          Column {
+            HedvigText(text = label)
+            HedvigText(
+              text = text,
+              color = HedvigTheme.colorScheme.textSecondary,
+            )
+          }
         }
       },
       endSlot = {
@@ -281,8 +315,10 @@ private fun CurrentPayinMethodRow(
               HedvigButtonGhostWithBorder(
                 size = ButtonDefaults.ButtonSize.Small,
                 text = "Choose as default", // todo
-                onClick = onClick,
-                isLoading = loadingDefaultProvider,
+                onClick = {
+                  onClick(provider)
+                },
+                isLoading = loadingDefaultProvider == provider,
               )
             }
           }
@@ -381,6 +417,12 @@ private class PayinAccountOverviewUiStateProvider : CollectionPreviewParameterPr
           phoneNumber = "070-123 45 67",
           isPending = false,
           isDefault = false,
+        ),
+        PayinAccount.Invoice (
+          delivery =  PaymentMethodInvoiceDelivery.KIVRA,
+          isPending = false,
+          isDefault = false,
+          email = ""
         ),
       ),
       availablePayinMethods = listOf(MemberPaymentProvider.TRUSTLY),

@@ -62,7 +62,7 @@ internal class GetPayinAccountUseCase(
         MemberPaymentProvider.INVOICE -> {
           val invoiceDetails = method.details?.asPaymentMethodInvoiceDetails()
           PayinAccount.Invoice(
-            delivery = invoiceDetails?.delivery?.toDeliveryString(),
+            delivery = invoiceDetails?.delivery,
             email = invoiceDetails?.email,
             isPending = isPending,
             isDefault = isDefault,
@@ -128,14 +128,14 @@ internal sealed interface PayinAccount {
   ) : PayinAccount
 
   data class Invoice(
-    val delivery: String?,
+    val delivery: PaymentMethodInvoiceDelivery?,
     val email: String?,
     override val isPending: Boolean,
     override val isDefault: Boolean,
   ) : PayinAccount
 }
 
-private fun PaymentMethodInvoiceDelivery?.toDeliveryString(): String? {
+fun PaymentMethodInvoiceDelivery?.toDeliveryString(): String? {
   return when (this) {
     PaymentMethodInvoiceDelivery.KIVRA -> "Kivra"
 
