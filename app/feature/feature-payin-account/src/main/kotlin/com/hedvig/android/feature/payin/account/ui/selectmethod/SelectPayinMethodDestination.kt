@@ -43,7 +43,7 @@ internal fun SelectPayinMethodDestination(
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = "Select billing method to add", // todo
+    topAppBarText = "Add or change billing method", // todo
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
