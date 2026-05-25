@@ -14,13 +14,13 @@ import kotlinx.serialization.Serializable
 import octopus.PuppyGuideQuery
 
 interface GetPuppyGuideUseCase {
-  fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>?>>
+  fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>>>
 }
 
 internal class GetPuppyGuideUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetPuppyGuideUseCase {
-  override fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>?>> {
+  override fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>>> {
     return apolloClient
       .query(PuppyGuideQuery())
       .fetchPolicy(FetchPolicy.CacheAndNetwork)

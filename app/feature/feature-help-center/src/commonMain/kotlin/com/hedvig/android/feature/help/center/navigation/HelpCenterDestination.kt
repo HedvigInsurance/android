@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.help.center.navigation
 
-import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.shared.partners.deflect.DeflectData

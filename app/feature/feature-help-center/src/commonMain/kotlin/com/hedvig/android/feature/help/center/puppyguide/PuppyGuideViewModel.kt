@@ -38,17 +38,9 @@ private class PuppyGuidePresenter(
 
     LaunchedEffect(loadIteration) {
       getPuppyGuideUseCase.invoke().collect { response ->
-        response.fold(
-          ifLeft = {
-            currentState = PuppyGuideUiState.Failure
-          },
-          ifRight = { stories ->
-            currentState = if (stories == null) {
-              PuppyGuideUiState.Failure
-            } else {
-              PuppyGuideUiState.Success(stories)
-            }
-          },
+        currentState = response.fold(
+          ifLeft = { PuppyGuideUiState.Failure },
+          ifRight = { stories -> PuppyGuideUiState.Success(stories) },
         )
       }
     }

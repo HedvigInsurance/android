@@ -86,12 +86,8 @@ fun NavGraphBuilder.helpCenterGraph(
           onNavigateToNewConversation()
         },
         onNavigateUp = onNavigateUp,
-        onNavigateToPuppyGuide = {
-          with(navController) {
-            navigate(
-              HelpCenterDestinations.PuppyGuide,
-            )
-          }
+        onNavigateToPuppyGuide = dropUnlessResumed {
+          navController.navigate(HelpCenterDestinations.PuppyGuide)
         },
       )
     }

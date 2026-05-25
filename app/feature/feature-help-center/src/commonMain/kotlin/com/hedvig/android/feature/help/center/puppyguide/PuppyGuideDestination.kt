@@ -225,11 +225,8 @@ private fun PuppyGuideSuccessScreen(
                   val index = categories.indexOf(category)
                   if (index == -1) return@onClick
                   scope.launch {
-                    listState.animateScrollToItem(
-                      index + 2,
-                      // Negative offset to scroll less and avoid sticky header covering the title
-                      scrollOffset = -200, // todo: wtf
-                    )
+                    // Negative offset prevents the sticky header from covering the section title.
+                    listState.animateScrollToItem(index + 2, scrollOffset = -200)
                   }
                 },
               )
@@ -343,7 +340,7 @@ private fun ArticleItem(
       val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
       AsyncImage(
         model = story.image,
-        contentDescription = EmptyContentDescription, // todo
+        contentDescription = EmptyContentDescription,
         placeholder = fallbackPainter,
         error = fallbackPainter,
         fallback = fallbackPainter,
@@ -371,7 +368,7 @@ private fun ArticleItem(
       story.title,
       style = HedvigTheme.typography.label,
       maxLines = 1,
-      overflow = TextOverflow.Ellipsis, // todo: not by a11y req
+      overflow = TextOverflow.Ellipsis,
     )
     HedvigText(
       story.subtitle,
