@@ -39,7 +39,6 @@ private fun Project.configureKotlinMultiplatform() {
     listOf(
       iosArm64(),
       iosSimulatorArm64(),
-      iosX64(),
     )
     jvm {
       compilerOptions {
