@@ -333,17 +333,22 @@ private fun ArticleItem(
   modifier: Modifier = Modifier,
   shape: Shape = HedvigTheme.shapes.cornerMedium,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
   Column(
     modifier
       .width(size)
-      .clip(shape)
       .clickable(
+        interactionSource = interactionSource,
+        indication = null,
         onClick = {
           onNavigateToArticle(story)
         },
       ),
   ) {
     Box(
+      modifier = Modifier
+        .clip(shape)
+        .indication(interactionSource, LocalIndication.current),
       contentAlignment = Alignment.TopEnd,
     ) {
       val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
