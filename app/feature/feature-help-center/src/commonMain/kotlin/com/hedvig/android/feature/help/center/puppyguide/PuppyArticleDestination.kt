@@ -33,7 +33,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -59,6 +58,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
+import com.hedvig.android.feature.help.center.ui.toHapticFeedbackType
 import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
@@ -216,8 +216,9 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    val hapticFeedback = LocalHapticFeedback.current
+
     val ratings = listOf(1, 2, 3, 4, 5)
+    val hapticFeedback = LocalHapticFeedback.current
     Row(
       horizontalArrangement = Arrangement.SpaceAround,
       modifier = Modifier,
@@ -227,7 +228,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
         HedvigCard(
           modifier = Modifier.weight(1f),
           onClick = {
-            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+            hapticFeedback.performHapticFeedback(rating.toHapticFeedbackType())
             onRatingClick(rating)
           },
           color = if (isSelectedRating) {

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -117,9 +118,4 @@ actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: 
       override val listItemTop: Dp = 0.dp
     },
   )
-}
-
-@Composable
-actual fun PerformHapticFeedback(intensity: HapticIntensity) {
-  // TODO: Implement native (iOS) haptic feedback
 }
