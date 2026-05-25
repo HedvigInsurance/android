@@ -14,6 +14,7 @@ import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -34,6 +35,7 @@ import kotlinx.datetime.toLocalDateTime
 internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
+  private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
   private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   private val applicationScope: CoroutineScope,
   private val isProduction: Boolean,
@@ -66,6 +68,12 @@ internal class HomePresenter(
 
         is HomeEvent.CrossSellToolTipShown -> {
           crossSellToolTipShownEpochDay = homeEvent.epochDay
+        }
+
+        is HomeEvent.DismissOngoingShopSession -> {
+          applicationScope.launch {
+            dismissedShopSessionsStorage.dismiss(homeEvent.sessionId)
+          }
         }
       }
     }
@@ -154,6 +162,8 @@ internal sealed interface HomeEvent {
   data object MarkCardCrossSellsAsSeen : HomeEvent
 
   data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
+
+  data class DismissOngoingShopSession(val sessionId: String) : HomeEvent
 }
 
 internal sealed interface HomeUiState {

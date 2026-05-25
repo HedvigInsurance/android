@@ -18,6 +18,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.feature.home.home.data.FakeDismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
@@ -60,6 +61,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -87,6 +89,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -112,6 +115,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -187,6 +191,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -240,6 +245,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -264,6 +270,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -302,6 +309,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -351,6 +359,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -407,6 +416,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -466,6 +476,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,
@@ -514,6 +525,7 @@ internal class HomePresenterTest {
     val homePresenter = HomePresenter(
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
+      FakeDismissedShopSessionsStorage(),
       { FakeCrossSellHomeNotificationService() },
       backgroundScope,
       false,

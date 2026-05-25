@@ -189,6 +189,7 @@ internal fun HomeDestination(
     openAppSettings = openAppSettings,
     navigateToMissingInfo = navigateToMissingInfo,
     markMessageAsSeen = { viewModel.emit(HomeEvent.MarkMessageAsSeen(it)) },
+    onDismissShopSession = { viewModel.emit(HomeEvent.DismissOngoingShopSession(it)) },
     navigateToFirstVet = navigateToFirstVet,
     markCrossSellsNotificationAsSeen = { viewModel.emit(HomeEvent.MarkCardCrossSellsAsSeen) },
     navigateToContactInfo = navigateToContactInfo,
@@ -216,6 +217,7 @@ private fun HomeScreen(
   openUrl: (String) -> Unit,
   openAuthenticatedWebUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
+  onDismissShopSession: (sessionId: String) -> Unit,
   openAppSettings: () -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   navigateToFirstVet: (List<FirstVetSection>) -> Unit,
@@ -289,6 +291,7 @@ private fun HomeScreen(
             navigateToMissingInfo = navigateToMissingInfo,
             onNavigateToNewConversation = onNavigateToNewConversation,
             markMessageAsSeen = markMessageAsSeen,
+            onDismissShopSession = onDismissShopSession,
             navigateToContactInfo = navigateToContactInfo,
             navigateToChipIdScreen = navigateToChipIdScreen,
             imageLoader = imageLoader,
@@ -437,6 +440,7 @@ private fun HomeScreenSuccess(
   openUrl: (String) -> Unit,
   openAuthenticatedWebUrl: (String) -> Unit,
   markMessageAsSeen: (String) -> Unit,
+  onDismissShopSession: (sessionId: String) -> Unit,
   navigateToMissingInfo: (String, CoInsuredFlowType) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToContactInfo: () -> Unit,
@@ -493,10 +497,8 @@ private fun HomeScreenSuccess(
         ongoingShopSessionCards = {
           OngoingShopSessionCards(
             sessions = uiState.ongoingShopSessions,
-            // The resume URL is intentionally public — anyone with a shopSessionId can reach the
-            // retargeting flow (this is how CRM emails work). So we just open it as a plain URL,
-            // no app-to-web auth handover needed.
             onSessionClick = { session -> openUrl(session.resumeUrl) },
+            onDismissSession = { session -> onDismissShopSession(session.id) },
             imageLoader = imageLoader,
             contentPadding = PaddingValues(horizontal = 16.dp) + horizontalInsets,
           )
@@ -831,6 +833,7 @@ private fun PreviewHomeScreen(
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
+        onDismissShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -864,6 +867,7 @@ private fun PreviewHomeScreenWithError() {
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
+        onDismissShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},
@@ -919,6 +923,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
         openAppSettings = {},
         navigateToMissingInfo = { _, _ -> },
         markMessageAsSeen = {},
+        onDismissShopSession = {},
         navigateToFirstVet = {},
         markCrossSellsNotificationAsSeen = {},
         navigateToContactInfo = {},

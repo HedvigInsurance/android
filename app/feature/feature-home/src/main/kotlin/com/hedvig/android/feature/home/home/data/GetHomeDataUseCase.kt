@@ -60,6 +60,7 @@ internal class GetHomeDataUseCaseImpl(
   private val clock: Clock,
   private val timeZone: TimeZone,
   private val getTravelAddonBannerInfoUseCaseProvider: GetTravelAddonBannerInfoUseCaseProvider,
+  private val dismissedShopSessionsStorage: DismissedShopSessionsStorage,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
@@ -85,6 +86,7 @@ internal class GetHomeDataUseCaseImpl(
       },
       featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
+      dismissedShopSessionsStorage.observeDismissedSessionIds(),
     ) {
       homeQueryDataResult,
       unreadMessageCountResult,
@@ -93,6 +95,7 @@ internal class GetHomeDataUseCaseImpl(
       travelBannerInfo,
       isChatDisabled,
       isHelpCenterEnabled,
+      dismissedShopSessionIds,
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
@@ -169,9 +172,10 @@ internal class GetHomeDataUseCaseImpl(
         val travelBannerInfo = travelBannerInfo.getOrNull()
         val ongoingShopSessions = homeQueryData.currentMember.ongoingShopSessions
           .filter { it.display.validTo > clock.now() }
+          .filter { it.id !in dismissedShopSessionIds }
           .map { session ->
             HomeData.OngoingShopSession(
-              id = session.id.toString(),
+              id = session.id,
               title = session.display.title,
               subtitle = session.display.subtitle,
               resumeUrl = session.display.resumeUrl,
@@ -361,7 +365,7 @@ internal data class HomeData(
 /**
  * The reason this exists is because the standard combine function only allows up to 5 generic flows.
  */
-fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
+fun <T1, T2, T3, T4, T5, T6, T7, T8, R> combine(
   flow: Flow<T1>,
   flow2: Flow<T2>,
   flow3: Flow<T3>,
@@ -369,8 +373,9 @@ fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
   flow5: Flow<T5>,
   flow6: Flow<T6>,
   flow7: Flow<T7>,
-  transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R,
-): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
+  flow8: Flow<T8>,
+  transform: suspend (T1, T2, T3, T4, T5, T6, T7, T8) -> R,
+): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6, flow7, flow8) { args: Array<*> ->
   @Suppress("UNCHECKED_CAST")
   transform(
     args[0] as T1,
@@ -380,5 +385,6 @@ fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
     args[4] as T5,
     args[5] as T6,
     args[6] as T7,
+    args[7] as T8,
   )
 }

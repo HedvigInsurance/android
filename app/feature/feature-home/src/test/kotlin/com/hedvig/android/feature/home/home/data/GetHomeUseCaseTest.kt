@@ -1,11 +1,13 @@
 package com.hedvig.android.feature.home.home.data
 
+import app.cash.turbine.test
 import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.raise.either
 import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.extracting
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
@@ -62,6 +64,8 @@ import octopus.type.buildLinkInfo
 import octopus.type.buildMember
 import octopus.type.buildMemberImportantMessage
 import octopus.type.buildPendingContract
+import octopus.type.buildShopSession
+import octopus.type.buildShopSessionDisplay
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -129,6 +133,7 @@ internal class GetHomeUseCaseTest {
       TestClock(),
       TimeZone.UTC,
       getTravelAddonBannerInfoUseCaseProvider = travelBannerProvider,
+      dismissedShopSessionsStorage = FakeDismissedShopSessionsStorage(),
     )
     val testId = "test"
 
@@ -178,6 +183,7 @@ internal class GetHomeUseCaseTest {
       TestClock(),
       TimeZone.UTC,
       travelBannerProvider,
+      FakeDismissedShopSessionsStorage(),
     )
 
     testGetMemberRemindersUseCase.memberReminders.add(MemberReminders())
@@ -768,12 +774,125 @@ internal class GetHomeUseCaseTest {
       }
   }
 
+  @Test
+  fun `dismissed ongoing shop sessions are filtered out of the returned HomeData`() = runTest {
+    val testClock = TestClock()
+    val storage = FakeDismissedShopSessionsStorage().apply { dismiss("dismissed-id") }
+    val getHomeDataUseCase = testUseCaseWithoutReminders(
+      testClock = testClock,
+      dismissedShopSessionsStorage = storage,
+    )
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          ongoingShopSessions = listOf(
+            buildShopSession {
+              id = "kept-id"
+              display = buildShopSessionDisplay {
+                title = "Hemförsäkring"
+                resumeUrl = "https://example.com/kept"
+                validTo = testClock.now() + 7.days
+                lastActivityAt = testClock.now()
+              }
+            },
+            buildShopSession {
+              id = "dismissed-id"
+              display = buildShopSessionDisplay {
+                title = "Bilförsäkring"
+                resumeUrl = "https://example.com/dismissed"
+                validTo = testClock.now() + 7.days
+                lastActivityAt = testClock.now()
+              }
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(UnreadMessageCountQuery(), UnreadMessageCountQuery.Data(OctopusFakeResolver))
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    val result = getHomeDataUseCase.invoke(true).first()
+
+    assertThat(result)
+      .isNotNull()
+      .isRight()
+      .prop(HomeData::ongoingShopSessions)
+      .extracting(HomeData.OngoingShopSession::id)
+      .containsExactly("kept-id")
+  }
+
+  @Test
+  fun `dismissing an ongoing shop session removes it from a previously-emitted HomeData`() = runTest {
+    val testClock = TestClock()
+    val storage = FakeDismissedShopSessionsStorage()
+    val getHomeDataUseCase = testUseCaseWithoutReminders(
+      testClock = testClock,
+      dismissedShopSessionsStorage = storage,
+    )
+
+    apolloClient.registerTestResponse(
+      HomeQuery(true),
+      HomeQuery.Data(OctopusFakeResolver) {
+        currentMember = buildMember {
+          ongoingShopSessions = listOf(
+            buildShopSession {
+              id = "a"
+              display = buildShopSessionDisplay {
+                title = "Hemförsäkring"
+                resumeUrl = "https://example.com/a"
+                validTo = testClock.now() + 7.days
+                lastActivityAt = testClock.now()
+              }
+            },
+            buildShopSession {
+              id = "b"
+              display = buildShopSessionDisplay {
+                title = "Bilförsäkring"
+                resumeUrl = "https://example.com/b"
+                validTo = testClock.now() + 7.days
+                lastActivityAt = testClock.now()
+              }
+            },
+          )
+        }
+      },
+    )
+    apolloClient.registerTestResponse(UnreadMessageCountQuery(), UnreadMessageCountQuery.Data(OctopusFakeResolver))
+    apolloClient.registerTestResponse(
+      CbmNumberOfChatMessagesQuery(),
+      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
+    )
+
+    getHomeDataUseCase.invoke(true).test {
+      assertThat(awaitItem())
+        .isRight()
+        .prop(HomeData::ongoingShopSessions)
+        .extracting(HomeData.OngoingShopSession::id)
+        .containsExactly("a", "b")
+
+      storage.dismiss("a")
+
+      assertThat(awaitItem())
+        .isRight()
+        .prop(HomeData::ongoingShopSessions)
+        .extracting(HomeData.OngoingShopSession::id)
+        .containsExactly("b")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   // Used as a convenience to get a use case without any enqueued apollo responses, but some sane defaults for the
   // other dependencies
   private fun testUseCaseWithoutReminders(
     featureManager: FeatureManager = FakeFeatureManager(true),
     testClock: TestClock = TestClock(),
     timeZone: TimeZone = TimeZone.UTC,
+    dismissedShopSessionsStorage: DismissedShopSessionsStorage = FakeDismissedShopSessionsStorage(),
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
@@ -783,6 +902,7 @@ internal class GetHomeUseCaseTest {
       testClock,
       timeZone,
       travelBannerProvider,
+      dismissedShopSessionsStorage,
     )
   }
 }

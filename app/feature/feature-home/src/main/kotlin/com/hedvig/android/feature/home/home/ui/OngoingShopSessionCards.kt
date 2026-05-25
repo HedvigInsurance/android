@@ -32,13 +32,19 @@ import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
+import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.IconButton
 import com.hedvig.android.design.system.hedvig.LocalTextStyle
+import com.hedvig.android.design.system.hedvig.debugBorder
+import com.hedvig.android.design.system.hedvig.icon.Close
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.placeholder.crossSellPainterFallback
 import com.hedvig.android.feature.home.home.data.HomeData.OngoingShopSession
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
 import hedvig.resources.Res
 import hedvig.resources.TIER_FLOW_TOTAL
 import hedvig.resources.ongoing_shop_session_action_button
+import hedvig.resources.ongoing_shop_session_dismiss_offer
 import hedvig.resources.ongoing_shop_session_offer_expires_in_days
 import hedvig.resources.ongoing_shop_session_offer_expires_in_hours
 import hedvig.resources.ongoing_shop_session_offer_expires_in_minutes
@@ -53,6 +59,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun OngoingShopSessionCards(
   sessions: List<OngoingShopSession>,
   onSessionClick: (OngoingShopSession) -> Unit,
+  onDismissSession: (OngoingShopSession) -> Unit,
   imageLoader: ImageLoader,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
@@ -62,6 +69,7 @@ internal fun OngoingShopSessionCards(
     OngoingShopSessionCard(
       session = sessions.single(),
       onClick = { onSessionClick(sessions.single()) },
+      onDismiss = { onDismissSession(sessions.single()) },
       imageLoader = imageLoader,
       modifier = modifier.padding(contentPadding),
     )
@@ -79,6 +87,7 @@ internal fun OngoingShopSessionCards(
         OngoingShopSessionCard(
           session = session,
           onClick = { onSessionClick(session) },
+          onDismiss = { onDismissSession(session) },
           imageLoader = imageLoader,
           modifier = Modifier.fillMaxWidth(),
         )
@@ -97,6 +106,7 @@ internal fun OngoingShopSessionCards(
 private fun OngoingShopSessionCard(
   session: OngoingShopSession,
   onClick: () -> Unit,
+  onDismiss: () -> Unit,
   imageLoader: ImageLoader,
   modifier: Modifier = Modifier,
 ) {
@@ -105,7 +115,7 @@ private fun OngoingShopSessionCard(
     modifier = modifier.fillMaxWidth(),
   ) {
     Column(modifier = Modifier.padding(16.dp)) {
-      Header(session = session, imageLoader = imageLoader)
+      Header(session = session, onDismiss = onDismiss, imageLoader = imageLoader)
       if (session.monthlyNet != null) {
         Spacer(Modifier.height(16.dp))
         HorizontalDivider()
@@ -137,7 +147,7 @@ private fun OngoingShopSessionCard(
 }
 
 @Composable
-private fun Header(session: OngoingShopSession, imageLoader: ImageLoader) {
+private fun Header(session: OngoingShopSession, onDismiss: () -> Unit, imageLoader: ImageLoader) {
   Row(verticalAlignment = Alignment.CenterVertically) {
     if (session.pillowImage != null) {
       val placeholder = crossSellPainterFallback(shape = HedvigTheme.shapes.cornerXXLarge)
@@ -164,6 +174,15 @@ private fun Header(session: OngoingShopSession, imageLoader: ImageLoader) {
           color = HedvigTheme.colorScheme.textSecondaryTranslucent,
         )
       }
+    }
+    IconButton(
+      onClick = onDismiss,
+      modifier = Modifier.align(Alignment.Top).size(36.dp),
+    ) {
+      Icon(
+        imageVector = HedvigIcons.Close,
+        contentDescription = stringResource(Res.string.ongoing_shop_session_dismiss_offer),
+      )
     }
   }
 }
@@ -208,7 +227,7 @@ private fun formatExpiresIn(validTo: kotlin.time.Instant): String? {
       remaining.inWholeHours,
     )
 
-    remaining < 7.days -> pluralStringResource(
+    remaining < 31.days -> pluralStringResource(
       Res.plurals.ongoing_shop_session_offer_expires_in_days,
       remaining.inWholeDays.toInt(),
       remaining.inWholeDays,

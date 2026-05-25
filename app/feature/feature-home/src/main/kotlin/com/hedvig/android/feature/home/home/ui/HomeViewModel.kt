@@ -2,6 +2,7 @@ package com.hedvig.android.feature.home.home.ui
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.feature.home.home.data.DismissedShopSessionsStorage
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 internal class HomeViewModel(
   getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   seenImportantMessagesStorage: SeenImportantMessagesStorage,
+  dismissedShopSessionsStorage: DismissedShopSessionsStorage,
   crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   applicationScope: CoroutineScope,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -19,6 +21,7 @@ internal class HomeViewModel(
     HomePresenter(
       getHomeDataUseCaseProvider,
       seenImportantMessagesStorage,
+      dismissedShopSessionsStorage,
       crossSellHomeNotificationServiceProvider,
       applicationScope,
       hedvigBuildConstants.isProduction,
