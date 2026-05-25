@@ -1,7 +1,10 @@
 package com.hedvig.android.feature.help.center.puppyguide
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -224,9 +227,15 @@ private fun PuppyGuideSuccessScreen(
                 onCategoryClick = onClick@{ category ->
                   val index = categories.indexOf(category)
                   if (index == -1) return@onClick
+                  val stickyInfo = listState.layoutInfo.visibleItemsInfo
+                    .firstOrNull { it.key == CategoriesStickyHeaderKey }
+                  val stickyContentHeightPx = stickyInfo?.let {
+                    val topInsetPx = with(density) { verticalInsetsPadding.calculateTopPadding().roundToPx() }
+                    val currentTopPadding = (-it.offset).coerceIn(0, topInsetPx)
+                    it.size - currentTopPadding
+                  } ?: 0
                   scope.launch {
-                    // Negative offset prevents the sticky header from covering the section title.
-                    listState.animateScrollToItem(index + 2, scrollOffset = -200)
+                    listState.animateScrollToItem(index + 3, scrollOffset = -stickyContentHeightPx)
                   }
                 },
               )
