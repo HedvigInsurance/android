@@ -522,7 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
-  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your billing methods</string>
+  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Activate your coverage again by contacting us once your payment has been processed</string>
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Review contact info</string>
@@ -1281,6 +1281,7 @@
   <string name="onboarding_contextual_menu_app_info_label">App information</string>
   <string name="onboarding_embark_flow_information_modal_title">Information</string>
   <string name="ongoing_shop_session_action_button">Continue purchase</string>
+  <string name="ongoing_shop_session_dismiss_offer">Dismiss offer</string>
   <plurals name="ongoing_shop_session_offer_expires_in_days">
     <item quantity="one">The offer expires in %1$d day</item>
     <item quantity="other">The offer expires in %1$d days</item>

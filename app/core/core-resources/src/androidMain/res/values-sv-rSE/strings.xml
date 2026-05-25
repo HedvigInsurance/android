@@ -522,7 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
-  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your billing methods</string>
+  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
@@ -1281,6 +1281,7 @@
   <string name="onboarding_contextual_menu_app_info_label">Appinformation</string>
   <string name="onboarding_embark_flow_information_modal_title">Information</string>
   <string name="ongoing_shop_session_action_button">Fortsätt köpet</string>
+  <string name="ongoing_shop_session_dismiss_offer">Avvisa erbjudandet</string>
   <plurals name="ongoing_shop_session_offer_expires_in_days">
     <item quantity="one">Erbjudandet löper ut om %1$d dag</item>
     <item quantity="other">Erbjudandet löper ut om %1$d dagar</item>
