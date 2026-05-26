@@ -325,7 +325,7 @@ private fun HelpCenterHomeScreen(
             onClearSearch()
           },
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
         Column(
           modifier = Modifier
             .fillMaxSize()
@@ -389,7 +389,6 @@ private fun ContentWithoutSearch(
       modifier =
         Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
-      Spacer(Modifier.height(32.dp))
       AnimatedContent(
         puppyGuidesExist,
         contentAlignment = Alignment.Center,
@@ -403,6 +402,7 @@ private fun ContentWithoutSearch(
               modifier = Modifier.padding(horizontal = 16.dp),
             )
           } else {
+            Spacer(Modifier.padding(16.dp))
             Image(
               painter = painterResource(Res.drawable.pillow_hedvig),
               contentDescription = null,
