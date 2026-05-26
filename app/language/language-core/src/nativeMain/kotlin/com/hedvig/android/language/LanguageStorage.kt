@@ -6,6 +6,8 @@ package com.hedvig.android.language
  */
 interface LanguageStorage {
   fun getCurrentLanguageTag(): String
+
   fun getSelectedLanguageTag(): String?
+
   fun setLanguageTag(tag: String)
 }

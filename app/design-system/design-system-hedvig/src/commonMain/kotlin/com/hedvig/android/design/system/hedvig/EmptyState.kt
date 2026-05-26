@@ -161,7 +161,7 @@ object EmptyStateDefaults {
     SUCCESS,
     BANK_ID,
     NO_ICON,
-    SUCCESS_WITH_WARNING
+    SUCCESS_WITH_WARNING,
   }
 
   sealed class EmptyStateButtonStyle {

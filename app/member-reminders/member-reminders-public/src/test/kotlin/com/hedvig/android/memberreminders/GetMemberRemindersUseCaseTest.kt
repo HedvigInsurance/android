@@ -41,7 +41,7 @@ class GetMemberRemindersUseCaseTest {
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
-      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase
+      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
     )
 
     getMemberRemindersUseCase.invoke().test {
@@ -75,7 +75,7 @@ class GetMemberRemindersUseCaseTest {
       getUpcomingRenewalRemindersUseCase = getUpcomingRenewalRemindersUseCase,
       getNeedsCoInsuredInfoRemindersUseCase = getNeedsCoInsuredInfoRemindersUseCase,
       getContactInfoUpdateIsNeededUseCase = getContactInfoUpdateIsNeededUseCase,
-      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase
+      getMissingChipIdReminderUseCase = getMissingChipIdReminderUseCase,
     )
     val testId = "test"
 
@@ -147,5 +147,4 @@ class GetMemberRemindersUseCaseTest {
       )
     }
   }
-
 }

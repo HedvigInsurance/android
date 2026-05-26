@@ -20,13 +20,13 @@ internal class AddChipIdViewModel(
   getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,
   contractId: String,
 ) : MoleculeViewModel<AddChipIdEvent, AddChipIdUiState>(
-  initialState = AddChipIdUiState.Loading,
-  presenter = AddChipIdPresenter(
-    updateChipIdUseCase = updateChipIdUseCase,
-    contractId = contractId,
-    getContractsWithMissingChipIdUseCase = getContractsWithMissingChipIdUseCase,
-  ),
-)
+    initialState = AddChipIdUiState.Loading,
+    presenter = AddChipIdPresenter(
+      updateChipIdUseCase = updateChipIdUseCase,
+      contractId = contractId,
+      getContractsWithMissingChipIdUseCase = getContractsWithMissingChipIdUseCase,
+    ),
+  )
 
 internal class AddChipIdPresenter(
   private val updateChipIdUseCase: UpdateChipIdUseCase,
@@ -81,8 +81,11 @@ internal class AddChipIdPresenter(
           Snapshot.withMutableSnapshot {
             val errorMessage = error.message
             submittingData = false
-            errorType =  if (errorMessage==null) ChipIdErrorType.GeneralError
-            else ChipIdErrorType.ErrorWithMessage(errorMessage)
+            errorType = if (errorMessage == null) {
+              ChipIdErrorType.GeneralError
+            } else {
+              ChipIdErrorType.ErrorWithMessage(errorMessage)
+            }
           }
         },
         ifRight = {
@@ -130,6 +133,7 @@ internal class AddChipIdPresenter(
         submittingData = submittingData,
         errorType = errorType,
       )
+
       AddChipIdUiState.Error, AddChipIdUiState.Loading -> state
     }
   }
@@ -167,5 +171,5 @@ internal sealed interface AddChipIdEvent {
 
   data object ShowedMessage : AddChipIdEvent
 
-  data class UpdateText(val newText: String): AddChipIdEvent
+  data class UpdateText(val newText: String) : AddChipIdEvent
 }

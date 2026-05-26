@@ -19,26 +19,30 @@ internal class ManualChargeViewModel(
   getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   triggerManualCharge: TriggerManualChargeUseCase,
 ) : MoleculeViewModel<ManualChargeEvent, ManualChargeUiState>(
-  initialState = ManualChargeUiState.Loading,
-  presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge),
-)
+    initialState = ManualChargeUiState.Loading,
+    presenter = ManualChargePresenter(getManualChargeInfoUseCase, triggerManualCharge),
+  )
 
 private class ManualChargePresenter(
   private val getManualChargeInfoUseCase: GetManualChargeInfoUseCase,
   private val triggerManualCharge: TriggerManualChargeUseCase,
 ) : MoleculePresenter<ManualChargeEvent, ManualChargeUiState> {
   @Composable
-  override fun MoleculePresenterScope<ManualChargeEvent>.present(
-    lastState: ManualChargeUiState,
-  ): ManualChargeUiState {
+  override fun MoleculePresenterScope<ManualChargeEvent>.present(lastState: ManualChargeUiState): ManualChargeUiState {
     var dataLoadIteration by remember { mutableIntStateOf(0) }
     var screenState by remember { mutableStateOf(lastState) }
     var triggerChargeIteration by remember { mutableIntStateOf(0) }
 
     CollectEvents {
       when (it) {
-        ManualChargeEvent.Retry -> dataLoadIteration++
-        ManualChargeEvent.TriggerCharge -> triggerChargeIteration++
+        ManualChargeEvent.Retry -> {
+          dataLoadIteration++
+        }
+
+        ManualChargeEvent.TriggerCharge -> {
+          triggerChargeIteration++
+        }
+
         ManualChargeEvent.ClearNav -> {
           val currentState = screenState as? ManualChargeUiState.Success ?: return@CollectEvents
           screenState = currentState.copy(navigateToSuccess = null)
@@ -100,6 +104,6 @@ internal sealed interface ManualChargeEvent {
   data object Retry : ManualChargeEvent
 
   data object TriggerCharge : ManualChargeEvent
+
   data object ClearNav : ManualChargeEvent
 }
-

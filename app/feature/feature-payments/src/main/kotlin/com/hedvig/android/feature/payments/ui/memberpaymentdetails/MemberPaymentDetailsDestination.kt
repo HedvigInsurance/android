@@ -252,22 +252,16 @@ private fun MemberPaymentDetailsSuccessScreen(
 @Composable
 private fun PaymentMethod.label(): String = when (this) {
   PaymentMethod.TRUSTLY -> stringResource(R.string.PAYMENTS_AUTOGIRO_LABEL)
-
   PaymentMethod.NORDEA -> stringResource(R.string.BANK_PAYOUT_METHOD_CARD_TITLE)
-
   PaymentMethod.INVOICE -> stringResource(R.string.PAYMENTS_INVOICE)
-
   PaymentMethod.SWISH -> stringResource(Res.string.swish)
 }
 
 @Composable
 private fun PaymentAccount.label(): String = when (this) {
   PaymentAccount.Kivra -> "Kivra"
-
   is PaymentAccount.Email -> email
-
   is PaymentAccount.PhoneNumber -> phoneNumber
-
   is PaymentAccount.BankAccount -> account
 }
 

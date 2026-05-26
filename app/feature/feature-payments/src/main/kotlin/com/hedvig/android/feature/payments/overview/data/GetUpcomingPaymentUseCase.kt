@@ -36,7 +36,6 @@ internal data class GetUpcomingPaymentUseCaseImpl(
   val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
-
     val result = apolloClient.query(UpcomingPaymentQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
@@ -53,7 +52,9 @@ internal data class GetUpcomingPaymentUseCaseImpl(
       }
       if (failedChargeNet != null) {
         ManualChargeToPrompt(failedChargeNet)
-      } else null
+      } else {
+        null
+      }
     } else {
       null
     }

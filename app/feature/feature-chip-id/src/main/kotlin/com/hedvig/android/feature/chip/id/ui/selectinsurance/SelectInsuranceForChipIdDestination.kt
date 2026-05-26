@@ -219,6 +219,5 @@ private fun SelectInsuranceForChipIdContentScreen(
       )
       Spacer(Modifier.height(16.dp))
     }
-
   }
 }
