@@ -32,7 +32,7 @@ val HedvigIcons.Bookmark: ImageVector
     ).apply {
       path(
         fill = SolidColor(Color(0xFF121212)),
-        pathFillType = PathFillType.EvenOdd
+        pathFillType = PathFillType.EvenOdd,
       ) {
         moveTo(7.5f, 3.75f)
         curveTo(6.80964f, 3.75f, 6.25f, 4.30964f, 6.25f, 5f)

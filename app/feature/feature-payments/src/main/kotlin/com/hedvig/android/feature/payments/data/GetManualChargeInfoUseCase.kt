@@ -23,7 +23,6 @@ internal class GetManualChargeInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetManualChargeInfoUseCase {
   override suspend fun invoke(): Either<ErrorMessage, ManualChargeInfo> = either {
-
     val currentMember = apolloClient.query(ManualChargeInfoQuery())
       .fetchPolicy(FetchPolicy.NetworkOnly)
       .safeExecute(::ErrorMessage)

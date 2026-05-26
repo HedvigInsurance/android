@@ -348,7 +348,7 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
       openConversation = {
         navigateToNewConversation()
-      }
+      },
     )
     payoutAccountGraph(
       navController = navController,

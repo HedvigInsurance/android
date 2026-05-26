@@ -28,11 +28,7 @@ import androidx.compose.ui.unit.Dp
  * behind the top bar.
  */
 @Composable
-fun rememberStickyHeaderTopInset(
-  listState: LazyListState,
-  stickyHeaderKey: Any,
-  topContentPadding: Dp,
-): Dp {
+fun rememberStickyHeaderTopInset(listState: LazyListState, stickyHeaderKey: Any, topContentPadding: Dp): Dp {
   val density = LocalDensity.current
   val topContentPaddingPx = with(density) { topContentPadding.roundToPx() }
   val offsetPx by remember(listState, stickyHeaderKey, topContentPaddingPx) {

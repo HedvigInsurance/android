@@ -23,7 +23,7 @@ fun NavGraphBuilder.chipIdGraph(
   navigateUp: () -> Unit,
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   popBackStackOrFinish: () -> Unit,
-  goHome: () -> Unit
+  goHome: () -> Unit,
 ) {
   navdestination<ChipIdDestination.AddChipIdTriage>(
     deepLinks = navDeepLinks(
@@ -88,10 +88,8 @@ fun NavGraphBuilder.chipIdGraph(
           if (!navController.popBackStack(ChipIdGraphDestination::class, inclusive = true)) {
             goHome()
           }
-        }
+        },
       )
     }
   }
 }
-
-

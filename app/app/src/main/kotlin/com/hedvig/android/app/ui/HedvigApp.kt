@@ -39,7 +39,6 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
@@ -47,6 +46,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel

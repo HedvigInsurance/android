@@ -20,8 +20,6 @@ dependencies {
   implementation(libs.androidx.compose.material3.windowSizeClass)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.arrow.core)
-  implementation(libs.compose.richtext)
-  implementation(libs.compose.richtextCommonmark)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.lifecycle.viewmodel.compose)

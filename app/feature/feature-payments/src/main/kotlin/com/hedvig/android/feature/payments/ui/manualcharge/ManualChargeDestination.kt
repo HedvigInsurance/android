@@ -104,16 +104,22 @@ private fun ManualChargeScreen(
     topAppBarText = stringResource(Res.string.PAYMENTS_PAYMENT_OVERDUE_TITLE),
   ) {
     when (uiState) {
-
       is ManualChargeUiState.Failure -> {
-        val title = if (uiState.error.message != null)
-          stringResource(Res.string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE) else
+        val title = if (uiState.error.message != null) {
+          stringResource(Res.string.SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE)
+        } else {
           stringResource(Res.string.something_went_wrong)
-        val subTitle = if (uiState.error.message != null) uiState.error.message else
+        }
+        val subTitle = if (uiState.error.message != null) {
+          uiState.error.message
+        } else {
           stringResource(Res.string.GENERAL_ERROR_BODY)
-        val buttonText = if (uiState.error.message != null)
-          stringResource(Res.string.claim_status_detail_chat_button_description) else
+        }
+        val buttonText = if (uiState.error.message != null) {
+          stringResource(Res.string.claim_status_detail_chat_button_description)
+        } else {
           stringResource(Res.string.GENERAL_RETRY)
+        }
         val onButtonClick = if (uiState.error.message != null) openConversation else reload
 
         HedvigErrorSection(
@@ -125,7 +131,6 @@ private fun ManualChargeScreen(
           buttonText = buttonText,
           title = title,
         )
-
       }
 
       ManualChargeUiState.Loading -> {
@@ -160,8 +165,6 @@ private fun ManualChargeSuccessScreen(
   val dateTimeFormatter = rememberHedvigMonthDateTimeFormatter()
   val dateTimeFormatterWithYear = rememberHedvigDateTimeFormatter()
   Column {
-
-
     Column(
       modifier = Modifier
         .padding(
@@ -181,7 +184,6 @@ private fun ManualChargeSuccessScreen(
           color = HedvigTheme.colorScheme.borderPrimary,
           shape = HedvigTheme.shapes.cornerXLarge,
         )
-
         .clip(HedvigTheme.shapes.cornerXLarge)
         .padding(16.dp),
     ) {
@@ -244,8 +246,7 @@ private fun ManualChargeSuccessScreen(
             style = HedvigTheme.typography.label,
           )
         }
-        if (uiState.manualChargeInfo.bankDescriptor != null
-        ) {
+        if (uiState.manualChargeInfo.bankDescriptor != null) {
           Spacer(Modifier.height(10.dp))
           Row(
             modifier = Modifier.fillMaxWidth(),
@@ -291,7 +292,7 @@ private fun ManualChargeSuccessScreen(
         enabled = !uiState.payButtonLoading,
         buttonSize = ButtonDefaults.ButtonSize.Medium,
         modifier = Modifier.fillMaxWidth(),
-        isLoading = uiState.payButtonLoading
+        isLoading = uiState.payButtonLoading,
       )
 
       Spacer(modifier = Modifier.height(8.dp))
@@ -383,8 +384,12 @@ private fun ManualChargeScreenFailurePreview(
       ManualChargeScreen(
         uiState = ManualChargeUiState.Failure(
           ErrorMessage(
-            message = if (hasUserError) "Cannot charge the failed payment since there have been some changes. " +
-              "The new amount will be included in the upcoming payment." else null,
+            message = if (hasUserError) {
+              "Cannot charge the failed payment since there have been some changes. " +
+                "The new amount will be included in the upcoming payment."
+            } else {
+              null
+            },
           ),
         ),
         navigateUp = {},
@@ -397,5 +402,3 @@ private fun ManualChargeScreenFailurePreview(
     }
   }
 }
-
-
