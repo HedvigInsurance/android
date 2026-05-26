@@ -61,7 +61,6 @@ import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -113,9 +112,7 @@ private fun PuppyGuideScreen(
   onScrollOffsetChanged: (Float) -> Unit,
 ) {
   when (uiState) {
-    PuppyGuideUiState.Failure -> HedvigScaffold(
-      navigateUp = onNavigateUp,
-    ) {
+    PuppyGuideUiState.Failure -> PuppyScaffold(navigateUp = onNavigateUp) {
       HedvigErrorSection(
         onButtonClick = reload,
         modifier = Modifier.weight(1f),
@@ -404,11 +401,12 @@ private fun ReadLabel(modifier: Modifier) {
   ) {
     Row(
       Modifier.padding(
-        start = 8.dp, end = 8.dp,
+        start = 8.dp,
+        end = 8.dp,
         top = 3.dp,
         bottom = 3.dp,
       ),
-      verticalAlignment = Alignment.CenterVertically
+      verticalAlignment = Alignment.CenterVertically,
     ) {
       HedvigText(
         text = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
@@ -420,7 +418,6 @@ private fun ReadLabel(modifier: Modifier) {
         EmptyContentDescription,
       )
     }
-
   }
 }
 

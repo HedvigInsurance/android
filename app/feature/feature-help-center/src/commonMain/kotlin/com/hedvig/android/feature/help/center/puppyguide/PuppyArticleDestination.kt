@@ -50,7 +50,6 @@ import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
-import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -103,9 +102,7 @@ private fun PuppyArticleScreen(
   onScrollOffsetChanged: (Float) -> Unit,
 ) {
   when (uiState) {
-    PuppyArticleUiState.Failure -> HedvigScaffold(
-      navigateUp = navigateUp,
-    ) {
+    PuppyArticleUiState.Failure -> PuppyScaffold(navigateUp = navigateUp) {
       HedvigErrorSection(
         onButtonClick = onReload,
         modifier = Modifier.weight(1f),
@@ -232,7 +229,6 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-
     val ratings = listOf(1, 2, 3, 4, 5)
     val hapticFeedback = LocalHapticFeedback.current
     Row(
