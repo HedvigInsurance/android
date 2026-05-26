@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,6 +89,9 @@ internal fun PuppyArticleDestination(
       viewModel.emit(PuppyArticleEvent.RatingClick(it))
     },
     onScrollOffsetChanged = onScrollOffsetChanged,
+    onReachedBottom = {
+      viewModel.emit(PuppyArticleEvent.ReachedBottom)
+    },
   )
 }
 
@@ -100,6 +104,7 @@ private fun PuppyArticleScreen(
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
   onScrollOffsetChanged: (Float) -> Unit,
+  onReachedBottom: () -> Unit,
 ) {
   when (uiState) {
     PuppyArticleUiState.Failure -> PuppyScaffold(navigateUp = navigateUp) {
@@ -127,6 +132,7 @@ private fun PuppyArticleScreen(
       imageLoader = imageLoader,
       onRatingClick = onRatingClick,
       onScrollOffsetChanged = onScrollOffsetChanged,
+      onReachedBottom = onReachedBottom,
     )
   }
 }
@@ -139,6 +145,7 @@ private fun PuppyArticleSuccessScreen(
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
   onScrollOffsetChanged: (Float) -> Unit,
+  onReachedBottom: () -> Unit,
 ) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
@@ -157,6 +164,15 @@ private fun PuppyArticleSuccessScreen(
       val density = LocalDensity.current
       LaunchedEffect(scrollState, density, onScrollOffsetChanged) {
         snapshotFlow { with(density) { scrollState.value.toDp().value } }.collect(onScrollOffsetChanged)
+      }
+      val currentOnReachedBottom by rememberUpdatedState(onReachedBottom)
+      LaunchedEffect(scrollState) {
+        snapshotFlow {
+          val max = scrollState.maxValue
+          max != Int.MAX_VALUE && scrollState.value >= max
+        }.collect { atBottom ->
+          if (atBottom) currentOnReachedBottom()
+        }
       }
       Column(
         modifier = Modifier
@@ -302,6 +318,7 @@ private fun PuppyArticleScreenPreview(
         onRatingClick = {},
         imageLoader = rememberPreviewImageLoader(),
         onScrollOffsetChanged = {},
+        onReachedBottom = {},
       )
     }
   }
