@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.help.center.puppyguide
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
@@ -25,8 +26,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,6 +69,10 @@ import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
 import hedvig.resources.Res
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -166,74 +173,88 @@ private fun PuppyArticleSuccessScreen(
         snapshotFlow { with(density) { scrollState.value.toDp().value } }.collect(onScrollOffsetChanged)
       }
       val currentOnReachedBottom by rememberUpdatedState(onReachedBottom)
+      var contentHeight by remember { mutableIntStateOf(0) }
+      var viewportHeight by remember { mutableIntStateOf(0) }
       LaunchedEffect(scrollState) {
-        snapshotFlow {
-          val max = scrollState.maxValue
-          max != Int.MAX_VALUE && scrollState.value >= max
-        }.collect { atBottom ->
-          if (atBottom) currentOnReachedBottom()
-        }
+        snapshotFlow { contentHeight to viewportHeight }
+          .filter { (c, v) -> c > 0 && v > 0 }
+          .debounce(150.milliseconds)
+          .first()
+        snapshotFlow { scrollState.value + viewportHeight >= contentHeight }.first { it }
+        currentOnReachedBottom()
       }
-      Column(
+      Box(
         modifier = Modifier
           .fillMaxWidth()
-          .verticalScroll(scrollState)
-          .padding(horizontalInsetsPadding)
-          .padding(horizontal = 16.dp),
+          .onSizeChanged { viewportHeight = it.height },
       ) {
-        Spacer(
-          modifier = Modifier.windowInsetsTopHeight(
-            WindowInsets.safeDrawing.exclude(consumedWindowInsets).only(WindowInsetsSides.Top),
-          ),
-        )
-        Spacer(modifier = Modifier.height(8.dp))
         Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
           modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .verticalScroll(scrollState)
+            .padding(horizontalInsetsPadding)
+            .padding(horizontal = 16.dp),
         ) {
-          val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
-          AsyncImage(
-            model = uiState.story.image,
-            contentDescription = EmptyContentDescription,
-            placeholder = fallbackPainter,
-            error = fallbackPainter,
-            fallback = fallbackPainter,
-            imageLoader = imageLoader,
-            contentScale = ContentScale.Crop,
+          Column(
             modifier = Modifier
               .fillMaxWidth()
-              .defaultMinSize(minHeight = 200.dp)
-              .clip(HedvigTheme.shapes.cornerMedium),
-          )
+              .onSizeChanged { contentHeight = it.height },
+          ) {
+            Spacer(
+              modifier = Modifier.windowInsetsTopHeight(
+                WindowInsets.safeDrawing.exclude(consumedWindowInsets).only(WindowInsetsSides.Top),
+              ),
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              modifier = Modifier
+                .fillMaxWidth(),
+            ) {
+              val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
+              AsyncImage(
+                model = uiState.story.image,
+                contentDescription = EmptyContentDescription,
+                placeholder = fallbackPainter,
+                error = fallbackPainter,
+                fallback = fallbackPainter,
+                imageLoader = imageLoader,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .defaultMinSize(minHeight = 200.dp)
+                  .clip(HedvigTheme.shapes.cornerMedium),
+              )
+            }
+            Spacer(Modifier.height(16.dp))
+            HedvigText(
+              uiState.story.title,
+              style = HedvigTheme.typography.headlineMedium,
+            )
+            Spacer(Modifier.height(4.dp))
+            HedvigText(
+              uiState.story.subtitle,
+              style = HedvigTheme.typography.label,
+              color = HedvigTheme.colorScheme.textSecondaryTranslucent,
+            )
+            Spacer(Modifier.height(24.dp))
+            ProvideTextStyle(
+              HedvigTheme.typography.bodySmall
+                .copy(color = HedvigTheme.colorScheme.textSecondaryTranslucent),
+            ) {
+              MarkdownText(uiState.story.content, withArticleStyle = true)
+            }
+            Spacer(Modifier.height(48.dp))
+            HedvigText(stringResource(Res.string.PUPPY_GUIDE_RATING_QUESTION))
+            Spacer(Modifier.height(16.dp))
+            RatingSection(
+              onRatingClick = onRatingClick,
+              selectedRating = uiState.story.rating,
+            )
+            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+          }
         }
-        Spacer(Modifier.height(16.dp))
-        HedvigText(
-          uiState.story.title,
-          style = HedvigTheme.typography.headlineMedium,
-        )
-        Spacer(Modifier.height(4.dp))
-        HedvigText(
-          uiState.story.subtitle,
-          style = HedvigTheme.typography.label,
-          color = HedvigTheme.colorScheme.textSecondaryTranslucent,
-        )
-        Spacer(Modifier.height(24.dp))
-        ProvideTextStyle(
-          HedvigTheme.typography.bodySmall
-            .copy(color = HedvigTheme.colorScheme.textSecondaryTranslucent),
-        ) {
-          MarkdownText(uiState.story.content, withArticleStyle = true)
-        }
-        Spacer(Modifier.height(48.dp))
-        HedvigText(stringResource(Res.string.PUPPY_GUIDE_RATING_QUESTION))
-        Spacer(Modifier.height(16.dp))
-        RatingSection(
-          onRatingClick = onRatingClick,
-          selectedRating = uiState.story.rating,
-        )
-        Spacer(Modifier.height(16.dp))
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
       }
     }
   }
