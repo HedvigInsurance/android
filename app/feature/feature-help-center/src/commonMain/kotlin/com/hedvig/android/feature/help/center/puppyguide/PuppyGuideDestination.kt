@@ -388,7 +388,7 @@ private fun ArticleItem(
 }
 
 @Composable
-private fun ReadLabel(modifier: Modifier) {
+private fun ReadLabel(modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier,
     shape = HedvigTheme.shapes.cornerXSmall,
