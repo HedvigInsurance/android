@@ -30,7 +30,6 @@ internal sealed interface ProfileDestinations {
 
   @Serializable
   data object SettingsGraph : ProfileDestinations, Destination
-
 }
 
 internal sealed interface SettingsDestinations {
@@ -46,4 +45,3 @@ val profileBottomNavPermittedDestinations: List<KClass<out Destination>> = listO
 * Not saving navigation state when explicitly logging out from Profile
 */
 val destinationToExcludeFromSavingState: KClass<out Destination> = ProfileDestination.Profile::class
-
