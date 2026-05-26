@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,40 +33,53 @@ actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: 
     object : MarkdownTypography {
       override val h1: TextStyle = typography.bodySmall.copy(
         color = headingColor,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val h2: TextStyle = typography.bodySmall.copy(
         color = headingColor,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val h3: TextStyle = typography.bodySmall.copy(
         color = headingColor,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val h4: TextStyle = typography.bodySmall.copy(
         color = headingColor,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val h5: TextStyle = typography.bodySmall.copy(
         color = headingColor,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val h6: TextStyle = typography.bodySmall.copy(
         color = headingColor,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val text: TextStyle = typography.bodySmall.copy(
         color = colors.textSecondaryTranslucent,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val paragraph: TextStyle = typography.bodySmall.copy(
         color = colors.textSecondaryTranslucent,
-        fontWeight = FontWeight.Normal)
+        fontWeight = FontWeight.Normal,
+      )
       override val code: TextStyle = typography.label
       override val inlineCode: TextStyle = typography.label
       override val bullet: TextStyle = typography.bodySmall.copy(
-        color = colors.textSecondaryTranslucent)
+        color = colors.textSecondaryTranslucent,
+      )
       override val list: TextStyle = typography.bodySmall.copy(
-        color = colors.textSecondaryTranslucent)
+        color = colors.textSecondaryTranslucent,
+      )
       override val ordered: TextStyle = typography.bodySmall.copy(
-        color = colors.textSecondaryTranslucent)
+        color = colors.textSecondaryTranslucent,
+      )
       override val quote: TextStyle = typography.bodySmall.copy(
-        color = colors.textSecondaryTranslucent)
+        color = colors.textSecondaryTranslucent,
+      )
       override val table: TextStyle = typography.bodySmall.copy(
-        color = colors.textSecondaryTranslucent)
+        color = colors.textSecondaryTranslucent,
+      )
       override val textLink = TextLinkStyles(
         style = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
         focusedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
