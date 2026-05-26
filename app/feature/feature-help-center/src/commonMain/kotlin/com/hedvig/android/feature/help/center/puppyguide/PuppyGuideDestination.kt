@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -41,6 +42,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -60,10 +62,11 @@ import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.HighlightLabel
-import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults
+import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.blockSwipeBackOnIos
+import com.hedvig.android.design.system.hedvig.icon.Checkmark
+import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import hedvig.resources.PUPPY_GUIDE_INFO
@@ -354,14 +357,11 @@ private fun ArticleItem(
           .clip(shape),
       )
       if (story.isRead || story.rating != null) {
-        HighlightLabel(
-          modifier = modifier.padding(
+        ReadLabel(
+          modifier = Modifier.padding(
             end = 12.dp,
             top = 12.dp,
           ),
-          labelText = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
-          size = HighlightLabelDefaults.HighLightSize.Small,
-          color = HighlightLabelDefaults.HighlightColor.Grey(HighlightLabelDefaults.HighlightShade.LIGHT),
         )
       }
     }
@@ -381,6 +381,35 @@ private fun ArticleItem(
   }
 }
 
+@Composable
+private fun ReadLabel(modifier: Modifier) {
+  Surface(
+    modifier = modifier,
+    shape = HedvigTheme.shapes.cornerXSmall,
+    color = HedvigTheme.colorScheme.buttonSecondaryResting,
+  ) {
+    Row(
+      Modifier.padding(
+        start = 8.dp, end = 8.dp,
+        top = 3.dp,
+        bottom = 3.dp,
+      ),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      HedvigText(
+        text = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
+        textAlign = TextAlign.Center,
+        style = HedvigTheme.typography.label,
+      )
+      Icon(
+        HedvigIcons.Checkmark,
+        EmptyContentDescription,
+      )
+    }
+
+  }
+}
+
 @HedvigShortMultiScreenPreview
 @Composable
 private fun PuppyArticleScreenAnimations(
@@ -395,6 +424,23 @@ private fun PuppyArticleScreenAnimations(
         reload = {},
         imageLoader = rememberPreviewImageLoader(),
         onScrollOffsetChanged = {},
+      )
+    }
+  }
+}
+
+@HedvigShortMultiScreenPreview
+@Composable
+private fun ReadLabelPreview(
+  @PreviewParameter(PuppyGuideUiStatePreviewProvider::class) uiState: PuppyGuideUiState,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      ReadLabel(
+        Modifier.padding(
+          end = 12.dp,
+          top = 12.dp,
+        ),
       )
     }
   }
