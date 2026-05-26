@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -490,13 +489,12 @@ private fun ContentWithoutSearch(
 @Composable
 private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
+    onClick = onClick,
     color = HedvigTheme.colorScheme.backgroundPrimary,
+    borderColor = HedvigTheme.colorScheme.borderSecondary,
     modifier = modifier
       .fillMaxWidth()
-      .shadow(1.dp, HedvigTheme.shapes.cornerXLarge)
-      .clickable(enabled = true) {
-        onClick()
-      },
+      .shadow(1.dp, HedvigTheme.shapes.cornerXLarge),
   ) {
     Column {
       Box(Modifier.align(Alignment.CenterHorizontally)) {
