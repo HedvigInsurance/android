@@ -62,7 +62,7 @@ internal data class HelpCenterUiState(
   val search: Search?,
   val showNavigateToInboxButton: Boolean,
   val destinationToNavigate: QuickLinkDestination? = null,
-  val puppyGuidesExist: Boolean,
+  val puppyGuide: PuppyGuidePresentation?,
 ) {
   data class QuickLink(val quickAction: QuickAction)
 
@@ -72,6 +72,12 @@ internal data class HelpCenterUiState(
     data object NoQuickLinks : QuickLinkUiState
 
     data class QuickLinks(val quickLinks: NonEmptyList<QuickLink>) : QuickLinkUiState
+  }
+
+  sealed interface PuppyGuidePresentation {
+    data object FullCard : PuppyGuidePresentation
+
+    data object QuickAction : PuppyGuidePresentation
   }
 
   data class Search(
@@ -183,13 +189,19 @@ internal class HelpCenterPresenter(
         )
         val topics = faq.getOrNull()?.topics ?: listOf()
         val questions = faq.getOrNull()?.commonFAQ ?: listOf()
+        val puppyGuide = puppyGuideResult.getOrNull()
+        val puppyGuidePresentation = when {
+          puppyGuide == null || puppyGuide.stories.isEmpty() -> null
+          puppyGuide.isForYoungDog == true -> HelpCenterUiState.PuppyGuidePresentation.FullCard
+          else -> HelpCenterUiState.PuppyGuidePresentation.QuickAction
+        }
         currentState = currentState.copy(
           topics = topics,
           questions = questions,
           quickLinksUiState = quickLinksUiState,
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
-          puppyGuidesExist = puppyGuideResult.getOrNull()?.stories?.isNotEmpty() == true,
+          puppyGuide = puppyGuidePresentation,
         )
       }.collect()
     }

@@ -19,7 +19,7 @@ internal class HelpCenterViewModel(
       quickLinksUiState = HelpCenterUiState.QuickLinkUiState.Loading,
       search = null,
       showNavigateToInboxButton = false,
-      puppyGuidesExist = false,
+      puppyGuide = null,
     ),
     presenter = HelpCenterPresenter(
       getQuickLinksUseCase = getQuickLinksUseCase,

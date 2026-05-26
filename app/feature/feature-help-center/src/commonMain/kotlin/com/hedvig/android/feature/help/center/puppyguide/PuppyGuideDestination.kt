@@ -411,7 +411,7 @@ private fun ReadLabel(modifier: Modifier = Modifier) {
       Icon(
         HedvigIcons.Checkmark,
         EmptyContentDescription,
-        Modifier.size(20.dp)
+        Modifier.size(20.dp),
       )
     }
   }
