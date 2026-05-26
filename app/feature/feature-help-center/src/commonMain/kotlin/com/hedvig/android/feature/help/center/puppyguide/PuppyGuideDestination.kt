@@ -45,6 +45,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -64,6 +66,10 @@ import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProg
 import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
+import com.hedvig.android.design.system.hedvig.HighlightLabel
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighLightSize
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightColor
+import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.blockSwipeBackOnIos
@@ -368,12 +374,7 @@ private fun ArticleItem(
           .clip(shape),
       )
       if (story.isRead || story.rating != null) {
-        ReadLabel(
-          modifier = Modifier.padding(
-            end = 12.dp,
-            top = 12.dp,
-          ),
-        )
+        ReadLabel(modifier = Modifier.padding(12.dp))
       }
     }
 
@@ -393,20 +394,15 @@ private fun ArticleItem(
 }
 
 @Composable
-private fun ReadLabel(modifier: Modifier) {
-  Surface(
-    modifier = modifier,
-    shape = HedvigTheme.shapes.cornerXSmall,
-    color = HedvigTheme.colorScheme.buttonSecondaryResting,
+private fun ReadLabel(modifier: Modifier = Modifier) {
+  HighlightLabel(
+    size = HighLightSize.Small,
+    color = HighlightColor.Grey(HighlightShade.LIGHT),
+    modifier = modifier.semantics { hideFromAccessibility() },
   ) {
     Row(
-      Modifier.padding(
-        start = 8.dp,
-        end = 8.dp,
-        top = 3.dp,
-        bottom = 3.dp,
-      ),
       verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
     ) {
       HedvigText(
         text = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
@@ -416,6 +412,7 @@ private fun ReadLabel(modifier: Modifier) {
       Icon(
         HedvigIcons.Checkmark,
         EmptyContentDescription,
+        Modifier.size(20.dp)
       )
     }
   }
@@ -447,12 +444,7 @@ private fun ReadLabelPreview(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ReadLabel(
-        Modifier.padding(
-          end = 12.dp,
-          top = 12.dp,
-        ),
-      )
+      ReadLabel()
     }
   }
 }
