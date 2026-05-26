@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -57,6 +58,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
+import com.hedvig.android.feature.help.center.ui.toHapticFeedbackType
 import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
@@ -214,7 +216,9 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
+
     val ratings = listOf(1, 2, 3, 4, 5)
+    val hapticFeedback = LocalHapticFeedback.current
     Row(
       horizontalArrangement = Arrangement.SpaceAround,
       modifier = Modifier,
@@ -224,6 +228,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
         HedvigCard(
           modifier = Modifier.weight(1f),
           onClick = {
+            hapticFeedback.performHapticFeedback(rating.toHapticFeedbackType())
             onRatingClick(rating)
           },
           color = if (isSelectedRating) {
@@ -247,7 +252,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
         Spacer(Modifier.width(6.dp))
       }
     }
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(
