@@ -252,7 +252,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
         Spacer(Modifier.width(6.dp))
       }
     }
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(8.dp))
     HorizontalItemsWithMaximumSpaceTaken(
       startSlot = {
         HedvigText(
