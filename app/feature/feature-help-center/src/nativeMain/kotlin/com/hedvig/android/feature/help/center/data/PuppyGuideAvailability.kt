@@ -13,7 +13,7 @@ fun observePuppyGuideAvailability(onResult: (Boolean) -> Unit): PuppyGuideAvaila
   val scope = CoroutineScope(Dispatchers.Main)
   val job: Job = scope.launch {
     useCase.invoke().collectLatest { either ->
-      onResult(either.getOrNull()?.isNotEmpty() == true)
+      onResult(either.getOrNull()?.stories?.isNotEmpty() == true)
     }
   }
   return PuppyGuideAvailabilityCancellable { job.cancel() }

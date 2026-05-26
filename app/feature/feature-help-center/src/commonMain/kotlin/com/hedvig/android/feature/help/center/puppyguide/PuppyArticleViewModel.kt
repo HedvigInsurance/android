@@ -37,7 +37,10 @@ private class PuppyArticlePresenter(
 
     CollectEvents { event ->
       when (event) {
-        PuppyArticleEvent.Reload -> loadIteration++
+        PuppyArticleEvent.Reload -> {
+          loadIteration++
+        }
+
         is PuppyArticleEvent.RatingClick -> {
           rating = event.rating
         }
@@ -50,8 +53,8 @@ private class PuppyArticlePresenter(
           ifLeft = {
             currentState = PuppyArticleUiState.Failure
           },
-          ifRight = { stories ->
-            val matchingStory = stories.firstOrNull { it.name == storyName }
+          ifRight = { puppyGuide ->
+            val matchingStory = puppyGuide.stories.firstOrNull { it.name == storyName }
             currentState = if (matchingStory == null) {
               PuppyArticleUiState.Failure
             } else {
@@ -77,12 +80,19 @@ private class PuppyArticlePresenter(
     }
 
     return when (val state = currentState) {
-      PuppyArticleUiState.Failure -> state
-      PuppyArticleUiState.Loading -> state
-      is PuppyArticleUiState.Success ->
+      PuppyArticleUiState.Failure -> {
+        state
+      }
+
+      PuppyArticleUiState.Loading -> {
+        state
+      }
+
+      is PuppyArticleUiState.Success -> {
         state.copy(
           story = state.story.copy(rating = rating),
         )
+      }
     }
   }
 }

@@ -189,7 +189,7 @@ internal class HelpCenterPresenter(
           quickLinksUiState = quickLinksUiState,
           selectedQuickAction = selectedQuickAction,
           showNavigateToInboxButton = hasAnyActiveConversation,
-          puppyGuidesExist = puppyGuideResult.getOrNull()?.isNotEmpty() == true,
+          puppyGuidesExist = puppyGuideResult.getOrNull()?.stories?.isNotEmpty() == true,
         )
       }.collect()
     }

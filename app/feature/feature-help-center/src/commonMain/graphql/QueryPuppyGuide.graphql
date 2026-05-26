@@ -1,14 +1,17 @@
 query PuppyGuide {
   currentMember {
-    puppyGuideStories {
-      categories
-      content
-      image
-      name
-      rating
-      read
-      subtitle
-      title
+    puppyGuide {
+      forYoungDog
+      stories {
+        categories
+        content
+        image
+        name
+        rating
+        read
+        subtitle
+        title
+      }
     }
   }
 }

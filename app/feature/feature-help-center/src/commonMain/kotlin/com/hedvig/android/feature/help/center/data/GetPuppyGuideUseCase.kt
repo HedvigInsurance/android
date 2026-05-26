@@ -14,37 +14,47 @@ import kotlinx.serialization.Serializable
 import octopus.PuppyGuideQuery
 
 interface GetPuppyGuideUseCase {
-  fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>>>
+  fun invoke(): Flow<Either<ErrorMessage, PuppyGuide>>
 }
 
 internal class GetPuppyGuideUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetPuppyGuideUseCase {
-  override fun invoke(): Flow<Either<ErrorMessage, List<PuppyGuideStory>>> {
+  override fun invoke(): Flow<Either<ErrorMessage, PuppyGuide>> {
     return apolloClient
       .query(PuppyGuideQuery())
       .fetchPolicy(FetchPolicy.CacheAndNetwork)
       .safeFlow(::ErrorMessage)
       .map { either ->
         either
-          .onLeft { logcat { "Cannot load PuppyGuideStory: $it" } }
+          .onLeft { logcat { "Cannot load PuppyGuide: $it" } }
           .map { data ->
-            data.currentMember.puppyGuideStories.map { story ->
-              PuppyGuideStory(
-                categories = story.categories,
-                content = story.content,
-                image = story.image,
-                name = story.name,
-                rating = story.rating,
-                isRead = story.read,
-                subtitle = story.subtitle,
-                title = story.title,
-              )
-            }
+            val puppyGuide = data.currentMember.puppyGuide
+            PuppyGuide(
+              stories = puppyGuide?.stories.orEmpty().map { story ->
+                PuppyGuideStory(
+                  categories = story.categories,
+                  content = story.content,
+                  image = story.image,
+                  name = story.name,
+                  rating = story.rating,
+                  isRead = story.read,
+                  subtitle = story.subtitle,
+                  title = story.title,
+                )
+              },
+              isForYoungDog = puppyGuide?.forYoungDog,
+            )
           }
       }
   }
 }
+
+@Serializable
+data class PuppyGuide(
+  val stories: List<PuppyGuideStory>,
+  val isForYoungDog: Boolean?,
+)
 
 @Serializable
 data class PuppyGuideStory(

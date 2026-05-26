@@ -40,7 +40,7 @@ private class PuppyGuidePresenter(
       getPuppyGuideUseCase.invoke().collect { response ->
         currentState = response.fold(
           ifLeft = { PuppyGuideUiState.Failure },
-          ifRight = { stories -> PuppyGuideUiState.Success(stories) },
+          ifRight = { puppyGuide -> PuppyGuideUiState.Success(puppyGuide.stories) },
         )
       }
     }
