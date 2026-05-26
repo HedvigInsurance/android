@@ -397,7 +397,7 @@ private fun ReadLabel(modifier: Modifier) {
   Surface(
     modifier = modifier,
     shape = HedvigTheme.shapes.cornerXSmall,
-    color = HedvigTheme.colorScheme.buttonSecondaryResting,
+    color = HedvigTheme.colorScheme.buttonSecondaryAltResting,
   ) {
     Row(
       Modifier.padding(
