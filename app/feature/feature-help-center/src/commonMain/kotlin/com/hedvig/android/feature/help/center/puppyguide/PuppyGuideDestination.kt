@@ -1,7 +1,10 @@
 package com.hedvig.android.feature.help.center.puppyguide
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -227,12 +230,15 @@ private fun PuppyGuideSuccessScreen(
                 onCategoryClick = onClick@{ category ->
                   val index = categories.indexOf(category)
                   if (index == -1) return@onClick
+                  val stickyInfo = listState.layoutInfo.visibleItemsInfo
+                    .firstOrNull { it.key == CategoriesStickyHeaderKey }
+                  val stickyContentHeightPx = stickyInfo?.let {
+                    val topInsetPx = with(density) { verticalInsetsPadding.calculateTopPadding().roundToPx() }
+                    val currentTopPadding = (-it.offset).coerceIn(0, topInsetPx)
+                    it.size - currentTopPadding
+                  } ?: 0
                   scope.launch {
-                    listState.animateScrollToItem(
-                      index + 2,
-                      // Negative offset to scroll less and avoid sticky header covering the title
-                      scrollOffset = -200, // todo: wtf
-                    )
+                    listState.animateScrollToItem(index + 3, scrollOffset = -stickyContentHeightPx)
                   }
                 },
               )
@@ -330,23 +336,28 @@ private fun ArticleItem(
   modifier: Modifier = Modifier,
   shape: Shape = HedvigTheme.shapes.cornerMedium,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
   Column(
     modifier
       .width(size)
-      .clip(shape)
       .clickable(
+        interactionSource = interactionSource,
+        indication = null,
         onClick = {
           onNavigateToArticle(story)
         },
       ),
   ) {
     Box(
+      modifier = Modifier
+        .clip(shape)
+        .indication(interactionSource, LocalIndication.current),
       contentAlignment = Alignment.TopEnd,
     ) {
       val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
       AsyncImage(
         model = story.image,
-        contentDescription = EmptyContentDescription, // todo
+        contentDescription = EmptyContentDescription,
         placeholder = fallbackPainter,
         error = fallbackPainter,
         fallback = fallbackPainter,
@@ -371,7 +382,7 @@ private fun ArticleItem(
       story.title,
       style = HedvigTheme.typography.label,
       maxLines = 1,
-      overflow = TextOverflow.Ellipsis, // todo: not by a11y req
+      overflow = TextOverflow.Ellipsis,
     )
     HedvigText(
       story.subtitle,

@@ -51,11 +51,10 @@ private class PuppyArticlePresenter(
             currentState = PuppyArticleUiState.Failure
           },
           ifRight = { stories ->
-            val matchingStory = stories?.firstOrNull { it.name == storyName }
+            val matchingStory = stories.firstOrNull { it.name == storyName }
             currentState = if (matchingStory == null) {
               PuppyArticleUiState.Failure
             } else {
-              logcat { "Mariia. Story rating is: ${matchingStory.rating} " }
               rating = matchingStory.rating
               PuppyArticleUiState.Success(matchingStory)
             }
@@ -72,13 +71,8 @@ private class PuppyArticlePresenter(
         articleName = articleName,
         rating = currentRating,
       ).fold(
-        ifLeft = {
-          logcat { "setArticleRatingUseCase rating failed!" }
-          // todo: snackbar?
-        },
-        ifRight = {
-          logcat { "setArticleRatingUseCase rating set!" }
-        },
+        ifLeft = { logcat { "setArticleRatingUseCase rating failed!" } },
+        ifRight = { logcat { "setArticleRatingUseCase rating set!" } },
       )
     }
 

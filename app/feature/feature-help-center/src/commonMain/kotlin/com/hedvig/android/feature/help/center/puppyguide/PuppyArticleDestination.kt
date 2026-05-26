@@ -166,7 +166,7 @@ private fun PuppyArticleSuccessScreen(
           val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
           AsyncImage(
             model = uiState.story.image,
-            contentDescription = EmptyContentDescription, // todo
+            contentDescription = EmptyContentDescription,
             placeholder = fallbackPainter,
             error = fallbackPainter,
             fallback = fallbackPainter,
