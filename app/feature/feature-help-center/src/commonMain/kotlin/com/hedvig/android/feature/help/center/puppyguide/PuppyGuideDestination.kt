@@ -149,8 +149,11 @@ private fun PuppyGuideSuccessScreen(
   val density = LocalDensity.current
   LaunchedEffect(listState, density, onScrollOffsetChanged) {
     snapshotFlow {
-      if (listState.firstVisibleItemIndex > 0) 200f
-      else with(density) { listState.firstVisibleItemScrollOffset.toDp().value }
+      if (listState.firstVisibleItemIndex > 0) {
+        200f
+      } else {
+        with(density) { listState.firstVisibleItemScrollOffset.toDp().value }
+      }
     }.collect(onScrollOffsetChanged)
   }
 

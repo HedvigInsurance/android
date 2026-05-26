@@ -45,6 +45,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
+import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -59,6 +61,7 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
 import com.hedvig.android.feature.help.center.ui.toHapticFeedbackType
+import hedvig.resources.PUPPY_GUIDE_GO_BUTTON
 import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
@@ -69,6 +72,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PuppyArticleDestination(
   viewModel: PuppyArticleViewModel,
   navigateUp: () -> Unit,
+  onNavigateToList: () -> Unit,
   imageLoader: ImageLoader,
   onScrollOffsetChanged: (Float) -> Unit = {},
 ) {
@@ -76,6 +80,7 @@ internal fun PuppyArticleDestination(
   PuppyArticleScreen(
     uiState,
     navigateUp = navigateUp,
+    onNavigateToList = onNavigateToList,
     onReload = {
       viewModel.emit(PuppyArticleEvent.Reload)
     },
@@ -91,6 +96,7 @@ internal fun PuppyArticleDestination(
 private fun PuppyArticleScreen(
   uiState: PuppyArticleUiState,
   navigateUp: () -> Unit,
+  onNavigateToList: () -> Unit,
   onReload: () -> Unit,
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
@@ -104,6 +110,16 @@ private fun PuppyArticleScreen(
         onButtonClick = onReload,
         modifier = Modifier.weight(1f),
       )
+      HedvigButton(
+        text = stringResource(Res.string.PUPPY_GUIDE_GO_BUTTON),
+        onClick = onNavigateToList,
+        enabled = true,
+        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 16.dp),
+      )
+      Spacer(Modifier.height(16.dp))
     }
 
     PuppyArticleUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
@@ -285,6 +301,7 @@ private fun PuppyArticleScreenPreview(
       PuppyArticleScreen(
         uiState,
         navigateUp = {},
+        onNavigateToList = {},
         onReload = {},
         onRatingClick = {},
         imageLoader = rememberPreviewImageLoader(),
