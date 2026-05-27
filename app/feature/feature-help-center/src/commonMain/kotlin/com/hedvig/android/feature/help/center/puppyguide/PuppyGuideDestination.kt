@@ -368,6 +368,12 @@ private fun ArticleItem(
           .clip(shape),
       )
       if (story.isRead || story.rating != null) {
+        Surface(
+          modifier = Modifier
+            .size(size)
+            .clip(shape),
+          color = HedvigTheme.colorScheme.fillSecondaryTransparent
+        ) {}
         ReadLabel(modifier = Modifier.padding(12.dp))
       }
     }
