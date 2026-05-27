@@ -51,10 +51,7 @@ internal sealed interface HelpCenterDestinations {
   data object PuppyGuide : HelpCenterDestinations, Destination
 
   @Serializable
-  data class PuppyGuideArticle(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
-    val storyName: String = "",
-  ) : HelpCenterDestinations, Destination
+  data class PuppyGuideArticle(val storyName: String) : HelpCenterDestinations, Destination
 }
 
 val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(

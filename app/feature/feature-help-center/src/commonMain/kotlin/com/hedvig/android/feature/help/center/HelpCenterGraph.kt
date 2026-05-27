@@ -168,20 +168,13 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
 
-    navdestination<HelpCenterDestinations.PuppyGuideArticle>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.puppyGuideArticle),
-    ) {
+    navdestination<HelpCenterDestinations.PuppyGuideArticle> {
       val viewModel = koinViewModel<PuppyArticleViewModel> {
         parametersOf(storyName)
       }
       PuppyArticleDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
-        onNavigateToList = dropUnlessResumed {
-          navController.navigate(HelpCenterDestinations.PuppyGuide) {
-            popUpTo<HelpCenterDestinations.PuppyGuideArticle> { inclusive = true }
-          }
-        },
         imageLoader = imageLoader,
       )
     }
