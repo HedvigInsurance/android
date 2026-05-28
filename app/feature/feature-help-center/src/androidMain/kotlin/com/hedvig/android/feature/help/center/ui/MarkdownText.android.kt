@@ -13,6 +13,7 @@ import com.hedvig.android.design.system.hedvig.RichText
 @Composable
 actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: Boolean) {
   val headingColor = HedvigTheme.colorScheme.textPrimary
+  val linkColor = HedvigTheme.colorScheme.link
   val style = if (withArticleStyle) {
     RichTextStyle(
       paragraphSpacing = 12.sp,
@@ -24,6 +25,9 @@ actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: 
       stringStyle = RichTextStringStyle(
         boldStyle = SpanStyle(
           color = headingColor,
+        ),
+        linkStyle = SpanStyle(
+          color = linkColor,
         ),
       ),
     )
