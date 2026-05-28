@@ -1332,6 +1332,10 @@ type Contract {
   """
   supportsChangeTier: Boolean!
   """
+  Whether or not this contract can be terminated by user
+  """
+  supportsTermination: Boolean!
+  """
   Current state of co-insured including upcoming changes.
   If current agreement doesn't support co-insured, this is null
   """
@@ -3932,6 +3936,10 @@ type PendingContract {
   or if the member have to cancel it themselves and get back to us with a requested start date (false).
   """
   externalInsuranceCancellationHandledByHedvig: Boolean!
+  """
+  Whether or not this contract can be terminated by user
+  """
+  supportsTermination: Boolean!
   """
   List of addons on the agreement.
   """
