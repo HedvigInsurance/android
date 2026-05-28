@@ -9,6 +9,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -83,10 +84,10 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
         color = colors.textSecondaryTranslucent,
       )
       override val textLink = TextLinkStyles(
-        style = SpanStyle(color = colors.link),
-        focusedStyle = SpanStyle(color = colors.link),
-        hoveredStyle = SpanStyle(color = colors.link),
-        pressedStyle = SpanStyle(color = colors.link),
+        style = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
+        focusedStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
+        hoveredStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
+        pressedStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
       )
     }
   } else {
@@ -107,10 +108,10 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
       override val quote: TextStyle = typography.bodySmall
       override val table: TextStyle = typography.bodySmall
       override val textLink = TextLinkStyles(
-        style = SpanStyle(color = colors.link),
-        focusedStyle = SpanStyle(color = colors.link),
-        hoveredStyle = SpanStyle(color = colors.link),
-        pressedStyle = SpanStyle(color = colors.link),
+        style = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
+        focusedStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
+        hoveredStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
+        pressedStyle = SpanStyle(color = colors.link, textDecoration = TextDecoration.Underline),
       )
     }
   }
