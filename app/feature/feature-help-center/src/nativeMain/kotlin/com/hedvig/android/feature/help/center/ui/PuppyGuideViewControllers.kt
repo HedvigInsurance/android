@@ -36,7 +36,6 @@ fun PuppyGuideViewController(
 fun PuppyArticleViewController(
   storyName: String,
   navigateUp: () -> Unit,
-  onNavigateToList: () -> Unit,
   swipeBackController: IosSwipeBackController,
   onScrollOffsetChanged: (Float) -> Unit,
 ): UIViewController {
@@ -46,7 +45,6 @@ fun PuppyArticleViewController(
     PuppyArticleDestination(
       viewModel = viewModel,
       navigateUp = navigateUp,
-      onNavigateToList = onNavigateToList,
       imageLoader = imageLoader,
       onScrollOffsetChanged = onScrollOffsetChanged,
     )

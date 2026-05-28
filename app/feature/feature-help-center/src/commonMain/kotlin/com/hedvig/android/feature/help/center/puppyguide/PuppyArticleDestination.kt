@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,8 +46,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.hedvig.android.compose.ui.EmptyContentDescription
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
@@ -60,18 +59,20 @@ import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
 import com.hedvig.android.feature.help.center.ui.toHapticFeedbackType
-import hedvig.resources.PUPPY_GUIDE_GO_BUTTON
 import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
 import hedvig.resources.Res
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun PuppyArticleDestination(
   viewModel: PuppyArticleViewModel,
   navigateUp: () -> Unit,
-  onNavigateToList: () -> Unit,
   imageLoader: ImageLoader,
   onScrollOffsetChanged: (Float) -> Unit = {},
 ) {
@@ -79,7 +80,6 @@ internal fun PuppyArticleDestination(
   PuppyArticleScreen(
     uiState,
     navigateUp = navigateUp,
-    onNavigateToList = onNavigateToList,
     onReload = {
       viewModel.emit(PuppyArticleEvent.Reload)
     },
@@ -88,6 +88,9 @@ internal fun PuppyArticleDestination(
       viewModel.emit(PuppyArticleEvent.RatingClick(it))
     },
     onScrollOffsetChanged = onScrollOffsetChanged,
+    onReachedBottom = {
+      viewModel.emit(PuppyArticleEvent.ReachedBottom)
+    },
   )
 }
 
@@ -95,11 +98,11 @@ internal fun PuppyArticleDestination(
 private fun PuppyArticleScreen(
   uiState: PuppyArticleUiState,
   navigateUp: () -> Unit,
-  onNavigateToList: () -> Unit,
   onReload: () -> Unit,
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
   onScrollOffsetChanged: (Float) -> Unit,
+  onReachedBottom: () -> Unit,
 ) {
   when (uiState) {
     PuppyArticleUiState.Failure -> PuppyScaffold(navigateUp = navigateUp) {
@@ -107,16 +110,6 @@ private fun PuppyArticleScreen(
         onButtonClick = onReload,
         modifier = Modifier.weight(1f),
       )
-      HedvigButton(
-        text = stringResource(Res.string.PUPPY_GUIDE_GO_BUTTON),
-        onClick = onNavigateToList,
-        enabled = true,
-        buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp),
-      )
-      Spacer(Modifier.height(16.dp))
     }
 
     PuppyArticleUiState.Loading -> HedvigFullScreenCenterAlignedProgress()
@@ -127,6 +120,7 @@ private fun PuppyArticleScreen(
       imageLoader = imageLoader,
       onRatingClick = onRatingClick,
       onScrollOffsetChanged = onScrollOffsetChanged,
+      onReachedBottom = onReachedBottom,
     )
   }
 }
@@ -139,6 +133,7 @@ private fun PuppyArticleSuccessScreen(
   onRatingClick: (Int) -> Unit,
   imageLoader: ImageLoader,
   onScrollOffsetChanged: (Float) -> Unit,
+  onReachedBottom: () -> Unit,
 ) {
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
     Column(Modifier.fillMaxSize()) {
@@ -157,6 +152,15 @@ private fun PuppyArticleSuccessScreen(
       val density = LocalDensity.current
       LaunchedEffect(scrollState, density, onScrollOffsetChanged) {
         snapshotFlow { with(density) { scrollState.value.toDp().value } }.collect(onScrollOffsetChanged)
+      }
+      val currentOnReachedBottom by rememberUpdatedState(onReachedBottom)
+      LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.maxValue }
+          .filter { it != Int.MAX_VALUE }
+          .debounce(150.milliseconds)
+          .first()
+        snapshotFlow { scrollState.value >= scrollState.maxValue }.first { it }
+        currentOnReachedBottom()
       }
       Column(
         modifier = Modifier
@@ -297,11 +301,11 @@ private fun PuppyArticleScreenPreview(
       PuppyArticleScreen(
         uiState,
         navigateUp = {},
-        onNavigateToList = {},
         onReload = {},
         onRatingClick = {},
         imageLoader = rememberPreviewImageLoader(),
         onScrollOffsetChanged = {},
+        onReachedBottom = {},
       )
     }
   }

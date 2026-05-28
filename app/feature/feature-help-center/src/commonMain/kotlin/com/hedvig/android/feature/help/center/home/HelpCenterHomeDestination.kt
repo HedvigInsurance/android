@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,6 +88,7 @@ import com.hedvig.android.design.system.hedvig.placeholder.fade
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.feature.help.center.HelpCenterEvent
 import com.hedvig.android.feature.help.center.HelpCenterUiState
+import com.hedvig.android.feature.help.center.HelpCenterUiState.PuppyGuidePresentation
 import com.hedvig.android.feature.help.center.HelpCenterViewModel
 import com.hedvig.android.feature.help.center.data.FAQItem
 import com.hedvig.android.feature.help.center.data.FAQTopic
@@ -175,7 +175,7 @@ internal fun HelpCenterHomeDestination(
     reload = {
       viewModel.emit(HelpCenterEvent.ReloadFAQAndQuickLinks)
     },
-    puppyGuidesExist = uiState.puppyGuidesExist,
+    puppyGuide = uiState.puppyGuide,
     onNavigateToPuppyGuide = onNavigateToPuppyGuide,
   )
 }
@@ -185,7 +185,7 @@ private fun HelpCenterHomeScreen(
   search: HelpCenterUiState.Search?,
   topics: List<FAQTopic>,
   questions: List<FAQItem>,
-  puppyGuidesExist: Boolean,
+  puppyGuide: PuppyGuidePresentation?,
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   selectedQuickAction: QuickAction?,
   onNavigateToTopic: (topicId: String) -> Unit,
@@ -308,7 +308,7 @@ private fun HelpCenterHomeScreen(
                   quickLinksForSearch = (
                     quickLinksUiState as?
                       HelpCenterUiState.QuickLinkUiState.QuickLinks
-                  )?.quickLinks ?: listOf(),
+                    )?.quickLinks ?: listOf(),
                   questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
                 )
                 onUpdateSearchResults(it, results)
@@ -349,7 +349,7 @@ private fun HelpCenterHomeScreen(
                 showNavigateToInboxButton = showNavigateToInboxButton,
                 onNavigateToInbox = onNavigateToInbox,
                 onNavigateToNewConversation = onNavigateToNewConversation,
-                puppyGuidesExist = puppyGuidesExist,
+                puppyGuide = puppyGuide,
                 onNavigateToPuppyGuide = onNavigateToPuppyGuide,
               )
             } else {
@@ -377,26 +377,27 @@ private fun ContentWithoutSearch(
   topics: List<FAQTopic>,
   onNavigateToTopic: (topicId: String) -> Unit,
   questions: List<FAQItem>,
-  puppyGuidesExist: Boolean,
+  puppyGuide: PuppyGuidePresentation?,
   onNavigateToQuestion: (questionId: String) -> Unit,
   showNavigateToInboxButton: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateToPuppyGuide: () -> Unit,
 ) {
+  val showPuppyGuideQuickAction = puppyGuide is PuppyGuidePresentation.QuickAction
   Column {
     Column(
       modifier =
         Modifier.padding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).asPaddingValues()),
     ) {
       AnimatedContent(
-        puppyGuidesExist,
+        puppyGuide is PuppyGuidePresentation.FullCard,
         contentAlignment = Alignment.Center,
-      ) { puppyGuidesExist ->
+      ) { showFullCard ->
         Column(
           Modifier.fillMaxWidth(),
         ) {
-          if (puppyGuidesExist) {
+          if (showFullCard) {
             PuppyGuideCard(
               onClick = dropUnlessResumed { onNavigateToPuppyGuide() },
               modifier = Modifier.padding(horizontal = 16.dp),
@@ -429,12 +430,18 @@ private fun ContentWithoutSearch(
 
       Column {
         AnimatedVisibility(
-          visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks,
+          visible = quickLinksUiState !is HelpCenterUiState.QuickLinkUiState.NoQuickLinks ||
+            showPuppyGuideQuickAction,
           enter = QuickLinksSectionEnterTransition,
           exit = QuickLinksSectionExitTransition,
         ) {
           Column {
-            QuickLinksSection(quickLinksUiState, onQuickActionsSelected)
+            QuickLinksSection(
+              quickLinksUiState = quickLinksUiState,
+              onQuickActionsClick = onQuickActionsSelected,
+              showPuppyGuideRow = showPuppyGuideQuickAction,
+              onPuppyGuideClick = onNavigateToPuppyGuide,
+            )
             Spacer(Modifier.height(32.dp))
           }
         }
@@ -490,13 +497,12 @@ private fun ContentWithoutSearch(
 @Composable
 private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
+    onClick = onClick,
     color = HedvigTheme.colorScheme.backgroundPrimary,
+    borderColor = HedvigTheme.colorScheme.borderSecondary,
     modifier = modifier
       .fillMaxWidth()
-      .shadow(1.dp, HedvigTheme.shapes.cornerXLarge)
-      .clickable(enabled = true) {
-        onClick()
-      },
+      .shadow(1.dp, HedvigTheme.shapes.cornerXLarge),
   ) {
     Column {
       Box(Modifier.align(Alignment.CenterHorizontally)) {
@@ -626,6 +632,8 @@ private val QuickLinksSectionExitTransition = fadeOut() + shrinkVertically(
 private fun QuickLinksSection(
   quickLinksUiState: HelpCenterUiState.QuickLinkUiState,
   onQuickActionsClick: (QuickAction) -> Unit,
+  showPuppyGuideRow: Boolean,
+  onPuppyGuideClick: () -> Unit,
 ) {
   HelpCenterSection(
     modifier = Modifier.padding(horizontal = 16.dp),
@@ -636,39 +644,73 @@ private fun QuickLinksSection(
         targetState = quickLinksUiState,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
       ) { quickLinks: HelpCenterUiState.QuickLinkUiState ->
-        if (quickLinks is HelpCenterUiState.QuickLinkUiState.QuickLinks) {
-          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            for (quickLink in quickLinks.quickLinks) {
-              QuickLinkCard(
-                topText = {
-                  HedvigText(
-                    text = stringResource(
-                      quickLink.quickAction.titleRes,
-                    ),
-                    textAlign = TextAlign.Start,
-                  )
-                },
-                bottomText = {
-                  HedvigText(
-                    text = stringResource(
-                      quickLink.quickAction.hintTextRes,
-                    ),
-                    textAlign = TextAlign.Start,
-                    color = HedvigTheme.colorScheme.textSecondary,
-                    style = HedvigTheme.typography.finePrint,
-                  )
-                },
-                onClick = {
-                  onQuickActionsClick(quickLink.quickAction)
-                },
-              )
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          when (quickLinks) {
+            is HelpCenterUiState.QuickLinkUiState.QuickLinks -> {
+              for (quickLink in quickLinks.quickLinks) {
+                QuickLinkCard(
+                  topText = {
+                    HedvigText(
+                      text = stringResource(
+                        quickLink.quickAction.titleRes,
+                      ),
+                      textAlign = TextAlign.Start,
+                    )
+                  },
+                  bottomText = {
+                    HedvigText(
+                      text = stringResource(
+                        quickLink.quickAction.hintTextRes,
+                      ),
+                      textAlign = TextAlign.Start,
+                      color = HedvigTheme.colorScheme.textSecondary,
+                      style = HedvigTheme.typography.finePrint,
+                    )
+                  },
+                  onClick = {
+                    onQuickActionsClick(quickLink.quickAction)
+                  },
+                )
+              }
+              if (showPuppyGuideRow) {
+                PuppyGuideQuickLinkRow(onClick = onPuppyGuideClick)
+              }
+            }
+
+            HelpCenterUiState.QuickLinkUiState.NoQuickLinks -> {
+              if (showPuppyGuideRow) {
+                PuppyGuideQuickLinkRow(onClick = onPuppyGuideClick)
+              }
+            }
+
+            HelpCenterUiState.QuickLinkUiState.Loading -> {
+              PlaceholderQuickLinks()
             }
           }
-        } else {
-          PlaceholderQuickLinks()
         }
       }
     },
+  )
+}
+
+@Composable
+private fun PuppyGuideQuickLinkRow(onClick: () -> Unit) {
+  QuickLinkCard(
+    topText = {
+      HedvigText(
+        text = stringResource(Res.string.PUPPY_GUIDE_TITLE),
+        textAlign = TextAlign.Start,
+      )
+    },
+    bottomText = {
+      HedvigText(
+        text = stringResource(Res.string.PUPPY_GUIDE_SUBTITLE),
+        textAlign = TextAlign.Start,
+        color = HedvigTheme.colorScheme.textSecondary,
+        style = HedvigTheme.typography.finePrint,
+      )
+    },
+    onClick = onClick,
   )
 }
 
@@ -800,7 +842,7 @@ private fun PreviewHelpCenterHomeScreen(
         onUpdateSearchResults = { _, _ -> },
         search = null,
         reload = {},
-        puppyGuidesExist = true,
+        puppyGuide = PuppyGuidePresentation.FullCard,
         onNavigateToPuppyGuide = {},
       )
     }
@@ -847,7 +889,7 @@ private fun PreviewQuickLinkAnimations() {
           onUpdateSearchResults = { _, _ -> },
           search = null,
           reload = {},
-          puppyGuidesExist = false,
+          puppyGuide = null,
           onNavigateToPuppyGuide = {},
         )
       }
@@ -878,12 +920,76 @@ private fun PreviewQuickLinkEmptyState() {
         onUpdateSearchResults = { _, _ -> },
         search = null,
         reload = {},
-        puppyGuidesExist = false,
+        puppyGuide = null,
         onNavigateToPuppyGuide = {},
       )
     }
   }
 }
+
+@HedvigPreview
+@Composable
+private fun PreviewHelpCenterPuppyGuideVariants(
+  @PreviewParameter(PuppyGuidePresentationPreviewProvider::class) puppyGuide: PuppyGuidePresentation?,
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      HelpCenterHomeScreen(
+        topics = listOf(
+          FAQTopic(
+            title = "Payments",
+            commonFAQ = listOf(),
+            otherFAQ = listOf(),
+            id = "topicId",
+          ),
+        ),
+        questions = listOf(
+          FAQItem(
+            "01",
+            stringResource(Res.string.HC_CLAIMS_Q_01),
+            stringResource(Res.string.HC_CLAIMS_A_01),
+          ),
+        ),
+        selectedQuickAction = null,
+        onNavigateToTopic = {},
+        onNavigateToQuestion = {},
+        onNavigateToQuickLink = {},
+        onQuickActionsSelected = {},
+        onDismissQuickActionDialog = {},
+        showNavigateToInboxButton = true,
+        onNavigateToInbox = {},
+        onNavigateToNewConversation = {},
+        onNavigateUp = {},
+        quickLinksUiState = HelpCenterUiState.QuickLinkUiState.QuickLinks(
+          List(2) {
+            HelpCenterUiState.QuickLink(
+              StandaloneQuickLink(
+                Res.string.HC_QUICK_ACTIONS_CANCELLATION_TITLE,
+                Res.string.HC_QUICK_ACTIONS_CANCELLATION_SUBTITLE,
+                QuickLinkDestination.OuterDestination.QuickLinkTermination,
+              ),
+            )
+          }.toNonEmptyListOrNull()!!,
+        ),
+        onClearSearch = {},
+        onUpdateSearchResults = { _, _ -> },
+        search = null,
+        reload = {},
+        puppyGuide = puppyGuide,
+        onNavigateToPuppyGuide = {},
+      )
+    }
+  }
+}
+
+private class PuppyGuidePresentationPreviewProvider :
+  CollectionPreviewParameterProvider<PuppyGuidePresentation?>(
+    listOf(
+      null,
+      PuppyGuidePresentation.FullCard,
+      PuppyGuidePresentation.QuickAction,
+    ),
+  )
 
 private class QuickLinkUiStatePreviewProvider :
   CollectionPreviewParameterProvider<HelpCenterUiState.QuickLinkUiState>(

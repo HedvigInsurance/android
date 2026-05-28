@@ -368,12 +368,13 @@ private fun ArticleItem(
           .clip(shape),
       )
       if (story.isRead || story.rating != null) {
-        ReadLabel(
-          modifier = Modifier.padding(
-            end = 12.dp,
-            top = 12.dp,
-          ),
-        )
+        Surface(
+          modifier = Modifier
+            .size(size)
+            .clip(shape),
+          color = HedvigTheme.colorScheme.fillSecondaryTransparent
+        ) {}
+        ReadLabel(modifier = Modifier.padding(12.dp))
       }
     }
 
@@ -393,11 +394,11 @@ private fun ArticleItem(
 }
 
 @Composable
-private fun ReadLabel(modifier: Modifier) {
+private fun ReadLabel(modifier: Modifier = Modifier) {
   Surface(
     modifier = modifier,
     shape = HedvigTheme.shapes.cornerXSmall,
-    color = HedvigTheme.colorScheme.buttonSecondaryResting,
+    color = HedvigTheme.colorScheme.buttonSecondaryAltResting,
   ) {
     Row(
       Modifier.padding(
@@ -416,6 +417,7 @@ private fun ReadLabel(modifier: Modifier) {
       Icon(
         HedvigIcons.Checkmark,
         EmptyContentDescription,
+        Modifier.size(20.dp),
       )
     }
   }
@@ -447,12 +449,7 @@ private fun ReadLabelPreview(
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      ReadLabel(
-        Modifier.padding(
-          end = 12.dp,
-          top = 12.dp,
-        ),
-      )
+      ReadLabel()
     }
   }
 }

@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.isSpecified
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigTheme
@@ -60,14 +62,16 @@ fun Modifier.hedvigPlaceholder(
   contentFadeAnimationSpec: AnimationSpec<Float> = spring(),
 ): Modifier = this.composed {
   val themedColor = if (color.isSpecified) color else PlaceholderDefaults.color()
-  Modifier.corePlaceholder(
-    visible = visible,
-    color = themedColor,
-    shape = shape,
-    highlight = highlight,
-    placeholderFadeAnimationSpec = placeholderFadeAnimationSpec,
-    contentFadeAnimationSpec = contentFadeAnimationSpec,
-  )
+  Modifier
+    .semantics { hideFromAccessibility() }
+    .corePlaceholder(
+      visible = visible,
+      color = themedColor,
+      shape = shape,
+      highlight = highlight,
+      placeholderFadeAnimationSpec = placeholderFadeAnimationSpec,
+      contentFadeAnimationSpec = contentFadeAnimationSpec,
+    )
 }
 
 @HedvigPreview
