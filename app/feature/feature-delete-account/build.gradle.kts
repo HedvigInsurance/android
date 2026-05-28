@@ -17,8 +17,6 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
-  implementation(libs.compose.richtext)
-  implementation(libs.compose.richtextCommonmark)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.koin.composeViewModel)

@@ -1,47 +1,46 @@
 package com.hedvig.android.feature.chat.inbox
 
-import com.halilibo.richtext.commonmark.CommonMarkdownParseOptions
-import com.halilibo.richtext.commonmark.CommonmarkAstNodeParser
-import com.halilibo.richtext.markdown.node.AstBlockNodeType
-import com.halilibo.richtext.markdown.node.AstCode
-import com.halilibo.richtext.markdown.node.AstHardLineBreak
-import com.halilibo.richtext.markdown.node.AstImage
-import com.halilibo.richtext.markdown.node.AstNode
-import com.halilibo.richtext.markdown.node.AstSoftLineBreak
-import com.halilibo.richtext.markdown.node.AstText
+import org.intellij.markdown.IElementType
+import org.intellij.markdown.MarkdownElementTypes
+import org.intellij.markdown.ast.ASTNode
+import org.intellij.markdown.ast.getTextInNode
+import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
+import org.intellij.markdown.parser.MarkdownParser
 
 // The inbox conversation row shows a single ellipsized preview line with no clickable regions,
-// so we strip markdown formatting rather than render it. Walking the commonmark AST means any
+// so we strip markdown formatting rather than render it. Walking the markdown AST means any
 // syntax the parser understands collapses to its text content, so future markdown features need
 // no changes here.
-internal fun String.markdownToPlainText(): String = buildString {
-  appendPlainText(inboxMarkdownParser.parse(this@markdownToPlainText))
+internal fun String.markdownToPlainText(): String {
+  val flavour = CommonMarkFlavourDescriptor()
+  val tree = MarkdownParser(flavour).buildMarkdownTreeFromString(this)
+  return buildString {
+    appendPlainText(tree, this@markdownToPlainText)
+  }
 }
 
-private val inboxMarkdownParser = CommonmarkAstNodeParser(CommonMarkdownParseOptions(autolink = false))
+private fun StringBuilder.appendPlainText(node: ASTNode, src: String) {
+  val nodeType = node.type
 
-private fun StringBuilder.appendPlainText(node: AstNode) {
-  val type = node.type
-  if (type is AstText) {
-    append(type.literal)
+  // Check if this is a text node by comparing with known IElementType instances
+  if (nodeType.toString().contains("TEXT") || nodeType.toString().contains("Code")) {
+    append(node.getTextInNode(src))
     return
   }
-  if (type is AstCode) {
-    append(type.literal)
-    return
-  }
-  if (type === AstSoftLineBreak || type === AstHardLineBreak) {
+
+  // EOL creates a space
+  if (nodeType.toString().contains("EOL")) {
     append(' ')
     return
   }
-  // Alt text isn't useful in a one-line preview, so we drop the image entirely.
-  if (type is AstImage) return
-  // Container node — recurse into children, separating block-level siblings with a space so
-  // paragraphs don't run together.
-  var child = node.links.firstChild
-  while (child != null) {
-    appendPlainText(child)
-    if (child.links.next != null && child.type is AstBlockNodeType) append(' ')
-    child = child.links.next
+
+  // Drop images
+  if (nodeType == MarkdownElementTypes.IMAGE) return
+
+  // Recurse into children
+  node.children.forEach { child ->
+    appendPlainText(child, src)
+    // Add space between block elements
+    if (child.type.toString().contains("Block")) append(' ')
   }
 }
