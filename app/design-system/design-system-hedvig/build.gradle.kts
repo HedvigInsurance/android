@@ -45,17 +45,12 @@ kotlin {
       implementation(libs.jetbrains.lifecycle.runtime.compose)
       implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.kotlinx.datetime)
+      implementation(libs.mikepenz.markdown)
       implementation(projects.composeUi)
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.designSystemInternals)
       implementation(projects.navigationCore)
-    }
-    val jvmAndAndroidMain by getting {
-      dependencies {
-        implementation(libs.compose.richtext)
-        implementation(libs.compose.richtextCommonmark)
-      }
     }
     androidMain.dependencies {
       implementation(libs.androidx.other.core)

@@ -60,11 +60,11 @@ jetbrains-lifecycle = "2.10.0"
 jetbrains-material = "1.11.0-rc01"
 jetbrains-material3 = "1.11.0-alpha07"
 jetbrains-navigation = "2.9.2"
+jetbrainsMarkdown = "0.7.3"
 arrow = "2.2.1.1"
 assertK = "0.28.1"
 atomicfu = "0.31.0"
 coil = "3.3.0"
-composeRichtext = "1.0.0-alpha04"
 coreLibraryDesugaring = "2.1.5"
 coroutines = "1.10.2"
 datadog = "3.6.0"
@@ -148,8 +148,6 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "c
 coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
-compose-richtext = { module = "com.halilibo.compose-richtext:richtext-ui", version.ref = "composeRichtext" }
-compose-richtextCommonmark = { module = "com.halilibo.compose-richtext:richtext-commonmark", version.ref = "composeRichtext" }
 coreLibraryDesugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "coreLibraryDesugaring" }
 mikepenz-markdown = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "mikepenzMarkdown" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -183,6 +181,7 @@ jetbrains-compose-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-t
 jetbrains-compose-ui-unit = { module = "org.jetbrains.compose.ui:ui-unit", version.ref = "jetbrains-compose" }
 jetbrains-compose-ui-util = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "jetbrains-compose" }
 jetbrains-graphics-shapes = { module = "org.jetbrains.androidx.graphics:graphics-shapes", version.ref = "jetbrains-graphics" }
+jetbrains-markdown = { module = "org.jetbrains:markdown", version.ref = "jetbrainsMarkdown" }
 jetbrains-lifecycle-common = { module = "org.jetbrains.androidx.lifecycle:lifecycle-common", version.ref = "jetbrains-lifecycle" }
 jetbrains-lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime", version.ref = "jetbrains-lifecycle" }
 jetbrains-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jetbrains-lifecycle" }

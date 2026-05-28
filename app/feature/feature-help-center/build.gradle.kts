@@ -38,6 +38,7 @@ kotlin {
       implementation(libs.koin.composeViewModel)
       implementation(libs.koin.core)
       implementation(libs.kotlinx.serialization.core)
+      implementation(libs.mikepenz.markdown)
       implementation(projects.apolloCore)
       implementation(projects.apolloOctopusPublic)
       implementation(projects.composeUi)
@@ -59,15 +60,8 @@ kotlin {
     }
     androidMain.dependencies {
       implementation(libs.bundles.kmpPreviewBugWorkaround)
-      implementation(libs.compose.richtext)
-      implementation(libs.compose.richtextCommonmark)
     }
     jvmMain.dependencies {
-      implementation(libs.compose.richtext)
-      implementation(libs.compose.richtextCommonmark)
-    }
-    nativeMain.dependencies {
-      implementation(libs.mikepenz.markdown)
     }
     androidInstrumentedTest.dependencies {
       implementation(libs.apollo.testingSupport)
