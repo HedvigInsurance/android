@@ -3,7 +3,9 @@ package com.hedvig.android.feature.help.center.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextDecoration
 import com.halilibo.richtext.commonmark.Markdown
 import com.halilibo.richtext.ui.RichTextStyle
 import com.halilibo.richtext.ui.string.RichTextStringStyle
@@ -26,8 +28,11 @@ actual fun MarkdownText(markdown: String, modifier: Modifier, withArticleStyle: 
         boldStyle = SpanStyle(
           color = headingColor,
         ),
-        linkStyle = SpanStyle(
-          color = linkColor,
+        linkStyle = TextLinkStyles(
+          SpanStyle(
+            color = linkColor,
+            textDecoration = TextDecoration.Underline,
+          ),
         ),
       ),
     )
