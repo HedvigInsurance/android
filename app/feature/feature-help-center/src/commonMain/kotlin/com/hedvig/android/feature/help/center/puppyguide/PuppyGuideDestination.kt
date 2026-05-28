@@ -2,6 +2,7 @@ package com.hedvig.android.feature.help.center.puppyguide
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -368,12 +369,11 @@ private fun ArticleItem(
           .clip(shape),
       )
       if (story.isRead || story.rating != null) {
-        Surface(
+        Box(
           modifier = Modifier
-            .size(size)
-            .clip(shape),
-          color = HedvigTheme.colorScheme.fillSecondaryTransparent
-        ) {}
+            .matchParentSize()
+            .background(Color.Black.copy(alpha = 0.4f)),
+        )
         ReadLabel(modifier = Modifier.padding(12.dp))
       }
     }
