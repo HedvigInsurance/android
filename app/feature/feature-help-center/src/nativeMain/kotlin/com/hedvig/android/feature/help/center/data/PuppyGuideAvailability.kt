@@ -8,9 +8,7 @@ import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform
 
 @Suppress("unused") // Used from iOS
-fun observePuppyGuideAvailability(
-  onResult: (PuppyGuidePresentation?) -> Unit,
-): PuppyGuideAvailabilityCancellable {
+fun observePuppyGuideAvailability(onResult: (PuppyGuidePresentation?) -> Unit): PuppyGuideAvailabilityCancellable {
   val useCase = KoinPlatform.getKoin().get<GetPuppyGuideUseCase>()
   val scope = CoroutineScope(Dispatchers.Main)
   val job: Job = scope.launch {

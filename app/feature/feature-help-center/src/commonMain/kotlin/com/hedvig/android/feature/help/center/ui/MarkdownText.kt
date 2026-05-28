@@ -134,11 +134,3 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
     },
   )
 }
-
-fun Int.toHapticFeedbackType(): HapticFeedbackType {
-  return when (this) {
-    1, 2 -> HapticFeedbackType.TextHandleMove
-    4, 5 -> HapticFeedbackType.Confirm
-    else -> HapticFeedbackType.LongPress
-  }
-}

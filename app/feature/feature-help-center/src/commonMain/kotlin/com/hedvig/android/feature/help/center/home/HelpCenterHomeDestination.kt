@@ -308,7 +308,7 @@ private fun HelpCenterHomeScreen(
                   quickLinksForSearch = (
                     quickLinksUiState as?
                       HelpCenterUiState.QuickLinkUiState.QuickLinks
-                    )?.quickLinks ?: listOf(),
+                  )?.quickLinks ?: listOf(),
                   questionsForSearch = topics.flatMap { it.commonFAQ + it.otherFAQ },
                 )
                 onUpdateSearchResults(it, results)
