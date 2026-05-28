@@ -522,6 +522,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
+  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
@@ -680,7 +681,7 @@
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Reseintyg</string>
   <string name="PROFILE_TITLE">Din profil</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Se guider</string>
-  <string name="PUPPY_GUIDE_INFO">I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.</string>
+  <string name="PUPPY_GUIDE_INFO">I Valpguiden får du svar på de vanligaste frågorna som rör valpens första tid.</string>
   <string name="PUPPY_GUIDE_LABEL">Utvalda guider</string>
   <string name="PUPPY_GUIDE_LABEL_READ">Läst</string>
   <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Inte hjälpsam</string>
@@ -1279,6 +1280,19 @@
   <string name="offer_screen_MULTIPLE_INSURANCES_coverage_paragraph">Läs om ditt fullständiga försäkringsskydd nedan.</string>
   <string name="onboarding_contextual_menu_app_info_label">Appinformation</string>
   <string name="onboarding_embark_flow_information_modal_title">Information</string>
+  <string name="ongoing_shop_session_action_button">Fortsätt köpet</string>
+  <plurals name="ongoing_shop_session_offer_expires_in_days">
+    <item quantity="one">Erbjudandet löper ut om %1$d dag</item>
+    <item quantity="other">Erbjudandet löper ut om %1$d dagar</item>
+  </plurals>
+  <plurals name="ongoing_shop_session_offer_expires_in_hours">
+    <item quantity="one">Erbjudandet löper ut om %1$d timme</item>
+    <item quantity="other">Erbjudandet löper ut om %1$d timmar</item>
+  </plurals>
+  <plurals name="ongoing_shop_session_offer_expires_in_minutes">
+    <item quantity="one">Erbjudandet löper ut om %1$d minut</item>
+    <item quantity="other">Erbjudandet löper ut om %1$d minuter</item>
+  </plurals>
   <string name="open_chat">Skriv meddelande</string>
   <string name="pay_in_confirmation_direct_debit_headline">Autogiro är anslutet!</string>
   <string name="pay_in_error_body">Vi kunde inte ansluta ditt bankkonto. Vänligen försök igen eller skriv till oss direkt i appen.</string>

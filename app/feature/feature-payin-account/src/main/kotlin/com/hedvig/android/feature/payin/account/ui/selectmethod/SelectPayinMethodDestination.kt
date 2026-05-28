@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payoutaccount.ui.selectmethod
+package com.hedvig.android.feature.payin.account.ui.selectmethod
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -18,72 +18,44 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
+import com.hedvig.android.design.system.hedvig.HedvigShortMultiScreenPreview
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.Surface
-import com.hedvig.android.design.system.hedvig.icon.BankAccount
-import com.hedvig.android.design.system.hedvig.icon.Card
+import com.hedvig.android.design.system.hedvig.icon.Autogiro
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.Link
+import com.hedvig.android.design.system.hedvig.icon.colored.Kivra
 import com.hedvig.android.design.system.hedvig.icon.colored.Swish
-import hedvig.resources.BANK_PAYOUT_METHOD_CARD_DESCRIPTION
-import hedvig.resources.BANK_PAYOUT_METHOD_CARD_TITLE
-import hedvig.resources.PAYOUT_METHOD_SWISH_DESCRIPTION
-import hedvig.resources.PAYOUT_METHOD_TRUSTLY_DESCRIPTION
-import hedvig.resources.PAYOUT_SELECT_PAYOUT_METHOD
+import hedvig.resources.PAYMENTS_INVOICE
+import hedvig.resources.PAYOUT_METHOD_INVOICE_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.swish
-import hedvig.resources.trustly
 import octopus.type.MemberPaymentProvider
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SelectPayoutMethodDestination(
+internal fun SelectPayinMethodDestination(
   availableProviders: List<MemberPaymentProvider>,
   onTrustlySelected: () -> Unit,
-  onNordeaSelected: () -> Unit,
   onSwishSelected: () -> Unit,
+  onInvoiceSelected: () -> Unit,
   navigateUp: () -> Unit,
 ) {
   HedvigScaffold(
-    topAppBarText = stringResource(Res.string.PAYOUT_SELECT_PAYOUT_METHOD),
+    topAppBarText = "Add or change payment method", // todo
     navigateUp = navigateUp,
     modifier = Modifier.fillMaxSize(),
   ) {
     Spacer(Modifier.height(8.dp))
     Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       for (provider in availableProviders) {
-        when (provider) {
-          MemberPaymentProvider.TRUSTLY -> {
-            PayoutMethodRow(
-              title = stringResource(Res.string.trustly),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_TRUSTLY_DESCRIPTION),
-              onClick = onTrustlySelected,
-              provider = provider,
-            )
-          }
-
-          MemberPaymentProvider.NORDEA -> {
-            PayoutMethodRow(
-              title = stringResource(Res.string.BANK_PAYOUT_METHOD_CARD_TITLE),
-              subtitle = "Payout to a bank account",  //todo: removed BANK_PAYOUT_METHOD_CARD_DESCRIPTION for demo
-              onClick = onNordeaSelected,
-              provider = provider,
-            )
-          }
-
-          MemberPaymentProvider.SWISH -> {
-            PayoutMethodRow(
-              title = stringResource(Res.string.swish),
-              subtitle = stringResource(Res.string.PAYOUT_METHOD_SWISH_DESCRIPTION),
-              onClick = onSwishSelected,
-              provider = provider,
-            )
-          }
-
-          else -> {}
-        }
+        PayinMethodRow(
+          provider = provider,
+          onTrustlySelected = onTrustlySelected,
+          onSwishSelected = onSwishSelected,
+          onInvoiceSelected = onInvoiceSelected,
+        )
       }
     }
     Spacer(Modifier.height(16.dp))
@@ -91,15 +63,31 @@ internal fun SelectPayoutMethodDestination(
 }
 
 @Composable
-private fun PayoutMethodRow(
+private fun PayinMethodRow(
   provider: MemberPaymentProvider,
-  title: String,
-  subtitle: String,
-  onClick: () -> Unit,
+  onTrustlySelected: () -> Unit,
+  onSwishSelected: () -> Unit,
+  onInvoiceSelected: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   HedvigCard(
-    onClick = onClick,
+    onClick = {
+      when (provider) {
+        MemberPaymentProvider.TRUSTLY -> {
+          onTrustlySelected()
+        }
+
+        MemberPaymentProvider.SWISH -> {
+          onSwishSelected()
+        }
+
+        MemberPaymentProvider.INVOICE -> {
+          onInvoiceSelected()
+        }
+
+        else -> {}
+      }
+    },
     modifier = modifier.fillMaxWidth(),
   ) {
     Row(
@@ -108,7 +96,7 @@ private fun PayoutMethodRow(
     ) {
       when (provider) {
         MemberPaymentProvider.TRUSTLY -> Icon(
-          HedvigIcons.Link,
+          HedvigIcons.Autogiro,
           null, //todo
           modifier = Modifier.size(32.dp),
         )
@@ -119,9 +107,9 @@ private fun PayoutMethodRow(
           modifier = Modifier.size(32.dp),
         )
 
-        MemberPaymentProvider.NORDEA -> Icon(
-          HedvigIcons.Card,
-          null, //todo
+        MemberPaymentProvider.INVOICE -> Image(
+          HedvigIcons.Kivra,
+          null,  //todo
           modifier = Modifier.size(32.dp),
         )
 
@@ -129,31 +117,45 @@ private fun PayoutMethodRow(
       }
 
       Spacer(Modifier.width(16.dp))
-      Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-        HedvigText(text = title)
+      Column(Modifier.padding(vertical = 12.dp)) {
         HedvigText(
-          text = subtitle,
+          text = when (provider) {
+            MemberPaymentProvider.TRUSTLY -> "Direct debit" // todo
+            MemberPaymentProvider.SWISH -> stringResource(Res.string.swish)
+            MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYMENTS_INVOICE)
+            else -> ""
+          },
+        )
+        HedvigText(
+          text = when (provider) {
+            MemberPaymentProvider.TRUSTLY -> "Connect your bank via Trustly" // todo
+            MemberPaymentProvider.SWISH -> "Monthly auto-payments via Swish" // todo
+            MemberPaymentProvider.INVOICE -> stringResource(Res.string.PAYOUT_METHOD_INVOICE_DESCRIPTION)
+            else -> ""
+          },
           color = HedvigTheme.colorScheme.textSecondary,
         )
       }
+
+
     }
   }
 }
 
 @Composable
-@HedvigPreview
-private fun PreviewSelectPayoutMethodScreen() {
+@HedvigShortMultiScreenPreview
+private fun PreviewSelectPayinMethodScreen() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      SelectPayoutMethodDestination(
+      SelectPayinMethodDestination(
         availableProviders = listOf(
           MemberPaymentProvider.SWISH,
+          MemberPaymentProvider.INVOICE,
           MemberPaymentProvider.TRUSTLY,
-          MemberPaymentProvider.NORDEA,
         ),
         onTrustlySelected = {},
-        onNordeaSelected = {},
         onSwishSelected = {},
+        onInvoiceSelected = {},
         navigateUp = {},
       )
     }

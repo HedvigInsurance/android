@@ -167,13 +167,6 @@ private fun PayoutAccountContent(
         )
       }
 
-      is PayoutAccount.Invoice -> {
-        PayoutAccountReadOnlyTextField(
-          stringResource(Res.string.PAYMENTS_ACCOUNT),
-          stringResource(Res.string.PAYMENTS_INVOICE),
-        )
-      }
-
       is PayoutAccount.BankAccount -> {
         val accountNumber = formatBankAccountNumber(currentMethod.clearingNumber, currentMethod.accountNumber)
         PayoutAccountReadOnlyTextField(
@@ -319,22 +312,6 @@ private class PayoutAccountOverviewUiStateProvider : CollectionPreviewParameterP
         isPending = true,
       ),
       availablePayoutMethods = listOf(MemberPaymentProvider.NORDEA),
-    ),
-    Content(
-      currentMethod = PayoutAccount.Invoice(
-        delivery = PaymentMethodInvoiceDelivery.KIVRA,
-        email = null,
-        isPending = false,
-      ),
-      availablePayoutMethods = listOf(MemberPaymentProvider.INVOICE),
-    ),
-    Content(
-      currentMethod = PayoutAccount.Invoice(
-        delivery = PaymentMethodInvoiceDelivery.MAIL,
-        email = "user@example.com",
-        isPending = false,
-      ),
-      availablePayoutMethods = listOf(MemberPaymentProvider.INVOICE, MemberPaymentProvider.TRUSTLY),
     ),
   ),
 )

@@ -12,6 +12,9 @@ import com.hedvig.android.feature.payments.data.MemberPaymentsDetails
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.WhileSubscribed
 
 internal class MemberPaymentDetailsViewModel(
   getMemberPaymentsDetailsUseCase: GetMemberPaymentsDetailsUseCase,
@@ -20,6 +23,7 @@ internal class MemberPaymentDetailsViewModel(
     presenter = MemberPaymentDetailsPresenter(
       getMemberPaymentsDetailsUseCase,
     ),
+  sharingStarted = SharingStarted.WhileSubscribed(2.seconds),
   )
 
 private class MemberPaymentDetailsPresenter(

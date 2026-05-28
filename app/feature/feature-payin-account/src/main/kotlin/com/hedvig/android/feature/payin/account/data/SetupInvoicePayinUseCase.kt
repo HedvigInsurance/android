@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.payoutaccount.data
+package com.hedvig.android.feature.payin.account.data
 
 import arrow.core.Either
 import arrow.core.raise.either
@@ -7,24 +7,23 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import octopus.SetupInvoicePayoutMutation
-import octopus.type.PaymentMethodInvoiceDelivery
+import octopus.SetupInvoicePayinMutation
 import octopus.type.PaymentMethodSetupStatus
 
-internal class SetupInvoicePayoutUseCase(
+internal class SetupInvoicePayinUseCase(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
 ) {
   suspend fun invoke(): Either<ErrorMessage, Unit> = either {
     val result = apolloClient
-      .mutation(SetupInvoicePayoutMutation())
+      .mutation(SetupInvoicePayinMutation())
       .safeExecute(::ErrorMessage)
       .bind()
 
     val output = result.paymentMethodSetupInvoicePayin
     when (output.status) {
       PaymentMethodSetupStatus.FAILED -> {
-        raise(ErrorMessage(output.error?.message ?: "Failed to set up invoice payout"))
+        raise(ErrorMessage(output.error?.message ?: "Failed to set up invoice payin"))
       }
 
       else -> {

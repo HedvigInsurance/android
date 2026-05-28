@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.payoutaccount.data
 
-import octopus.type.PaymentMethodInvoiceDelivery
 
 internal sealed interface PayoutAccount {
   val isPending: Boolean
@@ -21,12 +20,6 @@ internal sealed interface PayoutAccount {
     val clearingNumber: String?,
     val accountNumber: String?,
     val bankName: String?,
-    override val isPending: Boolean,
-  ) : PayoutAccount
-
-  data class Invoice(
-    val delivery: PaymentMethodInvoiceDelivery?,
-    val email: String?,
     override val isPending: Boolean,
   ) : PayoutAccount
 }

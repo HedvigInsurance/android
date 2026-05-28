@@ -15,7 +15,7 @@ fun NavGraphBuilder.connectPaymentGraph(
 ) {
   navdestination<TrustlyDestination>(
     deepLinks = navDeepLinks(
-      hedvigDeepLinkContainer.connectPayment,
+      //hedvigDeepLinkContainer.connectPayment,
       hedvigDeepLinkContainer.directDebit,
     ),
   ) {

@@ -56,6 +56,7 @@ import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.placeholder.shimmer
 import hedvig.resources.DASHBOARD_OPEN_CHAT
 import hedvig.resources.KIVRA_NOTIFICATION_BOX_TEXT
+import hedvig.resources.MANAGE_BILLING_METHODS_BUTTON
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON
 import hedvig.resources.R
 import hedvig.resources.Res
@@ -94,7 +95,8 @@ private fun MemberPaymentDetailsScreen(
     when (uiState) {
       MemberPaymentDetailsUiState.Failure -> {
         HedvigErrorSection(
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            .weight(1f),
           onButtonClick = retry,
           buttonText = stringResource(R.string.GENERAL_RETRY),
         )
@@ -220,30 +222,15 @@ private fun MemberPaymentDetailsSuccessScreen(
     }
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(16.dp))
-    when {
-      paymentDetails.paymentMethod == PaymentMethod.TRUSTLY -> {
-        HedvigButton(
-          text = stringResource(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT),
-          onClick = onChangeBankAccount,
-          enabled = true,
-          buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
-          modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-        )
-      }
-
-      paymentDetails.paymentMethod == PaymentMethod.INVOICE && account == PaymentAccount.Kivra -> {
-        HedvigNotificationCard(
-          message = stringResource(Res.string.KIVRA_NOTIFICATION_BOX_TEXT),
-          priority = NotificationDefaults.NotificationPriority.Info,
-          style = NotificationDefaults.InfoCardStyle.Button(
-            buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
-            onButtonClick = onChangeBankAccount,
-          ),
-        )
-      }
-    }
+    HedvigButton(
+      text = stringResource(Res.string.MANAGE_BILLING_METHODS_BUTTON),//todo
+      onClick = onChangeBankAccount,
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      modifier = Modifier
+        .fillMaxWidth()
+        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+    )
 
     Spacer(Modifier.height(16.dp))
   }

@@ -431,7 +431,7 @@ private fun ReminderCardConnectPayment(
     modifier = modifier,
     priority = NotificationPriority.Attention,
     style = InfoCardStyle.Button(
-      buttonText = stringResource(Res.string.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON),
+      buttonText = "Setup payment method", //todo
       onButtonClick = navigateToConnectPayment,
     ),
     minLines = minLines,

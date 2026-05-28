@@ -78,6 +78,7 @@ import com.hedvig.android.feature.insurance.certificate.di.insuranceEvidenceModu
 import com.hedvig.android.feature.insurances.di.insurancesModule
 import com.hedvig.android.feature.login.di.loginModule
 import com.hedvig.android.feature.movingflow.di.movingFlowModule
+import com.hedvig.android.feature.payin.account.di.payinAccountModule
 import com.hedvig.android.feature.payments.di.paymentsModule
 import com.hedvig.android.feature.payoutaccount.di.payoutAccountModule
 import com.hedvig.android.feature.profile.di.profileModule
@@ -346,6 +347,7 @@ val applicationModule = module {
       notificationBadgeModule,
       notificationModule,
       payoutAccountModule,
+      payinAccountModule,
       paymentsModule,
       profileModule,
       settingsDatastoreModule,
