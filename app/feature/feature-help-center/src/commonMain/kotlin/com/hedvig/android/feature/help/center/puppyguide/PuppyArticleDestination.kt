@@ -58,7 +58,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
-import com.hedvig.android.feature.help.center.ui.toHapticFeedbackType
+import com.hedvig.android.feature.help.center.ui.rememberPerformRatingHaptic
 import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
@@ -234,7 +234,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     val ratings = listOf(1, 2, 3, 4, 5)
-    val hapticFeedback = LocalHapticFeedback.current
+    val performRatingHaptic = rememberPerformRatingHaptic(LocalHapticFeedback.current)
     Row(
       horizontalArrangement = Arrangement.SpaceAround,
       modifier = Modifier,
@@ -244,7 +244,7 @@ private fun RatingSection(selectedRating: Int?, onRatingClick: (Int) -> Unit, mo
         HedvigCard(
           modifier = Modifier.weight(1f),
           onClick = {
-            hapticFeedback.performHapticFeedback(rating.toHapticFeedbackType())
+            performRatingHaptic(rating)
             onRatingClick(rating)
           },
           color = if (isSelectedRating) {

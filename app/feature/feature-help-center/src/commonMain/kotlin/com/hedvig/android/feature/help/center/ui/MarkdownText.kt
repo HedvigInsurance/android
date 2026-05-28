@@ -2,7 +2,6 @@ package com.hedvig.android.feature.help.center.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 /**
  * Renders Markdown content.
@@ -11,11 +10,3 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
  */
 @Composable
 expect fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleStyle: Boolean = false)
-
-fun Int.toHapticFeedbackType(): HapticFeedbackType {
-  return when (this) {
-    1, 2 -> HapticFeedbackType.TextHandleMove
-    4, 5 -> HapticFeedbackType.Confirm
-    else -> HapticFeedbackType.LongPress
-  }
-}
