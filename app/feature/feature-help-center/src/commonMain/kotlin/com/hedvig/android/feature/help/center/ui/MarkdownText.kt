@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -82,10 +83,10 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
         color = colors.textSecondaryTranslucent,
       )
       override val textLink = TextLinkStyles(
-        style = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-        focusedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-        hoveredStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-        pressedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
+        style = SpanStyle(color = colors.link),
+        focusedStyle = SpanStyle(color = colors.link),
+        hoveredStyle = SpanStyle(color = colors.link),
+        pressedStyle = SpanStyle(color = colors.link),
       )
     }
   } else {
@@ -106,10 +107,10 @@ fun MarkdownText(markdown: String, modifier: Modifier = Modifier, withArticleSty
       override val quote: TextStyle = typography.bodySmall
       override val table: TextStyle = typography.bodySmall
       override val textLink = TextLinkStyles(
-        style = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-        focusedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-        hoveredStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-        pressedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
+        style = SpanStyle(color = colors.link),
+        focusedStyle = SpanStyle(color = colors.link),
+        hoveredStyle = SpanStyle(color = colors.link),
+        pressedStyle = SpanStyle(color = colors.link),
       )
     }
   }
