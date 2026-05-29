@@ -48,8 +48,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
@@ -74,6 +80,7 @@ import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
+import hedvig.resources.A11Y_READ_LABEL_HACK
 import hedvig.resources.PUPPY_GUIDE_INFO
 import hedvig.resources.PUPPY_GUIDE_LABEL_READ
 import hedvig.resources.PUPPY_GUIDE_TITLE
@@ -197,7 +204,7 @@ private fun PuppyGuideSuccessScreen(
             ) {
               Image(
                 painter = painterResource(Res.drawable.hundar_badar_pet),
-                contentDescription = null,
+                contentDescription = EmptyContentDescription,
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
                 modifier = Modifier
@@ -342,8 +349,19 @@ private fun ArticleItem(
   shape: Shape = HedvigTheme.shapes.cornerMedium,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
+  val isRead = story.isRead || story.rating != null
+  val readAudioLabel = stringResource(Res.string.A11Y_READ_LABEL_HACK)
+  val audioDescription = "${story.title}, ${story.subtitle}. ${if (isRead) readAudioLabel else ""}."
   Column(
     modifier
+      .clearAndSetSemantics {
+        contentDescription = audioDescription
+        role = Role.Button
+        onClick(label = null) {
+          onNavigateToArticle(story)
+          true
+        }
+      }
       .width(size)
       .clickable(
         interactionSource = interactionSource,
@@ -372,7 +390,7 @@ private fun ArticleItem(
           .size(size)
           .clip(shape),
       )
-      if (story.isRead || story.rating != null) {
+      if (isRead) {
         Box(
           modifier = Modifier
             .matchParentSize()
@@ -386,8 +404,6 @@ private fun ArticleItem(
     HedvigText(
       story.title,
       style = HedvigTheme.typography.label,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
     )
     HedvigText(
       story.subtitle,
@@ -400,7 +416,9 @@ private fun ArticleItem(
 @Composable
 private fun ReadLabel(modifier: Modifier = Modifier) {
   Surface(
-    modifier = modifier,
+    modifier = modifier.semantics {
+      hideFromAccessibility()
+    },
     shape = HedvigTheme.shapes.cornerXSmall,
     color = HedvigTheme.colorScheme.buttonSecondaryAltResting,
   ) {

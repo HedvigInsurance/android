@@ -47,6 +47,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -420,7 +423,10 @@ private fun ContentWithoutSearch(
         modifier = Modifier
           .padding(horizontal = 20.dp),
       ) {
-        HedvigText(stringResource(Res.string.HC_HOME_VIEW_QUESTION))
+        HedvigText(stringResource(Res.string.HC_HOME_VIEW_QUESTION),
+          modifier = Modifier.semantics {
+            heading()
+          })
         HedvigText(
           text = stringResource(Res.string.HC_HOME_VIEW_ANSWER),
           color = HedvigTheme.colorScheme.textSecondary,
@@ -497,14 +503,13 @@ private fun ContentWithoutSearch(
 @Composable
 private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
   HedvigCard(
-    onClick = onClick,
     color = HedvigTheme.colorScheme.backgroundPrimary,
     borderColor = HedvigTheme.colorScheme.borderSecondary,
     modifier = modifier
       .fillMaxWidth()
       .shadow(1.dp, HedvigTheme.shapes.cornerXLarge),
   ) {
-    Column {
+    Column{
       Box(Modifier.align(Alignment.CenterHorizontally)) {
         Image(
           painter = painterResource(Res.drawable.hundar_badar_pet),

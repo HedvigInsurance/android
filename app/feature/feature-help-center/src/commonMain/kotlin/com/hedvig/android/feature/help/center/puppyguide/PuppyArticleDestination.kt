@@ -211,7 +211,7 @@ private fun PuppyArticleSuccessScreen(
           HedvigTheme.typography.bodySmall
             .copy(color = HedvigTheme.colorScheme.textSecondaryTranslucent),
         ) {
-          MarkdownText(uiState.story.content, withArticleStyle = true)
+          MarkdownText(uiState.story.content.replace(Regex("\n\\s*\n"), "\n\n\u200b\n\n"), withArticleStyle = true)
         }
         Spacer(Modifier.height(48.dp))
         HedvigText(stringResource(Res.string.PUPPY_GUIDE_RATING_QUESTION))
