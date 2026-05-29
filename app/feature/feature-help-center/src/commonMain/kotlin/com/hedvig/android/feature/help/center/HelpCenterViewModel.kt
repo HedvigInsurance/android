@@ -4,6 +4,7 @@ import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.molecule.public.MoleculeViewModel
 
 internal class HelpCenterViewModel(
@@ -11,6 +12,7 @@ internal class HelpCenterViewModel(
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<HelpCenterEvent, HelpCenterUiState>(
     initialState = HelpCenterUiState(
       topics = listOf(),
@@ -26,5 +28,6 @@ internal class HelpCenterViewModel(
       hasAnyActiveConversationUseCase = hasAnyActiveConversationUseCase,
       getHelpCenterFAQUseCase = getHelpCenterFAQUseCase,
       getPuppyGuideUseCase = getPuppyGuideUseCase,
+      featureManager = featureManager,
     ),
   )

@@ -28,6 +28,8 @@ import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlinx.coroutines.flow.collect
@@ -102,6 +104,7 @@ internal class HelpCenterPresenter(
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
@@ -171,7 +174,8 @@ internal class HelpCenterPresenter(
         flow = flow { emit(getQuickLinksUseCase.invoke()) },
         flow2 = flow { emit(getHelpCenterFAQUseCase.invoke()) },
         flow3 = getPuppyGuideUseCase.invoke(),
-      ) { quickLinks, faq, puppyGuideResult ->
+        flow4 = featureManager.isFeatureEnabled(Feature.PUPPY_GUIDE),
+      ) { quickLinks, faq, puppyGuideResult, puppyGuideEnabled ->
         quickLinksUiState = quickLinks.fold(
           ifLeft = {
             HelpCenterUiState.QuickLinkUiState.NoQuickLinks
@@ -191,6 +195,7 @@ internal class HelpCenterPresenter(
         val questions = faq.getOrNull()?.commonFAQ ?: listOf()
         val puppyGuide = puppyGuideResult.getOrNull()
         val puppyGuidePresentation = when {
+          !puppyGuideEnabled -> null
           puppyGuide == null || puppyGuide.stories.isEmpty() -> null
           puppyGuide.isForYoungDog == true -> HelpCenterUiState.PuppyGuidePresentation.FullCard
           else -> HelpCenterUiState.PuppyGuidePresentation.QuickAction

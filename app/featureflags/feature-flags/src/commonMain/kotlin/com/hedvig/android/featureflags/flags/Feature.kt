@@ -22,4 +22,7 @@ enum class Feature(
   ),
   DISABLE_REDEEM_CAMPAIGN("Disables the ability to redeem a campaign code"),
   ENABLE_CLAIM_HISTORY("Enables claim history"),
+  PUPPY_GUIDE(
+    "Controls whether the puppy guide is available in the help center. Backed by the disable_puppy_guide kill switch.",
+  ),
 }
