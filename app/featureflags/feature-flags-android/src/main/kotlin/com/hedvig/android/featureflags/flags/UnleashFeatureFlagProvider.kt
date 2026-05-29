@@ -13,30 +13,29 @@ internal class UnleashFeatureFlagProvider(
     return hedvigUnleashClient.featureUpdatedFlow
       .map {
         when (feature) {
-          Feature.DISABLE_CHAT -> hedvigUnleashClient.client.isEnabled("disable_chat", false)
+          Feature.DISABLE_CHAT -> hedvigUnleashClient.client.isEnabled("disable_chat")
 
-          Feature.MOVING_FLOW -> hedvigUnleashClient.client.isEnabled("moving_flow", false)
+          Feature.MOVING_FLOW -> hedvigUnleashClient.client.isEnabled("moving_flow")
 
-          Feature.PAYMENT_SCREEN -> hedvigUnleashClient.client.isEnabled("payment_screen", false)
+          Feature.PAYMENT_SCREEN -> hedvigUnleashClient.client.isEnabled("payment_screen")
 
-          Feature.TERMINATION_FLOW -> hedvigUnleashClient.client.isEnabled("termination_flow", true)
+          Feature.TERMINATION_FLOW -> !hedvigUnleashClient.client.isEnabled("disable_termination_flow")
 
-          Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary", false)
+          Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary")
 
-          Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured", false)
+          Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured")
 
-          Feature.HELP_CENTER -> hedvigUnleashClient.client.isEnabled("help_center", true)
+          Feature.HELP_CENTER -> !hedvigUnleashClient.client.isEnabled("disable_help_center")
 
-          Feature.TRAVEL_ADDON -> hedvigUnleashClient.client.isEnabled("enable_addons", false)
+          Feature.TRAVEL_ADDON -> hedvigUnleashClient.client.isEnabled("enable_addons")
 
           Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES -> hedvigUnleashClient.client.isEnabled(
             "enable_video_player_in_chat_messages",
-            false,
           )
 
-          Feature.DISABLE_REDEEM_CAMPAIGN -> hedvigUnleashClient.client.isEnabled("disable_redeem_campaign", false)
+          Feature.DISABLE_REDEEM_CAMPAIGN -> hedvigUnleashClient.client.isEnabled("disable_redeem_campaign")
 
-          Feature.ENABLE_CLAIM_HISTORY -> hedvigUnleashClient.client.isEnabled("enable_claim_history", false)
+          Feature.ENABLE_CLAIM_HISTORY -> hedvigUnleashClient.client.isEnabled("enable_claim_history")
         }
       }.distinctUntilChanged()
   }
