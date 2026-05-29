@@ -42,6 +42,7 @@ query InsuranceContracts(
       basePremium {
         ...MoneyFragment
       }
+      supportsTermination
     }
   }
 }
@@ -55,6 +56,7 @@ fragment ContractFragment on Contract {
   supportsCoInsured
   supportsChangeTier
   supportsCoOwners
+  supportsTermination
   coInsured {
     ...ContractCoInsuredFragment
   }

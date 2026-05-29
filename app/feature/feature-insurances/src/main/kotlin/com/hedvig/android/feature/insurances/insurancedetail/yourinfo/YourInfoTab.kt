@@ -384,8 +384,7 @@ internal fun YourInfoTab(
         if (allowEditCoInsured ||
           allowEditCoOwners ||
           allowChangeTier ||
-          allowTerminatingInsurance ||
-          chipIdState is ChipIdState.Missing
+          allowTerminatingInsurance
         ) {
           HedvigButton(
             text = stringResource(Res.string.CONTRACT_EDIT_INFO_LABEL),

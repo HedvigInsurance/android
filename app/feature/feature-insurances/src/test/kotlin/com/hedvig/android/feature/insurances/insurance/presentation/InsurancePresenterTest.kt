@@ -99,6 +99,7 @@ internal class InsurancePresenterTest {
       existingAddons = emptyList(),
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
     EstablishedInsuranceContract(
       id = "contractId#2",
@@ -147,6 +148,7 @@ internal class InsurancePresenterTest {
       existingAddons = emptyList(),
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
   )
   private val terminatedContracts: List<EstablishedInsuranceContract> = listOf(
@@ -197,6 +199,7 @@ internal class InsurancePresenterTest {
       existingAddons = emptyList(),
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
     EstablishedInsuranceContract(
       id = "contractId#4",
@@ -245,6 +248,7 @@ internal class InsurancePresenterTest {
       existingAddons = emptyList(),
       availableAddons = emptyList(),
       chipId = ChipIdState.Missing,
+      supportsTermination = true,
     ),
   )
   private val validCrossSells: CrossSellResult = CrossSellResult(
