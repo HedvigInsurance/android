@@ -48,7 +48,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.hideFromAccessibility
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -200,7 +205,7 @@ private fun PuppyGuideSuccessScreen(
             ) {
               Image(
                 painter = painterResource(Res.drawable.hundar_badar_pet),
-                contentDescription =stringResource(Res.string.VOICEOVER_CHAT_IMAGE),
+                contentDescription = stringResource(Res.string.VOICEOVER_CHAT_IMAGE),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
                 modifier = Modifier
@@ -345,9 +350,19 @@ private fun ArticleItem(
   shape: Shape = HedvigTheme.shapes.cornerMedium,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
+  val isRead = story.isRead || story.rating != null
+  val readAudioLabel = stringResource(Res.string.A11Y_READ_LABEL_HACK)
+  val audioDescription = "${story.title}, ${story.subtitle}. ${if (isRead) readAudioLabel else ""}."
   Column(
     modifier
-      .semantics(true) {}
+      .clearAndSetSemantics {
+        contentDescription = audioDescription
+        role = Role.Button
+        onClick(label = null) {
+          onNavigateToArticle(story)
+          true
+        }
+      }
       .width(size)
       .clickable(
         interactionSource = interactionSource,
@@ -376,7 +391,7 @@ private fun ArticleItem(
           .size(size)
           .clip(shape),
       )
-      if (story.isRead || story.rating != null) {
+      if (isRead) {
         Box(
           modifier = Modifier
             .matchParentSize()
@@ -402,7 +417,9 @@ private fun ArticleItem(
 @Composable
 private fun ReadLabel(modifier: Modifier = Modifier) {
   Surface(
-    modifier = modifier,
+    modifier = modifier.semantics {
+      hideFromAccessibility()
+    },
     shape = HedvigTheme.shapes.cornerXSmall,
     color = HedvigTheme.colorScheme.buttonSecondaryAltResting,
   ) {
@@ -415,14 +432,10 @@ private fun ReadLabel(modifier: Modifier = Modifier) {
       ),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      val audioLabel = stringResource(Res.string.A11Y_READ_LABEL_HACK)
       HedvigText(
-          text = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
-          textAlign = TextAlign.Center,
-          style = HedvigTheme.typography.label,
-          modifier = Modifier.semantics {
-              contentDescription = audioLabel
-          },
+        text = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
+        textAlign = TextAlign.Center,
+        style = HedvigTheme.typography.label,
       )
       Icon(
         HedvigIcons.Checkmark,
