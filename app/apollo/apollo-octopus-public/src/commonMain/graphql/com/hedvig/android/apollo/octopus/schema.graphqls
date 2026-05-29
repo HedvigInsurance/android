@@ -4451,6 +4451,11 @@ type ProductRecommendation {
   Null when no Insurely data collection is associated with the session.
   """
   externalInsurance: RecommendationExternalInsurance
+  """
+  Best-effort prefill for the product's price calculator, derived from Insurely data, for
+  product-only recommendations where no offer could be generated. Null when no usable prefill exists.
+  """
+  priceIntentData: PricingFormData
 }
 type ProductVariant {
   """
