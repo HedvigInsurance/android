@@ -80,6 +80,7 @@ import hedvig.resources.PUPPY_GUIDE_INFO
 import hedvig.resources.PUPPY_GUIDE_LABEL_READ
 import hedvig.resources.PUPPY_GUIDE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.VOICEOVER_CHAT_IMAGE
 import hedvig.resources.hundar_badar_pet
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -199,7 +200,7 @@ private fun PuppyGuideSuccessScreen(
             ) {
               Image(
                 painter = painterResource(Res.drawable.hundar_badar_pet),
-                contentDescription = null,
+                contentDescription =stringResource(Res.string.VOICEOVER_CHAT_IMAGE),
                 contentScale = ContentScale.Crop,
                 alignment = Alignment.Center,
                 modifier = Modifier
