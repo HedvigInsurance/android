@@ -14,6 +14,7 @@
   <string name="A11Y_OF">av</string>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
+  <string name="A11Y_READ_LABEL_HACK">Läst</string>
   <string name="A11Y_SCROLL_DOWN">Skrolla längst ner på sidan</string>
   <plurals name="A11Y_SUBMITTED_VALUES">
     <item quantity="one">Inskickat värde</item>

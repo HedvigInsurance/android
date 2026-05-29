@@ -63,6 +63,7 @@ import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
 import hedvig.resources.Res
+import hedvig.resources.VOICEOVER_CHAT_IMAGE
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
@@ -183,7 +184,7 @@ private fun PuppyArticleSuccessScreen(
           val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
           AsyncImage(
             model = uiState.story.image,
-            contentDescription = EmptyContentDescription,
+            contentDescription = stringResource(Res.string.VOICEOVER_CHAT_IMAGE),
             placeholder = fallbackPainter,
             error = fallbackPainter,
             fallback = fallbackPainter,

@@ -48,8 +48,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.Dp
@@ -74,11 +75,11 @@ import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
+import hedvig.resources.A11Y_READ_LABEL_HACK
 import hedvig.resources.PUPPY_GUIDE_INFO
 import hedvig.resources.PUPPY_GUIDE_LABEL_READ
 import hedvig.resources.PUPPY_GUIDE_TITLE
 import hedvig.resources.Res
-import hedvig.resources.VOICEOVER_CHAT_IMAGE
 import hedvig.resources.hundar_badar_pet
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -345,6 +346,7 @@ private fun ArticleItem(
   val interactionSource = remember { MutableInteractionSource() }
   Column(
     modifier
+      .semantics(true) {}
       .width(size)
       .clickable(
         interactionSource = interactionSource,
@@ -363,7 +365,7 @@ private fun ArticleItem(
       val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
       AsyncImage(
         model = story.image,
-        contentDescription = stringResource(Res.string.VOICEOVER_CHAT_IMAGE),
+        contentDescription = EmptyContentDescription,
         placeholder = fallbackPainter,
         error = fallbackPainter,
         fallback = fallbackPainter,
@@ -412,10 +414,14 @@ private fun ReadLabel(modifier: Modifier = Modifier) {
       ),
       verticalAlignment = Alignment.CenterVertically,
     ) {
+      val audioLabel = stringResource(Res.string.A11Y_READ_LABEL_HACK)
       HedvigText(
-        text = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
-        textAlign = TextAlign.Center,
-        style = HedvigTheme.typography.label,
+          text = stringResource(Res.string.PUPPY_GUIDE_LABEL_READ),
+          textAlign = TextAlign.Center,
+          style = HedvigTheme.typography.label,
+          modifier = Modifier.semantics {
+              contentDescription = audioLabel
+          },
       )
       Icon(
         HedvigIcons.Checkmark,
