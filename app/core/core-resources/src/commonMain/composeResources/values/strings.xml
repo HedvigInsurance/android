@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="swedish">Svenska</string>
   <string name="english_swedish">English</string>
@@ -522,6 +521,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Question regarding claim, Vehicle reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Preferences</string>
   <string name="LOGOUT_BUTTON">Logout</string>
+  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Activate your coverage again by contacting us once your payment has been processed</string>
   <string name="MARKETING_GET_HEDVIG">Get a price quote</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Review contact info</string>
@@ -997,6 +997,7 @@
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %1$s</string>
   <string name="VOICEOVER_CHANGE_VALUE">change value</string>
+  <string name="VOICEOVER_CHAT_IMAGE">Image</string>
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>
@@ -1279,6 +1280,20 @@
   <string name="offer_screen_MULTIPLE_INSURANCES_coverage_paragraph">Read the full coverage of your insurances below. </string>
   <string name="onboarding_contextual_menu_app_info_label">App information</string>
   <string name="onboarding_embark_flow_information_modal_title">Information</string>
+  <string name="ongoing_shop_session_action_button">Continue purchase</string>
+  <string name="ongoing_shop_session_dismiss_offer">Dismiss offer</string>
+  <plurals name="ongoing_shop_session_offer_expires_in_days">
+    <item quantity="one">The offer expires in %1$d day</item>
+    <item quantity="other">The offer expires in %1$d days</item>
+  </plurals>
+  <plurals name="ongoing_shop_session_offer_expires_in_hours">
+    <item quantity="one">The offer expires in %1$d hour</item>
+    <item quantity="other">The offer expires in %1$d hours</item>
+  </plurals>
+  <plurals name="ongoing_shop_session_offer_expires_in_minutes">
+    <item quantity="one">The offer expires in %1$d minute</item>
+    <item quantity="other">The offer expires in %1$d minutes</item>
+  </plurals>
   <string name="open_chat">Write message</string>
   <string name="pay_in_confirmation_direct_debit_headline">Direct debit connected!</string>
   <string name="pay_in_error_body">We were unable to add your payment method. Please try again or send us a message here in the app.</string>

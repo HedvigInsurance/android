@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="swedish">Svenska</string>
   <string name="english_swedish">English</string>
@@ -522,6 +521,7 @@
   <string name="LETTER_TO_EIR_SUBJECT">Fråga angående skadeanmälan - Fordon reg. %1$s</string>
   <string name="LOGIN_MARKET_PICKER_PREFERENCES">Välj land och språk</string>
   <string name="LOGOUT_BUTTON">Logga ut</string>
+  <string name="MANAGE_BILLING_METHODS_BUTTON">Manage your payment methods</string>
   <string name="MANUAL_CHARGE_CANCELLATION_WARNING">Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats</string>
   <string name="MARKETING_GET_HEDVIG">Få ett prisförslag</string>
   <string name="MISSING_CONTACT_INFO_CARD_BUTTON">Se över kontaktuppgifter</string>
@@ -680,7 +680,7 @@
   <string name="PROFILE_ROW_TRAVEL_CERTIFICATE">Reseintyg</string>
   <string name="PROFILE_TITLE">Din profil</string>
   <string name="PUPPY_GUIDE_GO_BUTTON">Se guider</string>
-  <string name="PUPPY_GUIDE_INFO">I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.</string>
+  <string name="PUPPY_GUIDE_INFO">I valpguiden får du svar på de vanligaste frågorna som rör valpens första tid.</string>
   <string name="PUPPY_GUIDE_LABEL">Utvalda guider</string>
   <string name="PUPPY_GUIDE_LABEL_READ">Läst</string>
   <string name="PUPPY_GUIDE_RATING_NOT_HELPFUL">Inte hjälpsam</string>
@@ -997,6 +997,7 @@
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %1$s</string>
   <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
+  <string name="VOICEOVER_CHAT_IMAGE">Bild</string>
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>
@@ -1279,6 +1280,20 @@
   <string name="offer_screen_MULTIPLE_INSURANCES_coverage_paragraph">Läs om ditt fullständiga försäkringsskydd nedan.</string>
   <string name="onboarding_contextual_menu_app_info_label">Appinformation</string>
   <string name="onboarding_embark_flow_information_modal_title">Information</string>
+  <string name="ongoing_shop_session_action_button">Fortsätt köpet</string>
+  <string name="ongoing_shop_session_dismiss_offer">Avvisa erbjudandet</string>
+  <plurals name="ongoing_shop_session_offer_expires_in_days">
+    <item quantity="one">Erbjudandet löper ut om %1$d dag</item>
+    <item quantity="other">Erbjudandet löper ut om %1$d dagar</item>
+  </plurals>
+  <plurals name="ongoing_shop_session_offer_expires_in_hours">
+    <item quantity="one">Erbjudandet löper ut om %1$d timme</item>
+    <item quantity="other">Erbjudandet löper ut om %1$d timmar</item>
+  </plurals>
+  <plurals name="ongoing_shop_session_offer_expires_in_minutes">
+    <item quantity="one">Erbjudandet löper ut om %1$d minut</item>
+    <item quantity="other">Erbjudandet löper ut om %1$d minuter</item>
+  </plurals>
   <string name="open_chat">Skriv meddelande</string>
   <string name="pay_in_confirmation_direct_debit_headline">Autogiro är anslutet!</string>
   <string name="pay_in_error_body">Vi kunde inte ansluta ditt bankkonto. Vänligen försök igen eller skriv till oss direkt i appen.</string>

@@ -78,6 +78,7 @@ import hedvig.resources.PUPPY_GUIDE_INFO
 import hedvig.resources.PUPPY_GUIDE_LABEL_READ
 import hedvig.resources.PUPPY_GUIDE_TITLE
 import hedvig.resources.Res
+import hedvig.resources.VOICEOVER_CHAT_IMAGE
 import hedvig.resources.hundar_badar_pet
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -362,7 +363,7 @@ private fun ArticleItem(
       val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
       AsyncImage(
         model = story.image,
-        contentDescription = EmptyContentDescription,
+        contentDescription = stringResource(Res.string.VOICEOVER_CHAT_IMAGE),
         placeholder = fallbackPainter,
         error = fallbackPainter,
         fallback = fallbackPainter,
@@ -386,8 +387,6 @@ private fun ArticleItem(
     HedvigText(
       story.title,
       style = HedvigTheme.typography.label,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
     )
     HedvigText(
       story.subtitle,
