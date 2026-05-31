@@ -1,13 +1,20 @@
 package com.hedvig.android.feature.home.home.ui
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.CoroutineScope
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 internal class HomeViewModel(
   getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   seenImportantMessagesStorage: SeenImportantMessagesStorage,

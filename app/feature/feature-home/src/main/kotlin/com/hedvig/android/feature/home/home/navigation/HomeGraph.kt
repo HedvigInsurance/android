@@ -14,7 +14,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.homeGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -44,7 +44,7 @@ fun NavGraphBuilder.homeGraph(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
-      val viewModel: HomeViewModel = koinViewModel()
+      val viewModel: HomeViewModel = metroViewModel()
       HomeDestination(
         viewModel = viewModel,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },

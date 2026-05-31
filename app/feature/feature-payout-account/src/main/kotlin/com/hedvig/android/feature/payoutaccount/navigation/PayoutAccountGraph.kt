@@ -21,8 +21,8 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
-import org.koin.compose.viewmodel.koinViewModel
 
 fun NavGraphBuilder.payoutAccountGraph(
   navController: NavController,
@@ -36,7 +36,7 @@ fun NavGraphBuilder.payoutAccountGraph(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout),
   ) {
     navdestination<PayoutAccountDestinations.Overview> {
-      val viewModel: PayoutAccountOverviewViewModel = koinViewModel()
+      val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
       PayoutAccountOverviewDestination(
         viewModel = viewModel,
         onConnectPayoutMethodClicked = dropUnlessResumed {
@@ -76,7 +76,7 @@ fun NavGraphBuilder.payoutAccountGraph(
     }
 
     navdestination<PayoutAccountDestinations.EditBankAccount> {
-      val viewModel: EditBankAccountViewModel = koinViewModel()
+      val viewModel: EditBankAccountViewModel = metroViewModel()
       EditBankAccountDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
@@ -88,7 +88,7 @@ fun NavGraphBuilder.payoutAccountGraph(
     }
 
     navdestination<PayoutAccountDestinations.SetupSwishPayout> {
-      val viewModel: SetupSwishPayoutViewModel = koinViewModel()
+      val viewModel: SetupSwishPayoutViewModel = metroViewModel()
       SetupSwishPayoutDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
@@ -100,7 +100,7 @@ fun NavGraphBuilder.payoutAccountGraph(
     }
 
     navdestination<PayoutAccountDestinations.SetupInvoicePayout> {
-      val viewModel: SetupInvoicePayoutViewModel = koinViewModel()
+      val viewModel: SetupInvoicePayoutViewModel = metroViewModel()
       SetupInvoicePayoutDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,

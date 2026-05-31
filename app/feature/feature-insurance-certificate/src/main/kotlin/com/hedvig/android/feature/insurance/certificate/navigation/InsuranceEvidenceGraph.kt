@@ -13,7 +13,7 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.core.common.android.sharePDF
-import org.koin.compose.viewmodel.koinViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.insuranceEvidenceGraph(
   navController: NavController,
@@ -26,7 +26,7 @@ fun NavGraphBuilder.insuranceEvidenceGraph(
     navdestination<InsuranceEvidenceDestination.InsuranceEvidenceEmailInput>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.insuranceEvidence),
     ) {
-      val viewModel: InsuranceEvidenceEmailInputViewModel = koinViewModel()
+      val viewModel: InsuranceEvidenceEmailInputViewModel = metroViewModel()
       InsuranceEvidenceEmailInputDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -40,7 +40,7 @@ fun NavGraphBuilder.insuranceEvidenceGraph(
       )
     }
     navdestination<InsuranceEvidenceDestination.ShowCertificate> {
-      val viewModel: InsuranceEvidenceOverviewViewModel = koinViewModel()
+      val viewModel: InsuranceEvidenceOverviewViewModel = metroViewModel()
       val context = LocalContext.current
       InsuranceEvidenceOverviewDestination(
         insuranceEvidenceUrl = certificateUrl,

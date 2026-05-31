@@ -7,13 +7,13 @@ import com.hedvig.android.feature.deleteaccount.DeleteAccountDestination
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.deleteAccountGraph(hedvigDeepLinkContainer: HedvigDeepLinkContainer, navController: NavController) {
   navdestination<DeleteAccountDestination>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.deleteAccount),
   ) {
-    val viewModel: DeleteAccountViewModel = koinViewModel()
+    val viewModel: DeleteAccountViewModel = metroViewModel()
     DeleteAccountDestination(
       viewModel = viewModel,
       navigateUp = navController::navigateUp,

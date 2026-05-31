@@ -20,8 +20,8 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.core.common.android.sharePDF
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.travelCertificateGraph(
   navController: NavController,
@@ -36,7 +36,7 @@ fun NavGraphBuilder.travelCertificateGraph(
     navdestination<TravelCertificateDestination.TravelCertificateHistory>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.travelCertificate),
     ) {
-      val viewModel: CertificateHistoryViewModel = koinViewModel()
+      val viewModel: CertificateHistoryViewModel = metroViewModel()
       val localContext = LocalContext.current
       TravelCertificateHistoryDestination(
         viewModel = viewModel,
@@ -56,7 +56,7 @@ fun NavGraphBuilder.travelCertificateGraph(
     }
 
     navdestination<TravelCertificateDestination.TravelCertificateChooseContract> {
-      val viewModel: ChooseContractForCertificateViewModel = koinViewModel()
+      val viewModel: ChooseContractForCertificateViewModel = metroViewModel()
       ChooseContractForCertificateDestination(
         viewModel = viewModel,
         onContinue = { contractId ->
@@ -67,11 +67,11 @@ fun NavGraphBuilder.travelCertificateGraph(
     }
 
     navdestination<TravelCertificateDestination.TravelCertificateDateInput> {
-      val viewModel: TravelCertificateDateInputViewModel = koinViewModel(
-        parameters = {
-          parametersOf(contractId)
-        },
-      )
+      val contractId = this.contractId
+      val viewModel: TravelCertificateDateInputViewModel =
+        assistedMetroViewModel<TravelCertificateDateInputViewModel, TravelCertificateDateInputViewModel.Factory> {
+          create(contractId)
+        }
       TravelCertificateDateInputDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -97,11 +97,14 @@ fun NavGraphBuilder.travelCertificateGraph(
     navdestination<TravelCertificateDestination.TravelCertificateTravellersInput>(
       TravelCertificateDestination.TravelCertificateTravellersInput,
     ) {
-      val viewModel: TravelCertificateTravellersInputViewModel = koinViewModel(
-        parameters = {
-          parametersOf(primaryInput)
-        },
-      )
+      val primaryInput = this.primaryInput
+      val viewModel: TravelCertificateTravellersInputViewModel =
+        assistedMetroViewModel<
+          TravelCertificateTravellersInputViewModel,
+          TravelCertificateTravellersInputViewModel.Factory,
+        > {
+          create(primaryInput)
+        }
       TravelCertificateTravellersInputDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -121,7 +124,7 @@ fun NavGraphBuilder.travelCertificateGraph(
     navdestination<TravelCertificateDestination.ShowCertificate>(
       TravelCertificateDestination.ShowCertificate,
     ) {
-      val viewModel: TravelCertificateOverviewViewModel = koinViewModel()
+      val viewModel: TravelCertificateOverviewViewModel = metroViewModel()
       val context = LocalContext.current
       TravelCertificateOverviewDestination(
         travelCertificateUrl = travelCertificateUrl,
