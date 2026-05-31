@@ -9,4 +9,5 @@ dependencies {
   implementation(libs.koin.core)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authEventCore)
+  implementation(projects.coreCommonPublic)
 }

@@ -1,12 +1,19 @@
 package com.hedvig.android.datadog.demo.tracking
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.datadog.core.attributestracking.DatadogAttributeProvider
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+@ContributesIntoSet(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class DatadogDemoModeTracking(
   private val demoManager: DemoManager,
 ) : DatadogAttributeProvider {

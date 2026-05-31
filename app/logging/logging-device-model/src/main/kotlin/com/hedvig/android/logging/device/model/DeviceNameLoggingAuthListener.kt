@@ -8,13 +8,12 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.permission.Permission
 import com.hedvig.android.permission.PermissionManager
-import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import dev.zacsweers.metro.binding
 import octopus.MemberLogDeviceMutation
 
-@ContributesBinding(AppScope::class, binding = binding<AuthEventListener>())
+@ContributesIntoSet(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
 internal class DeviceNameLoggingAuthListener(
