@@ -1,7 +1,10 @@
 package com.hedvig.android.notification.badge.data.crosssell
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
 import com.hedvig.android.notification.badge.data.storage.NotificationBadgeStorage
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -13,6 +16,8 @@ import kotlinx.coroutines.flow.first
  * The cross-sells recommendation comes from the backend as id
  * and we store the id locally.
  */
+@SingleIn(AppScope::class)
+@Inject
 internal class CrossSellNotificationBadgeService(
   private val getCrossSellRecommendationIdUseCase: GetCrossSellRecommendationIdUseCase,
   private val notificationBadgeStorage: NotificationBadgeStorage,

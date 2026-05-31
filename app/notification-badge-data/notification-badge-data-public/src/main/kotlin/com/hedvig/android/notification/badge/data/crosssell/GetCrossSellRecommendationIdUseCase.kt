@@ -4,7 +4,11 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import octopus.CrossSellTypesQuery
@@ -16,6 +20,9 @@ interface GetCrossSellRecommendationIdUseCase {
   fun invoke(): Flow<CrossSellIdentifier?>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetCrossSellRecommendationIdUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellRecommendationIdUseCase {
