@@ -6,14 +6,21 @@ import arrow.core.raise.ensure
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.InsuranceEvidenceAvailabilityQuery
 
 interface CheckInsuranceEvidenceAvailabilityUseCase {
   suspend fun invoke(): Either<InsuranceEvidenceAvailabilityError, Unit>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class CheckInsuranceEvidenceAvailabilityUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : CheckInsuranceEvidenceAvailabilityUseCase {
