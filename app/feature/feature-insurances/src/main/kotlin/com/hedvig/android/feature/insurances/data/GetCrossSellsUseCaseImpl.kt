@@ -6,13 +6,16 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.serialization.Serializable
 import octopus.CrossSellsQuery
 
-@dev.zacsweers.metro.Inject
-@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
+@Inject
+@SingleIn(AppScope::class)
 internal class GetCrossSellsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellsUseCase {
