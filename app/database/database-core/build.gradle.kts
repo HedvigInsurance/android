@@ -13,5 +13,6 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.room.paging)
   implementation(libs.room.runtime)
+  implementation(projects.coreCommonPublic)
   implementation(projects.dataChat)
 }
