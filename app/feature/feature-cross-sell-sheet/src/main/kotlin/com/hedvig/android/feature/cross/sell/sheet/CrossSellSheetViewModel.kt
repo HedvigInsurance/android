@@ -138,6 +138,8 @@ internal interface GetCrossSellSheetDataUseCase {
   suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>
 }
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(AppScope::class)
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
@@ -196,6 +198,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
   }
 }
 
+@dev.zacsweers.metro.Inject
 internal class DemoGetCrossSellSheetDataUseCase() : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
