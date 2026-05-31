@@ -6,6 +6,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
+@dev.zacsweers.metro.Inject
 class DemoGetAddonBannerInfoUseCase : GetAddonBannerInfoUseCase {
   override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
     return flowOf(emptyList<AddonBannerInfo>().right())
