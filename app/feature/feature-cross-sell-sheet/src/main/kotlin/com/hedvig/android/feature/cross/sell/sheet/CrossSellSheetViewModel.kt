@@ -30,6 +30,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -138,8 +139,8 @@ internal interface GetCrossSellSheetDataUseCase {
   suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>
 }
 
-@dev.zacsweers.metro.Inject
-@dev.zacsweers.metro.SingleIn(AppScope::class)
+@Inject
+@SingleIn(AppScope::class)
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
@@ -198,7 +199,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
   }
 }
 
-@dev.zacsweers.metro.Inject
+@Inject
 internal class DemoGetCrossSellSheetDataUseCase() : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
