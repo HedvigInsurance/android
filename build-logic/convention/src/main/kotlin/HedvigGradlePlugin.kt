@@ -21,6 +21,7 @@ class HedvigGradlePlugin : Plugin<Project> {
       configureFeatureModuleGuidelines()
       configureKtlint(libs)
       configureCommonDependencies(libs)
+      configureMetro(libs)
       apply<HedvigLintConventionPlugin>()
       with(pluginManager) {
         apply(libs.plugins.dependencyAnalysis.get().pluginId)
@@ -84,6 +85,21 @@ private fun Project.configureFeatureModuleGuidelines() {
   }
 }
 
+private fun Project.configureMetro(libs: LibrariesForLibs) {
+  // Metro hooks into the Kotlin compiler, so it can only be applied once a Kotlin plugin is present.
+  // Applying it lazily also makes us independent of plugin ordering within each module's plugins {} block.
+  val metroPluginId = libs.plugins.metro.get().pluginId
+  pluginManager.withPlugin(libs.plugins.kotlinMultiplatform.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  pluginManager.withPlugin(libs.plugins.kotlinJvm.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  pluginManager.withPlugin(libs.plugins.kotlin.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+}
+
 private fun Project.configureCommonDependencies(libs: LibrariesForLibs) {
   pluginManager.withPlugin(libs.plugins.kotlinMultiplatform.get().pluginId) {
     project.extensions.configure<KotlinMultiplatformExtension> {
@@ -122,6 +138,12 @@ private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configur
   dependencies {
     add(configurationName, platform(koinBom))
     add(configurationName, platform(composeBom))
+
+    // metrox ViewModel support (Android only; commonMain ViewModels are constructed by the Android factory)
+    if (configurationName == "implementation") {
+      add(configurationName, libs.metro.viewmodel)
+      add(configurationName, libs.metro.viewmodel.compose)
+    }
 
     with(project.name) {
       // Logging project needs to depend on this one, so we make an exception here
