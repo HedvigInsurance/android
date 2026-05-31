@@ -98,6 +98,19 @@ private fun Project.configureMetro(libs: LibrariesForLibs) {
   pluginManager.withPlugin(libs.plugins.kotlin.get().pluginId) {
     pluginManager.apply(metroPluginId)
   }
+
+  // metrox ViewModel artifacts are only needed by Android modules, which host the ViewModels resolved
+  // through the central factory. Gating on the Android Gradle plugin keeps the Compose-bearing runtime
+  // out of pure-JVM library modules. withPlugin fires after the plugin is applied, so ordering is irrelevant.
+  pluginManager.withPlugin("com.android.library") { addMetroViewModelDependencies(libs) }
+  pluginManager.withPlugin("com.android.application") { addMetroViewModelDependencies(libs) }
+}
+
+private fun Project.addMetroViewModelDependencies(libs: LibrariesForLibs) {
+  dependencies {
+    add("implementation", libs.metro.viewmodel)
+    add("implementation", libs.metro.viewmodel.compose)
+  }
 }
 
 private fun Project.configureCommonDependencies(libs: LibrariesForLibs) {
@@ -138,12 +151,6 @@ private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configur
   dependencies {
     add(configurationName, platform(koinBom))
     add(configurationName, platform(composeBom))
-
-    // metrox ViewModel support (Android only; commonMain ViewModels are constructed by the Android factory)
-    if (configurationName == "implementation") {
-      add(configurationName, libs.metro.viewmodel)
-      add(configurationName, libs.metro.viewmodel.compose)
-    }
 
     with(project.name) {
       // Logging project needs to depend on this one, so we make an exception here
