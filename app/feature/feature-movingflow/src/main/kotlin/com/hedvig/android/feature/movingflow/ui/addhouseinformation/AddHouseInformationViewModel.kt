@@ -19,6 +19,7 @@ import arrow.core.raise.ensure
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
@@ -41,6 +42,9 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
@@ -49,6 +53,9 @@ import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToHouseInput
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 internal class AddHouseInformationViewModel(
   savedStateHandle: SavedStateHandle,
   movingFlowRepository: MovingFlowRepository,

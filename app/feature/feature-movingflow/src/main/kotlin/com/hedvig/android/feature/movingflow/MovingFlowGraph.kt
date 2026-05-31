@@ -28,12 +28,12 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Serializable
 data object MovingFlowGraphDestination : Destination
@@ -90,7 +90,7 @@ fun NavGraphBuilder.movingFlowGraph(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.moveContract),
   ) {
     SelectContractDestination(
-      viewModel = koinViewModel<SelectContractViewModel>(),
+      viewModel = metroViewModel<SelectContractViewModel>(),
       navigateUp = navController::navigateUp,
       exitFlow = { navController.typedPopBackStack<SelectContractForMoving>(inclusive = true) },
       onNavigateToNextStep = { moveIntentId, shouldPopUp ->
@@ -112,7 +112,7 @@ fun NavGraphBuilder.movingFlowGraph(
     navdestination<MovingFlowDestinations.HousingType> {
       val moveIntentId = it.toRoute<MovingFlowDestinations.HousingType>().moveIntentId
       HousingTypeDestination(
-        viewModel = koinViewModel<HousingTypeViewModel>(),
+        viewModel = metroViewModel<HousingTypeViewModel>(),
         navigateUp = navController::navigateUp,
         exitFlow = {
           navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
@@ -126,7 +126,7 @@ fun NavGraphBuilder.movingFlowGraph(
     navdestination<EnterNewAddress> {
       val moveIntentId = it.toRoute<EnterNewAddress>().moveIntentId
       EnterNewAddressDestination(
-        viewModel = koinViewModel<EnterNewAddressViewModel>(),
+        viewModel = metroViewModel<EnterNewAddressViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
         exitFlow = {
@@ -143,7 +143,7 @@ fun NavGraphBuilder.movingFlowGraph(
     }
     navdestination<MovingFlowDestinations.AddHouseInformation> {
       AddHouseInformationDestination(
-        viewModel = koinViewModel<AddHouseInformationViewModel>(),
+        viewModel = metroViewModel<AddHouseInformationViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
         exitFlow = {
@@ -158,8 +158,11 @@ fun NavGraphBuilder.movingFlowGraph(
     navdestination<MovingFlowDestinations.ChoseCoverageLevelAndDeductible> { backStackEntry ->
       val moveIntentId = backStackEntry.toRoute<MovingFlowDestinations.ChoseCoverageLevelAndDeductible>().moveIntentId
       ChoseCoverageLevelAndDeductibleDestination(
-        viewModel = koinViewModel<ChoseCoverageLevelAndDeductibleViewModel> {
-          parametersOf(moveIntentId)
+        viewModel = assistedMetroViewModel<
+          ChoseCoverageLevelAndDeductibleViewModel,
+          ChoseCoverageLevelAndDeductibleViewModel.Factory,
+        > {
+          create(moveIntentId)
         },
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
@@ -179,9 +182,11 @@ fun NavGraphBuilder.movingFlowGraph(
     navdestination<MovingFlowDestinations.CompareCoverage>(
       destinationNavTypeAware = MovingFlowDestinations.CompareCoverage.Companion,
     ) { _ ->
-      val viewModel: ComparisonViewModel = koinViewModel {
-        parametersOf(this.comparisonParameters)
-      }
+      val comparisonParameters = this.comparisonParameters
+      val viewModel: ComparisonViewModel =
+        assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
+          create(comparisonParameters)
+        }
       ComparisonDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -190,7 +195,7 @@ fun NavGraphBuilder.movingFlowGraph(
 
     navdestination<MovingFlowDestinations.Summary> { backStackEntry ->
       SummaryDestination(
-        viewModel = koinViewModel<SummaryViewModel>(),
+        viewModel = metroViewModel<SummaryViewModel>(),
         navigateUp = navController::navigateUp,
         navigateBack = navController::popBackStack,
         exitFlow = {

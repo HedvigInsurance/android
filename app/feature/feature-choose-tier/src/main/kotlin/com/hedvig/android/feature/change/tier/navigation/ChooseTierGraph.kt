@@ -23,8 +23,8 @@ import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.changeTierGraph(
   navController: NavController,
@@ -34,9 +34,11 @@ fun NavGraphBuilder.changeTierGraph(
   navdestination<StartTierFlowDestination> (
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithContractId),
   ) { _ ->
-    val viewModel: StartTierFlowViewModel = koinViewModel {
-      parametersOf(this.insuranceId)
-    }
+    val insuranceId = this.insuranceId
+    val viewModel: StartTierFlowViewModel =
+      assistedMetroViewModel<StartTierFlowViewModel, StartTierFlowViewModel.Factory> {
+        create(insuranceId)
+      }
     StartChangeTierFlowDestination(
       viewModel = viewModel,
       popBackStack = {
@@ -57,7 +59,7 @@ fun NavGraphBuilder.changeTierGraph(
   navdestination<StartTierFlowChooseInsuranceDestination>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithoutContractId),
   ) {
-    val viewModel: ChooseInsuranceViewModel = koinViewModel()
+    val viewModel: ChooseInsuranceViewModel = metroViewModel()
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,
       navigateUp = navController::navigateUp,
@@ -82,9 +84,10 @@ fun NavGraphBuilder.changeTierGraph(
     navdestination<ChooseTierDestination.SelectTierAndDeductible> { backStackEntry ->
       val chooseTierGraphDestination = navController
         .getRouteFromBackStack<ChooseTierGraphDestination>(backStackEntry)
-      val viewModel: SelectCoverageViewModel = koinViewModel {
-        parametersOf(chooseTierGraphDestination.parameters)
-      }
+      val viewModel: SelectCoverageViewModel =
+        assistedMetroViewModel<SelectCoverageViewModel, SelectCoverageViewModel.Factory> {
+          create(chooseTierGraphDestination.parameters)
+        }
       SelectTierDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -120,9 +123,11 @@ fun NavGraphBuilder.changeTierGraph(
     navdestination<ChooseTierDestination.Comparison>(
       destinationNavTypeAware = ChooseTierDestination.Comparison.Companion,
     ) { _ ->
-      val viewModel: ComparisonViewModel = koinViewModel {
-        parametersOf(this.comparisonParameters)
-      }
+      val comparisonParameters = this.comparisonParameters
+      val viewModel: ComparisonViewModel =
+        assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
+          create(comparisonParameters)
+        }
       ComparisonDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -132,9 +137,11 @@ fun NavGraphBuilder.changeTierGraph(
     navdestination<ChooseTierDestination.Summary>(
       destinationNavTypeAware = ChooseTierDestination.Summary.Companion,
     ) {
-      val viewModel: SummaryViewModel = koinViewModel {
-        parametersOf(this.params)
-      }
+      val params = this.params
+      val viewModel: SummaryViewModel =
+        assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
+          create(params)
+        }
       ChangeTierSummaryDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
