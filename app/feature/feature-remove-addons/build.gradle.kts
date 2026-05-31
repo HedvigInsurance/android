@@ -23,6 +23,7 @@ kotlin {
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.koin.composeViewModel)
+      implementation(libs.metro.viewmodel)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(projects.apolloCore)

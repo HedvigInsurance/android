@@ -5,12 +5,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import arrow.core.merge
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.map
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 internal class ShowNavigateToInboxViewModel(
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
 ) : MoleculeViewModel<Unit, Boolean>(

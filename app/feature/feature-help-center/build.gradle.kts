@@ -37,6 +37,7 @@ kotlin {
       implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.koin.composeViewModel)
       implementation(libs.koin.core)
+      implementation(libs.metro.viewmodel)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.mikepenz.markdown)
       implementation(projects.apolloCore)

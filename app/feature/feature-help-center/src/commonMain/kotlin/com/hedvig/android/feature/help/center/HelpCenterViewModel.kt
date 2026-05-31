@@ -1,11 +1,18 @@
 package com.hedvig.android.feature.help.center
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 internal class HelpCenterViewModel(
   getQuickLinksUseCase: GetQuickLinksUseCase,
   hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
