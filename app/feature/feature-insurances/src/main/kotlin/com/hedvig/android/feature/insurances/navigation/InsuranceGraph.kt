@@ -20,8 +20,8 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.insuranceGraph(
   nestedGraphs: NavGraphBuilder.() -> Unit,
@@ -55,7 +55,7 @@ fun NavGraphBuilder.insuranceGraph(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
-      val viewModel: InsuranceViewModel = koinViewModel()
+      val viewModel: InsuranceViewModel = metroViewModel()
       InsuranceDestination(
         viewModel = viewModel,
         onInsuranceCardClick = dropUnlessResumed { contractId: String ->
@@ -76,7 +76,10 @@ fun NavGraphBuilder.insuranceGraph(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.contract),
     ) {
       val contractDetail = this
-      val viewModel: ContractDetailViewModel = koinViewModel { parametersOf(contractDetail.contractId) }
+      val viewModel: ContractDetailViewModel =
+        assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
+          create(contractDetail.contractId)
+        }
       ContractDetailDestination(
         viewModel = viewModel,
         onEditCoInsuredClick = dropUnlessResumed { contractId: String -> startEditCoInsured(contractId) },
@@ -108,7 +111,7 @@ fun NavGraphBuilder.insuranceGraph(
       )
     }
     navdestination<InsurancesDestinations.TerminatedInsurances> {
-      val viewModel: TerminatedContractsViewModel = koinViewModel()
+      val viewModel: TerminatedContractsViewModel = metroViewModel()
       TerminatedContractsDestination(
         viewModel = viewModel,
         navigateToContractDetail = dropUnlessResumed { contractId: String ->

@@ -14,8 +14,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.core.common.android.sharePDF
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun NavGraphBuilder.claimDetailsGraph(
   imageLoader: ImageLoader,
@@ -31,7 +30,8 @@ fun NavGraphBuilder.claimDetailsGraph(
   navdestination<ClaimDetailDestination.ClaimOverviewDestination>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimDetails),
   ) {
-    val viewModel: ClaimDetailsViewModel = koinViewModel { parametersOf(claimId) }
+    val viewModel: ClaimDetailsViewModel =
+      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModel.Factory> { create(claimId) }
     val context = LocalContext.current
     ClaimDetailsDestination(
       viewModel = viewModel,
@@ -59,7 +59,10 @@ fun NavGraphBuilder.claimDetailsGraph(
     )
   }
   navdestination<ClaimDetailInternalDestination.AddFilesDestination> {
-    val viewModel: AddFilesViewModel = koinViewModel { parametersOf(targetUploadUrl, initialFilesUri) }
+    val viewModel: AddFilesViewModel =
+      assistedMetroViewModel<AddFilesViewModel, AddFilesViewModel.Factory> {
+        create(targetUploadUrl, initialFilesUri)
+      }
     AddFilesDestination(
       viewModel = viewModel,
       navigateUp = navigateUp,
