@@ -31,6 +31,8 @@ internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
 }
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
@@ -106,6 +108,8 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
   },
 )
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class GetUpcomingPaymentUseCaseDemo(
   private val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
