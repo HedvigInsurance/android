@@ -16,6 +16,8 @@ import com.hedvig.android.logger.logcat
 import octopus.ContactInformationQuery
 import octopus.MemberUpdateContactInfoMutation
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class ContactInfoRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
