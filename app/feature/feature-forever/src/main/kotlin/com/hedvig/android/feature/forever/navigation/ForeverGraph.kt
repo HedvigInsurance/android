@@ -10,7 +10,7 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
-import org.koin.compose.viewmodel.koinViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.foreverGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -25,7 +25,7 @@ fun NavGraphBuilder.foreverGraph(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
-      val viewModel: ForeverViewModel = koinViewModel()
+      val viewModel: ForeverViewModel = metroViewModel()
       ForeverDestination(
         viewModel = viewModel,
         languageService = languageService,

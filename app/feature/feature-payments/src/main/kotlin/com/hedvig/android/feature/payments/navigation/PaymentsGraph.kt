@@ -27,8 +27,8 @@ import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.paymentsGraph(
   navController: NavController,
@@ -47,7 +47,7 @@ fun NavGraphBuilder.paymentsGraph(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
-      val viewModel: PaymentsViewModel = koinViewModel()
+      val viewModel: PaymentsViewModel = metroViewModel()
       PaymentsDestination(
         viewModel = viewModel,
         onPaymentHistoryClicked = dropUnlessResumed {
@@ -73,7 +73,7 @@ fun NavGraphBuilder.paymentsGraph(
     navdestination<PaymentsDestinations.ManualCharge>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.manualCharge),
     ) {
-      val viewModel: ManualChargeViewModel = koinViewModel()
+      val viewModel: ManualChargeViewModel = metroViewModel()
       ManualChargeDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -107,7 +107,9 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     navdestination<PaymentsDestinations.Details> {
-      val viewModel: PaymentDetailsViewModel = koinViewModel(parameters = { parametersOf(this.memberChargeId) })
+      val memberChargeId = this.memberChargeId
+      val viewModel: PaymentDetailsViewModel =
+        assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModel.Factory> { create(memberChargeId) }
       PaymentDetailsDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -115,7 +117,7 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     navdestination<PaymentsDestinations.History> {
-      val viewModel: PaymentHistoryViewModel = koinViewModel()
+      val viewModel: PaymentHistoryViewModel = metroViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,
         onChargeClicked = dropUnlessResumed { memberChargeId: String ->
@@ -130,7 +132,7 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     navdestination<PaymentsDestinations.Forever> {
-      val viewModel: ForeverViewModel = koinViewModel()
+      val viewModel: ForeverViewModel = metroViewModel()
       ForeverDestination(
         viewModel = viewModel,
         languageService = languageService,
@@ -139,7 +141,7 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     navdestination<PaymentsDestinations.Discounts> {
-      val viewModel: DiscountsViewModel = koinViewModel()
+      val viewModel: DiscountsViewModel = metroViewModel()
       DiscountsDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -152,7 +154,7 @@ fun NavGraphBuilder.paymentsGraph(
     }
 
     navdestination<PaymentsDestinations.MemberPaymentDetails> {
-      val viewModel: MemberPaymentDetailsViewModel = koinViewModel()
+      val viewModel: MemberPaymentDetailsViewModel = metroViewModel()
       MemberPaymentDetailsDestination(
         viewModel,
         onChangeBankAccount = navigateToConnectPayment,
