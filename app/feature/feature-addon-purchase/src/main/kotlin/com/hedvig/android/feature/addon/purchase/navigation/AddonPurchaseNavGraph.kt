@@ -34,9 +34,8 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStackOrNull
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.serialization.Serializable
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Serializable
 internal data class PerilComparisonParams(
@@ -77,9 +76,10 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
         }
       }
     } else {
-      val viewModel: TravelAddonTriageViewModel = koinViewModel {
-        parametersOf(deepLinkInfo.source)
-      }
+      val viewModel: TravelAddonTriageViewModel =
+        assistedMetroViewModel<TravelAddonTriageViewModel, TravelAddonTriageViewModel.Factory> {
+          create(deepLinkInfo.source)
+        }
       TravelAddonTriageDestination(
         viewModel = viewModel,
         popBackStack = navController::popBackStack,
@@ -116,9 +116,11 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
           }
         }
       } else {
-        val viewModel: SelectInsuranceForAddonViewModel = koinViewModel {
-          parametersOf(addonPurchaseGraphDestination?.insuranceIds ?: emptyList<String>())
-        }
+        val insuranceIds = addonPurchaseGraphDestination?.insuranceIds ?: emptyList<String>()
+        val viewModel: SelectInsuranceForAddonViewModel =
+          assistedMetroViewModel<SelectInsuranceForAddonViewModel, SelectInsuranceForAddonViewModel.Factory> {
+            create(insuranceIds)
+          }
         SelectInsuranceForAddonDestination(
           viewModel = viewModel,
           navigateUp = navController::navigateUp,
@@ -132,9 +134,12 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
 
     // Choose addon option (e.g. 45/60 days for travel addon or different car plus options)
     navdestination<CustomizeAddon> {
-      val viewModel: CustomizeAddonViewModel = koinViewModel {
-        parametersOf(this.insuranceId, this.preselectedAddonDisplayNames)
-      }
+      val insuranceId = this.insuranceId
+      val preselectedAddonDisplayNames = this.preselectedAddonDisplayNames
+      val viewModel: CustomizeAddonViewModel =
+        assistedMetroViewModel<CustomizeAddonViewModel, CustomizeAddonViewModel.Factory> {
+          create(insuranceId, preselectedAddonDisplayNames)
+        }
       CustomizeAddonDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -170,9 +175,11 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
     navdestination<Summary>(Summary) { backStackEntry ->
       val source = navController
         .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry).source
-      val viewModel: AddonSummaryViewModel = koinViewModel {
-        parametersOf(this.params, source)
-      }
+      val summaryParameters = this.params
+      val viewModel: AddonSummaryViewModel =
+        assistedMetroViewModel<AddonSummaryViewModel, AddonSummaryViewModel.Factory> {
+          create(summaryParameters, source)
+        }
       AddonSummaryDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,

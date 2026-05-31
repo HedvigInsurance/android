@@ -14,8 +14,7 @@ import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStackOrNull
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun NavGraphBuilder.chipIdGraph(
   navController: NavController,
@@ -52,9 +51,10 @@ fun NavGraphBuilder.chipIdGraph(
         .getRouteFromBackStackOrNull<ChipIdGraphDestination>(backStackEntry)
       val preselectedContractId = chipIdGraphDestination?.contractId
 
-      val viewModel: SelectInsuranceForChipIdViewModel = koinViewModel {
-        parametersOf(preselectedContractId)
-      }
+      val viewModel: SelectInsuranceForChipIdViewModel =
+        assistedMetroViewModel<SelectInsuranceForChipIdViewModel, SelectInsuranceForChipIdViewModel.Factory> {
+          create(preselectedContractId)
+        }
       SelectInsuranceForChipIdDestination(
         viewModel = viewModel,
         navigateUp = navigateUp,
@@ -73,9 +73,10 @@ fun NavGraphBuilder.chipIdGraph(
 
     navdestination<ChipIdDestination.AddChipId> { backStackEntry ->
       val contractId = this.contractId
-      val viewModel: AddChipIdViewModel = koinViewModel {
-        parametersOf(contractId)
-      }
+      val viewModel: AddChipIdViewModel =
+        assistedMetroViewModel<AddChipIdViewModel, AddChipIdViewModel.Factory> {
+          create(contractId)
+        }
       AddChipIdDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,

@@ -18,8 +18,8 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.loginGraph(
   navController: NavController,
@@ -33,7 +33,7 @@ fun NavGraphBuilder.loginGraph(
     startDestination = LoginDestinations.Marketing::class,
   ) {
     navdestination<LoginDestinations.Marketing> {
-      val marketingViewModel: MarketingViewModel = koinViewModel()
+      val marketingViewModel: MarketingViewModel = metroViewModel()
       val locale = getLocale()
       MarketingDestination(
         viewModel = marketingViewModel,
@@ -49,7 +49,7 @@ fun NavGraphBuilder.loginGraph(
       )
     }
     navdestination<LoginDestinations.SwedishLogin> {
-      val swedishLoginViewModel: SwedishLoginViewModel = koinViewModel()
+      val swedishLoginViewModel: SwedishLoginViewModel = metroViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
         navigateUp = navController::navigateUp,
@@ -61,7 +61,7 @@ fun NavGraphBuilder.loginGraph(
       )
     }
     navdestination<LoginDestinations.GenericAuthCredentialsInput> {
-      val viewModel: GenericAuthViewModel = koinViewModel()
+      val viewModel: GenericAuthViewModel = metroViewModel()
       GenericAuthDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -76,7 +76,10 @@ fun NavGraphBuilder.loginGraph(
       LoginDestinations.OtpInput,
     ) {
       val otpInputInformation: LoginDestinations.OtpInput.OtpInformation = this.otpInformation
-      val viewModel: OtpInputViewModel = koinViewModel { parametersOf(otpInputInformation) }
+      val viewModel: OtpInputViewModel =
+        assistedMetroViewModel<OtpInputViewModel, OtpInputViewModel.Factory> {
+          create(otpInputInformation.verifyUrl, otpInputInformation.resendUrl, otpInputInformation.credential)
+        }
       OtpInputDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,

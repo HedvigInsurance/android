@@ -10,14 +10,14 @@ import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestinat
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageDestination
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepLinkContainer: HedvigDeepLinkContainer) {
   navdestination<EditCoInsuredTriage>(
@@ -26,7 +26,12 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
       hedvigDeepLinkContainer.editCoInsuredWithoutContractId,
     ),
   ) {
-    val viewModel: EditCoInsuredTriageViewModel = koinViewModel { parametersOf(contractId, type) }
+    val triageContractId = contractId
+    val triageType = type
+    val viewModel: EditCoInsuredTriageViewModel =
+      assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
+        create(triageContractId, triageType)
+      }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
       navigateUp = navController::navigateUp,
@@ -50,7 +55,11 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
   navdestination<EditCoOwnersTriageDeepLink>(
     deepLinks = navDeepLinks(hedvigDeepLinkContainer.editCoOwners),
   ) {
-    val viewModel: EditCoInsuredTriageViewModel = koinViewModel { parametersOf(contractId, CoInsuredFlowType.CoOwners) }
+    val coOwnersContractId = contractId
+    val viewModel: EditCoInsuredTriageViewModel =
+      assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
+        create(coOwnersContractId, CoInsuredFlowType.CoOwners)
+      }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
       navigateUp = navController::navigateUp,
@@ -72,8 +81,12 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
   }
 
   navdestination<EditCoInsuredDestination.CoInsuredAddInfo> {
+    val addInfoContractId = contractId
+    val addInfoType = type
     EditCoInsuredAddMissingInfoDestination(
-      viewModel = koinViewModel { parametersOf(contractId, type) },
+      viewModel = assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModel.Factory> {
+        create(addInfoContractId, addInfoType)
+      },
       navigateToSuccessScreen = {
         navController.navigate(EditCoInsuredDestination.Success(it, type)) {
           typedPopUpTo<EditCoInsuredDestination.CoInsuredAddInfo> {
@@ -85,8 +98,12 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
     )
   }
   navdestination<EditCoInsuredDestination.CoInsuredAddOrRemove> {
+    val addOrRemoveContractId = contractId
+    val addOrRemoveType = type
     EditCoInsuredAddOrRemoveDestination(
-      koinViewModel { parametersOf(contractId, type) },
+      assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModel.Factory> {
+        create(addOrRemoveContractId, addOrRemoveType)
+      },
       navigateToSuccessScreen = {
         navController.navigate(EditCoInsuredDestination.Success(it, type)) {
           typedPopUpTo<EditCoInsuredDestination.CoInsuredAddOrRemove> {
