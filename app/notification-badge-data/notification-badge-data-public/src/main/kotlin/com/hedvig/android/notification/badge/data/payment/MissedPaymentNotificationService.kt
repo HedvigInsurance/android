@@ -1,7 +1,10 @@
 package com.hedvig.android.notification.badge.data.payment
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -15,7 +18,7 @@ interface MissedPaymentNotificationService {
   fun showRedDotNotification(): Flow<Boolean>
 }
 
-@dev.zacsweers.metro.Inject
+@Inject
 internal class DemoMissedPaymentNotificationService : MissedPaymentNotificationService {
   var showNotification = false
 
@@ -24,8 +27,8 @@ internal class DemoMissedPaymentNotificationService : MissedPaymentNotificationS
   }
 }
 
-@dev.zacsweers.metro.Inject
-@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
+@Inject
+@SingleIn(AppScope::class)
 internal class MissedPaymentNotificationServiceImpl(
   private val getIfMissedPaymentUseCase: GetIfMissedPaymentUseCase,
 ) : MissedPaymentNotificationService {
