@@ -8,6 +8,8 @@ import octopus.FullReferralsQuery
 import octopus.type.CurrencyCode
 import octopus.type.MemberReferralStatus
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class ForeverRepositoryDemo : ForeverRepository {
   private var code: String = "code"
 

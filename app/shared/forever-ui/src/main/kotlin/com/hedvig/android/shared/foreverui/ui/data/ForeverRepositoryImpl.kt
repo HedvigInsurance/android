@@ -12,6 +12,8 @@ import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository.ReferralErr
 import octopus.FullReferralsQuery
 import octopus.MemberReferralInformationCodeUpdateMutation
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class ForeverRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : ForeverRepository {
