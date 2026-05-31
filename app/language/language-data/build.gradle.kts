@@ -14,5 +14,6 @@ dependencies {
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authEventCore)
+  implementation(projects.coreCommonPublic)
   implementation(projects.languageCore)
 }
