@@ -36,6 +36,7 @@ import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
+import com.hedvig.android.core.common.di.DatabaseFile
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
@@ -78,6 +79,12 @@ interface ApplicationMetroProviders {
       databaseProvider,
     )
   }
+
+  @Provides
+  @SingleIn(AppScope::class)
+  @DatabaseFile
+  fun provideDatabaseFile(applicationContext: Context): File =
+    applicationContext.applicationContext.getDatabasePath("hedvig_chat_database.db")
 
   @Provides
   @SingleIn(AppScope::class)
