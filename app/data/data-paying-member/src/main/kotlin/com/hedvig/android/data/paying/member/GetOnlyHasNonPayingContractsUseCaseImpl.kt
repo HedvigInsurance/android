@@ -10,6 +10,7 @@ import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.toContractType
 import octopus.ActiveInsuranceContractTypesQuery
 
+@dev.zacsweers.metro.Inject
 internal class GetOnlyHasNonPayingContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetOnlyHasNonPayingContractsUseCase {
