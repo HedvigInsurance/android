@@ -7,7 +7,7 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.connectPaymentGraph(
   navController: NavController,
@@ -19,7 +19,7 @@ fun NavGraphBuilder.connectPaymentGraph(
       hedvigDeepLinkContainer.directDebit,
     ),
   ) {
-    val viewModel: TrustlyViewModel = koinViewModel()
+    val viewModel: TrustlyViewModel = metroViewModel()
     TrustlyDestination(
       viewModel = viewModel,
       navigateUp = navController::navigateUp,

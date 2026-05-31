@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
@@ -30,12 +31,18 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
-internal class TerminationSurveyViewModel(
-  options: List<TerminationSurveyOption>,
-  action: TerminationAction,
+internal class TerminationSurveyViewModel @AssistedInject constructor(
+  @Assisted options: List<TerminationSurveyOption>,
+  @Assisted action: TerminationAction,
   changeTierRepository: ChangeTierRepository,
-  contractId: String,
+  @Assisted contractId: String,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
     initialState = TerminationSurveyState(options),
     presenter = TerminationSurveyPresenter(
@@ -44,7 +51,18 @@ internal class TerminationSurveyViewModel(
       changeTierRepository,
       contractId,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted options: List<TerminationSurveyOption>,
+      @Assisted action: TerminationAction,
+      @Assisted contractId: String,
+    ): TerminationSurveyViewModel
+  }
+}
 
 internal class TerminationSurveyPresenter(
   private val options: List<TerminationSurveyOption>,

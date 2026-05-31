@@ -14,8 +14,8 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.cbmChatGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -36,7 +36,7 @@ fun NavGraphBuilder.cbmChatGraph(
         hedvigDeepLinkContainer.chat,
       ),
     ) {
-      val viewModel: InboxViewModel = koinViewModel()
+      val viewModel: InboxViewModel = metroViewModel()
       InboxDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -48,7 +48,10 @@ fun NavGraphBuilder.cbmChatGraph(
     navdestination<ChatDestinations.Chat>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.conversation),
     ) {
-      val viewModel = koinViewModel<CbmChatViewModel> { parametersOf(this.conversationId) }
+      val conversationId = this.conversationId
+      val viewModel = assistedMetroViewModel<CbmChatViewModel, CbmChatViewModel.Factory> {
+        create(conversationId)
+      }
       CbmChatDestination(
         viewModel = viewModel,
         imageLoader = imageLoader,

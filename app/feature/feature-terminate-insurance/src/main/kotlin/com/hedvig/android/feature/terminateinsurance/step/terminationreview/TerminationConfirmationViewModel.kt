@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
@@ -17,18 +18,24 @@ import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraph
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Clock
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-internal class TerminationConfirmationViewModel(
-  terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
-  insuranceInfo: TerminationGraphParameters,
-  extraCoverageItems: List<ExtraCoverageItem>,
-  selectedReasonId: String,
-  feedbackComment: String?,
+internal class TerminationConfirmationViewModel @AssistedInject constructor(
+  @Assisted terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+  @Assisted insuranceInfo: TerminationGraphParameters,
+  @Assisted extraCoverageItems: List<ExtraCoverageItem>,
+  @Assisted selectedReasonId: String,
+  @Assisted feedbackComment: String?,
   terminateInsuranceRepository: TerminateInsuranceRepository,
   getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
   clock: Clock,
@@ -51,7 +58,20 @@ internal class TerminationConfirmationViewModel(
       getTerminationNotificationUseCase,
       clock,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+      @Assisted insuranceInfo: TerminationGraphParameters,
+      @Assisted extraCoverageItems: List<ExtraCoverageItem>,
+      @Assisted selectedReasonId: String,
+      @Assisted feedbackComment: String?,
+    ): TerminationConfirmationViewModel
+  }
+}
 
 sealed interface TerminationConfirmationEvent {
   data object Submit : TerminationConfirmationEvent

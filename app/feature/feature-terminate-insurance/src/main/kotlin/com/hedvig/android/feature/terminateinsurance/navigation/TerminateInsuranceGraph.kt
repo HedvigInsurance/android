@@ -32,8 +32,7 @@ import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
 import com.hedvig.android.navigation.compose.typed.getRouteFromBackStackOrNull
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun NavGraphBuilder.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
@@ -91,9 +90,11 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     navdestination<TerminateInsuranceDestination.StartStep> { backStackEntry ->
       val terminateInsuranceGraphDestination = navController
         .getRouteFromBackStackOrNull<TerminateInsuranceGraphDestination>(backStackEntry)
-      val viewModel: ChooseInsuranceToTerminateViewModel = koinViewModel {
-        parametersOf(terminateInsuranceGraphDestination?.insuranceId)
-      }
+      val insuranceId = terminateInsuranceGraphDestination?.insuranceId
+      val viewModel: ChooseInsuranceToTerminateViewModel =
+        assistedMetroViewModel<ChooseInsuranceToTerminateViewModel, ChooseInsuranceToTerminateViewModel.Factory> {
+          create(insuranceId)
+        }
       ChooseInsuranceToTerminateDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -120,9 +121,13 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     navdestination<TerminateInsuranceDestination.TerminationSurveyFirstStep>(
       TerminateInsuranceDestination.TerminationSurveyFirstStep,
     ) {
-      val viewModel: TerminationSurveyViewModel = koinViewModel {
-        parametersOf(options, action, commonParams.contractId)
-      }
+      val surveyOptions = options
+      val surveyAction = action
+      val surveyContractId = commonParams.contractId
+      val viewModel: TerminationSurveyViewModel =
+        assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
+          create(surveyOptions, surveyAction, surveyContractId)
+        }
       TerminationSurveyDestination(
         viewModel,
         navigateUp = navController::navigateUp,
@@ -146,9 +151,13 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     navdestination<TerminateInsuranceDestination.TerminationSurveySecondStep>(
       TerminateInsuranceDestination.TerminationSurveySecondStep,
     ) {
-      val viewModel: TerminationSurveyViewModel = koinViewModel {
-        parametersOf(subOptions, action, commonParams.contractId)
-      }
+      val surveySubOptions = subOptions
+      val surveyAction = action
+      val surveyContractId = commonParams.contractId
+      val viewModel: TerminationSurveyViewModel =
+        assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
+          create(surveySubOptions, surveyAction, surveyContractId)
+        }
       TerminationSurveyDestination(
         viewModel,
         navigateUp = navController::navigateUp,
@@ -176,15 +185,15 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     navdestination<TerminateInsuranceDestination.TerminationDate>(
       TerminateInsuranceDestination.TerminationDate,
     ) {
-      val viewModel: TerminationDateViewModel = koinViewModel {
-        parametersOf(
-          TerminationDateParameters(
-            minDate = minDate,
-            maxDate = maxDate,
-            commonParams,
-          ),
-        )
-      }
+      val terminationDateParameters = TerminationDateParameters(
+        minDate = minDate,
+        maxDate = maxDate,
+        commonParams,
+      )
+      val viewModel: TerminationDateViewModel =
+        assistedMetroViewModel<TerminationDateViewModel, TerminationDateViewModel.Factory> {
+          create(terminationDateParameters)
+        }
       TerminationDateDestination(
         viewModel = viewModel,
         onContinue = { localDate ->
@@ -230,15 +239,21 @@ fun NavGraphBuilder.terminateInsuranceGraph(
     navdestination<TerminateInsuranceDestination.TerminationConfirmation>(
       TerminateInsuranceDestination.TerminationConfirmation,
     ) {
-      val viewModel: TerminationConfirmationViewModel = koinViewModel {
-        parametersOf(
-          terminationType,
-          commonParams,
-          extraCoverageItems,
-          selectedReasonId,
-          feedbackComment,
-        )
-      }
+      val confirmationTerminationType = terminationType
+      val confirmationInsuranceInfo = commonParams
+      val confirmationExtraCoverageItems = extraCoverageItems
+      val confirmationSelectedReasonId = selectedReasonId
+      val confirmationFeedbackComment = feedbackComment
+      val viewModel: TerminationConfirmationViewModel =
+        assistedMetroViewModel<TerminationConfirmationViewModel, TerminationConfirmationViewModel.Factory> {
+          create(
+            confirmationTerminationType,
+            confirmationInsuranceInfo,
+            confirmationExtraCoverageItems,
+            confirmationSelectedReasonId,
+            confirmationFeedbackComment,
+          )
+        }
       TerminationConfirmationDestination(
         viewModel = viewModel,
         onContinue = {

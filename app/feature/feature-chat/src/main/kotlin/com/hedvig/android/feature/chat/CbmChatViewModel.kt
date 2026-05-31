@@ -29,6 +29,7 @@ import androidx.paging.map
 import androidx.room.RoomDatabase
 import arrow.core.Either
 import com.benasher44.uuid.Uuid
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
@@ -53,6 +54,12 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
@@ -70,8 +77,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal class CbmChatViewModel(
-  conversationId: String,
+internal class CbmChatViewModel @AssistedInject constructor(
+  @Assisted conversationId: String,
   database: RoomDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,
@@ -99,7 +106,16 @@ internal class CbmChatViewModel(
       context,
     ),
     coroutineScope = coroutineScope,
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted conversationId: String,
+    ): CbmChatViewModel
+  }
+}
 
 @OptIn(ExperimentalPagingApi::class)
 private fun cbmChatPresenterPagingData(

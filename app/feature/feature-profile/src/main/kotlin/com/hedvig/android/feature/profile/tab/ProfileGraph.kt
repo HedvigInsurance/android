@@ -28,7 +28,7 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.profileGraph(
   settingsDestinationNestedGraphs: NavGraphBuilder.() -> Unit,
@@ -59,7 +59,7 @@ fun NavGraphBuilder.profileGraph(
       enterTransition = { MotionDefaults.fadeThroughEnter },
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
-      val viewModel: ProfileViewModel = koinViewModel()
+      val viewModel: ProfileViewModel = metroViewModel()
       ProfileDestination(
         navigateToEurobonus = dropUnlessResumed {
           navController.navigate(ProfileDestinations.Eurobonus)
@@ -95,7 +95,7 @@ fun NavGraphBuilder.profileGraph(
     navdestination<ProfileDestinations.Eurobonus>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.eurobonus),
     ) {
-      val viewModel: EurobonusViewModel = koinViewModel()
+      val viewModel: EurobonusViewModel = metroViewModel()
       EurobonusDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -104,7 +104,7 @@ fun NavGraphBuilder.profileGraph(
     navdestination<ProfileDestination.ContactInfo>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo),
     ) {
-      val viewModel: ContactInfoViewModel = koinViewModel()
+      val viewModel: ContactInfoViewModel = metroViewModel()
       ContactInfoDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
@@ -113,7 +113,7 @@ fun NavGraphBuilder.profileGraph(
       )
     }
     navdestination<ProfileDestinations.Information> {
-      val viewModel: AboutAppViewModel = koinViewModel()
+      val viewModel: AboutAppViewModel = metroViewModel()
       InformationDestination(
         viewModel = viewModel,
         onBackPressed = navController::navigateUp,
@@ -132,7 +132,7 @@ fun NavGraphBuilder.profileGraph(
       )
     }
     navdestination<Certificates> {
-      val viewModel: CertificatesViewModel = koinViewModel()
+      val viewModel: CertificatesViewModel = metroViewModel()
       CertificatesDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,
@@ -144,7 +144,7 @@ fun NavGraphBuilder.profileGraph(
       startDestination = SettingsDestinations.Settings::class,
     ) {
       navdestination<SettingsDestinations.Settings> {
-        val viewModel: SettingsViewModel = koinViewModel()
+        val viewModel: SettingsViewModel = metroViewModel()
         SettingsDestination(
           viewModel = viewModel,
           navigateUp = navController::navigateUp,
