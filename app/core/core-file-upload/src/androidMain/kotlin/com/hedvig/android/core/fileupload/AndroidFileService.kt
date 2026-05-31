@@ -6,10 +6,17 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import com.eygraber.uri.Uri
 import com.eygraber.uri.toAndroidUri
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import java.util.Locale
 import kotlin.math.max
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class AndroidFileService(
   private val contentResolver: ContentResolver,
 ) : FileService {

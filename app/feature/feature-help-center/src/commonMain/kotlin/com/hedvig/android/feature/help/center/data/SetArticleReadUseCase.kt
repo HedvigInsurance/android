@@ -8,13 +8,20 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.PuppyGuideEngagementMutation
 
 interface SetArticleReadUseCase {
   suspend fun invoke(articleName: String): Either<ErrorMessage, Unit>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class SetArticleReadUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : SetArticleReadUseCase {

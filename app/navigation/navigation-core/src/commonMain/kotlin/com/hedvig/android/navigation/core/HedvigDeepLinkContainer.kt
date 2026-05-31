@@ -1,6 +1,10 @@
 package com.hedvig.android.navigation.core
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
 interface HedvigDeepLinkContainer {
   val home: List<String> // Home destination, the start destination of the app
@@ -85,6 +89,9 @@ interface HedvigDeepLinkContainer {
   val manualCharge: List<String>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class HedvigDeepLinkContainerImpl(
   hedvigBuildConstants: HedvigBuildConstants,
 ) : HedvigDeepLinkContainer {

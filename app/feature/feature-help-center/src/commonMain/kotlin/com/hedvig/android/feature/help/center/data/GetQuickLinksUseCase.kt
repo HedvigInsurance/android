@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners
 import com.hedvig.android.feature.help.center.model.QuickAction
@@ -16,6 +17,9 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import hedvig.resources.CONTRACT_COOWNER
 import hedvig.resources.EDIT_COOWNER_SUBTITLE
 import hedvig.resources.EDIT_COOWNER_TITLE
@@ -46,6 +50,9 @@ internal interface GetQuickLinksUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<QuickAction>>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetQuickLinksUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,

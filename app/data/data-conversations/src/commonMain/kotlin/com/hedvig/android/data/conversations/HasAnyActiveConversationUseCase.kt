@@ -7,13 +7,18 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import octopus.CbmNumberOfChatMessagesQuery
 import octopus.type.ChatMessageSender
 
+@SingleIn(AppScope::class)
+@Inject
 class HasAnyActiveConversationUseCase(
   private val apolloClient: ApolloClient,
 ) {

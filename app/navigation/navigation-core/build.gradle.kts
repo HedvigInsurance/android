@@ -9,6 +9,7 @@ kotlin {
       api(libs.jetbrains.navigation.common)
       implementation(libs.koin.core)
       implementation(projects.coreBuildConstants)
+      implementation(projects.coreCommonPublic)
       implementation(projects.navigationCommon)
     }
   }
