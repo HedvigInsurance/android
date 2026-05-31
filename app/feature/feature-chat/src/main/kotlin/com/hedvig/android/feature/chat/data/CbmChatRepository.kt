@@ -85,6 +85,8 @@ internal interface CbmChatRepository {
   suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): List<Either<MessageSendError, CbmChatMessage>>
 }
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class CbmChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val database: RoomDatabase,

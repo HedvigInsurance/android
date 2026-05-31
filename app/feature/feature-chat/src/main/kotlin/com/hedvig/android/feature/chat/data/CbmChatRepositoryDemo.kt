@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.flowOf
  * Normally we'd add a fake impl here, but the database being involved makes this too much of a task for it to be worth
  * it. Best we just show errors everywhere instead.
  */
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class CbmChatRepositoryDemo(
   private val clock: Clock,
 ) : CbmChatRepository {
