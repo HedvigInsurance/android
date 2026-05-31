@@ -1,8 +1,12 @@
 package com.hedvig.android.data.cross.sell.after.flow
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -69,6 +73,9 @@ sealed class CrossSellInfoType() {
   }
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class CrossSellAfterFlowRepositoryImpl() : CrossSellAfterFlowRepository {
   /**
    * Purposefully not stored in persistent storage so that if the app is killed after this was set, we do not still
