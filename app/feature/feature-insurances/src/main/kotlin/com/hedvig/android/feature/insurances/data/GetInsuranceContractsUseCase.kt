@@ -43,6 +43,8 @@ internal interface GetInsuranceContractsUseCase {
   fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
@@ -124,24 +126,24 @@ private fun InsuranceContractsQuery.Data.CurrentMember.PendingContract.toPending
   contractHolderSSN: String?,
 ): PendingInsuranceContract {
   return PendingInsuranceContract(
-      id = this.id,
-      tierName = this.productVariant.displayNameTier,
-      displayName = this.productVariant.displayName,
-      contractHolderDisplayName = contractHolderDisplayName,
-      contractHolderSSN = contractHolderSSN,
-      exposureDisplayName = exposureDisplayName,
-      productVariant = this.productVariant.toProductVariant(),
-      displayItems = this.displayItems.map { it.toDisplayItem() },
-      addons = this.addons?.map {
-          Addon(
-              it.addonVariant.toAddonVariant(),
-              premium = UiMoney.fromMoneyFragment(it.premium),
-          )
-      },
-      cost = this.cost.toMonthlyCost(),
-      basePremium = UiMoney.fromMoneyFragment(this.basePremium),
-      chipId = ChipIdState.NotRequired,
-      supportsTermination = supportsTermination,
+    id = this.id,
+    tierName = this.productVariant.displayNameTier,
+    displayName = this.productVariant.displayName,
+    contractHolderDisplayName = contractHolderDisplayName,
+    contractHolderSSN = contractHolderSSN,
+    exposureDisplayName = exposureDisplayName,
+    productVariant = this.productVariant.toProductVariant(),
+    displayItems = this.displayItems.map { it.toDisplayItem() },
+    addons = this.addons?.map {
+      Addon(
+        it.addonVariant.toAddonVariant(),
+        premium = UiMoney.fromMoneyFragment(it.premium),
+      )
+    },
+    cost = this.cost.toMonthlyCost(),
+    basePremium = UiMoney.fromMoneyFragment(this.basePremium),
+    chipId = ChipIdState.NotRequired,
+    supportsTermination = supportsTermination,
   )
 }
 
@@ -265,7 +267,7 @@ private fun AgreementCreationCause.toCreationCause() = when (this) {
 
   AgreementCreationCause.UNKNOWN,
   AgreementCreationCause.UNKNOWN__,
-    -> InsuranceAgreement.CreationCause.UNKNOWN
+  -> InsuranceAgreement.CreationCause.UNKNOWN
 }
 
 private fun ContractCoInsuredFragment.toCoInsured(): InsuranceAgreement.CoInsured = InsuranceAgreement.CoInsured(

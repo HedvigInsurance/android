@@ -11,6 +11,8 @@ import com.hedvig.android.data.contract.ImageAsset
 import kotlinx.serialization.Serializable
 import octopus.CrossSellsQuery
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class GetCrossSellsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellsUseCase {

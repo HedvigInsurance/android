@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return flowOf(

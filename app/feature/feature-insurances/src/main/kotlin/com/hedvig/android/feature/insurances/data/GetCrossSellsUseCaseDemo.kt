@@ -6,6 +6,8 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, CrossSellResult> {
     return either {
