@@ -26,6 +26,7 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.fileupload.BackendFileLimitException
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.data.chat.database.ChatDao
@@ -41,6 +42,8 @@ import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.model.toSender
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -85,8 +88,8 @@ internal interface CbmChatRepository {
   suspend fun sendMedia(conversationId: Uuid, uriList: List<Uri>): List<Either<MessageSendError, CbmChatMessage>>
 }
 
-@dev.zacsweers.metro.Inject
-@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
+@Inject
+@SingleIn(AppScope::class)
 internal class CbmChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val database: RoomDatabase,
