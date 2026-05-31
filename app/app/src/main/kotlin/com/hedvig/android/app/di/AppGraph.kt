@@ -8,6 +8,8 @@ import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 
 @DependencyGraph(AppScope::class)
 interface AppGraph : ViewModelGraph {
+  val workerFactory: MetroWorkerFactory
+
   @DependencyGraph.Factory
   interface Factory {
     fun create(
