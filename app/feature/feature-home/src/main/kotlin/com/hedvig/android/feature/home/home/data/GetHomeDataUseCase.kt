@@ -51,6 +51,8 @@ internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
 }
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,

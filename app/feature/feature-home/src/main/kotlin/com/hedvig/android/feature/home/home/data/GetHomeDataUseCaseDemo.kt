@@ -11,6 +11,8 @@ import com.hedvig.android.memberreminders.MemberReminders
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> = flowOf(
     HomeData(
