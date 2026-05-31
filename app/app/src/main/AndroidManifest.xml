@@ -141,6 +141,9 @@
         android:name="com.hedvig.android.app.di.KoinInitializer"
         android:value="androidx.startup" />
       <meta-data
+        android:name="com.hedvig.android.app.di.AppGraphInitializer"
+        android:value="androidx.startup" />
+      <meta-data
         android:name="com.hedvig.android.app.startup.DatadogInitializerImpl"
         android:value="androidx.startup" />
       <meta-data

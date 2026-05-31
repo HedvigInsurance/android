@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -30,6 +31,7 @@ import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
+import com.hedvig.android.app.di.AppGraphHolder
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
@@ -50,6 +52,7 @@ import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -129,45 +132,49 @@ class MainActivity : AppCompatActivity() {
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
-      val context = LocalContext.current
-      RiveInitializer.init(context)
-      val windowSizeClass = calculateWindowSizeClass(this)
-      val navHostController = rememberNavController().also { navController = it }
-      LifecycleStartEffect(navHostController) {
-        navController = navHostController
-        onStopOrDispose {
-          navController = null
+      CompositionLocalProvider(
+        LocalMetroViewModelFactory provides AppGraphHolder.graph.metroViewModelFactory,
+      ) {
+        val context = LocalContext.current
+        RiveInitializer.init(context)
+        val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
+        val navHostController = rememberNavController().also { navController = it }
+        LifecycleStartEffect(navHostController) {
+          navController = navHostController
+          onStopOrDispose {
+            navController = null
+          }
         }
+        HedvigApp(
+          navHostController = navHostController,
+          windowSizeClass = windowSizeClass,
+          settingsDataStore = settingsDataStore,
+          getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
+          featureManager = featureManager,
+          splashIsRemovedSignal = splashIsRemovedSignal,
+          authTokenService = authTokenService,
+          demoManager = demoManager,
+          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          imageLoader = imageLoader,
+          simpleVideoCache = simpleVideoCache,
+          languageService = languageService,
+          hedvigBuildConstants = hedvigBuildConstants,
+          waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
+          enableEdgeToEdge = { systemBarStyle ->
+            enableEdgeToEdge(
+              statusBarStyle = systemBarStyle,
+              navigationBarStyle = systemBarStyle,
+            )
+          },
+          shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
+          finishApp = ::finish,
+          tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
+          externalNavigator = externalNavigator,
+          logoutUseCase = logoutUseCase,
+          getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
+          missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+        )
       }
-      HedvigApp(
-        navHostController = navHostController,
-        windowSizeClass = windowSizeClass,
-        settingsDataStore = settingsDataStore,
-        getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
-        featureManager = featureManager,
-        splashIsRemovedSignal = splashIsRemovedSignal,
-        authTokenService = authTokenService,
-        demoManager = demoManager,
-        hedvigDeepLinkContainer = hedvigDeepLinkContainer,
-        imageLoader = imageLoader,
-        simpleVideoCache = simpleVideoCache,
-        languageService = languageService,
-        hedvigBuildConstants = hedvigBuildConstants,
-        waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
-        enableEdgeToEdge = { systemBarStyle ->
-          enableEdgeToEdge(
-            statusBarStyle = systemBarStyle,
-            navigationBarStyle = systemBarStyle,
-          )
-        },
-        shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-        finishApp = ::finish,
-        tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
-        externalNavigator = externalNavigator,
-        logoutUseCase = logoutUseCase,
-        getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-        missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
-      )
     }
   }
 
