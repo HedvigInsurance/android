@@ -15,6 +15,7 @@ interface MissedPaymentNotificationService {
   fun showRedDotNotification(): Flow<Boolean>
 }
 
+@dev.zacsweers.metro.Inject
 internal class DemoMissedPaymentNotificationService : MissedPaymentNotificationService {
   var showNotification = false
 
@@ -23,6 +24,8 @@ internal class DemoMissedPaymentNotificationService : MissedPaymentNotificationS
   }
 }
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class MissedPaymentNotificationServiceImpl(
   private val getIfMissedPaymentUseCase: GetIfMissedPaymentUseCase,
 ) : MissedPaymentNotificationService {

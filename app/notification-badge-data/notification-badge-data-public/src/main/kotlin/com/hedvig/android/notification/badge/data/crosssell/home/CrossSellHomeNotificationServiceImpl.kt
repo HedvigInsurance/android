@@ -19,6 +19,7 @@ class CrossSellHomeNotificationServiceProvider(
   override val prodImpl: CrossSellHomeNotificationService,
 ) : ProdOrDemoProvider<CrossSellHomeNotificationService>
 
+@dev.zacsweers.metro.Inject
 internal class DemoCrossSellHomeNotificationService() : CrossSellHomeNotificationService {
   var showNotification = true
 
@@ -48,6 +49,8 @@ interface CrossSellHomeNotificationService {
   suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long)
 }
 
+@dev.zacsweers.metro.Inject
+@dev.zacsweers.metro.SingleIn(com.hedvig.android.core.common.di.AppScope::class)
 internal class CrossSellHomeNotificationServiceImpl(
   private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
   private val dataStore: DataStore<Preferences>,
