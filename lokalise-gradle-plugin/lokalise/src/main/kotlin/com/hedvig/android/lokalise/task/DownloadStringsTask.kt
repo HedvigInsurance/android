@@ -16,7 +16,6 @@ import kotlinx.coroutines.runBlocking
 import java.net.URI
 import javax.inject.Inject
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
@@ -83,6 +82,7 @@ abstract class DownloadStringsTask @Inject constructor(
         .removeDotsFromStringIds()
         .convertSimpleFormatToNumberedFormat(resourcesType)
         .removeEscapesFromMultiplatformStrings(resourcesType)
+        .removeXmlVersionHeaderFromMultiplatformResources(resourcesType)
         .addUntranslatableStrings()
     }
     tempFileForZipFile.delete()
@@ -116,10 +116,11 @@ abstract class DownloadStringsTask @Inject constructor(
       )
     }
     logger.debug("{} asyncDownloadRequest body:{}", tag, requestBody)
-    val response = httpClient.post("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download") {
-      commonLokaliseHeaders()
-      setBody(requestBody.toString())
-    }.bodyAsText()
+    val response =
+      httpClient.post("https://api.lokalise.com/api2/projects/${lokaliseProjectId.get()}/files/async-download") {
+        commonLokaliseHeaders()
+        setBody(requestBody.toString())
+      }.bodyAsText()
     logger.debug("{} post response:{}", tag, response)
     val processId = Json.parseToJsonElement(response).jsonObject["process_id"]?.jsonPrimitive?.content
       ?: error("Lokalise responded with a null processId")
@@ -266,6 +267,19 @@ abstract class DownloadStringsTask @Inject constructor(
       }
     }
   }
+
+  /**
+   * The multiplatform resources do not need this heading, and may also result in some weird runtime errors
+   */
+  private fun String.removeXmlVersionHeaderFromMultiplatformResources(resourcesType: ResourcesType): String {
+    return when (resourcesType) {
+      ResourcesType.Android -> this
+      ResourcesType.KMP -> {
+        removePrefix("""<?xml version="1.0" encoding="UTF-8"?>""").trimStart()
+      }
+    }
+  }
+
   private fun String.addUntranslatableStrings(): String {
     return this.replace(
       """<resources>""",
@@ -275,7 +289,7 @@ abstract class DownloadStringsTask @Inject constructor(
       |  <string name="english_swedish">English</string>
       |  <string name="swish">Swish</string>
       |  <string name="trustly">Trustly</string>
-      """.trimMargin("|")
+      """.trimMargin("|"),
     )
   }
 

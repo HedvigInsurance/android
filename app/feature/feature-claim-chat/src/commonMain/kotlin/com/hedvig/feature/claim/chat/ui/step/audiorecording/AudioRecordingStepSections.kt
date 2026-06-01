@@ -393,7 +393,7 @@ private fun AudioRecordingSheetContent(
   audioRecordingState: AudioRecordingStepState.AudioRecording,
   stopRecording: () -> Unit,
   startRecording: () -> Unit,
-  recordAudioPermissionState: PermissionState
+  recordAudioPermissionState: PermissionState,
 ) {
   Column {
     HedvigText(
@@ -442,7 +442,7 @@ private fun AudioRecordingSheetContent(
               text = stringResource(Res.string.something_went_wrong),
               modifier = Modifier,
               iconStyle = EmptyStateDefaults.EmptyStateIconStyle.ERROR,
-              description = null
+              description = null,
             )
           }
 
@@ -1179,6 +1179,7 @@ private class AudioRecordingSheetContentStateProvider :
 private class MockPermissionState(val granted: Boolean) : PermissionState {
   override val permission: String = "android.permission.RECORD_AUDIO"
   override val status: PermissionStatus = if (granted) PermissionStatus.Granted else PermissionStatus.Denied(false)
+
   override fun launchPermissionRequest() {}
 }
 

@@ -25,7 +25,7 @@ dependencies {
   implementation(projects.dataContract)
   implementation(projects.dataCrossSellAfterFlow)
   implementation(projects.dataProductVariantPublic)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.uiTiersAndAddons)
 
   testImplementation(libs.apollo.testingSupport)

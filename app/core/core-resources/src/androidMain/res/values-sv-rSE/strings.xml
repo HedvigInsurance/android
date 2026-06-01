@@ -15,6 +15,7 @@
   <string name="A11Y_OF">av</string>
   <string name="A11Y_PAUSE">Pausa</string>
   <string name="A11Y_PLAY">Spela</string>
+  <string name="A11Y_READ_LABEL_HACK">Läst</string>
   <string name="A11Y_SCROLL_DOWN">Skrolla längst ner på sidan</string>
   <plurals name="A11Y_SUBMITTED_VALUES">
     <item quantity="one">Inskickat värde</item>
@@ -998,6 +999,7 @@
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Vi kan tyvärr inte ge dig ett pris. Var god se till att du har Kivras digitala brevlåda och försök igen.\n\nDu kan skaffa digital brevlåda hos Kivra här: https://kivra.se/sv/privat/sa-funkar-det/digitala-brev-brevlada</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Rabattnamn: %s</string>
   <string name="VOICEOVER_CHANGE_VALUE">ändra värde</string>
+  <string name="VOICEOVER_CHAT_IMAGE">Bild</string>
   <string name="VOICEOVER_MORE_INFO">Tryck för mer information</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Kampanjikon</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Informationsikon</string>

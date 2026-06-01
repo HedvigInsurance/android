@@ -38,10 +38,7 @@ import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ManualChargeSuccessDestination(
-  showCancellationWarning: Boolean,
-  popBackStack: () -> Unit,
-) {
+internal fun ManualChargeSuccessDestination(showCancellationWarning: Boolean, popBackStack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -60,9 +57,11 @@ internal fun ManualChargeSuccessDestination(
       description = stringResource(
         Res.string.PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION,
       ),
-      iconStyle = if (showCancellationWarning)
+      iconStyle = if (showCancellationWarning) {
         EmptyStateDefaults.EmptyStateIconStyle.SUCCESS_WITH_WARNING
-      else SUCCESS,
+      } else {
+        SUCCESS
+      },
       buttonStyle = NoButton,
     )
     Column(Modifier.weight(1f)) {
@@ -82,7 +81,7 @@ internal fun ManualChargeSuccessDestination(
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,
-      buttonStyle = ButtonDefaults.ButtonStyle.Secondary
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
     )
     Spacer(Modifier.height(16.dp))
   }

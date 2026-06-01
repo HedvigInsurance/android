@@ -315,7 +315,8 @@ private fun openEmailClientWithPrefilledData(
 }
 
 private val horizontalDividerModifier = Modifier.horizontalDivider(
-  DividerPosition.Bottom, horizontalPadding = 16.dp,
+  DividerPosition.Bottom,
+  horizontalPadding = 16.dp,
 )
 
 @Composable
@@ -352,6 +353,7 @@ private class LinkContainer(
 ) {
   private val privacyPolicyLinkEn = "https://www.hedvig.com/se-en/hedvig/privacy-policy"
   private val privacyPolicyLinkSe = "https://www.hedvig.com/se/hedvig/personuppgifter"
+
   fun getPrivacyPolicyLink(): String {
     return when (languageService.getLanguage()) {
       Language.SV_SE -> privacyPolicyLinkSe
@@ -361,6 +363,7 @@ private class LinkContainer(
 
   private val legalInfoLinkEn = "https://www.hedvig.com/se-en/hedvig/legal"
   private val legalInfoLinkSe = "https://www.hedvig.com/se/hedvig/legal"
+
   fun getLegalInfoLink(): String {
     return when (languageService.getLanguage()) {
       Language.SV_SE -> legalInfoLinkSe
@@ -370,6 +373,7 @@ private class LinkContainer(
 
   private val a11yLinkEn = "https://www.hedvig.com/se-en/help/accessibility"
   private val a11yLinkSe = "https://www.hedvig.com/se/hjalp/tillganglighet"
+
   fun getA11yLink(): String {
     return when (languageService.getLanguage()) {
       Language.SV_SE -> a11yLinkSe
@@ -378,14 +382,8 @@ private class LinkContainer(
   }
 }
 
-
 @Composable
-private fun LinkRow(
-  link: String,
-  text: String,
-  onLinkClick: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun LinkRow(link: String, text: String, onLinkClick: (String) -> Unit, modifier: Modifier = Modifier) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
@@ -412,7 +410,6 @@ private fun LinkRow(
     )
   }
 }
-
 
 @HedvigPreview
 @Composable
@@ -450,12 +447,15 @@ private fun PreviewInformationScreen() {
 
 private val previewLanguageService = object : LanguageService {
   override fun setLanguage(language: Language) {}
+
   override fun getSelectedLanguage(): Language {
     return Language.EN_SE
   }
+
   override fun getLanguage(): Language {
     return Language.EN_SE
   }
+
   override fun getLocale(): CommonLocale {
     return CommonLocale.getDefault()
   }

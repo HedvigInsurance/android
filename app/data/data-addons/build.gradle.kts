@@ -22,7 +22,7 @@ dependencies {
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
 
   testImplementation(libs.apollo.testingSupport)
   testImplementation(libs.assertK)

@@ -8,8 +8,8 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
-import com.hedvig.android.feature.profile.aboutapp.InformationDestination
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
+import com.hedvig.android.feature.profile.aboutapp.InformationDestination
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
 import com.hedvig.android.feature.profile.certificates.CertificatesDestination
 import com.hedvig.android.feature.profile.certificates.CertificatesViewModel
@@ -17,7 +17,6 @@ import com.hedvig.android.feature.profile.contactinfo.ContactInfoDestination
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
-
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations
 import com.hedvig.android.feature.profile.navigation.ProfileDestinations.Certificates

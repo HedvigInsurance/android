@@ -4,6 +4,7 @@ on:
     branches:
       - develop
       - feat/manual-charge
+      - feat/puppy-guide-kmp
   workflow_dispatch:
 
 concurrency:

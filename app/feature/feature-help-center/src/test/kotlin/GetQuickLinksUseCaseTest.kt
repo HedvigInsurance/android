@@ -11,7 +11,7 @@ import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
 import com.hedvig.android.feature.help.center.data.GetMemberActionsUseCase
-import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCaseImpl
 import com.hedvig.android.feature.help.center.data.MemberAction
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
@@ -67,7 +67,7 @@ class GetQuickLinksUseCaseTest {
     val featureManager = FakeFeatureManager(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithTier.right())
-    val useCase = GetQuickLinksUseCase(
+    val useCase = GetQuickLinksUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
       getMemberActionsUseCase = getMemberActionsUseCase,
@@ -98,7 +98,7 @@ class GetQuickLinksUseCaseTest {
     val featureManager = FakeFeatureManager(fixedReturnForAll = true)
     val getMemberActionsUseCase = FakeGetMemberActionsUseCase()
     getMemberActionsUseCase.turbine.add(fakeMemberActionWithoutTier.right())
-    val useCase = GetQuickLinksUseCase(
+    val useCase = GetQuickLinksUseCaseImpl(
       apolloClient = apolloClientWithGoodResponse,
       featureManager = featureManager,
       getMemberActionsUseCase = getMemberActionsUseCase,

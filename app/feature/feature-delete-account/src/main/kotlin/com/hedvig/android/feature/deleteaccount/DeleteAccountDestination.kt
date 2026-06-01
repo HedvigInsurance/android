@@ -12,16 +12,15 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.halilibo.richtext.commonmark.Markdown
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgress
+import com.hedvig.android.design.system.hedvig.HedvigMarkdownText
 import com.hedvig.android.design.system.hedvig.HedvigPreview
 import com.hedvig.android.design.system.hedvig.HedvigScaffold
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.RichText
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.feature.chat.DeleteAccountViewModel
 import hedvig.resources.DELETE_ACCOUNT_DELETE_ACCOUNT_DESCRIPTION
@@ -122,15 +121,12 @@ private fun DeleteScreenContents(
         .padding(horizontal = 16.dp),
     )
     Spacer(Modifier.height(32.dp))
-    RichText(
+    HedvigMarkdownText(
+      content = description,
       modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
-    ) {
-      Markdown(
-        content = description,
-      )
-    }
+    )
     Spacer(Modifier.height(16.dp))
     Spacer(Modifier.weight(1f))
     Spacer(Modifier.height(8.dp))

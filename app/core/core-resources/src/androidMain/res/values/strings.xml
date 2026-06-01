@@ -15,6 +15,7 @@
   <string name="A11Y_OF">of</string>
   <string name="A11Y_PAUSE">Pause</string>
   <string name="A11Y_PLAY">Play</string>
+  <string name="A11Y_READ_LABEL_HACK">Red</string>
   <string name="A11Y_SCROLL_DOWN">Scroll to bottom</string>
   <plurals name="A11Y_SUBMITTED_VALUES">
     <item quantity="one">Submitted value</item>
@@ -998,6 +999,7 @@
   <string name="USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK">Sorry, we couldn’t generate a price. Please make sure you have Kivra\'s digital mailbox and then try again. \n\nYou can get Kivra\'s digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.</string>
   <string name="VOICEOVER_BUNDLE_DISCOUNT_TAG">Discount name: %s</string>
   <string name="VOICEOVER_CHANGE_VALUE">change value</string>
+  <string name="VOICEOVER_CHAT_IMAGE">Image</string>
   <string name="VOICEOVER_MORE_INFO">Tap for more info</string>
   <string name="VOICE_OVER_CAMPAIGN_IMAGE_DESCRIPTION">Campaign image</string>
   <string name="VOICE_OVER_INFO_IMAGE_DESCRIPTION">Information image</string>

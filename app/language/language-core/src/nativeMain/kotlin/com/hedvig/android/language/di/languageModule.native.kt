@@ -6,5 +6,5 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 internal actual val platformLanguageModule: Module = module {
-  single<LanguageService> { NativeLanguageService() }
+  single<LanguageService> { NativeLanguageService(get()) }
 }

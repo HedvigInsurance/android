@@ -96,7 +96,10 @@ private fun DefaultRequest.DefaultRequestBuilder.commonHeaders(
     append("X-System-Version", hedvigBuildConstants.buildApiVersion.toString())
     append("X-Platform", hedvigBuildConstants.platformName)
     append("X-Model", hedvigBuildConstants.model)
-    append("Hedvig-App-Version", "android;${hedvigBuildConstants.appVersionName}")
+    append(
+      "Hedvig-App-Version",
+      "${hedvigBuildConstants.platformName.lowercase()};${hedvigBuildConstants.appVersionName}",
+    )
   }
 }
 

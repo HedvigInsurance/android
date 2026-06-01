@@ -53,7 +53,8 @@ task generateProjectDependencyGraph {
             project.configurations.all { config ->
                 config.dependencies
                         .withType(ProjectDependency)
-                        .collect { it.dependencyProject }
+                        .collect { rootProject.findProject(it.path) }
+                        .findAll { it != null }
                         .each { dependency ->
                             projects.add(project)
                             projects.add(dependency)
