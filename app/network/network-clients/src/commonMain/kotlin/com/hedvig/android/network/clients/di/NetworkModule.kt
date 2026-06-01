@@ -6,6 +6,8 @@ import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.normalizedCache
 import com.apollographql.ktor.ktorClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.language.LanguageService
@@ -14,6 +16,9 @@ import com.hedvig.android.network.clients.AccessTokenFetcher
 import com.hedvig.android.network.clients.DeviceIdInterceptor
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.network.clients.HedvigHttpLogger
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.DefaultRequest
@@ -58,6 +63,45 @@ val networkModule = module {
 }
 
 internal expect val platformNetworkModule: Module
+
+@ContributesTo(AppScope::class)
+interface NetworkMetroProviders {
+  @Provides
+  @SingleIn(AppScope::class)
+  @BaseHttpClient
+  fun provideBaseHttpClient(
+    hedvigBuildConstants: HedvigBuildConstants,
+    languageService: LanguageService,
+    deviceIdFetcher: DeviceIdFetcher,
+  ): HttpClient = buildKtorClient(hedvigBuildConstants, languageService, deviceIdFetcher)
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideHttpClient(
+    @BaseHttpClient baseHttpClient: HttpClient,
+    accessTokenFetcher: AccessTokenFetcher,
+  ): HttpClient = baseHttpClient
+    .config {}
+    .apply { addAuthPlugin(accessTokenFetcher) }
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideNormalizedCacheFactory(): NormalizedCacheFactory = MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideApolloClient(
+    extraApolloClientConfiguration: ExtraApolloClientConfiguration,
+    normalizedCacheFactory: NormalizedCacheFactory,
+    httpClient: HttpClient,
+    hedvigBuildConstants: HedvigBuildConstants,
+  ): ApolloClient = ApolloClient.Builder()
+    .normalizedCache(normalizedCacheFactory)
+    .ktorClient(httpClient)
+    .httpServerUrl(hedvigBuildConstants.urlGraphqlOctopus)
+    .run { extraApolloClientConfiguration.configure(this) }
+    .build()
+}
 
 private fun buildKtorClient(
   hedvigBuildConstants: HedvigBuildConstants,
