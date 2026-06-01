@@ -97,6 +97,7 @@ import com.hedvig.feature.claim.chat.ui.step.TaskStepBottomContent
 import com.hedvig.feature.claim.chat.ui.step.TaskStepTopContent
 import com.hedvig.feature.claim.chat.ui.step.UploadFilesStep
 import com.hedvig.feature.claim.chat.ui.step.audiorecording.AudioRecordingStep
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import hedvig.resources.A11Y_SCROLL_DOWN
 import hedvig.resources.CHAT_CONVERSATION_CLAIM_TITLE
 import hedvig.resources.CLAIMS_TEXT_INPUT_PLACEHOLDER
@@ -116,8 +117,6 @@ import kotlin.time.Clock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun ClaimChatDestination(
@@ -132,9 +131,10 @@ internal fun ClaimChatDestination(
   navigateUp: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  val claimChatViewModel = koinViewModel<ClaimChatViewModel> {
-    parametersOf(isDevelopmentFlow)
-  }
+  val claimChatViewModel =
+    assistedMetroViewModel<ClaimChatViewModel, ClaimChatViewModel.Factory> {
+      create(isDevelopmentFlow)
+    }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {
     BlurredGradientBackground()
     ClaimChatScreenContent(

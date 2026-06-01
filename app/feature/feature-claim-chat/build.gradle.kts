@@ -25,6 +25,7 @@ kotlin {
       implementation(libs.jetbrains.navigationevent.compose)
       implementation(libs.koin.composeViewModel)
       implementation(libs.metro.viewmodel)
+      implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.ktor.client.contentNegotiation)

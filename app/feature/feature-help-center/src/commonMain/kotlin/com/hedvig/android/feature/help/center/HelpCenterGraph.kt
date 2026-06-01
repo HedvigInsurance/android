@@ -27,8 +27,8 @@ import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun NavGraphBuilder.helpCenterGraph(
   hedvigDeepLinkContainer: HedvigDeepLinkContainer,
@@ -47,7 +47,7 @@ fun NavGraphBuilder.helpCenterGraph(
     navdestination<HelpCenterDestinations.HelpCenter>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenter),
     ) {
-      val viewModel = koinViewModel<HelpCenterViewModel>()
+      val viewModel = metroViewModel<HelpCenterViewModel>()
       HelpCenterHomeDestination(
         viewModel = viewModel,
         onNavigateToTopic = dropUnlessResumed { topic ->
@@ -95,10 +95,12 @@ fun NavGraphBuilder.helpCenterGraph(
     navdestination<HelpCenterDestinations.Topic>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenterCommonTopic),
     ) {
-      val showNavigateToInboxViewModel = koinViewModel<ShowNavigateToInboxViewModel>()
-      val helpCenterTopicViewModel = koinViewModel<HelpCenterTopicViewModel> {
-        parametersOf(topicId)
-      }
+      val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
+      val topicId = topicId
+      val helpCenterTopicViewModel =
+        assistedMetroViewModel<HelpCenterTopicViewModel, HelpCenterTopicViewModel.Factory> {
+          create(topicId)
+        }
       HelpCenterTopicDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
@@ -114,10 +116,12 @@ fun NavGraphBuilder.helpCenterGraph(
     navdestination<HelpCenterDestinations.Question>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenterQuestion),
     ) {
-      val showNavigateToInboxViewModel = koinViewModel<ShowNavigateToInboxViewModel>()
-      val helpCenterQuestionViewModel = koinViewModel<HelpCenterQuestionViewModel> {
-        parametersOf(questionId)
-      }
+      val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
+      val questionId = questionId
+      val helpCenterQuestionViewModel =
+        assistedMetroViewModel<HelpCenterQuestionViewModel, HelpCenterQuestionViewModel.Factory> {
+          create(questionId)
+        }
       HelpCenterQuestionDestination(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
@@ -151,7 +155,7 @@ fun NavGraphBuilder.helpCenterGraph(
     navdestination<HelpCenterDestinations.PuppyGuide>(
       deepLinks = navDeepLinks(hedvigDeepLinkContainer.puppyGuide),
     ) { _ ->
-      val viewModel = koinViewModel<PuppyGuideViewModel>()
+      val viewModel = metroViewModel<PuppyGuideViewModel>()
       PuppyGuideDestination(
         viewModel,
         onNavigateUp = navController::navigateUp,
@@ -169,9 +173,11 @@ fun NavGraphBuilder.helpCenterGraph(
     }
 
     navdestination<HelpCenterDestinations.PuppyGuideArticle> {
-      val viewModel = koinViewModel<PuppyArticleViewModel> {
-        parametersOf(storyName)
-      }
+      val storyName = storyName
+      val viewModel =
+        assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
+          create(storyName)
+        }
       PuppyArticleDestination(
         viewModel = viewModel,
         navigateUp = navController::navigateUp,

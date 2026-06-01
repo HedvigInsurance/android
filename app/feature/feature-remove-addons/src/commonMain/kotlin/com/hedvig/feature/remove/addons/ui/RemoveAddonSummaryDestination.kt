@@ -43,6 +43,7 @@ import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import com.hedvig.ui.tiersandaddons.QuoteCard
 import com.hedvig.ui.tiersandaddons.QuoteCostBreakdown
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import hedvig.resources.CONFIRM_CHANGES_SUBTITLE
 import hedvig.resources.CONFIRM_CHANGES_TITLE
 import hedvig.resources.GENERAL_ARE_YOU_SURE
@@ -57,8 +58,6 @@ import hedvig.resources.general_cancel_button
 import hedvig.resources.general_close_button
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun RemoveAddonSummaryDestination(
@@ -74,19 +73,20 @@ internal fun RemoveAddonSummaryDestination(
   onFailure: () -> Unit,
   onCloseFlow: () -> Unit,
 ) {
-  val viewModel: RemoveAddonSummaryViewModel = koinViewModel {
-    parametersOf(
-      CommonSummaryParameters(
-        contractId = contractId,
-        addonsToRemove = addonsToRemove,
-        activationDate = activationDate,
-        baseCost = baseCost,
-        currentTotalCost = currentTotalCost,
-        productVariant = productVariant,
-        existingAddons = existingAddonsToRemove,
-      ),
-    )
-  }
+  val viewModel: RemoveAddonSummaryViewModel =
+    assistedMetroViewModel<RemoveAddonSummaryViewModel, RemoveAddonSummaryViewModel.Factory> {
+      create(
+        CommonSummaryParameters(
+          contractId = contractId,
+          addonsToRemove = addonsToRemove,
+          activationDate = activationDate,
+          baseCost = baseCost,
+          currentTotalCost = currentTotalCost,
+          productVariant = productVariant,
+          existingAddons = existingAddonsToRemove,
+        ),
+      )
+    }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   RemoveAddonSummaryScreen(
     uiState = uiState,

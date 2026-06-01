@@ -9,6 +9,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.window.ComposeUIViewController
 import com.hedvig.android.design.system.hedvig.api.IosSwipeBackController
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import platform.UIKit.UIViewController
 
 private val LocalIosSwipeBackController = staticCompositionLocalOf<IosSwipeBackController?> { null }
@@ -19,7 +20,10 @@ fun HedvigComposeUIViewController(
   content: @Composable () -> Unit,
 ): UIViewController = ComposeUIViewController {
   HedvigTheme {
-    CompositionLocalProvider(LocalIosSwipeBackController provides swipeBackController) {
+    CompositionLocalProvider(
+      LocalIosSwipeBackController provides swipeBackController,
+      LocalMetroViewModelFactory provides IosDiHolder.metroViewModelFactory,
+    ) {
       content()
     }
   }

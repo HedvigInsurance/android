@@ -58,5 +58,9 @@ kotlin {
       implementation(libs.media3.exoplayer.dash)
       implementation(libs.media3.ui)
     }
+    nativeMain.dependencies {
+      implementation(libs.metro.viewmodel)
+      implementation(libs.metro.viewmodel.compose)
+    }
   }
 }

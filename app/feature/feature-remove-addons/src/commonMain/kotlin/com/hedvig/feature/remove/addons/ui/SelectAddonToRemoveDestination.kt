@@ -50,6 +50,7 @@ import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.feature.remove.addons.data.StartAddonRemovalResponse
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import hedvig.resources.GENERAL_ERROR_BODY
 import hedvig.resources.GENERAL_RETRY
 import hedvig.resources.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION
@@ -60,8 +61,6 @@ import hedvig.resources.general_continue_button
 import hedvig.resources.something_went_wrong
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 internal fun SelectAddonToRemoveDestination(
@@ -79,9 +78,10 @@ internal fun SelectAddonToRemoveDestination(
     Boolean,
   ) -> Unit,
 ) {
-  val viewModel: SelectAddonToRemoveViewModel = koinViewModel {
-    parametersOf(contractId, preselectedAddonProduct)
-  }
+  val viewModel: SelectAddonToRemoveViewModel =
+    assistedMetroViewModel<SelectAddonToRemoveViewModel, SelectAddonToRemoveViewModel.Factory> {
+      create(contractId, preselectedAddonProduct)
+    }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectAddonToRemoveScreen(
     uiState = uiState,
