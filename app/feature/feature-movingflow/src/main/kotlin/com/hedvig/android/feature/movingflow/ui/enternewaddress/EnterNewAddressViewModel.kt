@@ -10,6 +10,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.toRoute
 import arrow.core.None
 import arrow.core.Option
@@ -58,9 +60,12 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -72,11 +77,9 @@ import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
 
-@Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@AssistedInject
 internal class EnterNewAddressViewModel(
-  savedStateHandle: SavedStateHandle,
+  @Assisted savedStateHandle: SavedStateHandle,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   featureManager: FeatureManager,
@@ -88,7 +91,18 @@ internal class EnterNewAddressViewModel(
       apolloClient,
       featureManager,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ViewModelAssistedFactoryKey(EnterNewAddressViewModel::class)
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ViewModelAssistedFactory {
+    override fun create(extras: CreationExtras): EnterNewAddressViewModel = create(extras.createSavedStateHandle())
+
+    fun create(
+      @Assisted savedStateHandle: SavedStateHandle,
+    ): EnterNewAddressViewModel
+  }
+}
 
 private class EnterNewAddressPresenter(
   private val moveIntentId: String,

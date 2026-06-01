@@ -49,7 +49,7 @@ fun NavGraphBuilder.loginGraph(
       )
     }
     navdestination<LoginDestinations.SwedishLogin> {
-      val swedishLoginViewModel: SwedishLoginViewModel = metroViewModel()
+      val swedishLoginViewModel: SwedishLoginViewModel = assistedMetroViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
         navigateUp = navController::navigateUp,

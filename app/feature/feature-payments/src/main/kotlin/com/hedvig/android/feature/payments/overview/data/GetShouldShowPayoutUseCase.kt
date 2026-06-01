@@ -14,7 +14,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.ShouldShowPayoutButtonQuery
 
-internal interface GetShouldShowPayoutUseCase {
+interface GetShouldShowPayoutUseCase {
   suspend fun invoke(): Either<ErrorMessage, Boolean>
 }
 
@@ -24,7 +24,7 @@ internal interface GetShouldShowPayoutUseCase {
  */
 @Inject
 @SingleIn(AppScope::class)
-internal class GetShouldShowPayoutUseCaseImpl(
+class GetShouldShowPayoutUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetShouldShowPayoutUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Boolean> = either {
@@ -43,6 +43,6 @@ internal class GetShouldShowPayoutUseCaseImpl(
 
 @Inject
 @SingleIn(AppScope::class)
-internal class GetShouldShowPayoutUseCaseDemo : GetShouldShowPayoutUseCase {
+class GetShouldShowPayoutUseCaseDemo : GetShouldShowPayoutUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Boolean> = false.right()
 }

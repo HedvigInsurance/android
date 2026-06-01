@@ -12,7 +12,7 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-internal interface CrossSellSheetMetroProviders {
+interface CrossSellSheetMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideGetCrossSellSheetDataUseCaseProvider(

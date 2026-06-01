@@ -16,7 +16,7 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-internal interface PaymentsMetroProviders {
+interface PaymentsMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideGetUpcomingPaymentUseCaseProvider(

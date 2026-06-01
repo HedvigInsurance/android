@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.flowOf
 
 @Inject
 @SingleIn(AppScope::class)
-internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
+class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> = flowOf(
     HomeData(
       contractStatus = HomeData.ContractStatus.Active,

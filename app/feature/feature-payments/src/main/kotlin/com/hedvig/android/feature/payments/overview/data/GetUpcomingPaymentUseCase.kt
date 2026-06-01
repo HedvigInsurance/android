@@ -30,13 +30,13 @@ import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
 
-internal interface GetUpcomingPaymentUseCase {
+interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
 }
 
 @Inject
 @SingleIn(AppScope::class)
-internal data class GetUpcomingPaymentUseCaseImpl(
+data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
@@ -113,7 +113,7 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
 
 @Inject
 @SingleIn(AppScope::class)
-internal class GetUpcomingPaymentUseCaseDemo(
+class GetUpcomingPaymentUseCaseDemo(
   private val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> {

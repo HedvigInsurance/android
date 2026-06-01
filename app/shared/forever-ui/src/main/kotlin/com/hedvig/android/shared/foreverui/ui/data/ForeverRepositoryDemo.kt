@@ -13,7 +13,7 @@ import octopus.type.MemberReferralStatus
 
 @Inject
 @SingleIn(AppScope::class)
-internal class ForeverRepositoryDemo : ForeverRepository {
+class ForeverRepositoryDemo : ForeverRepository {
   private var code: String = "code"
 
   override suspend fun getReferralsData(): Either<ErrorMessage, FullReferralsQuery.Data> = either {

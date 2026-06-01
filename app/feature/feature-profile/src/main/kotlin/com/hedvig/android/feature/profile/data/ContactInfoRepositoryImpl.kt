@@ -21,7 +21,7 @@ import octopus.MemberUpdateContactInfoMutation
 
 @Inject
 @SingleIn(AppScope::class)
-internal class ContactInfoRepositoryImpl(
+class ContactInfoRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
 ) : ContactInfoRepository {

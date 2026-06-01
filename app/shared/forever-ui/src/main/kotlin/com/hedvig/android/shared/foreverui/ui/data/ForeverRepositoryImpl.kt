@@ -17,7 +17,7 @@ import octopus.MemberReferralInformationCodeUpdateMutation
 
 @Inject
 @SingleIn(AppScope::class)
-internal class ForeverRepositoryImpl(
+class ForeverRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : ForeverRepository {
   private val referralsQuery = FullReferralsQuery()

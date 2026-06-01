@@ -12,7 +12,7 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-internal interface ForeverMetroProviders {
+interface ForeverMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideForeverRepositoryProvider(

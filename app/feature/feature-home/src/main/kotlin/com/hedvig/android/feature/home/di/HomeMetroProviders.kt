@@ -11,7 +11,7 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-internal interface HomeMetroProviders {
+interface HomeMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideGetHomeDataUseCaseProvider(

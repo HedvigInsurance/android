@@ -50,13 +50,13 @@ import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.HomeCrossSellFragment
 
-internal interface GetHomeDataUseCase {
+interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
 }
 
 @Inject
 @SingleIn(AppScope::class)
-internal class GetHomeDataUseCaseImpl(
+class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
@@ -286,7 +286,7 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   )
 }
 
-internal data class HomeData(
+data class HomeData(
   val contractStatus: ContractStatus,
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: List<VeryImportantMessage>,

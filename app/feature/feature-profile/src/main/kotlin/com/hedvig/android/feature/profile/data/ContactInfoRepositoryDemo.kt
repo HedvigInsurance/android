@@ -11,7 +11,7 @@ import dev.zacsweers.metro.SingleIn
 
 @Inject
 @SingleIn(AppScope::class)
-internal class ContactInfoRepositoryDemo : ContactInfoRepository {
+class ContactInfoRepositoryDemo : ContactInfoRepository {
   private var contactInformation = ContactInformation(
     PhoneNumber("072102103"),
     Email("google@gmail.com"),

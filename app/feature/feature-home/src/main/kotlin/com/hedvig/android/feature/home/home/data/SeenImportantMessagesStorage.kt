@@ -1,5 +1,9 @@
 package com.hedvig.android.feature.home.home.data
 
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +15,10 @@ interface SeenImportantMessagesStorage {
   fun markMessageAsSeen(id: String)
 }
 
-internal class SeenImportantMessagesStorageImpl : SeenImportantMessagesStorage {
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
+class SeenImportantMessagesStorageImpl : SeenImportantMessagesStorage {
   private val storedSeenMessages: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
 
   override val seenMessages: StateFlow<List<String>>
