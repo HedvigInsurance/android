@@ -118,7 +118,8 @@ internal class TerminateInsuranceRepositoryImpl(
   }
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData(): Either<ErrorMessage, TerminationSurveyData> {
+private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData():
+  Either<ErrorMessage, TerminationSurveyData> {
   return either {
     TerminationSurveyData(
       options = options.mapIndexed { index, option -> option.toTerminationSurveyOption(index) },
@@ -167,7 +168,8 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSu
   )
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): Either<ErrorMessage, TerminationAction> {
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction():
+  Either<ErrorMessage, TerminationAction> {
   return when (this) {
     is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionTerminateWithDateAction -> {
       Either.Right(

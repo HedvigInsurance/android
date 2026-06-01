@@ -48,7 +48,8 @@ internal class TravelCertificateTravellersInputViewModel(
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+      @Assisted
+      primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
     ): TravelCertificateTravellersInputViewModel
   }
 }

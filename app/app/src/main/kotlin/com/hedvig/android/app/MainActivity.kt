@@ -64,20 +64,34 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
   @Inject private lateinit var authTokenService: AuthTokenService
+
   @Inject private lateinit var demoManager: DemoManager
+
   @Inject private lateinit var featureManager: FeatureManager
+
   @Inject private lateinit var getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider
+
   @Inject private lateinit var hedvigBuildConstants: HedvigBuildConstants
+
   @Inject private lateinit var hedvigDeepLinkContainer: HedvigDeepLinkContainer
+
   @Inject private lateinit var imageLoader: ImageLoader
+
   @Inject private lateinit var languageService: LanguageService
+
   @Inject private lateinit var settingsDataStore: SettingsDataStore
-  @Inject private lateinit var waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase
+
+  @Inject
+  private lateinit var waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase
+
   @Inject private lateinit var languageLaunchCheckUseCase: LanguageLaunchCheckUseCase
+
   @Inject private lateinit var simpleVideoCache: SimpleCache
 
   @Inject private lateinit var logoutUseCase: LogoutUseCase
+
   @Inject private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
+
   @Inject private lateinit var missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider
 
   private var navController: NavController? = null

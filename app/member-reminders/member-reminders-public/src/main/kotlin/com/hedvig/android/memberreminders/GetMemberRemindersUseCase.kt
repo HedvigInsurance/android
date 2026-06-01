@@ -70,7 +70,8 @@ internal class GetMemberRemindersUseCaseImpl(
       val enableNotifications = values[0] as MemberReminder.EnableNotifications?
       val connectPayment = values[1] as MemberReminder.PaymentReminder?
       val upcomingRenewalReminders = values[2] as? NonEmptyList<MemberReminder.UpcomingRenewal>?
-      val coInsuredInfoResult = values[3] as? Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
+      val coInsuredInfoResult =
+        values[3] as? Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
       val contactInfoReminder = values[4] as? Either<ErrorMessage, ContactInfoUpdateNeeded?>
       val missingChipIdReminder = values[5] as? Either<ErrorMessage, MemberReminder.MissingChipId?>
 

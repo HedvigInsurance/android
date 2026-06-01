@@ -16,6 +16,7 @@ class PushNotificationService : FirebaseMessagingService() {
   private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
   @Inject private lateinit var notificationSenders: Set<NotificationSender>
+
   @Inject private lateinit var fcmTokenManager: FCMTokenManager
 
   override fun onCreate() {
