@@ -24,8 +24,7 @@ import kotlinx.coroutines.tasks.await
  * token is received by our [com.hedvig.android.notification.firebase.PushNotificationService]
  */
 @SingleIn(AppScope::class)
-@Inject
-internal class FCMTokenManager(
+class FCMTokenManager @Inject internal constructor(
   private val applicationContext: Context,
   private val fcmTokenStorage: FCMTokenStorage,
 ) {

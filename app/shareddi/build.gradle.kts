@@ -13,7 +13,6 @@ kotlin {
       implementation(libs.apollo.runtime)
       implementation(libs.coil.coil)
       implementation(libs.coil.network.ktor)
-      implementation(libs.koin.core)
       implementation(libs.ktor.client.auth)
       implementation(libs.ktor.client.logging)
       implementation(libs.metro.viewmodel)

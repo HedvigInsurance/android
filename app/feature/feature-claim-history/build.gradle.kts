@@ -24,9 +24,7 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(libs.androidx.navigation.compose)
-      implementation(libs.koin.composeViewModel)
-      implementation(libs.koin.composeViewModel)
-      implementation(libs.koin.core)
+      implementation(libs.metro.viewmodel.compose)
       implementation(projects.coreResources)
       implementation(projects.designSystemHedvig)
       implementation(projects.moleculePublic)

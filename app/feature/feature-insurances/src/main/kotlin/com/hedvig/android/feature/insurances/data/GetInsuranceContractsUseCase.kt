@@ -22,6 +22,7 @@ import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedI
 import com.hedvig.android.feature.insurances.data.InsuranceContract.PendingInsuranceContract
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Duration.Companion.seconds
@@ -42,12 +43,13 @@ import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
 import octopus.type.DisplayItemOptions
 
-internal interface GetInsuranceContractsUseCase {
+interface GetInsuranceContractsUseCase {
   fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 @Inject
 @SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,

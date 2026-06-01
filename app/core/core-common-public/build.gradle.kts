@@ -8,7 +8,6 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.coroutines.core)
-      implementation(libs.koin.core)
       implementation(libs.kotlinx.datetime)
     }
 

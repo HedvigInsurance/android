@@ -8,7 +8,6 @@ import com.apollographql.ktor.ktorClient
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
-import com.hedvig.android.core.common.di.baseHttpClientQualifier
 import com.hedvig.android.core.datastore.DeviceIdFetcher
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
@@ -33,36 +32,6 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.plugin
 import io.ktor.client.request.header
 import io.ktor.client.request.headers
-import org.koin.core.module.Module
-import org.koin.dsl.module
-
-val networkModule = module {
-  includes(platformNetworkModule)
-  single<HttpClient>(baseHttpClientQualifier) {
-    buildKtorClient(get<HedvigBuildConstants>(), get<LanguageService>(), get<DeviceIdFetcher>())
-  }
-  single<HttpClient> {
-    get<HttpClient>(baseHttpClientQualifier)
-      .config {}
-      .apply {
-        addAuthPlugin(get<AccessTokenFetcher>())
-      }
-  }
-  single<NormalizedCacheFactory> {
-    MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
-  }
-  single<ApolloClient> {
-    val extraConfig = get<ExtraApolloClientConfiguration>()
-    ApolloClient.Builder()
-      .normalizedCache(get<NormalizedCacheFactory>())
-      .ktorClient(get<HttpClient>())
-      .httpServerUrl(get<HedvigBuildConstants>().urlGraphqlOctopus)
-      .run { extraConfig.configure(this) }
-      .build()
-  }
-}
-
-internal expect val platformNetworkModule: Module
 
 @ContributesTo(AppScope::class)
 interface NetworkMetroProviders {

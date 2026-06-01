@@ -9,6 +9,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,7 @@ class CrossSellHomeNotificationServiceProvider(
 ) : ProdOrDemoProvider<CrossSellHomeNotificationService>
 
 @Inject
-internal class DemoCrossSellHomeNotificationService() : CrossSellHomeNotificationService {
+class DemoCrossSellHomeNotificationService() : CrossSellHomeNotificationService {
   var showNotification = true
 
   override fun showRedDotNotification(): Flow<Boolean> {
@@ -54,6 +55,7 @@ interface CrossSellHomeNotificationService {
 
 @Inject
 @SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 internal class CrossSellHomeNotificationServiceImpl(
   private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
   private val dataStore: DataStore<Preferences>,

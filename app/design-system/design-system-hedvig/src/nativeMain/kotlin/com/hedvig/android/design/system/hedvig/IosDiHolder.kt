@@ -12,4 +12,10 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 object IosDiHolder {
   lateinit var metroViewModelFactory: MetroViewModelFactory
   lateinit var imageLoader: ImageLoader
+
+  /**
+   * The iOS Metro graph as [Any] so iOS-only code in feature modules (which cannot see the concrete
+   * graph type) can cast it to a `@ContributesTo(AppScope::class)` entry-point interface they declare.
+   */
+  lateinit var graph: Any
 }

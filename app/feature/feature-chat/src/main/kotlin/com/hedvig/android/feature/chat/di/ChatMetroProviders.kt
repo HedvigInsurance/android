@@ -5,19 +5,18 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.chat.data.CbmChatRepository
 import com.hedvig.android.feature.chat.data.CbmChatRepositoryDemo
-import com.hedvig.android.feature.chat.data.CbmChatRepositoryImpl
 import com.hedvig.android.feature.chat.data.GetCbmChatRepositoryProvider
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-internal interface ChatMetroProviders {
+interface ChatMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideGetCbmChatRepositoryProvider(
     demoManager: DemoManager,
-    prodImpl: CbmChatRepositoryImpl,
+    prodImpl: CbmChatRepository,
     demoImpl: CbmChatRepositoryDemo,
   ): Provider<CbmChatRepository> = GetCbmChatRepositoryProvider(
     demoManager = demoManager,

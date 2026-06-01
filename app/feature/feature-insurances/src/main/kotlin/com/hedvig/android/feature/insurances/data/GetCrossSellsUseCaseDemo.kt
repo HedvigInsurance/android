@@ -11,7 +11,7 @@ import dev.zacsweers.metro.SingleIn
 
 @Inject
 @SingleIn(AppScope::class)
-internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
+class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, CrossSellResult> {
     return either {
       CrossSellResult(

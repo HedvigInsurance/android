@@ -7,7 +7,6 @@ dependencies {
   api(libs.datadog.sdk.rum)
   api(projects.trackingCore)
 
-  implementation(libs.koin.core)
   implementation(projects.coreCommonPublic)
   implementation(projects.initializable)
 }

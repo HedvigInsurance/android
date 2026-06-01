@@ -35,8 +35,6 @@ kotlin {
       implementation(libs.jetbrains.navigation.common)
       implementation(libs.jetbrains.navigation.compose)
       implementation(libs.jetbrains.navigationevent.compose)
-      implementation(libs.koin.composeViewModel)
-      implementation(libs.koin.core)
       implementation(libs.metro.viewmodel)
       implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)

@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.flowOf
  */
 @Inject
 @SingleIn(AppScope::class)
-internal class CbmChatRepositoryDemo(
+class CbmChatRepositoryDemo(
   private val clock: Clock,
 ) : CbmChatRepository {
   private val info = ConversationInfo.Info("1", null, clock.now(), true)

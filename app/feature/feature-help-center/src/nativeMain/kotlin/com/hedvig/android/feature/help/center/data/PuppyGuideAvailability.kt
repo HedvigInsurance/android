@@ -1,15 +1,22 @@
 package com.hedvig.android.feature.help.center.data
 
+import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.design.system.hedvig.IosDiHolder
+import dev.zacsweers.metro.ContributesTo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.mp.KoinPlatform
+
+@ContributesTo(AppScope::class)
+interface PuppyGuideEntryPoint {
+  val getPuppyGuideUseCase: GetPuppyGuideUseCase
+}
 
 @Suppress("unused") // Used from iOS
 fun observePuppyGuideAvailability(onResult: (PuppyGuidePresentation?) -> Unit): PuppyGuideAvailabilityCancellable {
-  val useCase = KoinPlatform.getKoin().get<GetPuppyGuideUseCase>()
+  val useCase = (IosDiHolder.graph as PuppyGuideEntryPoint).getPuppyGuideUseCase
   val scope = CoroutineScope(Dispatchers.Main)
   val job: Job = scope.launch {
     useCase.invoke().collectLatest { either ->

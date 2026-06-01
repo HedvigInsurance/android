@@ -52,6 +52,7 @@ import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
 import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
+import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
 import kotlinx.coroutines.channels.Channel
@@ -60,25 +61,24 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-  private val authTokenService: AuthTokenService by inject()
-  private val demoManager: DemoManager by inject()
-  private val featureManager: FeatureManager by inject()
-  private val getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider by inject()
-  private val hedvigBuildConstants: HedvigBuildConstants by inject()
-  private val hedvigDeepLinkContainer: HedvigDeepLinkContainer by inject()
-  private val imageLoader: ImageLoader by inject()
-  private val languageService: LanguageService by inject()
-  private val settingsDataStore: SettingsDataStore by inject()
-  private val waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase by inject()
-  private val languageLaunchCheckUseCase: LanguageLaunchCheckUseCase by inject()
-  private val simpleVideoCache: SimpleCache by inject()
+  @Inject private lateinit var authTokenService: AuthTokenService
+  @Inject private lateinit var demoManager: DemoManager
+  @Inject private lateinit var featureManager: FeatureManager
+  @Inject private lateinit var getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider
+  @Inject private lateinit var hedvigBuildConstants: HedvigBuildConstants
+  @Inject private lateinit var hedvigDeepLinkContainer: HedvigDeepLinkContainer
+  @Inject private lateinit var imageLoader: ImageLoader
+  @Inject private lateinit var languageService: LanguageService
+  @Inject private lateinit var settingsDataStore: SettingsDataStore
+  @Inject private lateinit var waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase
+  @Inject private lateinit var languageLaunchCheckUseCase: LanguageLaunchCheckUseCase
+  @Inject private lateinit var simpleVideoCache: SimpleCache
 
-  private val logoutUseCase: LogoutUseCase by inject()
-  private val getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase by inject()
-  private val missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider by inject()
+  @Inject private lateinit var logoutUseCase: LogoutUseCase
+  @Inject private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
+  @Inject private lateinit var missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider
 
   private var navController: NavController? = null
 
@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity() {
   private val splashIsRemovedSignal = Channel<Unit>(Channel.UNLIMITED)
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    AppGraphHolder.graph.inject(this)
     installSplashScreen().apply {
       setKeepOnScreenCondition { showSplash.value }
       setOnExitAnimationListener {

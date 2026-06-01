@@ -19,7 +19,7 @@ import kotlinx.datetime.LocalDate
 
 @Inject
 @SingleIn(AppScope::class)
-internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
+class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return flowOf(
       listOf(

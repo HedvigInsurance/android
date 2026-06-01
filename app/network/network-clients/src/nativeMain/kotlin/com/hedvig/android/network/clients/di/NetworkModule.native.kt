@@ -6,14 +6,6 @@ import com.hedvig.android.network.clients.NoopExtraApolloClientConfiguration
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
-import org.koin.core.module.Module
-import org.koin.dsl.module
-
-internal actual val platformNetworkModule: Module = module {
-  single<ExtraApolloClientConfiguration> {
-    NoopExtraApolloClientConfiguration()
-  }
-}
 
 @ContributesTo(AppScope::class)
 interface NativeNetworkMetroProviders {

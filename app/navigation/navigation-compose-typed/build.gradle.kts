@@ -15,7 +15,6 @@ kotlin {
       implementation(libs.jetbrains.navigation.compose)
       implementation(libs.jetbrains.compose.runtime)
       implementation(libs.jetbrains.lifecycle.viewmodel)
-      implementation(libs.koin.composeViewModel)
       implementation(libs.kotlinx.serialization.core)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)

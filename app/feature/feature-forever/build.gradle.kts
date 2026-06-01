@@ -11,8 +11,6 @@ hedvig {
 dependencies {
   api(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)
   implementation(projects.designSystemHedvig)

@@ -146,10 +146,8 @@ private fun DependencyHandlerScope.configureCommonDependencies(project: Project,
 }
 
 private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configurationName: String) {
-  val koinBom = libs.koin.bom
   val composeBom = libs.androidx.compose.bom
   dependencies {
-    add(configurationName, platform(koinBom))
     add(configurationName, platform(composeBom))
 
     with(project.name) {

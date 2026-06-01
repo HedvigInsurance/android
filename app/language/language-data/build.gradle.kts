@@ -10,7 +10,6 @@ hedvig {
 dependencies {
 
   implementation(libs.apollo.runtime)
-  implementation(libs.koin.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.authEventCore)

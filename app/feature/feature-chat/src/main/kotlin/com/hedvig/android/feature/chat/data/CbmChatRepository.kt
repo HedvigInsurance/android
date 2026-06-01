@@ -42,6 +42,7 @@ import com.hedvig.android.feature.chat.model.toChatMessageEntity
 import com.hedvig.android.feature.chat.model.toSender
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
@@ -64,7 +65,7 @@ import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
 import octopus.type.ChatMessageDisclaimerType
 
-internal interface CbmChatRepository {
+interface CbmChatRepository {
   suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info>
 
   fun getConversationInfo(conversationId: Uuid): Flow<Either<ApolloOperationError, ConversationInfo>>
@@ -90,6 +91,7 @@ internal interface CbmChatRepository {
 
 @Inject
 @SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class)
 internal class CbmChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val database: RoomDatabase,
@@ -450,7 +452,7 @@ private fun ErrorMessage.toMessageSendError(): MessageSendError {
   }
 }
 
-internal sealed interface ConversationInfo {
+sealed interface ConversationInfo {
   data object NoConversation : ConversationInfo
 
   data class Info(
@@ -484,7 +486,7 @@ private fun octopus.fragment.ConversationInfo.toConversationInfo(): Info {
   )
 }
 
-internal sealed interface BannerText {
+sealed interface BannerText {
   data object ClosedConversation : BannerText
 
   data class Text(
@@ -507,7 +509,7 @@ private sealed interface ConversationInput {
   ) : ConversationInput
 }
 
-internal sealed interface PagingToken {
+sealed interface PagingToken {
   val newerToken: String?
     get() = (this as? NewerToken)?.value
   val olderToken: String?
@@ -522,7 +524,7 @@ internal sealed interface PagingToken {
   ) : PagingToken
 }
 
-internal data class ChatMessagePageResponse(
+data class ChatMessagePageResponse(
   val messages: List<CbmChatMessage>,
   val newerToken: String?,
   val olderToken: String?,

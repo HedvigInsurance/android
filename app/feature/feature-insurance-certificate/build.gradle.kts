@@ -18,8 +18,6 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
   implementation(libs.jetbrains.navigation.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)

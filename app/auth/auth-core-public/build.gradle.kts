@@ -15,7 +15,6 @@ dependencies {
   implementation(libs.androidx.datastore.core)
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.coroutines.core)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor.client.android)
   implementation(projects.authEventCore)

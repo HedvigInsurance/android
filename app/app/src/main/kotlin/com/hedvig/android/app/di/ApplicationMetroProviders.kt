@@ -33,6 +33,8 @@ import com.hedvig.android.app.notification.senders.PaymentNotificationSender
 import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
 import com.hedvig.android.app.notification.senders.TravelAddonSender
 import com.hedvig.android.auth.AuthTokenService
+import com.hedvig.android.core.buildconstants.AppBuildConfig
+import com.hedvig.android.core.buildconstants.Flavor
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
@@ -44,6 +46,7 @@ import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.permission.PermissionManager
+import com.hedvig.app.BuildConfig
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.IntoSet
 import dev.zacsweers.metro.Provides
@@ -53,6 +56,10 @@ import java.io.File
 
 @ContributesTo(AppScope::class)
 interface ApplicationMetroProviders {
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideAppBuildConfig(): AppBuildConfig = AndroidBuildConfig()
+
   @Provides
   @SingleIn(AppScope::class)
   fun provideExtraApolloClientConfiguration(
@@ -97,6 +104,11 @@ interface ApplicationMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideTimeZone(): kotlinx.datetime.TimeZone = kotlinx.datetime.TimeZone.currentSystemDefault()
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideContentResolver(applicationContext: Context): android.content.ContentResolver =
+    applicationContext.contentResolver
 
   @Provides
   @SingleIn(AppScope::class)
@@ -306,4 +318,24 @@ interface ApplicationMetroProviders {
     deepLinkContainer,
     HedvigNotificationChannel.Other,
   )
+}
+
+private class AndroidBuildConfig : AppBuildConfig {
+  override val debug: Boolean = BuildConfig.DEBUG
+  override val applicationId: String = BuildConfig.APPLICATION_ID
+  override val buildType: String = BuildConfig.BUILD_TYPE
+  override val versionCode: Int = BuildConfig.VERSION_CODE
+  override val versionName: String = BuildConfig.VERSION_NAME
+  override val appFlavor: Flavor = when (applicationId) {
+    "com.hedvig.dev.app" if buildType == "debug" -> Flavor.Develop
+    "com.hedvig.app" if buildType == "staging" -> Flavor.Staging
+    "com.hedvig.app" if buildType == "release" -> Flavor.Production
+    else -> error("Wrong mix of applicationId and buildType [$applicationId | $buildType]")
+  }
+  override val osReleaseVersion: String = Build.VERSION.RELEASE
+  override val osSdkVersion: Int = Build.VERSION.SDK_INT
+  override val brand: String = Build.BRAND
+  override val model: String = Build.MODEL
+  override val device: String = Build.DEVICE
+  override val manufacturer: String = Build.MANUFACTURER
 }

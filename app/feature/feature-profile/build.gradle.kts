@@ -16,6 +16,7 @@ android {
 dependencies {
   implementation(libs.accompanist.permissions)
   implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.other.appCompat)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
@@ -23,8 +24,6 @@ dependencies {
   implementation(libs.jetbrains.compose.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.navigation.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloNetworkCacheManager)
