@@ -19,7 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.core.common.di.MetroGraphHolder
+import com.hedvig.android.core.common.di.MetroGraphProvider
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.feature.impersonation.ImpersonationReceiverViewModel.ViewState.Error
@@ -59,7 +59,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
     ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
 
-    val entryPoint = MetroGraphHolder.graph as ImpersonationEntryPoint
+    val entryPoint = (applicationContext as MetroGraphProvider).metroGraph as ImpersonationEntryPoint
     val hedvigDeepLinkContainer = entryPoint.hedvigDeepLinkContainer
 
     val token = intent.data?.getQueryParameter("authorizationCode")

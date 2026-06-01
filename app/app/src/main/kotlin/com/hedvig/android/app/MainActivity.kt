@@ -31,7 +31,6 @@ import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
-import com.hedvig.android.app.di.AppGraphHolder
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
@@ -109,7 +108,7 @@ class MainActivity : AppCompatActivity() {
   private val splashIsRemovedSignal = Channel<Unit>(Channel.UNLIMITED)
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    AppGraphHolder.graph.inject(this)
+    (application as HedvigApplication).appGraph.inject(this)
     installSplashScreen().apply {
       setKeepOnScreenCondition { showSplash.value }
       setOnExitAnimationListener {
@@ -148,7 +147,7 @@ class MainActivity : AppCompatActivity() {
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
       CompositionLocalProvider(
-        LocalMetroViewModelFactory provides AppGraphHolder.graph.metroViewModelFactory,
+        LocalMetroViewModelFactory provides (application as HedvigApplication).appGraph.metroViewModelFactory,
       ) {
         val context = LocalContext.current
         RiveInitializer.init(context)
