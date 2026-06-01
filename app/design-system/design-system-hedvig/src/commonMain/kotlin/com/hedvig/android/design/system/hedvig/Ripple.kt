@@ -9,6 +9,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorProducer
 import androidx.compose.ui.graphics.isSpecified
@@ -19,6 +20,7 @@ import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.unit.Dp
+import com.hedvig.android.design.system.hedvig.internal.identityHashCode
 import com.hedvig.android.design.system.hedvig.tokens.StateTokens
 
 /**
@@ -31,18 +33,28 @@ fun ripple(
   radius: Dp = Dp.Unspecified,
   color: Color = Color.Unspecified,
 ): IndicationNodeFactory {
+  if (rippleIsNoopOnThisPlatform) return NoopIndication
   return if (radius == Dp.Unspecified && color == Color.Unspecified) {
-    if (bounded) return DefaultBoundedRipple else DefaultUnboundedRipple
+    if (bounded) DefaultBoundedRipple else DefaultUnboundedRipple
   } else {
     RippleNodeFactory(bounded, radius, color)
   }
 }
 
-fun noopRipple(): Indication = NoopIndication
+fun noopRipple(): IndicationNodeFactory = NoopIndication
+
+/**
+ * iOS has no ripple — UIKit doesn't show one and Compose's ripple looks foreign there.
+ * Routed through [ripple] (and the internal [ColorProducer] overload) so every code path
+ * — `LocalIndication.current`, direct `ripple()`, custom-color `ripple(...)` — collapses to
+ * [NoopIndication] on iOS without callers having to know.
+ */
+internal expect val rippleIsNoopOnThisPlatform: Boolean
 
 @Suppress("unused")
 @Stable
 internal fun ripple(color: ColorProducer, bounded: Boolean = true, radius: Dp = Dp.Unspecified): IndicationNodeFactory {
+  if (rippleIsNoopOnThisPlatform) return NoopIndication
   return RippleNodeFactory(bounded, radius, color)
 }
 
@@ -189,8 +201,12 @@ private val DefaultUnboundedRipple = RippleNodeFactory(
   color = Color.Unspecified,
 )
 
-private object NoopIndication : Indication {
+private object NoopIndication : IndicationNodeFactory {
+  override fun create(interactionSource: InteractionSource): DelegatableNode = NoopIndicationNode()
+
   override fun equals(other: Any?): Boolean = other === NoopIndication
 
-  override fun hashCode(): Int = System.identityHashCode(this)
+  override fun hashCode(): Int = identityHashCode(this)
 }
+
+private class NoopIndicationNode : Modifier.Node()

@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.imageviewer
 
+import android.graphics.Canvas as AndroidCanvas
+import android.graphics.Color as AndroidColor
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,19 +21,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import android.graphics.Canvas as AndroidCanvas
-import android.graphics.Color as AndroidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.compose.dropUnlessResumed
 import coil3.Bitmap
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import coil3.request.transformations
 import coil3.size.Size
 import coil3.transform.Transformation
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -51,8 +53,6 @@ import hedvig.resources.TALKBACK_OPEN_EXTERNAL_LINK
 import hedvig.resources.TALKBACK_PINCH_TO_ZOOM
 import hedvig.resources.general_back_button
 import org.jetbrains.compose.resources.stringResource
-import androidx.core.graphics.createBitmap
-import coil3.request.transformations
 
 @Composable
 internal fun ImageViewerDestination(
@@ -63,8 +63,8 @@ internal fun ImageViewerDestination(
 ) {
   Box(
     Modifier
-        .fillMaxSize()
-        .background(Color.Black),
+      .fillMaxSize()
+      .background(Color.Black),
   ) {
     val zoomableState = rememberZoomableState(overZoomConfig = OverZoomConfig(1f, 4f))
     Zoomable(
@@ -81,10 +81,10 @@ internal fun ImageViewerDestination(
           .build(),
         contentDescription = stringResource(Res.string.TALKBACK_PINCH_TO_ZOOM),
         modifier = Modifier
-            .fillMaxSize()
-            .semantics {
-                role = Role.Image
-            },
+          .fillMaxSize()
+          .semantics {
+            role = Role.Image
+          },
       )
     }
     HedvigTheme(darkTheme = true) {
@@ -95,10 +95,12 @@ internal fun ImageViewerDestination(
           Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top))
-                .padding(horizontal = 4.dp)
-                .fillMaxWidth()
-                .height(64.dp),
+              .windowInsetsPadding(
+                WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
+              )
+              .padding(horizontal = 4.dp)
+              .fillMaxWidth()
+              .height(64.dp),
           ) {
             val description = stringResource(Res.string.general_back_button)
             IconButton(
@@ -140,7 +142,6 @@ class WhiteBackgroundTransformation : Transformation() {
     return output
   }
 }
-
 
 @HedvigPreview
 @Composable

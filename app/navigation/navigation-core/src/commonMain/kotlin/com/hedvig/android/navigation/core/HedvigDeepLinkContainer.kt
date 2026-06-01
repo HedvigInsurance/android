@@ -7,6 +7,7 @@ interface HedvigDeepLinkContainer {
   val helpCenter: List<String> // The help center root screen
   val helpCenterCommonTopic: List<String> // A common topic inside the help center
   val helpCenterQuestion: List<String> // A specific question inside the help center
+  val puppyGuide: List<String> // The puppy guide list screen, inside the help center
 
   val insurances: List<String> // The insurances destination, which also shows cross sells
   val claimFlow: List<String> // The claim flow starting pledge destination
@@ -103,6 +104,10 @@ internal class HedvigDeepLinkContainerImpl(
   // Sample url: https://hedvigdevelop.page.link/help-center/question?id=2
   override val helpCenterQuestion: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
     "$baseDeepLinkDomain/help-center/question?id={id}"
+  }
+
+  override val puppyGuide: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
+    "$baseDeepLinkDomain/puppy-guide"
   }
 
   override val insurances: List<String> = baseDeepLinkDomains.map { baseDeepLinkDomain ->
@@ -241,6 +246,7 @@ val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
     petIdWithContractId.first(),
     petIdWithoutContractId.first(),
     profile.first(),
+    puppyGuide.first(),
     terminateInsurance.first(),
     travelAddon.first(),
     travelAddonWithContractId.first(),

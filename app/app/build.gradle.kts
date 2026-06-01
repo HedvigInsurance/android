@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.2.4"
+    versionName = "14.3.0"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -194,8 +194,7 @@ dependencies {
   implementation(projects.featureCrossSellSheet)
   implementation(projects.featureDeleteAccount)
   implementation(projects.featureEditCoinsured)
-  implementation(projects.featureFlagsAndroid)
-  implementation(projects.featureFlagsPublic)
+  implementation(projects.featureFlags)
   implementation(projects.featureForever)
   implementation(projects.featureHelpCenter)
   implementation(projects.featureHome)

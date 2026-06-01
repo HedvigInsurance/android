@@ -1,0 +1,17 @@
+query PuppyGuide {
+  currentMember {
+    puppyGuide {
+      forYoungDog
+      stories {
+        categories
+        content
+        image
+        name
+        rating
+        read
+        subtitle
+        title
+      }
+    }
+  }
+}

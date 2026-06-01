@@ -69,8 +69,8 @@ import com.hedvig.android.design.system.hedvig.icon.Card
 import com.hedvig.android.design.system.hedvig.icon.ChevronRight
 import com.hedvig.android.design.system.hedvig.icon.Clock
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.icon.PaymentOutline
+import com.hedvig.android.design.system.hedvig.icon.WarningFilled
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
@@ -258,7 +258,7 @@ private fun PaymentsContent(
           FailedPaymentInfo(
             amountDue = upcomingPaymentInfo.isManualChargeAllowed.sum.toString(),
             onReviewPaymentClick = onOpenManualCharge,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
           )
           Spacer(Modifier.height(8.dp))
         }
@@ -343,7 +343,7 @@ private fun PaymentsContent(
         is ConnectedPaymentInfo.NeedsSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-          -> {
+        -> {
         }
       }
     }
@@ -378,10 +378,7 @@ private fun CardNotConnectedWarningCard(
 }
 
 @Composable
-private fun UpcomingPaymentInfoCard(
-  upcomingPaymentInfo: UpcomingPaymentInfo?,
-  modifier: Modifier = Modifier,
-) {
+private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, modifier: Modifier = Modifier) {
   Box(modifier) {
     when (upcomingPaymentInfo) {
       NoInfo -> {}
@@ -625,9 +622,12 @@ private fun FailedPaymentInfo(amountDue: String, onReviewPaymentClick: () -> Uni
     color = HedvigTheme.colorScheme.fillNegative,
     modifier = modifier
       .fillMaxWidth()
-      .border(1.dp, HedvigTheme.colorScheme.borderPrimary,
-        HedvigTheme.shapes.cornerXLarge)
-      .hedvigDropShadow()
+      .border(
+        1.dp,
+        HedvigTheme.colorScheme.borderPrimary,
+        HedvigTheme.shapes.cornerXLarge,
+      )
+      .hedvigDropShadow(),
   ) {
     Column(
       modifier = Modifier
@@ -732,7 +732,6 @@ private fun PreviewFailedPaymentInfo() {
     }
   }
 }
-
 
 @Composable
 @HedvigPreview

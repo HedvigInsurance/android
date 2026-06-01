@@ -917,12 +917,30 @@ Root type expressing the entire flow for members trying to report a new claim.
 """
 type ClaimIntent {
   id: ID!
+  """
+  The time this was started.
+  """
+  createdAt: DateTime!
+  """
+  All steps that have been taken before the current step. These typically include "current value" data.
+  WARNING: Only query these once when resuming an old intent, as they can be quite expensive to compute.
+  They effectively need to perform all the work of rendering every previous step all at once, which we should
+  generally avoid when going through the flow normally.
+  """
+  previousSteps: [ClaimIntentStep!]!
+  """
+  The current step.
+  """
   currentStep: ClaimIntentStep
   """
   A value between 0.0 and 1.0 that indicates roughly how far along the submission
   flow the user has progressed.
   """
   progress: Float
+  """
+  A short summary of the contents of this flow. Null when the flow is completely new (typically pre triage).
+  """
+  displayName: String
   """
   The created claim of this intent.
   Once this value is returned, the intent is effectively over, and no steps
@@ -964,7 +982,7 @@ type ClaimIntentSourceMessage {
   text: String!
 }
 input ClaimIntentStartInput {
-  developmentFlow: Boolean
+  developmentFlow: Boolean @deprecated(reason: "Unused")
 }
 """
 Represents a single step in the claim submission flow.
@@ -993,6 +1011,14 @@ type ClaimIntentStepContentAudioRecording {
   uploadUri: String!
   freeTextMinLength: Int!
   freeTextMaxLength: Int!
+  """
+  URL of the audio uploaded by the user.
+  """
+  currentAudioUrl: Url
+  """
+  Free text submitted by the user.
+  """
+  currentFreeText: String
   isSkippable: Boolean!
 }
 """
@@ -1038,7 +1064,16 @@ type ClaimIntentStepContentFileUpload {
   The relative URI towards where one should upload the files.
   """
   uploadUri: String!
+  """
+  Current files uploaded by the user.
+  """
+  currentFiles: [ClaimIntentStepContentFileUploadFile!]
   isSkippable: Boolean!
+}
+type ClaimIntentStepContentFileUploadFile {
+  url: Url!
+  contentType: String!
+  fileName: String!
 }
 """
 A form step is one that contains a form in the shape of a list of "fields".
@@ -1081,6 +1116,10 @@ type ClaimIntentStepContentFormField {
   If there are default values, they will show up in this array. Empty means no default value.
   """
   defaultValues: [ClaimIntentStepContentFormFieldValue!]!
+  """
+  These are the values that the user has submitted for this field.
+  """
+  currentValues: [ClaimIntentStepContentFormFieldValue!]!
   """
   If type is SEARCH, then this will be present.
   """
@@ -1136,8 +1175,21 @@ It can be seen as a special-case form with nicer rendering.
 Submitted using `Mutation.claimIntentSubmitSelect`.
 """
 type ClaimIntentStepContentSelect {
+  """
+  Selectable options.
+  """
   options: [ClaimIntentStepContentSelectOption!]!
+  """
+  Visual style of this selection.
+  """
   style: ClaimIntentStepContentSelectStyle!
+  """
+  Currently selected value by the user.
+  """
+  currentSelectedId: ID
+  """
+  Pre-filled default value.
+  """
   defaultSelectedId: ID
   isSkippable: Boolean!
 }
@@ -1331,6 +1383,10 @@ type Contract {
   Whether or not this contract can be changed through the 'ChangeTier' API.
   """
   supportsChangeTier: Boolean!
+  """
+  Whether or not this contract can be terminated by user
+  """
+  supportsTermination: Boolean!
   """
   Current state of co-insured including upcoming changes.
   If current agreement doesn't support co-insured, this is null
@@ -2464,6 +2520,11 @@ type Member {
   List of members FAQ
   """
   memberFAQ: MemberFAQ!
+  """
+  Returns the most recent claim intent for this member, that can be "resumed" by querying `ClaimIntent.previousSteps`.
+  Will return `null` if the server considers it too old to be resumed.
+  """
+  resumableClaimIntent: ClaimIntent
   claims: [Claim!]!
   claimsActive: [Claim!]!
   claimsHistory: [Claim!]!
@@ -2527,10 +2588,16 @@ type Member {
   """
   crossSellV2(input: CrossSellInput!): CrossSellV2!
   """
-  Young Pet Guide stories for the member.
-  Returns a list of educational content stories for young pet owners.
+  Shop sessions started by this member that have not yet been signed and are not expired.
+  Ordered by most recent activity first.
   """
-  puppyGuideStories: [PuppyGuideStory!]!
+  ongoingShopSessions: [ShopSession!]!
+  """
+  Young Pet Guide content for the member.
+  Returns the educational content stories plus an indicator of whether the audience
+  is a young dog. Returns null when the member has no active dog contracts.
+  """
+  puppyGuide: PuppyGuide
   """
   Fetch all the active contracts for this member. Active contracts include all insurances that are either
   active today, or to-be-active in the future.
@@ -3933,6 +4000,10 @@ type PendingContract {
   """
   externalInsuranceCancellationHandledByHedvig: Boolean!
   """
+  Whether or not this contract can be terminated by user
+  """
+  supportsTermination: Boolean!
+  """
   List of addons on the agreement.
   """
   addons: [Addon!]!
@@ -4380,6 +4451,11 @@ type ProductRecommendation {
   Null when no Insurely data collection is associated with the session.
   """
   externalInsurance: RecommendationExternalInsurance
+  """
+  Best-effort prefill for the product's price calculator, derived from Insurely data, for
+  product-only recommendations where no offer could be generated. Null when no usable prefill exists.
+  """
+  priceIntentData: PricingFormData
 }
 type ProductVariant {
   """
@@ -4451,6 +4527,19 @@ input PuppyEngagementInput {
   opened: Boolean
   read: Boolean
   closed: Boolean
+}
+type PuppyGuide {
+  """
+  Educational content stories for dog owners. The same set is served regardless of dog age.
+  """
+  stories: [PuppyGuideStory!]
+  """
+  True if the member has at least one active dog contract for a dog under 2 years old.
+  Clients should use this to render the content appropriately for the audience —
+  content tailored to puppies will be a better fit when this is true.
+  [null] assumes it's not a young dog, as we do not have this info
+  """
+  forYoungDog: Boolean
 }
 type PuppyGuideStory {
   """
@@ -4674,6 +4763,11 @@ type ShopSession {
   """
   cart: Cart!
   """
+  Display-ready summary of this session for surfacing it in member-facing lists
+  (e.g. the Hedvig mobile app's home screen).
+  """
+  display: ShopSessionDisplay!
+  """
   The outcome of a signed shop-session. Requires authentication.
   """
   outcome: ShopSessionOutcome
@@ -4807,6 +4901,49 @@ input ShopSessionCustomerUpdateInput {
   phoneNumber: String
   firstName: String
   lastName: String
+}
+type ShopSessionDisplay {
+  """
+  Title summarizing the session's products, e.g. "Car Insurance Full" for a single
+  product or "Home + Accident" when several products are in play. Uses each product's
+  full localized display name (tier-specific where applicable).
+  """
+  title: String!
+  """
+  Optional secondary line with insured-object info, e.g. "Studio apartment, Stockholm".
+  Null when no insured-object data is available.
+  """
+  subtitle: String
+  """
+  Effective monthly price after any campaign/bundle discounts.
+  Null when the session has no priced offers in the cart.
+  """
+  monthlyNet: Money
+  """
+  Original monthly price before any campaign/bundle discounts.
+  Null under the same conditions as `monthlyNet`.
+  """
+  monthlyGross: Money
+  """
+  Most recent activity timestamp on this session.
+  Used for sorting or displaying it relatively (e.g. "2 days ago").
+  """
+  lastActivityAt: DateTime!
+  """
+  Absolute URL to open in a browser to resume this session. Clients open it
+  directly in the device browser, no auth is required.
+  """
+  resumeUrl: String!
+  """
+  Mirrors the underlying session's `validTo`. Clients can use this to hide cards
+  that are expired.
+  """
+  validTo: DateTime!
+  """
+  Pillow image of the primary product in the session, suitable as a card icon.
+  Null when no product is yet associated with the session.
+  """
+  pillowImage: StoryblokImageAsset
 }
 """
 A/B testing experiment configuration for shop sessions.

@@ -27,10 +27,14 @@ internal class TriggerManualChargeUseCaseImpl(
       }
       .bind()
 
-    if (result.manuallyChargeMember.userError != null) raise(
-      ErrorMessage(
-        result.manuallyChargeMember.userError.message,
-      ),
-    ) else Unit
+    if (result.manuallyChargeMember.userError != null) {
+      raise(
+        ErrorMessage(
+          result.manuallyChargeMember.userError.message,
+        ),
+      )
+    } else {
+      Unit
+    }
   }
 }

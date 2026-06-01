@@ -178,7 +178,6 @@ internal class HedvigAppState(
     false,
   )
 
-
   /**
    * UI logic for navigating to a top level destination in the app. Top level destinations have
    * only one copy of the destination of the back stack, and save and restore state whenever you
@@ -222,7 +221,6 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedOut() {
-
     val isLoggingOutFromProfile = navController.currentDestination
       ?.typedHasRoute(destinationToExcludeFromSavingState) ?: false
 

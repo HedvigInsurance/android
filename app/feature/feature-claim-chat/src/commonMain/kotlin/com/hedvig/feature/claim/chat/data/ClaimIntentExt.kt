@@ -178,7 +178,7 @@ private fun ClaimIntentStepContentFragment.toStepContent(locale: CommonLocale): 
           faq = faq.map { it.toInfoBlock() },
           buttonText = buttonTitle,
         ),
-        )
+      )
     }
 
     else -> {

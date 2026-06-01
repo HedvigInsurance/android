@@ -691,6 +691,7 @@ private val previewPendingContract = InsuranceContract.PendingInsuranceContract(
     discounts = emptyList(),
   ),
   chipId = ChipIdState.NotRequired,
+  supportsTermination = true,
 )
 
 private val previewInsurance = EstablishedInsuranceContract(
@@ -740,4 +741,5 @@ private val previewInsurance = EstablishedInsuranceContract(
   existingAddons = emptyList(),
   availableAddons = emptyList(),
   chipId = ChipIdState.Missing,
+  supportsTermination = true,
 )

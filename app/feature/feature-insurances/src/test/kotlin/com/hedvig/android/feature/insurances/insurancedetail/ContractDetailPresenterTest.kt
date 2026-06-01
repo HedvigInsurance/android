@@ -224,7 +224,7 @@ class ContractDetailPresenterTest {
   }
 
   @Test
-  fun `if termination is enabled but contract has termination date not show cancel insurance button`() = runTest {
+  fun `if termination is enabled but contract does not support termination not show cancel insurance button`() = runTest {
     val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
     val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
     val presenter = ContractDetailPresenter(
@@ -291,7 +291,8 @@ class ContractDetailPresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
-      chipId = ChipIdState.Missing
+      chipId = ChipIdState.Missing,
+      supportsTermination = true,
     )
 
     private val insuranceWithTerminationDate = EstablishedInsuranceContract(
@@ -340,7 +341,8 @@ class ContractDetailPresenterTest {
       tierName = "STANDARD",
       existingAddons = emptyList(),
       availableAddons = emptyList(),
-      chipId = ChipIdState.Missing
+      chipId = ChipIdState.Missing,
+      supportsTermination = false,
     )
 
     private val responseTurbine = Turbine<Either<GetContractForContractIdError, EstablishedInsuranceContract>>()
