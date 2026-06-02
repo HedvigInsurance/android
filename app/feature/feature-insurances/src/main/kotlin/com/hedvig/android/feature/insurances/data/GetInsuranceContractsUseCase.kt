@@ -43,7 +43,7 @@ import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
 import octopus.type.DisplayItemOptions
 
-interface GetInsuranceContractsUseCase {
+internal interface GetInsuranceContractsUseCase {
   fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
