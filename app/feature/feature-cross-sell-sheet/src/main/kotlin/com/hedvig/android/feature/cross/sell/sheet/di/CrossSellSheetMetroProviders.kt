@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.cross.sell.sheet.di
 
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
@@ -17,11 +18,10 @@ interface CrossSellSheetMetroProviders {
   @SingleIn(AppScope::class)
   fun provideGetCrossSellSheetDataUseCaseProvider(
     demoManager: DemoManager,
-    prodImpl: GetCrossSellSheetDataUseCaseImpl,
-    demoImpl: DemoGetCrossSellSheetDataUseCase,
+    apolloClient: ApolloClient,
   ): Provider<GetCrossSellSheetDataUseCase> = GetCrossSellSheetDataUseCaseProvider(
     demoManager = demoManager,
-    demoImpl = demoImpl,
-    prodImpl = prodImpl,
+    prodImpl = GetCrossSellSheetDataUseCaseImpl(apolloClient),
+    demoImpl = DemoGetCrossSellSheetDataUseCase(),
   )
 }

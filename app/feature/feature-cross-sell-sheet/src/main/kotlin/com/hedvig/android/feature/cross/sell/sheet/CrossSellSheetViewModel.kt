@@ -31,7 +31,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.Flow
@@ -131,7 +130,7 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
   }
 }
 
-class GetCrossSellSheetDataUseCaseProvider(
+internal class GetCrossSellSheetDataUseCaseProvider(
   override val demoManager: DemoManager,
   override val demoImpl: GetCrossSellSheetDataUseCase,
   override val prodImpl: GetCrossSellSheetDataUseCase,
@@ -141,9 +140,7 @@ interface GetCrossSellSheetDataUseCase {
   suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>
 }
 
-@Inject
-@SingleIn(AppScope::class)
-class GetCrossSellSheetDataUseCaseImpl(
+internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
@@ -201,8 +198,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
   }
 }
 
-@Inject
-class DemoGetCrossSellSheetDataUseCase() : GetCrossSellSheetDataUseCase {
+internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }
