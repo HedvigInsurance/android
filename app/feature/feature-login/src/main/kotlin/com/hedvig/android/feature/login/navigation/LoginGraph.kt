@@ -46,7 +46,7 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
     )
   }
   navdestination<SwedishLoginKey> {
-    val swedishLoginViewModel: SwedishLoginViewModel = metroViewModel()
+    val swedishLoginViewModel: SwedishLoginViewModel = assistedMetroViewModel()
     SwedishLoginDestination(
       swedishLoginViewModel = swedishLoginViewModel,
       navigateUp = backStack::navigateUp,
