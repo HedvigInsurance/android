@@ -1,16 +1,68 @@
+# OSS license gate (inlined).
+#
+# This is deliberately inlined rather than calling the shared reusable workflow in
+# HedvigInsurance/prod-env: that repo is PRIVATE and this repo is PUBLIC, and a public
+# repo cannot call a private repo's reusable workflow. Keep the policy block below in
+# sync with prod-env/.github/workflows/license-gate.yml.
+#
+# Android ships to end-user devices (a distribution context), so we gate on HIGH,CRITICAL
+# — blocking weak copyleft (LGPL/MPL/EPL) as well as forbidden licenses.
 name: license
+
 on:
   pull_request:
   push:
     branches: [develop, "renovate/**"]
+
+permissions:
+  contents: read
+
 jobs:
-  license:
-    uses: HedvigInsurance/prod-env/.github/workflows/license-gate.yml@master
-    with:
-      # Android ships to end-user devices (a distribution context), so block weak
-      # copyleft (LGPL/MPL/EPL) as well as forbidden licenses — not just the
-      # forbidden set that backends gate on.
-      gate-severity: "HIGH,CRITICAL"
-      # Warn-only pilot: reports findings but never fails the build. Review one run,
-      # populate `ignored-licenses` for any pre-existing hits, then remove this line.
-      enforce: false
+  license-gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      # Category -> Trivy severity: forbidden=CRITICAL  restricted=HIGH
+      #   reciprocal=MEDIUM  notice/permissive/unencumbered=LOW
+      - name: Write license policy
+        run: |
+          cat > "${RUNNER_TEMP}/trivy-license.yaml" <<'YAML'
+          license:
+            forbidden:
+              - AGPL-3.0
+              - GPL-2.0
+              - GPL-3.0
+              - SSPL-1.0
+              - BUSL-1.1
+              - Commons-Clause
+            restricted:
+              - LGPL-2.1
+              - LGPL-3.0
+              - MPL-2.0
+              - EPL-1.0
+              - EPL-2.0
+            notice:
+              - Apache-2.0
+              - MIT
+              - BSD-2-Clause
+              - BSD-3-Clause
+              - ISC
+            unencumbered:
+              - CC0-1.0
+              - Unlicense
+            permissive: []
+          YAML
+
+      - name: License gate
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: "."
+          scanners: license
+          trivy-config: ${{ runner.temp }}/trivy-license.yaml
+          severity: "HIGH,CRITICAL" # distribution context: forbidden + weak copyleft
+          # Warn-only pilot: reports findings but never fails the build.
+          # Change to "1" to enforce once the report is reviewed.
+          exit-code: "0"
+          format: table

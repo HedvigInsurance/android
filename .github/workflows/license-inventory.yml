@@ -1,11 +1,55 @@
+# OSS license inventory (inlined).
+#
+# Inlined rather than calling the shared reusable workflow in HedvigInsurance/prod-env,
+# because that repo is PRIVATE and this one is PUBLIC (a public repo cannot call a
+# private reusable workflow). Keep in sync with prod-env/.github/workflows/license-inventory.yml.
+#
+# Regenerates the CycloneDX license inventory and opens a PR with it when (and only when)
+# the dependency/license set changed. The committed file is annual-review evidence:
+# "what changed since last year" is `git diff` on .license/inventory.cdx.json.
 name: license-inventory
+
 on:
   schedule:
     - cron: "0 5 * * 1" # Mondays ~06:00 Europe/Stockholm
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   inventory:
-    permissions:
-      contents: write
-      pull-requests: write
-    uses: HedvigInsurance/prod-env/.github/workflows/license-inventory.yml@master
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate license inventory (CycloneDX)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: "."
+          scanners: license
+          format: cyclonedx
+          output: inventory.cdx.json
+
+      # CycloneDX randomizes serialNumber + timestamp every run; strip them so a PR
+      # opens only when the actual component/license set changed.
+      - name: Normalize inventory
+        run: |
+          mkdir -p .license
+          jq 'del(.serialNumber, .metadata.timestamp)' inventory.cdx.json > .license/inventory.cdx.json
+          rm -f inventory.cdx.json
+
+      - name: Open PR if inventory changed
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          add-paths: .license/inventory.cdx.json
+          branch: chore/license-inventory
+          title: "chore: update license inventory"
+          commit-message: "chore: update license inventory"
+          labels: dependencies
+          body: |
+            Automated snapshot of the OSS license inventory, kept as annual-review
+            evidence. Opens only when the dependency/license set changed since the
+            last snapshot.
