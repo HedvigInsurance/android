@@ -15,7 +15,7 @@ import dev.zacsweers.metro.SingleIn
 import octopus.InsuranceEvidenceCreateMutation
 import octopus.type.InsuranceEvidenceInput
 
-interface GenerateInsuranceEvidenceUseCase {
+internal interface GenerateInsuranceEvidenceUseCase {
   suspend fun invoke(email: String): Either<ErrorMessage, String>
 }
 

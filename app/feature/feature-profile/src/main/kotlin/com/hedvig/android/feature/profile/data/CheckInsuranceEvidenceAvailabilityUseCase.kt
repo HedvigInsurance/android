@@ -14,7 +14,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.InsuranceEvidenceAvailabilityQuery
 
-interface CheckInsuranceEvidenceAvailabilityUseCase {
+internal interface CheckInsuranceEvidenceAvailabilityUseCase {
   suspend fun invoke(): Either<InsuranceEvidenceAvailabilityError, Unit>
 }
 

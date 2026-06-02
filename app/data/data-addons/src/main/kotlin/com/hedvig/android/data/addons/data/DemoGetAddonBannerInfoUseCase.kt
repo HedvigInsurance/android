@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 @Inject
-class DemoGetAddonBannerInfoUseCase : GetAddonBannerInfoUseCase {
+internal class DemoGetAddonBannerInfoUseCase : GetAddonBannerInfoUseCase {
   override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
     return flowOf(emptyList<AddonBannerInfo>().right())
   }

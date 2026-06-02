@@ -23,7 +23,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.datetime.LocalDate
 import octopus.CoInsuredForContractQuery
 
-interface GetCoInsuredForContractUseCase {
+internal interface GetCoInsuredForContractUseCase {
   fun invoke(contractId: String): Flow<Either<ErrorMessage, CoInsuredDataWithMember>>
 }
 

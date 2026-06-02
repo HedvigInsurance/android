@@ -25,7 +25,7 @@ interface MissedPaymentNotificationService {
 }
 
 @Inject
-class DemoMissedPaymentNotificationService : MissedPaymentNotificationService {
+internal class DemoMissedPaymentNotificationService : MissedPaymentNotificationService {
   var showNotification = false
 
   override fun showRedDotNotification(): Flow<Boolean> {

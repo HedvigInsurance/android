@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import octopus.ContractsEligibleForTierChangeQuery
 
-interface GetCustomizableInsurancesUseCase {
+internal interface GetCustomizableInsurancesUseCase {
   suspend fun invoke(): Flow<Either<ErrorMessage, NonEmptyList<CustomisableInsurance>?>>
 }
 

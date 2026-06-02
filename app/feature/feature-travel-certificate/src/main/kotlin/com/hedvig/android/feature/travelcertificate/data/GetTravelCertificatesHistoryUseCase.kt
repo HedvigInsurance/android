@@ -17,7 +17,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import octopus.TravelCertificatesQuery
 
-interface GetTravelCertificatesHistoryUseCase {
+internal interface GetTravelCertificatesHistoryUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<TravelCertificate>>
 }
 

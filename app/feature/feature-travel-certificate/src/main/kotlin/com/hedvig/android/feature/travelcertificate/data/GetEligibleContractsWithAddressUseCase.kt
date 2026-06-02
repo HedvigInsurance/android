@@ -15,7 +15,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.EligibleContractsWithAddressQuery
 
-interface GetEligibleContractsWithAddressUseCase {
+internal interface GetEligibleContractsWithAddressUseCase {
   suspend fun invoke(): Either<ErrorMessage, List<ContractEligibleWithAddress>>
 }
 

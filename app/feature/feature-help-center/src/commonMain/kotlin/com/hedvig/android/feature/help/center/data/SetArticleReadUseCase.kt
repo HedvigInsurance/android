@@ -15,7 +15,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.PuppyGuideEngagementMutation
 
-interface SetArticleReadUseCase {
+internal interface SetArticleReadUseCase {
   suspend fun invoke(articleName: String): Either<ErrorMessage, Unit>
 }
 

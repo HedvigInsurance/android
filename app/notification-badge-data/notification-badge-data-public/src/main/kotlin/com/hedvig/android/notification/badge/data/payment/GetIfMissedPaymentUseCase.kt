@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import octopus.MissedPaymentQuery
 
-interface GetIfMissedPaymentUseCase {
+internal interface GetIfMissedPaymentUseCase {
   fun invoke(): Flow<Boolean>
 }
 

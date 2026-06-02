@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
-interface CheckCertificatesAvailabilityUseCase {
+internal interface CheckCertificatesAvailabilityUseCase {
   suspend fun invoke(): Either<ErrorMessage, Unit>
 }
 
