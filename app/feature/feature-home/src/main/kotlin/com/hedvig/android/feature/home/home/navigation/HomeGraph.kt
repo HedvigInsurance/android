@@ -10,6 +10,7 @@ import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
@@ -35,7 +36,8 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
   imageLoader: ImageLoader,
 ) {
   entry<HomeKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
+      NavSuiteSceneDecoratorStrategy.showNavBar(),
   ) {
     val viewModel: HomeViewModel = metroViewModel()
     HomeDestination(

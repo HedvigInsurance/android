@@ -28,6 +28,7 @@ import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -53,7 +54,8 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
   languageService: LanguageService,
 ) {
   entry<ProfileKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
+      NavSuiteSceneDecoratorStrategy.showNavBar(),
   ) {
     val viewModel: ProfileViewModel = metroViewModel()
     ProfileDestination(
@@ -88,7 +90,7 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
     )
   }
 
-  entry<EurobonusKey> {
+  entry<EurobonusKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: EurobonusViewModel = metroViewModel()
     EurobonusDestination(
       viewModel = viewModel,

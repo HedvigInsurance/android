@@ -17,21 +17,15 @@ import com.hedvig.android.app.notification.senders.CurrentDestinationInMemorySto
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.help.center.navigation.helpCenterCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.insurances.navigation.InsurancesKey
-import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.feature.insurances.navigation.insurancesCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.payments.navigation.PaymentsKey
-import com.hedvig.android.feature.profile.navigation.ProfileKey
-import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
@@ -97,24 +91,13 @@ internal class HedvigAppState(
   val currentTopLevelGraph: TopLevelGraph
     get() = backStackController.currentTopLevel
 
-  private val shouldShowNavBars: Boolean
-    get() {
-      if (!backStackController.isLoggedIn) return false
-      val destination = currentDestination ?: return false
-      if (destination.isTopLevelStartDestination()) return true
-      return bottomNavPermittedDestinations.any { it.isInstance(destination) }
-    }
-
   val navigationSuiteType: NavigationSuiteType
-    get() {
-      if (!shouldShowNavBars) return NavigationSuiteType.None
-      return when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
+    get() = when (windowSizeClass.widthSizeClass) {
+      WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
 
-        else -> when (windowSizeClass.heightSizeClass) {
-          WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
-          else -> NavigationSuiteType.NavigationRail
-        }
+      else -> when (windowSizeClass.heightSizeClass) {
+        WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
+        else -> NavigationSuiteType.NavigationRail
       }
     }
 
@@ -195,42 +178,6 @@ internal class HedvigAppState(
         else -> isSystemInDarkTheme()
       }
     }
-}
-
-@JvmInline
-value class NavigationSuiteType private constructor(
-  private val description: String,
-) {
-  override fun toString(): String = description
-
-  companion object {
-    val NavigationBar = NavigationSuiteType(description = "NavigationBar")
-    val NavigationRail = NavigationSuiteType(description = "NavigationRail")
-    val NavigationRailXLarge = NavigationSuiteType(description = "NavigationRailXL")
-    val None = NavigationSuiteType(description = "None")
-  }
-}
-
-private fun HedvigNavKey.isTopLevelStartDestination(): Boolean {
-  return when (this) {
-    is HomeKey,
-    is InsurancesKey,
-    is ForeverKey,
-    is PaymentsKey,
-    is ProfileKey,
-    -> true
-
-    else -> false
-  }
-}
-
-/**
- * Special routes, which despite not being top level should still show the navigation bars.
- */
-private val bottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = buildList {
-  addAll(profileBottomNavPermittedDestinations)
-  addAll(com.hedvig.android.feature.claimhistory.nav.profileBottomNavPermittedDestinations)
-  addAll(insurancesBottomNavPermittedDestinations)
 }
 
 /**

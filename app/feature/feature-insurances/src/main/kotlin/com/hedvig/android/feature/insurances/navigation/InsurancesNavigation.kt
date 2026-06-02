@@ -18,11 +18,6 @@ internal data class InsuranceContractDetailKey(
 @Serializable
 internal data object TerminatedInsurancesKey : HedvigNavKey
 
-val insurancesBottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  InsuranceContractDetailKey::class,
-  TerminatedInsurancesKey::class,
-)
-
 val insurancesCrossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = listOf(
   InsurancesKey::class,
   InsuranceContractDetailKey::class,

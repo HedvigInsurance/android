@@ -1,85 +1,63 @@
 package com.hedvig.android.app.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NavigationBar
 import com.hedvig.android.design.system.hedvig.NavigationRail
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.core.TopLevelGraph
 
+/**
+ * Renders just the navigation chrome (bottom bar, rail, or extra-tall rail) for the given
+ * [navigationSuiteType]. Show/hide and the content layout are owned by [NavSuiteSceneDecoratorStrategy],
+ * which places this as a shared element inside each chrome-bearing scene — so this composable only
+ * picks the right variant and never wraps the destination content.
+ */
 @Composable
-internal fun NavigationSuite(
+internal fun NavigationSuiteChrome(
   navigationSuiteType: NavigationSuiteType,
   topLevelGraphs: Set<TopLevelGraph>,
   currentTopLevelGraph: TopLevelGraph?,
   onNavigateToTopLevelGraph: (TopLevelGraph) -> Unit,
   modifier: Modifier = Modifier,
   getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
-  content: @Composable RowScope.() -> Unit,
 ) {
-  Column(modifier) {
-    Row(
-      modifier = Modifier
-        .weight(1f)
-        .fillMaxWidth(),
-    ) {
-      AnimatedVisibility(
-        visible = navigationSuiteType == NavigationSuiteType.NavigationRail ||
-          navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
-        enter = expandHorizontally(expandFrom = Alignment.End),
-        exit = shrinkHorizontally(shrinkTowards = Alignment.End),
-      ) {
-        NavigationRail(
-          destinations = topLevelGraphs,
-          onNavigateToDestination = onNavigateToTopLevelGraph,
-          getIsCurrentlySelected = { it == currentTopLevelGraph },
-          isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
-          getShowNotificationBadge = getShowNotificationBadge,
-        )
-      }
-      content()
-    }
-    AnimatedVisibility(
-      visible = navigationSuiteType == NavigationSuiteType.NavigationBar,
-      enter = expandVertically(expandFrom = Alignment.Top),
-      exit = shrinkVertically(shrinkTowards = Alignment.Top),
-    ) {
-      NavigationBar(
-        destinations = topLevelGraphs,
-        onNavigateToDestination = onNavigateToTopLevelGraph,
-        getIsCurrentlySelected = { it == currentTopLevelGraph },
-        getShowNotificationBadge = getShowNotificationBadge,
-      )
-    }
+  when (navigationSuiteType) {
+    NavigationSuiteType.NavigationBar -> NavigationBar(
+      destinations = topLevelGraphs,
+      onNavigateToDestination = onNavigateToTopLevelGraph,
+      getIsCurrentlySelected = { it == currentTopLevelGraph },
+      getShowNotificationBadge = getShowNotificationBadge,
+      modifier = modifier,
+    )
+
+    else -> NavigationRail(
+      destinations = topLevelGraphs,
+      onNavigateToDestination = onNavigateToTopLevelGraph,
+      getIsCurrentlySelected = { it == currentTopLevelGraph },
+      isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
+      getShowNotificationBadge = getShowNotificationBadge,
+      modifier = modifier,
+    )
   }
 }
 
 @PreviewFontScale
 @PreviewScreenSizes
 @Composable
-private fun PreviewNavigationSuite(
+private fun PreviewNavigationSuiteChrome(
   @PreviewParameter(
     com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider::class,
   ) showBottomBar: Boolean,
 ) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
-      NavigationSuite(
+      NavigationSuiteChrome(
         navigationSuiteType = if (showBottomBar) {
           NavigationSuiteType.NavigationBar
         } else {
@@ -88,9 +66,7 @@ private fun PreviewNavigationSuite(
         topLevelGraphs = TopLevelGraph.entries.toSet(),
         currentTopLevelGraph = null,
         onNavigateToTopLevelGraph = {},
-      ) {
-        HedvigText("Content")
-      }
+      )
     }
   }
 }

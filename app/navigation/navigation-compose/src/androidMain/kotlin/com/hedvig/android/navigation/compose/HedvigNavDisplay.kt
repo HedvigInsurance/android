@@ -2,6 +2,8 @@ package com.hedvig.android.navigation.compose
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,6 +11,7 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.hedvig.android.navigation.common.HedvigNavKey
 
@@ -25,6 +28,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
  * this module stays free of a design-system dependency). They are combined into the
  * forward/pop/predictive-pop [androidx.compose.animation.ContentTransform]s that [NavDisplay] needs.
  */
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HedvigNavDisplay(
   backStack: MutableList<HedvigNavKey>,
@@ -34,6 +38,8 @@ fun HedvigNavDisplay(
   popEnterTransition: EnterTransition,
   popExitTransition: ExitTransition,
   modifier: Modifier = Modifier,
+  sharedTransitionScope: SharedTransitionScope? = null,
+  sceneDecoratorStrategies: List<SceneDecoratorStrategy<HedvigNavKey>> = emptyList(),
   builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
 ) {
   NavDisplay(
@@ -43,24 +49,12 @@ fun HedvigNavDisplay(
     entryDecorators = listOf(
       rememberSaveableStateHolderNavEntryDecorator(),
       rememberViewModelStoreNavEntryDecorator(),
-      sharedElementTransitionDecorator,
     ),
+    sharedTransitionScope = sharedTransitionScope,
+    sceneDecoratorStrategies = sceneDecoratorStrategies,
     transitionSpec = { enterTransition togetherWith exitTransition },
     popTransitionSpec = { popEnterTransition togetherWith popExitTransition },
     predictivePopTransitionSpec = { popEnterTransition togetherWith popExitTransition },
     entryProvider = entryProvider(builder = builder),
   )
-}
-
-/**
- * Bridges Nav3's [LocalNavAnimatedContentScope] (the [androidx.compose.animation.AnimatedContentScope] that
- * [NavDisplay] provides around each decorated entry) to our design-system-facing [LocalNavAnimatedVisibilityScope],
- * so shared-element modifiers (`Modifier.globalSharedElement`) keep working under Nav3 without depending on nav3 types.
- */
-private val sharedElementTransitionDecorator: NavEntryDecorator<HedvigNavKey> = NavEntryDecorator { entry ->
-  CompositionLocalProvider(
-    LocalNavAnimatedVisibilityScope provides LocalNavAnimatedContentScope.current,
-  ) {
-    entry.Content()
-  }
 }

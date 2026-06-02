@@ -28,10 +28,6 @@ internal data object SettingsGraphKey : HedvigNavKey
 @Serializable
 internal data object SettingsKey : HedvigNavKey
 
-val profileBottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  EurobonusKey::class,
-)
-
 /*
 * Not saving navigation state when explicitly logging out from Profile
 */

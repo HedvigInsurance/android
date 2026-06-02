@@ -20,6 +20,7 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
@@ -37,7 +38,8 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
   openConversation: () -> Unit,
 ) {
   entry<PaymentsKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
+      NavSuiteSceneDecoratorStrategy.showNavBar(),
   ) {
     val viewModel: PaymentsViewModel = metroViewModel()
     PaymentsDestination(

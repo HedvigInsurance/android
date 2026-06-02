@@ -5,6 +5,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
@@ -15,7 +16,8 @@ fun EntryProviderScope<HedvigNavKey>.foreverGraph(
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   entry<ForeverKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
+      NavSuiteSceneDecoratorStrategy.showNavBar(),
   ) {
     val viewModel: ForeverViewModel = metroViewModel()
     ForeverDestination(

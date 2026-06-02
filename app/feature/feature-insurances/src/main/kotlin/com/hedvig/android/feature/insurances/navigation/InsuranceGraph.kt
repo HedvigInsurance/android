@@ -16,6 +16,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewM
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
@@ -43,7 +44,8 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
 ) {
   nestedGraphs()
   entry<InsurancesKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
+      NavSuiteSceneDecoratorStrategy.showNavBar(),
   ) {
     val viewModel: InsuranceViewModel = metroViewModel()
     InsuranceDestination(
@@ -62,7 +64,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
       },
     )
   }
-  entry<InsuranceContractDetailKey> { key ->
+  entry<InsuranceContractDetailKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) { key ->
     val contractDetail = key
     val viewModel: ContractDetailViewModel =
       assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
@@ -98,7 +100,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
       navigateToChipIdScreen = navigateToChipIdScreen,
     )
   }
-  entry<TerminatedInsurancesKey> {
+  entry<TerminatedInsurancesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: TerminatedContractsViewModel = metroViewModel()
     TerminatedContractsDestination(
       viewModel = viewModel,

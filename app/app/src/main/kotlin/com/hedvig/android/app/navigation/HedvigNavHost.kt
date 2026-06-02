@@ -1,10 +1,13 @@
 package com.hedvig.android.app.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.scene.SceneDecoratorStrategy
 import coil3.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
@@ -87,6 +90,7 @@ import com.hedvig.feature.claim.chat.claimChatGraph
 import com.hedvig.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
@@ -101,6 +105,8 @@ internal fun HedvigNavHost(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   modifier: Modifier = Modifier,
+  sharedTransitionScope: SharedTransitionScope? = null,
+  sceneDecoratorStrategies: List<SceneDecoratorStrategy<HedvigNavKey>> = emptyList(),
 ) {
   val backStack = hedvigAppState.backStackController.backStack
 
@@ -133,6 +139,8 @@ internal fun HedvigNavHost(
     popEnterTransition = MotionDefaults.sharedXAxisPopEnter(density),
     popExitTransition = MotionDefaults.sharedXAxisPopExit(density),
     modifier = modifier,
+    sharedTransitionScope = sharedTransitionScope,
+    sceneDecoratorStrategies = sceneDecoratorStrategies,
   ) {
     loginGraph(
       backStack = hedvigAppState.backStackController.backStack,
