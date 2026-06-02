@@ -4,44 +4,35 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
-sealed interface ProfileDestination {
-  @Serializable
-  data object Graph : ProfileDestination, HedvigNavKey
+@Serializable
+data object ProfileKey : HedvigNavKey
 
-  @Serializable
-  data object Profile : ProfileDestination, HedvigNavKey
+@Serializable
+data object ContactInfoKey : HedvigNavKey
 
-  @Serializable
-  data object ContactInfo : ProfileDestination, HedvigNavKey
-}
+@Serializable
+internal data object EurobonusKey : HedvigNavKey
 
-internal sealed interface ProfileDestinations {
-  @Serializable
-  data object Eurobonus : ProfileDestinations, HedvigNavKey
+@Serializable
+internal data object CertificatesKey : HedvigNavKey
 
-  @Serializable
-  data object Certificates : ProfileDestinations, HedvigNavKey
+@Serializable
+internal data object InformationKey : HedvigNavKey
 
-  @Serializable
-  data object Information : ProfileDestinations, HedvigNavKey
+@Serializable
+internal data object LicensesKey : HedvigNavKey
 
-  @Serializable
-  data object Licenses : ProfileDestinations, HedvigNavKey
+@Serializable
+internal data object SettingsGraphKey : HedvigNavKey
 
-  @Serializable
-  data object SettingsGraph : ProfileDestinations, HedvigNavKey
-}
-
-internal sealed interface SettingsDestinations {
-  @Serializable
-  data object Settings : SettingsDestinations, HedvigNavKey
-}
+@Serializable
+internal data object SettingsKey : HedvigNavKey
 
 val profileBottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  ProfileDestinations.Eurobonus::class,
+  EurobonusKey::class,
 )
 
 /*
 * Not saving navigation state when explicitly logging out from Profile
 */
-val destinationToExcludeFromSavingState: KClass<out HedvigNavKey> = ProfileDestination.Profile::class
+val destinationToExcludeFromSavingState: KClass<out HedvigNavKey> = ProfileKey::class

@@ -4,7 +4,7 @@ import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
-import com.hedvig.android.feature.profile.navigation.ProfileDestination
+import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.TopLevelGraph
 
@@ -14,5 +14,5 @@ internal val TopLevelGraph.startDestination: HedvigNavKey
     TopLevelGraph.Insurances -> InsurancesKey
     TopLevelGraph.Forever -> ForeverDestination.Forever
     TopLevelGraph.Payments -> PaymentsDestination.Payments
-    TopLevelGraph.Profile -> ProfileDestination.Profile
+    TopLevelGraph.Profile -> ProfileKey
   }

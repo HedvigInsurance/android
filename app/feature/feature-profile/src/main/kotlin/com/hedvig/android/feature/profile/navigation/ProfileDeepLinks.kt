@@ -15,7 +15,7 @@ internal class ProfileDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.profile, ProfileDestination.Profile.serializer()) +
-      uriDeepLinkMatchers(container.contactInfo, ProfileDestination.ContactInfo.serializer()) +
-      uriDeepLinkMatchers(container.eurobonus, ProfileDestinations.Eurobonus.serializer())
+    uriDeepLinkMatchers(container.profile, ProfileKey.serializer()) +
+      uriDeepLinkMatchers(container.contactInfo, ContactInfoKey.serializer()) +
+      uriDeepLinkMatchers(container.eurobonus, EurobonusKey.serializer())
 }

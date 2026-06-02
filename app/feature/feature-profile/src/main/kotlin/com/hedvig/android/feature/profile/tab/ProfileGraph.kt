@@ -16,25 +16,29 @@ import com.hedvig.android.feature.profile.contactinfo.ContactInfoDestination
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoViewModel
 import com.hedvig.android.feature.profile.eurobonus.EurobonusDestination
 import com.hedvig.android.feature.profile.eurobonus.EurobonusViewModel
-import com.hedvig.android.feature.profile.navigation.ProfileDestination
-import com.hedvig.android.feature.profile.navigation.ProfileDestinations
-import com.hedvig.android.feature.profile.navigation.ProfileDestinations.Certificates
-import com.hedvig.android.feature.profile.navigation.SettingsDestinations
+import com.hedvig.android.feature.profile.navigation.CertificatesKey
+import com.hedvig.android.feature.profile.navigation.ContactInfoKey
+import com.hedvig.android.feature.profile.navigation.EurobonusKey
+import com.hedvig.android.feature.profile.navigation.InformationKey
+import com.hedvig.android.feature.profile.navigation.LicensesKey
+import com.hedvig.android.feature.profile.navigation.ProfileKey
+import com.hedvig.android.feature.profile.navigation.SettingsGraphKey
+import com.hedvig.android.feature.profile.navigation.SettingsKey
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.profileGraph(
   settingsDestinationNestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
   nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
   globalSnackBarState: GlobalSnackBarState,
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   popBackStackOrFinish: () -> Unit,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
@@ -51,28 +55,28 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
   languageService: LanguageService,
 ) {
   navgraph(
-    startDestination = ProfileDestination.Profile::class,
+    startDestination = ProfileKey::class,
   ) {
-    navdestination<ProfileDestination.Profile>(
+    navdestination<ProfileKey>(
       metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: ProfileViewModel = metroViewModel()
       ProfileDestination(
         navigateToEurobonus = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.Eurobonus)
+          backStack.add(EurobonusKey)
         },
         navigateToClaimHistory = dropUnlessResumed { navigateToClaimHistory() },
         navigateToContactInfo = dropUnlessResumed {
-          navigator.navigate(ProfileDestination.ContactInfo)
+          backStack.add(ContactInfoKey)
         },
         navigateToAboutApp = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.Information)
+          backStack.add(InformationKey)
         },
         navigateToSettings = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.SettingsGraph)
+          backStack.add(SettingsGraphKey)
         },
         navigateToCertificates = dropUnlessResumed {
-          navigator.navigate(Certificates)
+          backStack.add(CertificatesKey)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
         navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
@@ -89,29 +93,29 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
       )
     }
 
-    navdestination<ProfileDestinations.Eurobonus> {
+    navdestination<EurobonusKey> {
       val viewModel: EurobonusViewModel = metroViewModel()
       EurobonusDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
       )
     }
-    navdestination<ProfileDestination.ContactInfo> {
+    navdestination<ContactInfoKey> {
       val viewModel: ContactInfoViewModel = metroViewModel()
       ContactInfoDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         popBackStack = popBackStackOrFinish,
       )
     }
-    navdestination<ProfileDestinations.Information> {
+    navdestination<InformationKey> {
       val viewModel: AboutAppViewModel = metroViewModel()
       InformationDestination(
         viewModel = viewModel,
-        onBackPressed = navigator::navigateUp,
+        onBackPressed = backStack::navigateUp,
         showOpenSourceLicenses = dropUnlessResumed {
-          navigator.navigate(ProfileDestinations.Licenses)
+          backStack.add(LicensesKey)
         },
         navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         hedvigBuildConstants = hedvigBuildConstants,
@@ -119,28 +123,28 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
         openUrl = openUrl,
       )
     }
-    navdestination<ProfileDestinations.Licenses> {
+    navdestination<LicensesKey> {
       LicensesDestination(
-        onBackPressed = navigator::navigateUp,
+        onBackPressed = backStack::navigateUp,
       )
     }
-    navdestination<Certificates> {
+    navdestination<CertificatesKey> {
       val viewModel: CertificatesViewModel = metroViewModel()
       CertificatesDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
         onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
       )
     }
     navgraph(
-      startDestination = SettingsDestinations.Settings::class,
+      startDestination = SettingsKey::class,
     ) {
-      navdestination<SettingsDestinations.Settings> {
+      navdestination<SettingsKey> {
         val viewModel: SettingsViewModel = metroViewModel()
         SettingsDestination(
           viewModel = viewModel,
-          navigateUp = navigator::navigateUp,
+          navigateUp = backStack::navigateUp,
           openAppSettings = openAppSettings,
           onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
         )

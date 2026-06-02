@@ -65,7 +65,7 @@ import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountDestination
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountGraph
-import com.hedvig.android.feature.profile.navigation.ProfileDestination.ContactInfo
+import com.hedvig.android.feature.profile.navigation.ContactInfoKey
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
@@ -157,7 +157,7 @@ internal fun HedvigNavHost(
       navigateToClaimDetails = { claimId -> navigator.navigate(ClaimOverviewDestination(claimId)) },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToConnectPayout = navigateToPayoutAccount,
-      navigateToContactInfo = { navigator.navigate(ContactInfo) },
+      navigateToContactInfo = { navigator.navigate(ContactInfoKey) },
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
         navigator.navigate(CoInsuredAddInfo(contractId, type))
       },
@@ -290,7 +290,7 @@ internal fun HedvigNavHost(
         )
       },
       globalSnackBarState = globalSnackBarState,
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       popBackStackOrFinish = popBackStackOrFinish,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
