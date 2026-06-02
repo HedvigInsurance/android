@@ -5,20 +5,18 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ChipIdGraphDestination(val contractId: String? = null) : HedvigNavKey
+data class ChipIdKey(val contractId: String? = null) : HedvigNavKey
 
-internal sealed interface ChipIdDestination {
-  @androidx.annotation.Keep
-  @Serializable
-  data class AddChipId(
-    val contractId: String,
-  ) : ChipIdDestination, HedvigNavKey
+@androidx.annotation.Keep
+@Serializable
+internal data class AddChipIdKey(
+  val contractId: String,
+) : HedvigNavKey
 
-  @androidx.annotation.Keep
-  @Serializable
-  data class AddChipIdTriage(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.petIdWithContractId] */
-    @SerialName("contractId")
-    val contractId: String? = null,
-  ) : ChipIdDestination, HedvigNavKey
-}
+@androidx.annotation.Keep
+@Serializable
+internal data class AddChipIdTriageKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.petIdWithContractId] */
+  @SerialName("contractId")
+  val contractId: String? = null,
+) : HedvigNavKey

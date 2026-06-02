@@ -8,31 +8,31 @@ import com.hedvig.android.feature.chip.id.ui.AddChipIdViewModel
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdDestination
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
   popBackStackOrFinish: () -> Unit,
   goHome: () -> Unit,
 ) {
-  navdestination<ChipIdDestination.AddChipIdTriage> {
+  navdestination<AddChipIdTriageKey> {
     val contractId = this.contractId
     LaunchedEffect(Unit) {
-      navigator.navigate<ChipIdDestination.AddChipIdTriage>(
-        ChipIdGraphDestination(contractId = contractId),
+      backStack.navigateAndPopUpTo<AddChipIdTriageKey>(
+        ChipIdKey(contractId = contractId),
         inclusive = true,
       )
     }
   }
 
-  navdestination<ChipIdGraphDestination> {
+  navdestination<ChipIdKey> {
     val preselectedContractId = this.contractId
     val viewModel: SelectInsuranceForChipIdViewModel =
       assistedMetroViewModel<SelectInsuranceForChipIdViewModel, SelectInsuranceForChipIdViewModel.Factory> {
@@ -44,15 +44,15 @@ fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
       popBackStack = popBackStackOrFinish,
       navigateToAddChipId = { contractId: String, popSelectInsurance: Boolean ->
         if (popSelectInsurance) {
-          navigator.navigate<ChipIdGraphDestination>(ChipIdDestination.AddChipId(contractId), inclusive = true)
+          backStack.navigateAndPopUpTo<ChipIdKey>(AddChipIdKey(contractId), inclusive = true)
         } else {
-          navigator.navigate(ChipIdDestination.AddChipId(contractId))
+          backStack.add(AddChipIdKey(contractId))
         }
       },
     )
   }
 
-  navdestination<ChipIdDestination.AddChipId> {
+  navdestination<AddChipIdKey> {
     val contractId = this.contractId
     val viewModel: AddChipIdViewModel =
       assistedMetroViewModel<AddChipIdViewModel, AddChipIdViewModel.Factory> {
@@ -62,13 +62,13 @@ fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       navigateUp = {
-        if (!navigator.navigateUp()) {
+        if (!backStack.navigateUp()) {
           goHome()
         }
       },
       popFlowOnSuccess = {
-        if (navigator.findLastOrNull<ChipIdGraphDestination>() != null) {
-          navigator.popUpTo<ChipIdGraphDestination>(inclusive = true)
+        if (backStack.findLastOrNull<ChipIdKey>() != null) {
+          backStack.popUpTo<ChipIdKey>(inclusive = true)
         } else {
           goHome()
         }

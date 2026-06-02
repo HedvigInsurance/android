@@ -24,7 +24,7 @@ import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
-import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
+import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
 import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
@@ -169,7 +169,7 @@ internal fun HedvigNavHost(
       navigateToClaimChatInDevMode = {
         navigator.navigate(ClaimChatDestination(messageId = null, isDevelopmentFlow = true))
       },
-      navigateToChipIdScreen = { navigator.navigate(ChipIdGraphDestination()) },
+      navigateToChipIdScreen = { navigator.navigate(ChipIdKey()) },
       openAppSettings = externalNavigator::openAppSettings,
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
@@ -260,7 +260,7 @@ internal fun HedvigNavHost(
           ),
         )
       },
-      navigateToChipIdScreen = { contractId -> navigator.navigate(ChipIdGraphDestination(contractId)) },
+      navigateToChipIdScreen = { contractId -> navigator.navigate(ChipIdKey(contractId)) },
     )
     foreverGraph(
       languageService = languageService,
@@ -306,7 +306,7 @@ internal fun HedvigNavHost(
       onNavigateToTravelCertificate = { navigator.navigate(TravelCertificateKey) },
       onNavigateToInsuranceEvidence = { navigator.navigate(InsuranceEvidenceKey) },
       openUrl = openUrl,
-      navigateToChipId = { navigator.navigate(ChipIdGraphDestination()) },
+      navigateToChipId = { navigator.navigate(ChipIdKey()) },
       languageService = languageService,
     )
     cbmChatGraph(
@@ -335,12 +335,12 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = navigateToNewConversation,
     )
     chipIdGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       globalSnackBarState = globalSnackBarState,
       navigateUp = navigator::navigateUp,
       popBackStackOrFinish = popBackStackOrFinish,
       goHome = {
-        navigator.popUpTo<ChipIdGraphDestination>(inclusive = true)
+        navigator.popUpTo<ChipIdKey>(inclusive = true)
         hedvigAppState.navigateToTopLevelGraph(TopLevelGraph.Home)
       },
     )
