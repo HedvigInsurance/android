@@ -130,7 +130,7 @@ internal fun HedvigNavHost(
     modifier = modifier,
   ) {
     loginGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       appVersionName = hedvigBuildConstants.appVersionName,
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,

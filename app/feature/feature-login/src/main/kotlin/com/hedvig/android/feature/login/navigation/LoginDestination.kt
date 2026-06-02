@@ -7,37 +7,32 @@ import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object LoginDestination : HedvigNavKey
+data object LoginKey : HedvigNavKey
 
-internal sealed interface LoginDestinations {
+@Serializable
+internal data object SwedishLoginKey : HedvigNavKey
+
+/**
+ * The screen where the Qasa email is added for SE
+ */
+@Serializable
+internal data object GenericAuthCredentialsInputKey : HedvigNavKey
+
+/**
+ * The screen where the OTP coming from email is entered in order to login to the app
+ */
+@Serializable
+internal data class OtpInputKey(
+  val otpInformation: OtpInformation,
+) : HedvigNavKey {
   @Serializable
-  object Marketing : LoginDestinations, HedvigNavKey
+  data class OtpInformation(
+    val verifyUrl: String,
+    val resendUrl: String,
+    val credential: String,
+  )
 
-  @Serializable
-  object SwedishLogin : LoginDestinations, HedvigNavKey
-
-  /**
-   * The screen where the Qasa email is added for SE
-   */
-  @Serializable
-  object GenericAuthCredentialsInput : LoginDestinations, HedvigNavKey
-
-  /**
-   * The screen where the OTP coming from email is entered in order to login to the app
-   */
-  @Serializable
-  data class OtpInput(
-    val otpInformation: OtpInformation,
-  ) : LoginDestinations, HedvigNavKey {
-    @Serializable
-    data class OtpInformation(
-      val verifyUrl: String,
-      val resendUrl: String,
-      val credential: String,
-    )
-
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<OtpInformation>())
-    }
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<OtpInformation>())
   }
 }

@@ -16,14 +16,14 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.loginGraph(
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   appVersionName: String,
   urlBaseWeb: String,
   openUrl: (String) -> Unit,
@@ -31,9 +31,9 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
   onNavigateToLoggedIn: () -> Unit,
 ) {
   navgraph(
-    startDestination = LoginDestinations.Marketing::class,
+    startDestination = LoginKey::class,
   ) {
-    navdestination<LoginDestinations.Marketing> {
+    navdestination<LoginKey> {
       val marketingViewModel: MarketingViewModel = metroViewModel()
       val locale = getLocale()
       MarketingDestination(
@@ -45,43 +45,43 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
           openUrl(uri)
         },
         navigateToLoginScreen = dropUnlessResumed {
-          navigator.navigate(LoginDestinations.SwedishLogin)
+          backStack.add(SwedishLoginKey)
         },
       )
     }
-    navdestination<LoginDestinations.SwedishLogin> {
+    navdestination<SwedishLoginKey> {
       val swedishLoginViewModel: SwedishLoginViewModel = metroViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         navigateToEmailLogin = dropUnlessResumed {
           logcat(LogPriority.INFO) { "Login with OTP clicked" }
-          navigator.navigate(LoginDestinations.GenericAuthCredentialsInput)
+          backStack.add(GenericAuthCredentialsInputKey)
         },
         onNavigateToLoggedIn = onNavigateToLoggedIn,
       )
     }
-    navdestination<LoginDestinations.GenericAuthCredentialsInput> {
+    navdestination<GenericAuthCredentialsInputKey> {
       val viewModel: GenericAuthViewModel = metroViewModel()
       GenericAuthDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onStartOtpInput = { verifyUrl: String, resendUrl: String, email: String ->
-          navigator.navigate(
-            LoginDestinations.OtpInput(LoginDestinations.OtpInput.OtpInformation(verifyUrl, resendUrl, email)),
+          backStack.add(
+            OtpInputKey(OtpInputKey.OtpInformation(verifyUrl, resendUrl, email)),
           )
         },
       )
     }
-    navdestination<LoginDestinations.OtpInput> {
-      val otpInputInformation: LoginDestinations.OtpInput.OtpInformation = this.otpInformation
+    navdestination<OtpInputKey> {
+      val otpInputInformation: OtpInputKey.OtpInformation = this.otpInformation
       val viewModel: OtpInputViewModel =
         assistedMetroViewModel<OtpInputViewModel, OtpInputViewModel.Factory> {
           create(otpInputInformation.verifyUrl, otpInputInformation.resendUrl, otpInputInformation.credential)
         }
       OtpInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onNavigateToLoggedIn = onNavigateToLoggedIn,
         onOpenEmailApp = dropUnlessResumed { onOpenEmailApp() },
       )

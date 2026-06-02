@@ -10,7 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hedvig.android.app.ui.startDestination
-import com.hedvig.android.feature.login.navigation.LoginDestination
+import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
@@ -19,7 +19,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
  * Owns the app's navigation back stacks for the Nav3 [androidx.navigation3.ui.NavDisplay].
  *
  * Two roots, mutually exclusive, toggled by [setLoggedIn]:
- * - logged-out: a single [loginBackStack] seeded with [LoginDestination].
+ * - logged-out: a single [loginBackStack] seeded with [LoginKey].
  * - logged-in: one independent [SnapshotStateList] per [TopLevelGraph] tab, so each tab keeps its
  *   own drill-down depth across tab switches (the per-tab key list persists; only the currently
  *   displayed tab's entries are alive in the composition).
@@ -90,11 +90,11 @@ internal class HedvigTopLevelBackStacks(
     }
   }
 
-  /** Drop back to the login root. Clears the login stack down to [LoginDestination]. */
+  /** Drop back to the login root. Clears the login stack down to [LoginKey]. */
   fun setLoggedOut() {
     Snapshot.withMutableSnapshot {
       loginBackStack.clear()
-      loginBackStack.add(LoginDestination)
+      loginBackStack.add(LoginKey)
       isLoggedIn = false
     }
   }
@@ -105,7 +105,7 @@ internal fun rememberHedvigTopLevelBackStacks(): HedvigTopLevelBackStacks {
   val tabBackStacks = TopLevelGraph.entries.associateWith { graph ->
     remember(graph) { mutableStateListOf<HedvigNavKey>(graph.startDestination) }
   }
-  val loginBackStack = remember { mutableStateListOf<HedvigNavKey>(LoginDestination) }
+  val loginBackStack = remember { mutableStateListOf<HedvigNavKey>(LoginKey) }
   return remember(tabBackStacks, loginBackStack) {
     HedvigTopLevelBackStacks(tabBackStacks, loginBackStack)
   }
