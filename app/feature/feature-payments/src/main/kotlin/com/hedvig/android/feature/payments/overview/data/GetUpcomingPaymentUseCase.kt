@@ -27,7 +27,7 @@ import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
 
-interface GetUpcomingPaymentUseCase {
+internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
 }
 

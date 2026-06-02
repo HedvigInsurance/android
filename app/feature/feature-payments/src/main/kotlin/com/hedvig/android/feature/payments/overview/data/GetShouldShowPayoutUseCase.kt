@@ -11,7 +11,7 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import octopus.ShouldShowPayoutButtonQuery
 
-interface GetShouldShowPayoutUseCase {
+internal interface GetShouldShowPayoutUseCase {
   suspend fun invoke(): Either<ErrorMessage, Boolean>
 }
 
