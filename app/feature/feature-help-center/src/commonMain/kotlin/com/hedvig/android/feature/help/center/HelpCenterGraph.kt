@@ -28,7 +28,6 @@ import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -44,129 +43,125 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
   tryToDialPhone: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  navgraph(
-    startDestination = HelpCenterHomeKey::class,
-  ) {
-    navdestination<HelpCenterHomeKey> {
-      val viewModel = metroViewModel<HelpCenterViewModel>()
-      HelpCenterHomeDestination(
-        viewModel = viewModel,
-        onNavigateToTopic = dropUnlessResumed { topic ->
-          navigateToTopic(topic, backStack)
-        },
-        onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, backStack)
-        },
-        onNavigateToQuickLink = dropUnlessResumed { destination ->
-          when (destination) {
-            is QuickLinkDestination.OuterDestination -> {
-              onNavigateToQuickLink(destination)
-            }
+  navdestination<HelpCenterHomeKey> {
+    val viewModel = metroViewModel<HelpCenterViewModel>()
+    HelpCenterHomeDestination(
+      viewModel = viewModel,
+      onNavigateToTopic = dropUnlessResumed { topic ->
+        navigateToTopic(topic, backStack)
+      },
+      onNavigateToQuestion = dropUnlessResumed { question ->
+        navigateToQuestion(question, backStack)
+      },
+      onNavigateToQuickLink = dropUnlessResumed { destination ->
+        when (destination) {
+          is QuickLinkDestination.OuterDestination -> {
+            onNavigateToQuickLink(destination)
+          }
 
-            is InnerHelpCenterDestination -> {
-              when (destination) {
-                is FirstVet -> {
-                  backStack.add(FirstVetKey(destination.sections))
-                }
+          is InnerHelpCenterDestination -> {
+            when (destination) {
+              is FirstVet -> {
+                backStack.add(FirstVetKey(destination.sections))
+              }
 
-                is QuickLinkSickAbroad -> {
-                  backStack.add(EmergencyKey(destination.deflectData))
-                }
+              is QuickLinkSickAbroad -> {
+                backStack.add(EmergencyKey(destination.deflectData))
               }
             }
           }
-        },
-        onNavigateToInbox = dropUnlessResumed {
-          onNavigateToInbox()
-        },
-        onNavigateToNewConversation = dropUnlessResumed {
-          onNavigateToNewConversation()
-        },
-        onNavigateUp = onNavigateUp,
-        onNavigateToPuppyGuide = dropUnlessResumed {
-          backStack.add(PuppyGuideKey)
-        },
-      )
-    }
-
-    navdestination<HelpCenterTopicKey> {
-      val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
-      val topicId = topicId
-      val helpCenterTopicViewModel =
-        assistedMetroViewModel<HelpCenterTopicViewModel, HelpCenterTopicViewModel.Factory> {
-          create(topicId)
         }
-      HelpCenterTopicDestination(
-        showNavigateToInboxViewModel = showNavigateToInboxViewModel,
-        helpCenterTopicViewModel = helpCenterTopicViewModel,
-        onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, backStack)
-        },
-        onNavigateUp = backStack::navigateUp,
-        onNavigateBack = backStack::popBackStack,
-        onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
-        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      )
-    }
-    navdestination<HelpCenterQuestionKey> {
-      val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
-      val questionId = questionId
-      val helpCenterQuestionViewModel =
-        assistedMetroViewModel<HelpCenterQuestionViewModel, HelpCenterQuestionViewModel.Factory> {
-          create(questionId)
-        }
-      HelpCenterQuestionDestination(
-        showNavigateToInboxViewModel = showNavigateToInboxViewModel,
-        onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
-        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        onNavigateUp = backStack::navigateUp,
-        onNavigateBack = backStack::popBackStack,
-        helpCenterQuestionViewModel = helpCenterQuestionViewModel,
-      )
-    }
-    navdestination<FirstVetKey> {
-      FirstVetDestination(
-        sections = sections,
-        navigateUp = backStack::navigateUp,
-        navigateBack = backStack::popBackStack,
-        openUrl = openUrl,
-      )
-    }
-    navdestination<EmergencyKey> {
-      EmergencyDestination(
-        deflect = deflectData,
-        navigateUp = backStack::navigateUp,
-        openUrl = openUrl,
-        tryToDialPhone = tryToDialPhone,
-        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        imageLoader = imageLoader,
-      )
-    }
+      },
+      onNavigateToInbox = dropUnlessResumed {
+        onNavigateToInbox()
+      },
+      onNavigateToNewConversation = dropUnlessResumed {
+        onNavigateToNewConversation()
+      },
+      onNavigateUp = onNavigateUp,
+      onNavigateToPuppyGuide = dropUnlessResumed {
+        backStack.add(PuppyGuideKey)
+      },
+    )
+  }
 
-    navdestination<PuppyGuideKey> {
-      val viewModel = metroViewModel<PuppyGuideViewModel>()
-      PuppyGuideDestination(
-        viewModel,
-        onNavigateUp = backStack::navigateUp,
-        onNavigateToArticle = { story ->
-          backStack.add(PuppyGuideArticleKey(story.name))
-        },
-        imageLoader = imageLoader,
-      )
-    }
+  navdestination<HelpCenterTopicKey> {
+    val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
+    val topicId = topicId
+    val helpCenterTopicViewModel =
+      assistedMetroViewModel<HelpCenterTopicViewModel, HelpCenterTopicViewModel.Factory> {
+        create(topicId)
+      }
+    HelpCenterTopicDestination(
+      showNavigateToInboxViewModel = showNavigateToInboxViewModel,
+      helpCenterTopicViewModel = helpCenterTopicViewModel,
+      onNavigateToQuestion = dropUnlessResumed { question ->
+        navigateToQuestion(question, backStack)
+      },
+      onNavigateUp = backStack::navigateUp,
+      onNavigateBack = backStack::popBackStack,
+      onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+    )
+  }
+  navdestination<HelpCenterQuestionKey> {
+    val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
+    val questionId = questionId
+    val helpCenterQuestionViewModel =
+      assistedMetroViewModel<HelpCenterQuestionViewModel, HelpCenterQuestionViewModel.Factory> {
+        create(questionId)
+      }
+    HelpCenterQuestionDestination(
+      showNavigateToInboxViewModel = showNavigateToInboxViewModel,
+      onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      onNavigateUp = backStack::navigateUp,
+      onNavigateBack = backStack::popBackStack,
+      helpCenterQuestionViewModel = helpCenterQuestionViewModel,
+    )
+  }
+  navdestination<FirstVetKey> {
+    FirstVetDestination(
+      sections = sections,
+      navigateUp = backStack::navigateUp,
+      navigateBack = backStack::popBackStack,
+      openUrl = openUrl,
+    )
+  }
+  navdestination<EmergencyKey> {
+    EmergencyDestination(
+      deflect = deflectData,
+      navigateUp = backStack::navigateUp,
+      openUrl = openUrl,
+      tryToDialPhone = tryToDialPhone,
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      imageLoader = imageLoader,
+    )
+  }
 
-    navdestination<PuppyGuideArticleKey> {
-      val storyName = storyName
-      val viewModel =
-        assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
-          create(storyName)
-        }
-      PuppyArticleDestination(
-        viewModel = viewModel,
-        navigateUp = backStack::navigateUp,
-        imageLoader = imageLoader,
-      )
-    }
+  navdestination<PuppyGuideKey> {
+    val viewModel = metroViewModel<PuppyGuideViewModel>()
+    PuppyGuideDestination(
+      viewModel,
+      onNavigateUp = backStack::navigateUp,
+      onNavigateToArticle = { story ->
+        backStack.add(PuppyGuideArticleKey(story.name))
+      },
+      imageLoader = imageLoader,
+    )
+  }
+
+  navdestination<PuppyGuideArticleKey> {
+    val storyName = storyName
+    val viewModel =
+      assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
+        create(storyName)
+      }
+    PuppyArticleDestination(
+      viewModel = viewModel,
+      navigateUp = backStack::navigateUp,
+      imageLoader = imageLoader,
+    )
   }
 }
 

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavEntry
 import com.hedvig.android.navigation.common.HedvigNavKey
-import kotlin.reflect.KClass
 
 /**
  * Nav3 replacement for the Nav2 `navdestination`. Registers a single [NavEntry] for the [T] key.
@@ -21,17 +20,4 @@ inline fun <reified T : HedvigNavKey> EntryProviderScope<HedvigNavKey>.navdestin
   entry<T>(metadata = metadata) { key ->
     key.content()
   }
-}
-
-/**
- * Nav3 replacement for the Nav2 `navgraph`. Nav3 back stacks are flat — there is no nested graph
- * container — so this is a plain grouping function: it just invokes [builder] to register the
- * child entries into the same flat provider. [startDestination] is kept for call-site parity and
- * documents which key seeds the flow; the back stack itself decides the actual start.
- */
-inline fun EntryProviderScope<HedvigNavKey>.navgraph(
-  @Suppress("UNUSED_PARAMETER") startDestination: KClass<out HedvigNavKey>,
-  builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
-) {
-  builder()
 }

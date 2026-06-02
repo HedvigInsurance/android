@@ -12,7 +12,6 @@ import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -36,47 +35,43 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  navgraph(
-    startDestination = HomeKey::class,
+  navdestination<HomeKey>(
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
   ) {
-    navdestination<HomeKey>(
-      metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
-    ) {
-      val viewModel: HomeViewModel = metroViewModel()
-      HomeDestination(
-        viewModel = viewModel,
-        onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
-        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        navigateToClaimChat = dropUnlessResumed { navigateToClaimChat() },
-        navigateToClaimChatInDevMode = dropUnlessResumed { navigateToClaimChatInDevMode() },
-        onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
-          navigateToClaimDetails(claimId)
-        },
-        navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
-        navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
-        navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
-        navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
-        openUrl = openUrl,
-        openCrossSellUrl = openCrossSellUrl,
-        openAppSettings = openAppSettings,
-        navigateToFirstVet = dropUnlessResumed { sections ->
-          backStack.add(FirstVetKey(sections))
-        },
-        navigateToContactInfo = dropUnlessResumed {
-          navigateToContactInfo()
-        },
-        imageLoader = imageLoader,
-        navigateToChipId = navigateToChipIdScreen,
-      )
-    }
-    navdestination<FirstVetKey> {
-      FirstVetDestination(
-        sections,
-        navigateUp = backStack::navigateUp,
-        navigateBack = backStack::popBackStack,
-        openUrl = openUrl,
-      )
-    }
-    nestedGraphs()
+    val viewModel: HomeViewModel = metroViewModel()
+    HomeDestination(
+      viewModel = viewModel,
+      onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      navigateToClaimChat = dropUnlessResumed { navigateToClaimChat() },
+      navigateToClaimChatInDevMode = dropUnlessResumed { navigateToClaimChatInDevMode() },
+      onClaimDetailCardClicked = dropUnlessResumed { claimId: String ->
+        navigateToClaimDetails(claimId)
+      },
+      navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+      navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
+      navigateToMissingInfo = dropUnlessResumed { contractId, type -> navigateToMissingInfo(contractId, type) },
+      navigateToHelpCenter = dropUnlessResumed { navigateToHelpCenter() },
+      openUrl = openUrl,
+      openCrossSellUrl = openCrossSellUrl,
+      openAppSettings = openAppSettings,
+      navigateToFirstVet = dropUnlessResumed { sections ->
+        backStack.add(FirstVetKey(sections))
+      },
+      navigateToContactInfo = dropUnlessResumed {
+        navigateToContactInfo()
+      },
+      imageLoader = imageLoader,
+      navigateToChipId = navigateToChipIdScreen,
+    )
   }
+  navdestination<FirstVetKey> {
+    FirstVetDestination(
+      sections,
+      navigateUp = backStack::navigateUp,
+      navigateBack = backStack::popBackStack,
+      openUrl = openUrl,
+    )
+  }
+  nestedGraphs()
 }

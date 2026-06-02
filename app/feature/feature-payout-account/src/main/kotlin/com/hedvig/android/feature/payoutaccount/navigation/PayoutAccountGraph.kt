@@ -15,7 +15,6 @@ import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDe
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -27,77 +26,73 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
   navigateToConnectPayment: () -> Unit,
   navigateUp: () -> Unit,
 ) {
-  navgraph(
-    startDestination = PayoutAccountKey::class,
-  ) {
-    navdestination<PayoutAccountKey> {
-      val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
-      PayoutAccountOverviewDestination(
-        viewModel = viewModel,
-        onConnectPayoutMethodClicked = dropUnlessResumed {
-          val content = viewModel.uiState.value as? PayoutAccountOverviewUiState.Content
-          backStack.add(
-            SelectPayoutMethodKey(
-              availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
-            ),
-          )
-        },
-        navigateToConnectPayment = dropUnlessResumed {
-          backStack.popUpTo<PayoutAccountKey>(inclusive = true)
-          navigateToConnectPayment()
-        },
-        navigateUp = navigateUp,
-      )
-    }
+  navdestination<PayoutAccountKey> {
+    val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
+    PayoutAccountOverviewDestination(
+      viewModel = viewModel,
+      onConnectPayoutMethodClicked = dropUnlessResumed {
+        val content = viewModel.uiState.value as? PayoutAccountOverviewUiState.Content
+        backStack.add(
+          SelectPayoutMethodKey(
+            availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
+          ),
+        )
+      },
+      navigateToConnectPayment = dropUnlessResumed {
+        backStack.popUpTo<PayoutAccountKey>(inclusive = true)
+        navigateToConnectPayment()
+      },
+      navigateUp = navigateUp,
+    )
+  }
 
-    navdestination<SelectPayoutMethodKey> {
-      SelectPayoutMethodDestination(
-        availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
-        onTrustlySelected = dropUnlessResumed {
-          backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-          navigateToConnectPayment()
-        },
-        onNordeaSelected = dropUnlessResumed { backStack.add(EditBankAccountKey) },
-        onSwishSelected = dropUnlessResumed { backStack.add(SetupSwishPayoutKey) },
-        onInvoiceSelected = dropUnlessResumed { backStack.add(SetupInvoicePayoutKey) },
-        navigateUp = backStack::navigateUp,
-      )
-    }
+  navdestination<SelectPayoutMethodKey> {
+    SelectPayoutMethodDestination(
+      availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
+      onTrustlySelected = dropUnlessResumed {
+        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+        navigateToConnectPayment()
+      },
+      onNordeaSelected = dropUnlessResumed { backStack.add(EditBankAccountKey) },
+      onSwishSelected = dropUnlessResumed { backStack.add(SetupSwishPayoutKey) },
+      onInvoiceSelected = dropUnlessResumed { backStack.add(SetupInvoicePayoutKey) },
+      navigateUp = backStack::navigateUp,
+    )
+  }
 
-    navdestination<EditBankAccountKey> {
-      val viewModel: EditBankAccountViewModel = metroViewModel()
-      EditBankAccountDestination(
-        viewModel = viewModel,
-        globalSnackBarState = globalSnackBarState,
-        onSuccessfullyConnected = {
-          backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-        },
-        navigateUp = backStack::navigateUp,
-      )
-    }
+  navdestination<EditBankAccountKey> {
+    val viewModel: EditBankAccountViewModel = metroViewModel()
+    EditBankAccountDestination(
+      viewModel = viewModel,
+      globalSnackBarState = globalSnackBarState,
+      onSuccessfullyConnected = {
+        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+      },
+      navigateUp = backStack::navigateUp,
+    )
+  }
 
-    navdestination<SetupSwishPayoutKey> {
-      val viewModel: SetupSwishPayoutViewModel = metroViewModel()
-      SetupSwishPayoutDestination(
-        viewModel = viewModel,
-        globalSnackBarState = globalSnackBarState,
-        onSuccessfullyConnected = {
-          backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-        },
-        navigateUp = backStack::navigateUp,
-      )
-    }
+  navdestination<SetupSwishPayoutKey> {
+    val viewModel: SetupSwishPayoutViewModel = metroViewModel()
+    SetupSwishPayoutDestination(
+      viewModel = viewModel,
+      globalSnackBarState = globalSnackBarState,
+      onSuccessfullyConnected = {
+        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+      },
+      navigateUp = backStack::navigateUp,
+    )
+  }
 
-    navdestination<SetupInvoicePayoutKey> {
-      val viewModel: SetupInvoicePayoutViewModel = metroViewModel()
-      SetupInvoicePayoutDestination(
-        viewModel = viewModel,
-        globalSnackBarState = globalSnackBarState,
-        onSuccessfullyConnected = {
-          backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-        },
-        navigateUp = backStack::navigateUp,
-      )
-    }
+  navdestination<SetupInvoicePayoutKey> {
+    val viewModel: SetupInvoicePayoutViewModel = metroViewModel()
+    SetupInvoicePayoutDestination(
+      viewModel = viewModel,
+      globalSnackBarState = globalSnackBarState,
+      onSuccessfullyConnected = {
+        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+      },
+      navigateUp = backStack::navigateUp,
+    )
   }
 }

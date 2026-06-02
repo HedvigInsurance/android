@@ -11,7 +11,6 @@ import com.hedvig.android.feature.chat.inbox.InboxDestination
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -25,34 +24,30 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   backStack: MutableList<HedvigNavKey>,
 ) {
-  navgraph(
-    startDestination = InboxKey::class,
-  ) {
-    navdestination<InboxKey> {
-      val viewModel: InboxViewModel = metroViewModel()
-      InboxDestination(
-        viewModel = viewModel,
-        navigateUp = backStack::navigateUp,
-        onConversationClick = dropUnlessResumed { conversationId ->
-          backStack.add(ChatKey(conversationId))
-        },
-      )
+  navdestination<InboxKey> {
+    val viewModel: InboxViewModel = metroViewModel()
+    InboxDestination(
+      viewModel = viewModel,
+      navigateUp = backStack::navigateUp,
+      onConversationClick = dropUnlessResumed { conversationId ->
+        backStack.add(ChatKey(conversationId))
+      },
+    )
+  }
+  navdestination<ChatKey> {
+    val conversationId = this.conversationId
+    val viewModel = assistedMetroViewModel<CbmChatViewModel, CbmChatViewModel.Factory> {
+      create(conversationId)
     }
-    navdestination<ChatKey> {
-      val conversationId = this.conversationId
-      val viewModel = assistedMetroViewModel<CbmChatViewModel, CbmChatViewModel.Factory> {
-        create(conversationId)
-      }
-      CbmChatDestination(
-        viewModel = viewModel,
-        imageLoader = imageLoader,
-        appPackageId = hedvigBuildConstants.appPackageId,
-        openUrl = openUrl,
-        onNavigateToClaimDetails = onNavigateToClaimDetails,
-        onNavigateToImageViewer = onNavigateToImageViewer,
-        onNavigateUp = backStack::navigateUp,
-        simpleVideoCache = simpleVideoCache,
-      )
-    }
+    CbmChatDestination(
+      viewModel = viewModel,
+      imageLoader = imageLoader,
+      appPackageId = hedvigBuildConstants.appPackageId,
+      openUrl = openUrl,
+      onNavigateToClaimDetails = onNavigateToClaimDetails,
+      onNavigateToImageViewer = onNavigateToImageViewer,
+      onNavigateUp = backStack::navigateUp,
+      simpleVideoCache = simpleVideoCache,
+    )
   }
 }

@@ -18,7 +18,6 @@ import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContr
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -43,76 +42,72 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToChipIdScreen: (String) -> Unit,
 ) {
-  navgraph(
-    startDestination = InsurancesKey::class,
+  nestedGraphs()
+  navdestination<InsurancesKey>(
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
   ) {
-    nestedGraphs()
-    navdestination<InsurancesKey>(
-      metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
-    ) {
-      val viewModel: InsuranceViewModel = metroViewModel()
-      InsuranceDestination(
-        viewModel = viewModel,
-        onInsuranceCardClick = dropUnlessResumed { contractId: String ->
-          backStack.add(InsuranceContractDetailKey(contractId))
-        },
-        onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
-        navigateToCancelledInsurances = dropUnlessResumed {
-          backStack.add(TerminatedInsurancesKey)
-        },
-        onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
-        imageLoader = imageLoader,
-        onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<ContractId> ->
-          onNavigateToAddonPurchaseFlow(ids, null)
-        },
-      )
-    }
-    navdestination<InsuranceContractDetailKey> {
-      val contractDetail = this
-      val viewModel: ContractDetailViewModel =
-        assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
-          create(contractDetail.contractId)
-        }
-      ContractDetailDestination(
-        viewModel = viewModel,
-        onEditCoInsuredClick = dropUnlessResumed { contractId: String -> startEditCoInsured(contractId) },
-        onEditCoOwnersClick = dropUnlessResumed { contractId: String -> startEditCoOwners(contractId) },
-        onMissingCoInsuredInfoClick = dropUnlessResumed { contractId: String ->
-          startEditCoInsuredAddMissingInfo(contractId)
-        },
-        onMissingCoOwnersInfoClick = dropUnlessResumed { contractId: String ->
-          startEditCoOwnersAddMissingInfo(contractId)
-        },
-        onChangeAddressClick = dropUnlessResumed { startMovingFlow() },
-        onCancelInsuranceClick = dropUnlessResumed { cancelInsuranceData: CancelInsuranceData ->
-          startTerminationFlow(cancelInsuranceData)
-        },
-        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        openUrl = openUrl,
-        navigateUp = backStack::navigateUp,
-        navigateBack = backStack::popBackStack,
-        imageLoader = imageLoader,
-        onChangeTierClick = dropUnlessResumed { contractId: String ->
-          onNavigateToStartChangeTier(contractId)
-        },
-        navigateToRemoveAddon = onNavigateToRemoveAddon,
-        navigateToUpgradeAddon = navigateToUpgradeAddon,
-        navigateToAddAddon = { availableAddon ->
-          onNavigateToAddonPurchaseFlow(listOf(availableAddon.relatedContractId), availableAddon)
-        },
-        navigateToChipIdScreen = navigateToChipIdScreen,
-      )
-    }
-    navdestination<TerminatedInsurancesKey> {
-      val viewModel: TerminatedContractsViewModel = metroViewModel()
-      TerminatedContractsDestination(
-        viewModel = viewModel,
-        navigateToContractDetail = dropUnlessResumed { contractId: String ->
-          backStack.add(InsuranceContractDetailKey(contractId))
-        },
-        navigateUp = backStack::navigateUp,
-        imageLoader = imageLoader,
-      )
-    }
+    val viewModel: InsuranceViewModel = metroViewModel()
+    InsuranceDestination(
+      viewModel = viewModel,
+      onInsuranceCardClick = dropUnlessResumed { contractId: String ->
+        backStack.add(InsuranceContractDetailKey(contractId))
+      },
+      onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
+      navigateToCancelledInsurances = dropUnlessResumed {
+        backStack.add(TerminatedInsurancesKey)
+      },
+      onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
+      imageLoader = imageLoader,
+      onNavigateToAddonPurchaseFlow = dropUnlessResumed { ids: List<ContractId> ->
+        onNavigateToAddonPurchaseFlow(ids, null)
+      },
+    )
+  }
+  navdestination<InsuranceContractDetailKey> {
+    val contractDetail = this
+    val viewModel: ContractDetailViewModel =
+      assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
+        create(contractDetail.contractId)
+      }
+    ContractDetailDestination(
+      viewModel = viewModel,
+      onEditCoInsuredClick = dropUnlessResumed { contractId: String -> startEditCoInsured(contractId) },
+      onEditCoOwnersClick = dropUnlessResumed { contractId: String -> startEditCoOwners(contractId) },
+      onMissingCoInsuredInfoClick = dropUnlessResumed { contractId: String ->
+        startEditCoInsuredAddMissingInfo(contractId)
+      },
+      onMissingCoOwnersInfoClick = dropUnlessResumed { contractId: String ->
+        startEditCoOwnersAddMissingInfo(contractId)
+      },
+      onChangeAddressClick = dropUnlessResumed { startMovingFlow() },
+      onCancelInsuranceClick = dropUnlessResumed { cancelInsuranceData: CancelInsuranceData ->
+        startTerminationFlow(cancelInsuranceData)
+      },
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      openUrl = openUrl,
+      navigateUp = backStack::navigateUp,
+      navigateBack = backStack::popBackStack,
+      imageLoader = imageLoader,
+      onChangeTierClick = dropUnlessResumed { contractId: String ->
+        onNavigateToStartChangeTier(contractId)
+      },
+      navigateToRemoveAddon = onNavigateToRemoveAddon,
+      navigateToUpgradeAddon = navigateToUpgradeAddon,
+      navigateToAddAddon = { availableAddon ->
+        onNavigateToAddonPurchaseFlow(listOf(availableAddon.relatedContractId), availableAddon)
+      },
+      navigateToChipIdScreen = navigateToChipIdScreen,
+    )
+  }
+  navdestination<TerminatedInsurancesKey> {
+    val viewModel: TerminatedContractsViewModel = metroViewModel()
+    TerminatedContractsDestination(
+      viewModel = viewModel,
+      navigateToContractDetail = dropUnlessResumed { contractId: String ->
+        backStack.add(InsuranceContractDetailKey(contractId))
+      },
+      navigateUp = backStack::navigateUp,
+      imageLoader = imageLoader,
+    )
   }
 }

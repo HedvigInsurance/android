@@ -30,7 +30,6 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -54,103 +53,95 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
   navigateToChipId: () -> Unit,
   languageService: LanguageService,
 ) {
-  navgraph(
-    startDestination = ProfileKey::class,
+  navdestination<ProfileKey>(
+    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
   ) {
-    navdestination<ProfileKey>(
-      metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
-    ) {
-      val viewModel: ProfileViewModel = metroViewModel()
-      ProfileDestination(
-        navigateToEurobonus = dropUnlessResumed {
-          backStack.add(EurobonusKey)
-        },
-        navigateToClaimHistory = dropUnlessResumed { navigateToClaimHistory() },
-        navigateToContactInfo = dropUnlessResumed {
-          backStack.add(ContactInfoKey)
-        },
-        navigateToAboutApp = dropUnlessResumed {
-          backStack.add(InformationKey)
-        },
-        navigateToSettings = dropUnlessResumed {
-          backStack.add(SettingsGraphKey)
-        },
-        navigateToCertificates = dropUnlessResumed {
-          backStack.add(CertificatesKey)
-        },
-        navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
-        navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
-        navigateToAddMissingInfo = dropUnlessResumed { contractId: String, type: CoInsuredFlowType ->
-          navigateToAddMissingInfo(contractId, type)
-        },
-        openAppSettings = openAppSettings,
-        openUrl = openUrl,
-        viewModel = viewModel,
-        onNavigateToNewConversation = dropUnlessResumed {
-          onNavigateToNewConversation()
-        },
-        navigateToChipId = navigateToChipId,
-      )
-    }
-
-    navdestination<EurobonusKey> {
-      val viewModel: EurobonusViewModel = metroViewModel()
-      EurobonusDestination(
-        viewModel = viewModel,
-        navigateUp = backStack::navigateUp,
-      )
-    }
-    navdestination<ContactInfoKey> {
-      val viewModel: ContactInfoViewModel = metroViewModel()
-      ContactInfoDestination(
-        viewModel = viewModel,
-        globalSnackBarState = globalSnackBarState,
-        navigateUp = backStack::navigateUp,
-        popBackStack = popBackStackOrFinish,
-      )
-    }
-    navdestination<InformationKey> {
-      val viewModel: AboutAppViewModel = metroViewModel()
-      InformationDestination(
-        viewModel = viewModel,
-        onBackPressed = backStack::navigateUp,
-        showOpenSourceLicenses = dropUnlessResumed {
-          backStack.add(LicensesKey)
-        },
-        navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        hedvigBuildConstants = hedvigBuildConstants,
-        languageService = languageService,
-        openUrl = openUrl,
-      )
-    }
-    navdestination<LicensesKey> {
-      LicensesDestination(
-        onBackPressed = backStack::navigateUp,
-      )
-    }
-    navdestination<CertificatesKey> {
-      val viewModel: CertificatesViewModel = metroViewModel()
-      CertificatesDestination(
-        viewModel = viewModel,
-        navigateUp = backStack::navigateUp,
-        onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
-        onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
-      )
-    }
-    navgraph(
-      startDestination = SettingsKey::class,
-    ) {
-      navdestination<SettingsKey> {
-        val viewModel: SettingsViewModel = metroViewModel()
-        SettingsDestination(
-          viewModel = viewModel,
-          navigateUp = backStack::navigateUp,
-          openAppSettings = openAppSettings,
-          onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
-        )
-      }
-      settingsDestinationNestedGraphs()
-    }
-    nestedGraphs()
+    val viewModel: ProfileViewModel = metroViewModel()
+    ProfileDestination(
+      navigateToEurobonus = dropUnlessResumed {
+        backStack.add(EurobonusKey)
+      },
+      navigateToClaimHistory = dropUnlessResumed { navigateToClaimHistory() },
+      navigateToContactInfo = dropUnlessResumed {
+        backStack.add(ContactInfoKey)
+      },
+      navigateToAboutApp = dropUnlessResumed {
+        backStack.add(InformationKey)
+      },
+      navigateToSettings = dropUnlessResumed {
+        backStack.add(SettingsGraphKey)
+      },
+      navigateToCertificates = dropUnlessResumed {
+        backStack.add(CertificatesKey)
+      },
+      navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
+      navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
+      navigateToAddMissingInfo = dropUnlessResumed { contractId: String, type: CoInsuredFlowType ->
+        navigateToAddMissingInfo(contractId, type)
+      },
+      openAppSettings = openAppSettings,
+      openUrl = openUrl,
+      viewModel = viewModel,
+      onNavigateToNewConversation = dropUnlessResumed {
+        onNavigateToNewConversation()
+      },
+      navigateToChipId = navigateToChipId,
+    )
   }
+
+  navdestination<EurobonusKey> {
+    val viewModel: EurobonusViewModel = metroViewModel()
+    EurobonusDestination(
+      viewModel = viewModel,
+      navigateUp = backStack::navigateUp,
+    )
+  }
+  navdestination<ContactInfoKey> {
+    val viewModel: ContactInfoViewModel = metroViewModel()
+    ContactInfoDestination(
+      viewModel = viewModel,
+      globalSnackBarState = globalSnackBarState,
+      navigateUp = backStack::navigateUp,
+      popBackStack = popBackStackOrFinish,
+    )
+  }
+  navdestination<InformationKey> {
+    val viewModel: AboutAppViewModel = metroViewModel()
+    InformationDestination(
+      viewModel = viewModel,
+      onBackPressed = backStack::navigateUp,
+      showOpenSourceLicenses = dropUnlessResumed {
+        backStack.add(LicensesKey)
+      },
+      navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      hedvigBuildConstants = hedvigBuildConstants,
+      languageService = languageService,
+      openUrl = openUrl,
+    )
+  }
+  navdestination<LicensesKey> {
+    LicensesDestination(
+      onBackPressed = backStack::navigateUp,
+    )
+  }
+  navdestination<CertificatesKey> {
+    val viewModel: CertificatesViewModel = metroViewModel()
+    CertificatesDestination(
+      viewModel = viewModel,
+      navigateUp = backStack::navigateUp,
+      onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
+      onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
+    )
+  }
+  navdestination<SettingsKey> {
+    val viewModel: SettingsViewModel = metroViewModel()
+    SettingsDestination(
+      viewModel = viewModel,
+      navigateUp = backStack::navigateUp,
+      openAppSettings = openAppSettings,
+      onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
+    )
+  }
+  settingsDestinationNestedGraphs()
+  nestedGraphs()
 }
