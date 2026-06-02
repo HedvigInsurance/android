@@ -83,7 +83,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.feature.claim.chat.ClaimChatKey
 import com.hedvig.feature.claim.chat.claimChatGraph
-import com.hedvig.feature.remove.addons.AddonRemoveGraphDestination
+import com.hedvig.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.feature.remove.addons.removeAddonsNavGraph
 
 @Composable
@@ -249,7 +249,7 @@ internal fun HedvigNavHost(
         )
       },
       onNavigateToRemoveAddon = { contractId, addonVariant ->
-        navigator.navigate(AddonRemoveGraphDestination(contractId, addonVariant))
+        navigator.navigate(RemoveAddonsKey(contractId, addonVariant))
       },
       navigateToUpgradeAddon = { contractId, _ ->
         navigator.navigate(
@@ -409,7 +409,7 @@ internal fun HedvigNavHost(
       imageLoader = imageLoader,
     )
     imageViewerGraph(hedvigAppState.backStacks.backStack, imageLoader)
-    removeAddonsNavGraph(navigator = navigator)
+    removeAddonsNavGraph(backStack = hedvigAppState.backStacks.backStack)
   }
 }
 
