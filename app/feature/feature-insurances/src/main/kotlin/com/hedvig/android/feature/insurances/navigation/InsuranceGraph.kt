@@ -16,16 +16,17 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewM
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.navigateUp
+import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
   nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
@@ -43,21 +44,21 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
   navigateToChipIdScreen: (String) -> Unit,
 ) {
   navgraph(
-    startDestination = InsurancesDestination.Insurances::class,
+    startDestination = InsurancesKey::class,
   ) {
     nestedGraphs()
-    navdestination<InsurancesDestination.Insurances>(
+    navdestination<InsurancesKey>(
       metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: InsuranceViewModel = metroViewModel()
       InsuranceDestination(
         viewModel = viewModel,
         onInsuranceCardClick = dropUnlessResumed { contractId: String ->
-          navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
+          backStack.add(InsuranceContractDetailKey(contractId))
         },
         onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
         navigateToCancelledInsurances = dropUnlessResumed {
-          navigator.navigate(InsurancesDestinations.TerminatedInsurances)
+          backStack.add(TerminatedInsurancesKey)
         },
         onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
         imageLoader = imageLoader,
@@ -66,7 +67,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
         },
       )
     }
-    navdestination<InsurancesDestinations.InsuranceContractDetail> {
+    navdestination<InsuranceContractDetailKey> {
       val contractDetail = this
       val viewModel: ContractDetailViewModel =
         assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
@@ -88,8 +89,8 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
         },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         openUrl = openUrl,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = backStack::navigateUp,
+        navigateBack = backStack::popBackStack,
         imageLoader = imageLoader,
         onChangeTierClick = dropUnlessResumed { contractId: String ->
           onNavigateToStartChangeTier(contractId)
@@ -102,14 +103,14 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
         navigateToChipIdScreen = navigateToChipIdScreen,
       )
     }
-    navdestination<InsurancesDestinations.TerminatedInsurances> {
+    navdestination<TerminatedInsurancesKey> {
       val viewModel: TerminatedContractsViewModel = metroViewModel()
       TerminatedContractsDestination(
         viewModel = viewModel,
         navigateToContractDetail = dropUnlessResumed { contractId: String ->
-          navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
+          backStack.add(InsuranceContractDetailKey(contractId))
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         imageLoader = imageLoader,
       )
     }

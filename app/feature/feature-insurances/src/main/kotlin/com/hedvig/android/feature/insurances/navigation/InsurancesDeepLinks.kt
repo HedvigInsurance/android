@@ -16,7 +16,7 @@ internal class InsurancesDeepLinkMatcherProvider(
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> = uriDeepLinkMatchers(
     container.insurances + container.contractWithoutContractId,
-    InsurancesDestination.Insurances.serializer(),
+    InsurancesKey.serializer(),
   ) +
-    uriDeepLinkMatchers(container.contract, InsurancesDestinations.InsuranceContractDetail.serializer())
+    uriDeepLinkMatchers(container.contract, InsuranceContractDetailKey.serializer())
 }

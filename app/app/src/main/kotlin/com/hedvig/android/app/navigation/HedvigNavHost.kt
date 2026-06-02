@@ -214,7 +214,7 @@ internal fun HedvigNavHost(
           },
         )
       },
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
       onNavigateToNewConversation = navigateToNewConversation,

@@ -5,32 +5,25 @@ import kotlin.reflect.KClass
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-sealed interface InsurancesDestination {
-  @Serializable
-  data object Graph : InsurancesDestination, HedvigNavKey
+@Serializable
+data object InsurancesKey : HedvigNavKey
 
-  @Serializable
-  data object Insurances : InsurancesDestination, HedvigNavKey
-}
+@Serializable
+internal data class InsuranceContractDetailKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
+  @SerialName("contractId")
+  val contractId: String,
+) : HedvigNavKey
 
-internal sealed interface InsurancesDestinations {
-  @Serializable
-  data class InsuranceContractDetail(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.contract] */
-    @SerialName("contractId")
-    val contractId: String,
-  ) : InsurancesDestinations, HedvigNavKey
-
-  @Serializable
-  data object TerminatedInsurances : InsurancesDestinations, HedvigNavKey
-}
+@Serializable
+internal data object TerminatedInsurancesKey : HedvigNavKey
 
 val insurancesBottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  InsurancesDestinations.InsuranceContractDetail::class,
-  InsurancesDestinations.TerminatedInsurances::class,
+  InsuranceContractDetailKey::class,
+  TerminatedInsurancesKey::class,
 )
 
 val insurancesCrossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  InsurancesDestination.Insurances::class,
-  InsurancesDestinations.InsuranceContractDetail::class,
+  InsurancesKey::class,
+  InsuranceContractDetailKey::class,
 )
