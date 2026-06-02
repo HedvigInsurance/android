@@ -4,4 +4,4 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ImageViewer(val imageUrl: String, val cacheKey: String) : HedvigNavKey
+data class ImageViewerKey(val imageUrl: String, val cacheKey: String) : HedvigNavKey

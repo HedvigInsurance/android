@@ -53,7 +53,7 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDes
 import com.hedvig.android.feature.help.center.helpCenterGraph
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeGraph
-import com.hedvig.android.feature.imageviewer.navigation.ImageViewer
+import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerGraph
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
 import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceGraph
@@ -110,7 +110,7 @@ internal fun HedvigNavHost(
   val navigateToConversation = { conversationId: String -> navigator.navigate(ChatKey(conversationId)) }
   val navigateToMovingFlow = { navigator.navigate(SelectContractForMovingKey) }
   val onNavigateToImageViewer = { imageUrl: String, cacheKey: String ->
-    navigator.navigate(ImageViewer(imageUrl, cacheKey))
+    navigator.navigate(ImageViewerKey(imageUrl, cacheKey))
   }
   val popBackStackOrFinish = {
     if (!navigator.popBackStack()) {
@@ -408,7 +408,7 @@ internal fun HedvigNavHost(
       tryToDialPhone = externalNavigator::tryToDialPhone,
       imageLoader = imageLoader,
     )
-    imageViewerGraph(navigator, imageLoader)
+    imageViewerGraph(hedvigAppState.backStacks.backStack, imageLoader)
     removeAddonsNavGraph(navigator = navigator)
   }
 }
