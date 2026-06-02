@@ -67,7 +67,7 @@ import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountDestinat
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountGraph
 import com.hedvig.android.feature.profile.navigation.ProfileDestination.ContactInfo
 import com.hedvig.android.feature.profile.tab.profileGraph
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceGraphDestination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateGraphDestination
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
@@ -178,30 +178,30 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         terminateInsuranceGraph(
           windowSizeClass = hedvigAppState.windowSizeClass,
-          navigator = navigator,
+          backStack = hedvigAppState.backStacks.backStack,
           onNavigateToNewConversation = navigateToNewConversation,
           openUrl = openUrl,
           openPlayStore = externalNavigator::tryOpenPlayStore,
           navigateToInsurances = {
-            navigator.popUpTo<TerminateInsuranceGraphDestination>(inclusive = true)
+            navigator.popUpTo<TerminateInsuranceKey>(inclusive = true)
             hedvigAppState.navigateToTopLevelGraph(TopLevelGraph.Insurances)
           },
           navigateToMovingFlow = {
-            navigator.navigate<TerminateInsuranceGraphDestination>(SelectContractForMoving, inclusive = true)
+            navigator.navigate<TerminateInsuranceKey>(SelectContractForMoving, inclusive = true)
           },
           closeTerminationFlow = {
-            // If we fail to pop the backstack including TerminateInsuranceGraphDestination here it means we were deep
+            // If we fail to pop the backstack including TerminateInsuranceKey here it means we were deep
             //  linked into this screen only, and they do not wish to continue with the flow they were deep linked to.
             //  The right way to handle this is to simply finish the app as per the docs:
             //  https://developer.android.com/guide/navigation/backstack#handle-failure
-            if (navigator.findLastOrNull<TerminateInsuranceGraphDestination>() != null) {
-              navigator.popUpTo<TerminateInsuranceGraphDestination>(inclusive = true)
+            if (navigator.findLastOrNull<TerminateInsuranceKey>() != null) {
+              navigator.popUpTo<TerminateInsuranceKey>(inclusive = true)
             } else {
               finishApp()
             }
           },
           redirectToChangeTierFlow = { idWithIntent ->
-            navigator.navigate<TerminateInsuranceGraphDestination>(
+            navigator.navigate<TerminateInsuranceKey>(
               ChooseTierGraphDestination(
                 InsuranceCustomizationParameters(
                   insuranceId = idWithIntent.first,
@@ -220,7 +220,7 @@ internal fun HedvigNavHost(
       onNavigateToNewConversation = navigateToNewConversation,
       startMovingFlow = navigateToMovingFlow,
       startTerminationFlow = { data: CancelInsuranceData ->
-        navigator.navigate(TerminateInsuranceGraphDestination(insuranceId = data.contractId))
+        navigator.navigate(TerminateInsuranceKey(insuranceId = data.contractId))
       },
       imageLoader = imageLoader,
       startEditCoInsured = { contractId: String ->
@@ -380,7 +380,7 @@ internal fun HedvigNavHost(
           }
 
           QuickLinkTermination -> {
-            TerminateInsuranceGraphDestination(null)
+            TerminateInsuranceKey(null)
           }
 
           QuickLinkTravelCertificate -> {

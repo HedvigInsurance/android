@@ -53,11 +53,14 @@ internal class HedvigTopLevelBackStacks(
     get() = currentBackStack.lastOrNull()
 
   /**
-   * A single stable navigator forwarding to the active stack. Feature graphs capture this once; its
-   * target changes implicitly with [currentTopLevel] / [isLoggedIn] because the forwarding list
-   * resolves [currentBackStack] on every call.
+   * A single stable back-stack list forwarding to the active stack. Feature graphs capture this
+   * once; its target changes implicitly with [currentTopLevel] / [isLoggedIn] because the forwarding
+   * list resolves [currentBackStack] on every call.
    */
-  val navigator: Navigator = Navigator(ForwardingBackStack { currentBackStack })
+  val backStack: MutableList<HedvigNavKey> = ForwardingBackStack { currentBackStack }
+
+  /** Legacy [Navigator] over the same forwarding [backStack], kept until all graphs take the list. */
+  val navigator: Navigator = Navigator(backStack)
 
   /** Rail/bar tap: bring the tab forward, or pop it to its start key if it is already current. */
   fun selectTopLevel(topLevelGraph: TopLevelGraph) {
