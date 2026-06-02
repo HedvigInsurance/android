@@ -43,10 +43,24 @@ fun HedvigNavDisplay(
     entryDecorators = listOf(
       rememberSaveableStateHolderNavEntryDecorator(),
       rememberViewModelStoreNavEntryDecorator(),
+      sharedElementTransitionDecorator,
     ),
     transitionSpec = { enterTransition togetherWith exitTransition },
     popTransitionSpec = { popEnterTransition togetherWith popExitTransition },
     predictivePopTransitionSpec = { popEnterTransition togetherWith popExitTransition },
     entryProvider = entryProvider(builder = builder),
   )
+}
+
+/**
+ * Bridges Nav3's [LocalNavAnimatedContentScope] (the [androidx.compose.animation.AnimatedContentScope] that
+ * [NavDisplay] provides around each decorated entry) to our design-system-facing [LocalNavAnimatedVisibilityScope],
+ * so shared-element modifiers (`Modifier.globalSharedElement`) keep working under Nav3 without depending on nav3 types.
+ */
+private val sharedElementTransitionDecorator: NavEntryDecorator<HedvigNavKey> = NavEntryDecorator { entry ->
+  CompositionLocalProvider(
+    LocalNavAnimatedVisibilityScope provides LocalNavAnimatedContentScope.current,
+  ) {
+    entry.Content()
+  }
 }
