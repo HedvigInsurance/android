@@ -24,7 +24,7 @@ import kotlinx.serialization.PolymorphicSerializer
  * [currentTopLevel] are derived, so process-death restore reconstructs them for free.
  */
 @Stable
-internal class HedvigTopLevelBackStacks(
+internal class HedvigBackStackController(
   val backStack: SnapshotStateList<HedvigNavKey>,
 ) {
   val isLoggedIn: Boolean
@@ -96,14 +96,14 @@ private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKe
 }
 
 @Composable
-internal fun rememberHedvigTopLevelBackStacks(
+internal fun rememberHedvigBackStackController(
   savedStateConfiguration: SavedStateConfiguration,
-): HedvigTopLevelBackStacks {
+): HedvigBackStackController {
   val backStack = rememberSerializable(
     configuration = savedStateConfiguration,
     serializer = SnapshotStateListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
   ) {
     mutableStateListOf<HedvigNavKey>(LoginKey)
   }
-  return remember(backStack) { HedvigTopLevelBackStacks(backStack) }
+  return remember(backStack) { HedvigBackStackController(backStack) }
 }

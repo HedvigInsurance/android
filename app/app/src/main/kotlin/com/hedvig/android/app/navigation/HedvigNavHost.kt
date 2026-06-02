@@ -102,7 +102,7 @@ internal fun HedvigNavHost(
   hedvigBuildConstants: HedvigBuildConstants,
   modifier: Modifier = Modifier,
 ) {
-  val backStack = hedvigAppState.backStacks.backStack
+  val backStack = hedvigAppState.backStackController.backStack
 
   val navigateToConnectPayment: () -> Unit = { backStack.add(TrustlyKey) }
   val navigateToPayoutAccount: () -> Unit = { backStack.add(PayoutAccountKey) }
@@ -122,9 +122,9 @@ internal fun HedvigNavHost(
 
   val density = LocalDensity.current
   HedvigNavDisplay(
-    backStack = hedvigAppState.backStacks.backStack,
+    backStack = hedvigAppState.backStackController.backStack,
     onBack = {
-      if (!hedvigAppState.backStacks.handleBack()) {
+      if (!hedvigAppState.backStackController.handleBack()) {
         finishApp()
       }
     },
@@ -135,7 +135,7 @@ internal fun HedvigNavHost(
     modifier = modifier,
   ) {
     loginGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       appVersionName = hedvigBuildConstants.appVersionName,
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,
@@ -145,7 +145,7 @@ internal fun HedvigNavHost(
     homeGraph(
       nestedGraphs = {
         nestedHomeGraphs(
-          backStack = hedvigAppState.backStacks.backStack,
+          backStack = hedvigAppState.backStackController.backStack,
           appPackageId = hedvigBuildConstants.appPackageId,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           externalNavigator = externalNavigator,
@@ -156,7 +156,7 @@ internal fun HedvigNavHost(
           navigateToConversation = navigateToConversation,
         )
       },
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       onNavigateToInbox = navigateToInbox,
       onNavigateToNewConversation = navigateToNewConversation,
       navigateToClaimDetails = { claimId -> backStack.add(ClaimDetailsKey(claimId)) },
@@ -183,7 +183,7 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         terminateInsuranceGraph(
           windowSizeClass = hedvigAppState.windowSizeClass,
-          backStack = hedvigAppState.backStacks.backStack,
+          backStack = hedvigAppState.backStackController.backStack,
           onNavigateToNewConversation = navigateToNewConversation,
           openUrl = openUrl,
           openPlayStore = externalNavigator::tryOpenPlayStore,
@@ -219,7 +219,7 @@ internal fun HedvigNavHost(
           },
         )
       },
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       openUrl = openUrl,
       openCrossSellUrl = openCrossSellUrl,
       onNavigateToNewConversation = navigateToNewConversation,
@@ -271,7 +271,7 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
     )
     paymentsGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
@@ -279,14 +279,14 @@ internal fun HedvigNavHost(
       openConversation = navigateToNewConversation,
     )
     payoutAccountGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       globalSnackBarState = globalSnackBarState,
       navigateToConnectPayment = navigateToConnectPayment,
       navigateUp = backStack::navigateUp,
     )
     profileGraph(
       settingsDestinationNestedGraphs = {
-        deleteAccountGraph(hedvigAppState.backStacks.backStack)
+        deleteAccountGraph(hedvigAppState.backStackController.backStack)
       },
       nestedGraphs = {
         claimHistoryGraph(
@@ -295,7 +295,7 @@ internal fun HedvigNavHost(
         )
       },
       globalSnackBarState = globalSnackBarState,
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       popBackStackOrFinish = popBackStackOrFinish,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,
@@ -323,10 +323,10 @@ internal fun HedvigNavHost(
         backStack.add(ClaimDetailsKey(claimId))
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
     )
     addonPurchaseNavGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       popBackStack = popBackStackOrFinish,
       finishApp = finishApp,
       onNavigateToNewConversation = navigateToNewConversation,
@@ -335,11 +335,11 @@ internal fun HedvigNavHost(
       },
     )
     changeTierGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       onNavigateToNewConversation = navigateToNewConversation,
     )
     chipIdGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       globalSnackBarState = globalSnackBarState,
       navigateUp = backStack::navigateUp,
       popBackStackOrFinish = popBackStackOrFinish,
@@ -349,13 +349,13 @@ internal fun HedvigNavHost(
       },
     )
     movingFlowGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       goToChat = navigateToNewConversation,
     )
-    connectPaymentGraph(backStack = hedvigAppState.backStacks.backStack)
-    editCoInsuredGraph(hedvigAppState.backStacks.backStack)
+    connectPaymentGraph(backStack = hedvigAppState.backStackController.backStack)
+    editCoInsuredGraph(hedvigAppState.backStackController.backStack)
     helpCenterGraph(
-      backStack = hedvigAppState.backStacks.backStack,
+      backStack = hedvigAppState.backStackController.backStack,
       onNavigateUp = backStack::navigateUp,
       onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
         val destination: HedvigNavKey = when (quickLinkDestination) {
@@ -412,8 +412,8 @@ internal fun HedvigNavHost(
       tryToDialPhone = externalNavigator::tryToDialPhone,
       imageLoader = imageLoader,
     )
-    imageViewerGraph(hedvigAppState.backStacks.backStack, imageLoader)
-    removeAddonsNavGraph(backStack = hedvigAppState.backStacks.backStack)
+    imageViewerGraph(hedvigAppState.backStackController.backStack, imageLoader)
+    removeAddonsNavGraph(backStack = hedvigAppState.backStackController.backStack)
   }
 }
 

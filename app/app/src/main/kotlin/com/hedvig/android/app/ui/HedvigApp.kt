@@ -26,7 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
 import coil3.ImageLoader
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
-import com.hedvig.android.app.navigation.HedvigTopLevelBackStacks
+import com.hedvig.android.app.navigation.HedvigBackStackController
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -89,7 +89,7 @@ internal fun HedvigApp(
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
   val hedvigAppState = rememberHedvigAppState(
-    backStacks = backStacks,
+    backStackController = backStackController,
     windowSizeClass = windowSizeClass,
     settingsDataStore = settingsDataStore,
     getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
@@ -116,14 +116,14 @@ internal fun HedvigApp(
       }
       val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
         matcher = deepLinkMatcher,
-        backStack = backStacks.backStack,
+        backStack = backStackController.backStack,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
-      LaunchedEffect(deepLinkFirstUriHandler, backStacks, deepLinkChannel) {
+      LaunchedEffect(deepLinkFirstUriHandler, backStackController, deepLinkChannel) {
         deepLinkChannel.receiveAsFlow().collect { uri ->
           // Buffer external/notification deep links until the member is logged in, so they don't
           // land on (and get cleared with) the login back stack.
-          snapshotFlow { backStacks.isLoggedIn }.first { it }
+          snapshotFlow { backStackController.isLoggedIn }.first { it }
           deepLinkFirstUriHandler.openUri(uri)
         }
       }
@@ -264,7 +264,7 @@ private fun LogoutOnInvalidCredentialsEffect(
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
         demoManager.isDemoMode().distinctUntilChanged(),
-        snapshotFlow { hedvigAppState.backStacks.isLoggedIn },
+        snapshotFlow { hedvigAppState.backStackController.isLoggedIn },
       ) { authStatus: AuthStatus, isDemoMode: Boolean, isLoggedIn: Boolean ->
         logcat {
           "LogoutOnInvalidCredentialsEffect: " +

@@ -169,9 +169,9 @@ class MainActivity : AppCompatActivity() {
             serializersModule = serializersModules.merge()
           }
         }
-        val backStacks = rememberHedvigTopLevelBackStacks(savedStateConfiguration)
+        val backStackController = rememberHedvigBackStackController(savedStateConfiguration)
         HedvigApp(
-          backStacks = backStacks,
+          backStackController = backStackController,
           deepLinkChannel = deepLinkChannel,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
