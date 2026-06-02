@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -23,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
+import androidx.savedstate.serialization.SavedStateConfiguration
 import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
@@ -45,6 +47,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
+import com.hedvig.android.navigation.compose.merge
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
@@ -56,6 +59,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.modules.SerializersModule
 
 class MainActivity : AppCompatActivity() {
   @Inject private lateinit var authTokenService: AuthTokenService
@@ -88,6 +92,8 @@ class MainActivity : AppCompatActivity() {
   @Inject private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
 
   @Inject private lateinit var missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider
+
+  @Inject private lateinit var serializersModules: Set<SerializersModule>
 
   /**
    * External/notification VIEW intents are forwarded here as raw URI strings. [HedvigApp] collects them and routes
@@ -157,7 +163,12 @@ class MainActivity : AppCompatActivity() {
         val context = LocalContext.current
         RiveInitializer.init(context)
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
-        val backStacks = rememberHedvigTopLevelBackStacks()
+        val savedStateConfiguration = remember(serializersModules) {
+          SavedStateConfiguration {
+            serializersModule = serializersModules.merge()
+          }
+        }
+        val backStacks = rememberHedvigTopLevelBackStacks(savedStateConfiguration)
         HedvigApp(
           backStacks = backStacks,
           deepLinkChannel = deepLinkChannel,

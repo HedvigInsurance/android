@@ -170,8 +170,8 @@ internal class HedvigAppState(
   )
 
   /**
-   * Navigate to a top level destination. Each tab keeps its own back stack; selecting the current
-   * tab again pops it back to its start.
+   * Navigate to a top level destination. Selecting the current tab again pops it back to its start;
+   * selecting another tab brings its run forward (or returns to Home), keeping Home pinned at the base.
    */
   fun navigateToTopLevelGraph(topLevelGraph: TopLevelGraph) {
     backStacks.selectTopLevel(topLevelGraph)

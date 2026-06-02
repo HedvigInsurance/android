@@ -122,8 +122,12 @@ internal fun HedvigNavHost(
 
   val density = LocalDensity.current
   HedvigNavDisplay(
-    backStack = hedvigAppState.backStacks.currentBackStack,
-    onBack = { popBackStackOrFinish() },
+    backStack = hedvigAppState.backStacks.backStack,
+    onBack = {
+      if (!hedvigAppState.backStacks.handleBack()) {
+        finishApp()
+      }
+    },
     enterTransition = MotionDefaults.sharedXAxisEnter(density),
     exitTransition = MotionDefaults.sharedXAxisExit(density),
     popEnterTransition = MotionDefaults.sharedXAxisPopEnter(density),

@@ -2,164 +2,107 @@ package com.hedvig.android.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.hedvig.android.app.ui.startDestination
+import androidx.savedstate.compose.serialization.serializers.SnapshotStateListSerializer
+import androidx.savedstate.serialization.SavedStateConfiguration
+import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.TopLevelGraph
+import kotlinx.serialization.PolymorphicSerializer
 
 /**
- * Owns the app's navigation back stacks for the Nav3 [androidx.navigation3.ui.NavDisplay].
+ * Owns the app's single Nav3 back stack for [androidx.navigation3.ui.NavDisplay].
  *
- * Two roots, mutually exclusive, toggled by [setLoggedIn]:
- * - logged-out: a single [loginBackStack] seeded with [LoginKey].
- * - logged-in: one independent [SnapshotStateList] per [TopLevelGraph] tab, so each tab keeps its
- *   own drill-down depth across tab switches (the per-tab key list persists; only the currently
- *   displayed tab's entries are alive in the composition).
- *
- * [currentBackStack] is the list actually rendered. [backStack] is a single stable forwarding list
- * that always forwards to whichever list is current, so the ~25 feature graph builders capture it
- * once and keep mutating the right stack as tabs switch.
- *
- * Note: we cannot use Nav3's `rememberNavBackStack` here — it is typed `NavBackStack<NavKey>`, while
- * the whole feature DSL (`EntryProviderScope<HedvigNavKey>`, `MutableList<HedvigNavKey>`) is
- * `HedvigNavKey`-typed and `NavDisplay<HedvigNavKey>` needs `List<out HedvigNavKey>`. Per-tab
- * [mutableStateListOf] of [HedvigNavKey] is the type-compatible equivalent.
+ * One flat [SnapshotStateList] is the sole source of truth. Logged out it is `[LoginKey, …]`. Logged
+ * in, [HomeKey] is pinned at index 0 and contiguous per-tab "runs" sit above it. Feature graphs
+ * mutate [backStack] directly; the NavDisplay renders the same instance. [isLoggedIn] and
+ * [currentTopLevel] are derived, so process-death restore reconstructs them for free.
  */
 @Stable
 internal class HedvigTopLevelBackStacks(
-  private val tabBackStacks: Map<TopLevelGraph, SnapshotStateList<HedvigNavKey>>,
-  private val loginBackStack: SnapshotStateList<HedvigNavKey>,
+  val backStack: SnapshotStateList<HedvigNavKey>,
 ) {
-  var isLoggedIn: Boolean by mutableStateOf(false)
-    private set
+  val isLoggedIn: Boolean
+    get() = backStack.firstOrNull()?.topLevelGraphOrNull() != null
 
-  var currentTopLevel: TopLevelGraph by mutableStateOf(TopLevelGraph.Home)
-    private set
-
-  /** The list currently rendered by the NavDisplay. */
-  val currentBackStack: SnapshotStateList<HedvigNavKey>
-    get() = if (isLoggedIn) tabBackStacks.getValue(currentTopLevel) else loginBackStack
+  val currentTopLevel: TopLevelGraph
+    get() = nearestTopLevelGraph(backStack) ?: TopLevelGraph.Home
 
   /** The destination on top of the rendered stack — replaces Nav2's `navController.currentDestination`. */
   val currentDestination: HedvigNavKey?
-    get() = currentBackStack.lastOrNull()
+    get() = backStack.lastOrNull()
 
   /**
-   * A single stable back-stack list forwarding to the active stack. Feature graphs capture this
-   * once; its target changes implicitly with [currentTopLevel] / [isLoggedIn] because the forwarding
-   * list resolves [currentBackStack] on every call.
+   * Rail/bar tap. Re-tapping the current tab pops its run to the root; selecting Home from a side tab
+   * returns to Home (discarding parked runs); selecting a different side tab moves its run to the top
+   * (preserving Home at the base and the other runs).
    */
-  val backStack: MutableList<HedvigNavKey> = ForwardingBackStack { currentBackStack }
-
-  /** Rail/bar tap: bring the tab forward, or pop it to its start key if it is already current. */
   fun selectTopLevel(topLevelGraph: TopLevelGraph) {
-    if (currentTopLevel == topLevelGraph && isLoggedIn) {
-      popCurrentToStart()
-    } else {
-      currentTopLevel = topLevelGraph
-    }
-  }
-
-  private fun popCurrentToStart() {
-    val stack = currentBackStack
     Snapshot.withMutableSnapshot {
-      while (stack.size > 1) stack.removeAt(stack.lastIndex)
+      val target = when {
+        topLevelGraph == currentTopLevel -> popTopRunToStart(backStack)
+        topLevelGraph == TopLevelGraph.Home -> collapseToHome(backStack)
+        else -> moveRunToTop(backStack, topLevelGraph)
+      }
+      backStack.replaceWith(target)
     }
   }
 
-  /** Move into the tabbed shell. Resets every tab to its start so a re-login starts clean. */
+  /**
+   * System-back handler. Returns false when the app should finish. Drains the active run, returns a
+   * non-Home tab root straight to Home (no wandering into parked tabs), and exits from the root.
+   */
+  fun handleBack(): Boolean {
+    if (backStack.size <= 1) return false
+    val topTab = backStack.last().topLevelGraphOrNull()
+    Snapshot.withMutableSnapshot {
+      if (topTab != null && topTab != TopLevelGraph.Home) {
+        backStack.replaceWith(collapseToHome(backStack))
+      } else {
+        backStack.removeAt(backStack.lastIndex)
+      }
+    }
+    return true
+  }
+
+  /** Move into the tabbed shell, Home pinned at the base. */
   fun setLoggedIn() {
     Snapshot.withMutableSnapshot {
-      for ((graph, stack) in tabBackStacks) {
-        stack.clear()
-        stack.add(graph.startDestination)
-      }
-      currentTopLevel = TopLevelGraph.Home
-      isLoggedIn = true
+      backStack.clear()
+      backStack.add(HomeKey)
     }
   }
 
-  /** Drop back to the login root. Clears the login stack down to [LoginKey]. */
+  /** Drop back to the login root. */
   fun setLoggedOut() {
     Snapshot.withMutableSnapshot {
-      loginBackStack.clear()
-      loginBackStack.add(LoginKey)
-      isLoggedIn = false
+      backStack.clear()
+      backStack.add(LoginKey)
     }
   }
+}
+
+/** In-place replace; skips mutation when the content is already equal to avoid recomposition churn. */
+private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKey>) {
+  if (this == target) return
+  clear()
+  addAll(target)
 }
 
 @Composable
-internal fun rememberHedvigTopLevelBackStacks(): HedvigTopLevelBackStacks {
-  val tabBackStacks = TopLevelGraph.entries.associateWith { graph ->
-    remember(graph) { mutableStateListOf<HedvigNavKey>(graph.startDestination) }
+internal fun rememberHedvigTopLevelBackStacks(
+  savedStateConfiguration: SavedStateConfiguration,
+): HedvigTopLevelBackStacks {
+  val backStack = rememberSerializable(
+    configuration = savedStateConfiguration,
+    serializer = SnapshotStateListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
+  ) {
+    mutableStateListOf<HedvigNavKey>(LoginKey)
   }
-  val loginBackStack = remember { mutableStateListOf<HedvigNavKey>(LoginKey) }
-  return remember(tabBackStacks, loginBackStack) {
-    HedvigTopLevelBackStacks(tabBackStacks, loginBackStack)
-  }
-}
-
-/**
- * A [MutableList] view that delegates every operation to whatever list [current] returns at call
- * time. Lets a single [Navigator] instance keep mutating the active tab's stack as the active tab
- * changes, without rebuilding the navigator (and therefore the captured graph builders).
- */
-private class ForwardingBackStack(
-  private val current: () -> MutableList<HedvigNavKey>,
-) : MutableList<HedvigNavKey> by MutableListDelegate(current)
-
-private class MutableListDelegate(
-  private val current: () -> MutableList<HedvigNavKey>,
-) : MutableList<HedvigNavKey> {
-  private val target: MutableList<HedvigNavKey> get() = current()
-
-  override val size: Int get() = target.size
-
-  override fun contains(element: HedvigNavKey) = target.contains(element)
-
-  override fun containsAll(elements: Collection<HedvigNavKey>) = target.containsAll(elements)
-
-  override fun get(index: Int) = target[index]
-
-  override fun indexOf(element: HedvigNavKey) = target.indexOf(element)
-
-  override fun isEmpty() = target.isEmpty()
-
-  override fun iterator() = target.iterator()
-
-  override fun lastIndexOf(element: HedvigNavKey) = target.lastIndexOf(element)
-
-  override fun add(element: HedvigNavKey) = target.add(element)
-
-  override fun add(index: Int, element: HedvigNavKey) = target.add(index, element)
-
-  override fun addAll(index: Int, elements: Collection<HedvigNavKey>) = target.addAll(index, elements)
-
-  override fun addAll(elements: Collection<HedvigNavKey>) = target.addAll(elements)
-
-  override fun clear() = target.clear()
-
-  override fun listIterator() = target.listIterator()
-
-  override fun listIterator(index: Int) = target.listIterator(index)
-
-  override fun remove(element: HedvigNavKey) = target.remove(element)
-
-  override fun removeAll(elements: Collection<HedvigNavKey>) = target.removeAll(elements)
-
-  override fun removeAt(index: Int) = target.removeAt(index)
-
-  override fun retainAll(elements: Collection<HedvigNavKey>) = target.retainAll(elements)
-
-  override fun set(index: Int, element: HedvigNavKey) = target.set(index, element)
-
-  override fun subList(fromIndex: Int, toIndex: Int) = target.subList(fromIndex, toIndex)
+  return remember(backStack) { HedvigTopLevelBackStacks(backStack) }
 }
