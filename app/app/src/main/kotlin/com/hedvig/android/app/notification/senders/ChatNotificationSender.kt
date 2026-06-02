@@ -22,7 +22,7 @@ import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
-import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
+import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
@@ -51,7 +51,7 @@ private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
   ChatKey::class,
   InboxKey::class,
   HomeKey::class,
-  ClaimDetailDestination.ClaimOverviewDestination::class,
+  ClaimDetailsKey::class,
 )
 
 class ChatNotificationSender(

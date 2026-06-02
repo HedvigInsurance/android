@@ -10,7 +10,6 @@ import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -22,10 +21,10 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateUp: () -> Unit,
   navigateToConversation: (String) -> Unit,
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   applicationId: String,
 ) {
-  navdestination<ClaimDetailDestination.ClaimOverviewDestination> {
+  navdestination<ClaimDetailsKey> {
     val viewModel: ClaimDetailsViewModel =
       assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModel.Factory> { create(claimId) }
     val context = LocalContext.current
@@ -39,8 +38,8 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
       },
       onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
         if (filesUri.isNotEmpty()) {
-          navigator.navigate(
-            ClaimDetailInternalDestination.AddFilesDestination(
+          backStack.add(
+            AddFilesKey(
               targetUploadUrl = uploadUri,
               initialFilesUri = filesUri.map { it.toString() },
             ),
@@ -54,7 +53,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
       },
     )
   }
-  navdestination<ClaimDetailInternalDestination.AddFilesDestination> {
+  navdestination<AddFilesKey> {
     val viewModel: AddFilesViewModel =
       assistedMetroViewModel<AddFilesViewModel, AddFilesViewModel.Factory> {
         create(targetUploadUrl, initialFilesUri)

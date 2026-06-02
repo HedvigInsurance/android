@@ -26,7 +26,7 @@ import com.hedvig.android.feature.chat.navigation.InboxKey
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
 import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
 import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
-import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination.ClaimOverviewDestination
+import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
@@ -155,7 +155,7 @@ internal fun HedvigNavHost(
       backStack = hedvigAppState.backStacks.backStack,
       onNavigateToInbox = navigateToInbox,
       onNavigateToNewConversation = navigateToNewConversation,
-      navigateToClaimDetails = { claimId -> navigator.navigate(ClaimOverviewDestination(claimId)) },
+      navigateToClaimDetails = { claimId -> navigator.navigate(ClaimDetailsKey(claimId)) },
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToConnectPayout = navigateToPayoutAccount,
       navigateToContactInfo = { navigator.navigate(ContactInfoKey) },
@@ -287,7 +287,7 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         claimHistoryGraph(
           navigateUp = navigator::navigateUp,
-          navigateToClaimDetails = { claimId -> navigator.navigate(ClaimOverviewDestination(claimId)) },
+          navigateToClaimDetails = { claimId -> navigator.navigate(ClaimDetailsKey(claimId)) },
         )
       },
       globalSnackBarState = globalSnackBarState,
@@ -316,7 +316,7 @@ internal fun HedvigNavHost(
       openUrl = openUrl,
       onNavigateToClaimDetails = { claimId ->
         logcat { "Navigating to claim details from chat" }
-        navigator.navigate(ClaimOverviewDestination(claimId))
+        navigator.navigate(ClaimDetailsKey(claimId))
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
       backStack = hedvigAppState.backStacks.backStack,
@@ -430,7 +430,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     openAppSettings = externalNavigator::openAppSettings,
     onNavigateToImageViewer = onNavigateToImageViewer,
-    navigateToClaimDetails = { claimId: String -> navigator.navigate(ClaimOverviewDestination(claimId)) },
+    navigateToClaimDetails = { claimId: String -> navigator.navigate(ClaimDetailsKey(claimId)) },
     tryOpenPlayStore = externalNavigator::tryOpenPlayStore,
     openUrl = openUrl,
     tryToDialPhone = externalNavigator::tryToDialPhone,
@@ -446,7 +446,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
     navigateUp = navigator::navigateUp,
     appPackageId = appPackageId,
     navigateToConversation = { conversationId -> navigateToConversation(conversationId) },
-    navigator = navigator,
+    backStack = backStack,
     applicationId = appPackageId,
   )
   travelCertificateGraph(
