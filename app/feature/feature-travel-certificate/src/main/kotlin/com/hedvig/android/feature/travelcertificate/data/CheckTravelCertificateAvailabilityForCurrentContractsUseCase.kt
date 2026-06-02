@@ -13,7 +13,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.CurrentContractsQuery
 
-interface CheckTravelCertificateAvailabilityForCurrentContractsUseCase {
+internal interface CheckTravelCertificateAvailabilityForCurrentContractsUseCase {
   suspend fun invoke(): Either<ErrorMessage, Boolean>
 }
 

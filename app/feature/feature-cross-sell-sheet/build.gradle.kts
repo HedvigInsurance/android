@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
+  implementation(projects.coreCommonPublic)
   implementation(projects.coreDemoMode)
   implementation(projects.crossSells)
   implementation(projects.dataAddons)

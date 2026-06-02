@@ -9,9 +9,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
 import octopus.ShouldShowPayoutButtonQuery
 
 internal interface GetShouldShowPayoutUseCase {
@@ -23,7 +21,6 @@ internal interface GetShouldShowPayoutUseCase {
  * to add one in the member's current state
  */
 @Inject
-@SingleIn(AppScope::class)
 internal class GetShouldShowPayoutUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetShouldShowPayoutUseCase {
@@ -42,7 +39,6 @@ internal class GetShouldShowPayoutUseCaseImpl(
 }
 
 @Inject
-@SingleIn(AppScope::class)
 internal class GetShouldShowPayoutUseCaseDemo : GetShouldShowPayoutUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Boolean> = false.right()
 }

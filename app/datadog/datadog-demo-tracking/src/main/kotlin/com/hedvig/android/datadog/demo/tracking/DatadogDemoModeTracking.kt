@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 @ContributesIntoSet(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-class DatadogDemoModeTracking(
+internal class DatadogDemoModeTracking(
   private val demoManager: DemoManager,
 ) : DatadogAttributeProvider {
   override fun provide(): Flow<Pair<String, Any?>> {

@@ -86,7 +86,7 @@ internal fun HedvigApp(
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
-  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
+  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     backStacks = backStacks,

@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
@@ -28,9 +29,11 @@ import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -48,7 +51,7 @@ import octopus.type.UserFlow
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
@@ -57,11 +60,11 @@ internal class CrossSellSheetViewModel(
     CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
   )
 
-sealed interface CrossSellSheetEvent {
+internal sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
 }
 
-sealed interface CrossSellSheetState {
+internal sealed interface CrossSellSheetState {
   data object Loading : CrossSellSheetState
 
   data object DontShow : CrossSellSheetState
@@ -129,10 +132,13 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
   }
 }
 
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding<Provider<GetCrossSellSheetDataUseCase>>())
 internal class GetCrossSellSheetDataUseCaseProvider(
   override val demoManager: DemoManager,
-  override val demoImpl: GetCrossSellSheetDataUseCase,
-  override val prodImpl: GetCrossSellSheetDataUseCase,
+  override val prodImpl: GetCrossSellSheetDataUseCaseImpl,
+  override val demoImpl: DemoGetCrossSellSheetDataUseCase,
 ) : ProdOrDemoProvider<GetCrossSellSheetDataUseCase>
 
 internal interface GetCrossSellSheetDataUseCase {
@@ -140,7 +146,6 @@ internal interface GetCrossSellSheetDataUseCase {
 }
 
 @Inject
-@SingleIn(AppScope::class)
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
@@ -200,7 +205,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
 }
 
 @Inject
-internal class DemoGetCrossSellSheetDataUseCase() : GetCrossSellSheetDataUseCase {
+internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }

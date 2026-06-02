@@ -6,7 +6,7 @@ import com.hedvig.android.core.common.ErrorMessage
 import dev.zacsweers.metro.Inject
 
 @Inject
-class GetOnlyHasNonPayingContractsUseCaseDemo : GetOnlyHasNonPayingContractsUseCase {
+internal class GetOnlyHasNonPayingContractsUseCaseDemo : GetOnlyHasNonPayingContractsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, Boolean> {
     return false.right()
   }

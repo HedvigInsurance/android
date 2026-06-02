@@ -25,7 +25,7 @@ interface CrossSellAfterClaimClosedRepository {
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-class CrossSellAfterClaimClosedRepositoryImpl(
+internal class CrossSellAfterClaimClosedRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
 ) : CrossSellAfterClaimClosedRepository {

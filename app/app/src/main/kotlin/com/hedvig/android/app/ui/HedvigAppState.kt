@@ -33,7 +33,7 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.TopLevelGraph
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
@@ -50,7 +50,7 @@ internal fun rememberHedvigAppState(
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
-  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
+  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   val appState = remember(
@@ -89,7 +89,7 @@ internal class HedvigAppState(
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
-  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
+  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
   val currentDestination: HedvigNavKey?
     get() = backStacks.currentDestination

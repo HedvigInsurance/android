@@ -38,8 +38,9 @@ import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCaseProvider
+import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
@@ -48,7 +49,7 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.navigation.compose.merge
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
   @Inject private lateinit var featureManager: FeatureManager
 
-  @Inject private lateinit var getOnlyHasNonPayingContractsUseCase: GetOnlyHasNonPayingContractsUseCaseProvider
+  @Inject private lateinit var getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>
 
   @Inject private lateinit var hedvigBuildConstants: HedvigBuildConstants
 
@@ -91,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 
   @Inject private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
 
-  @Inject private lateinit var missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider
+  @Inject private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
 
   @Inject private lateinit var serializersModules: Set<SerializersModule>
 

@@ -15,7 +15,7 @@ import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import octopus.TravelCertificateSpecificationsQuery
 
-interface GetTravelCertificateSpecificationsUseCase {
+internal interface GetTravelCertificateSpecificationsUseCase {
   suspend fun invoke(contractId: String?): Either<TravelCertificateError, TravelCertificateData>
 }
 

@@ -14,7 +14,7 @@ internal interface ContactInfoRepository {
   suspend fun updateInfo(phoneNumber: PhoneNumber, email: Email): Either<ErrorMessage, ContactInformation>
 }
 
-internal data class ContactInformation(
+data class ContactInformation(
   val phoneNumber: PhoneNumber?,
   val email: Email?,
 ) {

@@ -17,7 +17,6 @@ import octopus.CrossSellsQuery
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
 internal class GetCrossSellsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellsUseCase {

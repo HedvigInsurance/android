@@ -65,7 +65,7 @@ import octopus.fragment.ChatMessageFragment
 import octopus.fragment.ChatMessageTextChatMessageFragment
 import octopus.type.ChatMessageDisclaimerType
 
-interface CbmChatRepository {
+internal interface CbmChatRepository {
   suspend fun createConversation(conversationId: Uuid): Either<ErrorMessage, Info>
 
   fun getConversationInfo(conversationId: Uuid): Flow<Either<ApolloOperationError, ConversationInfo>>
@@ -91,7 +91,6 @@ interface CbmChatRepository {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
 internal class CbmChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val database: RoomDatabase,

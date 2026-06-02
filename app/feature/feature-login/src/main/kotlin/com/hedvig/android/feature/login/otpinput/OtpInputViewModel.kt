@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @AssistedInject
-class OtpInputViewModel(
+internal class OtpInputViewModel(
   @Assisted private val verifyUrl: String,
   @Assisted private val resendUrl: String,
   @Assisted credential: String,

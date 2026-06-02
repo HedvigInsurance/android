@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import octopus.PuppyGuideQuery
 
-interface GetPuppyGuideUseCase {
+internal interface GetPuppyGuideUseCase {
   fun invoke(): Flow<Either<ErrorMessage, PuppyGuide>>
 }
 

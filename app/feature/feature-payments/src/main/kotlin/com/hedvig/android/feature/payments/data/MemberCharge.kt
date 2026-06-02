@@ -14,7 +14,7 @@ import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
 
 @Serializable
-internal data class MemberCharge(
+data class MemberCharge(
   val grossAmount: UiMoney,
   val netAmount: UiMoney,
   val id: String?,
@@ -47,7 +47,7 @@ internal data class MemberCharge(
     val sum: UiMoney,
   )
 
-  internal enum class MemberChargeStatus {
+  enum class MemberChargeStatus {
     UPCOMING,
     SUCCESS,
     PENDING,

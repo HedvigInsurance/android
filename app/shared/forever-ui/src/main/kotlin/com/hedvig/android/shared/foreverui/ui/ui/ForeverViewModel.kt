@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import arrow.core.raise.either
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.Provider
@@ -22,11 +23,12 @@ import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.ShowedReferralCode
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.SubmitNewReferralCode
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(

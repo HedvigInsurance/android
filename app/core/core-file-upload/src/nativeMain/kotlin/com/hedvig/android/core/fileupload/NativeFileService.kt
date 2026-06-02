@@ -9,7 +9,7 @@ import dev.zacsweers.metro.SingleIn
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-class NativeFileService : FileService {
+internal class NativeFileService : FileService {
   override fun convertToCommonFile(uri: Uri): CommonFile {
     return NativeFile(
       fileName = "todo",

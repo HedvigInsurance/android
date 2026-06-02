@@ -9,18 +9,15 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
 import octopus.ContactInformationQuery
 import octopus.MemberUpdateContactInfoMutation
 
 @Inject
-@SingleIn(AppScope::class)
 internal class ContactInfoRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,
