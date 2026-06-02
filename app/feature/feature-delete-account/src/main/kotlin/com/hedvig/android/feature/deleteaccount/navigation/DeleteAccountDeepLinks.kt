@@ -15,5 +15,5 @@ internal class DeleteAccountDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.deleteAccount, DeleteAccountDestination.serializer())
+    uriDeepLinkMatchers(container.deleteAccount, DeleteAccountKey.serializer())
 }

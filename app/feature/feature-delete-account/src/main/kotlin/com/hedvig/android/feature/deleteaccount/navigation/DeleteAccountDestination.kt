@@ -4,4 +4,4 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object DeleteAccountDestination : HedvigNavKey
+data object DeleteAccountKey : HedvigNavKey

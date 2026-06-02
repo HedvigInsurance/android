@@ -32,7 +32,7 @@ import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
-import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
+import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddOrRemove
@@ -282,7 +282,7 @@ internal fun HedvigNavHost(
     )
     profileGraph(
       settingsDestinationNestedGraphs = {
-        deleteAccountGraph(navigator)
+        deleteAccountGraph(hedvigAppState.backStacks.backStack)
       },
       nestedGraphs = {
         claimHistoryGraph(
@@ -299,7 +299,7 @@ internal fun HedvigNavHost(
       navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
         navigator.navigate(CoInsuredAddInfo(contractId, type))
       },
-      navigateToDeleteAccountFeature = { navigator.navigate(DeleteAccountDestination) },
+      navigateToDeleteAccountFeature = { navigator.navigate(DeleteAccountKey) },
       navigateToClaimHistory = { navigator.navigate(ClaimHistoryDestination) },
       openAppSettings = externalNavigator::openAppSettings,
       onNavigateToNewConversation = navigateToNewConversation,
