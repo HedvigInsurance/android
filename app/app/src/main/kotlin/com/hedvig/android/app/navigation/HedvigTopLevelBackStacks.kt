@@ -87,11 +87,12 @@ internal class HedvigTopLevelBackStacks(
   }
 }
 
-/** In-place replace; skips mutation when the content is already equal to avoid recomposition churn. */
 private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKey>) {
   if (this == target) return
-  clear()
-  addAll(target)
+  Snapshot.withMutableSnapshot {
+    clear()
+    addAll(target)
+  }
 }
 
 @Composable
