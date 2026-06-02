@@ -14,7 +14,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -113,7 +113,7 @@ internal class TravelCertificateDateInputPresenter(
     }
 
     var primaryInput by remember {
-      mutableStateOf<TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?>(null)
+      mutableStateOf<TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput?>(null)
     }
 
     var invalidEmailErrorMessage by remember { mutableStateOf<StringResource?>(null) }
@@ -129,7 +129,7 @@ internal class TravelCertificateDateInputPresenter(
         ) {
           if (successScreenContent.details.hasCoInsured) {
             val travelCertificatePrimaryInput =
-              TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput(
+              TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput(
                 successScreenContent.details.email,
                 successScreenContent.details.travelDate,
                 successScreenContent.details.contractId,
@@ -316,7 +316,7 @@ internal sealed interface TravelCertificateDateInputUiState {
     val hasCoInsured: Boolean,
     val datePickerState: HedvigDatePickerState,
     val daysValid: Int,
-    val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?,
+    val primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput?,
     val errorMessageRes: StringResource?,
   ) : TravelCertificateDateInputUiState
 }

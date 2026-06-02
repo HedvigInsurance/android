@@ -10,43 +10,41 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object TravelCertificateGraphDestination : HedvigNavKey
+data object TravelCertificateKey : HedvigNavKey
 
-internal sealed interface TravelCertificateDestination {
+@Serializable
+internal data object TravelCertificateChooseContractKey : HedvigNavKey
+
+@Serializable
+internal data class TravelCertificateDateInputKey(
+  val contractId: String?,
+) : HedvigNavKey
+
+@Serializable
+internal data class TravelCertificateTravellersInputKey(
+  val primaryInput: TravelCertificatePrimaryInput,
+) : HedvigNavKey {
   @Serializable
-  data object TravelCertificateChooseContract : TravelCertificateDestination, HedvigNavKey
+  data class TravelCertificatePrimaryInput(
+    val email: String,
+    val travelDate: LocalDate,
+    val contractId: String,
+  )
 
-  @Serializable
-  data class TravelCertificateDateInput(
-    val contractId: String?,
-  ) : TravelCertificateDestination, HedvigNavKey
-
-  @Serializable
-  data class TravelCertificateTravellersInput(
-    val primaryInput: TravelCertificatePrimaryInput,
-  ) : TravelCertificateDestination, HedvigNavKey {
-    @Serializable
-    data class TravelCertificatePrimaryInput(
-      val email: String,
-      val travelDate: LocalDate,
-      val contractId: String,
-    )
-
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<TravelCertificatePrimaryInput>())
-    }
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<TravelCertificatePrimaryInput>())
   }
+}
 
-  @Serializable
-  data class ShowCertificate(
-    val travelCertificateUrl: TravelCertificateUrl,
-  ) : TravelCertificateDestination, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<TravelCertificateUrl>())
-    }
+@Serializable
+internal data class ShowCertificateKey(
+  val travelCertificateUrl: TravelCertificateUrl,
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<TravelCertificateUrl>())
   }
 }
 
 val travelCertificateCrossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  TravelCertificateGraphDestination::class,
+  TravelCertificateKey::class,
 )

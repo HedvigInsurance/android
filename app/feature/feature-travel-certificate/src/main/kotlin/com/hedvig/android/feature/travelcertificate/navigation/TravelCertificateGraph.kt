@@ -14,34 +14,34 @@ import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   applicationId: String,
   onNavigateToCoInsuredAddInfo: (String) -> Unit,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
   navgraph(
-    startDestination = TravelCertificateGraphDestination::class,
+    startDestination = TravelCertificateKey::class,
   ) {
-    navdestination<TravelCertificateGraphDestination> {
+    navdestination<TravelCertificateKey> {
       val viewModel: CertificateHistoryViewModel = metroViewModel()
       val localContext = LocalContext.current
       TravelCertificateHistoryDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onStartGenerateTravelCertificateFlow = {
-          navigator.navigate(TravelCertificateDestination.TravelCertificateDateInput(null))
+          backStack.add(TravelCertificateDateInputKey(null))
         },
         onNavigateToChooseContract = {
-          navigator.navigate(TravelCertificateDestination.TravelCertificateChooseContract)
+          backStack.add(TravelCertificateChooseContractKey)
         },
         onShareTravelCertificate = {
           viewModel.emit(CertificateHistoryEvent.HaveProcessedCertificateUri)
@@ -51,18 +51,18 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
       )
     }
 
-    navdestination<TravelCertificateDestination.TravelCertificateChooseContract> {
+    navdestination<TravelCertificateChooseContractKey> {
       val viewModel: ChooseContractForCertificateViewModel = metroViewModel()
       ChooseContractForCertificateDestination(
         viewModel = viewModel,
         onContinue = { contractId ->
-          navigator.navigate(TravelCertificateDestination.TravelCertificateDateInput(contractId))
+          backStack.add(TravelCertificateDateInputKey(contractId))
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
       )
     }
 
-    navdestination<TravelCertificateDestination.TravelCertificateDateInput> {
+    navdestination<TravelCertificateDateInputKey> {
       val contractId = this.contractId
       val viewModel: TravelCertificateDateInputViewModel =
         assistedMetroViewModel<TravelCertificateDateInputViewModel, TravelCertificateDateInputViewModel.Factory> {
@@ -70,24 +70,24 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
         }
       TravelCertificateDateInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onNavigateToFellowTravellers = { travelCertificatePrimaryInput ->
-          navigator.navigate(
-            TravelCertificateDestination.TravelCertificateTravellersInput(
+          backStack.add(
+            TravelCertificateTravellersInputKey(
               travelCertificatePrimaryInput,
             ),
           )
         },
         onNavigateToOverview = { travelCertificateUrl ->
-          navigator.navigate<TravelCertificateGraphDestination>(
-            TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
+          backStack.navigateAndPopUpTo<TravelCertificateKey>(
+            ShowCertificateKey(travelCertificateUrl),
             inclusive = false,
           )
         },
       )
     }
 
-    navdestination<TravelCertificateDestination.TravelCertificateTravellersInput> {
+    navdestination<TravelCertificateTravellersInputKey> {
       val primaryInput = this.primaryInput
       val viewModel: TravelCertificateTravellersInputViewModel =
         assistedMetroViewModel<
@@ -98,10 +98,10 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
         }
       TravelCertificateTravellersInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onNavigateToOverview = { travelCertificateUrl ->
-          navigator.navigate<TravelCertificateGraphDestination>(
-            TravelCertificateDestination.ShowCertificate(travelCertificateUrl),
+          backStack.navigateAndPopUpTo<TravelCertificateKey>(
+            ShowCertificateKey(travelCertificateUrl),
             inclusive = false,
           )
         },
@@ -109,13 +109,13 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
       )
     }
 
-    navdestination<TravelCertificateDestination.ShowCertificate> {
+    navdestination<ShowCertificateKey> {
       val viewModel: TravelCertificateOverviewViewModel = metroViewModel()
       val context = LocalContext.current
       TravelCertificateOverviewDestination(
         travelCertificateUrl = travelCertificateUrl,
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onShareTravelCertificate = {
           context.sharePDF(it, applicationId)
         },

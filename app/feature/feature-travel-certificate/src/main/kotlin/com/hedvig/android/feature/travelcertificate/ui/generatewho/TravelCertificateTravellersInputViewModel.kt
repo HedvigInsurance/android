@@ -15,7 +15,7 @@ import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContractUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -32,7 +32,7 @@ import kotlinx.serialization.Serializable
 
 @AssistedInject
 internal class TravelCertificateTravellersInputViewModel(
-  @Assisted primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+  @Assisted primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
 ) : MoleculeViewModel<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState>(
@@ -49,13 +49,13 @@ internal class TravelCertificateTravellersInputViewModel(
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted
-      primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+      primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
     ): TravelCertificateTravellersInputViewModel
   }
 }
 
 internal class TravelCertificateTravellersInputPresenter(
-  private val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+  private val primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
 ) : MoleculePresenter<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState> {

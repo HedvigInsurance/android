@@ -15,5 +15,5 @@ internal class TravelCertificateDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.travelCertificate, TravelCertificateGraphDestination.serializer())
+    uriDeepLinkMatchers(container.travelCertificate, TravelCertificateKey.serializer())
 }

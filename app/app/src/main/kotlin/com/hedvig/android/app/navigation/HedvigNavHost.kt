@@ -69,7 +69,7 @@ import com.hedvig.android.feature.profile.navigation.ContactInfoKey
 import com.hedvig.android.feature.profile.tab.profileGraph
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
 import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateGraphDestination
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
@@ -141,6 +141,7 @@ internal fun HedvigNavHost(
       nestedGraphs = {
         nestedHomeGraphs(
           navigator = navigator,
+          backStack = hedvigAppState.backStacks.backStack,
           appPackageId = hedvigBuildConstants.appPackageId,
           shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
           externalNavigator = externalNavigator,
@@ -302,7 +303,7 @@ internal fun HedvigNavHost(
       navigateToClaimHistory = { navigator.navigate(ClaimHistoryDestination) },
       openAppSettings = externalNavigator::openAppSettings,
       onNavigateToNewConversation = navigateToNewConversation,
-      onNavigateToTravelCertificate = { navigator.navigate(TravelCertificateGraphDestination) },
+      onNavigateToTravelCertificate = { navigator.navigate(TravelCertificateKey) },
       onNavigateToInsuranceEvidence = { navigator.navigate(InsuranceEvidenceGraphDestination) },
       openUrl = openUrl,
       navigateToChipId = { navigator.navigate(ChipIdGraphDestination()) },
@@ -384,7 +385,7 @@ internal fun HedvigNavHost(
           }
 
           QuickLinkTravelCertificate -> {
-            TravelCertificateGraphDestination
+            TravelCertificateKey
           }
 
           QuickLinkChangeTier -> {
@@ -414,6 +415,7 @@ internal fun HedvigNavHost(
 
 private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
   navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   appPackageId: String,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   externalNavigator: ExternalNavigator,
@@ -448,7 +450,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
     applicationId = appPackageId,
   )
   travelCertificateGraph(
-    navigator = navigator,
+    backStack = backStack,
     applicationId = appPackageId,
     onNavigateToCoInsuredAddInfo = { contractId ->
       navigator.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoInsured))
