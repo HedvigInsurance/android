@@ -8,21 +8,16 @@ import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
-sealed interface HomeDestination {
-  @Serializable
-  data object Graph : HomeDestination, HedvigNavKey
+@Serializable
+data object HomeKey : HedvigNavKey
 
-  @Serializable
-  data object Home : HomeDestination, HedvigNavKey
-
-  @Serializable
-  data class FirstVet(val sections: List<FirstVetSection>) : HomeDestination, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
-    }
+@Serializable
+internal data class FirstVetKey(val sections: List<FirstVetSection>) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
   }
 }
 
 val homeCrossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  HomeDestination.Home::class,
+  HomeKey::class,
 )

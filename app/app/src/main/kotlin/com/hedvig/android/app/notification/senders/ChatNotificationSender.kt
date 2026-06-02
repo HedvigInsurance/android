@@ -23,7 +23,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
-import com.hedvig.android.feature.home.home.navigation.HomeDestination
+import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -50,7 +50,7 @@ object CurrentDestinationInMemoryStorage {
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
   ChatDestinations.Chat::class,
   ChatDestination::class,
-  HomeDestination.Home::class,
+  HomeKey::class,
   ClaimDetailDestination.ClaimOverviewDestination::class,
 )
 

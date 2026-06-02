@@ -19,7 +19,7 @@ import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.forever.navigation.ForeverDestination
 import com.hedvig.android.feature.help.center.navigation.helpCenterCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.home.home.navigation.HomeDestination
+import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
@@ -213,7 +213,7 @@ value class NavigationSuiteType private constructor(
 
 private fun HedvigNavKey.isTopLevelStartDestination(): Boolean {
   return when (this) {
-    is HomeDestination.Home,
+    is HomeKey,
     is InsurancesDestination.Insurances,
     is ForeverDestination.Forever,
     is PaymentsDestination.Payments,

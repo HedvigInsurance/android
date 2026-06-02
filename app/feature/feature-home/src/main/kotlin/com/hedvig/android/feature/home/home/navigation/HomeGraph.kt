@@ -10,15 +10,16 @@ import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.navigateUp
+import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.homeGraph(
   nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
@@ -36,9 +37,9 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
   imageLoader: ImageLoader,
 ) {
   navgraph(
-    startDestination = HomeDestination.Home::class,
+    startDestination = HomeKey::class,
   ) {
-    navdestination<HomeDestination.Home>(
+    navdestination<HomeKey>(
       metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: HomeViewModel = metroViewModel()
@@ -59,7 +60,7 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
         openCrossSellUrl = openCrossSellUrl,
         openAppSettings = openAppSettings,
         navigateToFirstVet = dropUnlessResumed { sections ->
-          navigator.navigate(HomeDestination.FirstVet(sections))
+          backStack.add(FirstVetKey(sections))
         },
         navigateToContactInfo = dropUnlessResumed {
           navigateToContactInfo()
@@ -68,11 +69,11 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
         navigateToChipId = navigateToChipIdScreen,
       )
     }
-    navdestination<HomeDestination.FirstVet> {
+    navdestination<FirstVetKey> {
       FirstVetDestination(
         sections,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = backStack::navigateUp,
+        navigateBack = backStack::popBackStack,
         openUrl = openUrl,
       )
     }

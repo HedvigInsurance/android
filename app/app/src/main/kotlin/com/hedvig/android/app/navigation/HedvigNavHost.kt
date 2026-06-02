@@ -151,7 +151,7 @@ internal fun HedvigNavHost(
           navigateToConversation = navigateToConversation,
         )
       },
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       onNavigateToInbox = navigateToInbox,
       onNavigateToNewConversation = navigateToNewConversation,
       navigateToClaimDetails = { claimId -> navigator.navigate(ClaimOverviewDestination(claimId)) },
