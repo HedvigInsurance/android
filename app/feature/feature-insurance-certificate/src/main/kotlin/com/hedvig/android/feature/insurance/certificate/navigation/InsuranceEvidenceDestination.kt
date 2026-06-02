@@ -4,11 +4,9 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object InsuranceEvidenceGraphDestination : HedvigNavKey
+data object InsuranceEvidenceKey : HedvigNavKey
 
-internal sealed interface InsuranceEvidenceDestination {
-  @Serializable
-  data class ShowCertificate(
-    val certificateUrl: String,
-  ) : InsuranceEvidenceDestination, HedvigNavKey
-}
+@Serializable
+internal data class ShowCertificateKey(
+  val certificateUrl: String,
+) : HedvigNavKey

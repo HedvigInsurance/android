@@ -15,5 +15,5 @@ internal class InsuranceEvidenceDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.insuranceEvidence, InsuranceEvidenceGraphDestination.serializer())
+    uriDeepLinkMatchers(container.insuranceEvidence, InsuranceEvidenceKey.serializer())
 }

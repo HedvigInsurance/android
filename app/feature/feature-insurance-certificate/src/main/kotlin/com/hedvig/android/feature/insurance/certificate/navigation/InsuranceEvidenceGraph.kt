@@ -7,37 +7,40 @@ import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEviden
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewDestination
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceGraph(navigator: Navigator, applicationId: String) {
+fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceGraph(
+  backStack: MutableList<HedvigNavKey>,
+  applicationId: String,
+) {
   navgraph(
-    startDestination = InsuranceEvidenceGraphDestination::class,
+    startDestination = InsuranceEvidenceKey::class,
   ) {
-    navdestination<InsuranceEvidenceGraphDestination> {
+    navdestination<InsuranceEvidenceKey> {
       val viewModel: InsuranceEvidenceEmailInputViewModel = metroViewModel()
       InsuranceEvidenceEmailInputDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         navigateToShowCertificate = { url ->
-          navigator.navigate<InsuranceEvidenceGraphDestination>(
-            InsuranceEvidenceDestination.ShowCertificate(url),
+          backStack.navigateAndPopUpTo<InsuranceEvidenceKey>(
+            ShowCertificateKey(url),
             inclusive = true,
           )
         },
       )
     }
-    navdestination<InsuranceEvidenceDestination.ShowCertificate> {
+    navdestination<ShowCertificateKey> {
       val viewModel: InsuranceEvidenceOverviewViewModel = metroViewModel()
       val context = LocalContext.current
       InsuranceEvidenceOverviewDestination(
         insuranceEvidenceUrl = certificateUrl,
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onShareInsuranceEvidence = {
           context.sharePDF(it, applicationId)
         },
