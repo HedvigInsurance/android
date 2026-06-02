@@ -16,17 +16,17 @@ import androidx.core.graphics.drawable.IconCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.navigation.NavDestination
 import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.feature.chat.navigation.ChatDestination
 import com.hedvig.android.feature.chat.navigation.ChatDestinations
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.compose.typedHasRoute
+import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -44,12 +44,12 @@ import hedvig.resources.R
  * thought we should.
  */
 object CurrentDestinationInMemoryStorage {
-  var currentDestination: NavDestination? = null
+  var currentDestination: Destination? = null
 }
 
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
   ChatDestinations.Chat::class,
-  ChatDestinations.Inbox::class,
+  ChatDestination::class,
   HomeDestination.Home::class,
   ClaimDetailDestination.ClaimOverviewDestination::class,
 )
@@ -68,7 +68,7 @@ class ChatNotificationSender(
     val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
     val currentlyOnDestinationWhichForbidsShowingChatNotification =
       listOfDestinationsWhichShouldNotShowChatNotification.any { clazz ->
-        currentDestination?.typedHasRoute(clazz) == true
+        clazz.isInstance(currentDestination)
       }
     if (currentlyOnDestinationWhichForbidsShowingChatNotification && isAppForegrounded) {
       logcat { "ChatNotificationSender ignoring notification since we are showing destination $currentDestination" }

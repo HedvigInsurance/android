@@ -13,12 +13,12 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.coreBuildConstants)
+  implementation(projects.coreCommonPublic)
   implementation(projects.designSystemHedvig)
   implementation(projects.foreverUi)
   implementation(projects.languageCore)
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 }

@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.payments.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
@@ -20,80 +19,73 @@ import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPayment
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
+import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.paymentsGraph(
-  navController: NavController,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+fun EntryProviderScope<Destination>.paymentsGraph(
+  navigator: Navigator,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   openConversation: () -> Unit,
 ) {
-  navgraph<PaymentsDestination.Graph>(
+  navgraph(
     startDestination = PaymentsDestination.Payments::class,
   ) {
     navdestination<PaymentsDestination.Payments>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.payments),
-      enterTransition = { MotionDefaults.fadeThroughEnter },
-      exitTransition = { MotionDefaults.fadeThroughExit },
+      metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: PaymentsViewModel = metroViewModel()
       PaymentsDestination(
         viewModel = viewModel,
         onPaymentHistoryClicked = dropUnlessResumed {
-          navController.navigate(PaymentsDestinations.History)
+          navigator.navigate(PaymentsDestinations.History)
         },
         onPayoutAccountClicked = dropUnlessResumed { navigateToPayoutAccount() },
         onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
         onDiscountClicked = dropUnlessResumed {
-          navController.navigate(PaymentsDestinations.Discounts)
+          navigator.navigate(PaymentsDestinations.Discounts)
         },
         onPaymentClicked = dropUnlessResumed { id: String? ->
-          navController.navigate(PaymentsDestinations.Details(id))
+          navigator.navigate(PaymentsDestinations.Details(id))
         },
         onMemberPaymentDetailsClicked = dropUnlessResumed {
-          navController.navigate(PaymentsDestinations.MemberPaymentDetails)
+          navigator.navigate(PaymentsDestinations.MemberPaymentDetails)
         },
         onOpenManualCharge = {
-          navController.navigate(PaymentsDestinations.ManualCharge)
+          navigator.navigate(PaymentsDestinations.ManualCharge)
         },
       )
     }
 
-    navdestination<PaymentsDestinations.ManualCharge>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.manualCharge),
-    ) {
+    navdestination<PaymentsDestinations.ManualCharge> {
       val viewModel: ManualChargeViewModel = metroViewModel()
       ManualChargeDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
-          navController.navigate(
+          navigator.navigate(
             PaymentsDestinations.Details(
               chargeId,
             ),
           )
         },
         onNavigateToSuccess = { showCancellationWarning ->
-          navController.navigate(
+          navigator.navigate<PaymentsDestinations.ManualCharge>(
             PaymentsDestinations.ManualChargeSuccess(
               showCancellationWarning = showCancellationWarning,
             ),
-          ) {
-            typedPopUpTo<PaymentsDestinations.ManualCharge> {
-              inclusive = true
-            }
-          }
+            inclusive = true,
+          )
         },
         openConversation = openConversation,
       )
@@ -102,7 +94,7 @@ fun NavGraphBuilder.paymentsGraph(
     navdestination<PaymentsDestinations.ManualChargeSuccess> {
       ManualChargeSuccessDestination(
         this.showCancellationWarning,
-        navController::navigateUp,
+        navigator::navigateUp,
       )
     }
 
@@ -112,7 +104,7 @@ fun NavGraphBuilder.paymentsGraph(
         assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModel.Factory> { create(memberChargeId) }
       PaymentDetailsDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
 
@@ -121,13 +113,13 @@ fun NavGraphBuilder.paymentsGraph(
       PaymentHistoryDestination(
         viewModel = viewModel,
         onChargeClicked = dropUnlessResumed { memberChargeId: String ->
-          navController.navigate(
+          navigator.navigate(
             PaymentsDestinations.Details(
               memberChargeId,
             ),
           )
         },
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
 
@@ -144,9 +136,9 @@ fun NavGraphBuilder.paymentsGraph(
       val viewModel: DiscountsViewModel = metroViewModel()
       DiscountsDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         navigateToForever = dropUnlessResumed {
-          navController.navigate(
+          navigator.navigate(
             PaymentsDestinations.Forever,
           )
         },
@@ -158,7 +150,7 @@ fun NavGraphBuilder.paymentsGraph(
       MemberPaymentDetailsDestination(
         viewModel,
         onChangeBankAccount = navigateToConnectPayment,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
   }

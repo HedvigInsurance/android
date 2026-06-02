@@ -47,7 +47,6 @@ kotlin {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
-      implementation(projects.navigationComposeTyped)
       implementation(projects.dataProductVariantPublic)
     }
   }

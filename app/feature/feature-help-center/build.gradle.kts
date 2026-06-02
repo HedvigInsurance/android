@@ -53,7 +53,6 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
-      implementation(projects.navigationComposeTyped)
       implementation(projects.navigationCore)
       implementation(projects.partnersDeflect)
       implementation(projects.uiEmergency)

@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.claimhistory.nav
 
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.claimhistory.ClaimHistoryDestination
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.compose.navdestination
@@ -11,7 +11,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object ClaimHistoryDestination : Destination
 
-fun NavGraphBuilder.claimHistoryGraph(navigateUp: () -> Unit, navigateToClaimDetails: (claimId: String) -> Unit) {
+fun EntryProviderScope<Destination>.claimHistoryGraph(
+  navigateUp: () -> Unit,
+  navigateToClaimDetails: (claimId: String) -> Unit,
+) {
   navdestination<ClaimHistoryDestination> {
     ClaimHistoryDestination(
       claimHistoryViewModel = metroViewModel(),

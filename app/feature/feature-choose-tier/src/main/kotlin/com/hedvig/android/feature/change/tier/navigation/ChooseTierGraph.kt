@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.change.tier.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceToChangeTierDestination
 import com.hedvig.android.feature.change.tier.ui.chooseinsurance.ChooseInsuranceViewModel
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageViewModel
@@ -13,27 +12,19 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.ChangeTierSummaryDe
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierFailureScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
-import com.hedvig.android.navigation.compose.typedPopBackStack
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.changeTierGraph(
-  navController: NavController,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  onNavigateToNewConversation: () -> Unit,
-) {
-  navdestination<StartTierFlowDestination> (
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithContractId),
-  ) { _ ->
+fun EntryProviderScope<Destination>.changeTierGraph(navigator: Navigator, onNavigateToNewConversation: () -> Unit) {
+  navdestination<StartTierFlowDestination> {
     val insuranceId = this.insuranceId
     val viewModel: StartTierFlowViewModel =
       assistedMetroViewModel<StartTierFlowViewModel, StartTierFlowViewModel.Factory> {
@@ -42,136 +33,118 @@ fun NavGraphBuilder.changeTierGraph(
     StartChangeTierFlowDestination(
       viewModel = viewModel,
       popBackStack = {
-        navController.popBackStack()
+        navigator.popBackStack()
       },
       launchFlow = { params: InsuranceCustomizationParameters ->
-        navController.navigate(ChooseTierGraphDestination(params)) {
-          typedPopUpTo<StartTierFlowDestination> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<StartTierFlowDestination>(ChooseTierGraphDestination(params), inclusive = true)
       },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
     )
   }
 
-  navdestination<StartTierFlowChooseInsuranceDestination>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.changeTierWithoutContractId),
-  ) {
+  navdestination<StartTierFlowChooseInsuranceDestination> {
     val viewModel: ChooseInsuranceViewModel = metroViewModel()
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
       navigateToNextStep = { params: InsuranceCustomizationParameters ->
-        navController.navigate(ChooseTierGraphDestination(params)) {
-          typedPopUpTo<StartTierFlowChooseInsuranceDestination> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<StartTierFlowChooseInsuranceDestination>(
+          ChooseTierGraphDestination(params),
+          inclusive = true,
+        )
       },
       popBackStack = {
-        navController.popBackStack()
+        navigator.popBackStack()
       },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
 
-  navgraph<ChooseTierGraphDestination>(
-    startDestination = ChooseTierDestination.SelectTierAndDeductible::class,
-    destinationNavTypeAware = ChooseTierGraphDestination,
-  ) {
-    navdestination<ChooseTierDestination.SelectTierAndDeductible> { backStackEntry ->
-      val chooseTierGraphDestination = navController
-        .getRouteFromBackStack<ChooseTierGraphDestination>(backStackEntry)
-      val viewModel: SelectCoverageViewModel =
-        assistedMetroViewModel<SelectCoverageViewModel, SelectCoverageViewModel.Factory> {
-          create(chooseTierGraphDestination.parameters)
-        }
-      SelectTierDestination(
-        viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-        navigateToSummary = { quote ->
-          navController.navigate(
-            ChooseTierDestination.Summary(
-              SummaryParameters(
-                quoteIdToSubmit = quote.id,
-                activationDate = chooseTierGraphDestination.parameters.activationDate,
-                insuranceId = chooseTierGraphDestination.parameters.insuranceId,
-              ),
+  navdestination<ChooseTierGraphDestination> {
+    val parameters = this.parameters
+    val viewModel: SelectCoverageViewModel =
+      assistedMetroViewModel<SelectCoverageViewModel, SelectCoverageViewModel.Factory> {
+        create(parameters)
+      }
+    SelectTierDestination(
+      viewModel = viewModel,
+      navigateUp = navigator::navigateUp,
+      navigateToSummary = { quote ->
+        navigator.navigate(
+          ChooseTierDestination.Summary(
+            SummaryParameters(
+              quoteIdToSubmit = quote.id,
+              activationDate = parameters.activationDate,
+              insuranceId = parameters.insuranceId,
             ),
-          )
-        },
-        popBackStack = {
-          navController.popBackStack()
-        },
-        navigateToComparison = { listOfQuotes, selectedTerms ->
-          navController.navigate(
-            ChooseTierDestination.Comparison(
-              ComparisonParameters(
-                termsIds = listOfQuotes.map {
-                  it.productVariant.termsVersion
-                },
-                selectedTermsVersion = selectedTerms,
-              ),
+          ),
+        )
+      },
+      popBackStack = {
+        navigator.popBackStack()
+      },
+      navigateToComparison = { listOfQuotes, selectedTerms ->
+        navigator.navigate(
+          ChooseTierDestination.Comparison(
+            ComparisonParameters(
+              termsIds = listOfQuotes.map {
+                it.productVariant.termsVersion
+              },
+              selectedTermsVersion = selectedTerms,
             ),
-          )
-        },
-      )
-    }
+          ),
+        )
+      },
+    )
+  }
 
-    navdestination<ChooseTierDestination.Comparison>(
-      destinationNavTypeAware = ChooseTierDestination.Comparison.Companion,
-    ) { _ ->
-      val comparisonParameters = this.comparisonParameters
-      val viewModel: ComparisonViewModel =
-        assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
-          create(comparisonParameters)
-        }
-      ComparisonDestination(
-        viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-      )
-    }
+  navdestination<ChooseTierDestination.Comparison> {
+    val comparisonParameters = this.comparisonParameters
+    val viewModel: ComparisonViewModel =
+      assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
+        create(comparisonParameters)
+      }
+    ComparisonDestination(
+      viewModel = viewModel,
+      navigateUp = navigator::navigateUp,
+    )
+  }
 
-    navdestination<ChooseTierDestination.Summary>(
-      destinationNavTypeAware = ChooseTierDestination.Summary.Companion,
-    ) {
-      val params = this.params
-      val viewModel: SummaryViewModel =
-        assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
-          create(params)
-        }
-      ChangeTierSummaryDestination(
-        viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-        onExitTierFlow = {
-          navController.typedPopBackStack<ChooseTierGraphDestination>(inclusive = true)
-        },
-        onFailure = {
-          navController.navigate(ChooseTierDestination.SubmitFailure)
-        },
-        onSuccess = {
-          navController.navigate(ChooseTierDestination.SubmitSuccess(this.params.activationDate)) {
-            typedPopUpTo<ChooseTierDestination.SelectTierAndDeductible> {
-              inclusive = true
-            }
-          }
-        },
-      )
-    }
+  navdestination<ChooseTierDestination.Summary> {
+    val params = this.params
+    val viewModel: SummaryViewModel =
+      assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
+        create(params)
+      }
+    ChangeTierSummaryDestination(
+      viewModel = viewModel,
+      navigateUp = navigator::navigateUp,
+      onExitTierFlow = {
+        navigator.popUpTo<ChooseTierGraphDestination>(inclusive = true)
+      },
+      onFailure = {
+        navigator.navigate(ChooseTierDestination.SubmitFailure)
+      },
+      onSuccess = {
+        navigator.navigate<ChooseTierGraphDestination>(
+          ChooseTierDestination.SubmitSuccess(this.params.activationDate),
+          inclusive = true,
+        )
+      },
+    )
+  }
 
-    navdestination<ChooseTierDestination.SubmitSuccess>(ChooseTierDestination.SubmitSuccess) {
-      SubmitTierSuccessScreen(
-        activationDate,
-        popBackStack = navController::popBackStack,
-      )
-    }
+  navdestination<ChooseTierDestination.SubmitSuccess> {
+    SubmitTierSuccessScreen(
+      activationDate,
+      popBackStack = navigator::popBackStack,
+    )
+  }
 
-    navdestination<ChooseTierDestination.SubmitFailure> { _ ->
-      SubmitTierFailureScreen(
-        popBackStack = navController::popBackStack,
-      )
-    }
+  navdestination<ChooseTierDestination.SubmitFailure> {
+    SubmitTierFailureScreen(
+      popBackStack = navigator::popBackStack,
+    )
   }
 }

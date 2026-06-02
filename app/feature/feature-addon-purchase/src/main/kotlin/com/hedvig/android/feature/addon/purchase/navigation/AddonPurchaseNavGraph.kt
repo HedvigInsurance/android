@@ -1,20 +1,15 @@
 package com.hedvig.android.feature.addon.purchase.navigation
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.toRoute
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.ChooseInsuranceToAddAddonDestination
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.CustomizeAddon
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitFailure
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.SubmitSuccess
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.Summary
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelAddonTriage
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonDestination
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonViewModel
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonDestination
@@ -26,14 +21,12 @@ import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewMode
 import com.hedvig.android.feature.addon.purchase.ui.travelinsuranceplusexplanation.TravelInsurancePlusExplanationDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
+import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
-import com.hedvig.android.navigation.compose.typed.getRouteFromBackStackOrNull
-import com.hedvig.android.navigation.compose.typedPopBackStack
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.serialization.Serializable
 
@@ -41,170 +34,134 @@ import kotlinx.serialization.Serializable
 internal data class PerilComparisonParams(
   val whatsIncludedPageTitle: String,
   val whatsIncludedPageDescription: String,
-  val perilList: List<Pair<String?, List<TravelPerilData>>>,
+  val perilList: List<Pair<String?, List<TravelInsurancePlusExplanation.TravelPerilData>>>,
 )
 
-fun NavGraphBuilder.addonPurchaseNavGraph(
-  navController: NavController,
+fun EntryProviderScope<Destination>.addonPurchaseNavGraph(
+  navigator: Navigator,
   popBackStack: () -> Unit,
   finishApp: () -> Unit,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   onNavigateToNewConversation: () -> Unit,
   onNavigateToChangeTier: (contractId: String) -> Unit,
 ) {
-  // Destination to get eligible insuranceIds if member comes to the feature using the deeplink
-  navdestination<TravelAddonTriage>(
-    deepLinks = navDeepLinks(
-      hedvigDeepLinkContainer.travelAddon,
-      hedvigDeepLinkContainer.carAddon,
-      hedvigDeepLinkContainer.travelAddonWithContractId,
-      hedvigDeepLinkContainer.carAddonWithContractId,
-    ),
-  ) { backStackEntry ->
-
-    val deepLinkInfo = getDeepLinkInfoFromBackStackEntry(backStackEntry)
-    if (deepLinkInfo.contractId != null) {
+  // Deep-link entry: if the URI carried a contractId, jump straight into the flow; otherwise let
+  // the member pick an eligible insurance.
+  navdestination<TravelAddonTriage> {
+    val source = this.source
+    val contractId = this.contractId
+    if (contractId != null) {
       LaunchedEffect(Unit) {
-        navController.navigate(
+        navigator.navigate<TravelAddonTriage>(
           AddonPurchaseGraphDestination(
-            insuranceIds = listOf(deepLinkInfo.contractId),
+            insuranceIds = listOf(contractId),
             preselectedAddonDisplayName = null,
-            source = deepLinkInfo.source,
+            source = source,
           ),
-        ) {
-          typedPopUpTo<TravelAddonTriage>({ inclusive = true })
-        }
+          inclusive = true,
+        )
       }
     } else {
       val viewModel: TravelAddonTriageViewModel =
         assistedMetroViewModel<TravelAddonTriageViewModel, TravelAddonTriageViewModel.Factory> {
-          create(deepLinkInfo.source)
+          create(source)
         }
       TravelAddonTriageDestination(
         viewModel = viewModel,
-        popBackStack = navController::popBackStack,
+        popBackStack = navigator::popBackStack,
         launchFlow = { insuranceIds: List<String> ->
-          navController.navigate(
+          navigator.navigate<TravelAddonTriage>(
             AddonPurchaseGraphDestination(
               insuranceIds = insuranceIds,
               preselectedAddonDisplayName = null,
-              source = deepLinkInfo.source,
+              source = source,
             ),
-          ) {
-            typedPopUpTo<TravelAddonTriage>({ inclusive = true })
-          }
+            inclusive = true,
+          )
         },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       )
     }
   }
 
-  navgraph<AddonPurchaseGraphDestination>(
-    startDestination = ChooseInsuranceToAddAddonDestination::class,
-  ) {
-    // Choose insurance to add addon to. Redirects to CustomizeAddon if insuranceIds list has only 1 insurance
-    navdestination<ChooseInsuranceToAddAddonDestination> { backStackEntry ->
-      val addonPurchaseGraphDestination = navController
-        .getRouteFromBackStackOrNull<AddonPurchaseGraphDestination>(backStackEntry)
-      val preselectedAddonDisplayNames = listOfNotNull(addonPurchaseGraphDestination?.preselectedAddonDisplayName)
-      if (addonPurchaseGraphDestination?.insuranceIds?.size == 1) {
-        LaunchedEffect(Unit) {
-          navController.navigate(
-            CustomizeAddon(addonPurchaseGraphDestination.insuranceIds[0], preselectedAddonDisplayNames),
-          ) {
-            typedPopUpTo<ChooseInsuranceToAddAddonDestination>({ inclusive = true })
-          }
-        }
-      } else {
-        val insuranceIds = addonPurchaseGraphDestination?.insuranceIds ?: emptyList<String>()
-        val viewModel: SelectInsuranceForAddonViewModel =
-          assistedMetroViewModel<SelectInsuranceForAddonViewModel, SelectInsuranceForAddonViewModel.Factory> {
-            create(insuranceIds)
-          }
-        SelectInsuranceForAddonDestination(
-          viewModel = viewModel,
-          navigateUp = navController::navigateUp,
-          popBackStack = popBackStack,
-          navigateToCustomizeAddon = { chosenInsuranceId: String ->
-            navController.navigate(CustomizeAddon(chosenInsuranceId, preselectedAddonDisplayNames))
-          },
-        )
-      }
-    }
-
-    // Choose addon option (e.g. 45/60 days for travel addon or different car plus options)
-    navdestination<CustomizeAddon> {
-      val insuranceId = this.insuranceId
-      val preselectedAddonDisplayNames = this.preselectedAddonDisplayNames
-      val viewModel: CustomizeAddonViewModel =
-        assistedMetroViewModel<CustomizeAddonViewModel, CustomizeAddonViewModel.Factory> {
-          create(insuranceId, preselectedAddonDisplayNames)
-        }
-      CustomizeAddonDestination(
-        viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+  // Flow anchor. With a single eligible insurance it renders CustomizeAddon inline (so the anchor
+  // stays on the back stack as the flow's exit/source reference); otherwise it picks an insurance.
+  navdestination<AddonPurchaseGraphDestination> {
+    val insuranceIds = this.insuranceIds
+    val preselectedAddonDisplayNames = listOfNotNull(this.preselectedAddonDisplayName)
+    if (insuranceIds.size == 1) {
+      CustomizeAddonContent(
+        navigator = navigator,
+        insuranceId = insuranceIds[0],
+        preselectedAddonDisplayNames = preselectedAddonDisplayNames,
         popBackStack = popBackStack,
-        popAddonFlow = {
-          if (!navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)) {
-            finishApp()
-          }
-        },
-        navigateToSummary = { summaryParameters: SummaryParameters ->
-          navController.navigate(Summary(summaryParameters))
-        },
-        onNavigateToTravelInsurancePlusExplanation = { perilData ->
-          navController.navigate(
-            TravelInsurancePlusExplanation(perilData),
-          )
-        },
-        navigateToChangeTier = { contractId ->
-          navController.typedPopBackStack<AddonPurchaseGraphDestination>(inclusive = true)
-          onNavigateToChangeTier(contractId)
-        },
+        finishApp = finishApp,
+        onNavigateToChangeTier = onNavigateToChangeTier,
       )
-    }
-
-    navdestination<TravelInsurancePlusExplanation>(TravelInsurancePlusExplanation) { backStackEntry ->
-      val perilData = backStackEntry.toRoute<TravelInsurancePlusExplanation>().perilData
-      TravelInsurancePlusExplanationDestination(
-        params = perilData,
-        navigateUp = navController::navigateUp,
-      )
-    }
-
-    navdestination<Summary>(Summary) { backStackEntry ->
-      val source = navController
-        .getRouteFromBackStack<AddonPurchaseGraphDestination>(backStackEntry).source
-      val summaryParameters = this.params
-      val viewModel: AddonSummaryViewModel =
-        assistedMetroViewModel<AddonSummaryViewModel, AddonSummaryViewModel.Factory> {
-          create(summaryParameters, source)
+    } else {
+      val viewModel: SelectInsuranceForAddonViewModel =
+        assistedMetroViewModel<SelectInsuranceForAddonViewModel, SelectInsuranceForAddonViewModel.Factory> {
+          create(insuranceIds)
         }
-      AddonSummaryDestination(
+      SelectInsuranceForAddonDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-        navigateBack = popBackStack,
-        onFailure = {
-          navController.navigate(SubmitFailure)
-        },
-        onSuccess = {
-          navController.navigate(SubmitSuccess(this.params.activationDate)) {
-            typedPopUpTo<AddonPurchaseGraphDestination> {
-              inclusive = true
-            }
-          }
-        },
-      )
-    }
-
-    navdestination<SubmitFailure> {
-      SubmitAddonFailureScreen(
+        navigateUp = navigator::navigateUp,
         popBackStack = popBackStack,
+        navigateToCustomizeAddon = { chosenInsuranceId: String ->
+          navigator.navigate(CustomizeAddon(chosenInsuranceId, preselectedAddonDisplayNames))
+        },
       )
     }
   }
 
-  navdestination<SubmitSuccess>(SubmitSuccess) {
+  navdestination<CustomizeAddon> {
+    CustomizeAddonContent(
+      navigator = navigator,
+      insuranceId = this.insuranceId,
+      preselectedAddonDisplayNames = this.preselectedAddonDisplayNames,
+      popBackStack = popBackStack,
+      finishApp = finishApp,
+      onNavigateToChangeTier = onNavigateToChangeTier,
+    )
+  }
+
+  navdestination<TravelInsurancePlusExplanation> {
+    TravelInsurancePlusExplanationDestination(
+      params = this.perilData,
+      navigateUp = navigator::navigateUp,
+    )
+  }
+
+  navdestination<Summary> {
+    val summaryParameters = this.params
+    val source = navigator.findLastOrNull<AddonPurchaseGraphDestination>()?.source
+      ?: AddonBannerSource.TRAVEL_DEEPLINK
+    val viewModel: AddonSummaryViewModel =
+      assistedMetroViewModel<AddonSummaryViewModel, AddonSummaryViewModel.Factory> {
+        create(summaryParameters, source)
+      }
+    AddonSummaryDestination(
+      viewModel = viewModel,
+      navigateUp = navigator::navigateUp,
+      navigateBack = popBackStack,
+      onFailure = {
+        navigator.navigate(SubmitFailure)
+      },
+      onSuccess = {
+        navigator.navigate<AddonPurchaseGraphDestination>(
+          SubmitSuccess(this.params.activationDate),
+          inclusive = true,
+        )
+      },
+    )
+  }
+
+  navdestination<SubmitFailure> {
+    SubmitAddonFailureScreen(
+      popBackStack = popBackStack,
+    )
+  }
+
+  navdestination<SubmitSuccess> {
     SubmitAddonSuccessScreen(
       activationDate = this.activationDate,
       popBackStack = popBackStack,
@@ -212,31 +169,40 @@ fun NavGraphBuilder.addonPurchaseNavGraph(
   }
 }
 
-private fun getDeepLinkInfoFromBackStackEntry(backStackEntry: NavBackStackEntry): DeepLinkInfo {
-  val intent = if (android.os.Build.VERSION.SDK_INT >= 33) {
-    backStackEntry.arguments?.getParcelable(
-      "android-support-nav:controller:deepLinkIntent",
-      android.content.Intent::class.java,
-    )
-  } else {
-    @Suppress("DEPRECATION")
-    backStackEntry.arguments?.getParcelable(
-      "android-support-nav:controller:deepLinkIntent",
-    )
-  }
-  val deepLinkPath = intent?.data?.path
-  val contractId = intent?.data?.getQueryParameter("contractId")?.removeSurrounding("{", "}")
-
-  val source: AddonBannerSource = when {
-    deepLinkPath?.contains("travel-addon") == true -> AddonBannerSource.TRAVEL_DEEPLINK
-    deepLinkPath?.contains("car-plus-addon") == true -> AddonBannerSource.CAR_ADDON_DEEPLINK
-    else -> AddonBannerSource.TRAVEL_DEEPLINK
-  }
-
-  return DeepLinkInfo(source, contractId)
+@Composable
+private fun CustomizeAddonContent(
+  navigator: Navigator,
+  insuranceId: String,
+  preselectedAddonDisplayNames: List<String>,
+  popBackStack: () -> Unit,
+  finishApp: () -> Unit,
+  onNavigateToChangeTier: (contractId: String) -> Unit,
+) {
+  val viewModel: CustomizeAddonViewModel =
+    assistedMetroViewModel<CustomizeAddonViewModel, CustomizeAddonViewModel.Factory> {
+      create(insuranceId, preselectedAddonDisplayNames)
+    }
+  CustomizeAddonDestination(
+    viewModel = viewModel,
+    navigateUp = navigator::navigateUp,
+    popBackStack = popBackStack,
+    popAddonFlow = {
+      // Drop everything above the anchor, then the anchor itself; if it was the root there is
+      // nothing left to show, so finish.
+      navigator.popUpTo<AddonPurchaseGraphDestination>(inclusive = false)
+      if (!navigator.popBackStack()) {
+        finishApp()
+      }
+    },
+    navigateToSummary = { summaryParameters: SummaryParameters ->
+      navigator.navigate(Summary(summaryParameters))
+    },
+    onNavigateToTravelInsurancePlusExplanation = { perilData ->
+      navigator.navigate(TravelInsurancePlusExplanation(perilData))
+    },
+    navigateToChangeTier = { contractId ->
+      navigator.popUpTo<AddonPurchaseGraphDestination>(inclusive = true)
+      onNavigateToChangeTier(contractId)
+    },
+  )
 }
-
-private data class DeepLinkInfo(
-  val source: AddonBannerSource,
-  val contractId: String?,
-)

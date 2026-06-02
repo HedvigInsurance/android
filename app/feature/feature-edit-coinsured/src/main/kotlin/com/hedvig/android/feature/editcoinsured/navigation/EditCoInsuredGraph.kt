@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
@@ -13,19 +12,14 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestinati
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageDestination
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepLinkContainer: HedvigDeepLinkContainer) {
-  navdestination<EditCoInsuredTriage>(
-    deepLinks = navDeepLinks(
-      hedvigDeepLinkContainer.editCoInsured,
-      hedvigDeepLinkContainer.editCoInsuredWithoutContractId,
-    ),
-  ) {
+fun EntryProviderScope<Destination>.editCoInsuredGraph(navigator: Navigator) {
+  navdestination<EditCoInsuredTriage> {
     val triageContractId = contractId
     val triageType = type
     val viewModel: EditCoInsuredTriageViewModel =
@@ -34,27 +28,23 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
       }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
       navigateToAddMissingInfo = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navController.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contract.id, contract.type)) {
-          typedPopUpTo<EditCoInsuredTriage> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<EditCoInsuredTriage>(
+          EditCoInsuredDestination.CoInsuredAddInfo(contract.id, contract.type),
+          inclusive = true,
+        )
       },
       navigateToAddOrRemoveCoInsured = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navController.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contract.id, contract.type)) {
-          typedPopUpTo<EditCoInsuredTriage> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<EditCoInsuredTriage>(
+          EditCoInsuredDestination.CoInsuredAddOrRemove(contract.id, contract.type),
+          inclusive = true,
+        )
       },
     )
   }
 
-  navdestination<EditCoOwnersTriageDeepLink>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.editCoOwners),
-  ) {
+  navdestination<EditCoOwnersTriageDeepLink> {
     val coOwnersContractId = contractId
     val viewModel: EditCoInsuredTriageViewModel =
       assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
@@ -62,20 +52,18 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
       }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
       navigateToAddMissingInfo = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navController.navigate(EditCoInsuredDestination.CoInsuredAddInfo(contract.id, contract.type)) {
-          typedPopUpTo<EditCoOwnersTriageDeepLink> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<EditCoOwnersTriageDeepLink>(
+          EditCoInsuredDestination.CoInsuredAddInfo(contract.id, contract.type),
+          inclusive = true,
+        )
       },
       navigateToAddOrRemoveCoInsured = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navController.navigate(EditCoInsuredDestination.CoInsuredAddOrRemove(contract.id, contract.type)) {
-          typedPopUpTo<EditCoOwnersTriageDeepLink> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<EditCoOwnersTriageDeepLink>(
+          EditCoInsuredDestination.CoInsuredAddOrRemove(contract.id, contract.type),
+          inclusive = true,
+        )
       },
     )
   }
@@ -88,13 +76,12 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
         create(addInfoContractId, addInfoType)
       },
       navigateToSuccessScreen = {
-        navController.navigate(EditCoInsuredDestination.Success(it, type)) {
-          typedPopUpTo<EditCoInsuredDestination.CoInsuredAddInfo> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<EditCoInsuredDestination.CoInsuredAddInfo>(
+          EditCoInsuredDestination.Success(it, type),
+          inclusive = true,
+        )
       },
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
     )
   }
   navdestination<EditCoInsuredDestination.CoInsuredAddOrRemove> {
@@ -105,23 +92,20 @@ fun NavGraphBuilder.editCoInsuredGraph(navController: NavController, hedvigDeepL
         create(addOrRemoveContractId, addOrRemoveType)
       },
       navigateToSuccessScreen = {
-        navController.navigate(EditCoInsuredDestination.Success(it, type)) {
-          typedPopUpTo<EditCoInsuredDestination.CoInsuredAddOrRemove> {
-            inclusive = true
-          }
-        }
+        navigator.navigate<EditCoInsuredDestination.CoInsuredAddOrRemove>(
+          EditCoInsuredDestination.Success(it, type),
+          inclusive = true,
+        )
       },
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
     )
   }
-  navdestination<EditCoInsuredDestination.Success>(
-    EditCoInsuredDestination.Success,
-  ) {
+  navdestination<EditCoInsuredDestination.Success> {
     EditCoInsuredSuccessDestination(
       date = date,
       type = type,
-      navigateUp = navController::navigateUp,
-      navigateBack = navController::popBackStack,
+      navigateUp = navigator::navigateUp,
+      navigateBack = navigator::popBackStack,
     )
   }
 }

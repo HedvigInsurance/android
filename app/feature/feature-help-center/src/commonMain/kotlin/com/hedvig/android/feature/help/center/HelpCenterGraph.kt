@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.help.center
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
@@ -23,16 +22,15 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestina
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.helpCenterGraph(
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navController: NavController,
+fun EntryProviderScope<Destination>.helpCenterGraph(
+  navigator: Navigator,
   onNavigateUp: () -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateToInbox: () -> Unit,
@@ -41,20 +39,18 @@ fun NavGraphBuilder.helpCenterGraph(
   tryToDialPhone: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  navgraph<HelpCenterDestination>(
+  navgraph(
     startDestination = HelpCenterDestinations.HelpCenter::class,
   ) {
-    navdestination<HelpCenterDestinations.HelpCenter>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenter),
-    ) {
+    navdestination<HelpCenterDestinations.HelpCenter> {
       val viewModel = metroViewModel<HelpCenterViewModel>()
       HelpCenterHomeDestination(
         viewModel = viewModel,
         onNavigateToTopic = dropUnlessResumed { topic ->
-          navigateToTopic(topic, navController)
+          navigateToTopic(topic, navigator)
         },
         onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, navController)
+          navigateToQuestion(question, navigator)
         },
         onNavigateToQuickLink = dropUnlessResumed { destination ->
           when (destination) {
@@ -65,11 +61,11 @@ fun NavGraphBuilder.helpCenterGraph(
             is InnerHelpCenterDestination -> {
               when (destination) {
                 is FirstVet -> {
-                  navController.navigate(HelpCenterDestinations.FirstVet(destination.sections))
+                  navigator.navigate(HelpCenterDestinations.FirstVet(destination.sections))
                 }
 
                 is QuickLinkSickAbroad -> {
-                  navController.navigate(
+                  navigator.navigate(
                     Emergency(
                       destination.deflectData,
                     ),
@@ -87,14 +83,12 @@ fun NavGraphBuilder.helpCenterGraph(
         },
         onNavigateUp = onNavigateUp,
         onNavigateToPuppyGuide = dropUnlessResumed {
-          navController.navigate(HelpCenterDestinations.PuppyGuide)
+          navigator.navigate(HelpCenterDestinations.PuppyGuide)
         },
       )
     }
 
-    navdestination<HelpCenterDestinations.Topic>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenterCommonTopic),
-    ) {
+    navdestination<HelpCenterDestinations.Topic> {
       val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
       val topicId = topicId
       val helpCenterTopicViewModel =
@@ -105,17 +99,15 @@ fun NavGraphBuilder.helpCenterGraph(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
         onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, navController)
+          navigateToQuestion(question, navigator)
         },
-        onNavigateUp = navController::navigateUp,
-        onNavigateBack = navController::popBackStack,
+        onNavigateUp = navigator::navigateUp,
+        onNavigateBack = navigator::popBackStack,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       )
     }
-    navdestination<HelpCenterDestinations.Question>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.helpCenterQuestion),
-    ) {
+    navdestination<HelpCenterDestinations.Question> {
       val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
       val questionId = questionId
       val helpCenterQuestionViewModel =
@@ -126,25 +118,23 @@ fun NavGraphBuilder.helpCenterGraph(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        onNavigateUp = navController::navigateUp,
-        onNavigateBack = navController::popBackStack,
+        onNavigateUp = navigator::navigateUp,
+        onNavigateBack = navigator::popBackStack,
         helpCenterQuestionViewModel = helpCenterQuestionViewModel,
       )
     }
-    navdestination<HelpCenterDestinations.FirstVet>(
-      HelpCenterDestinations.FirstVet,
-    ) {
+    navdestination<HelpCenterDestinations.FirstVet> {
       FirstVetDestination(
         sections = sections,
-        navigateUp = navController::navigateUp,
-        navigateBack = navController::popBackStack,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
         openUrl = openUrl,
       )
     }
-    navdestination<Emergency>(HelpCenterDestinations.Emergency) {
+    navdestination<Emergency> {
       EmergencyDestination(
         deflect = deflectData,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         openUrl = openUrl,
         tryToDialPhone = tryToDialPhone,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
@@ -152,21 +142,17 @@ fun NavGraphBuilder.helpCenterGraph(
       )
     }
 
-    navdestination<HelpCenterDestinations.PuppyGuide>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.puppyGuide),
-    ) { _ ->
+    navdestination<HelpCenterDestinations.PuppyGuide> {
       val viewModel = metroViewModel<PuppyGuideViewModel>()
       PuppyGuideDestination(
         viewModel,
-        onNavigateUp = navController::navigateUp,
+        onNavigateUp = navigator::navigateUp,
         onNavigateToArticle = { story ->
-          with(navController) {
-            navigate(
-              HelpCenterDestinations.PuppyGuideArticle(
-                story.name,
-              ),
-            )
-          }
+          navigator.navigate(
+            HelpCenterDestinations.PuppyGuideArticle(
+              story.name,
+            ),
+          )
         },
         imageLoader = imageLoader,
       )
@@ -180,23 +166,23 @@ fun NavGraphBuilder.helpCenterGraph(
         }
       PuppyArticleDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,
       )
     }
   }
 }
 
-private fun navigateToTopic(topicId: String, navController: NavController) {
+private fun navigateToTopic(topicId: String, navigator: Navigator) {
   val destination = HelpCenterDestinations.Topic(
     topicId = topicId,
   )
-  navController.navigate(destination)
+  navigator.navigate(destination)
 }
 
-private fun navigateToQuestion(questionId: String, navController: NavController) {
+private fun navigateToQuestion(questionId: String, navigator: Navigator) {
   val destination = HelpCenterDestinations.Question(
     questionId = questionId,
   )
-  navController.navigate(destination)
+  navigator.navigate(destination)
 }

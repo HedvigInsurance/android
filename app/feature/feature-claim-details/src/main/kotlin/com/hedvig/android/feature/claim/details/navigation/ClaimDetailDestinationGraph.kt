@@ -2,34 +2,30 @@ package com.hedvig.android.feature.claim.details.navigation
 
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun NavGraphBuilder.claimDetailsGraph(
+fun EntryProviderScope<Destination>.claimDetailsGraph(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateUp: () -> Unit,
   navigateToConversation: (String) -> Unit,
-  navController: NavController,
+  navigator: Navigator,
   applicationId: String,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
 ) {
-  navdestination<ClaimDetailDestination.ClaimOverviewDestination>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.claimDetails),
-  ) {
+  navdestination<ClaimDetailDestination.ClaimOverviewDestination> {
     val viewModel: ClaimDetailsViewModel =
       assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModel.Factory> { create(claimId) }
     val context = LocalContext.current
@@ -43,7 +39,7 @@ fun NavGraphBuilder.claimDetailsGraph(
       },
       onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
         if (filesUri.isNotEmpty()) {
-          navController.navigate(
+          navigator.navigate(
             ClaimDetailInternalDestination.AddFilesDestination(
               targetUploadUrl = uploadUri,
               initialFilesUri = filesUri.map { it.toString() },

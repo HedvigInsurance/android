@@ -35,7 +35,6 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 
   testImplementation(libs.apollo.testingSupport)

@@ -21,9 +21,6 @@ data class TerminateInsuranceGraphDestination(
 
 internal sealed interface TerminateInsuranceDestination {
   @Serializable
-  data object StartStep : TerminateInsuranceDestination, Destination
-
-  @Serializable
   data class TerminationSurveyFirstStep(
     val options: List<TerminationSurveyOption>,
     val action: TerminationAction,

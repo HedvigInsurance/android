@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.profile.tab
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
@@ -24,19 +23,19 @@ import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
+import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.profileGraph(
-  settingsDestinationNestedGraphs: NavGraphBuilder.() -> Unit,
-  nestedGraphs: NavGraphBuilder.() -> Unit,
+fun EntryProviderScope<Destination>.profileGraph(
+  settingsDestinationNestedGraphs: EntryProviderScope<Destination>.() -> Unit,
+  nestedGraphs: EntryProviderScope<Destination>.() -> Unit,
   globalSnackBarState: GlobalSnackBarState,
-  navController: NavController,
+  navigator: Navigator,
   popBackStackOrFinish: () -> Unit,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -51,31 +50,29 @@ fun NavGraphBuilder.profileGraph(
   navigateToChipId: () -> Unit,
   languageService: LanguageService,
 ) {
-  navgraph<ProfileDestination.Graph>(
+  navgraph(
     startDestination = ProfileDestination.Profile::class,
   ) {
     navdestination<ProfileDestination.Profile>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.profile),
-      enterTransition = { MotionDefaults.fadeThroughEnter },
-      exitTransition = { MotionDefaults.fadeThroughExit },
+      metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: ProfileViewModel = metroViewModel()
       ProfileDestination(
         navigateToEurobonus = dropUnlessResumed {
-          navController.navigate(ProfileDestinations.Eurobonus)
+          navigator.navigate(ProfileDestinations.Eurobonus)
         },
         navigateToClaimHistory = dropUnlessResumed { navigateToClaimHistory() },
         navigateToContactInfo = dropUnlessResumed {
-          navController.navigate(ProfileDestination.ContactInfo)
+          navigator.navigate(ProfileDestination.ContactInfo)
         },
         navigateToAboutApp = dropUnlessResumed {
-          navController.navigate(ProfileDestinations.Information)
+          navigator.navigate(ProfileDestinations.Information)
         },
         navigateToSettings = dropUnlessResumed {
-          navController.navigate(ProfileDestinations.SettingsGraph)
+          navigator.navigate(ProfileDestinations.SettingsGraph)
         },
         navigateToCertificates = dropUnlessResumed {
-          navController.navigate(Certificates)
+          navigator.navigate(Certificates)
         },
         navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
         navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
@@ -92,23 +89,19 @@ fun NavGraphBuilder.profileGraph(
       )
     }
 
-    navdestination<ProfileDestinations.Eurobonus>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.eurobonus),
-    ) {
+    navdestination<ProfileDestinations.Eurobonus> {
       val viewModel: EurobonusViewModel = metroViewModel()
       EurobonusDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
-    navdestination<ProfileDestination.ContactInfo>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.contactInfo),
-    ) {
+    navdestination<ProfileDestination.ContactInfo> {
       val viewModel: ContactInfoViewModel = metroViewModel()
       ContactInfoDestination(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         popBackStack = popBackStackOrFinish,
       )
     }
@@ -116,9 +109,9 @@ fun NavGraphBuilder.profileGraph(
       val viewModel: AboutAppViewModel = metroViewModel()
       InformationDestination(
         viewModel = viewModel,
-        onBackPressed = navController::navigateUp,
+        onBackPressed = navigator::navigateUp,
         showOpenSourceLicenses = dropUnlessResumed {
-          navController.navigate(ProfileDestinations.Licenses)
+          navigator.navigate(ProfileDestinations.Licenses)
         },
         navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         hedvigBuildConstants = hedvigBuildConstants,
@@ -128,26 +121,26 @@ fun NavGraphBuilder.profileGraph(
     }
     navdestination<ProfileDestinations.Licenses> {
       LicensesDestination(
-        onBackPressed = navController::navigateUp,
+        onBackPressed = navigator::navigateUp,
       )
     }
     navdestination<Certificates> {
       val viewModel: CertificatesViewModel = metroViewModel()
       CertificatesDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
         onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
       )
     }
-    navgraph<ProfileDestinations.SettingsGraph>(
+    navgraph(
       startDestination = SettingsDestinations.Settings::class,
     ) {
       navdestination<SettingsDestinations.Settings> {
         val viewModel: SettingsViewModel = metroViewModel()
         SettingsDestination(
           viewModel = viewModel,
-          navigateUp = navController::navigateUp,
+          navigateUp = navigator::navigateUp,
           openAppSettings = openAppSettings,
           onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
         )

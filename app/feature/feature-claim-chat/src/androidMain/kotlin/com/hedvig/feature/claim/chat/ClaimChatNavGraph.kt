@@ -1,15 +1,13 @@
 package com.hedvig.feature.claim.chat
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -47,9 +45,8 @@ internal data class ClaimOutcomeNewClaimDestination(
 @Serializable
 internal data object UpdateAppDestination : Destination
 
-fun NavGraphBuilder.claimChatGraph(
-  navController: NavController,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+fun EntryProviderScope<Destination>.claimChatGraph(
+  navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -71,36 +68,35 @@ fun NavGraphBuilder.claimChatGraph(
       navigateToClaimOutcome = { outcome ->
         when (outcome) {
           is ClaimIntentOutcome.Claim -> {
-            navController.navigate(ClaimOutcomeNewClaimDestination(outcome = outcome)) {
-              typedPopUpTo<ClaimChatDestination> {
-                inclusive = true
-              }
-            }
+            navigator.navigate<ClaimChatDestination>(
+              ClaimOutcomeNewClaimDestination(outcome = outcome),
+              inclusive = true,
+            )
           }
         }
       },
       navigateToDeflect = { deflect: StepContent.Deflect ->
-        navController.navigate(ClaimOutcomeDeflectDestination(deflect = deflect))
+        navigator.navigate(ClaimOutcomeDeflectDestination(deflect = deflect))
       },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
       openPlayStore = openPlayStore,
     )
   }
-  navdestination<ClaimOutcomeDeflectDestination>(ClaimOutcomeDeflectDestination) {
+  navdestination<ClaimOutcomeDeflectDestination> {
     ClaimOutcomeDeflectDestination(
       deflect = deflect.deflectData,
       imageLoader = imageLoader,
-      navigateUp = navController::navigateUp,
+      navigateUp = navigator::navigateUp,
       openUrl = openUrl,
       tryToDialPhone = tryToDialPhone,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
-  navdestination<ClaimOutcomeNewClaimDestination>(ClaimOutcomeNewClaimDestination) {
+  navdestination<ClaimOutcomeNewClaimDestination> {
     ClaimOutcomeNewClaimDestination(
-      navController::navigateUp,
+      navigator::navigateUp,
     )
   }
   navdestination<UpdateAppDestination> {

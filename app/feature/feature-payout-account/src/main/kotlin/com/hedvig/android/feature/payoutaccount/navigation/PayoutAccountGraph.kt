@@ -1,9 +1,7 @@
 package com.hedvig.android.feature.payoutaccount.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptionsBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountDestination
 import com.hedvig.android.feature.payoutaccount.ui.editbankaccount.EditBankAccountViewModel
@@ -15,44 +13,38 @@ import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayo
 import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayoutViewModel
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typedPopBackStack
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
 
-fun NavGraphBuilder.payoutAccountGraph(
-  navController: NavController,
+fun EntryProviderScope<Destination>.payoutAccountGraph(
+  navigator: Navigator,
   globalSnackBarState: GlobalSnackBarState,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navigateToConnectPayment: (builder: NavOptionsBuilder.() -> Unit) -> Unit,
+  navigateToConnectPayment: () -> Unit,
   navigateUp: () -> Unit,
 ) {
-  navgraph<PayoutAccountDestination.Graph>(
-    startDestination = PayoutAccountDestinations.Overview::class,
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.payout),
+  navgraph(
+    startDestination = PayoutAccountDestination.Graph::class,
   ) {
-    navdestination<PayoutAccountDestinations.Overview> {
+    navdestination<PayoutAccountDestination.Graph> {
       val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
       PayoutAccountOverviewDestination(
         viewModel = viewModel,
         onConnectPayoutMethodClicked = dropUnlessResumed {
           val content = viewModel.uiState.value as? PayoutAccountOverviewUiState.Content
-          navController.navigate(
+          navigator.navigate(
             PayoutAccountDestinations.SelectPayoutMethod(
               availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
             ),
           )
         },
         navigateToConnectPayment = dropUnlessResumed {
-          navigateToConnectPayment {
-            typedPopUpTo<PayoutAccountDestinations.Overview> {
-              inclusive = true
-            }
-          }
+          navigator.popUpTo<PayoutAccountDestination.Graph>(inclusive = true)
+          navigateToConnectPayment()
         },
         navigateUp = navigateUp,
       )
@@ -62,16 +54,13 @@ fun NavGraphBuilder.payoutAccountGraph(
       SelectPayoutMethodDestination(
         availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
         onTrustlySelected = dropUnlessResumed {
-          navigateToConnectPayment {
-            typedPopUpTo<PayoutAccountDestinations.SelectPayoutMethod> {
-              inclusive = true
-            }
-          }
+          navigator.popUpTo<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+          navigateToConnectPayment()
         },
-        onNordeaSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.EditBankAccount) },
-        onSwishSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupSwishPayout) },
-        onInvoiceSelected = dropUnlessResumed { navController.navigate(PayoutAccountDestinations.SetupInvoicePayout) },
-        navigateUp = navController::navigateUp,
+        onNordeaSelected = dropUnlessResumed { navigator.navigate(PayoutAccountDestinations.EditBankAccount) },
+        onSwishSelected = dropUnlessResumed { navigator.navigate(PayoutAccountDestinations.SetupSwishPayout) },
+        onInvoiceSelected = dropUnlessResumed { navigator.navigate(PayoutAccountDestinations.SetupInvoicePayout) },
+        navigateUp = navigator::navigateUp,
       )
     }
 
@@ -81,9 +70,9 @@ fun NavGraphBuilder.payoutAccountGraph(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
         onSuccessfullyConnected = {
-          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+          navigator.popUpTo<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
         },
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
 
@@ -93,9 +82,9 @@ fun NavGraphBuilder.payoutAccountGraph(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
         onSuccessfullyConnected = {
-          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+          navigator.popUpTo<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
         },
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
 
@@ -105,9 +94,9 @@ fun NavGraphBuilder.payoutAccountGraph(
         viewModel = viewModel,
         globalSnackBarState = globalSnackBarState,
         onSuccessfullyConnected = {
-          navController.typedPopBackStack<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
+          navigator.popUpTo<PayoutAccountDestinations.SelectPayoutMethod>(inclusive = true)
         },
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
       )
     }
   }

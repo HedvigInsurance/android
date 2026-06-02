@@ -25,6 +25,20 @@ data class AddonPurchaseGraphDestination(
   }
 }
 
+/**
+ * Deep-link entry for the travel/car addon flow. The URI → key mapping (path-derived [source] and
+ * the optional `contractId` query param) is resolved by the centralized deep-link matcher in `:app`.
+ */
+@Serializable
+data class TravelAddonTriage(
+  val source: AddonBannerSource,
+  val contractId: String?,
+) : Destination {
+  companion object : DestinationNavTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
+  }
+}
+
 internal sealed interface AddonPurchaseDestination {
   @Serializable
   data object ChooseInsuranceToAddAddonDestination : AddonPurchaseDestination, Destination
@@ -73,9 +87,6 @@ internal sealed interface AddonPurchaseDestination {
 
   @Serializable
   data object SubmitFailure : AddonPurchaseDestination, Destination
-
-  @Serializable
-  data object TravelAddonTriage : AddonPurchaseDestination, Destination
 }
 
 @Serializable

@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.home.home.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
@@ -10,16 +9,16 @@ import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
+import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.homeGraph(
-  nestedGraphs: NavGraphBuilder.() -> Unit,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  navController: NavController,
+fun EntryProviderScope<Destination>.homeGraph(
+  nestedGraphs: EntryProviderScope<Destination>.() -> Unit,
+  navigator: Navigator,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
@@ -36,13 +35,11 @@ fun NavGraphBuilder.homeGraph(
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  navgraph<HomeDestination.Graph>(
+  navgraph(
     startDestination = HomeDestination.Home::class,
   ) {
     navdestination<HomeDestination.Home>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.home, hedvigDeepLinkContainer.claimFlow),
-      enterTransition = { MotionDefaults.fadeThroughEnter },
-      exitTransition = { MotionDefaults.fadeThroughExit },
+      metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: HomeViewModel = metroViewModel()
       HomeDestination(
@@ -62,7 +59,7 @@ fun NavGraphBuilder.homeGraph(
         openCrossSellUrl = openCrossSellUrl,
         openAppSettings = openAppSettings,
         navigateToFirstVet = dropUnlessResumed { sections ->
-          navController.navigate(HomeDestination.FirstVet(sections))
+          navigator.navigate(HomeDestination.FirstVet(sections))
         },
         navigateToContactInfo = dropUnlessResumed {
           navigateToContactInfo()
@@ -71,13 +68,11 @@ fun NavGraphBuilder.homeGraph(
         navigateToChipId = navigateToChipIdScreen,
       )
     }
-    navdestination<HomeDestination.FirstVet>(
-      HomeDestination.FirstVet,
-    ) {
+    navdestination<HomeDestination.FirstVet> {
       FirstVetDestination(
         sections,
-        navigateUp = navController::navigateUp,
-        navigateBack = navController::popBackStack,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
         openUrl = openUrl,
       )
     }

@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import androidx.navigation.NavDestination
 import com.hedvig.android.design.system.hedvig.HedvigText
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.NavigationBar
@@ -27,7 +26,7 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 internal fun NavigationSuite(
   navigationSuiteType: NavigationSuiteType,
   topLevelGraphs: Set<TopLevelGraph>,
-  currentDestination: NavDestination?,
+  currentTopLevelGraph: TopLevelGraph?,
   onNavigateToTopLevelGraph: (TopLevelGraph) -> Unit,
   modifier: Modifier = Modifier,
   getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
@@ -48,7 +47,7 @@ internal fun NavigationSuite(
         NavigationRail(
           destinations = topLevelGraphs,
           onNavigateToDestination = onNavigateToTopLevelGraph,
-          getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
+          getIsCurrentlySelected = { it == currentTopLevelGraph },
           isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
           getShowNotificationBadge = getShowNotificationBadge,
         )
@@ -63,7 +62,7 @@ internal fun NavigationSuite(
       NavigationBar(
         destinations = topLevelGraphs,
         onNavigateToDestination = onNavigateToTopLevelGraph,
-        getIsCurrentlySelected = currentDestination::isTopLevelGraphInHierarchy,
+        getIsCurrentlySelected = { it == currentTopLevelGraph },
         getShowNotificationBadge = getShowNotificationBadge,
       )
     }
@@ -87,7 +86,7 @@ private fun PreviewNavigationSuite(
           NavigationSuiteType.NavigationRail
         },
         topLevelGraphs = TopLevelGraph.entries.toSet(),
-        currentDestination = null,
+        currentTopLevelGraph = null,
         onNavigateToTopLevelGraph = {},
       ) {
         HedvigText("Content")

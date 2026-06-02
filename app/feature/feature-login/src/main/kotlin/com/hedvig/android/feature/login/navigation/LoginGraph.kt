@@ -2,8 +2,7 @@ package com.hedvig.android.feature.login.navigation
 
 import android.net.Uri
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.feature.login.genericauth.GenericAuthDestination
 import com.hedvig.android.feature.login.genericauth.GenericAuthViewModel
@@ -16,20 +15,22 @@ import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.loginGraph(
-  navController: NavController,
+fun EntryProviderScope<Destination>.loginGraph(
+  navigator: Navigator,
   appVersionName: String,
   urlBaseWeb: String,
   openUrl: (String) -> Unit,
   onOpenEmailApp: () -> Unit,
   onNavigateToLoggedIn: () -> Unit,
 ) {
-  navgraph<LoginDestination>(
+  navgraph(
     startDestination = LoginDestinations.Marketing::class,
   ) {
     navdestination<LoginDestinations.Marketing> {
@@ -44,7 +45,7 @@ fun NavGraphBuilder.loginGraph(
           openUrl(uri)
         },
         navigateToLoginScreen = dropUnlessResumed {
-          navController.navigate(LoginDestinations.SwedishLogin)
+          navigator.navigate(LoginDestinations.SwedishLogin)
         },
       )
     }
@@ -52,10 +53,10 @@ fun NavGraphBuilder.loginGraph(
       val swedishLoginViewModel: SwedishLoginViewModel = metroViewModel()
       SwedishLoginDestination(
         swedishLoginViewModel = swedishLoginViewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         navigateToEmailLogin = dropUnlessResumed {
           logcat(LogPriority.INFO) { "Login with OTP clicked" }
-          navController.navigate(LoginDestinations.GenericAuthCredentialsInput)
+          navigator.navigate(LoginDestinations.GenericAuthCredentialsInput)
         },
         onNavigateToLoggedIn = onNavigateToLoggedIn,
       )
@@ -64,17 +65,15 @@ fun NavGraphBuilder.loginGraph(
       val viewModel: GenericAuthViewModel = metroViewModel()
       GenericAuthDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onStartOtpInput = { verifyUrl: String, resendUrl: String, email: String ->
-          navController.navigate(
+          navigator.navigate(
             LoginDestinations.OtpInput(LoginDestinations.OtpInput.OtpInformation(verifyUrl, resendUrl, email)),
           )
         },
       )
     }
-    navdestination<LoginDestinations.OtpInput>(
-      LoginDestinations.OtpInput,
-    ) {
+    navdestination<LoginDestinations.OtpInput> {
       val otpInputInformation: LoginDestinations.OtpInput.OtpInformation = this.otpInformation
       val viewModel: OtpInputViewModel =
         assistedMetroViewModel<OtpInputViewModel, OtpInputViewModel.Factory> {
@@ -82,7 +81,7 @@ fun NavGraphBuilder.loginGraph(
         }
       OtpInputDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onNavigateToLoggedIn = onNavigateToLoggedIn,
         onOpenEmailApp = dropUnlessResumed { onOpenEmailApp() },
       )

@@ -5,21 +5,14 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.navOptions
-import com.datadog.android.compose.ExperimentalTrackingApi
-import com.datadog.android.compose.NavigationViewTrackingEffect
-import com.hedvig.android.app.navigation.RootGraph
+import androidx.compose.runtime.snapshotFlow
+import com.hedvig.android.app.navigation.HedvigTopLevelBackStacks
 import com.hedvig.android.app.notification.senders.CurrentDestinationInMemoryStorage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
@@ -31,20 +24,14 @@ import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetP
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.feature.insurances.navigation.insurancesCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
-import com.hedvig.android.feature.profile.navigation.destinationToExcludeFromSavingState
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.compose.typedClearBackStack
-import com.hedvig.android.navigation.compose.typedHasRoute
-import com.hedvig.android.navigation.compose.typedPopBackStack
-import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
@@ -56,21 +43,18 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
-@OptIn(ExperimentalTrackingApi::class)
 @Composable
 internal fun rememberHedvigAppState(
+  backStacks: HedvigTopLevelBackStacks,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
-  navHostController: NavHostController,
   missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
-  NavigationViewTrackingEffect(navController = navHostController)
-  RegisterOnDestinationChangedListenerSideEffect(navHostController, coroutineScope)
-  return remember(
-    navHostController,
+  val appState = remember(
+    backStacks,
     windowSizeClass,
     coroutineScope,
     settingsDataStore,
@@ -79,7 +63,7 @@ internal fun rememberHedvigAppState(
     missedPaymentNotificationServiceProvider,
   ) {
     HedvigAppState(
-      navController = navHostController,
+      backStacks = backStacks,
       windowSizeClass = windowSizeClass,
       coroutineScope = coroutineScope,
       settingsDataStore = settingsDataStore,
@@ -88,11 +72,18 @@ internal fun rememberHedvigAppState(
       missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
     )
   }
+  LaunchedEffect(appState) {
+    snapshotFlow { appState.currentDestination }.collect { destination ->
+      logcat { "Navigated to destination:$destination" }
+      CurrentDestinationInMemoryStorage.currentDestination = destination
+    }
+  }
+  return appState
 }
 
 @Stable
 internal class HedvigAppState(
-  val navController: NavHostController,
+  val backStacks: HedvigTopLevelBackStacks,
   val windowSizeClass: WindowSizeClass,
   coroutineScope: CoroutineScope,
   private val settingsDataStore: SettingsDataStore,
@@ -100,29 +91,29 @@ internal class HedvigAppState(
   featureManager: FeatureManager,
   missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
 ) {
-  val currentDestination: NavDestination?
-    @Composable get() = navController.currentBackStackEntryAsState().value?.destination
+  val currentDestination: Destination?
+    get() = backStacks.currentDestination
+
+  val currentTopLevelGraph: TopLevelGraph
+    get() = backStacks.currentTopLevel
 
   private val shouldShowNavBars: Boolean
-    @Composable get() {
-      if (currentDestination?.toTopLevelAppDestination() != null) return true
-      return currentDestination.isInListOfNonTopLevelNavBarPermittedDestinations()
+    get() {
+      if (!backStacks.isLoggedIn) return false
+      val destination = currentDestination ?: return false
+      if (destination.isTopLevelStartDestination()) return true
+      return bottomNavPermittedDestinations.any { it.isInstance(destination) }
     }
 
   val navigationSuiteType: NavigationSuiteType
-    @Composable
     get() {
       if (!shouldShowNavBars) return NavigationSuiteType.None
       return when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> {
-          NavigationSuiteType.NavigationBar
-        }
+        WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
 
-        else -> {
-          when (windowSizeClass.heightSizeClass) {
-            WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
-            else -> NavigationSuiteType.NavigationRail
-          }
+        else -> when (windowSizeClass.heightSizeClass) {
+          WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
+          else -> NavigationSuiteType.NavigationRail
         }
       }
     }
@@ -139,9 +130,9 @@ internal class HedvigAppState(
     )
 
   val isInScreenEligibleForCrossSells: Boolean
-    @Composable
     get() {
-      return currentDestination?.isInListOfScreensPermittingCrossSellsSheetToShow() == true
+      val destination = currentDestination ?: return false
+      return crossSellBottomSheetPermittingDestinations.any { it.isInstance(destination) }
     }
 
   val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
@@ -179,60 +170,19 @@ internal class HedvigAppState(
   )
 
   /**
-   * UI logic for navigating to a top level destination in the app. Top level destinations have
-   * only one copy of the destination of the back stack, and save and restore state whenever you
-   * navigate to and from it.
-   *
-   * @param topLevelGraph: The destination the app needs to navigate to.
+   * Navigate to a top level destination. Each tab keeps its own back stack; selecting the current
+   * tab again pops it back to its start.
    */
   fun navigateToTopLevelGraph(topLevelGraph: TopLevelGraph) {
-    val popToStartOfGraph = navController.currentDestination?.isTopLevelGraphInHierarchy(topLevelGraph) == true
-    if (popToStartOfGraph) {
-      navController.typedPopBackStack(destination = topLevelGraph.startDestination, inclusive = false)
-    } else {
-      navController.navigate(
-        route = topLevelGraph.destination,
-        navOptions = navOptions {
-          popUpTo(navController.graph.findStartDestination().id) {
-            saveState = true
-          }
-          launchSingleTop = true
-          restoreState = true
-        },
-      )
-    }
+    backStacks.selectTopLevel(topLevelGraph)
   }
 
-  /**
-   * These should also save/restore state when it's possible to do so.
-   * Should also try to find a way to *not* save the state when explicitly logging out. The backstack saving should
-   * only happen in scenarios where the logout was due to token expiration. The most common scenario there would be
-   * when coming into the app from a deep link while not having valid credentials lying around already.
-   * https://issuetracker.google.com/issues/334413738
-   * todo: Now that we clear the backstack of all graphs on logout manually perhaps we can make this work properly
-   */
   fun navigateToLoggedIn() {
-    navController.navigate(RootGraph) {
-      restoreState = true
-      typedPopUpTo<LoginDestination> {
-        inclusive = true
-      }
-    }
+    backStacks.setLoggedIn()
   }
 
   fun navigateToLoggedOut() {
-    val isLoggingOutFromProfile = navController.currentDestination
-      ?.typedHasRoute(destinationToExcludeFromSavingState) ?: false
-
-    for (entry in TopLevelGraph.entries) {
-      navController.typedClearBackStack(entry.destination)
-    }
-    navController.navigate(LoginDestination) {
-      typedPopUpTo<RootGraph> {
-        inclusive = true
-        saveState = !isLoggingOutFromProfile
-      }
-    }
+    backStacks.setLoggedOut()
   }
 
   val darkTheme: Boolean
@@ -261,69 +211,17 @@ value class NavigationSuiteType private constructor(
   }
 }
 
-@Composable
-private fun RegisterOnDestinationChangedListenerSideEffect(
-  navController: NavController,
-  coroutineScope: CoroutineScope,
-) {
-  DisposableEffect(navController, coroutineScope) {
-    val listener = NavController.OnDestinationChangedListener { navController, destination, bundle ->
-      // Uncomment to debug the backstack changing in develop builds
-//      logcat {
-//        @android.annotation.SuppressLint("RestrictedApi")
-//        val backstack = navController.currentBackStack.value.map { it.destination.route }.joinToString()
-//        "Backstack: $backstack"
-//      }
-      logcat { "Navigated to route:${destination.route} | bundle:$bundle" }
-      CurrentDestinationInMemoryStorage.currentDestination = destination
-      val topLevelDestination = destination.toTopLevelAppDestination() ?: return@OnDestinationChangedListener
-      when (topLevelDestination) {
-        TopLevelDestination.Home -> {
-          logcat { "Navigated to top level screen: HOME" }
-        }
+private fun Destination.isTopLevelStartDestination(): Boolean {
+  return when (this) {
+    is HomeDestination.Home,
+    is InsurancesDestination.Insurances,
+    is ForeverDestination.Forever,
+    is PaymentsDestination.Payments,
+    is ProfileDestination.Profile,
+    -> true
 
-        TopLevelDestination.Insurances -> {
-          logcat { "Navigated to top level screen: INSURANCES" }
-        }
-
-        TopLevelDestination.Forever -> {
-          logcat { "Navigated to top level screen: FOREVER" }
-        }
-
-        TopLevelDestination.Payments -> {
-          logcat { "Navigated to top level screen: PAYMENTS" }
-        }
-
-        TopLevelDestination.Profile -> {
-          logcat { "Navigated to top level screen: PROFILE" }
-        }
-      }
-    }
-    navController.addOnDestinationChangedListener(listener)
-    onDispose {
-      navController.removeOnDestinationChangedListener(listener)
-    }
+    else -> false
   }
-}
-
-private fun NavDestination?.toTopLevelAppDestination(): TopLevelDestination? {
-  return when {
-    this == null -> null
-    typedHasRoute<HomeDestination.Home>() -> TopLevelDestination.Home
-    typedHasRoute<InsurancesDestination.Insurances>() -> TopLevelDestination.Insurances
-    typedHasRoute<ForeverDestination.Forever>() -> TopLevelDestination.Forever
-    typedHasRoute<PaymentsDestination.Payments>() -> TopLevelDestination.Payments
-    typedHasRoute<ProfileDestination.Profile>() -> TopLevelDestination.Profile
-    else -> null
-  }
-}
-
-private fun NavDestination?.isInListOfNonTopLevelNavBarPermittedDestinations(): Boolean {
-  return bottomNavPermittedDestinations.any { this?.typedHasRoute(it) == true }
-}
-
-private fun NavDestination?.isInListOfScreensPermittingCrossSellsSheetToShow(): Boolean {
-  return crossSellBottomSheetPermittingDestinations.any { this?.typedHasRoute(it) == true }
 }
 
 /**
@@ -349,28 +247,4 @@ private val crossSellBottomSheetPermittingDestinations: List<KClass<out Destinat
   addAll(travelCertificateCrossSellBottomSheetPermittingDestinations)
   // One could finish those flows after a deep link, so the app's start destination must also be included
   addAll(homeCrossSellBottomSheetPermittingDestinations)
-}
-
-private sealed interface TopLevelDestination {
-  val destination: Destination
-
-  object Home : TopLevelDestination {
-    override val destination: Destination = HomeDestination.Home
-  }
-
-  object Insurances : TopLevelDestination {
-    override val destination: Destination = InsurancesDestination.Insurances
-  }
-
-  object Forever : TopLevelDestination {
-    override val destination: Destination = ForeverDestination.Forever
-  }
-
-  object Payments : TopLevelDestination {
-    override val destination: Destination = PaymentsDestination.Payments
-  }
-
-  object Profile : TopLevelDestination {
-    override val destination: Destination = ProfileDestination.Profile
-  }
 }

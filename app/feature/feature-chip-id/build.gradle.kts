@@ -32,5 +32,4 @@ dependencies {
   implementation(projects.navigationCore)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
 }

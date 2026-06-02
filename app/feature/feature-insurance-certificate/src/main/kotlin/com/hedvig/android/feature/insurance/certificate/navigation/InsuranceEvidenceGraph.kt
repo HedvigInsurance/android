@@ -1,41 +1,33 @@
 package com.hedvig.android.feature.insurance.certificate.navigation
 
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputDestination
 import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEvidenceEmailInputViewModel
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewDestination
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.insuranceEvidenceGraph(
-  navController: NavController,
-  applicationId: String,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-) {
-  navgraph<InsuranceEvidenceGraphDestination>(
-    startDestination = InsuranceEvidenceDestination.InsuranceEvidenceEmailInput::class,
+fun EntryProviderScope<Destination>.insuranceEvidenceGraph(navigator: Navigator, applicationId: String) {
+  navgraph(
+    startDestination = InsuranceEvidenceGraphDestination::class,
   ) {
-    navdestination<InsuranceEvidenceDestination.InsuranceEvidenceEmailInput>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.insuranceEvidence),
-    ) {
+    navdestination<InsuranceEvidenceGraphDestination> {
       val viewModel: InsuranceEvidenceEmailInputViewModel = metroViewModel()
       InsuranceEvidenceEmailInputDestination(
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         navigateToShowCertificate = { url ->
-          with(navController) {
-            navigate(InsuranceEvidenceDestination.ShowCertificate(url)) {
-              typedPopUpTo<InsuranceEvidenceDestination.InsuranceEvidenceEmailInput>({ inclusive = true })
-            }
-          }
+          navigator.navigate<InsuranceEvidenceGraphDestination>(
+            InsuranceEvidenceDestination.ShowCertificate(url),
+            inclusive = true,
+          )
         },
       )
     }
@@ -45,7 +37,7 @@ fun NavGraphBuilder.insuranceEvidenceGraph(
       InsuranceEvidenceOverviewDestination(
         insuranceEvidenceUrl = certificateUrl,
         viewModel = viewModel,
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         onShareInsuranceEvidence = {
           context.sharePDF(it, applicationId)
         },

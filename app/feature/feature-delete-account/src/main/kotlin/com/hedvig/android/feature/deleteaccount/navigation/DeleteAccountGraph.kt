@@ -1,23 +1,20 @@
 package com.hedvig.android.feature.deleteaccount.navigation
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.chat.DeleteAccountViewModel
 import com.hedvig.android.feature.deleteaccount.DeleteAccountDestination
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.deleteAccountGraph(hedvigDeepLinkContainer: HedvigDeepLinkContainer, navController: NavController) {
-  navdestination<DeleteAccountDestination>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.deleteAccount),
-  ) {
+fun EntryProviderScope<Destination>.deleteAccountGraph(navigator: Navigator) {
+  navdestination<DeleteAccountDestination> {
     val viewModel: DeleteAccountViewModel = metroViewModel()
     DeleteAccountDestination(
       viewModel = viewModel,
-      navigateUp = navController::navigateUp,
-      navigateBack = navController::popBackStack,
+      navigateUp = navigator::navigateUp,
+      navigateBack = navigator::popBackStack,
     )
   }
 }

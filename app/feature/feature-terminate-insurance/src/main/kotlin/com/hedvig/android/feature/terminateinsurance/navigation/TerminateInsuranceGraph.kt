@@ -2,9 +2,7 @@ package com.hedvig.android.feature.terminateinsurance.navigation
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptionsBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
@@ -25,24 +23,19 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
 import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typed.getRouteFromBackStack
-import com.hedvig.android.navigation.compose.typed.getRouteFromBackStackOrNull
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun NavGraphBuilder.terminateInsuranceGraph(
+fun EntryProviderScope<Destination>.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
-  navController: NavController,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  navigator: Navigator,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToMovingFlow: () -> Unit,
   openPlayStore: () -> Unit,
-  navigateToInsurances: (NavOptionsBuilder.() -> Unit) -> Unit,
+  navigateToInsurances: () -> Unit,
   closeTerminationFlow: () -> Unit,
   redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
@@ -51,268 +44,241 @@ fun NavGraphBuilder.terminateInsuranceGraph(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(message),
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      navigateUp = navController::navigateUp,
-      navigateBack = navController::popBackStack,
+      navigateUp = navigator::navigateUp,
+      navigateBack = navigator::popBackStack,
     )
   }
   navdestination<TerminateInsuranceDestination.UnknownScreen> {
     UnknownScreenDestination(
       windowSizeClass = windowSizeClass,
       openPlayStore = openPlayStore,
-      navigateUp = navController::navigateUp,
-      navigateBack = navController::popBackStack,
+      navigateUp = navigator::navigateUp,
+      navigateBack = navigator::popBackStack,
     )
   }
 
-  navdestination<TerminateInsuranceDestination.TerminationSuccess>(
-    TerminateInsuranceDestination.TerminationSuccess,
-  ) {
+  navdestination<TerminateInsuranceDestination.TerminationSuccess> {
     TerminationSuccessDestination(
       terminationDate = terminationDate,
       onDone = {
-        if (!navController.popBackStack()) {
-          navigateToInsurances {
-            typedPopUpTo<TerminateInsuranceDestination.TerminationSuccess> {
-              inclusive = true
-            }
-          }
+        if (!navigator.popBackStack()) {
+          navigateToInsurances()
         }
       },
     )
   }
 
-  navgraph<TerminateInsuranceGraphDestination>(
-    startDestination = TerminateInsuranceDestination.StartStep::class,
-    deepLinks = navDeepLinks(
-      hedvigDeepLinkContainer.terminateInsurance,
-    ),
-  ) {
-    navdestination<TerminateInsuranceDestination.StartStep> { backStackEntry ->
-      val terminateInsuranceGraphDestination = navController
-        .getRouteFromBackStackOrNull<TerminateInsuranceGraphDestination>(backStackEntry)
-      val insuranceId = terminateInsuranceGraphDestination?.insuranceId
-      val viewModel: ChooseInsuranceToTerminateViewModel =
-        assistedMetroViewModel<ChooseInsuranceToTerminateViewModel, ChooseInsuranceToTerminateViewModel.Factory> {
-          create(insuranceId)
-        }
-      ChooseInsuranceToTerminateDestination(
-        viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        closeTerminationFlow = closeTerminationFlow,
-        navigateToNextStep = { surveyData, insuranceForCancellation ->
-          val commonParams = TerminationGraphParameters(
-            insuranceForCancellation.id,
-            insuranceForCancellation.displayName,
-            insuranceForCancellation.contractExposure,
-            insuranceForCancellation.contractGroup,
-          )
-          navController.navigateToTerminateFlowDestination(
-            TerminateInsuranceDestination.TerminationSurveyFirstStep(
-              options = surveyData.options,
-              action = surveyData.action,
-              commonParams = commonParams,
+  navdestination<TerminateInsuranceGraphDestination> {
+    val insuranceId = this.insuranceId
+    val viewModel: ChooseInsuranceToTerminateViewModel =
+      assistedMetroViewModel<ChooseInsuranceToTerminateViewModel, ChooseInsuranceToTerminateViewModel.Factory> {
+        create(insuranceId)
+      }
+    ChooseInsuranceToTerminateDestination(
+      viewModel = viewModel,
+      navigateUp = navigator::navigateUp,
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      closeTerminationFlow = closeTerminationFlow,
+      navigateToNextStep = { surveyData, insuranceForCancellation ->
+        val commonParams = TerminationGraphParameters(
+          insuranceForCancellation.id,
+          insuranceForCancellation.displayName,
+          insuranceForCancellation.contractExposure,
+          insuranceForCancellation.contractGroup,
+        )
+        navigator.navigateToTerminateFlowDestination(
+          TerminateInsuranceDestination.TerminationSurveyFirstStep(
+            options = surveyData.options,
+            action = surveyData.action,
+            commonParams = commonParams,
+          ),
+        )
+      },
+    )
+  }
+
+  navdestination<TerminateInsuranceDestination.TerminationSurveyFirstStep> {
+    val surveyOptions = options
+    val surveyAction = action
+    val surveyContractId = commonParams.contractId
+    val viewModel: TerminationSurveyViewModel =
+      assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
+        create(surveyOptions, surveyAction, surveyContractId)
+      }
+    TerminationSurveyDestination(
+      viewModel,
+      navigateUp = navigator::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+      navigateToSubOptions = { subOptions ->
+        navigator.navigate(
+          TerminateInsuranceDestination.TerminationSurveySecondStep(subOptions, action, commonParams),
+        )
+      },
+      navigateToNextStep = { navStep ->
+        navigateFromSurvey(navigator, navStep, commonParams)
+      },
+      navigateToMovingFlow = navigateToMovingFlow,
+      openUrl = openUrl,
+      redirectToChangeTierFlow = { intent ->
+        redirectToChangeTierFlow(intent)
+      },
+    )
+  }
+
+  navdestination<TerminateInsuranceDestination.TerminationSurveySecondStep> {
+    val surveySubOptions = subOptions
+    val surveyAction = action
+    val surveyContractId = commonParams.contractId
+    val viewModel: TerminationSurveyViewModel =
+      assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
+        create(surveySubOptions, surveyAction, surveyContractId)
+      }
+    TerminationSurveyDestination(
+      viewModel,
+      navigateUp = navigator::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+      navigateToSubOptions = { nestedSubOptions ->
+        navigator.navigate(
+          TerminateInsuranceDestination.TerminationSurveySecondStep(
+            nestedSubOptions,
+            action,
+            commonParams,
+          ),
+        )
+      },
+      navigateToNextStep = { navStep ->
+        navigateFromSurvey(navigator, navStep, commonParams)
+      },
+      navigateToMovingFlow = navigateToMovingFlow,
+      openUrl = openUrl,
+      redirectToChangeTierFlow = { intent ->
+        redirectToChangeTierFlow(intent)
+      },
+    )
+  }
+
+  navdestination<TerminateInsuranceDestination.TerminationDate> {
+    val terminationDateParameters = TerminationDateParameters(
+      minDate = minDate,
+      maxDate = maxDate,
+      commonParams,
+    )
+    val viewModel: TerminationDateViewModel =
+      assistedMetroViewModel<TerminationDateViewModel, TerminationDateViewModel.Factory> {
+        create(terminationDateParameters)
+      }
+    TerminationDateDestination(
+      viewModel = viewModel,
+      onContinue = { localDate ->
+        navigator.navigate(
+          TerminateInsuranceDestination.TerminationConfirmation(
+            terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination(
+              localDate,
             ),
-          )
-        },
-      )
-    }
+            extraCoverageItems = extraCoverageItems,
+            commonParams = commonParams,
+            selectedReasonId = selectedReasonId,
+            feedbackComment = feedbackComment,
+          ),
+        )
+      },
+      navigateUp = navigator::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+    )
+  }
 
-    navdestination<TerminateInsuranceDestination.TerminationSurveyFirstStep>(
-      TerminateInsuranceDestination.TerminationSurveyFirstStep,
-    ) {
-      val surveyOptions = options
-      val surveyAction = action
-      val surveyContractId = commonParams.contractId
-      val viewModel: TerminationSurveyViewModel =
-        assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
-          create(surveyOptions, surveyAction, surveyContractId)
-        }
-      TerminationSurveyDestination(
-        viewModel,
-        navigateUp = navController::navigateUp,
-        closeTerminationFlow = closeTerminationFlow,
-        navigateToSubOptions = { subOptions ->
-          navController.navigate(
-            TerminateInsuranceDestination.TerminationSurveySecondStep(subOptions, action, commonParams),
-          )
-        },
-        navigateToNextStep = { navStep ->
-          navigateFromSurvey(navController, navStep, commonParams)
-        },
-        navigateToMovingFlow = navigateToMovingFlow,
-        openUrl = openUrl,
-        redirectToChangeTierFlow = { intent ->
-          redirectToChangeTierFlow(intent)
-        },
-      )
-    }
+  navdestination<TerminateInsuranceDestination.InsuranceDeletion> {
+    InsuranceDeletionDestination(
+      displayName = commonParams.insuranceDisplayName,
+      exposureName = commonParams.exposureName,
+      onContinue = {
+        navigator.navigate(
+          TerminateInsuranceDestination.TerminationConfirmation(
+            terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
+            extraCoverageItems = extraCoverageItems,
+            commonParams = commonParams,
+            selectedReasonId = selectedReasonId,
+            feedbackComment = feedbackComment,
+          ),
+        )
+      },
+      navigateUp = navigator::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+    )
+  }
 
-    navdestination<TerminateInsuranceDestination.TerminationSurveySecondStep>(
-      TerminateInsuranceDestination.TerminationSurveySecondStep,
-    ) {
-      val surveySubOptions = subOptions
-      val surveyAction = action
-      val surveyContractId = commonParams.contractId
-      val viewModel: TerminationSurveyViewModel =
-        assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
-          create(surveySubOptions, surveyAction, surveyContractId)
-        }
-      TerminationSurveyDestination(
-        viewModel,
-        navigateUp = navController::navigateUp,
-        closeTerminationFlow = closeTerminationFlow,
-        navigateToSubOptions = { nestedSubOptions ->
-          navController.navigate(
-            TerminateInsuranceDestination.TerminationSurveySecondStep(
-              nestedSubOptions,
-              action,
-              commonParams,
-            ),
-          )
-        },
-        navigateToNextStep = { navStep ->
-          navigateFromSurvey(navController, navStep, commonParams)
-        },
-        navigateToMovingFlow = navigateToMovingFlow,
-        openUrl = openUrl,
-        redirectToChangeTierFlow = { intent ->
-          redirectToChangeTierFlow(intent)
-        },
-      )
-    }
+  navdestination<TerminateInsuranceDestination.TerminationConfirmation> {
+    val confirmationTerminationType = terminationType
+    val confirmationInsuranceInfo = commonParams
+    val confirmationExtraCoverageItems = extraCoverageItems
+    val confirmationSelectedReasonId = selectedReasonId
+    val confirmationFeedbackComment = feedbackComment
+    val viewModel: TerminationConfirmationViewModel =
+      assistedMetroViewModel<TerminationConfirmationViewModel, TerminationConfirmationViewModel.Factory> {
+        create(
+          confirmationTerminationType,
+          confirmationInsuranceInfo,
+          confirmationExtraCoverageItems,
+          confirmationSelectedReasonId,
+          confirmationFeedbackComment,
+        )
+      }
+    TerminationConfirmationDestination(
+      viewModel = viewModel,
+      onContinue = {
+        viewModel.emit(TerminationConfirmationEvent.Submit)
+      },
+      navigateToSuccess = { terminationDate ->
+        viewModel.emit(TerminationConfirmationEvent.HandledNavigation)
+        navigator.navigateToTerminateFlowDestination(
+          TerminateInsuranceDestination.TerminationSuccess(terminationDate),
+        )
+      },
+      navigateUp = navigator::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+    )
+  }
 
-    navdestination<TerminateInsuranceDestination.TerminationDate>(
-      TerminateInsuranceDestination.TerminationDate,
-    ) {
-      val terminationDateParameters = TerminationDateParameters(
-        minDate = minDate,
-        maxDate = maxDate,
-        commonParams,
-      )
-      val viewModel: TerminationDateViewModel =
-        assistedMetroViewModel<TerminationDateViewModel, TerminationDateViewModel.Factory> {
-          create(terminationDateParameters)
-        }
-      TerminationDateDestination(
-        viewModel = viewModel,
-        onContinue = { localDate ->
-          navController.navigate(
-            TerminateInsuranceDestination.TerminationConfirmation(
-              terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination(
-                localDate,
+  navdestination<TerminateInsuranceDestination.DeflectSuggestion> {
+    DeflectSuggestionDestination(
+      description = description,
+      suggestionType = suggestionType,
+      navigateUp = navigator::navigateUp,
+      closeTerminationFlow = closeTerminationFlow,
+      onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
+      onContinueTermination = {
+        when (val terminationAction = action) {
+          is TerminationAction.TerminateWithDate -> {
+            navigator.navigate(
+              TerminateInsuranceDestination.TerminationDate(
+                minDate = terminationAction.minDate,
+                maxDate = terminationAction.maxDate,
+                extraCoverageItems = terminationAction.extraCoverageItems,
+                commonParams = commonParams,
+                selectedReasonId = selectedReasonId,
+                feedbackComment = feedbackComment,
               ),
-              extraCoverageItems = extraCoverageItems,
-              commonParams = commonParams,
-              selectedReasonId = selectedReasonId,
-              feedbackComment = feedbackComment,
-            ),
-          )
-        },
-        navigateUp = navController::navigateUp,
-        closeTerminationFlow = closeTerminationFlow,
-      )
-    }
-
-    navdestination<TerminateInsuranceDestination.InsuranceDeletion>(
-      TerminateInsuranceDestination.InsuranceDeletion,
-    ) {
-      InsuranceDeletionDestination(
-        displayName = commonParams.insuranceDisplayName,
-        exposureName = commonParams.exposureName,
-        onContinue = {
-          navController.navigate(
-            TerminateInsuranceDestination.TerminationConfirmation(
-              terminationType = TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion,
-              extraCoverageItems = extraCoverageItems,
-              commonParams = commonParams,
-              selectedReasonId = selectedReasonId,
-              feedbackComment = feedbackComment,
-            ),
-          )
-        },
-        navigateUp = navController::navigateUp,
-        closeTerminationFlow = closeTerminationFlow,
-      )
-    }
-
-    navdestination<TerminateInsuranceDestination.TerminationConfirmation>(
-      TerminateInsuranceDestination.TerminationConfirmation,
-    ) {
-      val confirmationTerminationType = terminationType
-      val confirmationInsuranceInfo = commonParams
-      val confirmationExtraCoverageItems = extraCoverageItems
-      val confirmationSelectedReasonId = selectedReasonId
-      val confirmationFeedbackComment = feedbackComment
-      val viewModel: TerminationConfirmationViewModel =
-        assistedMetroViewModel<TerminationConfirmationViewModel, TerminationConfirmationViewModel.Factory> {
-          create(
-            confirmationTerminationType,
-            confirmationInsuranceInfo,
-            confirmationExtraCoverageItems,
-            confirmationSelectedReasonId,
-            confirmationFeedbackComment,
-          )
-        }
-      TerminationConfirmationDestination(
-        viewModel = viewModel,
-        onContinue = {
-          viewModel.emit(TerminationConfirmationEvent.Submit)
-        },
-        navigateToSuccess = { terminationDate ->
-          viewModel.emit(TerminationConfirmationEvent.HandledNavigation)
-          navController.navigateToTerminateFlowDestination(
-            TerminateInsuranceDestination.TerminationSuccess(terminationDate),
-          )
-        },
-        navigateUp = navController::navigateUp,
-        closeTerminationFlow = closeTerminationFlow,
-      )
-    }
-
-    navdestination<TerminateInsuranceDestination.DeflectSuggestion>(
-      TerminateInsuranceDestination.DeflectSuggestion,
-    ) {
-      DeflectSuggestionDestination(
-        description = description,
-        suggestionType = suggestionType,
-        navigateUp = navController::navigateUp,
-        closeTerminationFlow = closeTerminationFlow,
-        onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        onContinueTermination = {
-          when (val terminationAction = action) {
-            is TerminationAction.TerminateWithDate -> {
-              navController.navigate(
-                TerminateInsuranceDestination.TerminationDate(
-                  minDate = terminationAction.minDate,
-                  maxDate = terminationAction.maxDate,
-                  extraCoverageItems = terminationAction.extraCoverageItems,
-                  commonParams = commonParams,
-                  selectedReasonId = selectedReasonId,
-                  feedbackComment = feedbackComment,
-                ),
-              )
-            }
-
-            is TerminationAction.DeleteInsurance -> {
-              navController.navigate(
-                TerminateInsuranceDestination.InsuranceDeletion(
-                  commonParams = commonParams,
-                  extraCoverageItems = terminationAction.extraCoverageItems,
-                  selectedReasonId = selectedReasonId,
-                  feedbackComment = feedbackComment,
-                ),
-              )
-            }
+            )
           }
-        },
-      )
-    }
+
+          is TerminationAction.DeleteInsurance -> {
+            navigator.navigate(
+              TerminateInsuranceDestination.InsuranceDeletion(
+                commonParams = commonParams,
+                extraCoverageItems = terminationAction.extraCoverageItems,
+                selectedReasonId = selectedReasonId,
+                feedbackComment = feedbackComment,
+              ),
+            )
+          }
+        }
+      },
+    )
   }
 }
 
 private fun navigateFromSurvey(
-  navController: NavController,
+  navigator: Navigator,
   navStep: SurveyNavigationStep.NavigateToNextTerminationStep,
   commonParams: TerminationGraphParameters,
 ) {
@@ -323,7 +289,7 @@ private fun navigateFromSurvey(
   if (suggestion != null &&
     suggestion.type in SuggestionType.DEFLECT_TYPES
   ) {
-    navController.navigate(
+    navigator.navigate(
       TerminateInsuranceDestination.DeflectSuggestion(
         description = suggestion.description,
         url = suggestion.url,
@@ -340,7 +306,7 @@ private fun navigateFromSurvey(
   // Navigate based on the termination action
   when (val terminationAction = navStep.action) {
     is TerminationAction.TerminateWithDate -> {
-      navController.navigate(
+      navigator.navigate(
         TerminateInsuranceDestination.TerminationDate(
           minDate = terminationAction.minDate,
           maxDate = terminationAction.maxDate,
@@ -353,7 +319,7 @@ private fun navigateFromSurvey(
     }
 
     is TerminationAction.DeleteInsurance -> {
-      navController.navigate(
+      navigator.navigate(
         TerminateInsuranceDestination.InsuranceDeletion(
           commonParams = commonParams,
           extraCoverageItems = terminationAction.extraCoverageItems,
@@ -365,20 +331,13 @@ private fun navigateFromSurvey(
   }
 }
 
-private fun <T : Destination> NavController.navigateToTerminateFlowDestination(destination: T) {
-  val navOptions: NavOptionsBuilder.() -> Unit = {
-    when (destination) {
-      is TerminateInsuranceDestination.TerminationSuccess,
-      is TerminateInsuranceDestination.TerminationFailure,
-      is TerminateInsuranceDestination.UnknownScreen,
-      -> {
-        typedPopUpTo<TerminateInsuranceGraphDestination> {
-          inclusive = true
-        }
-      }
+private fun Navigator.navigateToTerminateFlowDestination(destination: Destination) {
+  when (destination) {
+    is TerminateInsuranceDestination.TerminationSuccess,
+    is TerminateInsuranceDestination.TerminationFailure,
+    is TerminateInsuranceDestination.UnknownScreen,
+    -> navigate<TerminateInsuranceGraphDestination>(destination, inclusive = true)
 
-      else -> {}
-    }
+    else -> navigate(destination)
   }
-  navigate(destination, navOptions)
 }

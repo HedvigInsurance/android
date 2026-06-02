@@ -10,9 +10,6 @@ sealed interface PayoutAccountDestination {
 
 internal sealed interface PayoutAccountDestinations {
   @Serializable
-  data object Overview : PayoutAccountDestinations, Destination
-
-  @Serializable
   data class SelectPayoutMethod(
     val availableProviders: List<String>,
   ) : PayoutAccountDestinations, Destination

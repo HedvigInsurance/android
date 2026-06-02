@@ -40,9 +40,6 @@ data class ChooseTierGraphDestination(
 
 internal sealed interface ChooseTierDestination {
   @Serializable
-  data object SelectTierAndDeductible : ChooseTierDestination, Destination
-
-  @Serializable
   data class Comparison(val comparisonParameters: ComparisonParameters) : ChooseTierDestination, Destination {
     companion object : DestinationNavTypeAware {
       override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())

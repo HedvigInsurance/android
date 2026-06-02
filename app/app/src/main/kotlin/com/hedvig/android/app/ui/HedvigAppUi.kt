@@ -43,7 +43,6 @@ import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.tokens.MotionTokens
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.navigation.core.TopLevelGraph
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
 import hedvig.resources.Res
@@ -52,7 +51,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HedvigAppUi(
   hedvigAppState: HedvigAppState,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -76,7 +74,7 @@ internal fun HedvigAppUi(
       NavigationSuite(
         navigationSuiteType = hedvigAppState.navigationSuiteType,
         topLevelGraphs = hedvigAppState.topLevelGraphs.collectAsState().value,
-        currentDestination = hedvigAppState.currentDestination,
+        currentTopLevelGraph = hedvigAppState.currentTopLevelGraph,
         onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
         getShowNotificationBadge = { graph ->
           if (graph == TopLevelGraph.Payments) showPaymentsBadge else false
@@ -93,7 +91,6 @@ internal fun HedvigAppUi(
           HedvigNavHost(
             hedvigAppState = hedvigAppState,
             globalSnackBarState = globalSnackBarState,
-            hedvigDeepLinkContainer = hedvigDeepLinkContainer,
             externalNavigator = externalNavigator,
             finishApp = finishApp,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,

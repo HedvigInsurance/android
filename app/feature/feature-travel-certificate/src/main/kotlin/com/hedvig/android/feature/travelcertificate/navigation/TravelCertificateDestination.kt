@@ -14,9 +14,6 @@ data object TravelCertificateGraphDestination : Destination
 
 internal sealed interface TravelCertificateDestination {
   @Serializable
-  data object TravelCertificateHistory : TravelCertificateDestination, Destination
-
-  @Serializable
   data object TravelCertificateChooseContract : TravelCertificateDestination, Destination
 
   @Serializable
@@ -51,5 +48,5 @@ internal sealed interface TravelCertificateDestination {
 }
 
 val travelCertificateCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
-  TravelCertificateDestination.TravelCertificateHistory::class,
+  TravelCertificateGraphDestination::class,
 )

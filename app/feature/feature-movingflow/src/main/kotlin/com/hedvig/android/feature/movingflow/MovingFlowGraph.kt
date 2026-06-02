@@ -1,8 +1,6 @@
 package com.hedvig.android.feature.movingflow
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.toRoute
+import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.movingflow.MovingFlowDestinations.EnterNewAddress
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationDestination
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModel
@@ -19,12 +17,10 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.typedPopBackStack
-import com.hedvig.android.navigation.compose.typedPopUpTo
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
@@ -81,145 +77,135 @@ internal sealed interface MovingFlowDestinations {
   }
 }
 
-fun NavGraphBuilder.movingFlowGraph(
-  navController: NavController,
-  goToChat: () -> Unit,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-) {
-  navdestination<SelectContractForMoving>(
-    deepLinks = navDeepLinks(hedvigDeepLinkContainer.moveContract),
-  ) {
+fun EntryProviderScope<Destination>.movingFlowGraph(navigator: Navigator, goToChat: () -> Unit) {
+  navdestination<SelectContractForMoving> {
     SelectContractDestination(
       viewModel = metroViewModel<SelectContractViewModel>(),
-      navigateUp = navController::navigateUp,
-      exitFlow = { navController.typedPopBackStack<SelectContractForMoving>(inclusive = true) },
+      navigateUp = navigator::navigateUp,
+      exitFlow = { navigator.popUpTo<SelectContractForMoving>(inclusive = true) },
       onNavigateToNextStep = { moveIntentId, shouldPopUp ->
-        navController.navigate(MovingFlowDestinations.HousingType(moveIntentId)) {
-          if (shouldPopUp) {
-            typedPopUpTo<SelectContractForMoving> {
-              inclusive = true
-            }
-          }
+        if (shouldPopUp) {
+          navigator.navigate<SelectContractForMoving>(
+            MovingFlowDestinations.HousingType(moveIntentId),
+            inclusive = true,
+          )
+        } else {
+          navigator.navigate(MovingFlowDestinations.HousingType(moveIntentId))
         }
       },
       goToChat = goToChat,
     )
   }
 
-  navgraph<MovingFlowGraphDestination>(
-    startDestination = MovingFlowDestinations.HousingType::class,
-  ) {
-    navdestination<MovingFlowDestinations.HousingType> {
-      val moveIntentId = it.toRoute<MovingFlowDestinations.HousingType>().moveIntentId
-      HousingTypeDestination(
-        viewModel = metroViewModel<HousingTypeViewModel>(),
-        navigateUp = navController::navigateUp,
-        exitFlow = {
-          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
-          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
-        },
-        onNavigateToNextStep = {
-          navController.navigate(EnterNewAddress(moveIntentId))
-        },
-      )
-    }
-    navdestination<EnterNewAddress> {
-      val moveIntentId = it.toRoute<EnterNewAddress>().moveIntentId
-      EnterNewAddressDestination(
-        viewModel = metroViewModel<EnterNewAddressViewModel>(),
-        navigateUp = navController::navigateUp,
-        popBackStack = navController::popBackStack,
-        exitFlow = {
-          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
-          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
-        },
-        onNavigateToAddHouseInformation = {
-          navController.navigate(MovingFlowDestinations.AddHouseInformation(moveIntentId))
-        },
-        onNavigateToChoseCoverageLevelAndDeductible = {
-          navController.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
-        },
-      )
-    }
-    navdestination<MovingFlowDestinations.AddHouseInformation> {
-      AddHouseInformationDestination(
-        viewModel = metroViewModel<AddHouseInformationViewModel>(),
-        navigateUp = navController::navigateUp,
-        popBackStack = navController::popBackStack,
-        exitFlow = {
-          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
-          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
-        },
-        onNavigateToChoseCoverageLevelAndDeductible = {
-          navController.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
-        },
-      )
-    }
-    navdestination<MovingFlowDestinations.ChoseCoverageLevelAndDeductible> { backStackEntry ->
-      val moveIntentId = backStackEntry.toRoute<MovingFlowDestinations.ChoseCoverageLevelAndDeductible>().moveIntentId
-      ChoseCoverageLevelAndDeductibleDestination(
-        viewModel = assistedMetroViewModel<
-          ChoseCoverageLevelAndDeductibleViewModel,
-          ChoseCoverageLevelAndDeductibleViewModel.Factory,
-        > {
-          create(moveIntentId)
-        },
-        navigateUp = navController::navigateUp,
-        popBackStack = navController::popBackStack,
-        exitFlow = {
-          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
-          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
-        },
-        onNavigateToSummaryScreen = { homeQuoteId ->
-          navController.navigate(MovingFlowDestinations.Summary(moveIntentId, homeQuoteId))
-        },
-        navigateToComparison = { parameters ->
-          navController.navigate(MovingFlowDestinations.CompareCoverage(parameters))
-        },
-      )
-    }
-
-    navdestination<MovingFlowDestinations.CompareCoverage>(
-      destinationNavTypeAware = MovingFlowDestinations.CompareCoverage.Companion,
-    ) { _ ->
-      val comparisonParameters = this.comparisonParameters
-      val viewModel: ComparisonViewModel =
-        assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
-          create(comparisonParameters)
-        }
-      ComparisonDestination(
-        viewModel = viewModel,
-        navigateUp = navController::navigateUp,
-      )
-    }
-
-    navdestination<MovingFlowDestinations.Summary> { backStackEntry ->
-      SummaryDestination(
-        viewModel = metroViewModel<SummaryViewModel>(),
-        navigateUp = navController::navigateUp,
-        navigateBack = navController::popBackStack,
-        exitFlow = {
-          navController.typedPopBackStack<MovingFlowGraphDestination>(inclusive = true)
-          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
-        },
-        onNavigateToFinishedScreen = { moveDate ->
-          navController.typedPopBackStack<SelectContractForMoving>(inclusive = true)
-          navController.navigate(MovingFlowDestinations.SuccessfulMove(moveDate)) {
-            typedPopUpTo<MovingFlowGraphDestination> {
-              inclusive = true
-            }
-          }
-        },
-      )
-    }
-  }
-  navdestination<MovingFlowDestinations.SuccessfulMove>(
-    MovingFlowDestinations.SuccessfulMove,
-  ) { backStackEntry ->
-    SuccessfulMoveDestination(
-      moveDate = backStackEntry.toRoute<MovingFlowDestinations.SuccessfulMove>().moveDate,
-      navigateUp = navController::navigateUp,
-      popBackStack = navController::popBackStack,
+  navdestination<MovingFlowDestinations.HousingType> {
+    val moveIntentId = this.moveIntentId
+    HousingTypeDestination(
+      viewModel = metroViewModel<HousingTypeViewModel>(),
+      navigateUp = navigator::navigateUp,
+      exitFlow = { navigator.exitMovingFlow() },
+      onNavigateToNextStep = {
+        navigator.navigate(EnterNewAddress(moveIntentId))
+      },
     )
   }
+  navdestination<EnterNewAddress> {
+    val moveIntentId = this.moveIntentId
+    EnterNewAddressDestination(
+      viewModel = assistedMetroViewModel<EnterNewAddressViewModel, EnterNewAddressViewModel.Factory> {
+        create(moveIntentId)
+      },
+      navigateUp = navigator::navigateUp,
+      popBackStack = navigator::popBackStack,
+      exitFlow = { navigator.exitMovingFlow() },
+      onNavigateToAddHouseInformation = {
+        navigator.navigate(MovingFlowDestinations.AddHouseInformation(moveIntentId))
+      },
+      onNavigateToChoseCoverageLevelAndDeductible = {
+        navigator.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
+      },
+    )
+  }
+  navdestination<MovingFlowDestinations.AddHouseInformation> {
+    val moveIntentId = this.moveIntentId
+    AddHouseInformationDestination(
+      viewModel = assistedMetroViewModel<AddHouseInformationViewModel, AddHouseInformationViewModel.Factory> {
+        create(moveIntentId)
+      },
+      navigateUp = navigator::navigateUp,
+      popBackStack = navigator::popBackStack,
+      exitFlow = { navigator.exitMovingFlow() },
+      onNavigateToChoseCoverageLevelAndDeductible = {
+        navigator.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
+      },
+    )
+  }
+  navdestination<MovingFlowDestinations.ChoseCoverageLevelAndDeductible> {
+    val moveIntentId = this.moveIntentId
+    ChoseCoverageLevelAndDeductibleDestination(
+      viewModel = assistedMetroViewModel<
+        ChoseCoverageLevelAndDeductibleViewModel,
+        ChoseCoverageLevelAndDeductibleViewModel.Factory,
+      > {
+        create(moveIntentId)
+      },
+      navigateUp = navigator::navigateUp,
+      popBackStack = navigator::popBackStack,
+      exitFlow = { navigator.exitMovingFlow() },
+      onNavigateToSummaryScreen = { homeQuoteId ->
+        navigator.navigate(MovingFlowDestinations.Summary(moveIntentId, homeQuoteId))
+      },
+      navigateToComparison = { parameters ->
+        navigator.navigate(MovingFlowDestinations.CompareCoverage(parameters))
+      },
+    )
+  }
+
+  navdestination<MovingFlowDestinations.CompareCoverage> {
+    val comparisonParameters = this.comparisonParameters
+    val viewModel: ComparisonViewModel =
+      assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
+        create(comparisonParameters)
+      }
+    ComparisonDestination(
+      viewModel = viewModel,
+      navigateUp = navigator::navigateUp,
+    )
+  }
+
+  navdestination<MovingFlowDestinations.Summary> {
+    val summaryRoute = this
+    SummaryDestination(
+      viewModel = assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
+        create(summaryRoute)
+      },
+      navigateUp = navigator::navigateUp,
+      navigateBack = navigator::popBackStack,
+      exitFlow = { navigator.exitMovingFlow() },
+      onNavigateToFinishedScreen = { moveDate ->
+        navigator.popUpTo<SelectContractForMoving>(inclusive = true)
+        navigator.navigate<MovingFlowDestinations.HousingType>(
+          MovingFlowDestinations.SuccessfulMove(moveDate),
+          inclusive = true,
+        )
+      },
+    )
+  }
+
+  navdestination<MovingFlowDestinations.SuccessfulMove> {
+    SuccessfulMoveDestination(
+      moveDate = moveDate,
+      navigateUp = navigator::navigateUp,
+      popBackStack = navigator::popBackStack,
+    )
+  }
+}
+
+/**
+ * Exits the moving flow regardless of which entry seeded it: the flow is rooted either at
+ * [SelectContractForMoving] (deep-link entry) or at [MovingFlowDestinations.HousingType] (direct
+ * entry), so both are popped inclusively to leave nothing behind.
+ */
+private fun Navigator.exitMovingFlow() {
+  popUpTo<MovingFlowDestinations.HousingType>(inclusive = true)
+  popUpTo<SelectContractForMoving>(inclusive = true)
 }

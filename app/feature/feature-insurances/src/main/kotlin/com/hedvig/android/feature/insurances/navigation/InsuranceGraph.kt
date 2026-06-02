@@ -1,8 +1,7 @@
 package com.hedvig.android.feature.insurances.navigation
 
 import androidx.lifecycle.compose.dropUnlessResumed
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.contract.ContractId
@@ -16,16 +15,17 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDesti
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.android.navigation.compose.navDeepLinks
+import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.compose.Navigator
+import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun NavGraphBuilder.insuranceGraph(
-  nestedGraphs: NavGraphBuilder.() -> Unit,
-  navController: NavController,
+fun EntryProviderScope<Destination>.insuranceGraph(
+  nestedGraphs: EntryProviderScope<Destination>.() -> Unit,
+  navigator: Navigator,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
@@ -36,34 +36,28 @@ fun NavGraphBuilder.insuranceGraph(
   startEditCoOwners: (contractId: String) -> Unit,
   startEditCoInsuredAddMissingInfo: (contractId: String) -> Unit,
   startEditCoOwnersAddMissingInfo: (contractId: String) -> Unit,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   imageLoader: ImageLoader,
   onNavigateToAddonPurchaseFlow: (List<ContractId>, AvailableAddon?) -> Unit,
   onNavigateToRemoveAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToChipIdScreen: (String) -> Unit,
 ) {
-  navgraph<InsurancesDestination.Graph>(
+  navgraph(
     startDestination = InsurancesDestination.Insurances::class,
   ) {
     nestedGraphs()
     navdestination<InsurancesDestination.Insurances>(
-      deepLinks = navDeepLinks(
-        hedvigDeepLinkContainer.insurances,
-        hedvigDeepLinkContainer.contractWithoutContractId,
-      ),
-      enterTransition = { MotionDefaults.fadeThroughEnter },
-      exitTransition = { MotionDefaults.fadeThroughExit },
+      metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: InsuranceViewModel = metroViewModel()
       InsuranceDestination(
         viewModel = viewModel,
         onInsuranceCardClick = dropUnlessResumed { contractId: String ->
-          navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
+          navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
         onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
         navigateToCancelledInsurances = dropUnlessResumed {
-          navController.navigate(InsurancesDestinations.TerminatedInsurances)
+          navigator.navigate(InsurancesDestinations.TerminatedInsurances)
         },
         onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
         imageLoader = imageLoader,
@@ -72,9 +66,7 @@ fun NavGraphBuilder.insuranceGraph(
         },
       )
     }
-    navdestination<InsurancesDestinations.InsuranceContractDetail>(
-      deepLinks = navDeepLinks(hedvigDeepLinkContainer.contract),
-    ) {
+    navdestination<InsurancesDestinations.InsuranceContractDetail> {
       val contractDetail = this
       val viewModel: ContractDetailViewModel =
         assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
@@ -96,8 +88,8 @@ fun NavGraphBuilder.insuranceGraph(
         },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         openUrl = openUrl,
-        navigateUp = navController::navigateUp,
-        navigateBack = navController::popBackStack,
+        navigateUp = navigator::navigateUp,
+        navigateBack = navigator::popBackStack,
         imageLoader = imageLoader,
         onChangeTierClick = dropUnlessResumed { contractId: String ->
           onNavigateToStartChangeTier(contractId)
@@ -115,9 +107,9 @@ fun NavGraphBuilder.insuranceGraph(
       TerminatedContractsDestination(
         viewModel = viewModel,
         navigateToContractDetail = dropUnlessResumed { contractId: String ->
-          navController.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
+          navigator.navigate(InsurancesDestinations.InsuranceContractDetail(contractId))
         },
-        navigateUp = navController::navigateUp,
+        navigateUp = navigator::navigateUp,
         imageLoader = imageLoader,
       )
     }
