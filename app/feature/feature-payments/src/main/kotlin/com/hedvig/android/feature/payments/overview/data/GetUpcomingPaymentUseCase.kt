@@ -9,7 +9,6 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
@@ -19,8 +18,6 @@ import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.TimeZone
@@ -34,9 +31,7 @@ interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
 }
 
-@Inject
-@SingleIn(AppScope::class)
-data class GetUpcomingPaymentUseCaseImpl(
+internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
@@ -111,9 +106,7 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
   },
 )
 
-@Inject
-@SingleIn(AppScope::class)
-class GetUpcomingPaymentUseCaseDemo(
+internal class GetUpcomingPaymentUseCaseDemo(
   private val clock: Clock,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> {
