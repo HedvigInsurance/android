@@ -21,8 +21,8 @@ import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationP
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceDestination
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowDestination
 import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
-import com.hedvig.android.feature.chat.navigation.ChatDestination
-import com.hedvig.android.feature.chat.navigation.ChatDestinations.Chat
+import com.hedvig.android.feature.chat.navigation.ChatKey
+import com.hedvig.android.feature.chat.navigation.InboxKey
 import com.hedvig.android.feature.chat.navigation.cbmChatGraph
 import com.hedvig.android.feature.chip.id.navigation.ChipIdGraphDestination
 import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
@@ -105,9 +105,9 @@ internal fun HedvigNavHost(
 
   val navigateToConnectPayment = { navigator.navigate(TrustlyDestination) }
   val navigateToPayoutAccount = { navigator.navigate(PayoutAccountDestination.Graph) }
-  val navigateToInbox = { navigator.navigate(ChatDestination) }
-  val navigateToNewConversation = { navigator.navigate(Chat(Uuid.randomUUID().toString())) }
-  val navigateToConversation = { conversationId: String -> navigator.navigate(Chat(conversationId)) }
+  val navigateToInbox = { navigator.navigate(InboxKey) }
+  val navigateToNewConversation = { navigator.navigate(ChatKey(Uuid.randomUUID().toString())) }
+  val navigateToConversation = { conversationId: String -> navigator.navigate(ChatKey(conversationId)) }
   val navigateToMovingFlow = { navigator.navigate(SelectContractForMoving) }
   val onNavigateToImageViewer = { imageUrl: String, cacheKey: String ->
     navigator.navigate(ImageViewer(imageUrl, cacheKey))
@@ -318,7 +318,7 @@ internal fun HedvigNavHost(
         navigator.navigate(ClaimOverviewDestination(claimId))
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
     )
     addonPurchaseNavGraph(
       navigator = navigator,

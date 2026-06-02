@@ -15,6 +15,6 @@ internal class ChatDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.chat + container.inbox, ChatDestination.serializer()) +
-      uriDeepLinkMatchers(container.conversation, ChatDestinations.Chat.serializer())
+    uriDeepLinkMatchers(container.chat + container.inbox, InboxKey.serializer()) +
+      uriDeepLinkMatchers(container.conversation, ChatKey.serializer())
 }

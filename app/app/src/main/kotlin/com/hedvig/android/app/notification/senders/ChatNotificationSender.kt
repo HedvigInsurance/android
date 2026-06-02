@@ -20,8 +20,8 @@ import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.feature.chat.navigation.ChatDestination
-import com.hedvig.android.feature.chat.navigation.ChatDestinations
+import com.hedvig.android.feature.chat.navigation.ChatKey
+import com.hedvig.android.feature.chat.navigation.InboxKey
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.logger.LogPriority.ERROR
@@ -48,8 +48,8 @@ object CurrentDestinationInMemoryStorage {
 }
 
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
-  ChatDestinations.Chat::class,
-  ChatDestination::class,
+  ChatKey::class,
+  InboxKey::class,
   HomeKey::class,
   ClaimDetailDestination.ClaimOverviewDestination::class,
 )

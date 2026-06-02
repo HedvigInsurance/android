@@ -4,11 +4,9 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-object ChatDestination : HedvigNavKey
+data object InboxKey : HedvigNavKey
 
-sealed interface ChatDestinations {
-  @Serializable
-  data class Chat(
-    val conversationId: String,
-  ) : ChatDestinations, HedvigNavKey
-}
+@Serializable
+data class ChatKey(
+  val conversationId: String,
+) : HedvigNavKey
