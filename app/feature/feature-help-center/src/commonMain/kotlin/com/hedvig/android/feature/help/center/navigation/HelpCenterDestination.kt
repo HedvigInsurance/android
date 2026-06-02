@@ -11,51 +11,49 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HelpCenterDestination : HedvigNavKey
+data object HelpCenterKey : HedvigNavKey
 
-internal sealed interface HelpCenterDestinations {
-  @Serializable
-  data object HelpCenter : HelpCenterDestinations, HedvigNavKey
+@Serializable
+internal data object HelpCenterHomeKey : HedvigNavKey
 
-  @Serializable
-  data class Topic(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
-    @SerialName("id")
-    val topicId: String = "",
-  ) : HelpCenterDestinations, HedvigNavKey
+@Serializable
+internal data class HelpCenterTopicKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
+  @SerialName("id")
+  val topicId: String = "",
+) : HedvigNavKey
 
-  @Serializable
-  data class Question(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
-    @SerialName("id")
-    val questionId: String = "",
-  ) : HelpCenterDestinations, HedvigNavKey
+@Serializable
+internal data class HelpCenterQuestionKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
+  @SerialName("id")
+  val questionId: String = "",
+) : HedvigNavKey
 
-  @Serializable
-  data class Emergency(
-    val deflectData: DeflectData,
-  ) : HelpCenterDestinations, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<DeflectData>())
-    }
+@Serializable
+internal data class EmergencyKey(
+  val deflectData: DeflectData,
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<DeflectData>())
   }
-
-  @Serializable
-  data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
-    }
-  }
-
-  @Serializable
-  data object PuppyGuide : HelpCenterDestinations, HedvigNavKey
-
-  @Serializable
-  data class PuppyGuideArticle(val storyName: String) : HelpCenterDestinations, HedvigNavKey
 }
 
+@Serializable
+internal data class FirstVetKey(val sections: List<FirstVetSection>) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
+  }
+}
+
+@Serializable
+internal data object PuppyGuideKey : HedvigNavKey
+
+@Serializable
+internal data class PuppyGuideArticleKey(val storyName: String) : HedvigNavKey
+
 val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  HelpCenterDestinations.HelpCenter::class,
-  HelpCenterDestinations.Topic::class,
-  HelpCenterDestinations.Question::class,
+  HelpCenterHomeKey::class,
+  HelpCenterTopicKey::class,
+  HelpCenterQuestionKey::class,
 )

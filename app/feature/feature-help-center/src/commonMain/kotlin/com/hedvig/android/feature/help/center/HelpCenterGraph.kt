@@ -11,9 +11,13 @@ import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination.Fi
 import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination.QuickLinkSickAbroad
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
-import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
-import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations
-import com.hedvig.android.feature.help.center.navigation.HelpCenterDestinations.Emergency
+import com.hedvig.android.feature.help.center.navigation.EmergencyKey
+import com.hedvig.android.feature.help.center.navigation.FirstVetKey
+import com.hedvig.android.feature.help.center.navigation.HelpCenterHomeKey
+import com.hedvig.android.feature.help.center.navigation.HelpCenterQuestionKey
+import com.hedvig.android.feature.help.center.navigation.HelpCenterTopicKey
+import com.hedvig.android.feature.help.center.navigation.PuppyGuideArticleKey
+import com.hedvig.android.feature.help.center.navigation.PuppyGuideKey
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
@@ -23,14 +27,15 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewMod
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.navigateUp
+import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   onNavigateUp: () -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateToInbox: () -> Unit,
@@ -40,17 +45,17 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
   imageLoader: ImageLoader,
 ) {
   navgraph(
-    startDestination = HelpCenterDestinations.HelpCenter::class,
+    startDestination = HelpCenterHomeKey::class,
   ) {
-    navdestination<HelpCenterDestinations.HelpCenter> {
+    navdestination<HelpCenterHomeKey> {
       val viewModel = metroViewModel<HelpCenterViewModel>()
       HelpCenterHomeDestination(
         viewModel = viewModel,
         onNavigateToTopic = dropUnlessResumed { topic ->
-          navigateToTopic(topic, navigator)
+          navigateToTopic(topic, backStack)
         },
         onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, navigator)
+          navigateToQuestion(question, backStack)
         },
         onNavigateToQuickLink = dropUnlessResumed { destination ->
           when (destination) {
@@ -61,15 +66,11 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
             is InnerHelpCenterDestination -> {
               when (destination) {
                 is FirstVet -> {
-                  navigator.navigate(HelpCenterDestinations.FirstVet(destination.sections))
+                  backStack.add(FirstVetKey(destination.sections))
                 }
 
                 is QuickLinkSickAbroad -> {
-                  navigator.navigate(
-                    Emergency(
-                      destination.deflectData,
-                    ),
-                  )
+                  backStack.add(EmergencyKey(destination.deflectData))
                 }
               }
             }
@@ -83,12 +84,12 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
         },
         onNavigateUp = onNavigateUp,
         onNavigateToPuppyGuide = dropUnlessResumed {
-          navigator.navigate(HelpCenterDestinations.PuppyGuide)
+          backStack.add(PuppyGuideKey)
         },
       )
     }
 
-    navdestination<HelpCenterDestinations.Topic> {
+    navdestination<HelpCenterTopicKey> {
       val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
       val topicId = topicId
       val helpCenterTopicViewModel =
@@ -99,15 +100,15 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         helpCenterTopicViewModel = helpCenterTopicViewModel,
         onNavigateToQuestion = dropUnlessResumed { question ->
-          navigateToQuestion(question, navigator)
+          navigateToQuestion(question, backStack)
         },
-        onNavigateUp = navigator::navigateUp,
-        onNavigateBack = navigator::popBackStack,
+        onNavigateUp = backStack::navigateUp,
+        onNavigateBack = backStack::popBackStack,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       )
     }
-    navdestination<HelpCenterDestinations.Question> {
+    navdestination<HelpCenterQuestionKey> {
       val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
       val questionId = questionId
       val helpCenterQuestionViewModel =
@@ -118,23 +119,23 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
         showNavigateToInboxViewModel = showNavigateToInboxViewModel,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-        onNavigateUp = navigator::navigateUp,
-        onNavigateBack = navigator::popBackStack,
+        onNavigateUp = backStack::navigateUp,
+        onNavigateBack = backStack::popBackStack,
         helpCenterQuestionViewModel = helpCenterQuestionViewModel,
       )
     }
-    navdestination<HelpCenterDestinations.FirstVet> {
+    navdestination<FirstVetKey> {
       FirstVetDestination(
         sections = sections,
-        navigateUp = navigator::navigateUp,
-        navigateBack = navigator::popBackStack,
+        navigateUp = backStack::navigateUp,
+        navigateBack = backStack::popBackStack,
         openUrl = openUrl,
       )
     }
-    navdestination<Emergency> {
+    navdestination<EmergencyKey> {
       EmergencyDestination(
         deflect = deflectData,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         openUrl = openUrl,
         tryToDialPhone = tryToDialPhone,
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
@@ -142,23 +143,19 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
       )
     }
 
-    navdestination<HelpCenterDestinations.PuppyGuide> {
+    navdestination<PuppyGuideKey> {
       val viewModel = metroViewModel<PuppyGuideViewModel>()
       PuppyGuideDestination(
         viewModel,
-        onNavigateUp = navigator::navigateUp,
+        onNavigateUp = backStack::navigateUp,
         onNavigateToArticle = { story ->
-          navigator.navigate(
-            HelpCenterDestinations.PuppyGuideArticle(
-              story.name,
-            ),
-          )
+          backStack.add(PuppyGuideArticleKey(story.name))
         },
         imageLoader = imageLoader,
       )
     }
 
-    navdestination<HelpCenterDestinations.PuppyGuideArticle> {
+    navdestination<PuppyGuideArticleKey> {
       val storyName = storyName
       val viewModel =
         assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
@@ -166,23 +163,17 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
         }
       PuppyArticleDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         imageLoader = imageLoader,
       )
     }
   }
 }
 
-private fun navigateToTopic(topicId: String, navigator: Navigator) {
-  val destination = HelpCenterDestinations.Topic(
-    topicId = topicId,
-  )
-  navigator.navigate(destination)
+private fun navigateToTopic(topicId: String, backStack: MutableList<HedvigNavKey>) {
+  backStack.add(HelpCenterTopicKey(topicId = topicId))
 }
 
-private fun navigateToQuestion(questionId: String, navigator: Navigator) {
-  val destination = HelpCenterDestinations.Question(
-    questionId = questionId,
-  )
-  navigator.navigate(destination)
+private fun navigateToQuestion(questionId: String, backStack: MutableList<HedvigNavKey>) {
+  backStack.add(HelpCenterQuestionKey(questionId = questionId))
 }

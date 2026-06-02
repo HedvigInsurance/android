@@ -51,7 +51,7 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDes
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTermination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.feature.help.center.helpCenterGraph
-import com.hedvig.android.feature.help.center.navigation.HelpCenterDestination
+import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeGraph
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewer
 import com.hedvig.android.feature.imageviewer.navigation.imageViewerGraph
@@ -161,7 +161,7 @@ internal fun HedvigNavHost(
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
         navigator.navigate(CoInsuredAddInfo(contractId, type))
       },
-      navigateToHelpCenter = { navigator.navigate(HelpCenterDestination) },
+      navigateToHelpCenter = { navigator.navigate(HelpCenterKey) },
       navigateToClaimChat = {
         navigator.navigate(ClaimChatDestination(messageId = null, isDevelopmentFlow = false))
       },
@@ -350,7 +350,7 @@ internal fun HedvigNavHost(
     connectPaymentGraph(navigator = navigator)
     editCoInsuredGraph(navigator)
     helpCenterGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       onNavigateUp = navigator::navigateUp,
       onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
         val destination: HedvigNavKey = when (quickLinkDestination) {
