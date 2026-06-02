@@ -3,7 +3,7 @@ package com.hedvig.android.app
 import android.app.Activity
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
-import android.app.assist.AssistContent
+import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
@@ -20,18 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
+import com.hedvig.android.app.navigation.rememberHedvigTopLevelBackStacks
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
@@ -46,11 +44,9 @@ import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.navigation.core.allDeepLinkUriPatterns
+import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
-import com.stylianosgakis.navigation.recents.url.sharing.provideAssistContent
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
@@ -72,7 +68,7 @@ class MainActivity : AppCompatActivity() {
 
   @Inject private lateinit var hedvigBuildConstants: HedvigBuildConstants
 
-  @Inject private lateinit var hedvigDeepLinkContainer: HedvigDeepLinkContainer
+  @Inject private lateinit var deepLinkMatcherProviders: Set<DeepLinkMatcherProvider>
 
   @Inject private lateinit var imageLoader: ImageLoader
 
@@ -93,7 +89,12 @@ class MainActivity : AppCompatActivity() {
 
   @Inject private lateinit var missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider
 
-  private var navController: NavController? = null
+  /**
+   * External/notification VIEW intents are forwarded here as raw URI strings. [HedvigApp] collects them and routes
+   * each through the in-app deep-link matcher once the member is logged in. Replaces Nav2's automatic launch-intent
+   * deep-link handling on the (now removed) NavController.
+   */
+  private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
 
   // Shows the splash screen as long as the auth status or the demo mode status is still undetermined
   private val showSplash = MutableStateFlow(true)
@@ -144,6 +145,10 @@ class MainActivity : AppCompatActivity() {
       }
     }
 
+    if (savedInstanceState == null) {
+      handleDeepLinkIntent(intent)
+    }
+
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
       CompositionLocalProvider(
@@ -152,15 +157,10 @@ class MainActivity : AppCompatActivity() {
         val context = LocalContext.current
         RiveInitializer.init(context)
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
-        val navHostController = rememberNavController().also { navController = it }
-        LifecycleStartEffect(navHostController) {
-          navController = navHostController
-          onStopOrDispose {
-            navController = null
-          }
-        }
+        val backStacks = rememberHedvigTopLevelBackStacks()
         HedvigApp(
-          navHostController = navHostController,
+          backStacks = backStacks,
+          deepLinkChannel = deepLinkChannel,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
           getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
           splashIsRemovedSignal = splashIsRemovedSignal,
           authTokenService = authTokenService,
           demoManager = demoManager,
-          hedvigDeepLinkContainer = hedvigDeepLinkContainer,
+          deepLinkMatcherProviders = deepLinkMatcherProviders,
           imageLoader = imageLoader,
           simpleVideoCache = simpleVideoCache,
           languageService = languageService,
@@ -192,12 +192,17 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  override fun onProvideAssistContent(outContent: AssistContent) {
-    super.onProvideAssistContent(outContent)
-    navController?.provideAssistContent(outContent, hedvigDeepLinkContainer.allDeepLinkUriPatterns)
-    outContent.webUri?.let {
-      logcat { "Providing a deep link to current screen: $it" }
-    }
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+    handleDeepLinkIntent(intent)
+  }
+
+  private fun handleDeepLinkIntent(intent: Intent) {
+    if (intent.action != Intent.ACTION_VIEW) return
+    val uri = intent.data?.toString() ?: return
+    logcat { "MainActivity received deep-link intent for uri:$uri" }
+    deepLinkChannel.trySend(uri)
   }
 }
 

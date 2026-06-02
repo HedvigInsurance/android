@@ -12,7 +12,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -22,10 +24,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavHostController
 import coil3.ImageLoader
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
+import com.hedvig.android.app.navigation.HedvigTopLevelBackStacks
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -39,13 +40,12 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
-import com.hedvig.android.feature.login.navigation.LoginDestination
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
-import com.hedvig.android.navigation.compose.typedHasRoute
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
+import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
+import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +64,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigApp(
-  navHostController: NavHostController,
+  backStacks: HedvigTopLevelBackStacks,
+  deepLinkChannel: Channel<String>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
@@ -72,7 +73,7 @@ internal fun HedvigApp(
   splashIsRemovedSignal: Channel<Unit>,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
-  hedvigDeepLinkContainer: HedvigDeepLinkContainer,
+  deepLinkMatcherProviders: Set<DeepLinkMatcherProvider>,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
   languageService: LanguageService,
@@ -88,11 +89,11 @@ internal fun HedvigApp(
   missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
 ) {
   val hedvigAppState = rememberHedvigAppState(
+    backStacks = backStacks,
     windowSizeClass = windowSizeClass,
     settingsDataStore = settingsDataStore,
     getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
     featureManager = featureManager,
-    navHostController = navHostController,
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
   val darkTheme = hedvigAppState.darkTheme
@@ -110,10 +111,22 @@ internal fun HedvigApp(
         tryShowAppStoreReviewDialog,
       )
       LogoutOnInvalidCredentialsEffect(hedvigAppState, authTokenService, demoManager)
+      val deepLinkMatcher = remember(deepLinkMatcherProviders) {
+        HedvigDeepLinkMatcher(deepLinkMatcherProviders.flatMap { it.matchers() })
+      }
       val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
-        navController = hedvigAppState.navController,
+        matcher = deepLinkMatcher,
+        navigator = backStacks.navigator,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
+      LaunchedEffect(deepLinkFirstUriHandler, backStacks, deepLinkChannel) {
+        deepLinkChannel.receiveAsFlow().collect { uri ->
+          // Buffer external/notification deep links until the member is logged in, so they don't
+          // land on (and get cleared with) the login back stack.
+          snapshotFlow { backStacks.isLoggedIn }.first { it }
+          deepLinkFirstUriHandler.openUri(uri)
+        }
+      }
       val scope = rememberCoroutineScope()
       val openCrossSellUrl: (String) -> Unit = { url ->
         openCrossSellUrl(scope, getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, url)
@@ -138,7 +151,6 @@ internal fun HedvigApp(
         ) {
           HedvigAppUi(
             hedvigAppState = hedvigAppState,
-            hedvigDeepLinkContainer = hedvigDeepLinkContainer,
             externalNavigator = externalNavigator,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             openUrl = deepLinkFirstUriHandler::openUri,
@@ -252,19 +264,15 @@ private fun LogoutOnInvalidCredentialsEffect(
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
         demoManager.isDemoMode().distinctUntilChanged(),
-        hedvigAppState.navController.currentBackStackEntryFlow,
-      ) { authStatus: AuthStatus, isDemoMode: Boolean, navBackStackEntry ->
-        val isLoggedOut = navBackStackEntry.destination.hierarchy.any { navDestination ->
-          navDestination.typedHasRoute<LoginDestination>()
-        }
+        snapshotFlow { hedvigAppState.backStacks.isLoggedIn },
+      ) { authStatus: AuthStatus, isDemoMode: Boolean, isLoggedIn: Boolean ->
         logcat {
           "LogoutOnInvalidCredentialsEffect: " +
             "authStatus:$authStatus | " +
             "isDemoMode:$isDemoMode | " +
-            "isLoggedOut:$isLoggedOut | " +
-            "currentRoute:${navBackStackEntry.destination.route}"
+            "isLoggedIn:$isLoggedIn"
         }
-        if (isLoggedOut) {
+        if (!isLoggedIn) {
           return@combine
         }
         if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
