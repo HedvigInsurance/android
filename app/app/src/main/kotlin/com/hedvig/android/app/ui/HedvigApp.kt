@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
+import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.HedvigBackStackController
@@ -64,7 +65,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigApp(
-  backStacks: HedvigTopLevelBackStacks,
+  backStackController: HedvigBackStackController,
   deepLinkChannel: Channel<String>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
@@ -87,6 +88,7 @@ internal fun HedvigApp(
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
+  dismissSplashScreen: () -> Unit,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     backStackController = backStackController,
@@ -95,6 +97,14 @@ internal fun HedvigApp(
     getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
     featureManager = featureManager,
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+  )
+  DetermineStartDestinationEffect(
+    backStackController = backStackController,
+    authTokenService = authTokenService,
+    demoManager = demoManager,
+    onLoggedIn = hedvigAppState::navigateToLoggedIn,
+    onLoggedOut = hedvigAppState::navigateToLoggedOut,
+    dismissSplashScreen = dismissSplashScreen,
   )
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
@@ -183,6 +193,36 @@ private fun openCrossSellUrl(
       url
     }
     deepLinkFirstUriHandler.openUri(finalUrl)
+  }
+}
+
+/**
+ * Holds the splash screen until the auth state resolves, then makes the back stack root match it
+ * before [dismissSplashScreen] lets the splash go — so the first frame shown is the correct scene
+ * (Home when logged in, Login when logged out) instead of the seeded login root.
+ *
+ * On process-death restore the back stack already reflects the previous session, so a matching root
+ * is left untouched and any deeper stack is preserved.
+ */
+@Composable
+private fun DetermineStartDestinationEffect(
+  backStackController: HedvigBackStackController,
+  authTokenService: AuthTokenService,
+  demoManager: DemoManager,
+  onLoggedIn: () -> Unit,
+  onLoggedOut: () -> Unit,
+  dismissSplashScreen: () -> Unit,
+) {
+  LaunchedEffect(Unit) {
+    val showLoggedInScene = raceN(
+      { authTokenService.authStatus.filterNotNull().first() is AuthStatus.LoggedIn },
+      { demoManager.isDemoMode().first { it } },
+    ).fold({ it }, { it })
+    when {
+      showLoggedInScene && !backStackController.isLoggedIn -> onLoggedIn()
+      !showLoggedInScene && backStackController.isLoggedIn -> onLoggedOut()
+    }
+    dismissSplashScreen()
   }
 }
 

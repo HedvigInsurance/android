@@ -25,13 +25,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.savedstate.serialization.SavedStateConfiguration
-import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
-import com.hedvig.android.app.navigation.rememberHedvigTopLevelBackStacks
+import com.hedvig.android.app.navigation.rememberHedvigBackStackController
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
@@ -57,7 +56,6 @@ import java.util.Locale
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.SerializersModule
@@ -141,17 +139,6 @@ class MainActivity : AppCompatActivity() {
         }
       }
     }
-    lifecycleScope.launch {
-      lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-        if (!showSplash.value) return@repeatOnLifecycle
-        raceN(
-          { authTokenService.authStatus.first { it != null } },
-          { demoManager.isDemoMode().first { it } },
-        )
-        showSplash.update { false }
-      }
-    }
-
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
     }
@@ -199,6 +186,7 @@ class MainActivity : AppCompatActivity() {
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
           missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+          dismissSplashScreen = { showSplash.update { false } },
         )
       }
     }
