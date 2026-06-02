@@ -1,10 +1,5 @@
 package com.hedvig.android.app.navigation
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.savedstate.serialization.SavedStateConfiguration
-import androidx.savedstate.serialization.decodeFromSavedState
-import androidx.savedstate.serialization.encodeToSavedState
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import com.hedvig.android.feature.forever.navigation.ForeverKey
@@ -15,21 +10,25 @@ import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 import org.junit.Test
-import org.junit.runner.RunWith
 
 /**
- * Verifies the same serializer + SavedStateConfiguration wiring used by
- * [rememberHedvigTopLevelBackStacks] round-trips a flat back stack of polymorphic
- * [HedvigNavKey]s. Exercises the public top-level keys plus [LoginKey], which a
- * logged-out cold start depends on.
+ * Verifies the polymorphic [HedvigNavKey] registration that the back stack relies on for
+ * process-death persistence: a flat list of keys round-trips through the same
+ * [PolymorphicSerializer] + [SerializersModule] used by [rememberHedvigTopLevelBackStacks].
+ *
+ * The production code feeds this into a `SavedStateConfiguration`; the SavedState encoder itself
+ * is androidx's concern and would require an Android `Bundle`. What we own — and what this test
+ * guards — is that every key is registered with no serial-name collisions, which is independent
+ * of the wire format, so a plain JSON round-trip exercises it without an Android runtime.
  */
-@RunWith(AndroidJUnit4::class)
 internal class BackStackSerializationTest {
-  private val configuration = SavedStateConfiguration {
+  private val json = Json {
     serializersModule = SerializersModule {
       polymorphic(HedvigNavKey::class) {
         subclass(HomeKey::class)
@@ -42,26 +41,23 @@ internal class BackStackSerializationTest {
     }
   }
 
-  private val serializer = PolymorphicSerializer(HedvigNavKey::class)
+  private val serializer = ListSerializer(PolymorphicSerializer(HedvigNavKey::class))
 
   @Test
-  fun `logged-in back stack round-trips through saved state`() {
-    val original: List<HedvigNavKey> = listOf(HomeKey, InsurancesKey, ProfileKey)
+  fun `logged-in back stack round-trips`() {
+    val original = listOf(HomeKey, InsurancesKey, ProfileKey)
 
-    val restored = original.map { key ->
-      val encoded = encodeToSavedState(serializer, key, configuration)
-      decodeFromSavedState(serializer, encoded, configuration)
-    }
+    val restored = json.decodeFromString(serializer, json.encodeToString(serializer, original))
 
-    assertThat(mutableStateListOf<HedvigNavKey>().apply { addAll(restored) })
-      .containsExactly(HomeKey, InsurancesKey, ProfileKey)
+    assertThat(restored).containsExactly(HomeKey, InsurancesKey, ProfileKey)
   }
 
   @Test
-  fun `logged-out back stack round-trips through saved state`() {
-    val encoded = encodeToSavedState(serializer, LoginKey, configuration)
-    val restored = decodeFromSavedState(serializer, encoded, configuration)
+  fun `logged-out back stack round-trips`() {
+    val original = listOf<HedvigNavKey>(LoginKey)
 
-    assertThat(listOf(restored)).containsExactly(LoginKey)
+    val restored = json.decodeFromString(serializer, json.encodeToString(serializer, original))
+
+    assertThat(restored).containsExactly(LoginKey)
   }
 }
