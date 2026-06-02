@@ -15,5 +15,5 @@ import dev.zacsweers.metro.binding
 internal class GetTravelAddonBannerInfoUseCaseProvider(
   override val demoManager: DemoManager,
   override val demoImpl: DemoGetAddonBannerInfoUseCase,
-  override val prodImpl: GetAddonBannerInfoUseCase,
+  override val prodImpl: GetAddonBannerInfoUseCaseImpl,
 ) : ProdOrDemoProvider<GetAddonBannerInfoUseCase>

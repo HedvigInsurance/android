@@ -15,7 +15,6 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +28,6 @@ interface GetAddonBannerInfoUseCase {
   fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>>
 }
 
-@ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
 internal class GetAddonBannerInfoUseCaseImpl(

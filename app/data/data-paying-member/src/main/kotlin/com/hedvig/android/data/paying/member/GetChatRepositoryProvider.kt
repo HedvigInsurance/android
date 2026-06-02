@@ -15,5 +15,5 @@ import dev.zacsweers.metro.binding
 internal class GetOnlyHasNonPayingContractsUseCaseProvider(
   override val demoManager: DemoManager,
   override val demoImpl: GetOnlyHasNonPayingContractsUseCaseDemo,
-  override val prodImpl: GetOnlyHasNonPayingContractsUseCase,
+  override val prodImpl: GetOnlyHasNonPayingContractsUseCaseImpl,
 ) : ProdOrDemoProvider<GetOnlyHasNonPayingContractsUseCase>
