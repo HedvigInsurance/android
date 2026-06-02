@@ -12,7 +12,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 
 /**
@@ -24,13 +23,13 @@ import com.hedvig.android.navigation.core.TopLevelGraph
  *   own drill-down depth across tab switches (the per-tab key list persists; only the currently
  *   displayed tab's entries are alive in the composition).
  *
- * [currentBackStack] is the list actually rendered. [navigator] is a single stable [Navigator] that
- * always forwards to whichever list is current, so the ~25 feature graph builders capture it once
- * and keep mutating the right stack as tabs switch.
+ * [currentBackStack] is the list actually rendered. [backStack] is a single stable forwarding list
+ * that always forwards to whichever list is current, so the ~25 feature graph builders capture it
+ * once and keep mutating the right stack as tabs switch.
  *
  * Note: we cannot use Nav3's `rememberNavBackStack` here — it is typed `NavBackStack<NavKey>`, while
- * the whole feature DSL (`EntryProviderScope<HedvigNavKey>`, `Navigator(MutableList<HedvigNavKey>)`)
- * is `HedvigNavKey`-typed and `NavDisplay<HedvigNavKey>` needs `List<out HedvigNavKey>`. Per-tab
+ * the whole feature DSL (`EntryProviderScope<HedvigNavKey>`, `MutableList<HedvigNavKey>`) is
+ * `HedvigNavKey`-typed and `NavDisplay<HedvigNavKey>` needs `List<out HedvigNavKey>`. Per-tab
  * [mutableStateListOf] of [HedvigNavKey] is the type-compatible equivalent.
  */
 @Stable
@@ -58,9 +57,6 @@ internal class HedvigTopLevelBackStacks(
    * list resolves [currentBackStack] on every call.
    */
   val backStack: MutableList<HedvigNavKey> = ForwardingBackStack { currentBackStack }
-
-  /** Legacy [Navigator] over the same forwarding [backStack], kept until all graphs take the list. */
-  val navigator: Navigator = Navigator(backStack)
 
   /** Rail/bar tap: bring the tab forward, or pop it to its start key if it is already current. */
   fun selectTopLevel(topLevelGraph: TopLevelGraph) {
