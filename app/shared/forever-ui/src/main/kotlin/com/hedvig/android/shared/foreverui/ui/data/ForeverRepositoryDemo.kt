@@ -4,16 +4,11 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
 import octopus.FullReferralsQuery
 import octopus.type.CurrencyCode
 import octopus.type.MemberReferralStatus
 
-@Inject
-@SingleIn(AppScope::class)
-class ForeverRepositoryDemo : ForeverRepository {
+internal class ForeverRepositoryDemo : ForeverRepository {
   private var code: String = "code"
 
   override suspend fun getReferralsData(): Either<ErrorMessage, FullReferralsQuery.Data> = either {

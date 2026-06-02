@@ -1,5 +1,6 @@
 package com.hedvig.android.shared.foreverui.ui.di
 
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
@@ -17,11 +18,10 @@ interface ForeverMetroProviders {
   @SingleIn(AppScope::class)
   fun provideForeverRepositoryProvider(
     demoManager: DemoManager,
-    prodImpl: ForeverRepositoryImpl,
-    demoImpl: ForeverRepositoryDemo,
+    apolloClient: ApolloClient,
   ): Provider<ForeverRepository> = ForeverRepositoryProvider(
     demoManager = demoManager,
-    demoImpl = demoImpl,
-    prodImpl = prodImpl,
+    prodImpl = ForeverRepositoryImpl(apolloClient),
+    demoImpl = ForeverRepositoryDemo(),
   )
 }
