@@ -5,7 +5,7 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.core.demomode.Provider
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCaseDemo
@@ -30,7 +30,7 @@ internal class GetHomeDataUseCaseProvider(
   featureManager: FeatureManager,
   clock: Clock,
   timeZone: TimeZone,
-  getTravelAddonBannerInfoUseCaseProvider: GetTravelAddonBannerInfoUseCaseProvider,
+  getTravelAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
 ) : ProdOrDemoProvider<GetHomeDataUseCase> {
   override val prodImpl: GetHomeDataUseCase = GetHomeDataUseCaseImpl(
     apolloClient = apolloClient,

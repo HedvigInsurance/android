@@ -11,12 +11,13 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
@@ -58,7 +59,7 @@ internal class GetHomeDataUseCaseImpl(
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
-  private val getTravelAddonBannerInfoUseCaseProvider: GetTravelAddonBannerInfoUseCaseProvider,
+  private val getTravelAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
