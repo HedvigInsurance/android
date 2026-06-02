@@ -81,7 +81,7 @@ import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigate
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
-import com.hedvig.feature.claim.chat.ClaimChatDestination
+import com.hedvig.feature.claim.chat.ClaimChatKey
 import com.hedvig.feature.claim.chat.claimChatGraph
 import com.hedvig.feature.remove.addons.AddonRemoveGraphDestination
 import com.hedvig.feature.remove.addons.removeAddonsNavGraph
@@ -164,10 +164,10 @@ internal fun HedvigNavHost(
       },
       navigateToHelpCenter = { navigator.navigate(HelpCenterKey) },
       navigateToClaimChat = {
-        navigator.navigate(ClaimChatDestination(messageId = null, isDevelopmentFlow = false))
+        navigator.navigate(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
       },
       navigateToClaimChatInDevMode = {
-        navigator.navigate(ClaimChatDestination(messageId = null, isDevelopmentFlow = true))
+        navigator.navigate(ClaimChatKey(messageId = null, isDevelopmentFlow = true))
       },
       navigateToChipIdScreen = { navigator.navigate(ChipIdKey()) },
       openAppSettings = externalNavigator::openAppSettings,
@@ -426,7 +426,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
   navigateToConversation: (String) -> Unit,
 ) {
   claimChatGraph(
-    navigator = navigator,
+    backStack = backStack,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     openAppSettings = externalNavigator::openAppSettings,
     onNavigateToImageViewer = onNavigateToImageViewer,

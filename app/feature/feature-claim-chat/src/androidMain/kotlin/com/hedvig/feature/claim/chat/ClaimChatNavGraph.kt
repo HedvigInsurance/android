@@ -5,9 +5,9 @@ import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -19,13 +19,13 @@ import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ClaimChatDestination(
+data class ClaimChatKey(
   val isDevelopmentFlow: Boolean = false,
   val messageId: String? = null,
 ) : HedvigNavKey
 
 @Serializable
-internal data class ClaimOutcomeDeflectDestination(
+internal data class ClaimOutcomeDeflectKey(
   val deflect: StepContent.Deflect,
 ) : HedvigNavKey {
   companion object Companion : NavKeyTypeAware {
@@ -34,7 +34,7 @@ internal data class ClaimOutcomeDeflectDestination(
 }
 
 @Serializable
-internal data class ClaimOutcomeNewClaimDestination(
+internal data class ClaimOutcomeNewClaimKey(
   val outcome: ClaimIntentOutcome.Claim,
 ) : HedvigNavKey {
   companion object Companion : NavKeyTypeAware {
@@ -43,10 +43,10 @@ internal data class ClaimOutcomeNewClaimDestination(
 }
 
 @Serializable
-internal data object UpdateAppDestination : HedvigNavKey
+internal data object UpdateAppKey : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -59,7 +59,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
   onNavigateToNewConversation: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  navdestination<ClaimChatDestination> {
+  navdestination<ClaimChatKey> {
     ClaimChatDestination(
       isDevelopmentFlow = isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -68,38 +68,38 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
       navigateToClaimOutcome = { outcome ->
         when (outcome) {
           is ClaimIntentOutcome.Claim -> {
-            navigator.navigate<ClaimChatDestination>(
-              ClaimOutcomeNewClaimDestination(outcome = outcome),
+            backStack.navigateAndPopUpTo<ClaimChatKey>(
+              ClaimOutcomeNewClaimKey(outcome = outcome),
               inclusive = true,
             )
           }
         }
       },
       navigateToDeflect = { deflect: StepContent.Deflect ->
-        navigator.navigate(ClaimOutcomeDeflectDestination(deflect = deflect))
+        backStack.add(ClaimOutcomeDeflectKey(deflect = deflect))
       },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
-      navigateUp = navigator::navigateUp,
+      navigateUp = backStack::navigateUp,
       openPlayStore = openPlayStore,
     )
   }
-  navdestination<ClaimOutcomeDeflectDestination> {
+  navdestination<ClaimOutcomeDeflectKey> {
     ClaimOutcomeDeflectDestination(
       deflect = deflect.deflectData,
       imageLoader = imageLoader,
-      navigateUp = navigator::navigateUp,
+      navigateUp = backStack::navigateUp,
       openUrl = openUrl,
       tryToDialPhone = tryToDialPhone,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
-  navdestination<ClaimOutcomeNewClaimDestination> {
+  navdestination<ClaimOutcomeNewClaimKey> {
     ClaimOutcomeNewClaimDestination(
-      navigator::navigateUp,
+      backStack::navigateUp,
     )
   }
-  navdestination<UpdateAppDestination> {
+  navdestination<UpdateAppKey> {
     ForceUpgradeBlockingScreen(
       goToPlayStore = tryOpenPlayStore,
     )
