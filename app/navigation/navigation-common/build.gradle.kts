@@ -6,6 +6,7 @@ plugins {
 kotlin {
   sourceSets {
     commonMain.dependencies {
+      api(libs.androidx.navigation3.runtime)
       implementation(libs.kotlin.reflect)
     }
   }
