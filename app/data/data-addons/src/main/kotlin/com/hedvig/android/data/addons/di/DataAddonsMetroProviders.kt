@@ -2,6 +2,7 @@ package com.hedvig.android.data.addons.di
 
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.DemoGetAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
@@ -22,4 +23,9 @@ interface DataAddonsMetroProviders {
     demoImpl = demoImpl,
     prodImpl = prodImpl,
   )
+
+  @Provides
+  fun provideGetAddonBannerInfoUseCaseProvider(
+    provider: GetTravelAddonBannerInfoUseCaseProvider,
+  ): Provider<GetAddonBannerInfoUseCase> = provider
 }

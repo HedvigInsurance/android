@@ -126,7 +126,7 @@ fun NavGraphBuilder.movingFlowGraph(
     navdestination<EnterNewAddress> {
       val moveIntentId = it.toRoute<EnterNewAddress>().moveIntentId
       EnterNewAddressDestination(
-        viewModel = metroViewModel<EnterNewAddressViewModel>(),
+        viewModel = assistedMetroViewModel<EnterNewAddressViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
         exitFlow = {
@@ -143,7 +143,7 @@ fun NavGraphBuilder.movingFlowGraph(
     }
     navdestination<MovingFlowDestinations.AddHouseInformation> {
       AddHouseInformationDestination(
-        viewModel = metroViewModel<AddHouseInformationViewModel>(),
+        viewModel = assistedMetroViewModel<AddHouseInformationViewModel>(),
         navigateUp = navController::navigateUp,
         popBackStack = navController::popBackStack,
         exitFlow = {
@@ -195,7 +195,7 @@ fun NavGraphBuilder.movingFlowGraph(
 
     navdestination<MovingFlowDestinations.Summary> { backStackEntry ->
       SummaryDestination(
-        viewModel = metroViewModel<SummaryViewModel>(),
+        viewModel = assistedMetroViewModel<SummaryViewModel>(),
         navigateUp = navController::navigateUp,
         navigateBack = navController::popBackStack,
         exitFlow = {

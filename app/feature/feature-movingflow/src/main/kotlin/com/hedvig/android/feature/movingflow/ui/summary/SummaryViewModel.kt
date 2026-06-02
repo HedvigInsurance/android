@@ -8,6 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.toRoute
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
@@ -37,17 +39,18 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
-@Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@AssistedInject
 internal class SummaryViewModel(
-  savedStateHandle: SavedStateHandle,
+  @Assisted savedStateHandle: SavedStateHandle,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
@@ -61,7 +64,18 @@ internal class SummaryViewModel(
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       getMoveIntentCostUseCase = getMoveIntentCostUseCase,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ViewModelAssistedFactoryKey(SummaryViewModel::class)
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ViewModelAssistedFactory {
+    override fun create(extras: CreationExtras): SummaryViewModel = create(extras.createSavedStateHandle())
+
+    fun create(
+      @Assisted savedStateHandle: SavedStateHandle,
+    ): SummaryViewModel
+  }
+}
 
 internal class SummaryPresenter(
   private val summaryRoute: Summary,

@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.payments.di
 
+import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
@@ -14,30 +15,30 @@ import com.hedvig.android.feature.payments.overview.data.GetUpcomingPaymentUseCa
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import kotlin.time.Clock
 
 @ContributesTo(AppScope::class)
-internal interface PaymentsMetroProviders {
+interface PaymentsMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideGetUpcomingPaymentUseCaseProvider(
     demoManager: DemoManager,
-    prodImpl: GetUpcomingPaymentUseCaseImpl,
-    demoImpl: GetUpcomingPaymentUseCaseDemo,
+    apolloClient: ApolloClient,
+    clock: Clock,
   ): Provider<GetUpcomingPaymentUseCase> = GetUpcomingPaymentUseCaseProvider(
     demoManager = demoManager,
-    demoImpl = demoImpl,
-    prodImpl = prodImpl,
+    prodImpl = GetUpcomingPaymentUseCaseImpl(apolloClient, clock),
+    demoImpl = GetUpcomingPaymentUseCaseDemo(clock),
   )
 
   @Provides
   @SingleIn(AppScope::class)
   fun provideGetShouldShowPayoutUseCaseProvider(
     demoManager: DemoManager,
-    prodImpl: GetShouldShowPayoutUseCaseImpl,
-    demoImpl: GetShouldShowPayoutUseCaseDemo,
+    apolloClient: ApolloClient,
   ): Provider<GetShouldShowPayoutUseCase> = GetShouldShowPayoutUseCaseProvider(
     demoManager = demoManager,
-    demoImpl = demoImpl,
-    prodImpl = prodImpl,
+    prodImpl = GetShouldShowPayoutUseCaseImpl(apolloClient),
+    demoImpl = GetShouldShowPayoutUseCaseDemo(),
   )
 }

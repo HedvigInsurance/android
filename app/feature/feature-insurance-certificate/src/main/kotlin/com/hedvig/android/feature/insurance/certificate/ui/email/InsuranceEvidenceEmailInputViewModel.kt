@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.insurance.certificate.data.GenerateInsuranceEvidenceUseCase
 import com.hedvig.android.feature.insurance.certificate.data.GetInsuranceEvidenceInitialEmailUseCase
@@ -17,6 +18,7 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.core.common.android.validation.validateEmail
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
 import hedvig.resources.Res
@@ -26,7 +28,7 @@ import org.jetbrains.compose.resources.StringResource
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class InsuranceEvidenceEmailInputViewModel(
   generateInsuranceEvidenceUseCase: GenerateInsuranceEvidenceUseCase,
   getEmailUseCase: GetInsuranceEvidenceInitialEmailUseCase,

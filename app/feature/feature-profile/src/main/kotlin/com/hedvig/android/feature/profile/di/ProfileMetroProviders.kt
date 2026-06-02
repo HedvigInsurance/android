@@ -1,5 +1,7 @@
 package com.hedvig.android.feature.profile.di
 
+import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
@@ -11,16 +13,16 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-internal interface ProfileMetroProviders {
+interface ProfileMetroProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideProfileRepositoryProvider(
     demoManager: DemoManager,
-    prodImpl: ContactInfoRepositoryImpl,
-    demoImpl: ContactInfoRepositoryDemo,
+    apolloClient: ApolloClient,
+    networkCacheManager: NetworkCacheManager,
   ): Provider<ContactInfoRepository> = ProfileRepositoryProvider(
     demoManager = demoManager,
-    demoImpl = demoImpl,
-    prodImpl = prodImpl,
+    prodImpl = ContactInfoRepositoryImpl(apolloClient, networkCacheManager),
+    demoImpl = ContactInfoRepositoryDemo(),
   )
 }

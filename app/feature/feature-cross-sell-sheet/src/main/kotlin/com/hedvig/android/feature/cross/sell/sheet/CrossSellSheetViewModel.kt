@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
@@ -30,7 +31,7 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -48,7 +49,7 @@ import octopus.type.UserFlow
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
@@ -135,12 +136,10 @@ internal class GetCrossSellSheetDataUseCaseProvider(
   override val prodImpl: GetCrossSellSheetDataUseCase,
 ) : ProdOrDemoProvider<GetCrossSellSheetDataUseCase>
 
-internal interface GetCrossSellSheetDataUseCase {
+interface GetCrossSellSheetDataUseCase {
   suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>
 }
 
-@Inject
-@SingleIn(AppScope::class)
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
@@ -199,8 +198,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
   }
 }
 
-@Inject
-internal class DemoGetCrossSellSheetDataUseCase() : GetCrossSellSheetDataUseCase {
+internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())
   }
