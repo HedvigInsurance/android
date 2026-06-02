@@ -15,7 +15,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 /**
  * Nav3 replacement for the Nav2 `NavHost`. Renders [backStack] (a list of [HedvigNavKey] keys) and
  * resolves each key to a [androidx.navigation3.runtime.NavEntry] via the [builder] DSL
- * (`navdestination`).
+ * (`entry`).
  *
  * Decorator order matters — outermost first:
  * 1. saveable-state holder (per-entry `rememberSaveable` survives pop/re-push),

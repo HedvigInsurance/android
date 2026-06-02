@@ -21,7 +21,6 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
@@ -37,7 +36,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
   navigateToPayoutAccount: () -> Unit,
   openConversation: () -> Unit,
 ) {
-  navdestination<PaymentsKey>(
+  entry<PaymentsKey>(
     metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
   ) {
     val viewModel: PaymentsViewModel = metroViewModel()
@@ -63,7 +62,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     )
   }
 
-  navdestination<ManualChargeKey> {
+  entry<ManualChargeKey> {
     val viewModel: ManualChargeViewModel = metroViewModel()
     ManualChargeDestination(
       viewModel = viewModel,
@@ -83,15 +82,15 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     )
   }
 
-  navdestination<ManualChargeSuccessKey> {
+  entry<ManualChargeSuccessKey> { key ->
     ManualChargeSuccessDestination(
-      this.showCancellationWarning,
+      key.showCancellationWarning,
       backStack::navigateUp,
     )
   }
 
-  navdestination<PaymentDetailsKey> {
-    val memberChargeId = this.memberChargeId
+  entry<PaymentDetailsKey> { key ->
+    val memberChargeId = key.memberChargeId
     val viewModel: PaymentDetailsViewModel =
       assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModel.Factory> { create(memberChargeId) }
     PaymentDetailsDestination(
@@ -100,7 +99,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     )
   }
 
-  navdestination<PaymentHistoryKey> {
+  entry<PaymentHistoryKey> {
     val viewModel: PaymentHistoryViewModel = metroViewModel()
     PaymentHistoryDestination(
       viewModel = viewModel,
@@ -111,7 +110,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     )
   }
 
-  navdestination<ForeverKey> {
+  entry<ForeverKey> {
     val viewModel: ForeverViewModel = metroViewModel()
     ForeverDestination(
       viewModel = viewModel,
@@ -120,7 +119,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     )
   }
 
-  navdestination<DiscountsKey> {
+  entry<DiscountsKey> {
     val viewModel: DiscountsViewModel = metroViewModel()
     DiscountsDestination(
       viewModel = viewModel,
@@ -131,7 +130,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     )
   }
 
-  navdestination<MemberPaymentDetailsKey> {
+  entry<MemberPaymentDetailsKey> {
     val viewModel: MemberPaymentDetailsViewModel = metroViewModel()
     MemberPaymentDetailsDestination(
       viewModel,

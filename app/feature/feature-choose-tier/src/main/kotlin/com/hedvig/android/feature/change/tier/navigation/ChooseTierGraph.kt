@@ -13,7 +13,6 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierFailureSc
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
@@ -28,8 +27,8 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
   backStack: MutableList<HedvigNavKey>,
   onNavigateToNewConversation: () -> Unit,
 ) {
-  navdestination<StartTierFlowKey> {
-    val insuranceId = this.insuranceId
+  entry<StartTierFlowKey> { key ->
+    val insuranceId = key.insuranceId
     val viewModel: StartTierFlowViewModel =
       assistedMetroViewModel<StartTierFlowViewModel, StartTierFlowViewModel.Factory> {
         create(insuranceId)
@@ -47,7 +46,7 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
     )
   }
 
-  navdestination<StartTierFlowChooseInsuranceKey> {
+  entry<StartTierFlowChooseInsuranceKey> {
     val viewModel: ChooseInsuranceViewModel = metroViewModel()
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,
@@ -65,8 +64,8 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
     )
   }
 
-  navdestination<ChooseTierKey> {
-    val parameters = this.parameters
+  entry<ChooseTierKey> { key ->
+    val parameters = key.parameters
     val viewModel: SelectCoverageViewModel =
       assistedMetroViewModel<SelectCoverageViewModel, SelectCoverageViewModel.Factory> {
         create(parameters)
@@ -103,8 +102,8 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
     )
   }
 
-  navdestination<ComparisonKey> {
-    val comparisonParameters = this.comparisonParameters
+  entry<ComparisonKey> { key ->
+    val comparisonParameters = key.comparisonParameters
     val viewModel: ComparisonViewModel =
       assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
         create(comparisonParameters)
@@ -115,8 +114,8 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
     )
   }
 
-  navdestination<SummaryKey> {
-    val params = this.params
+  entry<SummaryKey> { key ->
+    val params = key.params
     val viewModel: SummaryViewModel =
       assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
         create(params)
@@ -132,21 +131,21 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
       },
       onSuccess = {
         backStack.navigateAndPopUpTo<ChooseTierKey>(
-          SubmitSuccessKey(this.params.activationDate),
+          SubmitSuccessKey(key.params.activationDate),
           inclusive = true,
         )
       },
     )
   }
 
-  navdestination<SubmitSuccessKey> {
+  entry<SubmitSuccessKey> { key ->
     SubmitTierSuccessScreen(
-      activationDate,
+      key.activationDate,
       popBackStack = backStack::popBackStack,
     )
   }
 
-  navdestination<SubmitFailureKey> {
+  entry<SubmitFailureKey> {
     SubmitTierFailureScreen(
       popBackStack = backStack::popBackStack,
     )

@@ -10,7 +10,6 @@ import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
@@ -24,9 +23,9 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
   backStack: MutableList<HedvigNavKey>,
   applicationId: String,
 ) {
-  navdestination<ClaimDetailsKey> {
+  entry<ClaimDetailsKey> { key ->
     val viewModel: ClaimDetailsViewModel =
-      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModel.Factory> { create(claimId) }
+      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModel.Factory> { create(key.claimId) }
     val context = LocalContext.current
     ClaimDetailsDestination(
       viewModel = viewModel,
@@ -53,10 +52,10 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
       },
     )
   }
-  navdestination<AddFilesKey> {
+  entry<AddFilesKey> { key ->
     val viewModel: AddFilesViewModel =
       assistedMetroViewModel<AddFilesViewModel, AddFilesViewModel.Factory> {
-        create(targetUploadUrl, initialFilesUri)
+        create(key.targetUploadUrl, key.initialFilesUri)
       }
     AddFilesDestination(
       viewModel = viewModel,

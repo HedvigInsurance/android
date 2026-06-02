@@ -16,7 +16,6 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
@@ -73,7 +72,7 @@ internal data class SuccessfulMoveKey(
 }
 
 fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<HedvigNavKey>, goToChat: () -> Unit) {
-  navdestination<SelectContractForMovingKey> {
+  entry<SelectContractForMovingKey> {
     SelectContractDestination(
       viewModel = metroViewModel<SelectContractViewModel>(),
       navigateUp = backStack::navigateUp,
@@ -92,8 +91,8 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
     )
   }
 
-  navdestination<HousingTypeKey> {
-    val moveIntentId = this.moveIntentId
+  entry<HousingTypeKey> { key ->
+    val moveIntentId = key.moveIntentId
     HousingTypeDestination(
       viewModel = metroViewModel<HousingTypeViewModel>(),
       navigateUp = backStack::navigateUp,
@@ -103,8 +102,8 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       },
     )
   }
-  navdestination<EnterNewAddressKey> {
-    val moveIntentId = this.moveIntentId
+  entry<EnterNewAddressKey> { key ->
+    val moveIntentId = key.moveIntentId
     EnterNewAddressDestination(
       viewModel = assistedMetroViewModel<EnterNewAddressViewModel, EnterNewAddressViewModel.Factory> {
         create(moveIntentId)
@@ -120,8 +119,8 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       },
     )
   }
-  navdestination<AddHouseInformationKey> {
-    val moveIntentId = this.moveIntentId
+  entry<AddHouseInformationKey> { key ->
+    val moveIntentId = key.moveIntentId
     AddHouseInformationDestination(
       viewModel = assistedMetroViewModel<AddHouseInformationViewModel, AddHouseInformationViewModel.Factory> {
         create(moveIntentId)
@@ -134,8 +133,8 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       },
     )
   }
-  navdestination<ChoseCoverageLevelAndDeductibleKey> {
-    val moveIntentId = this.moveIntentId
+  entry<ChoseCoverageLevelAndDeductibleKey> { key ->
+    val moveIntentId = key.moveIntentId
     ChoseCoverageLevelAndDeductibleDestination(
       viewModel = assistedMetroViewModel<
         ChoseCoverageLevelAndDeductibleViewModel,
@@ -155,8 +154,8 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
     )
   }
 
-  navdestination<CompareCoverageKey> {
-    val comparisonParameters = this.comparisonParameters
+  entry<CompareCoverageKey> { key ->
+    val comparisonParameters = key.comparisonParameters
     val viewModel: ComparisonViewModel =
       assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
         create(comparisonParameters)
@@ -167,8 +166,8 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
     )
   }
 
-  navdestination<SummaryKey> {
-    val summaryRoute = this
+  entry<SummaryKey> { key ->
+    val summaryRoute = key
     SummaryDestination(
       viewModel = assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
         create(summaryRoute)
@@ -186,9 +185,9 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
     )
   }
 
-  navdestination<SuccessfulMoveKey> {
+  entry<SuccessfulMoveKey> { key ->
     SuccessfulMoveDestination(
-      moveDate = moveDate,
+      moveDate = key.moveDate,
       navigateUp = backStack::navigateUp,
       popBackStack = backStack::popBackStack,
     )

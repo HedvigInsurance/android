@@ -14,7 +14,6 @@ import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificate
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.core.common.android.sharePDF
@@ -27,7 +26,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
   onNavigateToCoInsuredAddInfo: (String) -> Unit,
   onNavigateToAddonPurchaseFlow: (List<String>) -> Unit,
 ) {
-  navdestination<TravelCertificateKey> {
+  entry<TravelCertificateKey> {
     val viewModel: CertificateHistoryViewModel = metroViewModel()
     val localContext = LocalContext.current
     TravelCertificateHistoryDestination(
@@ -47,7 +46,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
     )
   }
 
-  navdestination<TravelCertificateChooseContractKey> {
+  entry<TravelCertificateChooseContractKey> {
     val viewModel: ChooseContractForCertificateViewModel = metroViewModel()
     ChooseContractForCertificateDestination(
       viewModel = viewModel,
@@ -58,8 +57,8 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
     )
   }
 
-  navdestination<TravelCertificateDateInputKey> {
-    val contractId = this.contractId
+  entry<TravelCertificateDateInputKey> { key ->
+    val contractId = key.contractId
     val viewModel: TravelCertificateDateInputViewModel =
       assistedMetroViewModel<TravelCertificateDateInputViewModel, TravelCertificateDateInputViewModel.Factory> {
         create(contractId)
@@ -83,8 +82,8 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
     )
   }
 
-  navdestination<TravelCertificateTravellersInputKey> {
-    val primaryInput = this.primaryInput
+  entry<TravelCertificateTravellersInputKey> { key ->
+    val primaryInput = key.primaryInput
     val viewModel: TravelCertificateTravellersInputViewModel =
       assistedMetroViewModel<
         TravelCertificateTravellersInputViewModel,
@@ -105,11 +104,11 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
     )
   }
 
-  navdestination<ShowCertificateKey> {
+  entry<ShowCertificateKey> { key ->
     val viewModel: TravelCertificateOverviewViewModel = metroViewModel()
     val context = LocalContext.current
     TravelCertificateOverviewDestination(
-      travelCertificateUrl = travelCertificateUrl,
+      travelCertificateUrl = key.travelCertificateUrl,
       viewModel = viewModel,
       navigateUp = backStack::navigateUp,
       onShareTravelCertificate = {

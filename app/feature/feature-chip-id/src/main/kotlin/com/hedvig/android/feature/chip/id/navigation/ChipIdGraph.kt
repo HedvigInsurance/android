@@ -9,7 +9,6 @@ import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForC
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.findLastOrNull
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popUpTo
@@ -22,8 +21,8 @@ fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
   popBackStackOrFinish: () -> Unit,
   goHome: () -> Unit,
 ) {
-  navdestination<AddChipIdTriageKey> {
-    val contractId = this.contractId
+  entry<AddChipIdTriageKey> { key ->
+    val contractId = key.contractId
     LaunchedEffect(Unit) {
       backStack.navigateAndPopUpTo<AddChipIdTriageKey>(
         ChipIdKey(contractId = contractId),
@@ -32,8 +31,8 @@ fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
     }
   }
 
-  navdestination<ChipIdKey> {
-    val preselectedContractId = this.contractId
+  entry<ChipIdKey> { key ->
+    val preselectedContractId = key.contractId
     val viewModel: SelectInsuranceForChipIdViewModel =
       assistedMetroViewModel<SelectInsuranceForChipIdViewModel, SelectInsuranceForChipIdViewModel.Factory> {
         create(preselectedContractId)
@@ -52,8 +51,8 @@ fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
     )
   }
 
-  navdestination<AddChipIdKey> {
-    val contractId = this.contractId
+  entry<AddChipIdKey> { key ->
+    val contractId = key.contractId
     val viewModel: AddChipIdViewModel =
       assistedMetroViewModel<AddChipIdViewModel, AddChipIdViewModel.Factory> {
         create(contractId)

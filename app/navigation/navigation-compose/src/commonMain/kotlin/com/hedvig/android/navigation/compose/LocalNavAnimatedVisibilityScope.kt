@@ -6,7 +6,6 @@ import androidx.compose.runtime.compositionLocalOf
 
 /**
  * A local which contains the AnimatedVisibilityScope tied to the current navigation's destination.
- * See [navdestination] for how it's provided.
  */
 val LocalNavAnimatedVisibilityScope: ProvidableCompositionLocal<AnimatedVisibilityScope?> = compositionLocalOf {
   null

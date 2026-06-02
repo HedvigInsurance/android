@@ -5,7 +5,6 @@ import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
@@ -59,9 +58,9 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
   onNavigateToNewConversation: () -> Unit,
   openPlayStore: () -> Unit,
 ) {
-  navdestination<ClaimChatKey> {
+  entry<ClaimChatKey> { key ->
     ClaimChatDestination(
-      isDevelopmentFlow = isDevelopmentFlow,
+      isDevelopmentFlow = key.isDevelopmentFlow,
       shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
       openAppSettings = openAppSettings,
       onNavigateToImageViewer = onNavigateToImageViewer,
@@ -84,9 +83,9 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
       openPlayStore = openPlayStore,
     )
   }
-  navdestination<ClaimOutcomeDeflectKey> {
+  entry<ClaimOutcomeDeflectKey> { key ->
     ClaimOutcomeDeflectDestination(
-      deflect = deflect.deflectData,
+      deflect = key.deflect.deflectData,
       imageLoader = imageLoader,
       navigateUp = backStack::navigateUp,
       openUrl = openUrl,
@@ -94,12 +93,12 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
-  navdestination<ClaimOutcomeNewClaimKey> {
+  entry<ClaimOutcomeNewClaimKey> {
     ClaimOutcomeNewClaimDestination(
       backStack::navigateUp,
     )
   }
-  navdestination<UpdateAppKey> {
+  entry<UpdateAppKey> {
     ForceUpgradeBlockingScreen(
       goToPlayStore = tryOpenPlayStore,
     )

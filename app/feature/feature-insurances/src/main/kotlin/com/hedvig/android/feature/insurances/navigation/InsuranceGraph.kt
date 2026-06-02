@@ -17,7 +17,6 @@ import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContr
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -43,7 +42,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
   navigateToChipIdScreen: (String) -> Unit,
 ) {
   nestedGraphs()
-  navdestination<InsurancesKey>(
+  entry<InsurancesKey>(
     metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
   ) {
     val viewModel: InsuranceViewModel = metroViewModel()
@@ -63,8 +62,8 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
       },
     )
   }
-  navdestination<InsuranceContractDetailKey> {
-    val contractDetail = this
+  entry<InsuranceContractDetailKey> { key ->
+    val contractDetail = key
     val viewModel: ContractDetailViewModel =
       assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
         create(contractDetail.contractId)
@@ -99,7 +98,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
       navigateToChipIdScreen = navigateToChipIdScreen,
     )
   }
-  navdestination<TerminatedInsurancesKey> {
+  entry<TerminatedInsurancesKey> {
     val viewModel: TerminatedContractsViewModel = metroViewModel()
     TerminatedContractsDestination(
       viewModel = viewModel,

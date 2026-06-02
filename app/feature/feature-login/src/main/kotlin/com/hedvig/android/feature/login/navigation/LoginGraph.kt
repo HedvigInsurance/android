@@ -16,7 +16,6 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -29,7 +28,7 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
   onOpenEmailApp: () -> Unit,
   onNavigateToLoggedIn: () -> Unit,
 ) {
-  navdestination<LoginKey> {
+  entry<LoginKey> {
     val marketingViewModel: MarketingViewModel = metroViewModel()
     val locale = getLocale()
     MarketingDestination(
@@ -45,7 +44,7 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
       },
     )
   }
-  navdestination<SwedishLoginKey> {
+  entry<SwedishLoginKey> {
     val swedishLoginViewModel: SwedishLoginViewModel = assistedMetroViewModel()
     SwedishLoginDestination(
       swedishLoginViewModel = swedishLoginViewModel,
@@ -57,7 +56,7 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
       onNavigateToLoggedIn = onNavigateToLoggedIn,
     )
   }
-  navdestination<GenericAuthCredentialsInputKey> {
+  entry<GenericAuthCredentialsInputKey> {
     val viewModel: GenericAuthViewModel = metroViewModel()
     GenericAuthDestination(
       viewModel = viewModel,
@@ -69,8 +68,8 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
       },
     )
   }
-  navdestination<OtpInputKey> {
-    val otpInputInformation: OtpInputKey.OtpInformation = this.otpInformation
+  entry<OtpInputKey> { key ->
+    val otpInputInformation: OtpInputKey.OtpInformation = key.otpInformation
     val viewModel: OtpInputViewModel =
       assistedMetroViewModel<OtpInputViewModel, OtpInputViewModel.Factory> {
         create(otpInputInformation.verifyUrl, otpInputInformation.resendUrl, otpInputInformation.credential)

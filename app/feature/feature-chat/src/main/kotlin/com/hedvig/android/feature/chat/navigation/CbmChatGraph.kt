@@ -10,7 +10,6 @@ import com.hedvig.android.feature.chat.CbmChatViewModel
 import com.hedvig.android.feature.chat.inbox.InboxDestination
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -24,7 +23,7 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   backStack: MutableList<HedvigNavKey>,
 ) {
-  navdestination<InboxKey> {
+  entry<InboxKey> {
     val viewModel: InboxViewModel = metroViewModel()
     InboxDestination(
       viewModel = viewModel,
@@ -34,8 +33,8 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
       },
     )
   }
-  navdestination<ChatKey> {
-    val conversationId = this.conversationId
+  entry<ChatKey> { key ->
+    val conversationId = key.conversationId
     val viewModel = assistedMetroViewModel<CbmChatViewModel, CbmChatViewModel.Factory> {
       create(conversationId)
     }

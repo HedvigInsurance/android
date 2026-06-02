@@ -7,7 +7,6 @@ import com.hedvig.android.feature.insurance.certificate.ui.email.InsuranceEviden
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewDestination
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.core.common.android.sharePDF
@@ -17,7 +16,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceGraph(
   backStack: MutableList<HedvigNavKey>,
   applicationId: String,
 ) {
-  navdestination<InsuranceEvidenceKey> {
+  entry<InsuranceEvidenceKey> {
     val viewModel: InsuranceEvidenceEmailInputViewModel = metroViewModel()
     InsuranceEvidenceEmailInputDestination(
       viewModel = viewModel,
@@ -30,11 +29,11 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceGraph(
       },
     )
   }
-  navdestination<ShowCertificateKey> {
+  entry<ShowCertificateKey> { key ->
     val viewModel: InsuranceEvidenceOverviewViewModel = metroViewModel()
     val context = LocalContext.current
     InsuranceEvidenceOverviewDestination(
-      insuranceEvidenceUrl = certificateUrl,
+      insuranceEvidenceUrl = key.certificateUrl,
       viewModel = viewModel,
       navigateUp = backStack::navigateUp,
       onShareInsuranceEvidence = {

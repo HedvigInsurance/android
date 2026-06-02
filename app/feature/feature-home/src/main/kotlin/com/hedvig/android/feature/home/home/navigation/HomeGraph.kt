@@ -11,7 +11,6 @@ import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -35,7 +34,7 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  navdestination<HomeKey>(
+  entry<HomeKey>(
     metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
   ) {
     val viewModel: HomeViewModel = metroViewModel()
@@ -65,9 +64,9 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
       navigateToChipId = navigateToChipIdScreen,
     )
   }
-  navdestination<FirstVetKey> {
+  entry<FirstVetKey> { key ->
     FirstVetDestination(
-      sections,
+      key.sections,
       navigateUp = backStack::navigateUp,
       navigateBack = backStack::popBackStack,
       openUrl = openUrl,

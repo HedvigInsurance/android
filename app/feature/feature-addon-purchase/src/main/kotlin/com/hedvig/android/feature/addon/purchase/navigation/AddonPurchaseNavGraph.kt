@@ -18,7 +18,6 @@ import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageDest
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.findLastOrNull
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
@@ -42,9 +41,9 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseNavGraph(
 ) {
   // Deep-link entry: if the URI carried a contractId, jump straight into the flow; otherwise let
   // the member pick an eligible insurance.
-  navdestination<TravelAddonTriageKey> {
-    val source = this.source
-    val contractId = this.contractId
+  entry<TravelAddonTriageKey> { key ->
+    val source = key.source
+    val contractId = key.contractId
     if (contractId != null) {
       LaunchedEffect(Unit) {
         backStack.navigateAndPopUpTo<TravelAddonTriageKey>(
@@ -81,9 +80,9 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseNavGraph(
 
   // Flow anchor. With a single eligible insurance it renders CustomizeAddon inline (so the anchor
   // stays on the back stack as the flow's exit/source reference); otherwise it picks an insurance.
-  navdestination<AddonPurchaseKey> {
-    val insuranceIds = this.insuranceIds
-    val preselectedAddonDisplayNames = listOfNotNull(this.preselectedAddonDisplayName)
+  entry<AddonPurchaseKey> { key ->
+    val insuranceIds = key.insuranceIds
+    val preselectedAddonDisplayNames = listOfNotNull(key.preselectedAddonDisplayName)
     if (insuranceIds.size == 1) {
       CustomizeAddonContent(
         backStack = backStack,
@@ -109,26 +108,26 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseNavGraph(
     }
   }
 
-  navdestination<CustomizeAddonKey> {
+  entry<CustomizeAddonKey> { key ->
     CustomizeAddonContent(
       backStack = backStack,
-      insuranceId = this.insuranceId,
-      preselectedAddonDisplayNames = this.preselectedAddonDisplayNames,
+      insuranceId = key.insuranceId,
+      preselectedAddonDisplayNames = key.preselectedAddonDisplayNames,
       popBackStack = popBackStack,
       finishApp = finishApp,
       onNavigateToChangeTier = onNavigateToChangeTier,
     )
   }
 
-  navdestination<TravelInsurancePlusExplanationKey> {
+  entry<TravelInsurancePlusExplanationKey> { key ->
     TravelInsurancePlusExplanationDestination(
-      params = this.perilData,
+      params = key.perilData,
       navigateUp = backStack::navigateUp,
     )
   }
 
-  navdestination<SummaryKey> {
-    val summaryParameters = this.params
+  entry<SummaryKey> { key ->
+    val summaryParameters = key.params
     val source = backStack.findLastOrNull<AddonPurchaseKey>()?.source
       ?: AddonBannerSource.TRAVEL_DEEPLINK
     val viewModel: AddonSummaryViewModel =
@@ -144,22 +143,22 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseNavGraph(
       },
       onSuccess = {
         backStack.navigateAndPopUpTo<AddonPurchaseKey>(
-          SubmitSuccessKey(this.params.activationDate),
+          SubmitSuccessKey(key.params.activationDate),
           inclusive = true,
         )
       },
     )
   }
 
-  navdestination<SubmitFailureKey> {
+  entry<SubmitFailureKey> {
     SubmitAddonFailureScreen(
       popBackStack = popBackStack,
     )
   }
 
-  navdestination<SubmitSuccessKey> {
+  entry<SubmitSuccessKey> { key ->
     SubmitAddonSuccessScreen(
-      activationDate = this.activationDate,
+      activationDate = key.activationDate,
       popBackStack = popBackStack,
     )
   }

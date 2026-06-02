@@ -11,16 +11,15 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageDestination
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<HedvigNavKey>) {
-  navdestination<EditCoInsuredTriageKey> {
-    val triageContractId = contractId
-    val triageType = type
+  entry<EditCoInsuredTriageKey> { key ->
+    val triageContractId = key.contractId
+    val triageType = key.type
     val viewModel: EditCoInsuredTriageViewModel =
       assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
         create(triageContractId, triageType)
@@ -43,8 +42,8 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<H
     )
   }
 
-  navdestination<EditCoOwnersTriageDeepLinkKey> {
-    val coOwnersContractId = contractId
+  entry<EditCoOwnersTriageDeepLinkKey> { key ->
+    val coOwnersContractId = key.contractId
     val viewModel: EditCoInsuredTriageViewModel =
       assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
         create(coOwnersContractId, CoInsuredFlowType.CoOwners)
@@ -67,42 +66,42 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<H
     )
   }
 
-  navdestination<CoInsuredAddInfoKey> {
-    val addInfoContractId = contractId
-    val addInfoType = type
+  entry<CoInsuredAddInfoKey> { key ->
+    val addInfoContractId = key.contractId
+    val addInfoType = key.type
     EditCoInsuredAddMissingInfoDestination(
       viewModel = assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModel.Factory> {
         create(addInfoContractId, addInfoType)
       },
       navigateToSuccessScreen = {
         backStack.navigateAndPopUpTo<CoInsuredAddInfoKey>(
-          EditCoInsuredSuccessKey(it, type),
+          EditCoInsuredSuccessKey(it, key.type),
           inclusive = true,
         )
       },
       navigateUp = backStack::navigateUp,
     )
   }
-  navdestination<CoInsuredAddOrRemoveKey> {
-    val addOrRemoveContractId = contractId
-    val addOrRemoveType = type
+  entry<CoInsuredAddOrRemoveKey> { key ->
+    val addOrRemoveContractId = key.contractId
+    val addOrRemoveType = key.type
     EditCoInsuredAddOrRemoveDestination(
       assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModel.Factory> {
         create(addOrRemoveContractId, addOrRemoveType)
       },
       navigateToSuccessScreen = {
         backStack.navigateAndPopUpTo<CoInsuredAddOrRemoveKey>(
-          EditCoInsuredSuccessKey(it, type),
+          EditCoInsuredSuccessKey(it, key.type),
           inclusive = true,
         )
       },
       navigateUp = backStack::navigateUp,
     )
   }
-  navdestination<EditCoInsuredSuccessKey> {
+  entry<EditCoInsuredSuccessKey> { key ->
     EditCoInsuredSuccessDestination(
-      date = date,
-      type = type,
+      date = key.date,
+      type = key.type,
       navigateUp = backStack::navigateUp,
       navigateBack = backStack::popBackStack,
     )

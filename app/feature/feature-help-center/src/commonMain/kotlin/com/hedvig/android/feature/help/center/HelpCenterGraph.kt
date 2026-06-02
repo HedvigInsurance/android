@@ -27,7 +27,6 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewMod
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -43,7 +42,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
   tryToDialPhone: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  navdestination<HelpCenterHomeKey> {
+  entry<HelpCenterHomeKey> {
     val viewModel = metroViewModel<HelpCenterViewModel>()
     HelpCenterHomeDestination(
       viewModel = viewModel,
@@ -85,9 +84,9 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
     )
   }
 
-  navdestination<HelpCenterTopicKey> {
+  entry<HelpCenterTopicKey> { key ->
     val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
-    val topicId = topicId
+    val topicId = key.topicId
     val helpCenterTopicViewModel =
       assistedMetroViewModel<HelpCenterTopicViewModel, HelpCenterTopicViewModel.Factory> {
         create(topicId)
@@ -104,9 +103,9 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
   }
-  navdestination<HelpCenterQuestionKey> {
+  entry<HelpCenterQuestionKey> { key ->
     val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
-    val questionId = questionId
+    val questionId = key.questionId
     val helpCenterQuestionViewModel =
       assistedMetroViewModel<HelpCenterQuestionViewModel, HelpCenterQuestionViewModel.Factory> {
         create(questionId)
@@ -120,17 +119,17 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
       helpCenterQuestionViewModel = helpCenterQuestionViewModel,
     )
   }
-  navdestination<FirstVetKey> {
+  entry<FirstVetKey> { key ->
     FirstVetDestination(
-      sections = sections,
+      sections = key.sections,
       navigateUp = backStack::navigateUp,
       navigateBack = backStack::popBackStack,
       openUrl = openUrl,
     )
   }
-  navdestination<EmergencyKey> {
+  entry<EmergencyKey> { key ->
     EmergencyDestination(
-      deflect = deflectData,
+      deflect = key.deflectData,
       navigateUp = backStack::navigateUp,
       openUrl = openUrl,
       tryToDialPhone = tryToDialPhone,
@@ -139,7 +138,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
     )
   }
 
-  navdestination<PuppyGuideKey> {
+  entry<PuppyGuideKey> {
     val viewModel = metroViewModel<PuppyGuideViewModel>()
     PuppyGuideDestination(
       viewModel,
@@ -151,8 +150,8 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
     )
   }
 
-  navdestination<PuppyGuideArticleKey> {
-    val storyName = storyName
+  entry<PuppyGuideArticleKey> { key ->
+    val storyName = key.storyName
     val viewModel =
       assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
         create(storyName)

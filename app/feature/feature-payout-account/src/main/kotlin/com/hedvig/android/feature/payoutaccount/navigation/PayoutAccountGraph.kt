@@ -14,7 +14,6 @@ import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayo
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -26,7 +25,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
   navigateToConnectPayment: () -> Unit,
   navigateUp: () -> Unit,
 ) {
-  navdestination<PayoutAccountKey> {
+  entry<PayoutAccountKey> {
     val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
     PayoutAccountOverviewDestination(
       viewModel = viewModel,
@@ -46,9 +45,9 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
     )
   }
 
-  navdestination<SelectPayoutMethodKey> {
+  entry<SelectPayoutMethodKey> { key ->
     SelectPayoutMethodDestination(
-      availableProviders = this.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
+      availableProviders = key.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
       onTrustlySelected = dropUnlessResumed {
         backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         navigateToConnectPayment()
@@ -60,7 +59,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
     )
   }
 
-  navdestination<EditBankAccountKey> {
+  entry<EditBankAccountKey> {
     val viewModel: EditBankAccountViewModel = metroViewModel()
     EditBankAccountDestination(
       viewModel = viewModel,
@@ -72,7 +71,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
     )
   }
 
-  navdestination<SetupSwishPayoutKey> {
+  entry<SetupSwishPayoutKey> {
     val viewModel: SetupSwishPayoutViewModel = metroViewModel()
     SetupSwishPayoutDestination(
       viewModel = viewModel,
@@ -84,7 +83,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
     )
   }
 
-  navdestination<SetupInvoicePayoutKey> {
+  entry<SetupInvoicePayoutKey> {
     val viewModel: SetupInvoicePayoutViewModel = metroViewModel()
     SetupInvoicePayoutDestination(
       viewModel = viewModel,
