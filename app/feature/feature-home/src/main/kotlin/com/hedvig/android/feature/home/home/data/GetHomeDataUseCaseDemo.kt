@@ -3,20 +3,15 @@ package com.hedvig.android.feature.home.home.data
 import arrow.core.Either
 import arrow.core.right
 import com.hedvig.android.apollo.ApolloOperationError
-import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.memberreminders.MemberReminders
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-@Inject
-@SingleIn(AppScope::class)
-class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
+internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> = flowOf(
     HomeData(
       contractStatus = HomeData.ContractStatus.Active,

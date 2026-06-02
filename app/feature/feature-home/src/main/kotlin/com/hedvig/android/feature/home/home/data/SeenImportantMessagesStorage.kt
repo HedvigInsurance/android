@@ -18,7 +18,7 @@ interface SeenImportantMessagesStorage {
 @Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class SeenImportantMessagesStorageImpl : SeenImportantMessagesStorage {
+internal class SeenImportantMessagesStorageImpl : SeenImportantMessagesStorage {
   private val storedSeenMessages: MutableStateFlow<List<String>> = MutableStateFlow(listOf())
 
   override val seenMessages: StateFlow<List<String>>
