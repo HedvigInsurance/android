@@ -239,6 +239,9 @@ dependencies {
   runtimeOnly(platform(libs.okhttp.bom))
   runtimeOnly(libs.okhttp.core)
 
+  testImplementation(libs.assertK)
+  testImplementation(libs.junit)
+
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
 
