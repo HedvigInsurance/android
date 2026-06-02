@@ -17,7 +17,7 @@ import com.hedvig.android.app.notification.senders.CurrentDestinationInMemorySto
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.feature.forever.navigation.ForeverDestination
+import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.help.center.navigation.helpCenterCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetPermittingDestinations
@@ -215,7 +215,7 @@ private fun HedvigNavKey.isTopLevelStartDestination(): Boolean {
   return when (this) {
     is HomeKey,
     is InsurancesKey,
-    is ForeverDestination.Forever,
+    is ForeverKey,
     is PaymentsKey,
     is ProfileKey,
     -> true

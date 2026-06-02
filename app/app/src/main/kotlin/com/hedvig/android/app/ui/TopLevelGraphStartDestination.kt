@@ -1,6 +1,6 @@
 package com.hedvig.android.app.ui
 
-import com.hedvig.android.feature.forever.navigation.ForeverDestination
+import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
@@ -12,7 +12,7 @@ internal val TopLevelGraph.startDestination: HedvigNavKey
   get() = when (this) {
     TopLevelGraph.Home -> HomeKey
     TopLevelGraph.Insurances -> InsurancesKey
-    TopLevelGraph.Forever -> ForeverDestination.Forever
+    TopLevelGraph.Forever -> ForeverKey
     TopLevelGraph.Payments -> PaymentsKey
     TopLevelGraph.Profile -> ProfileKey
   }

@@ -17,9 +17,9 @@ fun EntryProviderScope<HedvigNavKey>.foreverGraph(
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
   navgraph(
-    startDestination = ForeverDestination.Forever::class,
+    startDestination = ForeverKey::class,
   ) {
-    navdestination<ForeverDestination.Forever>(
+    navdestination<ForeverKey>(
       metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: ForeverViewModel = metroViewModel()
