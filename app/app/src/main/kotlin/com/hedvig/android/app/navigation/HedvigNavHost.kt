@@ -63,7 +63,7 @@ import com.hedvig.android.feature.login.navigation.loginGraph
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
-import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountDestination
+import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
 import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountGraph
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
 import com.hedvig.android.feature.profile.tab.profileGraph
@@ -104,7 +104,7 @@ internal fun HedvigNavHost(
   val navigator = hedvigAppState.backStacks.navigator
 
   val navigateToConnectPayment = { navigator.navigate(TrustlyKey) }
-  val navigateToPayoutAccount = { navigator.navigate(PayoutAccountDestination.Graph) }
+  val navigateToPayoutAccount = { navigator.navigate(PayoutAccountKey) }
   val navigateToInbox = { navigator.navigate(InboxKey) }
   val navigateToNewConversation = { navigator.navigate(ChatKey(Uuid.randomUUID().toString())) }
   val navigateToConversation = { conversationId: String -> navigator.navigate(ChatKey(conversationId)) }
@@ -275,7 +275,7 @@ internal fun HedvigNavHost(
       openConversation = navigateToNewConversation,
     )
     payoutAccountGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       globalSnackBarState = globalSnackBarState,
       navigateToConnectPayment = navigateToConnectPayment,
       navigateUp = navigator::navigateUp,

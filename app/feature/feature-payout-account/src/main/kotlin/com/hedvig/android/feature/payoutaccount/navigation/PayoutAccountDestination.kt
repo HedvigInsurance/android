@@ -3,23 +3,19 @@ package com.hedvig.android.feature.payoutaccount.navigation
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.Serializable
 
-sealed interface PayoutAccountDestination {
-  @Serializable
-  data object Graph : PayoutAccountDestination, HedvigNavKey
-}
+@Serializable
+data object PayoutAccountKey : HedvigNavKey
 
-internal sealed interface PayoutAccountDestinations {
-  @Serializable
-  data class SelectPayoutMethod(
-    val availableProviders: List<String>,
-  ) : PayoutAccountDestinations, HedvigNavKey
+@Serializable
+internal data class SelectPayoutMethodKey(
+  val availableProviders: List<String>,
+) : HedvigNavKey
 
-  @Serializable
-  data object EditBankAccount : PayoutAccountDestinations, HedvigNavKey
+@Serializable
+internal data object EditBankAccountKey : HedvigNavKey
 
-  @Serializable
-  data object SetupSwishPayout : PayoutAccountDestinations, HedvigNavKey
+@Serializable
+internal data object SetupSwishPayoutKey : HedvigNavKey
 
-  @Serializable
-  data object SetupInvoicePayout : PayoutAccountDestinations, HedvigNavKey
-}
+@Serializable
+internal data object SetupInvoicePayoutKey : HedvigNavKey
