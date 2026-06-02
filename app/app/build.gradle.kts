@@ -100,6 +100,8 @@ android {
       "org.hamcrest:hamcrest:3.0",
     )
   }
+
+  testOptions.unitTests.isReturnDefaultValues = true
 }
 
 dependencies {
@@ -239,8 +241,10 @@ dependencies {
   runtimeOnly(platform(libs.okhttp.bom))
   runtimeOnly(libs.okhttp.core)
 
+  testImplementation(libs.androidx.junit)
   testImplementation(libs.assertK)
   testImplementation(libs.junit)
+  testImplementation(libs.robolectric)
 
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
