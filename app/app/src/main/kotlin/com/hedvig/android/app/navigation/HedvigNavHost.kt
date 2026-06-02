@@ -31,7 +31,7 @@ import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
-import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountDestination
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
@@ -103,7 +103,7 @@ internal fun HedvigNavHost(
 ) {
   val navigator = hedvigAppState.backStacks.navigator
 
-  val navigateToConnectPayment = { navigator.navigate(TrustlyDestination) }
+  val navigateToConnectPayment = { navigator.navigate(TrustlyKey) }
   val navigateToPayoutAccount = { navigator.navigate(PayoutAccountDestination.Graph) }
   val navigateToInbox = { navigator.navigate(InboxKey) }
   val navigateToNewConversation = { navigator.navigate(ChatKey(Uuid.randomUUID().toString())) }
@@ -348,7 +348,7 @@ internal fun HedvigNavHost(
       navigator = navigator,
       goToChat = navigateToNewConversation,
     )
-    connectPaymentGraph(navigator = navigator)
+    connectPaymentGraph(backStack = hedvigAppState.backStacks.backStack)
     editCoInsuredGraph(navigator)
     helpCenterGraph(
       backStack = hedvigAppState.backStacks.backStack,
@@ -377,7 +377,7 @@ internal fun HedvigNavHost(
           }
 
           QuickLinkConnectPayment -> {
-            TrustlyDestination
+            TrustlyKey
           }
 
           QuickLinkTermination -> {

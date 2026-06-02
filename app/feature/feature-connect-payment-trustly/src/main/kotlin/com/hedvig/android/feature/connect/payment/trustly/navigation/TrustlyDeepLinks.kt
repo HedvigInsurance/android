@@ -2,7 +2,7 @@ package com.hedvig.android.feature.connect.payment.trustly.navigation
 
 import androidx.navigation3.runtime.deeplink.DeepLinkMatcher
 import com.hedvig.android.core.common.di.AppScope
-import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
+import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.navigation.compose.uriDeepLinkMatchers
@@ -16,5 +16,5 @@ internal class TrustlyDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.connectPayment + container.directDebit, TrustlyDestination.serializer())
+    uriDeepLinkMatchers(container.connectPayment + container.directDebit, TrustlyKey.serializer())
 }

@@ -57,7 +57,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
 
 @Serializable
-data object TrustlyDestination : HedvigNavKey
+data object TrustlyKey : HedvigNavKey
 
 @Composable
 internal fun TrustlyDestination(
