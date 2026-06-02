@@ -204,7 +204,7 @@ private sealed interface ScreenContentState {
     ScreenContentState
 }
 
-sealed interface CertificateHistoryEvent {
+internal sealed interface CertificateHistoryEvent {
   data object RetryLoadData : CertificateHistoryEvent
 
   data class DownloadCertificate(val signedUrl: String) : CertificateHistoryEvent

@@ -101,7 +101,7 @@ class ImpersonationReceiverActivity : ComponentActivity() {
 }
 
 @AssistedInject
-class ImpersonationReceiverViewModel(
+internal class ImpersonationReceiverViewModel(
   @Assisted exchangeToken: String,
   authTokenService: AuthTokenService,
   authRepository: AuthRepository,

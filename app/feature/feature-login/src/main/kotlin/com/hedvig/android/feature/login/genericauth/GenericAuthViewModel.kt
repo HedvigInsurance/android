@@ -111,7 +111,7 @@ internal class GenericAuthViewModel(
   }
 }
 
-data class GenericAuthViewState(
+internal data class GenericAuthViewState(
   val emailInput: String = "",
   val error: TextFieldError? = null,
   val verifyUrl: String? = null,

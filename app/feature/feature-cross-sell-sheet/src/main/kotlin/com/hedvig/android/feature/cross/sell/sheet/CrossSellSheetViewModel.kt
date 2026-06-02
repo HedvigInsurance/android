@@ -60,11 +60,11 @@ internal class CrossSellSheetViewModel(
     CrossSellSheetPresenter(getCrossSellSheetDataUseCaseProvider, crossSellAfterFlowRepository),
   )
 
-sealed interface CrossSellSheetEvent {
+internal sealed interface CrossSellSheetEvent {
   data object CrossSellSheetShown : CrossSellSheetEvent
 }
 
-sealed interface CrossSellSheetState {
+internal sealed interface CrossSellSheetState {
   data object Loading : CrossSellSheetState
 
   data object DontShow : CrossSellSheetState
