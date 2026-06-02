@@ -1,12 +1,8 @@
-# OSS license inventory (inlined).
+# Weekly OSS license inventory for the Android app.
 #
-# Inlined rather than calling the shared reusable workflow in HedvigInsurance/prod-env,
-# because that repo is PRIVATE and this one is PUBLIC (a public repo cannot call a
-# private reusable workflow). Keep in sync with prod-env/.github/workflows/license-inventory.yml.
-#
-# Regenerates the CycloneDX license inventory and opens a PR with it when (and only when)
-# the dependency/license set changed. The committed file is annual-review evidence:
-# "what changed since last year" is `git diff` on .license/inventory.cdx.json.
+# Uses the build-resolved jaredsburrows licenseReleaseReport (accurate, full dependency
+# closure) — not a manifest scanner. Commits the sorted JSON as annual-review evidence;
+# "what changed since last year" is `git diff` on .license/inventory.json.
 name: license-inventory
 
 on:
@@ -20,36 +16,37 @@ permissions:
 
 jobs:
   inventory:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest-8-vcpu
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Generate license inventory (CycloneDX)
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+      - uses: actions/checkout@v5
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
         with:
-          scan-type: fs
-          scan-ref: "."
-          scanners: license
-          format: cyclonedx
-          output: inventory.cdx.json
+          gradle-cache-read-only: "true"
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
 
-      # CycloneDX randomizes serialNumber + timestamp every run; strip them so a PR
-      # opens only when the actual component/license set changed.
-      - name: Normalize inventory
+      - name: Generate license report
+        run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
+
+      - name: Stage inventory (sorted for stable diffs)
         run: |
           mkdir -p .license
-          jq 'del(.serialNumber, .metadata.timestamp)' inventory.cdx.json > .license/inventory.cdx.json
-          rm -f inventory.cdx.json
+          rm -f .license/inventory.cdx.json   # remove the old Trivy-based inventory
+          jq 'sort_by(.dependency)' \
+            app/app/build/reports/licenses/licenseReleaseReport.json \
+            > .license/inventory.json
 
       - name: Open PR if inventory changed
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
-          add-paths: .license/inventory.cdx.json
+          add-paths: .license
           branch: chore/license-inventory
           title: "chore: update license inventory"
           commit-message: "chore: update license inventory"
           labels: dependencies
           body: |
-            Automated snapshot of the OSS license inventory, kept as annual-review
-            evidence. Opens only when the dependency/license set changed since the
-            last snapshot.
+            Build-resolved OSS license inventory (jaredsburrows `licenseReleaseReport`),
+            kept as annual-review evidence. Opens only when the dependency/license set
+            changed since the last snapshot.

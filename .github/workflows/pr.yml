@@ -74,6 +74,12 @@ jobs:
       - name: Run license release report
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
         continue-on-error: true
+      - name: OSS license gate (warn-only)
+        # Reuses the report generated just above (no extra Gradle run). Warn-only for the
+        # pilot: continue-on-error + enforce=false. To enforce: pass `true` and drop
+        # continue-on-error so a forbidden license blocks the build.
+        run: bash .github/scripts/license-gate.sh app/app/build/reports/licenses/licenseReleaseReport.json false
+        continue-on-error: true
       - name: Build
         run: "./gradlew :app:bundleDebug"
       - name: Setup build tool version variable
