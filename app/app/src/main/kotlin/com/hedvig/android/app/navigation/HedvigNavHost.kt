@@ -16,10 +16,10 @@ import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
-import com.hedvig.android.feature.change.tier.navigation.ChooseTierGraphDestination
+import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
-import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceDestination
-import com.hedvig.android.feature.change.tier.navigation.StartTierFlowDestination
+import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
+import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
@@ -203,7 +203,7 @@ internal fun HedvigNavHost(
           },
           redirectToChangeTierFlow = { idWithIntent ->
             navigator.navigate<TerminateInsuranceKey>(
-              ChooseTierGraphDestination(
+              ChooseTierKey(
                 InsuranceCustomizationParameters(
                   insuranceId = idWithIntent.first,
                   activationDate = idWithIntent.second.activationDate,
@@ -231,7 +231,7 @@ internal fun HedvigNavHost(
         navigator.navigate(EditCoInsuredTriage(contractId, CoInsuredFlowType.CoOwners))
       },
       onNavigateToStartChangeTier = { contractId: String ->
-        navigator.navigate(StartTierFlowDestination(insuranceId = contractId))
+        navigator.navigate(StartTierFlowKey(insuranceId = contractId))
       },
       startEditCoInsuredAddMissingInfo = { contractId: String ->
         navigator.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoInsured))
@@ -327,11 +327,11 @@ internal fun HedvigNavHost(
       finishApp = finishApp,
       onNavigateToNewConversation = navigateToNewConversation,
       onNavigateToChangeTier = { contractId ->
-        navigator.navigate(StartTierFlowDestination(insuranceId = contractId))
+        navigator.navigate(StartTierFlowKey(insuranceId = contractId))
       },
     )
     changeTierGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       onNavigateToNewConversation = navigateToNewConversation,
     )
     chipIdGraph(
@@ -389,7 +389,7 @@ internal fun HedvigNavHost(
           }
 
           QuickLinkChangeTier -> {
-            StartTierFlowChooseInsuranceDestination
+            StartTierFlowChooseInsuranceKey
           }
 
           ChooseInsuranceForEditCoInsured -> {

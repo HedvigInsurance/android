@@ -15,9 +15,9 @@ internal class ChooseTierDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.changeTierWithContractId, StartTierFlowDestination.serializer()) +
+    uriDeepLinkMatchers(container.changeTierWithContractId, StartTierFlowKey.serializer()) +
       uriDeepLinkMatchers(
         container.changeTierWithoutContractId,
-        StartTierFlowChooseInsuranceDestination.serializer(),
+        StartTierFlowChooseInsuranceKey.serializer(),
       )
 }

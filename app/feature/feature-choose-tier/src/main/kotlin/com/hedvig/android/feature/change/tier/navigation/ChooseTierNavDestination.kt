@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
  */
 @androidx.annotation.Keep
 @Serializable
-data class StartTierFlowDestination(
+data class StartTierFlowKey(
   /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.changeTierWithContractId] */
   @SerialName("contractId")
   val insuranceId: String,
@@ -24,10 +24,10 @@ data class StartTierFlowDestination(
  * The start of the flow, where we have can choose insurance to change its tier
  */
 @Serializable
-data object StartTierFlowChooseInsuranceDestination : HedvigNavKey
+data object StartTierFlowChooseInsuranceKey : HedvigNavKey
 
 @Serializable
-data class ChooseTierGraphDestination(
+data class ChooseTierKey(
   /**
    * The ID to the contract and the change tier intent info with activation date, current tier level and all quote ids
    */
@@ -38,35 +38,33 @@ data class ChooseTierGraphDestination(
   }
 }
 
-internal sealed interface ChooseTierDestination {
-  @Serializable
-  data class Comparison(val comparisonParameters: ComparisonParameters) : ChooseTierDestination, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
-    }
+@Serializable
+internal data class ComparisonKey(val comparisonParameters: ComparisonParameters) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
   }
-
-  @Serializable
-  data class Summary(
-    val params: SummaryParameters,
-  ) : ChooseTierDestination, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
-    }
-  }
-
-  @Serializable
-  data class SubmitSuccess(val activationDate: LocalDate) : ChooseTierDestination, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<LocalDate>(),
-      )
-    }
-  }
-
-  @Serializable
-  data object SubmitFailure : ChooseTierDestination, HedvigNavKey
 }
+
+@Serializable
+internal data class SummaryKey(
+  val params: SummaryParameters,
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
+  }
+}
+
+@Serializable
+internal data class SubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(
+      typeOf<LocalDate>(),
+    )
+  }
+}
+
+@Serializable
+internal data object SubmitFailureKey : HedvigNavKey
 
 @Serializable
 data class SummaryParameters(
