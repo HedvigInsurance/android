@@ -8,7 +8,7 @@ import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 import com.hedvig.core.common.android.validation.isValidEmail
 
-interface ContactInfoRepository {
+internal interface ContactInfoRepository {
   suspend fun contactInfo(): Either<ErrorMessage, ContactInformation>
 
   suspend fun updateInfo(phoneNumber: PhoneNumber, email: Email): Either<ErrorMessage, ContactInformation>
