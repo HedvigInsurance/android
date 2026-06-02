@@ -47,7 +47,7 @@ import octopus.HomeQuery
 import octopus.UnreadMessageCountQuery
 import octopus.fragment.HomeCrossSellFragment
 
-interface GetHomeDataUseCase {
+internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
 }
 
