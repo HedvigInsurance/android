@@ -4,8 +4,6 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoOwnersTriageDeepLink
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
@@ -13,13 +11,14 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageDestination
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.navigateUp
+import com.hedvig.android.navigation.compose.popBackStack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(navigator: Navigator) {
-  navdestination<EditCoInsuredTriage> {
+fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<HedvigNavKey>) {
+  navdestination<EditCoInsuredTriageKey> {
     val triageContractId = contractId
     val triageType = type
     val viewModel: EditCoInsuredTriageViewModel =
@@ -28,23 +27,23 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(navigator: Navigator) {
       }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
-      navigateUp = navigator::navigateUp,
+      navigateUp = backStack::navigateUp,
       navigateToAddMissingInfo = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navigator.navigate<EditCoInsuredTriage>(
-          EditCoInsuredDestination.CoInsuredAddInfo(contract.id, contract.type),
+        backStack.navigateAndPopUpTo<EditCoInsuredTriageKey>(
+          CoInsuredAddInfoKey(contract.id, contract.type),
           inclusive = true,
         )
       },
       navigateToAddOrRemoveCoInsured = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navigator.navigate<EditCoInsuredTriage>(
-          EditCoInsuredDestination.CoInsuredAddOrRemove(contract.id, contract.type),
+        backStack.navigateAndPopUpTo<EditCoInsuredTriageKey>(
+          CoInsuredAddOrRemoveKey(contract.id, contract.type),
           inclusive = true,
         )
       },
     )
   }
 
-  navdestination<EditCoOwnersTriageDeepLink> {
+  navdestination<EditCoOwnersTriageDeepLinkKey> {
     val coOwnersContractId = contractId
     val viewModel: EditCoInsuredTriageViewModel =
       assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
@@ -52,23 +51,23 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(navigator: Navigator) {
       }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
-      navigateUp = navigator::navigateUp,
+      navigateUp = backStack::navigateUp,
       navigateToAddMissingInfo = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navigator.navigate<EditCoOwnersTriageDeepLink>(
-          EditCoInsuredDestination.CoInsuredAddInfo(contract.id, contract.type),
+        backStack.navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(
+          CoInsuredAddInfoKey(contract.id, contract.type),
           inclusive = true,
         )
       },
       navigateToAddOrRemoveCoInsured = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        navigator.navigate<EditCoOwnersTriageDeepLink>(
-          EditCoInsuredDestination.CoInsuredAddOrRemove(contract.id, contract.type),
+        backStack.navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(
+          CoInsuredAddOrRemoveKey(contract.id, contract.type),
           inclusive = true,
         )
       },
     )
   }
 
-  navdestination<EditCoInsuredDestination.CoInsuredAddInfo> {
+  navdestination<CoInsuredAddInfoKey> {
     val addInfoContractId = contractId
     val addInfoType = type
     EditCoInsuredAddMissingInfoDestination(
@@ -76,15 +75,15 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(navigator: Navigator) {
         create(addInfoContractId, addInfoType)
       },
       navigateToSuccessScreen = {
-        navigator.navigate<EditCoInsuredDestination.CoInsuredAddInfo>(
-          EditCoInsuredDestination.Success(it, type),
+        backStack.navigateAndPopUpTo<CoInsuredAddInfoKey>(
+          EditCoInsuredSuccessKey(it, type),
           inclusive = true,
         )
       },
-      navigateUp = navigator::navigateUp,
+      navigateUp = backStack::navigateUp,
     )
   }
-  navdestination<EditCoInsuredDestination.CoInsuredAddOrRemove> {
+  navdestination<CoInsuredAddOrRemoveKey> {
     val addOrRemoveContractId = contractId
     val addOrRemoveType = type
     EditCoInsuredAddOrRemoveDestination(
@@ -92,20 +91,20 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(navigator: Navigator) {
         create(addOrRemoveContractId, addOrRemoveType)
       },
       navigateToSuccessScreen = {
-        navigator.navigate<EditCoInsuredDestination.CoInsuredAddOrRemove>(
-          EditCoInsuredDestination.Success(it, type),
+        backStack.navigateAndPopUpTo<CoInsuredAddOrRemoveKey>(
+          EditCoInsuredSuccessKey(it, type),
           inclusive = true,
         )
       },
-      navigateUp = navigator::navigateUp,
+      navigateUp = backStack::navigateUp,
     )
   }
-  navdestination<EditCoInsuredDestination.Success> {
+  navdestination<EditCoInsuredSuccessKey> {
     EditCoInsuredSuccessDestination(
       date = date,
       type = type,
-      navigateUp = navigator::navigateUp,
-      navigateBack = navigator::popBackStack,
+      navigateUp = backStack::navigateUp,
+      navigateBack = backStack::popBackStack,
     )
   }
 }

@@ -34,9 +34,9 @@ import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
 import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddInfo
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.CoInsuredAddOrRemove
-import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredDestination.EditCoInsuredTriage
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
+import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
+import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
 import com.hedvig.android.feature.forever.navigation.foreverGraph
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
@@ -160,7 +160,7 @@ internal fun HedvigNavHost(
       navigateToConnectPayout = navigateToPayoutAccount,
       navigateToContactInfo = { navigator.navigate(ContactInfoKey) },
       navigateToMissingInfo = { contractId: String, type: CoInsuredFlowType ->
-        navigator.navigate(CoInsuredAddInfo(contractId, type))
+        navigator.navigate(CoInsuredAddInfoKey(contractId, type))
       },
       navigateToHelpCenter = { navigator.navigate(HelpCenterKey) },
       navigateToClaimChat = {
@@ -225,19 +225,19 @@ internal fun HedvigNavHost(
       },
       imageLoader = imageLoader,
       startEditCoInsured = { contractId: String ->
-        navigator.navigate(CoInsuredAddOrRemove(contractId, CoInsuredFlowType.CoInsured))
+        navigator.navigate(CoInsuredAddOrRemoveKey(contractId, CoInsuredFlowType.CoInsured))
       },
       startEditCoOwners = { contractId: String ->
-        navigator.navigate(EditCoInsuredTriage(contractId, CoInsuredFlowType.CoOwners))
+        navigator.navigate(EditCoInsuredTriageKey(contractId, CoInsuredFlowType.CoOwners))
       },
       onNavigateToStartChangeTier = { contractId: String ->
         navigator.navigate(StartTierFlowKey(insuranceId = contractId))
       },
       startEditCoInsuredAddMissingInfo = { contractId: String ->
-        navigator.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoInsured))
+        navigator.navigate(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
       },
       startEditCoOwnersAddMissingInfo = { contractId: String ->
-        navigator.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoOwners))
+        navigator.navigate(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoOwners))
       },
       onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon ->
         navigator.navigate(
@@ -297,7 +297,7 @@ internal fun HedvigNavHost(
       navigateToConnectPayment = navigateToConnectPayment,
       navigateToConnectPayout = navigateToPayoutAccount,
       navigateToAddMissingInfo = { contractId: String, type: CoInsuredFlowType ->
-        navigator.navigate(CoInsuredAddInfo(contractId, type))
+        navigator.navigate(CoInsuredAddInfoKey(contractId, type))
       },
       navigateToDeleteAccountFeature = { navigator.navigate(DeleteAccountKey) },
       navigateToClaimHistory = { navigator.navigate(ClaimHistoryDestination) },
@@ -349,7 +349,7 @@ internal fun HedvigNavHost(
       goToChat = navigateToNewConversation,
     )
     connectPaymentGraph(backStack = hedvigAppState.backStacks.backStack)
-    editCoInsuredGraph(navigator)
+    editCoInsuredGraph(hedvigAppState.backStacks.backStack)
     helpCenterGraph(
       backStack = hedvigAppState.backStacks.backStack,
       onNavigateUp = navigator::navigateUp,
@@ -361,19 +361,19 @@ internal fun HedvigNavHost(
           }
 
           is QuickLinkCoInsuredAddInfo -> {
-            CoInsuredAddInfo(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
+            CoInsuredAddInfoKey(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
           }
 
           is QuickLinkCoInsuredAddOrRemove -> {
-            CoInsuredAddOrRemove(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
+            CoInsuredAddOrRemoveKey(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
           }
 
           is QuickLinkCoOwnerAddInfo -> {
-            CoInsuredAddInfo(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
+            CoInsuredAddInfoKey(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
           }
 
           is QuickLinkCoOwnerAddOrRemove -> {
-            CoInsuredAddOrRemove(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
+            CoInsuredAddOrRemoveKey(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
           }
 
           QuickLinkConnectPayment -> {
@@ -393,11 +393,11 @@ internal fun HedvigNavHost(
           }
 
           ChooseInsuranceForEditCoInsured -> {
-            EditCoInsuredTriage()
+            EditCoInsuredTriageKey()
           }
 
           ChooseInsuranceForEditCoOwners -> {
-            EditCoInsuredTriage(type = CoInsuredFlowType.CoOwners)
+            EditCoInsuredTriageKey(type = CoInsuredFlowType.CoOwners)
           }
         }
         navigator.navigate(destination)
@@ -453,7 +453,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
     backStack = backStack,
     applicationId = appPackageId,
     onNavigateToCoInsuredAddInfo = { contractId ->
-      navigator.navigate(CoInsuredAddInfo(contractId, CoInsuredFlowType.CoInsured))
+      navigator.navigate(CoInsuredAddInfoKey(contractId, CoInsuredFlowType.CoInsured))
     },
     onNavigateToAddonPurchaseFlow = { ids ->
       navigator.navigate(

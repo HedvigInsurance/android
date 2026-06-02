@@ -16,7 +16,7 @@ internal class EditCoInsuredDeepLinkMatcherProvider(
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> = uriDeepLinkMatchers(
     container.editCoInsured + container.editCoInsuredWithoutContractId,
-    EditCoInsuredDestination.EditCoInsuredTriage.serializer(),
+    EditCoInsuredTriageKey.serializer(),
   ) +
-    uriDeepLinkMatchers(container.editCoOwners, EditCoInsuredDestination.EditCoOwnersTriageDeepLink.serializer())
+    uriDeepLinkMatchers(container.editCoOwners, EditCoOwnersTriageDeepLinkKey.serializer())
 }
