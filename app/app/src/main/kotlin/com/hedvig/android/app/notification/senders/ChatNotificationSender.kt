@@ -26,7 +26,7 @@ import com.hedvig.android.feature.claim.details.navigation.ClaimDetailDestinatio
 import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -44,7 +44,7 @@ import hedvig.resources.R
  * thought we should.
  */
 object CurrentDestinationInMemoryStorage {
-  var currentDestination: Destination? = null
+  var currentDestination: HedvigNavKey? = null
 }
 
 private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(

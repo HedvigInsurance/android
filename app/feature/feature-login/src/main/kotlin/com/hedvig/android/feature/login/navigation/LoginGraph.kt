@@ -15,14 +15,14 @@ import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.loginGraph(
+fun EntryProviderScope<HedvigNavKey>.loginGraph(
   navigator: Navigator,
   appVersionName: String,
   urlBaseWeb: String,

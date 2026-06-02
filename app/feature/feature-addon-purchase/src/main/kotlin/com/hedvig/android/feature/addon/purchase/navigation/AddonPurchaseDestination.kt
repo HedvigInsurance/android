@@ -6,8 +6,8 @@ import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.NavKeyTypeAware
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
@@ -19,8 +19,8 @@ data class AddonPurchaseGraphDestination(
   val insuranceIds: List<String> = emptyList(),
   val preselectedAddonDisplayName: String? = null,
   val source: AddonBannerSource = AddonBannerSource.TRAVEL_DEEPLINK,
-) : Destination {
-  companion object : DestinationNavTypeAware {
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
     override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
   }
 }
@@ -33,26 +33,26 @@ data class AddonPurchaseGraphDestination(
 data class TravelAddonTriage(
   val source: AddonBannerSource,
   val contractId: String?,
-) : Destination {
-  companion object : DestinationNavTypeAware {
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
     override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
   }
 }
 
 internal sealed interface AddonPurchaseDestination {
   @Serializable
-  data object ChooseInsuranceToAddAddonDestination : AddonPurchaseDestination, Destination
+  data object ChooseInsuranceToAddAddonDestination : AddonPurchaseDestination, HedvigNavKey
 
   @Serializable
   data class CustomizeAddon(
     val insuranceId: String,
     val preselectedAddonDisplayNames: List<String>,
-  ) : AddonPurchaseDestination, Destination
+  ) : AddonPurchaseDestination, HedvigNavKey
 
   @Serializable
   data class TravelInsurancePlusExplanation(
     val perilData: PerilComparisonParams,
-  ) : AddonPurchaseDestination, Destination {
+  ) : AddonPurchaseDestination, HedvigNavKey {
     @Serializable
     data class TravelPerilData(
       val title: String,
@@ -62,7 +62,7 @@ internal sealed interface AddonPurchaseDestination {
       val isEnabled: Boolean = true,
     )
 
-    companion object : DestinationNavTypeAware {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(typeOf<PerilComparisonParams>())
     }
   }
@@ -70,15 +70,15 @@ internal sealed interface AddonPurchaseDestination {
   @Serializable
   data class Summary(
     val params: SummaryParameters,
-  ) : AddonPurchaseDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  ) : AddonPurchaseDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
     }
   }
 
   @Serializable
-  data class SubmitSuccess(val activationDate: LocalDate) : AddonPurchaseDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  data class SubmitSuccess(val activationDate: LocalDate) : AddonPurchaseDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<LocalDate>(),
       )
@@ -86,7 +86,7 @@ internal sealed interface AddonPurchaseDestination {
   }
 
   @Serializable
-  data object SubmitFailure : AddonPurchaseDestination, Destination
+  data object SubmitFailure : AddonPurchaseDestination, HedvigNavKey
 }
 
 @Serializable

@@ -2,16 +2,16 @@ package com.hedvig.android.feature.claimhistory.nav
 
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.claimhistory.ClaimHistoryDestination
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.navdestination
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object ClaimHistoryDestination : Destination
+data object ClaimHistoryDestination : HedvigNavKey
 
-fun EntryProviderScope<Destination>.claimHistoryGraph(
+fun EntryProviderScope<HedvigNavKey>.claimHistoryGraph(
   navigateUp: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
 ) {
@@ -24,6 +24,6 @@ fun EntryProviderScope<Destination>.claimHistoryGraph(
   }
 }
 
-val profileBottomNavPermittedDestinations: List<KClass<out Destination>> = listOf(
+val profileBottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = listOf(
   ClaimHistoryDestination::class,
 )

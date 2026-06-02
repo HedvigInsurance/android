@@ -15,8 +15,8 @@ import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModel
 import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigate
@@ -32,31 +32,31 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object MovingFlowGraphDestination : Destination
+data object MovingFlowGraphDestination : HedvigNavKey
 
 @Serializable
-data object SelectContractForMoving : Destination
+data object SelectContractForMoving : HedvigNavKey
 
 internal sealed interface MovingFlowDestinations {
   @Serializable
-  data class HousingType(val moveIntentId: String) : MovingFlowDestinations, Destination
+  data class HousingType(val moveIntentId: String) : MovingFlowDestinations, HedvigNavKey
 
   @Serializable
-  data class EnterNewAddress(val moveIntentId: String) : MovingFlowDestinations, Destination
+  data class EnterNewAddress(val moveIntentId: String) : MovingFlowDestinations, HedvigNavKey
 
   @Serializable
   data class AddHouseInformation(
     val moveIntentId: String,
-  ) : MovingFlowDestinations, Destination
+  ) : MovingFlowDestinations, HedvigNavKey
 
   @Serializable
   data class ChoseCoverageLevelAndDeductible(
     val moveIntentId: String,
-  ) : MovingFlowDestinations, Destination
+  ) : MovingFlowDestinations, HedvigNavKey
 
   @Serializable
-  data class CompareCoverage(val comparisonParameters: ComparisonParameters) : MovingFlowDestinations, Destination {
-    companion object : DestinationNavTypeAware {
+  data class CompareCoverage(val comparisonParameters: ComparisonParameters) : MovingFlowDestinations, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
     }
   }
@@ -65,19 +65,19 @@ internal sealed interface MovingFlowDestinations {
   data class Summary(
     val moveIntentId: String,
     val homeQuoteId: String,
-  ) : MovingFlowDestinations, Destination
+  ) : MovingFlowDestinations, HedvigNavKey
 
   @Serializable
   data class SuccessfulMove(
     val moveDate: LocalDate,
-  ) : MovingFlowDestinations, Destination {
-    companion object : DestinationNavTypeAware {
+  ) : MovingFlowDestinations, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(typeOf<LocalDate>())
     }
   }
 }
 
-fun EntryProviderScope<Destination>.movingFlowGraph(navigator: Navigator, goToChat: () -> Unit) {
+fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(navigator: Navigator, goToChat: () -> Unit) {
   navdestination<SelectContractForMoving> {
     SelectContractDestination(
       viewModel = metroViewModel<SelectContractViewModel>(),

@@ -6,7 +6,7 @@ import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.Navigator
 
 /**
- * Tries to resolve a URI to an in-app [com.hedvig.android.navigation.common.Destination] via [matcher] and navigate to
+ * Tries to resolve a URI to an in-app [com.hedvig.android.navigation.common.HedvigNavKey] via [matcher] and navigate to
  * it with [navigator]. Falls back to the [delegate] (e.g. the system browser) when the URI is not one of our deep
  * links.
  */

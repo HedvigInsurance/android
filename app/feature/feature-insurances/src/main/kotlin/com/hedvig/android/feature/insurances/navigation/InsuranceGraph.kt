@@ -15,7 +15,7 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDesti
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
@@ -23,8 +23,8 @@ import com.hedvig.android.navigation.compose.navgraph
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.insuranceGraph(
-  nestedGraphs: EntryProviderScope<Destination>.() -> Unit,
+fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
+  nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
   navigator: Navigator,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,

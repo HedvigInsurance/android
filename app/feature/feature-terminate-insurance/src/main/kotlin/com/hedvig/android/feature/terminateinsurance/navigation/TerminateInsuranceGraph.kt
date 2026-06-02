@@ -22,13 +22,13 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigate
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<Destination>.terminateInsuranceGraph(
+fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
   navigator: Navigator,
   onNavigateToNewConversation: () -> Unit,
@@ -331,7 +331,7 @@ private fun navigateFromSurvey(
   }
 }
 
-private fun Navigator.navigateToTerminateFlowDestination(destination: Destination) {
+private fun Navigator.navigateToTerminateFlowDestination(destination: HedvigNavKey) {
   when (destination) {
     is TerminateInsuranceDestination.TerminationSuccess,
     is TerminateInsuranceDestination.TerminationFailure,

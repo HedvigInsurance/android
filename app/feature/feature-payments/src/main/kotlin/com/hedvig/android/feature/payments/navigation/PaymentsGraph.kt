@@ -19,7 +19,7 @@ import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPayment
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
@@ -30,7 +30,7 @@ import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.paymentsGraph(
+fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
   navigator: Navigator,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,

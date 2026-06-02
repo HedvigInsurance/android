@@ -1,6 +1,6 @@
 package com.hedvig.android.feature.claim.details.navigation
 
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -12,7 +12,7 @@ sealed interface ClaimDetailDestination {
      */
     @SerialName("claimId")
     val claimId: String,
-  ) : ClaimDetailDestination, Destination
+  ) : ClaimDetailDestination, HedvigNavKey
 }
 
 internal sealed interface ClaimDetailInternalDestination {
@@ -20,5 +20,5 @@ internal sealed interface ClaimDetailInternalDestination {
   data class AddFilesDestination(
     val targetUploadUrl: String,
     val initialFilesUri: List<String>,
-  ) : ClaimDetailInternalDestination, Destination
+  ) : ClaimDetailInternalDestination, HedvigNavKey
 }

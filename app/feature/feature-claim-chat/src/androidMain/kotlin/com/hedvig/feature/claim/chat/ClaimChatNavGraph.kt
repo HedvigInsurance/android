@@ -3,8 +3,8 @@ package com.hedvig.feature.claim.chat
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigate
@@ -22,13 +22,13 @@ import kotlinx.serialization.Serializable
 data class ClaimChatDestination(
   val isDevelopmentFlow: Boolean = false,
   val messageId: String? = null,
-) : Destination
+) : HedvigNavKey
 
 @Serializable
 internal data class ClaimOutcomeDeflectDestination(
   val deflect: StepContent.Deflect,
-) : Destination {
-  companion object Companion : DestinationNavTypeAware {
+) : HedvigNavKey {
+  companion object Companion : NavKeyTypeAware {
     override val typeList: List<KType> = listOf(typeOf<StepContent.Deflect>())
   }
 }
@@ -36,16 +36,16 @@ internal data class ClaimOutcomeDeflectDestination(
 @Serializable
 internal data class ClaimOutcomeNewClaimDestination(
   val outcome: ClaimIntentOutcome.Claim,
-) : Destination {
-  companion object Companion : DestinationNavTypeAware {
+) : HedvigNavKey {
+  companion object Companion : NavKeyTypeAware {
     override val typeList: List<KType> = listOf(typeOf<ClaimIntentOutcome.Claim>())
   }
 }
 
 @Serializable
-internal data object UpdateAppDestination : Destination
+internal data object UpdateAppDestination : HedvigNavKey
 
-fun EntryProviderScope<Destination>.claimChatGraph(
+fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
   navigator: Navigator,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,

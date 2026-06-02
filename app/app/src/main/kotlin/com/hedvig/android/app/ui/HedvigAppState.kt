@@ -31,7 +31,7 @@ import com.hedvig.android.feature.travelcertificate.navigation.travelCertificate
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
 import com.hedvig.android.theme.Theme
@@ -91,7 +91,7 @@ internal class HedvigAppState(
   featureManager: FeatureManager,
   missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
 ) {
-  val currentDestination: Destination?
+  val currentDestination: HedvigNavKey?
     get() = backStacks.currentDestination
 
   val currentTopLevelGraph: TopLevelGraph
@@ -211,7 +211,7 @@ value class NavigationSuiteType private constructor(
   }
 }
 
-private fun Destination.isTopLevelStartDestination(): Boolean {
+private fun HedvigNavKey.isTopLevelStartDestination(): Boolean {
   return when (this) {
     is HomeDestination.Home,
     is InsurancesDestination.Insurances,
@@ -227,7 +227,7 @@ private fun Destination.isTopLevelStartDestination(): Boolean {
 /**
  * Special routes, which despite not being top level should still show the navigation bars.
  */
-private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buildList {
+private val bottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = buildList {
   addAll(profileBottomNavPermittedDestinations)
   addAll(com.hedvig.android.feature.claimhistory.nav.profileBottomNavPermittedDestinations)
   addAll(insurancesBottomNavPermittedDestinations)
@@ -236,7 +236,7 @@ private val bottomNavPermittedDestinations: List<KClass<out Destination>> = buil
 /**
  * Destinations that must show the cross-sell bottom sheet after finishing some flow
  */
-private val crossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = buildList {
+private val crossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = buildList {
   // Screens that a member will end up in after finishing any of the following flows
   // 1. Moving flow
   // 2. Edit co-insured

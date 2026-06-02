@@ -23,16 +23,16 @@ import com.hedvig.android.feature.profile.navigation.SettingsDestinations
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.language.LanguageService
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.profileGraph(
-  settingsDestinationNestedGraphs: EntryProviderScope<Destination>.() -> Unit,
-  nestedGraphs: EntryProviderScope<Destination>.() -> Unit,
+fun EntryProviderScope<HedvigNavKey>.profileGraph(
+  settingsDestinationNestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
+  nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
   globalSnackBarState: GlobalSnackBarState,
   navigator: Navigator,
   popBackStackOrFinish: () -> Unit,

@@ -1,47 +1,47 @@
 package com.hedvig.android.feature.profile.navigation
 
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
 sealed interface ProfileDestination {
   @Serializable
-  data object Graph : ProfileDestination, Destination
+  data object Graph : ProfileDestination, HedvigNavKey
 
   @Serializable
-  data object Profile : ProfileDestination, Destination
+  data object Profile : ProfileDestination, HedvigNavKey
 
   @Serializable
-  data object ContactInfo : ProfileDestination, Destination
+  data object ContactInfo : ProfileDestination, HedvigNavKey
 }
 
 internal sealed interface ProfileDestinations {
   @Serializable
-  data object Eurobonus : ProfileDestinations, Destination
+  data object Eurobonus : ProfileDestinations, HedvigNavKey
 
   @Serializable
-  data object Certificates : ProfileDestinations, Destination
+  data object Certificates : ProfileDestinations, HedvigNavKey
 
   @Serializable
-  data object Information : ProfileDestinations, Destination
+  data object Information : ProfileDestinations, HedvigNavKey
 
   @Serializable
-  data object Licenses : ProfileDestinations, Destination
+  data object Licenses : ProfileDestinations, HedvigNavKey
 
   @Serializable
-  data object SettingsGraph : ProfileDestinations, Destination
+  data object SettingsGraph : ProfileDestinations, HedvigNavKey
 }
 
 internal sealed interface SettingsDestinations {
   @Serializable
-  data object Settings : SettingsDestinations, Destination
+  data object Settings : SettingsDestinations, HedvigNavKey
 }
 
-val profileBottomNavPermittedDestinations: List<KClass<out Destination>> = listOf(
+val profileBottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = listOf(
   ProfileDestinations.Eurobonus::class,
 )
 
 /*
 * Not saving navigation state when explicitly logging out from Profile
 */
-val destinationToExcludeFromSavingState: KClass<out Destination> = ProfileDestination.Profile::class
+val destinationToExcludeFromSavingState: KClass<out HedvigNavKey> = ProfileDestination.Profile::class

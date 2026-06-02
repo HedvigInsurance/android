@@ -1,7 +1,7 @@
 package com.hedvig.android.navigation.compose
 
 import androidx.compose.runtime.Stable
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlin.reflect.KClass
 
 /**
@@ -12,13 +12,13 @@ import kotlin.reflect.KClass
  */
 @Stable
 interface Navigator {
-  fun navigate(destination: Destination)
+  fun navigate(destination: HedvigNavKey)
 
   /**
    * Navigates to [destination] after popping up to the most recent entry of [popUpTo]. Replaces the
    * Nav2 `navigate(route, navOptions { popUpTo<T> { inclusive } })` pattern for in-flow navigation.
    */
-  fun navigate(destination: Destination, popUpTo: KClass<out Destination>, inclusive: Boolean)
+  fun navigate(destination: HedvigNavKey, popUpTo: KClass<out HedvigNavKey>, inclusive: Boolean)
 
   /** Pops the top entry. Returns false if the back stack is at its root (nothing popped). */
   fun popBackStack(): Boolean
@@ -30,38 +30,38 @@ interface Navigator {
    * Pops up to (and optionally including) the most recent entry of [klass]. Replaces Nav2
    * `typedPopBackStack<T>(inclusive)` / `navOptions { popUpTo<T> { inclusive } }`.
    */
-  fun popUpTo(klass: KClass<out Destination>, inclusive: Boolean)
+  fun popUpTo(klass: KClass<out HedvigNavKey>, inclusive: Boolean)
 
   /** Removes every entry of [klass] from the back stack. Replaces Nav2 `typedClearBackStack`. */
-  fun clearBackStackOf(klass: KClass<out Destination>)
+  fun clearBackStackOf(klass: KClass<out HedvigNavKey>)
 
   /**
    * Returns the most recent back-stack entry of [klass], or null if none. Replaces Nav2
    * `getRouteFromBackStackOrNull<T>()` — in Nav3 the key *is* the arguments.
    */
-  fun <T : Destination> findLastOrNull(klass: KClass<T>): T?
+  fun <T : HedvigNavKey> findLastOrNull(klass: KClass<T>): T?
 }
 
-inline fun <reified T : Destination> Navigator.popUpTo(inclusive: Boolean) = popUpTo(T::class, inclusive)
+inline fun <reified T : HedvigNavKey> Navigator.popUpTo(inclusive: Boolean) = popUpTo(T::class, inclusive)
 
-inline fun <reified T : Destination> Navigator.navigate(destination: Destination, inclusive: Boolean) =
+inline fun <reified T : HedvigNavKey> Navigator.navigate(destination: HedvigNavKey, inclusive: Boolean) =
   navigate(destination, T::class, inclusive)
 
-inline fun <reified T : Destination> Navigator.clearBackStackOf() = clearBackStackOf(T::class)
+inline fun <reified T : HedvigNavKey> Navigator.clearBackStackOf() = clearBackStackOf(T::class)
 
-inline fun <reified T : Destination> Navigator.findLastOrNull(): T? = findLastOrNull(T::class)
+inline fun <reified T : HedvigNavKey> Navigator.findLastOrNull(): T? = findLastOrNull(T::class)
 
-fun Navigator(backStack: MutableList<Destination>): Navigator = NavigatorImpl(backStack)
+fun Navigator(backStack: MutableList<HedvigNavKey>): Navigator = NavigatorImpl(backStack)
 
 @Stable
 internal class NavigatorImpl(
-  private val backStack: MutableList<Destination>,
+  private val backStack: MutableList<HedvigNavKey>,
 ) : Navigator {
-  override fun navigate(destination: Destination) {
+  override fun navigate(destination: HedvigNavKey) {
     backStack.add(destination)
   }
 
-  override fun navigate(destination: Destination, popUpTo: KClass<out Destination>, inclusive: Boolean) {
+  override fun navigate(destination: HedvigNavKey, popUpTo: KClass<out HedvigNavKey>, inclusive: Boolean) {
     popUpTo(popUpTo, inclusive)
     backStack.add(destination)
   }
@@ -74,7 +74,7 @@ internal class NavigatorImpl(
 
   override fun navigateUp(): Boolean = popBackStack()
 
-  override fun popUpTo(klass: KClass<out Destination>, inclusive: Boolean) {
+  override fun popUpTo(klass: KClass<out HedvigNavKey>, inclusive: Boolean) {
     val index = backStack.indexOfLast { klass.isInstance(it) }
     if (index == -1) return
     val removeFrom = if (inclusive) index else index + 1
@@ -83,11 +83,11 @@ internal class NavigatorImpl(
     }
   }
 
-  override fun clearBackStackOf(klass: KClass<out Destination>) {
+  override fun clearBackStackOf(klass: KClass<out HedvigNavKey>) {
     backStack.removeAll { klass.isInstance(it) }
   }
 
   @Suppress("UNCHECKED_CAST")
-  override fun <T : Destination> findLastOrNull(klass: KClass<T>): T? =
+  override fun <T : HedvigNavKey> findLastOrNull(klass: KClass<T>): T? =
     backStack.lastOrNull { klass.isInstance(it) } as T?
 }

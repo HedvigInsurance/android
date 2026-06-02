@@ -1,7 +1,7 @@
 package com.hedvig.android.navigation.compose
 
 import androidx.navigation3.runtime.deeplink.DeepLinkMatcher
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 
 /**
  * Each feature contributes one [DeepLinkMatcherProvider] into the Metro `AppScope` graph via `@ContributesIntoSet`.
@@ -10,5 +10,5 @@ import com.hedvig.android.navigation.common.Destination
  * that has to be edited (and can be forgotten) for every new feature.
  */
 interface DeepLinkMatcherProvider {
-  fun matchers(): List<DeepLinkMatcher<out Destination>>
+  fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>>
 }

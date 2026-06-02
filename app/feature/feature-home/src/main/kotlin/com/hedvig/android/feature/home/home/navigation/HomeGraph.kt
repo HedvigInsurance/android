@@ -9,15 +9,15 @@ import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.homeGraph(
-  nestedGraphs: EntryProviderScope<Destination>.() -> Unit,
+fun EntryProviderScope<HedvigNavKey>.homeGraph(
+  nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
   navigator: Navigator,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,

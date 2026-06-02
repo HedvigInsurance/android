@@ -4,13 +4,13 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.plus
 
 /**
- * Nav3 saves/restores the back stack across process death by serializing each [com.hedvig.android.navigation.common.Destination]
+ * Nav3 saves/restores the back stack across process death by serializing each [com.hedvig.android.navigation.common.HedvigNavKey]
  * key. Because the sealed hierarchies live across ~25 feature modules and we do not rely on JVM
  * reflection, each feature must register its subtypes polymorphically:
  *
  * ```
  * SerializersModule {
- *   polymorphic(Destination::class) {
+ *   polymorphic(HedvigNavKey::class) {
  *     subclass(MyFeatureDestination.Graph::class)
  *     subclass(MyFeatureDestination.Detail::class)
  *   }

@@ -22,14 +22,14 @@ import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestina
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.helpCenterGraph(
+fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
   navigator: Navigator,
   onNavigateUp: () -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,

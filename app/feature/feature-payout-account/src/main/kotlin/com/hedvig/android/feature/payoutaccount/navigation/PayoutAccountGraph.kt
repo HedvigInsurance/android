@@ -13,7 +13,7 @@ import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayo
 import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayoutViewModel
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -21,7 +21,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
 
-fun EntryProviderScope<Destination>.payoutAccountGraph(
+fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
   navigator: Navigator,
   globalSnackBarState: GlobalSnackBarState,
   navigateToConnectPayment: () -> Unit,

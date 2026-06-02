@@ -9,14 +9,14 @@ import com.hedvig.android.feature.chat.CbmChatDestination
 import com.hedvig.android.feature.chat.CbmChatViewModel
 import com.hedvig.android.feature.chat.inbox.InboxDestination
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.cbmChatGraph(
+fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
   hedvigBuildConstants: HedvigBuildConstants,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,

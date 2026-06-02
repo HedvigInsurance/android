@@ -13,7 +13,7 @@ import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistor
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewDestination
 import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificateOverviewViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
@@ -22,7 +22,7 @@ import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.travelCertificateGraph(
+fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
   navigator: Navigator,
   applicationId: String,
   onNavigateToCoInsuredAddInfo: (String) -> Unit,

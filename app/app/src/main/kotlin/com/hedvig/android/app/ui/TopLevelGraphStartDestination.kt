@@ -5,10 +5,10 @@ import com.hedvig.android.feature.home.home.navigation.HomeDestination
 import com.hedvig.android.feature.insurances.navigation.InsurancesDestination
 import com.hedvig.android.feature.payments.navigation.PaymentsDestination
 import com.hedvig.android.feature.profile.navigation.ProfileDestination
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.TopLevelGraph
 
-internal val TopLevelGraph.startDestination: Destination
+internal val TopLevelGraph.startDestination: HedvigNavKey
   get() = when (this) {
     TopLevelGraph.Home -> HomeDestination.Home
     TopLevelGraph.Insurances -> InsurancesDestination.Insurances

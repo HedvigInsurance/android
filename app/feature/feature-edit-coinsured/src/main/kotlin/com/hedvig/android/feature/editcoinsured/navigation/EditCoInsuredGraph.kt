@@ -12,13 +12,13 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestinati
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageDestination
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigate
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<Destination>.editCoInsuredGraph(navigator: Navigator) {
+fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(navigator: Navigator) {
   navdestination<EditCoInsuredTriage> {
     val triageContractId = contractId
     val triageType = type

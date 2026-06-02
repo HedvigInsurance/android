@@ -3,7 +3,7 @@ package com.hedvig.android.navigation.compose
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavEntry
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlin.reflect.KClass
 
 /**
@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
  * (see the androidMain `entryTransitionMetadata` helper). `NavDisplay` reads that metadata and falls
  * back to its default transitions when absent, so plain entries need no metadata at all.
  */
-inline fun <reified T : Destination> EntryProviderScope<Destination>.navdestination(
+inline fun <reified T : HedvigNavKey> EntryProviderScope<HedvigNavKey>.navdestination(
   metadata: Map<String, Any> = emptyMap(),
   crossinline content: @Composable T.() -> Unit,
 ) {
@@ -29,9 +29,9 @@ inline fun <reified T : Destination> EntryProviderScope<Destination>.navdestinat
  * child entries into the same flat provider. [startDestination] is kept for call-site parity and
  * documents which key seeds the flow; the back stack itself decides the actual start.
  */
-inline fun EntryProviderScope<Destination>.navgraph(
-  @Suppress("UNUSED_PARAMETER") startDestination: KClass<out Destination>,
-  builder: EntryProviderScope<Destination>.() -> Unit,
+inline fun EntryProviderScope<HedvigNavKey>.navgraph(
+  @Suppress("UNUSED_PARAMETER") startDestination: KClass<out HedvigNavKey>,
+  builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
 ) {
   builder()
 }

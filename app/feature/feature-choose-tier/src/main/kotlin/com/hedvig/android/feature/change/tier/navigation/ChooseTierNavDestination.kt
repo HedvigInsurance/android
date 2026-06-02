@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.change.tier.navigation
 
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -18,13 +18,13 @@ data class StartTierFlowDestination(
   /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer.changeTierWithContractId] */
   @SerialName("contractId")
   val insuranceId: String,
-) : Destination
+) : HedvigNavKey
 
 /**
  * The start of the flow, where we have can choose insurance to change its tier
  */
 @Serializable
-data object StartTierFlowChooseInsuranceDestination : Destination
+data object StartTierFlowChooseInsuranceDestination : HedvigNavKey
 
 @Serializable
 data class ChooseTierGraphDestination(
@@ -32,16 +32,16 @@ data class ChooseTierGraphDestination(
    * The ID to the contract and the change tier intent info with activation date, current tier level and all quote ids
    */
   val parameters: InsuranceCustomizationParameters,
-) : Destination {
-  companion object : DestinationNavTypeAware {
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
     override val typeList: List<KType> = listOf(typeOf<InsuranceCustomizationParameters>())
   }
 }
 
 internal sealed interface ChooseTierDestination {
   @Serializable
-  data class Comparison(val comparisonParameters: ComparisonParameters) : ChooseTierDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  data class Comparison(val comparisonParameters: ComparisonParameters) : ChooseTierDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
     }
   }
@@ -49,15 +49,15 @@ internal sealed interface ChooseTierDestination {
   @Serializable
   data class Summary(
     val params: SummaryParameters,
-  ) : ChooseTierDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  ) : ChooseTierDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
     }
   }
 
   @Serializable
-  data class SubmitSuccess(val activationDate: LocalDate) : ChooseTierDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  data class SubmitSuccess(val activationDate: LocalDate) : ChooseTierDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<LocalDate>(),
       )
@@ -65,7 +65,7 @@ internal sealed interface ChooseTierDestination {
   }
 
   @Serializable
-  data object SubmitFailure : ChooseTierDestination, Destination
+  data object SubmitFailure : ChooseTierDestination, HedvigNavKey
 }
 
 @Serializable

@@ -10,10 +10,10 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 
 /**
- * Nav3 replacement for the Nav2 `NavHost`. Renders [backStack] (a list of [Destination] keys) and
+ * Nav3 replacement for the Nav2 `NavHost`. Renders [backStack] (a list of [HedvigNavKey] keys) and
  * resolves each key to a [androidx.navigation3.runtime.NavEntry] via the [builder] DSL
  * (`navgraph`/`navdestination`).
  *
@@ -27,14 +27,14 @@ import com.hedvig.android.navigation.common.Destination
  */
 @Composable
 fun HedvigNavDisplay(
-  backStack: MutableList<Destination>,
+  backStack: MutableList<HedvigNavKey>,
   onBack: () -> Unit,
   enterTransition: EnterTransition,
   exitTransition: ExitTransition,
   popEnterTransition: EnterTransition,
   popExitTransition: ExitTransition,
   modifier: Modifier = Modifier,
-  builder: EntryProviderScope<Destination>.() -> Unit,
+  builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
 ) {
   NavDisplay(
     backStack = backStack,

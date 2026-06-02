@@ -74,7 +74,7 @@ import com.hedvig.android.feature.travelcertificate.navigation.travelCertificate
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.HedvigNavDisplay
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.findLastOrNull
@@ -353,7 +353,7 @@ internal fun HedvigNavHost(
       navigator = navigator,
       onNavigateUp = navigator::navigateUp,
       onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
-        val destination: Destination = when (quickLinkDestination) {
+        val destination: HedvigNavKey = when (quickLinkDestination) {
           QuickLinkChangeAddress -> {
             navigateToMovingFlow()
             return@onNavigateToQuickLink
@@ -412,7 +412,7 @@ internal fun HedvigNavHost(
   }
 }
 
-private fun EntryProviderScope<Destination>.nestedHomeGraphs(
+private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
   navigator: Navigator,
   appPackageId: String,
   shouldShowRequestPermissionRationale: (String) -> Boolean,

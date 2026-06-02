@@ -3,8 +3,8 @@ package com.hedvig.android.navigation.common
 import androidx.navigation3.runtime.NavKey
 import kotlin.reflect.KType
 
-interface Destination : NavKey
+interface HedvigNavKey : NavKey
 
-interface DestinationNavTypeAware {
+interface NavKeyTypeAware {
   val typeList: List<KType>
 }

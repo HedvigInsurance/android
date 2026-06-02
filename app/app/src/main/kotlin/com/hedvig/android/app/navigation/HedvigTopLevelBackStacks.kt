@@ -11,7 +11,7 @@ import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.login.navigation.LoginDestination
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.core.TopLevelGraph
 
@@ -29,14 +29,14 @@ import com.hedvig.android.navigation.core.TopLevelGraph
  * and keep mutating the right stack as tabs switch.
  *
  * Note: we cannot use Nav3's `rememberNavBackStack` here — it is typed `NavBackStack<NavKey>`, while
- * the whole feature DSL (`EntryProviderScope<Destination>`, `Navigator(MutableList<Destination>)`)
- * is `Destination`-typed and `NavDisplay<Destination>` needs `List<out Destination>`. Per-tab
- * [mutableStateListOf] of [Destination] is the type-compatible equivalent.
+ * the whole feature DSL (`EntryProviderScope<HedvigNavKey>`, `Navigator(MutableList<HedvigNavKey>)`)
+ * is `HedvigNavKey`-typed and `NavDisplay<HedvigNavKey>` needs `List<out HedvigNavKey>`. Per-tab
+ * [mutableStateListOf] of [HedvigNavKey] is the type-compatible equivalent.
  */
 @Stable
 internal class HedvigTopLevelBackStacks(
-  private val tabBackStacks: Map<TopLevelGraph, SnapshotStateList<Destination>>,
-  private val loginBackStack: SnapshotStateList<Destination>,
+  private val tabBackStacks: Map<TopLevelGraph, SnapshotStateList<HedvigNavKey>>,
+  private val loginBackStack: SnapshotStateList<HedvigNavKey>,
 ) {
   var isLoggedIn: Boolean by mutableStateOf(false)
     private set
@@ -45,11 +45,11 @@ internal class HedvigTopLevelBackStacks(
     private set
 
   /** The list currently rendered by the NavDisplay. */
-  val currentBackStack: SnapshotStateList<Destination>
+  val currentBackStack: SnapshotStateList<HedvigNavKey>
     get() = if (isLoggedIn) tabBackStacks.getValue(currentTopLevel) else loginBackStack
 
   /** The destination on top of the rendered stack — replaces Nav2's `navController.currentDestination`. */
-  val currentDestination: Destination?
+  val currentDestination: HedvigNavKey?
     get() = currentBackStack.lastOrNull()
 
   /**
@@ -100,9 +100,9 @@ internal class HedvigTopLevelBackStacks(
 @Composable
 internal fun rememberHedvigTopLevelBackStacks(): HedvigTopLevelBackStacks {
   val tabBackStacks = TopLevelGraph.entries.associateWith { graph ->
-    remember(graph) { mutableStateListOf<Destination>(graph.startDestination) }
+    remember(graph) { mutableStateListOf<HedvigNavKey>(graph.startDestination) }
   }
-  val loginBackStack = remember { mutableStateListOf<Destination>(LoginDestination) }
+  val loginBackStack = remember { mutableStateListOf<HedvigNavKey>(LoginDestination) }
   return remember(tabBackStacks, loginBackStack) {
     HedvigTopLevelBackStacks(tabBackStacks, loginBackStack)
   }
@@ -114,37 +114,37 @@ internal fun rememberHedvigTopLevelBackStacks(): HedvigTopLevelBackStacks {
  * changes, without rebuilding the navigator (and therefore the captured graph builders).
  */
 private class ForwardingBackStack(
-  private val current: () -> MutableList<Destination>,
-) : MutableList<Destination> by MutableListDelegate(current)
+  private val current: () -> MutableList<HedvigNavKey>,
+) : MutableList<HedvigNavKey> by MutableListDelegate(current)
 
 private class MutableListDelegate(
-  private val current: () -> MutableList<Destination>,
-) : MutableList<Destination> {
-  private val target: MutableList<Destination> get() = current()
+  private val current: () -> MutableList<HedvigNavKey>,
+) : MutableList<HedvigNavKey> {
+  private val target: MutableList<HedvigNavKey> get() = current()
 
   override val size: Int get() = target.size
 
-  override fun contains(element: Destination) = target.contains(element)
+  override fun contains(element: HedvigNavKey) = target.contains(element)
 
-  override fun containsAll(elements: Collection<Destination>) = target.containsAll(elements)
+  override fun containsAll(elements: Collection<HedvigNavKey>) = target.containsAll(elements)
 
   override fun get(index: Int) = target[index]
 
-  override fun indexOf(element: Destination) = target.indexOf(element)
+  override fun indexOf(element: HedvigNavKey) = target.indexOf(element)
 
   override fun isEmpty() = target.isEmpty()
 
   override fun iterator() = target.iterator()
 
-  override fun lastIndexOf(element: Destination) = target.lastIndexOf(element)
+  override fun lastIndexOf(element: HedvigNavKey) = target.lastIndexOf(element)
 
-  override fun add(element: Destination) = target.add(element)
+  override fun add(element: HedvigNavKey) = target.add(element)
 
-  override fun add(index: Int, element: Destination) = target.add(index, element)
+  override fun add(index: Int, element: HedvigNavKey) = target.add(index, element)
 
-  override fun addAll(index: Int, elements: Collection<Destination>) = target.addAll(index, elements)
+  override fun addAll(index: Int, elements: Collection<HedvigNavKey>) = target.addAll(index, elements)
 
-  override fun addAll(elements: Collection<Destination>) = target.addAll(elements)
+  override fun addAll(elements: Collection<HedvigNavKey>) = target.addAll(elements)
 
   override fun clear() = target.clear()
 
@@ -152,15 +152,15 @@ private class MutableListDelegate(
 
   override fun listIterator(index: Int) = target.listIterator(index)
 
-  override fun remove(element: Destination) = target.remove(element)
+  override fun remove(element: HedvigNavKey) = target.remove(element)
 
-  override fun removeAll(elements: Collection<Destination>) = target.removeAll(elements)
+  override fun removeAll(elements: Collection<HedvigNavKey>) = target.removeAll(elements)
 
   override fun removeAt(index: Int) = target.removeAt(index)
 
-  override fun retainAll(elements: Collection<Destination>) = target.retainAll(elements)
+  override fun retainAll(elements: Collection<HedvigNavKey>) = target.retainAll(elements)
 
-  override fun set(index: Int, element: Destination) = target.set(index, element)
+  override fun set(index: Int, element: HedvigNavKey) = target.set(index, element)
 
   override fun subList(fromIndex: Int, toIndex: Int) = target.subList(fromIndex, toIndex)
 }

@@ -6,8 +6,8 @@ import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navdestination
@@ -39,8 +39,8 @@ internal data class SummaryParameters(
 data class AddonRemoveGraphDestination(
   val insuranceId: ContractId?,
   val preselectedAddonVariant: AddonVariant?,
-) : Destination {
-  companion object : DestinationNavTypeAware {
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
     override val typeList: List<KType> = listOf(
       typeOf<ContractId?>(),
       typeOf<AddonVariant?>(),
@@ -53,8 +53,8 @@ internal sealed interface AddonRemoveDestination {
   data class ChooseAddonDestination(
     val insuranceId: ContractId,
     val preselectedAddonVariant: AddonVariant?,
-  ) : AddonRemoveDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  ) : AddonRemoveDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<ContractId>(),
         typeOf<AddonVariant?>(),
@@ -65,15 +65,15 @@ internal sealed interface AddonRemoveDestination {
   @Serializable
   data class Summary(
     val params: SummaryParameters,
-  ) : AddonRemoveDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  ) : AddonRemoveDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
     }
   }
 
   @Serializable
-  data class SubmitSuccess(val activationDate: LocalDate) : AddonRemoveDestination, Destination {
-    companion object : DestinationNavTypeAware {
+  data class SubmitSuccess(val activationDate: LocalDate) : AddonRemoveDestination, HedvigNavKey {
+    companion object : NavKeyTypeAware {
       override val typeList: List<KType> = listOf(
         typeOf<LocalDate>(),
       )
@@ -81,10 +81,10 @@ internal sealed interface AddonRemoveDestination {
   }
 
   @Serializable
-  data object SubmitFailure : AddonRemoveDestination, Destination
+  data object SubmitFailure : AddonRemoveDestination, HedvigNavKey
 }
 
-fun EntryProviderScope<Destination>.removeAddonsNavGraph(navigator: Navigator) {
+fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(navigator: Navigator) {
   // Flow anchor / insurance picker. When seeded with an insuranceId it jumps straight to the addon
   // picker (popping itself, so back leaves the flow); otherwise the member picks an insurance.
   navdestination<AddonRemoveGraphDestination> {
@@ -193,13 +193,13 @@ fun EntryProviderScope<Destination>.removeAddonsNavGraph(navigator: Navigator) {
  * [AddonRemoveDestination.ChooseAddonDestination] when the flow was seeded with an insuranceId (the
  * anchor having popped itself during the jump to the addon picker).
  */
-private fun Navigator.removeAddonFlowAnchorClass(): KClass<out Destination> =
+private fun Navigator.removeAddonFlowAnchorClass(): KClass<out HedvigNavKey> =
   if (findLastOrNull<AddonRemoveGraphDestination>() != null) {
     AddonRemoveGraphDestination::class
   } else {
     AddonRemoveDestination.ChooseAddonDestination::class
   }
 
-private fun Navigator.navigateExitingRemoveAddonFlow(destination: Destination) {
+private fun Navigator.navigateExitingRemoveAddonFlow(destination: HedvigNavKey) {
   navigate(destination, removeAddonFlowAnchorClass(), inclusive = true)
 }

@@ -7,7 +7,7 @@ import com.hedvig.android.feature.chip.id.ui.AddChipIdDestination
 import com.hedvig.android.feature.chip.id.ui.AddChipIdViewModel
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdDestination
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navdestination
@@ -15,7 +15,7 @@ import com.hedvig.android.navigation.compose.navigate
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<Destination>.chipIdGraph(
+fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
   navigator: Navigator,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,

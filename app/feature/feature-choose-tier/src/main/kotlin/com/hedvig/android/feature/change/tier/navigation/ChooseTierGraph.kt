@@ -12,7 +12,7 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.ChangeTierSummaryDe
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierFailureScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navigate
@@ -23,7 +23,7 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<Destination>.changeTierGraph(navigator: Navigator, onNavigateToNewConversation: () -> Unit) {
+fun EntryProviderScope<HedvigNavKey>.changeTierGraph(navigator: Navigator, onNavigateToNewConversation: () -> Unit) {
   navdestination<StartTierFlowDestination> {
     val insuranceId = this.insuranceId
     val viewModel: StartTierFlowViewModel =

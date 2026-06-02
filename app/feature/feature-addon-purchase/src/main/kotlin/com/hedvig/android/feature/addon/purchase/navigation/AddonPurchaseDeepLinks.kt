@@ -6,7 +6,7 @@ import androidx.navigation3.runtime.deeplink.UriDeepLinkMatcher
 import androidx.navigation3.runtime.deeplink.UriMatchResult
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import dev.zacsweers.metro.ContributesIntoSet
@@ -17,7 +17,7 @@ import dev.zacsweers.metro.Inject
 internal class AddonPurchaseDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
-  override fun matchers(): List<DeepLinkMatcher<out Destination>> =
+  override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
     (container.travelAddon + container.travelAddonWithContractId).map { pattern ->
       AddonDeepLinkMatcher(DeepLinkUri(pattern), AddonBannerSource.TRAVEL_DEEPLINK)
     } +

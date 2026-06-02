@@ -21,7 +21,7 @@ import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewMode
 import com.hedvig.android.feature.addon.purchase.ui.travelinsuranceplusexplanation.TravelInsurancePlusExplanationDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navdestination
@@ -37,7 +37,7 @@ internal data class PerilComparisonParams(
   val perilList: List<Pair<String?, List<TravelInsurancePlusExplanation.TravelPerilData>>>,
 )
 
-fun EntryProviderScope<Destination>.addonPurchaseNavGraph(
+fun EntryProviderScope<HedvigNavKey>.addonPurchaseNavGraph(
   navigator: Navigator,
   popBackStack: () -> Unit,
   finishApp: () -> Unit,
