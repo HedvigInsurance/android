@@ -266,7 +266,7 @@ internal fun HedvigNavHost(
       hedvigBuildConstants = hedvigBuildConstants,
     )
     paymentsGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       languageService = languageService,
       hedvigBuildConstants = hedvigBuildConstants,
       navigateToConnectPayment = navigateToConnectPayment,

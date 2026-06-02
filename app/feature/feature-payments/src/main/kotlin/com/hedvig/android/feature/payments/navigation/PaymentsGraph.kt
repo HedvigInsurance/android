@@ -20,18 +20,18 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
-import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
-  navigator: Navigator,
+  backStack: MutableList<HedvigNavKey>,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
@@ -39,49 +39,45 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
   openConversation: () -> Unit,
 ) {
   navgraph(
-    startDestination = PaymentsDestination.Payments::class,
+    startDestination = PaymentsKey::class,
   ) {
-    navdestination<PaymentsDestination.Payments>(
+    navdestination<PaymentsKey>(
       metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit),
     ) {
       val viewModel: PaymentsViewModel = metroViewModel()
       PaymentsDestination(
         viewModel = viewModel,
         onPaymentHistoryClicked = dropUnlessResumed {
-          navigator.navigate(PaymentsDestinations.History)
+          backStack.add(PaymentHistoryKey)
         },
         onPayoutAccountClicked = dropUnlessResumed { navigateToPayoutAccount() },
         onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
         onDiscountClicked = dropUnlessResumed {
-          navigator.navigate(PaymentsDestinations.Discounts)
+          backStack.add(DiscountsKey)
         },
         onPaymentClicked = dropUnlessResumed { id: String? ->
-          navigator.navigate(PaymentsDestinations.Details(id))
+          backStack.add(PaymentDetailsKey(id))
         },
         onMemberPaymentDetailsClicked = dropUnlessResumed {
-          navigator.navigate(PaymentsDestinations.MemberPaymentDetails)
+          backStack.add(MemberPaymentDetailsKey)
         },
         onOpenManualCharge = {
-          navigator.navigate(PaymentsDestinations.ManualCharge)
+          backStack.add(ManualChargeKey)
         },
       )
     }
 
-    navdestination<PaymentsDestinations.ManualCharge> {
+    navdestination<ManualChargeKey> {
       val viewModel: ManualChargeViewModel = metroViewModel()
       ManualChargeDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
-          navigator.navigate(
-            PaymentsDestinations.Details(
-              chargeId,
-            ),
-          )
+          backStack.add(PaymentDetailsKey(chargeId))
         },
         onNavigateToSuccess = { showCancellationWarning ->
-          navigator.navigate<PaymentsDestinations.ManualCharge>(
-            PaymentsDestinations.ManualChargeSuccess(
+          backStack.navigateAndPopUpTo<ManualChargeKey>(
+            ManualChargeSuccessKey(
               showCancellationWarning = showCancellationWarning,
             ),
             inclusive = true,
@@ -91,39 +87,35 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
       )
     }
 
-    navdestination<PaymentsDestinations.ManualChargeSuccess> {
+    navdestination<ManualChargeSuccessKey> {
       ManualChargeSuccessDestination(
         this.showCancellationWarning,
-        navigator::navigateUp,
+        backStack::navigateUp,
       )
     }
 
-    navdestination<PaymentsDestinations.Details> {
+    navdestination<PaymentDetailsKey> {
       val memberChargeId = this.memberChargeId
       val viewModel: PaymentDetailsViewModel =
         assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModel.Factory> { create(memberChargeId) }
       PaymentDetailsDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
       )
     }
 
-    navdestination<PaymentsDestinations.History> {
+    navdestination<PaymentHistoryKey> {
       val viewModel: PaymentHistoryViewModel = metroViewModel()
       PaymentHistoryDestination(
         viewModel = viewModel,
         onChargeClicked = dropUnlessResumed { memberChargeId: String ->
-          navigator.navigate(
-            PaymentsDestinations.Details(
-              memberChargeId,
-            ),
-          )
+          backStack.add(PaymentDetailsKey(memberChargeId))
         },
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
       )
     }
 
-    navdestination<PaymentsDestinations.Forever> {
+    navdestination<ForeverKey> {
       val viewModel: ForeverViewModel = metroViewModel()
       ForeverDestination(
         viewModel = viewModel,
@@ -132,25 +124,23 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
       )
     }
 
-    navdestination<PaymentsDestinations.Discounts> {
+    navdestination<DiscountsKey> {
       val viewModel: DiscountsViewModel = metroViewModel()
       DiscountsDestination(
         viewModel = viewModel,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
         navigateToForever = dropUnlessResumed {
-          navigator.navigate(
-            PaymentsDestinations.Forever,
-          )
+          backStack.add(ForeverKey)
         },
       )
     }
 
-    navdestination<PaymentsDestinations.MemberPaymentDetails> {
+    navdestination<MemberPaymentDetailsKey> {
       val viewModel: MemberPaymentDetailsViewModel = metroViewModel()
       MemberPaymentDetailsDestination(
         viewModel,
         onChangeBankAccount = navigateToConnectPayment,
-        navigateUp = navigator::navigateUp,
+        navigateUp = backStack::navigateUp,
       )
     }
   }

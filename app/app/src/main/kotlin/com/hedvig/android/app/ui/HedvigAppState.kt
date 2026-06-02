@@ -24,7 +24,7 @@ import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetP
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.insurances.navigation.insurancesBottomNavPermittedDestinations
 import com.hedvig.android.feature.insurances.navigation.insurancesCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.payments.navigation.PaymentsDestination
+import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.feature.profile.navigation.profileBottomNavPermittedDestinations
 import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
@@ -216,7 +216,7 @@ private fun HedvigNavKey.isTopLevelStartDestination(): Boolean {
     is HomeKey,
     is InsurancesKey,
     is ForeverDestination.Forever,
-    is PaymentsDestination.Payments,
+    is PaymentsKey,
     is ProfileKey,
     -> true
 
