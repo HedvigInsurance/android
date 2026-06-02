@@ -19,6 +19,10 @@ kotlin {
       implementation(libs.kotlinx.serialization.json)
       implementation(projects.navigationCommon)
     }
+    commonTest.dependencies {
+      implementation(libs.assertK)
+      implementation(libs.kotlin.test)
+    }
     androidMain.dependencies {
       implementation(libs.androidx.navigation3.ui)
       implementation(libs.androidx.lifecycle.viewmodel.navigation3)
