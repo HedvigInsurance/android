@@ -1,0 +1,11 @@
+name: license-inventory
+on:
+  schedule:
+    - cron: "0 5 * * 1" # Mondays ~06:00 Europe/Stockholm
+  workflow_dispatch:
+jobs:
+  inventory:
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: HedvigInsurance/prod-env/.github/workflows/license-inventory.yml@master
