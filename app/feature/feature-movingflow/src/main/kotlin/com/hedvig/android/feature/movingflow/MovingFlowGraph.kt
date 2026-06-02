@@ -1,7 +1,6 @@
 package com.hedvig.android.feature.movingflow
 
 import androidx.navigation3.runtime.EntryProviderScope
-import com.hedvig.android.feature.movingflow.MovingFlowDestinations.EnterNewAddress
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationDestination
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModel
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleDestination
@@ -17,9 +16,10 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
-import com.hedvig.android.navigation.compose.Navigator
 import com.hedvig.android.navigation.compose.navdestination
-import com.hedvig.android.navigation.compose.navigate
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.navigateUp
+import com.hedvig.android.navigation.compose.popBackStack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
@@ -32,114 +32,109 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object MovingFlowGraphDestination : HedvigNavKey
+data object SelectContractForMovingKey : HedvigNavKey
 
 @Serializable
-data object SelectContractForMoving : HedvigNavKey
+internal data class HousingTypeKey(val moveIntentId: String) : HedvigNavKey
 
-internal sealed interface MovingFlowDestinations {
-  @Serializable
-  data class HousingType(val moveIntentId: String) : MovingFlowDestinations, HedvigNavKey
+@Serializable
+internal data class EnterNewAddressKey(val moveIntentId: String) : HedvigNavKey
 
-  @Serializable
-  data class EnterNewAddress(val moveIntentId: String) : MovingFlowDestinations, HedvigNavKey
+@Serializable
+internal data class AddHouseInformationKey(
+  val moveIntentId: String,
+) : HedvigNavKey
 
-  @Serializable
-  data class AddHouseInformation(
-    val moveIntentId: String,
-  ) : MovingFlowDestinations, HedvigNavKey
+@Serializable
+internal data class ChoseCoverageLevelAndDeductibleKey(
+  val moveIntentId: String,
+) : HedvigNavKey
 
-  @Serializable
-  data class ChoseCoverageLevelAndDeductible(
-    val moveIntentId: String,
-  ) : MovingFlowDestinations, HedvigNavKey
-
-  @Serializable
-  data class CompareCoverage(val comparisonParameters: ComparisonParameters) : MovingFlowDestinations, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
-    }
-  }
-
-  @Serializable
-  data class Summary(
-    val moveIntentId: String,
-    val homeQuoteId: String,
-  ) : MovingFlowDestinations, HedvigNavKey
-
-  @Serializable
-  data class SuccessfulMove(
-    val moveDate: LocalDate,
-  ) : MovingFlowDestinations, HedvigNavKey {
-    companion object : NavKeyTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<LocalDate>())
-    }
+@Serializable
+internal data class CompareCoverageKey(val comparisonParameters: ComparisonParameters) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
   }
 }
 
-fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(navigator: Navigator, goToChat: () -> Unit) {
-  navdestination<SelectContractForMoving> {
+@Serializable
+internal data class SummaryKey(
+  val moveIntentId: String,
+  val homeQuoteId: String,
+) : HedvigNavKey
+
+@Serializable
+internal data class SuccessfulMoveKey(
+  val moveDate: LocalDate,
+) : HedvigNavKey {
+  companion object : NavKeyTypeAware {
+    override val typeList: List<KType> = listOf(typeOf<LocalDate>())
+  }
+}
+
+fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<HedvigNavKey>, goToChat: () -> Unit) {
+  navdestination<SelectContractForMovingKey> {
     SelectContractDestination(
       viewModel = metroViewModel<SelectContractViewModel>(),
-      navigateUp = navigator::navigateUp,
-      exitFlow = { navigator.popUpTo<SelectContractForMoving>(inclusive = true) },
+      navigateUp = backStack::navigateUp,
+      exitFlow = { backStack.popUpTo<SelectContractForMovingKey>(inclusive = true) },
       onNavigateToNextStep = { moveIntentId, shouldPopUp ->
         if (shouldPopUp) {
-          navigator.navigate<SelectContractForMoving>(
-            MovingFlowDestinations.HousingType(moveIntentId),
+          backStack.navigateAndPopUpTo<SelectContractForMovingKey>(
+            HousingTypeKey(moveIntentId),
             inclusive = true,
           )
         } else {
-          navigator.navigate(MovingFlowDestinations.HousingType(moveIntentId))
+          backStack.add(HousingTypeKey(moveIntentId))
         }
       },
       goToChat = goToChat,
     )
   }
 
-  navdestination<MovingFlowDestinations.HousingType> {
+  navdestination<HousingTypeKey> {
     val moveIntentId = this.moveIntentId
     HousingTypeDestination(
       viewModel = metroViewModel<HousingTypeViewModel>(),
-      navigateUp = navigator::navigateUp,
-      exitFlow = { navigator.exitMovingFlow() },
+      navigateUp = backStack::navigateUp,
+      exitFlow = { backStack.exitMovingFlow() },
       onNavigateToNextStep = {
-        navigator.navigate(EnterNewAddress(moveIntentId))
+        backStack.add(EnterNewAddressKey(moveIntentId))
       },
     )
   }
-  navdestination<EnterNewAddress> {
+  navdestination<EnterNewAddressKey> {
     val moveIntentId = this.moveIntentId
     EnterNewAddressDestination(
       viewModel = assistedMetroViewModel<EnterNewAddressViewModel, EnterNewAddressViewModel.Factory> {
         create(moveIntentId)
       },
-      navigateUp = navigator::navigateUp,
-      popBackStack = navigator::popBackStack,
-      exitFlow = { navigator.exitMovingFlow() },
+      navigateUp = backStack::navigateUp,
+      popBackStack = backStack::popBackStack,
+      exitFlow = { backStack.exitMovingFlow() },
       onNavigateToAddHouseInformation = {
-        navigator.navigate(MovingFlowDestinations.AddHouseInformation(moveIntentId))
+        backStack.add(AddHouseInformationKey(moveIntentId))
       },
       onNavigateToChoseCoverageLevelAndDeductible = {
-        navigator.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
+        backStack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
       },
     )
   }
-  navdestination<MovingFlowDestinations.AddHouseInformation> {
+  navdestination<AddHouseInformationKey> {
     val moveIntentId = this.moveIntentId
     AddHouseInformationDestination(
       viewModel = assistedMetroViewModel<AddHouseInformationViewModel, AddHouseInformationViewModel.Factory> {
         create(moveIntentId)
       },
-      navigateUp = navigator::navigateUp,
-      popBackStack = navigator::popBackStack,
-      exitFlow = { navigator.exitMovingFlow() },
+      navigateUp = backStack::navigateUp,
+      popBackStack = backStack::popBackStack,
+      exitFlow = { backStack.exitMovingFlow() },
       onNavigateToChoseCoverageLevelAndDeductible = {
-        navigator.navigate(MovingFlowDestinations.ChoseCoverageLevelAndDeductible(moveIntentId))
+        backStack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
       },
     )
   }
-  navdestination<MovingFlowDestinations.ChoseCoverageLevelAndDeductible> {
+  navdestination<ChoseCoverageLevelAndDeductibleKey> {
     val moveIntentId = this.moveIntentId
     ChoseCoverageLevelAndDeductibleDestination(
       viewModel = assistedMetroViewModel<
@@ -148,19 +143,19 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(navigator: Navigator, goToC
       > {
         create(moveIntentId)
       },
-      navigateUp = navigator::navigateUp,
-      popBackStack = navigator::popBackStack,
-      exitFlow = { navigator.exitMovingFlow() },
+      navigateUp = backStack::navigateUp,
+      popBackStack = backStack::popBackStack,
+      exitFlow = { backStack.exitMovingFlow() },
       onNavigateToSummaryScreen = { homeQuoteId ->
-        navigator.navigate(MovingFlowDestinations.Summary(moveIntentId, homeQuoteId))
+        backStack.add(SummaryKey(moveIntentId, homeQuoteId))
       },
       navigateToComparison = { parameters ->
-        navigator.navigate(MovingFlowDestinations.CompareCoverage(parameters))
+        backStack.add(CompareCoverageKey(parameters))
       },
     )
   }
 
-  navdestination<MovingFlowDestinations.CompareCoverage> {
+  navdestination<CompareCoverageKey> {
     val comparisonParameters = this.comparisonParameters
     val viewModel: ComparisonViewModel =
       assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
@@ -168,44 +163,44 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(navigator: Navigator, goToC
       }
     ComparisonDestination(
       viewModel = viewModel,
-      navigateUp = navigator::navigateUp,
+      navigateUp = backStack::navigateUp,
     )
   }
 
-  navdestination<MovingFlowDestinations.Summary> {
+  navdestination<SummaryKey> {
     val summaryRoute = this
     SummaryDestination(
       viewModel = assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
         create(summaryRoute)
       },
-      navigateUp = navigator::navigateUp,
-      navigateBack = navigator::popBackStack,
-      exitFlow = { navigator.exitMovingFlow() },
+      navigateUp = backStack::navigateUp,
+      navigateBack = backStack::popBackStack,
+      exitFlow = { backStack.exitMovingFlow() },
       onNavigateToFinishedScreen = { moveDate ->
-        navigator.popUpTo<SelectContractForMoving>(inclusive = true)
-        navigator.navigate<MovingFlowDestinations.HousingType>(
-          MovingFlowDestinations.SuccessfulMove(moveDate),
+        backStack.popUpTo<SelectContractForMovingKey>(inclusive = true)
+        backStack.navigateAndPopUpTo<HousingTypeKey>(
+          SuccessfulMoveKey(moveDate),
           inclusive = true,
         )
       },
     )
   }
 
-  navdestination<MovingFlowDestinations.SuccessfulMove> {
+  navdestination<SuccessfulMoveKey> {
     SuccessfulMoveDestination(
       moveDate = moveDate,
-      navigateUp = navigator::navigateUp,
-      popBackStack = navigator::popBackStack,
+      navigateUp = backStack::navigateUp,
+      popBackStack = backStack::popBackStack,
     )
   }
 }
 
 /**
  * Exits the moving flow regardless of which entry seeded it: the flow is rooted either at
- * [SelectContractForMoving] (deep-link entry) or at [MovingFlowDestinations.HousingType] (direct
+ * [SelectContractForMovingKey] (deep-link entry) or at [HousingTypeKey] (direct
  * entry), so both are popped inclusively to leave nothing behind.
  */
-private fun Navigator.exitMovingFlow() {
-  popUpTo<MovingFlowDestinations.HousingType>(inclusive = true)
-  popUpTo<SelectContractForMoving>(inclusive = true)
+private fun MutableList<HedvigNavKey>.exitMovingFlow() {
+  popUpTo<HousingTypeKey>(inclusive = true)
+  popUpTo<SelectContractForMovingKey>(inclusive = true)
 }

@@ -15,5 +15,5 @@ internal class MovingFlowDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.moveContract, SelectContractForMoving.serializer())
+    uriDeepLinkMatchers(container.moveContract, SelectContractForMovingKey.serializer())
 }

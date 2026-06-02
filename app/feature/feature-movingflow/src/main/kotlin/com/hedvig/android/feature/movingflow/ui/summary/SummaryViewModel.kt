@@ -16,7 +16,7 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
-import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
+import com.hedvig.android.feature.movingflow.SummaryKey
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
@@ -46,7 +46,7 @@ import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
 @AssistedInject
 internal class SummaryViewModel(
-  @Assisted summaryRoute: Summary,
+  @Assisted summaryRoute: SummaryKey,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
@@ -66,13 +66,13 @@ internal class SummaryViewModel(
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted summaryRoute: Summary,
+      @Assisted summaryRoute: SummaryKey,
     ): SummaryViewModel
   }
 }
 
 internal class SummaryPresenter(
-  private val summaryRoute: Summary,
+  private val summaryRoute: SummaryKey,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,

@@ -60,7 +60,7 @@ import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvid
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.navigation.insuranceGraph
 import com.hedvig.android.feature.login.navigation.loginGraph
-import com.hedvig.android.feature.movingflow.SelectContractForMoving
+import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
 import com.hedvig.android.feature.movingflow.movingFlowGraph
 import com.hedvig.android.feature.payments.navigation.paymentsGraph
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountDestination
@@ -108,7 +108,7 @@ internal fun HedvigNavHost(
   val navigateToInbox = { navigator.navigate(InboxKey) }
   val navigateToNewConversation = { navigator.navigate(ChatKey(Uuid.randomUUID().toString())) }
   val navigateToConversation = { conversationId: String -> navigator.navigate(ChatKey(conversationId)) }
-  val navigateToMovingFlow = { navigator.navigate(SelectContractForMoving) }
+  val navigateToMovingFlow = { navigator.navigate(SelectContractForMovingKey) }
   val onNavigateToImageViewer = { imageUrl: String, cacheKey: String ->
     navigator.navigate(ImageViewer(imageUrl, cacheKey))
   }
@@ -188,7 +188,7 @@ internal fun HedvigNavHost(
             hedvigAppState.navigateToTopLevelGraph(TopLevelGraph.Insurances)
           },
           navigateToMovingFlow = {
-            navigator.navigate<TerminateInsuranceKey>(SelectContractForMoving, inclusive = true)
+            navigator.navigate<TerminateInsuranceKey>(SelectContractForMovingKey, inclusive = true)
           },
           closeTerminationFlow = {
             // If we fail to pop the backstack including TerminateInsuranceKey here it means we were deep
@@ -345,7 +345,7 @@ internal fun HedvigNavHost(
       },
     )
     movingFlowGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       goToChat = navigateToNewConversation,
     )
     connectPaymentGraph(backStack = hedvigAppState.backStacks.backStack)
