@@ -28,7 +28,7 @@ import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
 import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
 import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
-import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryDestination
+import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
 import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
 import com.hedvig.android.feature.connect.payment.connectPaymentGraph
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
@@ -300,7 +300,7 @@ internal fun HedvigNavHost(
         navigator.navigate(CoInsuredAddInfoKey(contractId, type))
       },
       navigateToDeleteAccountFeature = { navigator.navigate(DeleteAccountKey) },
-      navigateToClaimHistory = { navigator.navigate(ClaimHistoryDestination) },
+      navigateToClaimHistory = { navigator.navigate(ClaimHistoryKey) },
       openAppSettings = externalNavigator::openAppSettings,
       onNavigateToNewConversation = navigateToNewConversation,
       onNavigateToTravelCertificate = { navigator.navigate(TravelCertificateKey) },

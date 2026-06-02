@@ -9,13 +9,13 @@ import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object ClaimHistoryDestination : HedvigNavKey
+data object ClaimHistoryKey : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.claimHistoryGraph(
   navigateUp: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
 ) {
-  navdestination<ClaimHistoryDestination> {
+  navdestination<ClaimHistoryKey> {
     ClaimHistoryDestination(
       claimHistoryViewModel = metroViewModel(),
       navigateUp = navigateUp,
@@ -25,5 +25,5 @@ fun EntryProviderScope<HedvigNavKey>.claimHistoryGraph(
 }
 
 val profileBottomNavPermittedDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  ClaimHistoryDestination::class,
+  ClaimHistoryKey::class,
 )
