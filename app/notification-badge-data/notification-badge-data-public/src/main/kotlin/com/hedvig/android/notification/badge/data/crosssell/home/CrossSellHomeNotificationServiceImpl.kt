@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.map
 @ContributesBinding(AppScope::class, binding<Provider<CrossSellHomeNotificationService>>())
 internal class CrossSellHomeNotificationServiceProvider(
   override val demoManager: DemoManager,
-  override val prodImpl: CrossSellHomeNotificationService,
+  override val prodImpl: CrossSellHomeNotificationServiceImpl,
   override val demoImpl: DemoCrossSellHomeNotificationService,
 ) : ProdOrDemoProvider<CrossSellHomeNotificationService>
 
@@ -60,7 +60,6 @@ interface CrossSellHomeNotificationService {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
 internal class CrossSellHomeNotificationServiceImpl(
   private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
   private val dataStore: DataStore<Preferences>,

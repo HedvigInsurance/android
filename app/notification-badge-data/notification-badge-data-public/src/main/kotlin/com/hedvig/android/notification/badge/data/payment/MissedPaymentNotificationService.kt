@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.flowOf
 internal class MissedPaymentNotificationServiceProvider(
   override val demoManager: DemoManager,
   override val demoImpl: DemoMissedPaymentNotificationService,
-  override val prodImpl: MissedPaymentNotificationService,
+  override val prodImpl: MissedPaymentNotificationServiceImpl,
 ) : ProdOrDemoProvider<MissedPaymentNotificationService>
 
 interface MissedPaymentNotificationService {
@@ -35,7 +35,6 @@ internal class DemoMissedPaymentNotificationService : MissedPaymentNotificationS
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
 internal class MissedPaymentNotificationServiceImpl(
   private val getIfMissedPaymentUseCase: GetIfMissedPaymentUseCase,
 ) : MissedPaymentNotificationService {

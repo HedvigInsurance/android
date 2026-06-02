@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.payments.overview.data
 
-import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
@@ -15,8 +14,6 @@ import dev.zacsweers.metro.binding
 @ContributesBinding(AppScope::class, binding<Provider<GetShouldShowPayoutUseCase>>())
 internal class GetShouldShowPayoutUseCaseProvider(
   override val demoManager: DemoManager,
-  apolloClient: ApolloClient,
-) : ProdOrDemoProvider<GetShouldShowPayoutUseCase> {
-  override val prodImpl: GetShouldShowPayoutUseCase = GetShouldShowPayoutUseCaseImpl(apolloClient)
-  override val demoImpl: GetShouldShowPayoutUseCase = GetShouldShowPayoutUseCaseDemo()
-}
+  override val prodImpl: GetShouldShowPayoutUseCaseImpl,
+  override val demoImpl: GetShouldShowPayoutUseCaseDemo,
+) : ProdOrDemoProvider<GetShouldShowPayoutUseCase>

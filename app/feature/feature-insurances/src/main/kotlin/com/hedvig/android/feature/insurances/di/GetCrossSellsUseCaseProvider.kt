@@ -6,6 +6,7 @@ import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseDemo
+import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCaseImpl
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -16,6 +17,6 @@ import dev.zacsweers.metro.binding
 @ContributesBinding(AppScope::class, binding<Provider<GetCrossSellsUseCase>>())
 internal class GetCrossSellsUseCaseProvider(
   override val demoManager: DemoManager,
-  override val prodImpl: GetCrossSellsUseCase,
+  override val prodImpl: GetCrossSellsUseCaseImpl,
   override val demoImpl: GetCrossSellsUseCaseDemo,
 ) : ProdOrDemoProvider<GetCrossSellsUseCase>

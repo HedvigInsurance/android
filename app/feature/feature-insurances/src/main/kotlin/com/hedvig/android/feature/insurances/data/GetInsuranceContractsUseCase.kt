@@ -49,7 +49,6 @@ internal interface GetInsuranceContractsUseCase {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,

@@ -137,16 +137,15 @@ internal fun CrossSellInfoType.toCrossSellSource(): CrossSellInput {
 @ContributesBinding(AppScope::class, binding<Provider<GetCrossSellSheetDataUseCase>>())
 internal class GetCrossSellSheetDataUseCaseProvider(
   override val demoManager: DemoManager,
-  apolloClient: ApolloClient,
-) : ProdOrDemoProvider<GetCrossSellSheetDataUseCase> {
-  override val prodImpl: GetCrossSellSheetDataUseCase = GetCrossSellSheetDataUseCaseImpl(apolloClient)
-  override val demoImpl: GetCrossSellSheetDataUseCase = DemoGetCrossSellSheetDataUseCase()
-}
+  override val prodImpl: GetCrossSellSheetDataUseCaseImpl,
+  override val demoImpl: DemoGetCrossSellSheetDataUseCase,
+) : ProdOrDemoProvider<GetCrossSellSheetDataUseCase>
 
 internal interface GetCrossSellSheetDataUseCase {
   suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>>
 }
 
+@Inject
 internal class GetCrossSellSheetDataUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCrossSellSheetDataUseCase {
@@ -205,6 +204,7 @@ internal fun CrossSellFragment.toCrossSell(): CrossSell {
   }
 }
 
+@Inject
 internal class DemoGetCrossSellSheetDataUseCase : GetCrossSellSheetDataUseCase {
   override suspend fun invoke(source: CrossSellInput): Flow<Either<ErrorMessage, CrossSellSheetData>> {
     return flowOf(ErrorMessage("Ineligible for demo mode").left())

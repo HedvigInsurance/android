@@ -1,7 +1,5 @@
 package com.hedvig.android.feature.profile.di
 
-import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
@@ -19,9 +17,6 @@ import dev.zacsweers.metro.binding
 @ContributesBinding(AppScope::class, binding<Provider<ContactInfoRepository>>())
 internal class ProfileRepositoryProvider(
   override val demoManager: DemoManager,
-  apolloClient: ApolloClient,
-  networkCacheManager: NetworkCacheManager,
-) : ProdOrDemoProvider<ContactInfoRepository> {
-  override val prodImpl: ContactInfoRepository = ContactInfoRepositoryImpl(apolloClient, networkCacheManager)
-  override val demoImpl: ContactInfoRepository = ContactInfoRepositoryDemo()
-}
+  override val prodImpl: ContactInfoRepositoryImpl,
+  override val demoImpl: ContactInfoRepositoryDemo,
+) : ProdOrDemoProvider<ContactInfoRepository>

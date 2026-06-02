@@ -1,6 +1,5 @@
 package com.hedvig.android.shared.foreverui.ui.data
 
-import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
@@ -15,8 +14,6 @@ import dev.zacsweers.metro.binding
 @ContributesBinding(AppScope::class, binding<Provider<ForeverRepository>>())
 internal class ForeverRepositoryProvider(
   override val demoManager: DemoManager,
-  apolloClient: ApolloClient,
-) : ProdOrDemoProvider<ForeverRepository> {
-  override val prodImpl: ForeverRepository = ForeverRepositoryImpl(apolloClient)
-  override val demoImpl: ForeverRepository = ForeverRepositoryDemo()
-}
+  override val prodImpl: ForeverRepositoryImpl,
+  override val demoImpl: ForeverRepositoryDemo,
+) : ProdOrDemoProvider<ForeverRepository>

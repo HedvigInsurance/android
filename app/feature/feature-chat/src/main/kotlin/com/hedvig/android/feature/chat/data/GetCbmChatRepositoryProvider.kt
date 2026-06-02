@@ -14,6 +14,6 @@ import dev.zacsweers.metro.binding
 @ContributesBinding(AppScope::class, binding<Provider<CbmChatRepository>>())
 internal class GetCbmChatRepositoryProvider(
   override val demoManager: DemoManager,
-  override val prodImpl: CbmChatRepository,
+  override val prodImpl: CbmChatRepositoryImpl,
   override val demoImpl: CbmChatRepositoryDemo,
 ) : ProdOrDemoProvider<CbmChatRepository>

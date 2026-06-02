@@ -91,7 +91,6 @@ internal interface CbmChatRepository {
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
 internal class CbmChatRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val database: RoomDatabase,
