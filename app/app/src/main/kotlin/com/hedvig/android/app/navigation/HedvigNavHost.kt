@@ -14,7 +14,7 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseGraphDestination
+import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierGraphDestination
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
@@ -241,7 +241,7 @@ internal fun HedvigNavHost(
       },
       onNavigateToAddonPurchaseFlow = { insuranceIds, availableAddon ->
         navigator.navigate(
-          AddonPurchaseGraphDestination(
+          AddonPurchaseKey(
             insuranceIds.map(ContractId::id),
             availableAddon?.displayName,
             AddonBannerSource.INSURANCES_TAB,
@@ -253,7 +253,7 @@ internal fun HedvigNavHost(
       },
       navigateToUpgradeAddon = { contractId, _ ->
         navigator.navigate(
-          AddonPurchaseGraphDestination(
+          AddonPurchaseKey(
             listOfNotNull(contractId?.id),
             null,
             AddonBannerSource.INSURANCES_TAB,
@@ -322,7 +322,7 @@ internal fun HedvigNavHost(
       backStack = hedvigAppState.backStacks.backStack,
     )
     addonPurchaseNavGraph(
-      navigator = navigator,
+      backStack = hedvigAppState.backStacks.backStack,
       popBackStack = popBackStackOrFinish,
       finishApp = finishApp,
       onNavigateToNewConversation = navigateToNewConversation,
@@ -457,7 +457,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
     },
     onNavigateToAddonPurchaseFlow = { ids ->
       navigator.navigate(
-        AddonPurchaseGraphDestination(
+        AddonPurchaseKey(
           insuranceIds = ids,
           preselectedAddonDisplayName = null,
           source = AddonBannerSource.TRAVEL_CERTIFICATES,

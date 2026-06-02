@@ -96,9 +96,9 @@ import com.hedvig.android.feature.addon.purchase.data.AddonOfferDeflectType
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.TravelAddonQuoteInsuranceDocument
-import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseDestination
 import com.hedvig.android.feature.addon.purchase.navigation.PerilComparisonParams
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
+import com.hedvig.android.feature.addon.purchase.navigation.TravelInsurancePlusExplanationKey
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Failure
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonState.Loading
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeTravelAddonEvent.ChooseOptionInDialog
@@ -465,7 +465,7 @@ private fun CustomizeAddonCard(
             is CustomizeAddonState.Success.Selectable -> listOf(
               null to
                 uiState.currentlyChosenOption.addonVariant.perils.map {
-                  AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData(
+                  TravelInsurancePlusExplanationKey.TravelPerilData(
                     title = it.title,
                     description = it.description,
                     covered = it.covered,
@@ -476,7 +476,7 @@ private fun CustomizeAddonCard(
 
             is CustomizeAddonState.Success.Toggleable -> uiState.addonOffer.addonOptions.map {
               it.displayTitle to it.addonVariant.perils.map { peril ->
-                AddonPurchaseDestination.TravelInsurancePlusExplanation.TravelPerilData(
+                TravelInsurancePlusExplanationKey.TravelPerilData(
                   title = peril.title,
                   description = peril.description,
                   covered = peril.covered,

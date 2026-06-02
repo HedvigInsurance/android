@@ -27,26 +27,26 @@ internal class AddonPurchaseDeepLinkMatcherProvider(
 }
 
 /**
- * [TravelAddonTriage.source] is not part of the deep-link URI — it is derived from which path (travel vs car) matched.
+ * [TravelAddonTriageKey.source] is not part of the deep-link URI — it is derived from which path (travel vs car) matched.
  * The default [UriDeepLinkMatcher] decodes the key purely from the URI arguments via the serializer, which would fail
- * here because [TravelAddonTriage.source] has no default. So we construct the key ourselves from the fixed [source]
+ * here because [TravelAddonTriageKey.source] has no default. So we construct the key ourselves from the fixed [source]
  * and the optional `contractId` query argument.
  */
 private class AddonDeepLinkMatcher(
   uriPattern: DeepLinkUri,
   private val source: AddonBannerSource,
-) : UriDeepLinkMatcher<TravelAddonTriage>(uriPattern, TravelAddonTriage.serializer()) {
+) : UriDeepLinkMatcher<TravelAddonTriageKey>(uriPattern, TravelAddonTriageKey.serializer()) {
   override fun matchArguments(
     pathArgs: Map<String, List<String>>,
     queryArgs: Map<String, List<String>>,
     fragmentArgs: Map<String, List<String>>,
-  ): UriMatchResult<TravelAddonTriage> {
+  ): UriMatchResult<TravelAddonTriageKey> {
     val arguments = buildMap {
       putAll(fragmentArgs)
       putAll(queryArgs)
       putAll(pathArgs)
     }
     val contractId = arguments["contractId"]?.firstOrNull()
-    return UriMatchResult(TravelAddonTriage(source = source, contractId = contractId), arguments)
+    return UriMatchResult(TravelAddonTriageKey(source = source, contractId = contractId), arguments)
   }
 }
