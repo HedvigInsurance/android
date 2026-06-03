@@ -2,9 +2,11 @@ package com.hedvig.android.navigation.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SAVED_STATE_REGISTRY_OWNER_KEY
@@ -33,6 +35,10 @@ import com.hedvig.android.navigation.common.HedvigNavKey
  * We instead consult [retainedContentKeys] (the union of the rendered stack and all parked tab runs)
  * and clear only the stores of keys that are genuinely gone. A key that merely moved into a parked
  * run keeps its ViewModels (and their SavedStateHandles) alive for when the run is restored.
+ *
+ * Disposal runs two ways: onPop clears a store promptly when its key leaves the rendered stack, and
+ * a [snapshotFlow]-driven reconcile pass ([EntryViewModel.retainOnly]) clears any store whose key is
+ * no longer in [retainedContentKeys] — covering parked/stashed keys that never fire onPop.
  */
 @Composable
 internal fun rememberRetainedViewModelStoreNavEntryDecorator(
@@ -42,6 +48,11 @@ internal fun rememberRetainedViewModelStoreNavEntryDecorator(
   },
 ): NavEntryDecorator<HedvigNavKey> {
   val latestRetained by rememberUpdatedState(retainedContentKeys)
+  LaunchedEffect(viewModelStoreOwner) {
+    snapshotFlow { latestRetained() }.collect { retained ->
+      viewModelStoreOwner.viewModelStore.getEntryViewModel().retainOnly(retained)
+    }
+  }
   return remember(viewModelStoreOwner) {
     RetainedViewModelStoreNavEntryDecorator(viewModelStoreOwner.viewModelStore) { contentKey ->
       contentKey !in latestRetained()
@@ -101,6 +112,11 @@ private class EntryViewModel : ViewModel() {
 
   fun clearViewModelStoreOwnerForKey(key: Any) {
     owners.remove(key)?.clear()
+  }
+
+  fun retainOnly(keys: Set<Any>) {
+    val gone = owners.keys.filter { it !in keys }
+    gone.forEach { owners.remove(it)?.clear() }
   }
 
   override fun onCleared() {
