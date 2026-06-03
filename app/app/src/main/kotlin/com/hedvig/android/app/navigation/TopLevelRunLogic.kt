@@ -47,6 +47,12 @@ internal fun collapseToHome(stack: List<HedvigNavKey>): List<HedvigNavKey> {
   return stack.subList(0, firstSideRunStart).toList()
 }
 
+/** The active side-tab run (the side-tab key plus its drill-downs), or empty if currently on Home. */
+internal fun activeSideRun(stack: List<HedvigNavKey>): List<HedvigNavKey> {
+  val start = (1..stack.lastIndex).firstOrNull { stack[it].topLevelGraphOrNull() != null } ?: return emptyList()
+  return stack.subList(start, stack.size).toList()
+}
+
 /** Drops the top run's drill-downs, keeping its root key. */
 internal fun popTopRunToStart(stack: List<HedvigNavKey>): List<HedvigNavKey> {
   val topRunStart = stack.indexOfLast { it.topLevelGraphOrNull() != null }

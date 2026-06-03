@@ -55,4 +55,18 @@ class TopLevelRunLogicTest {
       .isEqualTo(listOf(HomeKey, InsurancesKey))
     assertThat(popTopRunToStart(listOf(HomeKey, Drill("h")))).isEqualTo(listOf(HomeKey))
   }
+
+  @Test fun activeSideRun_isEmptyOnHome() {
+    assertThat(activeSideRun(listOf(HomeKey))).isEqualTo(emptyList<HedvigNavKey>())
+    assertThat(activeSideRun(listOf(HomeKey, Drill("h")))).isEqualTo(emptyList<HedvigNavKey>())
+  }
+
+  @Test fun activeSideRun_returnsSideTabKeyAndItsDrilldowns() {
+    val stack = listOf(HomeKey, Drill("h"), InsurancesKey, Drill("i1"), Drill("i2"))
+    assertThat(activeSideRun(stack)).isEqualTo(listOf(InsurancesKey, Drill("i1"), Drill("i2")))
+  }
+
+  @Test fun activeSideRun_sideTabRootOnly() {
+    assertThat(activeSideRun(listOf(HomeKey, ProfileKey))).isEqualTo(listOf(ProfileKey))
+  }
 }
