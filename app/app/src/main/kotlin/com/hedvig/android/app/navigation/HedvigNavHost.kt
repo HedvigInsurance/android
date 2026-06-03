@@ -3,6 +3,7 @@ package com.hedvig.android.app.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.media3.datasource.cache.SimpleCache
@@ -11,6 +12,7 @@ import androidx.navigation3.scene.SceneDecoratorStrategy
 import coil3.ImageLoader
 import com.benasher44.uuid.Uuid
 import com.hedvig.android.app.ui.HedvigAppState
+import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
@@ -90,11 +92,14 @@ import com.hedvig.feature.claim.chat.ClaimChatKey
 import com.hedvig.feature.claim.chat.claimChatGraph
 import com.hedvig.feature.remove.addons.RemoveAddonsKey
 import com.hedvig.feature.remove.addons.removeAddonsNavGraph
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigNavHost(
   hedvigAppState: HedvigAppState,
+  memberIdService: MemberIdService,
   globalSnackBarState: GlobalSnackBarState,
   externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
@@ -110,6 +115,7 @@ internal fun HedvigNavHost(
   sceneDecoratorStrategies: List<SceneDecoratorStrategy<HedvigNavKey>> = emptyList(),
 ) {
   val backstack = hedvigAppState.backstackController
+  val scope = rememberCoroutineScope()
 
   val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
@@ -150,7 +156,11 @@ internal fun HedvigNavHost(
       urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
       openUrl = openUrl,
       onOpenEmailApp = externalNavigator::openEmailApp,
-      onNavigateToLoggedIn = hedvigAppState::navigateToLoggedIn,
+      onNavigateToLoggedIn = {
+        scope.launch {
+          hedvigAppState.navigateToLoggedIn(memberIdService.getMemberId().first())
+        }
+      },
     )
     homeGraph(
       nestedGraphs = {

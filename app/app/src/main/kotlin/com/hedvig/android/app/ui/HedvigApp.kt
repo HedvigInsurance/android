@@ -11,6 +11,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,6 +34,7 @@ import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
@@ -74,6 +76,7 @@ internal fun HedvigApp(
   splashIsRemovedSignal: Channel<Unit>,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
+  memberIdService: MemberIdService,
   deepLinkMatcherProviders: Set<DeepLinkMatcherProvider>,
   imageLoader: ImageLoader,
   simpleVideoCache: SimpleCache,
@@ -98,12 +101,19 @@ internal fun HedvigApp(
     featureManager = featureManager,
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
+  val lastKnownMemberId = remember { mutableStateOf<String?>(null) }
+  LaunchedEffect(memberIdService) {
+    memberIdService.getMemberId().collect { id ->
+      if (id != null) lastKnownMemberId.value = id
+    }
+  }
   DetermineStartDestinationEffect(
     backstackController = backstackController,
     authTokenService = authTokenService,
     demoManager = demoManager,
-    onLoggedIn = hedvigAppState::navigateToLoggedIn,
-    onLoggedOut = hedvigAppState::navigateToLoggedOut,
+    memberIdService = memberIdService,
+    onLoggedIn = { memberId -> hedvigAppState.navigateToLoggedIn(memberId) },
+    onLoggedOut = { hedvigAppState.navigateToLoggedOut(lastKnownMemberId.value) },
     dismissSplashScreen = dismissSplashScreen,
   )
   val darkTheme = hedvigAppState.darkTheme
@@ -120,7 +130,12 @@ internal fun HedvigApp(
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
         tryShowAppStoreReviewDialog,
       )
-      LogoutOnInvalidCredentialsEffect(hedvigAppState, authTokenService, demoManager)
+      LogoutOnInvalidCredentialsEffect(
+        hedvigAppState,
+        authTokenService,
+        demoManager,
+        lastKnownMemberId = { lastKnownMemberId.value },
+      )
       val deepLinkMatcher = remember(deepLinkMatcherProviders) {
         HedvigDeepLinkMatcher(deepLinkMatcherProviders.flatMap { it.matchers() })
       }
@@ -158,6 +173,7 @@ internal fun HedvigApp(
         ) {
           HedvigAppUi(
             hedvigAppState = hedvigAppState,
+            memberIdService = memberIdService,
             externalNavigator = externalNavigator,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
             openUrl = deepLinkFirstUriHandler::openUri,
@@ -206,7 +222,8 @@ private fun DetermineStartDestinationEffect(
   backstackController: BackstackController,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
-  onLoggedIn: () -> Unit,
+  memberIdService: MemberIdService,
+  onLoggedIn: (memberId: String?) -> Unit,
   onLoggedOut: () -> Unit,
   dismissSplashScreen: () -> Unit,
 ) {
@@ -216,8 +233,15 @@ private fun DetermineStartDestinationEffect(
       { demoManager.isDemoMode().first { it } },
     ).fold({ it }, { it })
     when {
-      showLoggedInScene && !backstackController.isLoggedIn -> onLoggedIn()
-      !showLoggedInScene && backstackController.isLoggedIn -> onLoggedOut()
+      showLoggedInScene && !backstackController.isLoggedIn -> {
+        // Token is present now (authStatus is LoggedIn); read the member id straight from the JWT.
+        val memberId = memberIdService.getMemberId().first()
+        onLoggedIn(memberId)
+      }
+
+      !showLoggedInScene && backstackController.isLoggedIn -> {
+        onLoggedOut()
+      }
     }
     dismissSplashScreen()
   }
@@ -280,6 +304,7 @@ private fun LogoutOnInvalidCredentialsEffect(
   hedvigAppState: HedvigAppState,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
+  lastKnownMemberId: () -> String?,
 ) {
   val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
     logcat {
@@ -313,7 +338,7 @@ private fun LogoutOnInvalidCredentialsEffect(
           return@combine
         }
         if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
-          hedvigAppState.navigateToLoggedOut()
+          hedvigAppState.navigateToLoggedOut(lastKnownMemberId())
         }
       }.collect()
     }

@@ -34,6 +34,7 @@ import com.hedvig.android.app.navigation.rememberHedvigBackstackController
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.core.appreview.WaitUntilAppReviewDialogShouldBeOpenedUseCase
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -46,7 +47,6 @@ import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.navigation.compose.merge
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
@@ -59,9 +59,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 
 class MainActivity : AppCompatActivity() {
@@ -93,6 +90,8 @@ class MainActivity : AppCompatActivity() {
   @Inject private lateinit var logoutUseCase: LogoutUseCase
 
   @Inject private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
+
+  @Inject private lateinit var memberIdService: MemberIdService
 
   @Inject private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
 
@@ -163,13 +162,15 @@ class MainActivity : AppCompatActivity() {
         }
         val restoredBackstack = remember(serializersModules) {
           if (savedInstanceState != null) return@remember null
-          decodeRestoredBackstack(intent.getStringExtra(EXTRA_RESTORE_STACK), serializersModules)
+          RestoredBackstackTransfer.readFrom(intent, serializersModules)
         }
         val backstackController = rememberHedvigBackstackController(
           savedStateConfiguration = savedStateConfiguration,
           initialBackstack = restoredBackstack,
           isOwnTask = { isTaskRoot },
-          escapeToOwnTask = ::escapeToOwnTask,
+          escapeToOwnTask = { parentStack ->
+            RestoredBackstackTransfer.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
+          },
         )
         HedvigApp(
           backstackController = backstackController,
@@ -181,6 +182,7 @@ class MainActivity : AppCompatActivity() {
           splashIsRemovedSignal = splashIsRemovedSignal,
           authTokenService = authTokenService,
           demoManager = demoManager,
+          memberIdService = memberIdService,
           deepLinkMatcherProviders = deepLinkMatcherProviders,
           imageLoader = imageLoader,
           simpleVideoCache = simpleVideoCache,
@@ -212,40 +214,6 @@ class MainActivity : AppCompatActivity() {
     logcat { "MainActivity received deep-link intent for uri:$uri" }
     deepLinkChannel.trySend(uri)
   }
-
-  /**
-   * Re-roots the app in its own task when Up is pressed from a deep link that was hosted inside the
-   * launching app's task. Finishing the foreign-hosted instance and relaunching with
-   * NEW_TASK|CLEAR_TASK keeps our screens in our own task without a `singleTask` launch mode. The
-   * target ancestry rides along as a serialized extra so the fresh instance seeds it directly.
-   */
-  private fun escapeToOwnTask(parentStack: List<HedvigNavKey>) {
-    val relaunch = Intent(this, MainActivity::class.java).apply {
-      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-      putExtra(EXTRA_RESTORE_STACK, encodeRestoredBackstack(parentStack, serializersModules))
-    }
-    finish()
-    startActivity(relaunch)
-  }
-}
-
-private const val EXTRA_RESTORE_STACK = "com.hedvig.android.app.RESTORE_STACK"
-
-private fun backstackJson(serializersModules: Set<SerializersModule>): Json = Json {
-  serializersModule = serializersModules.merge()
-}
-
-private val backstackSerializer = ListSerializer(PolymorphicSerializer(HedvigNavKey::class))
-
-private fun encodeRestoredBackstack(stack: List<HedvigNavKey>, serializersModules: Set<SerializersModule>): String =
-  backstackJson(serializersModules).encodeToString(backstackSerializer, stack)
-
-private fun decodeRestoredBackstack(
-  encoded: String?,
-  serializersModules: Set<SerializersModule>,
-): List<HedvigNavKey>? {
-  if (encoded == null) return null
-  return backstackJson(serializersModules).decodeFromString(backstackSerializer, encoded)
 }
 
 /**

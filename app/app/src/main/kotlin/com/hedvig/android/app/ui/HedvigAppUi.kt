@@ -18,6 +18,7 @@ import coil3.ImageLoader
 import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.auth.LogoutUseCase
+import com.hedvig.android.auth.MemberIdService
 import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
@@ -39,6 +40,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HedvigAppUi(
   hedvigAppState: HedvigAppState,
+  memberIdService: MemberIdService,
   externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -95,6 +97,7 @@ internal fun HedvigAppUi(
         GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
         HedvigNavHost(
           hedvigAppState = hedvigAppState,
+          memberIdService = memberIdService,
           globalSnackBarState = globalSnackBarState,
           externalNavigator = externalNavigator,
           finishApp = finishApp,

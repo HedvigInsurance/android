@@ -160,12 +160,12 @@ internal class HedvigAppState(
     backstackController.selectTopLevel(topLevelGraph)
   }
 
-  fun navigateToLoggedIn() {
-    backstackController.setLoggedIn(null)
+  fun navigateToLoggedIn(memberId: String?) {
+    backstackController.setLoggedIn(memberId)
   }
 
-  fun navigateToLoggedOut() {
-    backstackController.setLoggedOut(null)
+  fun navigateToLoggedOut(memberId: String?) {
+    backstackController.setLoggedOut(memberId)
   }
 
   val darkTheme: Boolean
