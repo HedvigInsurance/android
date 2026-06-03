@@ -240,6 +240,7 @@ dependencies {
   runtimeOnly(libs.okhttp.core)
 
   testImplementation(libs.assertK)
+  testImplementation(libs.classgraph)
   testImplementation(libs.junit)
 
   debugImplementation(libs.androidx.compose.uiTooling)

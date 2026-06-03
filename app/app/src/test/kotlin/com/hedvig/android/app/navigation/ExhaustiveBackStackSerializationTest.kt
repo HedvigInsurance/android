@@ -48,6 +48,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.merge
 import com.hedvig.feature.claim.chat.ClaimChatSerializersModuleProvider
 import com.hedvig.feature.remove.addons.RemoveAddonsSerializersModuleProvider
+import io.github.classgraph.ClassGraph
 import kotlin.reflect.KClass
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -75,12 +76,12 @@ import org.junit.Test
  *
  * Because most concrete keys are `internal` to their feature module, `:app` cannot name them.
  * Instead of constructing each one, we introspect the merged module with [SerializersModuleCollector]
- * to enumerate every registered polymorphic subtype of [HedvigNavKey] and assert the count equals
- * the authoritative inventory (see docs/superpowers/plans/navkey-inventory.txt). When a future key is
- * added without a matching `subclass(...)`, the merged module will register one fewer subtype than
- * the inventory and this test fails. We additionally round-trip every registered serializer through
- * the production module to prove the wire path works, and round-trip a sample of every publicly
- * constructible key.
+ * to enumerate every registered polymorphic subtype of [HedvigNavKey], and independently scan the
+ * test classpath for every concrete `@Serializable` [HedvigNavKey]. The two sets must match: a key
+ * that exists but is not registered (a forgotten `subclass(...)`, or a whole new feature's keys)
+ * fails the test by name, with no hand-maintained count to keep in sync. We additionally round-trip
+ * every registered serializer through the production module to prove the wire path works, and
+ * round-trip a sample of every publicly constructible key.
  */
 internal class ExhaustiveBackStackSerializationTest {
   /**
@@ -116,14 +117,23 @@ internal class ExhaustiveBackStackSerializationTest {
   ).merge()
 
   /**
-   * The count of concrete [HedvigNavKey] subtypes contributed by the 23 feature provider modules and
-   * folded into the production merged module. This number is the live registered count (verified at
-   * runtime via [collectRegisteredSubtypes]); it is locked here as a regression guard. If you add a
-   * new navigable key, add its `subclass(...)` to the owning feature provider AND bump this number;
-   * if a registration is accidentally dropped, the count falls below this and the test fails — long
-   * before a user hits a process-death restore crash.
+   * Every concrete `@Serializable` [HedvigNavKey] present on the test classpath — the authoritative,
+   * self-deriving inventory of navigable keys. `:app` depends on every feature module, so this scan
+   * sees all of them. Compared against [collectRegisteredSubtypes], it needs no maintained count: a
+   * new key (or a whole new feature) appears here automatically and must be registered to pass.
    */
-  private val expectedRegisteredSubtypeCount = 101
+  private fun concreteSerializableNavKeysOnClasspath(): Set<KClass<*>> = ClassGraph()
+    .enableClassInfo()
+    .enableAnnotationInfo()
+    .acceptPackages("com.hedvig")
+    .scan()
+    .use { scan ->
+      scan.getClassesImplementing(HedvigNavKey::class.java.name)
+        .filter { !it.isInterface && !it.isAbstract }
+        .filter { it.hasAnnotation("kotlinx.serialization.Serializable") }
+        .map { it.loadClass().kotlin }
+        .toSet()
+    }
 
   @OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
   private fun collectRegisteredSubtypes(): List<Pair<KClass<*>, KSerializer<*>>> {
@@ -159,19 +169,24 @@ internal class ExhaustiveBackStackSerializationTest {
   }
 
   /**
-   * The single most important assertion in the migration: the production merged module must contain
-   * exactly as many [HedvigNavKey] subtypes as the inventory. A missing `subclass(...)` anywhere
-   * lowers this count and fails here, long before a user hits a process-death crash.
+   * The single most important assertion in the migration: every concrete `@Serializable`
+   * [HedvigNavKey] on the classpath must be registered in the production merged module. A missing
+   * `subclass(...)` anywhere fails here, naming the offending key, long before a user hits a
+   * process-death crash.
    */
   @Test
   fun `every concrete HedvigNavKey subtype is registered in the production module`() {
     val registered = collectRegisteredSubtypes().map { it.first }
-    val distinct = registered.toSet()
+    val distinctRegistered = registered.toSet()
+    val onClasspath = concreteSerializableNavKeysOnClasspath()
 
     // No subtype registered twice across modules (a duplicate would silently shadow on restore).
-    assertThat(registered.size - distinct.size).isEqualTo(0)
+    assertThat(registered.size - distinctRegistered.size).isEqualTo(0)
 
-    assertThat(distinct.size).isEqualTo(expectedRegisteredSubtypeCount)
+    // Every navigable key that exists must be registered, else process-death restore crashes on it.
+    assertThat((onClasspath - distinctRegistered).map { it.qualifiedName }).isEmpty()
+    // Nothing registered that is not a real concrete navigable key (catches stale registrations).
+    assertThat((distinctRegistered - onClasspath).map { it.qualifiedName }).isEmpty()
   }
 
   /**
@@ -185,7 +200,6 @@ internal class ExhaustiveBackStackSerializationTest {
     val serialNames = collectRegisteredSubtypes().map { it.second.descriptor.serialName }
     val duplicates = serialNames.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
     assertThat(duplicates.toList()).isEmpty()
-    assertThat(serialNames.toSet().size).isEqualTo(expectedRegisteredSubtypeCount)
   }
 
   /**
@@ -213,18 +227,6 @@ internal class ExhaustiveBackStackSerializationTest {
     json.encodeToString(ListSerializer(polymorphic), emptyList())
   }
 
-  /**
-   * Concrete encode/decode round-trip for every PUBLICLY constructible key, through the real
-   * production module. Internal keys are guarded by the count assertion above; these public ones
-   * additionally prove the JSON (and therefore SavedState) wire path is symmetric.
-   *
-   * Keys that are public but require feature-specific value types in their constructors
-   * (RemoveAddonsKey, ClaimChatKey's variants with domain types, ClaimDetailsKey, CoInsuredAddInfoKey,
-   * EditCoInsuredTriageKey, StartTierFlowKey, ChooseTierKey, AddonPurchaseKey, TravelAddonTriageKey,
-   * InsuranceContractDetailKey, ShowCertificateKey) are intentionally NOT individually constructed
-   * here to avoid coupling this guard to those domain types; their REGISTRATION is still covered by
-   * the exhaustive count test, which is the property that prevents the crash.
-   */
   @Test
   fun `publicly constructible keys round-trip through the production module`() {
     val json = Json { serializersModule = productionModule }
