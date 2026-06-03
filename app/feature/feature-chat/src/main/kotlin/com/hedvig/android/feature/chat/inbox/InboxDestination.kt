@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -31,6 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -40,9 +42,13 @@ import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.DividerPosition
 import com.hedvig.android.design.system.hedvig.EmptyState
 import com.hedvig.android.design.system.hedvig.EmptyStateDefaults
+import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
+import com.hedvig.android.design.system.hedvig.HedvigButton
+import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
 import com.hedvig.android.design.system.hedvig.HedvigFullScreenCenterAlignedProgressDebounced
 import com.hedvig.android.design.system.hedvig.HedvigPreview
@@ -54,6 +60,7 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightC
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
+import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBar
 import com.hedvig.android.design.system.hedvig.TopAppBarActionType
@@ -62,6 +69,7 @@ import com.hedvig.android.design.system.hedvig.datepicker.getLocale
 import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
 import com.hedvig.android.design.system.hedvig.icon.PenEdit
+import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.feature.chat.model.InboxConversation
 import com.hedvig.android.feature.chat.model.InboxConversation.Header
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage.File
@@ -81,10 +89,14 @@ import hedvig.resources.HEDVIG_NAME_TEXT
 import hedvig.resources.INBOX_EMPTY_STATE_SUBTITLE
 import hedvig.resources.INBOX_EMPTY_STATE_TITLE
 import hedvig.resources.INBOX_NEW_MESSAGE
+import hedvig.resources.INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION
+import hedvig.resources.INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION
 import hedvig.resources.Res
 import hedvig.resources.TALKBACK_CONVERSATION_DESCRIPTION
 import hedvig.resources.claim_status_bar_closed
+import hedvig.resources.general_close_button
 import hedvig.resources.home_claim_card_pill_claim
+import hedvig.resources.home_tab_claim_button_text
 import hedvig.resources.open_chat
 import kotlin.time.Clock
 import org.jetbrains.compose.resources.stringResource
@@ -95,6 +107,7 @@ internal fun InboxDestination(
   navigateUp: () -> Unit,
   onConversationClick: (id: String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   InboxScreen(
@@ -103,6 +116,7 @@ internal fun InboxDestination(
     onConversationClick = onConversationClick,
     reload = { viewModel.emit(InboxEvent.Reload) },
     onNavigateToNewConversation = onNavigateToNewConversation,
+    navigateToClaimChat = navigateToClaimChat
   )
 }
 
@@ -113,7 +127,37 @@ private fun InboxScreen(
   onConversationClick: (id: String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   reload: () -> Unit,
+  navigateToClaimChat: () -> Unit,
 ) {
+  val newChatSelectBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  val startClaimBottomSheetState = rememberHedvigBottomSheetState<Unit>()
+  HedvigBottomSheet(
+    newChatSelectBottomSheetState,
+    content = {
+      NewChatSelectBottomSheetContent(
+        onNavigateToNewConversation = {
+          newChatSelectBottomSheetState.dismiss()
+          onNavigateToNewConversation()
+        },
+        onStartNewClaim = {
+          newChatSelectBottomSheetState.dismiss()
+          startClaimBottomSheetState.show(Unit)
+        },
+        dismiss = {
+          newChatSelectBottomSheetState.dismiss()
+        },
+      )
+    },
+  )
+  StartClaimBottomSheet(
+    state = startClaimBottomSheetState,
+    navigateToClaimChat = {
+      startClaimBottomSheetState.dismiss()
+      navigateToClaimChat()
+    },
+    navigateToClaimChatInDevMode = {},
+    isStagingEnvironment = false,
+  )
   Surface(
     color = HedvigTheme.colorScheme.backgroundPrimary,
     modifier = Modifier.fillMaxSize(),
@@ -125,7 +169,11 @@ private fun InboxScreen(
         onActionClick = navigateUp,
         topAppBarActions = {
           if (uiState is InboxUiState.Success && uiState.newConversationButtonAvailable) {
-            NewConversationButton(onNavigateToNewConversation)
+            NewConversationButton(
+              {
+                newChatSelectBottomSheetState.show(Unit)
+              },
+            )
           }
         },
       )
@@ -142,8 +190,10 @@ private fun InboxScreen(
         is InboxUiState.Success -> InboxSuccessScreen(
           inboxConversations = uiState.inboxConversations,
           onConversationClick = onConversationClick,
-          onNavigateToNewConversation = onNavigateToNewConversation,
-          showNewConversationButton = uiState.newConversationButtonAvailable
+          onNavigateToNewConversation = {
+            newChatSelectBottomSheetState.show(Unit)
+          },
+          showNewConversationButton = uiState.newConversationButtonAvailable,
         )
       }
     }
@@ -174,11 +224,77 @@ private fun NewConversationButton(
 }
 
 @Composable
+private fun NewChatSelectBottomSheetContent(
+  onNavigateToNewConversation: () -> Unit,
+  onStartNewClaim: () -> Unit,
+  dismiss: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier) {
+    HedvigCard(
+      onClick = onNavigateToNewConversation,
+      modifier = Modifier
+        .fillMaxWidth(),
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+      ) {
+        HedvigText(
+          text = stringResource(Res.string.CHAT_CONVERSATION_QUESTION_TITLE),
+          textAlign = TextAlign.Start,
+        )
+        HedvigText(
+          text = stringResource(Res.string.INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION),
+          textAlign = TextAlign.Start,
+          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.finePrint,
+        )
+      }
+    }
+    Spacer(Modifier.height(4.dp))
+    HedvigCard(
+      onClick = onStartNewClaim,
+      modifier = Modifier
+        .fillMaxWidth(),
+    ) {
+      Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(start = 16.dp, bottom = 14.dp, top = 12.dp, end = 12.dp),
+      ) {
+        HedvigText(
+          text = stringResource(Res.string.home_tab_claim_button_text),
+          textAlign = TextAlign.Start,
+        )
+        HedvigText(
+          text = stringResource(Res.string.INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION),
+          textAlign = TextAlign.Start,
+          color = HedvigTheme.colorScheme.textSecondary,
+          style = HedvigTheme.typography.finePrint,
+        )
+      }
+    }
+    Spacer(Modifier.height(16.dp))
+    HedvigButton(
+      text = stringResource(Res.string.general_close_button),
+      enabled = true,
+      buttonStyle = ButtonDefaults.ButtonStyle.Secondary,
+      onClick = {
+        dismiss()
+      },
+      modifier = Modifier.fillMaxWidth(),
+    )
+    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+  }
+}
+
+@Composable
 private fun InboxSuccessScreen(
   inboxConversations: List<InboxConversation>,
   onConversationClick: (id: String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  showNewConversationButton: Boolean
+  showNewConversationButton: Boolean,
 ) {
   val lazyListState = rememberLazyListState()
   SideEffect {
@@ -225,8 +341,8 @@ private fun InboxSuccessScreen(
         iconStyle = EmptyStateDefaults.EmptyStateIconStyle.NO_ICON,
         buttonStyle = if (showNewConversationButton) EmptyStateDefaults.EmptyStateButtonStyle.Button(
           stringResource(Res.string.open_chat),
-          onNavigateToNewConversation
-        ) else EmptyStateDefaults.EmptyStateButtonStyle.NoButton
+          onNavigateToNewConversation,
+        ) else EmptyStateDefaults.EmptyStateButtonStyle.NoButton,
       )
     }
   }
@@ -349,7 +465,6 @@ private fun ConversationCard(
 }
 
 @HedvigPreview
-@PreviewFontScale
 @Composable
 private fun EmptyInboxSuccessScreenPreview(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) case: Boolean,
@@ -359,19 +474,29 @@ private fun EmptyInboxSuccessScreenPreview(
       InboxScreen(
         InboxUiState.Success(
           listOf(),
-          case
+          case,
 
-        ),
+          ),
         {},
         {},
-        {}, {},
+        {}, {}, {}
       )
     }
   }
 }
 
 @HedvigPreview
-@PreviewFontScale
+@Composable
+private fun BottomSheetPreview(
+) {
+  HedvigTheme {
+    Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
+      NewChatSelectBottomSheetContent({}, {}, {})
+    }
+  }
+}
+
+@HedvigPreview
 @Composable
 private fun InboxSuccessScreenPreview(
   @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) case: Boolean,
@@ -388,11 +513,11 @@ private fun InboxSuccessScreenPreview(
             mockInboxConversation3.copy(conversationId = "101"),
             mockInboxConversationLegacy,
           ),
-          newConversationButtonAvailable = case
+          newConversationButtonAvailable = case,
         ),
         {},
         {},
-        {}, {},
+        {}, {}, {}
       )
     }
   }

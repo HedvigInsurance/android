@@ -1,4 +1,4 @@
-package com.hedvig.android.feature.home.home.ui
+package com.hedvig.android.design.system.hedvig
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,24 +23,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.dropUnlessResumed
-import com.hedvig.android.design.system.hedvig.ButtonDefaults
-import com.hedvig.android.design.system.hedvig.Checkbox
-import com.hedvig.android.design.system.hedvig.CheckboxOption
-import com.hedvig.android.design.system.hedvig.DividerPosition
-import com.hedvig.android.design.system.hedvig.HedvigBottomSheet
-import com.hedvig.android.design.system.hedvig.HedvigButton
-import com.hedvig.android.design.system.hedvig.HedvigPreview
-import com.hedvig.android.design.system.hedvig.HedvigText
-import com.hedvig.android.design.system.hedvig.HedvigTheme
-import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.RadioGroupDefaults
-import com.hedvig.android.design.system.hedvig.RadioGroupSize
-import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.api.HedvigBottomSheetState
-import com.hedvig.android.design.system.hedvig.horizontalDivider
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import hedvig.resources.CLAIMS_PLEDGE_SLIDE_LABEL
 import hedvig.resources.HONESTY_PLEDGE_DESCRIPTION
 import hedvig.resources.HONESTY_PLEDGE_HEADER
@@ -54,7 +39,7 @@ import hedvig.resources.general_continue_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun StartClaimBottomSheet(
+fun StartClaimBottomSheet(
   state: HedvigBottomSheetState<Unit>,
   navigateToClaimChat: () -> Unit,
   navigateToClaimChatInDevMode: () -> Unit,

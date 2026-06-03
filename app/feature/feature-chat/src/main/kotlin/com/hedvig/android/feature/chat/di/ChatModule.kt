@@ -17,7 +17,6 @@ import com.hedvig.android.feature.chat.data.GetAllConversationsUseCaseImpl
 import com.hedvig.android.feature.chat.data.GetCbmChatRepositoryProvider
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.featureflags.FeatureManager
-import io.ktor.client.HttpClient
 import kotlin.time.Clock
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -36,8 +35,10 @@ val chatModule = module {
   }
 
   viewModel<InboxViewModel> {
-    InboxViewModel(get<GetAllConversationsUseCase>(),
-      featureManager = get<FeatureManager>())
+    InboxViewModel(
+      get<GetAllConversationsUseCase>(),
+      featureManager = get<FeatureManager>(),
+    )
   }
 
   single<CbmChatRepositoryImpl> {
