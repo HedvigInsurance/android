@@ -2,6 +2,7 @@ package com.hedvig.android.app.navigation
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.containsExactlyInAnyOrder
@@ -21,7 +22,7 @@ import org.junit.Test
 
 internal class BackstackControllerTest {
   private fun controllerWith(vararg keys: HedvigNavKey) =
-    BackstackController(mutableStateListOf(*keys), mutableStateMapOf())
+    BackstackController(mutableStateListOf(*keys), mutableStateMapOf(), mutableStateOf(null))
 
   @Test
   fun `system-back at a drill-down pops one entry`() {

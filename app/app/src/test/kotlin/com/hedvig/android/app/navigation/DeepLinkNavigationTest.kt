@@ -2,6 +2,7 @@ package com.hedvig.android.app.navigation
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
@@ -18,7 +19,7 @@ import org.junit.Test
  */
 internal class DeepLinkNavigationTest {
   private fun controllerWith(vararg keys: HedvigNavKey) =
-    BackstackController(mutableStateListOf(*keys), mutableStateMapOf())
+    BackstackController(mutableStateListOf(*keys), mutableStateMapOf(), mutableStateOf(null))
 
   @Test
   fun `deep link to the current tab root does not duplicate it`() {

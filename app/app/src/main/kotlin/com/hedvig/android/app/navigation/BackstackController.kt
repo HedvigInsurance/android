@@ -1,14 +1,19 @@
 package com.hedvig.android.app.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSerializable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.savedstate.compose.serialization.serializers.MutableStateSerializer
 import androidx.savedstate.compose.serialization.serializers.SnapshotStateListSerializer
 import androidx.savedstate.compose.serialization.serializers.SnapshotStateMapSerializer
 import androidx.savedstate.serialization.SavedStateConfiguration
@@ -21,12 +26,20 @@ import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.core.TopLevelGraph
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.nullable
 
 @Stable
 internal class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
   internal val parkedRuns: SnapshotStateMap<TopLevelGraph, List<HedvigNavKey>>,
+  pendingDeepLinkState: MutableState<HedvigNavKey?>,
 ) : Backstack {
+  /**
+   * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land
+   * alone). Persisted across rotation / process death (e.g. mid-OTP) via [rememberHedvigBackstackController].
+   */
+  internal var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
+
   val isLoggedIn: Boolean
     get() = entries.firstOrNull() !is LoginKey
 
@@ -167,5 +180,13 @@ internal fun rememberHedvigBackstackController(savedStateConfiguration: SavedSta
   ) {
     mutableStateMapOf<TopLevelGraph, List<HedvigNavKey>>()
   }
-  return remember(backstack, parkedRuns) { BackstackController(backstack, parkedRuns) }
+  val pendingDeepLink = rememberSerializable(
+    configuration = savedStateConfiguration,
+    serializer = MutableStateSerializer(PolymorphicSerializer(HedvigNavKey::class).nullable),
+  ) {
+    mutableStateOf<HedvigNavKey?>(null)
+  }
+  return remember(backstack, parkedRuns, pendingDeepLink) {
+    BackstackController(backstack, parkedRuns, pendingDeepLink)
+  }
 }
