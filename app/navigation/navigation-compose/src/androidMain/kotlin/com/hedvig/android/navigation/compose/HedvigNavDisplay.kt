@@ -7,10 +7,8 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -21,8 +19,9 @@ import com.hedvig.android.navigation.common.HedvigNavKey
  * (`entry`).
  *
  * Decorator order matters — outermost first:
- * 1. saveable-state holder (per-entry `rememberSaveable` survives pop/re-push),
- * 2. per-entry ViewModelStore (each key owns its store; pop clears it).
+ * 1. retained saveable-state holder (per-entry `rememberSaveable` state is kept alive while the key
+ *    is in [retainedContentKeys], i.e. in the rendered stack or parked in another tab run),
+ * 2. retained per-entry ViewModelStore (same union-key check; ViewModels survive tab switches).
  *
  * The four transitions are supplied by the caller (the design system owns the actual motion specs;
  * this module stays free of a design-system dependency). They are combined into the
@@ -33,6 +32,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 fun HedvigNavDisplay(
   backstack: Backstack,
   onBack: () -> Unit,
+  retainedContentKeys: () -> Set<Any>,
   enterTransition: EnterTransition,
   exitTransition: ExitTransition,
   popEnterTransition: EnterTransition,
@@ -47,8 +47,8 @@ fun HedvigNavDisplay(
     modifier = modifier,
     onBack = { onBack() },
     entryDecorators = listOf(
-      rememberSaveableStateHolderNavEntryDecorator(),
-      rememberViewModelStoreNavEntryDecorator(),
+      rememberRetainedSaveableStateHolderNavEntryDecorator(retainedContentKeys),
+      rememberRetainedViewModelStoreNavEntryDecorator(retainedContentKeys),
     ),
     sharedTransitionScope = sharedTransitionScope,
     sceneDecoratorStrategies = sceneDecoratorStrategies,
