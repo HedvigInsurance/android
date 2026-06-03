@@ -241,4 +241,12 @@ internal class BackstackControllerTest {
     assertThat(controllerWith(HomeKey, InsurancesKey).loneDeepLinkChrome)
       .isEqualTo(LoneDeepLinkChrome.ShowSuite)
   }
+
+  @Test
+  fun `navigateUp from a lone deep link drops the leaf and exposes the rebuilt ancestry`() {
+    val controller = controllerWith(InsurancesKey)
+    controller.navigateUp()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+    assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(HomeKey.toString())
+  }
 }
