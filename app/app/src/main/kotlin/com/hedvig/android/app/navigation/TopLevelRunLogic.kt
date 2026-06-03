@@ -7,6 +7,7 @@ import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.core.DeepLinkAncestry
 import com.hedvig.android.navigation.core.TopLevelGraph
 
 /** Reverse of [startDestination]: the tab this key is the root of, or null if it is not a tab root. */
@@ -46,4 +47,20 @@ internal fun popTopRunToStart(stack: List<HedvigNavKey>): List<HedvigNavKey> {
   val topRunStart = stack.indexOfLast { it.topLevelGraphOrNull() != null }
   if (topRunStart == -1) return stack.toList()
   return stack.subList(0, topRunStart + 1).toList()
+}
+
+/**
+ * Builds the synthetic back stack for a deep-linked [key], used by [navigateUp] when the key is
+ * standing alone. Reuses the existing [startDestination] tab→root map. `HomeKey` is always the
+ * pinned base so the result satisfies the runs-model invariant (index 0 == HomeKey).
+ */
+internal fun syntheticStackFor(key: HedvigNavKey): List<HedvigNavKey> {
+  val ancestry = key as? DeepLinkAncestry
+  val tab = ancestry?.owningTab ?: TopLevelGraph.Home
+  return buildList {
+    add(HomeKey)
+    if (tab != TopLevelGraph.Home) add(tab.startDestination)
+    addAll(ancestry?.syntheticParents.orEmpty())
+    add(key)
+  }.distinct()
 }
