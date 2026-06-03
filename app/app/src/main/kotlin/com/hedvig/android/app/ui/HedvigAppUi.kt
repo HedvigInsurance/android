@@ -1,6 +1,7 @@
 package com.hedvig.android.app.ui
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HedvigAppUi(
   hedvigAppState: HedvigAppState,
+  sharedTransitionScope: SharedTransitionScope,
   memberIdService: MemberIdService,
   externalNavigator: ExternalNavigator,
   finishApp: () -> Unit,
@@ -57,37 +59,32 @@ internal fun HedvigAppUi(
   val showPaymentsBadge by hedvigAppState.showPaymentsBadge.collectAsState()
   val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsState()
   val globalSnackBarState = rememberGlobalSnackBarState()
-  val sharedTransitionScope = LocalSharedTransitionScope.current
-  val sceneDecoratorStrategies = if (sharedTransitionScope != null) {
-    listOf(
-      rememberNavSuiteSceneDecoratorStrategy<HedvigNavKey>(
-        sharedTransitionScope = sharedTransitionScope,
-        navigationSuiteType = { hedvigAppState.navigationSuiteType },
-        chromeContent = {
-          NavigationSuiteChrome(
-            navigationSuiteType = hedvigAppState.navigationSuiteType,
-            topLevelGraphs = topLevelGraphs,
-            currentTopLevelGraph = hedvigAppState.currentTopLevelGraph,
-            onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
-            getShowNotificationBadge = { graph ->
-              if (graph == TopLevelGraph.Payments) showPaymentsBadge else false
-            },
-          )
-        },
-        upBarContent = {
-          // TODO: Add "" / "" to Lokalise — bare Up-bar shown only when a tab root is deep-linked
-          // alone; a back arrow with no title is the intended minimal affordance.
-          TopAppBarWithBack(
-            title = "",
-            onClick = { hedvigAppState.backstackController.navigateUp() },
-          )
-        },
-        loneDeepLinkChrome = { hedvigAppState.backstackController.loneDeepLinkChrome },
-      ),
-    )
-  } else {
-    emptyList()
-  }
+  val sceneDecoratorStrategies = listOf(
+    rememberNavSuiteSceneDecoratorStrategy<HedvigNavKey>(
+      sharedTransitionScope = sharedTransitionScope,
+      navigationSuiteType = { hedvigAppState.navigationSuiteType },
+      chromeContent = {
+        NavigationSuiteChrome(
+          navigationSuiteType = hedvigAppState.navigationSuiteType,
+          topLevelGraphs = topLevelGraphs,
+          currentTopLevelGraph = hedvigAppState.currentTopLevelGraph,
+          onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+          getShowNotificationBadge = { graph ->
+            if (graph == TopLevelGraph.Payments) showPaymentsBadge else false
+          },
+        )
+      },
+      upBarContent = {
+        // TODO: Add "" / "" to Lokalise — bare Up-bar shown only when a tab root is deep-linked
+        // alone; a back arrow with no title is the intended minimal affordance.
+        TopAppBarWithBack(
+          title = "",
+          onClick = { hedvigAppState.backstackController.navigateUp() },
+        )
+      },
+      loneDeepLinkChrome = { hedvigAppState.backstackController.loneDeepLinkChrome },
+    ),
+  )
   Box(Modifier.fillMaxSize()) {
     Surface(
       color = HedvigTheme.colorScheme.backgroundPrimary,

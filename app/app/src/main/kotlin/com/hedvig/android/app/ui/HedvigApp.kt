@@ -173,6 +173,7 @@ internal fun HedvigApp(
         ) {
           HedvigAppUi(
             hedvigAppState = hedvigAppState,
+            sharedTransitionScope = this,
             memberIdService = memberIdService,
             externalNavigator = externalNavigator,
             shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
