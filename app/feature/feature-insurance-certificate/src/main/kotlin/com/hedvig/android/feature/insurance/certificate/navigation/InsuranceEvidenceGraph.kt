@@ -9,7 +9,6 @@ import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvi
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 

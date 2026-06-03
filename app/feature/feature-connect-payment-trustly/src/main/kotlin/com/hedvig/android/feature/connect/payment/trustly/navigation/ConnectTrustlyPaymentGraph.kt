@@ -6,7 +6,6 @@ import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyDestination
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 

@@ -66,4 +66,16 @@ class BackstackTest {
     stack.removeAllOf<B>()
     assertEquals(listOf<HedvigNavKey>(A, C), stack.entries)
   }
+
+  @Test fun navigateUp_default_behavesLikePopBackstack() {
+    val stack = backstackOf(A, B("x"))
+    assertTrue(stack.navigateUp())
+    assertEquals(listOf<HedvigNavKey>(A), stack.entries)
+  }
+
+  @Test fun navigateUp_atRoot_returnsFalse() {
+    val stack = backstackOf(A)
+    assertFalse(stack.navigateUp())
+    assertEquals(listOf<HedvigNavKey>(A), stack.entries)
+  }
 }

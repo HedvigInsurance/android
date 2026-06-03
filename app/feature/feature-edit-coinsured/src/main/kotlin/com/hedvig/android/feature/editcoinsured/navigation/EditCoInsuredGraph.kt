@@ -13,7 +13,6 @@ import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageVie
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 

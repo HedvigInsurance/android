@@ -31,7 +31,6 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
-import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.profileGraph(

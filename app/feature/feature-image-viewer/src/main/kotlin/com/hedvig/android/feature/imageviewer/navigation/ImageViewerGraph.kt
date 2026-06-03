@@ -5,7 +5,6 @@ import coil3.ImageLoader
 import com.hedvig.android.feature.imageviewer.ImageViewerDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.navigateUp
 
 fun EntryProviderScope<HedvigNavKey>.imageViewerGraph(backstack: Backstack, imageLoader: ImageLoader) {
   entry<ImageViewerKey> { key ->

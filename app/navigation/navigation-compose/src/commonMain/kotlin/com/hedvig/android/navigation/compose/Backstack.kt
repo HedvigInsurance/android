@@ -12,6 +12,12 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 @Stable
 interface Backstack {
   val entries: MutableList<HedvigNavKey>
+
+  /**
+   * Up navigation. Defaults to a plain temporal pop; `:app`'s controller overrides it with
+   * task-aware synthetic-stack rebuilding for lone deep links (see BackstackController).
+   */
+  fun navigateUp(): Boolean = popBackstack()
 }
 
 /** Pushes [key] onto the top of the back stack. */
@@ -23,9 +29,6 @@ fun Backstack.popBackstack(): Boolean {
   entries.removeAt(entries.lastIndex)
   return true
 }
-
-/** TODO nav3: Make this equivalent to Nav2 navigateUp() in deep link scenarios. */
-fun Backstack.navigateUp(): Boolean = popBackstack()
 
 /** Pops up to (and optionally including) the most recent entry of [T]. No-op if absent. */
 inline fun <reified T : HedvigNavKey> Backstack.popUpTo(inclusive: Boolean) {

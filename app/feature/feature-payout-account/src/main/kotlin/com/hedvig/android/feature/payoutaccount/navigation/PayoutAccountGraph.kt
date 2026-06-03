@@ -16,7 +16,6 @@ import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutVi
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
