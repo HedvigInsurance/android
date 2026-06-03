@@ -25,6 +25,7 @@ fun NavGraphBuilder.cbmChatGraph(
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   navController: NavController,
 ) {
   navgraph<ChatDestination>(
@@ -43,6 +44,7 @@ fun NavGraphBuilder.cbmChatGraph(
         onConversationClick = dropUnlessResumed { conversationId ->
           navController.navigate(ChatDestinations.Chat(conversationId))
         },
+        onNavigateToNewConversation = onNavigateToNewConversation,
       )
     }
     navdestination<ChatDestinations.Chat>(

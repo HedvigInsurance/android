@@ -413,6 +413,9 @@ internal fun HedvigNavHost(
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
       navController = navController,
+      onNavigateToNewConversation = {
+        navigateToNewConversation()
+      },
     )
     addonPurchaseNavGraph(
       navController = navController,
