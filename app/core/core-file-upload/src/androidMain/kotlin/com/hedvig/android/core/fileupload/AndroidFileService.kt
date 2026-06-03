@@ -17,7 +17,7 @@ import kotlin.math.max
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-class AndroidFileService(
+internal class AndroidFileService(
   private val contentResolver: ContentResolver,
 ) : FileService {
   override fun convertToCommonFile(uri: Uri): CommonFile {

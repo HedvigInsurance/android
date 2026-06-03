@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapLatest
 import octopus.NeedsContactInfoUpdateReminderQuery
 
-interface GetContactInfoUpdateIsNeededUseCase {
+internal interface GetContactInfoUpdateIsNeededUseCase {
   fun invoke(): Flow<Either<ErrorMessage, MemberReminder.ContactInfoUpdateNeeded?>>
 }
 

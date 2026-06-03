@@ -18,6 +18,7 @@ import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
+import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlinx.datetime.TimeZone
@@ -27,10 +28,11 @@ import octopus.fragment.MemberChargeFragment
 import octopus.type.MemberChargeStatus
 import octopus.type.MemberPaymentMethodStatus
 
-interface GetUpcomingPaymentUseCase {
+internal interface GetUpcomingPaymentUseCase {
   suspend fun invoke(): Either<ErrorMessage, PaymentOverview>
 }
 
+@Inject
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
@@ -106,6 +108,7 @@ private fun MemberChargeFragment.toMemberChargeShortInfo() = MemberChargeShortIn
   },
 )
 
+@Inject
 internal class GetUpcomingPaymentUseCaseDemo(
   private val clock: Clock,
 ) : GetUpcomingPaymentUseCase {

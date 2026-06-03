@@ -43,13 +43,12 @@ import octopus.fragment.MonthlyCostFragment
 import octopus.type.AgreementCreationCause
 import octopus.type.DisplayItemOptions
 
-interface GetInsuranceContractsUseCase {
+internal interface GetInsuranceContractsUseCase {
   fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>>
 }
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class)
 internal class GetInsuranceContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,

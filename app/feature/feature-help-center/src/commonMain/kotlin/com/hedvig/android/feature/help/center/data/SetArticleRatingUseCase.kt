@@ -13,7 +13,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import octopus.PuppyGuideEngagementMutation
 
-interface SetArticleRatingUseCase {
+internal interface SetArticleRatingUseCase {
   suspend fun invoke(articleName: String, rating: Int): Either<ErrorMessage, Unit>
 }
 

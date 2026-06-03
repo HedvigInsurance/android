@@ -46,7 +46,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
@@ -85,7 +85,7 @@ internal fun HedvigApp(
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
-  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
+  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
   val hedvigAppState = rememberHedvigAppState(
     windowSizeClass = windowSizeClass,

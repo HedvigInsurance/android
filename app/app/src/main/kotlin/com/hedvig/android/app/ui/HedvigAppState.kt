@@ -46,7 +46,7 @@ import com.hedvig.android.navigation.compose.typedHasRoute
 import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.TopLevelGraph
-import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationServiceProvider
+import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +64,7 @@ internal fun rememberHedvigAppState(
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
   navHostController: NavHostController,
-  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
+  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   NavigationViewTrackingEffect(navController = navHostController)
@@ -98,7 +98,7 @@ internal class HedvigAppState(
   private val settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
   featureManager: FeatureManager,
-  missedPaymentNotificationServiceProvider: MissedPaymentNotificationServiceProvider,
+  missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
   val currentDestination: NavDestination?
     @Composable get() = navController.currentBackStackEntryAsState().value?.destination

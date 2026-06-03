@@ -300,7 +300,7 @@ internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
   }
 }
 
-data class CoverageInfo(
+internal data class CoverageInfo(
   val moveHomeQuoteId: String,
   val tierName: String,
   val tierDescription: String?,

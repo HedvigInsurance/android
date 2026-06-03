@@ -4,10 +4,12 @@ import arrow.core.Either
 import arrow.core.raise.either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
+import dev.zacsweers.metro.Inject
 import octopus.FullReferralsQuery
 import octopus.type.CurrencyCode
 import octopus.type.MemberReferralStatus
 
+@Inject
 internal class ForeverRepositoryDemo : ForeverRepository {
   private var code: String = "code"
 

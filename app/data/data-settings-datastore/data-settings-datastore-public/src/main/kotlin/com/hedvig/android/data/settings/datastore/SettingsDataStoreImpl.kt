@@ -29,7 +29,7 @@ interface SettingsDataStore {
 @ContributesBinding(AppScope::class)
 @SingleIn(AppScope::class)
 @Inject
-class SettingsDataStoreImpl(
+internal class SettingsDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
 ) : SettingsDataStore {
   override suspend fun setTheme(theme: Theme) {

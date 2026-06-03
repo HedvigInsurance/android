@@ -16,7 +16,7 @@ import octopus.CrossSellTypesQuery
 /**
  * Returns a set of unique identifiers per cross-sell that exists for the current member as returned from the backend.
  */
-interface GetCrossSellRecommendationIdUseCase {
+internal interface GetCrossSellRecommendationIdUseCase {
   fun invoke(): Flow<CrossSellIdentifier?>
 }
 
