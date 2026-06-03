@@ -105,14 +105,12 @@ internal class BackstackController(
   }
 
   /**
-   * Routes a resolved deep-link key onto the stack without creating a value-equal duplicate. Tab
-   * roots go through [selectTopLevel] (which restores any parked run); any other key already present
-   * is moved to the top rather than re-appended; a genuinely new key is appended.
+   * Routes a resolved deep-link key. Logged out: stash it (consumed by [setLoggedIn] to land alone).
+   * Logged in: dedup and append onto the live stack (join the current task — Nav2 parity).
    */
   fun navigateToDeepLink(key: HedvigNavKey) {
-    val topLevelGraph = key.topLevelGraphOrNull()
-    if (topLevelGraph != null) {
-      selectTopLevel(topLevelGraph)
+    if (!isLoggedIn) {
+      pendingDeepLink = key
       return
     }
     Snapshot.withMutableSnapshot {
@@ -136,12 +134,13 @@ internal class BackstackController(
     return popBackstack()
   }
 
-  /** Move into the tabbed shell, Home pinned at the base; forget any parked runs. */
+  /** Enter the logged-in app, landing any pending deep link alone, else Home. Forget parked runs. */
   fun setLoggedIn() {
     Snapshot.withMutableSnapshot {
       parkedRuns.clear()
-      entries.clear()
-      entries.add(HomeKey)
+      val target = pendingDeepLink
+      pendingDeepLink = null
+      entries.replaceWith(listOf(target ?: HomeKey))
     }
   }
 

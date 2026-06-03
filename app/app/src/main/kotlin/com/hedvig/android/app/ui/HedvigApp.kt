@@ -129,11 +129,8 @@ internal fun HedvigApp(
         backstackController = backstackController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
-      LaunchedEffect(deepLinkFirstUriHandler, backstackController, deepLinkChannel) {
+      LaunchedEffect(deepLinkFirstUriHandler, deepLinkChannel) {
         deepLinkChannel.receiveAsFlow().collect { uri ->
-          // Buffer external/notification deep links until the member is logged in, so they don't
-          // land on (and get cleared with) the login back stack.
-          snapshotFlow { backstackController.isLoggedIn }.first { it }
           deepLinkFirstUriHandler.openUri(uri)
         }
       }

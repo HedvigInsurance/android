@@ -187,4 +187,38 @@ internal class BackstackControllerTest {
     assertThat(controller.navigateUp()).isFalse()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
+
+  @Test
+  fun `navigateToDeepLink while logged out stashes and leaves the stack untouched`() {
+    val controller = controllerWith(LoginKey)
+    controller.navigateToDeepLink(HelpCenterKey)
+    assertThat(controller.entries.toList()).containsExactly(LoginKey)
+    assertThat(controller.pendingDeepLink).isEqualTo(HelpCenterKey)
+  }
+
+  @Test
+  fun `setLoggedIn consumes the stash and lands the target alone`() {
+    val controller = controllerWith(LoginKey)
+    controller.navigateToDeepLink(InsurancesKey)
+    controller.setLoggedIn()
+    assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
+    assertThat(controller.pendingDeepLink).isEqualTo(null)
+    assertThat(controller.parkedRuns).isEmpty()
+  }
+
+  @Test
+  fun `setLoggedIn without a stash lands on Home`() {
+    val controller = controllerWith(LoginKey)
+    controller.setLoggedIn()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `navigateToDeepLink while logged in appends onto the live stack`() {
+    val controller = controllerWith(HomeKey, InsurancesKey)
+    controller.navigateToDeepLink(HelpCenterKey)
+    assertThat(controller.entries.toList())
+      .containsExactly(HomeKey, InsurancesKey, HelpCenterKey)
+    assertThat(controller.pendingDeepLink).isEqualTo(null)
+  }
 }
