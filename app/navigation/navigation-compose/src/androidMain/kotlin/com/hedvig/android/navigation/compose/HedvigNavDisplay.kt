@@ -43,7 +43,7 @@ fun HedvigNavDisplay(
   builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
 ) {
   NavDisplay(
-    backstack = backstack.entries,
+    backStack = backstack.entries,
     modifier = modifier,
     onBack = { onBack() },
     entryDecorators = listOf(
