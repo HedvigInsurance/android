@@ -22,6 +22,7 @@ import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.core.TopLevelGraph
 import kotlinx.serialization.PolymorphicSerializer
@@ -59,6 +60,21 @@ internal class BackstackController(
     get() = buildSet {
       entries.forEach { add(it.toString()) }
       parkedRuns.values.forEach { run -> run.forEach { add(it.toString()) } }
+    }
+
+  /**
+   * Drives the scene decorator (D11). A lone non-Home/non-Login key suppresses the rail: a tab root
+   * gets a decorator-supplied Up-bar, a deep bar-keeper (which renders its own Up) gets nothing.
+   */
+  val loneDeepLinkChrome: LoneDeepLinkChrome
+    get() {
+      val first = entries.firstOrNull()
+      val isAlone = entries.size == 1 && first !is HomeKey && first !is LoginKey
+      return when {
+        !isAlone -> LoneDeepLinkChrome.ShowSuite
+        first?.topLevelGraphOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
+        else -> LoneDeepLinkChrome.ShowNothing
+      }
     }
 
   /**

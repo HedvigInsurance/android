@@ -17,6 +17,7 @@ import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.core.TopLevelGraph
 import org.junit.Test
 
@@ -220,5 +221,24 @@ internal class BackstackControllerTest {
     assertThat(controller.entries.toList())
       .containsExactly(HomeKey, InsurancesKey, HelpCenterKey)
     assertThat(controller.pendingDeepLink).isEqualTo(null)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowUpBar for a lone tab root`() {
+    assertThat(controllerWith(InsurancesKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowNothing for a lone deep non-tab key`() {
+    assertThat(controllerWith(HelpCenterKey).loneDeepLinkChrome)
+      .isEqualTo(LoneDeepLinkChrome.ShowNothing)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowSuite for lone Home, login, and multi-entry stacks`() {
+    assertThat(controllerWith(HomeKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+    assertThat(controllerWith(LoginKey).loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+    assertThat(controllerWith(HomeKey, InsurancesKey).loneDeepLinkChrome)
+      .isEqualTo(LoneDeepLinkChrome.ShowSuite)
   }
 }

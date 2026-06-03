@@ -38,6 +38,22 @@ import androidx.navigation3.scene.SceneDecoratorStrategyScope
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 
 /**
+ * Which chrome the scene decorator should render for a chrome-bearing scene. Driven by a single
+ * runtime probe supplied by `:app`. A lone deep link must never show the rail (it would expose the
+ * broken index-0 runs invariant — see spec D7), yet a bare tab root has no Up affordance of its own.
+ */
+enum class LoneDeepLinkChrome {
+  /** Normal: render the rail/bar. */
+  ShowSuite,
+
+  /** Lone tab root (no own Up): the decorator supplies a top-app-bar Up. */
+  ShowUpBar,
+
+  /** Lone deep "bar-keeper" that already renders its own Up: render nothing extra. */
+  ShowNothing,
+}
+
+/**
  * Renders the global navigation bar/rail as part of the scene itself, via a
  * [SceneDecoratorStrategy], rather than wrapping `NavDisplay` in an outer
  * `Row/Column { chrome ; content }`. This is the purpose-built Navigation 3 way to add persistent
@@ -65,10 +81,24 @@ class NavSuiteSceneDecoratorStrategy<T : Any> internal constructor(
   private val sharedTransitionScope: SharedTransitionScope,
   private val navigationSuiteType: () -> NavigationSuiteType,
   private val chromeContent: @Composable () -> Unit,
+  private val upBarContent: @Composable () -> Unit,
+  private val loneDeepLinkChrome: () -> LoneDeepLinkChrome,
 ) : SceneDecoratorStrategy<T> {
   override fun SceneDecoratorStrategyScope<T>.decorateScene(scene: Scene<T>): Scene<T> {
     if (!scene.metadata.showsNavBar()) return scene
-    return NavSuiteScene(scene, sharedTransitionScope, navigationSuiteType, chromeContent)
+    return when (loneDeepLinkChrome()) {
+      LoneDeepLinkChrome.ShowSuite -> {
+        NavSuiteScene(scene, sharedTransitionScope, navigationSuiteType, chromeContent)
+      }
+
+      LoneDeepLinkChrome.ShowUpBar -> {
+        NavUpBarScene(scene, upBarContent)
+      }
+
+      LoneDeepLinkChrome.ShowNothing -> {
+        scene
+      }
+    }
   }
 
   companion object {
@@ -87,14 +117,25 @@ fun <T : Any> rememberNavSuiteSceneDecoratorStrategy(
   sharedTransitionScope: SharedTransitionScope,
   navigationSuiteType: () -> NavigationSuiteType,
   chromeContent: @Composable () -> Unit,
+  upBarContent: @Composable () -> Unit,
+  loneDeepLinkChrome: () -> LoneDeepLinkChrome,
 ): NavSuiteSceneDecoratorStrategy<T> {
   // movableContentOf wants a single stable lambda; rememberUpdatedState lets the captured chrome
   // composable change (new callbacks each recomposition) without rebuilding the movable wrapper.
   val currentChrome by rememberUpdatedState(chromeContent)
+  val currentUpBar by rememberUpdatedState(upBarContent)
   val currentType by rememberUpdatedState(navigationSuiteType)
+  val currentLoneChrome by rememberUpdatedState(loneDeepLinkChrome)
   val movableChrome = remember { movableContentOf { currentChrome() } }
+  val movableUpBar = remember { movableContentOf { currentUpBar() } }
   return remember(sharedTransitionScope) {
-    NavSuiteSceneDecoratorStrategy(sharedTransitionScope, { currentType() }, movableChrome)
+    NavSuiteSceneDecoratorStrategy(
+      sharedTransitionScope,
+      { currentType() },
+      movableChrome,
+      movableUpBar,
+      { currentLoneChrome() },
+    )
   }
 }
 
@@ -148,6 +189,22 @@ private data class NavSuiteScene<T : Any>(
             scene.content()
           }
         }
+      }
+    }
+  }
+}
+
+private data class NavUpBarScene<T : Any>(
+  val scene: Scene<T>,
+  val upBarContent: @Composable () -> Unit,
+) : Scene<T> by scene {
+  override val key: Any = scene::class to scene.key
+
+  override val content: @Composable () -> Unit = {
+    Column(Modifier.fillMaxSize()) {
+      upBarContent()
+      Box(Modifier.weight(1f).fillMaxWidth()) {
+        scene.content()
       }
     }
   }
