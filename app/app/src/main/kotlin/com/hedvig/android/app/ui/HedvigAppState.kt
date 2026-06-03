@@ -165,7 +165,7 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedOut() {
-    backstackController.setLoggedOut()
+    backstackController.setLoggedOut(null)
   }
 
   val darkTheme: Boolean

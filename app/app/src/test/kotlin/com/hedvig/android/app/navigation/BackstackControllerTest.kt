@@ -148,10 +148,32 @@ internal class BackstackControllerTest {
   fun `setLoggedOut drops to login root and clears parked runs`() {
     val controller = controllerWith(HomeKey, InsurancesKey)
     controller.selectTopLevel(TopLevelGraph.Home)
-    controller.setLoggedOut()
+    controller.setLoggedOut(null)
     assertThat(controller.entries.toList()).containsExactly(LoginKey)
     assertThat(controller.parkedRuns).isEmpty()
     assertThat(controller.isLoggedIn).isFalse()
+  }
+
+  @Test
+  fun `setLoggedOut stashes the live session tagged with the member id`() {
+    val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
+    controller.selectTopLevel(TopLevelGraph.Profile) // park Insurances run, render Profile root
+    controller.setLoggedOut("mem-1")
+    assertThat(controller.entries.toList()).containsExactly(LoginKey)
+    assertThat(controller.parkedRuns).isEmpty()
+    val stash = controller.stashedSession!!
+    assertThat(stash.memberId).isEqualTo("mem-1")
+    assertThat(stash.entries).containsExactly(HomeKey, ProfileKey)
+    assertThat(stash.parkedRuns[TopLevelGraph.Insurances])
+      .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
+  }
+
+  @Test
+  fun `setLoggedOut with a null member id stashes nothing`() {
+    val controller = controllerWith(HomeKey, InsurancesKey)
+    controller.setLoggedOut(null)
+    assertThat(controller.entries.toList()).containsExactly(LoginKey)
+    assertThat(controller.stashedSession).isEqualTo(null)
   }
 
   @Test

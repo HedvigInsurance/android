@@ -205,12 +205,21 @@ internal class BackstackController(
     }
   }
 
-  /** Drop back to the login root; forget any parked runs. */
-  fun setLoggedOut() {
+  /**
+   * Drop to the login root. Stashes the live session (tagged with [memberId]) so a same-member
+   * re-login can restore the history; the stash is excluded from [allLiveContentKeys], so the
+   * decorators dispose every key's per-entry state while it waits. A null [memberId] (demo mode /
+   * unknown identity) stashes nothing — that session can never be safely restored.
+   */
+  fun setLoggedOut(memberId: String?) {
     Snapshot.withMutableSnapshot {
+      stashedSession = if (memberId != null) {
+        StashedSession(memberId, entries.toList(), parkedRuns.toMap())
+      } else {
+        null
+      }
       parkedRuns.clear()
-      entries.clear()
-      entries.add(LoginKey)
+      entries.replaceWith(listOf(LoginKey))
     }
   }
 }
