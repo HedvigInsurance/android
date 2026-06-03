@@ -22,8 +22,12 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import org.junit.Test
 
 internal class BackstackControllerTest {
-  private fun controllerWith(vararg keys: HedvigNavKey) =
-    BackstackController(mutableStateListOf(*keys), mutableStateMapOf(), mutableStateOf(null))
+  private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(
+    mutableStateListOf(*keys),
+    mutableStateMapOf(),
+    mutableStateOf(null), // pendingDeepLink
+    mutableStateOf(null), // stashedSession
+  )
 
   @Test
   fun `system-back at a drill-down pops one entry`() {
@@ -182,6 +186,7 @@ internal class BackstackControllerTest {
       mutableStateListOf(InsurancesKey),
       mutableStateMapOf(),
       mutableStateOf(null),
+      mutableStateOf(null),
       isOwnTask = { false },
       escapeToOwnTask = { escaped = it },
     )
@@ -197,6 +202,7 @@ internal class BackstackControllerTest {
     val controller = BackstackController(
       mutableStateListOf(InsurancesKey),
       mutableStateMapOf(),
+      mutableStateOf(null),
       mutableStateOf(null),
       isOwnTask = { true },
       escapeToOwnTask = { escaped = it },

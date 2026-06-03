@@ -18,8 +18,12 @@ import org.junit.Test
  * to a key already on the stack must therefore never blind-append.
  */
 internal class DeepLinkNavigationTest {
-  private fun controllerWith(vararg keys: HedvigNavKey) =
-    BackstackController(mutableStateListOf(*keys), mutableStateMapOf(), mutableStateOf(null))
+  private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(
+    mutableStateListOf(*keys),
+    mutableStateMapOf(),
+    mutableStateOf(null), // pendingDeepLink
+    mutableStateOf(null), // stashedSession
+  )
 
   @Test
   fun `deep link to the current tab root does not duplicate it`() {

@@ -25,15 +25,32 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.core.TopLevelGraph
+import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.nullable
+
+/**
+ * The logged-in session captured at logout: the rendered [entries] plus all [parkedRuns], tagged
+ * with the [memberId] (JWT `sub`) it belonged to. Held by [BackstackController.stashedSession],
+ * which is intentionally absent from [BackstackController.allLiveContentKeys] so the retained
+ * decorators dispose every key's per-entry state while the session sits here. Restored on a
+ * same-member login by [BackstackController.setLoggedIn]; persisted across process death.
+ */
+@Serializable
+internal data class StashedSession(
+  val memberId: String,
+  val entries: List<@Polymorphic HedvigNavKey>,
+  val parkedRuns: Map<TopLevelGraph, List<@Polymorphic HedvigNavKey>>,
+)
 
 @Stable
 internal class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
   internal val parkedRuns: SnapshotStateMap<TopLevelGraph, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
+  stashedSessionState: MutableState<StashedSession?>,
   /**
    * Whether this activity is the root of its own task. `false` means we were launched into the
    * caller's task by an external deep link, so an Up press must escape into our own task rather than
@@ -53,6 +70,13 @@ internal class BackstackController(
    * alone). Persisted across rotation / process death (e.g. mid-OTP) via [rememberHedvigBackstackController].
    */
   internal var pendingDeepLink: HedvigNavKey? by pendingDeepLinkState
+
+  /**
+   * The previous logged-in session, held between logout and the next login. Excluded from
+   * [allLiveContentKeys] on purpose — see [StashedSession]. Persisted across process death via
+   * [rememberHedvigBackstackController].
+   */
+  internal var stashedSession: StashedSession? by stashedSessionState
 
   val isLoggedIn: Boolean
     get() = entries.firstOrNull() !is LoginKey
@@ -233,7 +257,13 @@ internal fun rememberHedvigBackstackController(
   ) {
     mutableStateOf<HedvigNavKey?>(null)
   }
-  return remember(backstack, parkedRuns, pendingDeepLink) {
-    BackstackController(backstack, parkedRuns, pendingDeepLink, isOwnTask, escapeToOwnTask)
+  val stashedSession = rememberSerializable(
+    configuration = savedStateConfiguration,
+    serializer = MutableStateSerializer(StashedSession.serializer().nullable),
+  ) {
+    mutableStateOf<StashedSession?>(null)
+  }
+  return remember(backstack, parkedRuns, pendingDeepLink, stashedSession) {
+    BackstackController(backstack, parkedRuns, pendingDeepLink, stashedSession, isOwnTask, escapeToOwnTask)
   }
 }
