@@ -136,6 +136,7 @@ internal fun HedvigNavHost(
         finishApp()
       }
     },
+    retainedContentKeys = { hedvigAppState.backstackController.allLiveContentKeys },
     enterTransition = MotionDefaults.sharedXAxisEnter(density),
     exitTransition = MotionDefaults.sharedXAxisExit(density),
     popEnterTransition = MotionDefaults.sharedXAxisPopEnter(density),
