@@ -3,6 +3,10 @@ plugins {
   id("hedvig.gradle.plugin")
 }
 
+hedvig {
+  serialization()
+}
+
 kotlin {
   sourceSets {
     commonMain.dependencies {
