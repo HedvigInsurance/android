@@ -161,7 +161,7 @@ internal class HedvigAppState(
   }
 
   fun navigateToLoggedIn() {
-    backstackController.setLoggedIn()
+    backstackController.setLoggedIn(null)
   }
 
   fun navigateToLoggedOut() {

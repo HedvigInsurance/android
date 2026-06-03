@@ -195,13 +195,33 @@ internal class BackstackController(
     return popBackstack()
   }
 
-  /** Enter the logged-in app, landing any pending deep link alone, else Home. Forget parked runs. */
-  fun setLoggedIn() {
+  /**
+   * Enter the logged-in app. Precedence: a pending deep link lands alone (re-enabling the runs model
+   * on the next Up); otherwise a stash tagged with this same [memberId] is restored (history comes
+   * back, per-entry state having been disposed while stashed); otherwise a fresh Home. Any stash is
+   * always consumed/dropped so it can never bleed into a later session.
+   */
+  fun setLoggedIn(memberId: String?) {
     Snapshot.withMutableSnapshot {
-      parkedRuns.clear()
-      val target = pendingDeepLink
+      val pending = pendingDeepLink
       pendingDeepLink = null
-      entries.replaceWith(listOf(target ?: HomeKey))
+      val stash = stashedSession?.takeIf { memberId != null && it.memberId == memberId }
+      stashedSession = null
+      parkedRuns.clear()
+      when {
+        pending != null -> {
+          entries.replaceWith(listOf(pending))
+        }
+
+        stash != null -> {
+          parkedRuns.putAll(stash.parkedRuns)
+          entries.replaceWith(stash.entries)
+        }
+
+        else -> {
+          entries.replaceWith(listOf(HomeKey))
+        }
+      }
     }
   }
 

@@ -138,7 +138,7 @@ internal class BackstackControllerTest {
   fun `setLoggedIn pins Home and clears parked runs`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     controller.selectTopLevel(TopLevelGraph.Home) // park Insurances
-    controller.setLoggedIn()
+    controller.setLoggedIn("mem-1")
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.parkedRuns).isEmpty()
     assertThat(controller.isLoggedIn).isTrue()
@@ -260,7 +260,7 @@ internal class BackstackControllerTest {
   fun `setLoggedIn consumes the stash and lands the target alone`() {
     val controller = controllerWith(LoginKey)
     controller.navigateToDeepLink(InsurancesKey)
-    controller.setLoggedIn()
+    controller.setLoggedIn("mem-1")
     assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
     assertThat(controller.pendingDeepLink).isEqualTo(null)
     assertThat(controller.parkedRuns).isEmpty()
@@ -269,8 +269,50 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedIn without a stash lands on Home`() {
     val controller = controllerWith(LoginKey)
-    controller.setLoggedIn()
+    controller.setLoggedIn("mem-1")
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `setLoggedIn restores the stash for the same member`() {
+    val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
+    controller.selectTopLevel(TopLevelGraph.Profile)
+    controller.setLoggedOut("mem-1")
+    controller.setLoggedIn("mem-1")
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, ProfileKey)
+    assertThat(controller.parkedRuns[TopLevelGraph.Insurances])
+      .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
+    assertThat(controller.stashedSession).isEqualTo(null)
+  }
+
+  @Test
+  fun `setLoggedIn as a different member discards the stash and lands on Home`() {
+    val controller = controllerWith(HomeKey, ProfileKey)
+    controller.setLoggedOut("mem-1")
+    controller.setLoggedIn("mem-2")
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+    assertThat(controller.parkedRuns).isEmpty()
+    assertThat(controller.stashedSession).isEqualTo(null)
+  }
+
+  @Test
+  fun `setLoggedIn with a null member id lands on Home and drops the stash`() {
+    val controller = controllerWith(HomeKey, ProfileKey)
+    controller.setLoggedOut("mem-1")
+    controller.setLoggedIn(null)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+    assertThat(controller.stashedSession).isEqualTo(null)
+  }
+
+  @Test
+  fun `setLoggedIn lands a pending deep link alone even when a same-member stash exists`() {
+    val controller = controllerWith(HomeKey, ProfileKey)
+    controller.setLoggedOut("mem-1")
+    controller.navigateToDeepLink(HelpCenterKey) // logged out → stashed as pendingDeepLink
+    controller.setLoggedIn("mem-1")
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+    assertThat(controller.parkedRuns).isEmpty()
+    assertThat(controller.stashedSession).isEqualTo(null)
   }
 
   @Test
