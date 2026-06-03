@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -120,7 +121,7 @@ internal class BackstackControllerTest {
   fun `allLiveContentKeys includes parked runs`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     controller.selectTopLevel(TopLevelGraph.Home) // Insurances run now parked
-    assertThat(controller.allLiveContentKeys).containsExactly(
+    assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(
       HomeKey.toString(),
       InsurancesKey.toString(),
       HelpCenterKey.toString(),

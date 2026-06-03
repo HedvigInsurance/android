@@ -1,6 +1,7 @@
 package com.hedvig.android.app.navigation
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
@@ -16,7 +17,8 @@ import org.junit.Test
  * to a key already on the stack must therefore never blind-append.
  */
 internal class DeepLinkNavigationTest {
-  private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(mutableStateListOf(*keys))
+  private fun controllerWith(vararg keys: HedvigNavKey) =
+    BackstackController(mutableStateListOf(*keys), mutableStateMapOf())
 
   @Test
   fun `deep link to the current tab root does not duplicate it`() {

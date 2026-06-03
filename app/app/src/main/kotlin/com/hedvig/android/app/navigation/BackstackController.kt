@@ -3,19 +3,23 @@ package com.hedvig.android.app.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.savedstate.compose.serialization.serializers.SnapshotStateListSerializer
+import androidx.savedstate.compose.serialization.serializers.SnapshotStateMapSerializer
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.core.TopLevelGraph
 import kotlinx.serialization.PolymorphicSerializer
+import kotlinx.serialization.builtins.ListSerializer
 
 @Stable
 internal class BackstackController(
@@ -138,5 +142,14 @@ internal fun rememberHedvigBackstackController(savedStateConfiguration: SavedSta
   ) {
     mutableStateListOf<HedvigNavKey>(LoginKey)
   }
-  return remember(backstack) { BackstackController(backstack) }
+  val parkedRuns = rememberSerializable(
+    configuration = savedStateConfiguration,
+    serializer = SnapshotStateMapSerializer(
+      TopLevelGraph.serializer(),
+      ListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
+    ),
+  ) {
+    mutableStateMapOf<TopLevelGraph, List<HedvigNavKey>>()
+  }
+  return remember(backstack, parkedRuns) { BackstackController(backstack, parkedRuns) }
 }
