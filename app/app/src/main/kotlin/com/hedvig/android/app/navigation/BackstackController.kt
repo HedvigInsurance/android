@@ -27,7 +27,7 @@ internal class BackstackController(
   internal val parkedRuns: SnapshotStateMap<TopLevelGraph, List<HedvigNavKey>>,
 ) : Backstack {
   val isLoggedIn: Boolean
-    get() = entries.firstOrNull()?.topLevelGraphOrNull() != null
+    get() = entries.firstOrNull() !is LoginKey
 
   val currentTopLevel: TopLevelGraph
     get() = nearestTopLevelGraph(entries) ?: TopLevelGraph.Home

@@ -153,4 +153,16 @@ internal class BackstackControllerTest {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     assertThat(controller.currentTopLevel).isEqualTo(TopLevelGraph.Insurances)
   }
+
+  @Test
+  fun `isLoggedIn is true for a lone non-login deep link`() {
+    val controller = controllerWith(HelpCenterKey)
+    assertThat(controller.isLoggedIn).isTrue()
+  }
+
+  @Test
+  fun `isLoggedIn is false when rooted at login`() {
+    val controller = controllerWith(LoginKey)
+    assertThat(controller.isLoggedIn).isFalse()
+  }
 }
