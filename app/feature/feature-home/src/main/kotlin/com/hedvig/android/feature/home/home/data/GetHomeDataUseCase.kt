@@ -53,7 +53,6 @@ internal interface GetHomeDataUseCase {
 
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
-  private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val featureManager: FeatureManager,
   private val clock: Clock,
@@ -77,20 +76,16 @@ internal class GetHomeDataUseCaseImpl(
           delay(5.seconds)
         }
       },
-      hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
       getMemberRemindersUseCase.invoke(),
       flow {
         emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(AddonBannerSource.INSURANCES_TAB))
       },
-      featureManager.isFeatureEnabled(Feature.DISABLE_CHAT),
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
     ) {
       homeQueryDataResult,
       unreadMessageCountResult,
-      isEligibleToShowTheChatIconResult,
       memberReminders,
       travelBannerInfo,
-      isChatDisabled,
       isHelpCenterEnabled,
       ->
       either {
@@ -144,11 +139,6 @@ internal class GetHomeDataUseCaseImpl(
           recommendedCrossSell = recommendedCrossSell,
           otherCrossSells = otherCrossSellsData,
         )
-        val showChatIcon = !shouldHideChatButton(
-          isChatDisabledFromKillSwitch = isChatDisabled,
-          isEligibleToShowTheChatIcon = isEligibleToShowTheChatIconResult.bind(),
-          isHelpCenterEnabled = isHelpCenterEnabled,
-        )
         val unreadMessageCountData = unreadMessageCountResult.bind()
         val hasUnseenChatMessages = unreadMessageCountData
           .currentMember
@@ -171,7 +161,6 @@ internal class GetHomeDataUseCaseImpl(
           claimStatusCardsData = homeQueryData.claimStatusCards(),
           veryImportantMessages = veryImportantMessages,
           memberReminders = memberReminders,
-          showChatIcon = showChatIcon,
           hasUnseenChatMessages = hasUnseenChatMessages,
           showHelpCenter = isHelpCenterEnabled,
           firstVetSections = firstVetActions,
@@ -286,7 +275,6 @@ internal data class HomeData(
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: List<VeryImportantMessage>,
   val memberReminders: MemberReminders,
-  val showChatIcon: Boolean,
   val hasUnseenChatMessages: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,

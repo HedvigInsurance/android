@@ -301,7 +301,7 @@ private fun HomeScreen(
           val actionsList = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
-            if (currentState.chatAction != null) add(currentState.chatAction)
+            add(currentState.chatAction)
           }
           actionsList.forEach { action ->
             when (action) {
@@ -883,7 +883,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           hasUnseenChatMessages = false,
           crossSellsAction = null,
           firstVetAction = null,
-          chatAction = null,
+          chatAction = ChatAction,
           addonBannerInfo = null,
           isProduction = true,
         ),

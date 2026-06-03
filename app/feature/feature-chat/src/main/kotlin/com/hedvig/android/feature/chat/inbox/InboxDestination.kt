@@ -44,6 +44,9 @@ import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightC
 import com.hedvig.android.design.system.hedvig.HighlightLabelDefaults.HighlightShade
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBar
+import com.hedvig.android.design.system.hedvig.TopAppBarActionType
+import com.hedvig.android.design.system.hedvig.TopAppBarLayoutForActions
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.datepicker.formatInstantForTalkBack
 import com.hedvig.android.design.system.hedvig.datepicker.getLocale
@@ -97,9 +100,13 @@ private fun InboxScreen(
     modifier = Modifier.fillMaxSize(),
   ) {
     Column {
-      TopAppBarWithBack(
+      TopAppBar(
         title = stringResource(Res.string.CHAT_CONVERSATION_INBOX),
-        onClick = navigateUp,
+        actionType = TopAppBarActionType.BACK,
+        onActionClick = navigateUp,
+        topAppBarActions = {
+          //TODO
+        }
       )
       when (uiState) {
         InboxUiState.Loading -> HedvigFullScreenCenterAlignedProgressDebounced()

@@ -134,7 +134,7 @@ internal class HomePresenter(
           },
           isHelpCenterEnabled = successData.showHelpCenter,
           hasUnseenChatMessages = successData.hasUnseenChatMessages,
-          chatAction = successData.chatAction,
+          chatAction = HomeTopBarAction.ChatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
           addonBannerInfo = successData.addonBannerInfo,
@@ -171,7 +171,7 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: List<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
-    val chatAction: HomeTopBarAction.ChatAction?,
+    val chatAction: HomeTopBarAction.ChatAction,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     val addonBannerInfo: AddonBannerInfo?,
@@ -191,7 +191,6 @@ private data class SuccessData(
   val veryImportantMessages: List<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
-  val chatAction: HomeTopBarAction.ChatAction?,
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
@@ -206,7 +205,6 @@ private data class SuccessData(
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         showHelpCenter = lastState.isHelpCenterEnabled,
-        chatAction = lastState.chatAction,
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
@@ -226,7 +224,6 @@ private data class SuccessData(
         null
       }
 
-      val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
         HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
       } else {
@@ -254,7 +251,6 @@ private data class SuccessData(
           enableNotifications = null,
         ),
         showHelpCenter = homeData.showHelpCenter,
-        chatAction = chatAction,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,

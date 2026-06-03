@@ -13,7 +13,6 @@ internal class UnleashFeatureFlagProvider(
     return hedvigUnleashClient.featureUpdatedFlow
       .map {
         when (feature) {
-          Feature.DISABLE_CHAT -> hedvigUnleashClient.client.isEnabled("disable_chat")
 
           Feature.MOVING_FLOW -> hedvigUnleashClient.client.isEnabled("moving_flow")
 
