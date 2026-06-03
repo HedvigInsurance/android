@@ -1,14 +1,14 @@
 package com.hedvig.android.navigation.compose
 
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.ui.NavDisplay
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -23,9 +23,11 @@ import com.hedvig.android.navigation.common.HedvigNavKey
  *    is in [retainedContentKeys], i.e. in the rendered stack or parked in another tab run),
  * 2. retained per-entry ViewModelStore (same union-key check; ViewModels survive tab switches).
  *
- * The four transitions are supplied by the caller (the design system owns the actual motion specs;
- * this module stays free of a design-system dependency). They are combined into the
- * forward/pop/predictive-pop [androidx.compose.animation.ContentTransform]s that [NavDisplay] needs.
+ * The transitions are supplied by the caller as scene-pair classifiers (the design system owns the
+ * actual motion specs and the `:app` module owns the entry→tab mapping; this module stays free of
+ * both dependencies). Each lambda runs in [NavDisplay]'s [AnimatedContentTransitionScope] over the
+ * outgoing/incoming [Scene]s, so the caller can pick a transition from the (from, to) pair rather
+ * than from a single destination's metadata.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -33,11 +35,12 @@ fun HedvigNavDisplay(
   backstack: Backstack,
   onBack: () -> Unit,
   retainedContentKeys: () -> Set<Any>,
-  enterTransition: EnterTransition,
-  exitTransition: ExitTransition,
-  popEnterTransition: EnterTransition,
-  popExitTransition: ExitTransition,
+  transitionSpec: AnimatedContentTransitionScope<Scene<HedvigNavKey>>.() -> ContentTransform,
+  popTransitionSpec: AnimatedContentTransitionScope<Scene<HedvigNavKey>>.() -> ContentTransform,
   modifier: Modifier = Modifier,
+  predictivePopTransitionSpec: AnimatedContentTransitionScope<Scene<HedvigNavKey>>.(Int) -> ContentTransform = {
+    popTransitionSpec()
+  },
   sharedTransitionScope: SharedTransitionScope? = null,
   sceneDecoratorStrategies: List<SceneDecoratorStrategy<HedvigNavKey>> = emptyList(),
   builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
@@ -52,9 +55,9 @@ fun HedvigNavDisplay(
     ),
     sharedTransitionScope = sharedTransitionScope,
     sceneDecoratorStrategies = sceneDecoratorStrategies,
-    transitionSpec = { enterTransition togetherWith exitTransition },
-    popTransitionSpec = { popEnterTransition togetherWith popExitTransition },
-    predictivePopTransitionSpec = { popEnterTransition togetherWith popExitTransition },
+    transitionSpec = transitionSpec,
+    popTransitionSpec = popTransitionSpec,
+    predictivePopTransitionSpec = predictivePopTransitionSpec,
     entryProvider = entryProvider(builder = builder),
   )
 }

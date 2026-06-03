@@ -100,6 +100,32 @@ internal class BackstackController(
     }
 
   /**
+   * `contentKey` (`toString()`) → the top-level graph that owns it, used by the [HedvigNavDisplay]
+   * transition classifier to fade between tabs and slide within one. A screen's owner is *positional*
+   * (which run it sits in), so it can't be read off a single key in isolation; this resolves it from
+   * the full rendered stack plus all [parkedRuns].
+   *
+   * The map accumulates and is never cleared: a key just popped by [handleBack] (gone from both
+   * [entries] and [parkedRuns]) keeps its last-known owner so the *outgoing* scene of that pop can
+   * still be classified (e.g. system-back from a side-tab root to Home stays a fade). A given key
+   * type only ever lives in one tab's run, so a retained owner can't go stale.
+   */
+  private val owningTabByContentKey = mutableMapOf<String, TopLevelGraph>()
+
+  fun owningTopLevelGraphForContentKey(contentKey: Any?): TopLevelGraph? {
+    if (contentKey == null) return null
+    var tab: TopLevelGraph? = null
+    entries.forEach { key ->
+      tab = key.topLevelGraphOrNull() ?: tab
+      tab?.let { owningTabByContentKey[key.toString()] = it }
+    }
+    parkedRuns.forEach { (parkedTab, run) ->
+      run.forEach { owningTabByContentKey[it.toString()] = parkedTab }
+    }
+    return owningTabByContentKey[contentKey.toString()]
+  }
+
+  /**
    * Drives the scene decorator (D11). A lone non-Home/non-Login key suppresses the rail: a tab root
    * gets a decorator-supplied Up-bar, a deep bar-keeper (which renders its own Up) gets nothing.
    */

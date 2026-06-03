@@ -5,7 +5,6 @@ import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
-import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
@@ -13,7 +12,6 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -36,10 +34,7 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
   openCrossSellUrl: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  entry<HomeKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
-      NavSuiteSceneDecoratorStrategy.showNavBar(),
-  ) {
+  entry<HomeKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: HomeViewModel = metroViewModel()
     HomeDestination(
       viewModel = viewModel,

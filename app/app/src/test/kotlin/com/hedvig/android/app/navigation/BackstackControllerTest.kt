@@ -350,4 +350,43 @@ internal class BackstackControllerTest {
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(HomeKey.toString())
   }
+
+  @Test
+  fun `owningTopLevelGraph resolves positionally for the rendered stack`() {
+    val controller = controllerWith(HomeKey, HelpCenterKey, InsurancesKey, HelpCenterKey)
+    // HelpCenter sitting in the Home run belongs to Home; the Insurances run owns its own keys.
+    assertThat(controller.owningTopLevelGraphForContentKey(HomeKey.toString()))
+      .isEqualTo(TopLevelGraph.Home)
+    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelGraph.Insurances)
+  }
+
+  @Test
+  fun `owningTopLevelGraph resolves keys parked in another run`() {
+    val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
+    controller.selectTopLevel(TopLevelGraph.Profile) // park the Insurances run
+    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelGraph.Insurances)
+    assertThat(controller.owningTopLevelGraphForContentKey(ProfileKey.toString()))
+      .isEqualTo(TopLevelGraph.Profile)
+  }
+
+  @Test
+  fun `owningTopLevelGraph remembers a key after it is popped, so its exit still classifies`() {
+    val controller = controllerWith(HomeKey, InsurancesKey)
+    // Resolve while live so the accumulator records it (mirrors the spec running on the tab switch).
+    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelGraph.Insurances)
+    controller.handleBack() // system-back to Home: InsurancesKey is removed and never parked
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+    // The outgoing Insurances root must still classify as Insurances so its exit fades, not slides.
+    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelGraph.Insurances)
+  }
+
+  @Test
+  fun `owningTopLevelGraph is null for an unknown key`() {
+    val controller = controllerWith(HomeKey)
+    assertThat(controller.owningTopLevelGraphForContentKey(LoginKey.toString())).isEqualTo(null)
+  }
 }

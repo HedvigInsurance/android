@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.invalidateMeasurement
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.navigation3.runtime.NavMetadataKey
@@ -65,16 +66,18 @@ enum class LoneDeepLinkChrome {
  * full-screen.
  *
  * The naive version of this re-composes the chrome twice during a scene transition (both the
- * outgoing and incoming scene compose at once) and lets it slide/reflow with the content. The three
- * cooperating pieces that keep it visually static while transitioning between two chrome-bearing
- * scenes:
- * 1. [movableContentOf] — one chrome instance, moved (not re-created) between scenes, so its state
- *    (selected-tab indicator) survives the hand-off.
- * 2. `isChromeCaller` — only the *settled* (target == Visible) scene actually calls the movable
- *    content; the other scene leaves the slot empty so the instance isn't requested twice.
- * 3. `sharedElement` + [cacheSize] — pins the chrome in place across the two scenes and holds the
- *    empty slot at the chrome's measured size so the content pane doesn't jump while the chrome is
- *    "absent" from the non-calling scene.
+ * outgoing and incoming scene compose at once) and lets it slide/reflow with the content. Two
+ * cooperating pieces keep it visually static while transitioning between two chrome-bearing scenes:
+ * 1. [movableContentOf] — one chrome instance, *moved* (not re-created) between scenes. Each scene
+ *    decides locally whether it is the caller via `transition.targetState == Visible`, so at any
+ *    moment exactly one scene calls the movable content. That single-caller invariant is what lets
+ *    Compose perform a clean move that preserves the chrome's live nodes — including the navigation
+ *    item's press ripple (Bug #2). A previous design coordinated the host through shared state
+ *    written in a `SideEffect`, which produced frames with zero or two callers; the movable content
+ *    was then torn down and re-created instead of moved, killing the ripple.
+ * 2. `sharedElement` + the local [cacheSize] modifier — pins the chrome in place across the two
+ *    scenes and holds the non-caller scene's empty slot at the chrome's last measured size so the
+ *    content pane doesn't jump while the chrome lives in the other scene.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 class NavSuiteSceneDecoratorStrategy<T : Any> internal constructor(
@@ -150,6 +153,8 @@ private data class NavSuiteScene<T : Any>(
 
   override val content: @Composable () -> Unit = {
     val animatedContentScope = LocalNavAnimatedContentScope.current
+    // Exactly one active scene has targetState == Visible (the incoming/settled destination); it
+    // hosts the single movable chrome. The leaving scene leaves its slot empty at the cached size.
     val isChromeCaller = animatedContentScope.transition.targetState == EnterExitState.Visible
     with(sharedTransitionScope) {
       val chromeSlot = @Composable {
@@ -222,14 +227,16 @@ private object ShowNavBarKey : NavMetadataKey<Unit>
 private fun Map<String, Any>.showsNavBar(): Boolean = ShowNavBarKey in this
 
 /**
- * Holds the layout slot at the size it last measured to when [useCachedSize] is true. The
- * non-calling scene leaves the chrome slot empty (the movable content lives in the other scene), so
- * without this the slot would collapse to zero and the content pane would jump for the duration of
- * the transition.
+ * Caches the measured size of the chrome slot so the non-hosting scene reserves it. The hosting
+ * scene (the one that actually calls the movable chrome) measures the real chrome and caches that
+ * size; the leaving scene leaves the slot empty (the movable content lives in the other scene) and
+ * reuses its last cached size, so the content pane doesn't jump while the chrome is "absent" from it.
  */
 private fun Modifier.cacheSize(useCachedSize: Boolean): Modifier = this then CacheSizeElement(useCachedSize)
 
-private data class CacheSizeElement(val useCachedSize: Boolean) : ModifierNodeElement<CacheSizeNode>() {
+private data class CacheSizeElement(
+  val useCachedSize: Boolean,
+) : ModifierNodeElement<CacheSizeNode>() {
   override fun create(): CacheSizeNode = CacheSizeNode(useCachedSize)
 
   override fun update(node: CacheSizeNode) {
@@ -237,13 +244,24 @@ private data class CacheSizeElement(val useCachedSize: Boolean) : ModifierNodeEl
   }
 }
 
-private class CacheSizeNode(var useCachedSize: Boolean) : Modifier.Node(), LayoutModifierNode {
+private class CacheSizeNode(
+  useCachedSize: Boolean,
+) : Modifier.Node(), LayoutModifierNode {
+  var useCachedSize: Boolean = useCachedSize
+    set(value) {
+      if (field != value) {
+        field = value
+        invalidateMeasurement()
+      }
+    }
+
   private var cachedSize: IntSize? = null
 
   override fun MeasureScope.measure(measurable: Measurable, constraints: Constraints): MeasureResult {
     val placeable = measurable.measure(constraints)
     val measured = IntSize(placeable.width, placeable.height)
-    val size = if (useCachedSize) cachedSize ?: measured else measured.also { cachedSize = it }
+    val size = if (useCachedSize) cachedSize ?: measured else measured
+    cachedSize = size
     return layout(size.width, size.height) { placeable.place(0, 0) }
   }
 }

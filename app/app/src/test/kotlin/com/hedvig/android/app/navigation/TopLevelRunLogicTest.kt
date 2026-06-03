@@ -2,7 +2,9 @@ package com.hedvig.android.app.navigation
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
 import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
@@ -57,5 +59,21 @@ class TopLevelRunLogicTest {
 
   @Test fun activeSideRun_sideTabRootOnly() {
     assertThat(activeSideRun(listOf(HomeKey, ProfileKey))).isEqualTo(listOf(ProfileKey))
+  }
+
+  @Test fun shouldFadeThrough_trueWhenTabsDiffer() {
+    assertThat(shouldFadeThrough(TopLevelGraph.Forever, TopLevelGraph.Insurances)).isTrue()
+    assertThat(shouldFadeThrough(TopLevelGraph.Home, TopLevelGraph.Profile)).isTrue()
+  }
+
+  @Test fun shouldFadeThrough_falseWithinSameTab() {
+    assertThat(shouldFadeThrough(TopLevelGraph.Insurances, TopLevelGraph.Insurances)).isFalse()
+  }
+
+  @Test fun shouldFadeThrough_falseWhenEitherTabIsNull() {
+    // A tab-less screen (e.g. pre-login Login) is never a tab change.
+    assertThat(shouldFadeThrough(null, TopLevelGraph.Home)).isFalse()
+    assertThat(shouldFadeThrough(TopLevelGraph.Home, null)).isFalse()
+    assertThat(shouldFadeThrough(null, null)).isFalse()
   }
 }

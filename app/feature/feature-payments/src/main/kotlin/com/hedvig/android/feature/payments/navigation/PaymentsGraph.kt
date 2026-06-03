@@ -4,7 +4,6 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
@@ -23,7 +22,6 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
@@ -38,10 +36,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
   navigateToPayoutAccount: () -> Unit,
   openConversation: () -> Unit,
 ) {
-  entry<PaymentsKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
-      NavSuiteSceneDecoratorStrategy.showNavBar(),
-  ) {
+  entry<PaymentsKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: PaymentsViewModel = metroViewModel()
     PaymentsDestination(
       viewModel = viewModel,

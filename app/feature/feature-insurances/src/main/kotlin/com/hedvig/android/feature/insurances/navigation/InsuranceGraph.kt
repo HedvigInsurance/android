@@ -6,7 +6,6 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.AddonVariant
-import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.insurances.data.AvailableAddon
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
 import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
@@ -19,7 +18,6 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -44,10 +42,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
   navigateToChipIdScreen: (String) -> Unit,
 ) {
   nestedGraphs()
-  entry<InsurancesKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
-      NavSuiteSceneDecoratorStrategy.showNavBar(),
-  ) {
+  entry<InsurancesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: InsuranceViewModel = metroViewModel()
     InsuranceDestination(
       viewModel = viewModel,

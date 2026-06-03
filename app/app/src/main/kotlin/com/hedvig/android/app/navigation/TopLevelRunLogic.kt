@@ -29,6 +29,17 @@ internal fun nearestTopLevelGraph(stack: List<HedvigNavKey>): TopLevelGraph? {
   return null
 }
 
+/**
+ * Whether a transition between two screens owned by [fromTab] and [toTab] should fade through (used
+ * between top-level tabs) rather than slide (used within a tab). True only when both screens belong
+ * to a tab and the tabs differ — the decision is a property of the (from, to) pair, not of a single
+ * destination, since restoring a parked side-tab run lands on a deep screen that can't be classified
+ * from its key alone. A transition to or from a tab-less screen (e.g. the pre-login Login screen,
+ * which yields null) is never a tab change.
+ */
+internal fun shouldFadeThrough(fromTab: TopLevelGraph?, toTab: TopLevelGraph?): Boolean =
+  fromTab != null && toTab != null && fromTab != toTab
+
 /** Truncates to Home's run (Home + its drill-downs), discarding every parked side-tab run. */
 internal fun collapseToHome(stack: List<HedvigNavKey>): List<HedvigNavKey> {
   val firstSideRunStart = (1..stack.lastIndex).firstOrNull { stack[it].topLevelGraphOrNull() != null }

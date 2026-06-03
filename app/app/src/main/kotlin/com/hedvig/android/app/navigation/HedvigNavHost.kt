@@ -2,6 +2,7 @@ package com.hedvig.android.app.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -142,10 +143,24 @@ internal fun HedvigNavHost(
       }
     },
     retainedContentKeys = { hedvigAppState.backstackController.allLiveContentKeys },
-    enterTransition = MotionDefaults.sharedXAxisEnter(density),
-    exitTransition = MotionDefaults.sharedXAxisExit(density),
-    popEnterTransition = MotionDefaults.sharedXAxisPopEnter(density),
-    popExitTransition = MotionDefaults.sharedXAxisPopExit(density),
+    transitionSpec = {
+      val fromTab = backstack.owningTopLevelGraphForContentKey(initialState.entries.lastOrNull()?.contentKey)
+      val toTab = backstack.owningTopLevelGraphForContentKey(targetState.entries.lastOrNull()?.contentKey)
+      if (shouldFadeThrough(fromTab, toTab)) {
+        MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
+      } else {
+        MotionDefaults.sharedXAxisEnter(density) togetherWith MotionDefaults.sharedXAxisExit(density)
+      }
+    },
+    popTransitionSpec = {
+      val fromTab = backstack.owningTopLevelGraphForContentKey(initialState.entries.lastOrNull()?.contentKey)
+      val toTab = backstack.owningTopLevelGraphForContentKey(targetState.entries.lastOrNull()?.contentKey)
+      if (shouldFadeThrough(fromTab, toTab)) {
+        MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
+      } else {
+        MotionDefaults.sharedXAxisPopEnter(density) togetherWith MotionDefaults.sharedXAxisPopExit(density)
+      }
+    },
     modifier = modifier,
     sharedTransitionScope = sharedTransitionScope,
     sceneDecoratorStrategies = sceneDecoratorStrategies,

@@ -6,7 +6,6 @@ import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
-import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.feature.profile.aboutapp.AboutAppViewModel
 import com.hedvig.android.feature.profile.aboutapp.InformationDestination
 import com.hedvig.android.feature.profile.aboutapp.LicensesDestination
@@ -30,7 +29,6 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.profileGraph(
@@ -53,10 +51,7 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
   navigateToChipId: () -> Unit,
   languageService: LanguageService,
 ) {
-  entry<ProfileKey>(
-    metadata = entryTransitionMetadata(MotionDefaults.fadeThroughEnter, MotionDefaults.fadeThroughExit) +
-      NavSuiteSceneDecoratorStrategy.showNavBar(),
-  ) {
+  entry<ProfileKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: ProfileViewModel = metroViewModel()
     ProfileDestination(
       navigateToEurobonus = dropUnlessResumed {
