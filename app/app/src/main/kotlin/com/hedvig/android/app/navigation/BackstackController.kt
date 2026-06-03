@@ -127,7 +127,7 @@ internal class BackstackController(
 }
 
 private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKey>) {
-  if (this == target) return
+  if (size == target.size && indices.all { this[it] == target[it] }) return
   Snapshot.withMutableSnapshot {
     clear()
     addAll(target)
