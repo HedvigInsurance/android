@@ -293,6 +293,13 @@ internal fun rememberHedvigBackstackController(
     mutableStateOf<StashedSession?>(null)
   }
   return remember(backstack, parkedRuns, pendingDeepLink, stashedSession) {
-    BackstackController(backstack, parkedRuns, pendingDeepLink, stashedSession, isOwnTask, escapeToOwnTask)
+    BackstackController(
+      entries = backstack,
+      parkedRuns = parkedRuns,
+      pendingDeepLinkState = pendingDeepLink,
+      stashedSessionState = stashedSession,
+      isOwnTask = isOwnTask,
+      escapeToOwnTask = escapeToOwnTask,
+    )
   }
 }
