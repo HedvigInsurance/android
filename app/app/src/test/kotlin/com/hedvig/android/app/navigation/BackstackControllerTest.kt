@@ -176,6 +176,37 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `navigateUp from a foreign-hosted lone deep link escapes to own task with the parent stack`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = BackstackController(
+      mutableStateListOf(InsurancesKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      isOwnTask = { false },
+      escapeToOwnTask = { escaped = it },
+    )
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isEqualTo(listOf(HomeKey))
+    // The foreign-hosted stack is left untouched; the relaunched task owns the rebuilt ancestry.
+    assertThat(controller.entries.toList()).containsExactly(InsurancesKey)
+  }
+
+  @Test
+  fun `navigateUp in our own task rebuilds the parent ancestry in place`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = BackstackController(
+      mutableStateListOf(InsurancesKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      isOwnTask = { true },
+      escapeToOwnTask = { escaped = it },
+    )
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isEqualTo(null)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
   fun `navigateUp on a normal stack pops one entry like back`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     assertThat(controller.navigateUp()).isTrue()

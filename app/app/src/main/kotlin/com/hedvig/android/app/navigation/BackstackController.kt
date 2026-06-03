@@ -34,6 +34,19 @@ internal class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
   internal val parkedRuns: SnapshotStateMap<TopLevelGraph, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
+  /**
+   * Whether this activity is the root of its own task. `false` means we were launched into the
+   * caller's task by an external deep link, so an Up press must escape into our own task rather than
+   * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
+   * Defaults to `true` so unit tests and any non-Activity construction stay fully in-process.
+   */
+  private val isOwnTask: () -> Boolean = { true },
+  /**
+   * Re-roots the app in its own task seeded with the given stack (see [navigateUp]). The Activity
+   * owns the mechanics (relaunch with NEW_TASK|CLEAR_TASK + finish); the controller only supplies
+   * the target stack. No-op by default so the in-process path is the testable default.
+   */
+  private val escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
 ) : Backstack {
   /**
    * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land
@@ -137,14 +150,22 @@ internal class BackstackController(
 
   /**
    * Task-aware Up. For a lone deep link (size 1 with a non-trivial synthetic stack) it materializes
-   * the ancestry and lands on the parent, restoring HomeKey at index 0 (re-enabling the runs model).
-   * Everywhere else it is a plain temporal pop, identical to Back.
+   * the parent ancestry — `[Home]` for a lone tab root, `[Home, Insurances]` for a lone contract
+   * detail — so Up behaves exactly like Back would have inside the app. When we were launched into a
+   * foreign task ([isOwnTask] is false) that parent stack is handed to [escapeToOwnTask], which
+   * re-roots the app in its own task; otherwise it is materialized in place. Everywhere else Up is a
+   * plain temporal pop, identical to Back.
    */
   override fun navigateUp(): Boolean {
     val top = entries.lastOrNull() ?: return false
     val synthetic = syntheticStackFor(top)
     if (entries.size == 1 && synthetic.size > 1) {
-      entries.replaceWith(synthetic.dropLast(1))
+      val parentStack = synthetic.dropLast(1)
+      if (isOwnTask()) {
+        entries.replaceWith(parentStack)
+      } else {
+        escapeToOwnTask(parentStack)
+      }
       return true
     }
     return popBackstack()
@@ -179,12 +200,23 @@ private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKe
 }
 
 @Composable
-internal fun rememberHedvigBackstackController(savedStateConfiguration: SavedStateConfiguration): BackstackController {
+internal fun rememberHedvigBackstackController(
+  savedStateConfiguration: SavedStateConfiguration,
+  initialBackstack: List<HedvigNavKey>? = null,
+  isOwnTask: () -> Boolean = { true },
+  escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
+): BackstackController {
   val backstack = rememberSerializable(
     configuration = savedStateConfiguration,
     serializer = SnapshotStateListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
   ) {
-    mutableStateListOf<HedvigNavKey>(LoginKey)
+    // A fresh process relaunched by an Up-escape seeds the restored ancestry instead of the login
+    // root; tokens persist across the relaunch so the member is still logged in.
+    if (initialBackstack.isNullOrEmpty()) {
+      mutableStateListOf<HedvigNavKey>(LoginKey)
+    } else {
+      mutableStateListOf<HedvigNavKey>().apply { addAll(initialBackstack) }
+    }
   }
   val parkedRuns = rememberSerializable(
     configuration = savedStateConfiguration,
@@ -202,6 +234,6 @@ internal fun rememberHedvigBackstackController(savedStateConfiguration: SavedSta
     mutableStateOf<HedvigNavKey?>(null)
   }
   return remember(backstack, parkedRuns, pendingDeepLink) {
-    BackstackController(backstack, parkedRuns, pendingDeepLink)
+    BackstackController(backstack, parkedRuns, pendingDeepLink, isOwnTask, escapeToOwnTask)
   }
 }
