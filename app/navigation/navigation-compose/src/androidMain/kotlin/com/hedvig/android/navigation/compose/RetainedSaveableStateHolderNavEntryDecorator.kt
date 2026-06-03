@@ -3,6 +3,7 @@ package com.hedvig.android.navigation.compose
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.SaveableStateHolder
@@ -32,21 +33,19 @@ internal fun rememberRetainedSaveableStateHolderNavEntryDecorator(
 ): NavEntryDecorator<HedvigNavKey> {
   val latestRetained by rememberUpdatedState(retainedContentKeys)
   // Keys we have provided a SaveableStateProvider slot for. SaveableStateHolder can't enumerate its
-  // own keys, so we mirror them here to drive the reconcile pass below.
-  val decoratedKeys = remember { mutableSetOf<Any>() }
+  // own keys, so we mirror them here to drive the reconcile pass below. Snapshot-aware so reads and
+  // writes from composition (decorate/onPop) and the reconcile coroutine stay consistent.
+  val decoratedKeys = remember { mutableStateListOf<Any>() }
 
   // Reconcile pass: whenever the live-key set shrinks (a key was popped, parked-then-dropped, or its
   // whole session was stashed on logout), dispose the saved state of every tracked key that is no
   // longer live. This catches keys that never fire onPop because they never rendered.
   LaunchedEffect(saveableStateHolder) {
     snapshotFlow { latestRetained() }.collect { retained ->
-      val iterator = decoratedKeys.iterator()
-      while (iterator.hasNext()) {
-        val key = iterator.next()
-        if (key !in retained) {
-          saveableStateHolder.removeState(key)
-          iterator.remove()
-        }
+      val gone = decoratedKeys.filter { it !in retained }
+      gone.forEach { key ->
+        saveableStateHolder.removeState(key)
+        decoratedKeys.remove(key)
       }
     }
   }
@@ -60,7 +59,9 @@ internal fun rememberRetainedSaveableStateHolderNavEntryDecorator(
         }
       },
       decorate = { entry ->
-        decoratedKeys += entry.contentKey
+        if (entry.contentKey !in decoratedKeys) {
+          decoratedKeys.add(entry.contentKey)
+        }
         saveableStateHolder.SaveableStateProvider(entry.contentKey) { entry.Content() }
       },
     )
