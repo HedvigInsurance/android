@@ -165,4 +165,25 @@ internal class BackstackControllerTest {
     val controller = controllerWith(LoginKey)
     assertThat(controller.isLoggedIn).isFalse()
   }
+
+  @Test
+  fun `navigateUp on a lone side-tab root rebuilds to Home`() {
+    val controller = controllerWith(InsurancesKey)
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `navigateUp on a normal stack pops one entry like back`() {
+    val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
+  }
+
+  @Test
+  fun `navigateUp at the Home root returns false`() {
+    val controller = controllerWith(HomeKey)
+    assertThat(controller.navigateUp()).isFalse()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
 }

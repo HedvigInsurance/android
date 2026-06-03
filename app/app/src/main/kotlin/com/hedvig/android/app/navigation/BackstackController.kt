@@ -17,6 +17,7 @@ import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.core.TopLevelGraph
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.builtins.ListSerializer
@@ -105,6 +106,21 @@ internal class BackstackController(
       entries.remove(key)
       entries.add(key)
     }
+  }
+
+  /**
+   * Task-aware Up. For a lone deep link (size 1 with a non-trivial synthetic stack) it materializes
+   * the ancestry and lands on the parent, restoring HomeKey at index 0 (re-enabling the runs model).
+   * Everywhere else it is a plain temporal pop, identical to Back.
+   */
+  override fun navigateUp(): Boolean {
+    val top = entries.lastOrNull() ?: return false
+    val synthetic = syntheticStackFor(top)
+    if (entries.size == 1 && synthetic.size > 1) {
+      entries.replaceWith(synthetic.dropLast(1))
+      return true
+    }
+    return popBackstack()
   }
 
   /** Move into the tabbed shell, Home pinned at the base; forget any parked runs. */
