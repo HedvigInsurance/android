@@ -301,7 +301,7 @@ private fun HomeScreen(
           val actionsList = buildList {
             if (currentState.crossSellsAction != null) add(currentState.crossSellsAction)
             if (currentState.firstVetAction != null) add(currentState.firstVetAction)
-            add(currentState.chatAction)
+            if (currentState.chatAction != null) add(currentState.chatAction)
           }
           actionsList.forEach { action ->
             when (action) {

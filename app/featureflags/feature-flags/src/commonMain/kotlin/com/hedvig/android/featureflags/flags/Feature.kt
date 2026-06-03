@@ -19,4 +19,7 @@ enum class Feature(
   ),
   DISABLE_REDEEM_CAMPAIGN("Disables the ability to redeem a campaign code"),
   ENABLE_CLAIM_HISTORY("Enables claim history"),
+  ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT("Enables inbox icon always available on the Home screen " +
+    "and New conversation button inside the inbox")
+
 }

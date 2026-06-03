@@ -28,6 +28,7 @@ val homeModule = module {
       clock = get<Clock>(),
       timeZone = get<TimeZone>(),
       getTravelAddonBannerInfoUseCaseProvider = get<GetTravelAddonBannerInfoUseCaseProvider>(),
+      hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
     )
   }
   single<SeenImportantMessagesStorage> {

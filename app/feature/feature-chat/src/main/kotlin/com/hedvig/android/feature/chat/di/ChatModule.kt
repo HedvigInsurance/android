@@ -36,7 +36,8 @@ val chatModule = module {
   }
 
   viewModel<InboxViewModel> {
-    InboxViewModel(get<GetAllConversationsUseCase>())
+    InboxViewModel(get<GetAllConversationsUseCase>(),
+      featureManager = get<FeatureManager>())
   }
 
   single<CbmChatRepositoryImpl> {

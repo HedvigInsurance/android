@@ -3,6 +3,7 @@ package com.hedvig.android.feature.home.home.data
 import androidx.compose.runtime.Immutable
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.raise.context.bind
 import arrow.core.raise.either
 import arrow.core.raise.nullable
 import arrow.core.toNonEmptyListOrNull
@@ -17,10 +18,8 @@ import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
-import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
-import com.hedvig.android.data.contract.toContractGroup
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
@@ -58,6 +57,7 @@ internal class GetHomeDataUseCaseImpl(
   private val clock: Clock,
   private val timeZone: TimeZone,
   private val getTravelAddonBannerInfoUseCaseProvider: GetTravelAddonBannerInfoUseCaseProvider,
+  private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
     return combine(
@@ -81,12 +81,16 @@ internal class GetHomeDataUseCaseImpl(
         emitAll(getTravelAddonBannerInfoUseCaseProvider.provide().invoke(AddonBannerSource.INSURANCES_TAB))
       },
       featureManager.isFeatureEnabled(Feature.HELP_CENTER),
+      featureManager.isFeatureEnabled(Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT),
+      hasAnyActiveConversationUseCase.invoke(alwaysHitTheNetwork = true),
     ) {
       homeQueryDataResult,
       unreadMessageCountResult,
       memberReminders,
       travelBannerInfo,
       isHelpCenterEnabled,
+      inboxAlwaysAvailable,
+      anyActiveConversations
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
@@ -139,6 +143,10 @@ internal class GetHomeDataUseCaseImpl(
           recommendedCrossSell = recommendedCrossSell,
           otherCrossSells = otherCrossSellsData,
         )
+        val showChatIcon = shouldShowChatButton(
+          isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
+          hasActiveConversations = anyActiveConversations.bind()
+        )
         val unreadMessageCountData = unreadMessageCountResult.bind()
         val hasUnseenChatMessages = unreadMessageCountData
           .currentMember
@@ -166,6 +174,7 @@ internal class GetHomeDataUseCaseImpl(
           firstVetSections = firstVetActions,
           crossSells = crossSells,
           travelBannerInfo = travelBannerInfo?.firstOrNull(),
+          showChatIcon = showChatIcon,
         )
       }.onLeft { error: ApolloOperationError ->
         logcat(operationError = error) { "GetHomeDataUseCase failed with $error" }
@@ -173,16 +182,12 @@ internal class GetHomeDataUseCaseImpl(
     }
   }
 
-  private fun shouldHideChatButton(
-    isChatDisabledFromKillSwitch: Boolean,
-    isEligibleToShowTheChatIcon: Boolean,
-    isHelpCenterEnabled: Boolean,
+  private fun shouldShowChatButton(
+    isInboxEnabledFromKillSwitch: Boolean,
+    hasActiveConversations: Boolean,
   ): Boolean {
-    // If the feature flag is off, we should hide the chat button regardless of the other conditions
-    if (isChatDisabledFromKillSwitch) return true
-    // If the help center is disabled, we must always show the chat button, otherwise there is no way to get to the chat
-    if (!isHelpCenterEnabled) return false
-    return !isEligibleToShowTheChatIcon
+    if (isInboxEnabledFromKillSwitch) return true
+    return hasActiveConversations
   }
 
   private fun HomeQuery.Data.CurrentMember.toContractStatus(): HomeData.ContractStatus {
@@ -275,6 +280,7 @@ internal data class HomeData(
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: List<VeryImportantMessage>,
   val memberReminders: MemberReminders,
+  val showChatIcon: Boolean,
   val hasUnseenChatMessages: Boolean,
   val showHelpCenter: Boolean,
   val firstVetSections: List<FirstVetSection>,

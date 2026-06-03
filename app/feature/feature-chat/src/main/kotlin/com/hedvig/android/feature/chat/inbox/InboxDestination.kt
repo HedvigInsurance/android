@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.EmptyContentDescription
+import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleBooleanCollectionPreviewParameterProvider
 import com.hedvig.android.compose.ui.preview.TripleCase
 import com.hedvig.android.design.system.hedvig.DividerPosition
@@ -123,7 +124,9 @@ private fun InboxScreen(
         actionType = TopAppBarActionType.BACK,
         onActionClick = navigateUp,
         topAppBarActions = {
-          NewConversationButton(onNavigateToNewConversation)
+          if (uiState is InboxUiState.Success && uiState.newConversationButtonAvailable) {
+            NewConversationButton(onNavigateToNewConversation)
+          }
         },
       )
       when (uiState) {
@@ -137,9 +140,10 @@ private fun InboxScreen(
         )
 
         is InboxUiState.Success -> InboxSuccessScreen(
-          uiState.inboxConversations,
-          onConversationClick,
-          onNavigateToNewConversation
+          inboxConversations = uiState.inboxConversations,
+          onConversationClick = onConversationClick,
+          onNavigateToNewConversation = onNavigateToNewConversation,
+          showNewConversationButton = uiState.newConversationButtonAvailable
         )
       }
     }
@@ -174,6 +178,7 @@ private fun InboxSuccessScreen(
   inboxConversations: List<InboxConversation>,
   onConversationClick: (id: String) -> Unit,
   onNavigateToNewConversation: () -> Unit,
+  showNewConversationButton: Boolean
 ) {
   val lazyListState = rememberLazyListState()
   SideEffect {
@@ -216,12 +221,12 @@ private fun InboxSuccessScreen(
     ) {
       EmptyState(
         text = stringResource(Res.string.INBOX_EMPTY_STATE_TITLE),
-        description = stringResource(Res.string.INBOX_EMPTY_STATE_SUBTITLE),
+        description = if (showNewConversationButton) stringResource(Res.string.INBOX_EMPTY_STATE_SUBTITLE) else null,
         iconStyle = EmptyStateDefaults.EmptyStateIconStyle.NO_ICON,
-        buttonStyle = EmptyStateDefaults.EmptyStateButtonStyle.Button(
+        buttonStyle = if (showNewConversationButton) EmptyStateDefaults.EmptyStateButtonStyle.Button(
           stringResource(Res.string.open_chat),
           onNavigateToNewConversation
-        )
+        ) else EmptyStateDefaults.EmptyStateButtonStyle.NoButton
       )
     }
   }
@@ -346,12 +351,16 @@ private fun ConversationCard(
 @HedvigPreview
 @PreviewFontScale
 @Composable
-private fun EmptyInboxSuccessScreenPreview() {
+private fun EmptyInboxSuccessScreenPreview(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) case: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       InboxScreen(
         InboxUiState.Success(
           listOf(),
+          case
+
         ),
         {},
         {},
@@ -364,7 +373,9 @@ private fun EmptyInboxSuccessScreenPreview() {
 @HedvigPreview
 @PreviewFontScale
 @Composable
-private fun InboxSuccessScreenPreview() {
+private fun InboxSuccessScreenPreview(
+  @PreviewParameter(BooleanCollectionPreviewParameterProvider::class) case: Boolean,
+) {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       InboxScreen(
@@ -377,6 +388,7 @@ private fun InboxSuccessScreenPreview() {
             mockInboxConversation3.copy(conversationId = "101"),
             mockInboxConversationLegacy,
           ),
+          newConversationButtonAvailable = case
         ),
         {},
         {},

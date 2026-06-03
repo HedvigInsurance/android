@@ -134,7 +134,7 @@ internal class HomePresenter(
           },
           isHelpCenterEnabled = successData.showHelpCenter,
           hasUnseenChatMessages = successData.hasUnseenChatMessages,
-          chatAction = HomeTopBarAction.ChatAction,
+          chatAction = successData.chatAction,
           firstVetAction = successData.firstVetAction,
           crossSellsAction = successData.crossSellsAction,
           addonBannerInfo = successData.addonBannerInfo,
@@ -171,7 +171,7 @@ internal sealed interface HomeUiState {
     val claimStatusCardsData: HomeData.ClaimStatusCardsData?,
     val veryImportantMessages: List<HomeData.VeryImportantMessage>,
     val memberReminders: MemberReminders,
-    val chatAction: HomeTopBarAction.ChatAction,
+    val chatAction: HomeTopBarAction.ChatAction?,
     val firstVetAction: HomeTopBarAction.FirstVetAction?,
     val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
     val addonBannerInfo: AddonBannerInfo?,
@@ -191,6 +191,7 @@ private data class SuccessData(
   val veryImportantMessages: List<HomeData.VeryImportantMessage>,
   val memberReminders: MemberReminders,
   val showHelpCenter: Boolean,
+  val chatAction: HomeTopBarAction.ChatAction?,
   val firstVetAction: HomeTopBarAction.FirstVetAction?,
   val crossSellsAction: HomeTopBarAction.CrossSellsAction?,
   val hasUnseenChatMessages: Boolean,
@@ -209,6 +210,7 @@ private data class SuccessData(
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
         addonBannerInfo = lastState.addonBannerInfo,
+        chatAction = lastState.chatAction
       )
     }
 
@@ -255,6 +257,7 @@ private data class SuccessData(
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
         addonBannerInfo = homeData.travelBannerInfo,
+        chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       )
     }
   }
