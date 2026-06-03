@@ -423,10 +423,12 @@ private fun ContentWithoutSearch(
         modifier = Modifier
           .padding(horizontal = 20.dp),
       ) {
-        HedvigText(stringResource(Res.string.HC_HOME_VIEW_QUESTION),
+        HedvigText(
+          stringResource(Res.string.HC_HOME_VIEW_QUESTION),
           modifier = Modifier.semantics {
             heading()
-          })
+          },
+        )
         HedvigText(
           text = stringResource(Res.string.HC_HOME_VIEW_ANSWER),
           color = HedvigTheme.colorScheme.textSecondary,
@@ -509,7 +511,7 @@ private fun PuppyGuideCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
       .fillMaxWidth()
       .shadow(1.dp, HedvigTheme.shapes.cornerXLarge),
   ) {
-    Column{
+    Column {
       Box(Modifier.align(Alignment.CenterHorizontally)) {
         Image(
           painter = painterResource(Res.drawable.hundar_badar_pet),
