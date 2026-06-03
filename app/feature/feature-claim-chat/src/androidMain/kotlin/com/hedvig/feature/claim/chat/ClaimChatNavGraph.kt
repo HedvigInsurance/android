@@ -5,6 +5,8 @@ import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
@@ -45,7 +47,7 @@ internal data class ClaimOutcomeNewClaimKey(
 internal data object UpdateAppKey : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -67,7 +69,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
       navigateToClaimOutcome = { outcome ->
         when (outcome) {
           is ClaimIntentOutcome.Claim -> {
-            backStack.navigateAndPopUpTo<ClaimChatKey>(
+            backstack.navigateAndPopUpTo<ClaimChatKey>(
               ClaimOutcomeNewClaimKey(outcome = outcome),
               inclusive = true,
             )
@@ -75,11 +77,11 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
         }
       },
       navigateToDeflect = { deflect: StepContent.Deflect ->
-        backStack.add(ClaimOutcomeDeflectKey(deflect = deflect))
+        backstack.add(ClaimOutcomeDeflectKey(deflect = deflect))
       },
       appPackageId = appPackageId,
       imageLoader = imageLoader,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       openPlayStore = openPlayStore,
     )
   }
@@ -87,7 +89,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
     ClaimOutcomeDeflectDestination(
       deflect = key.deflect.deflectData,
       imageLoader = imageLoader,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       openUrl = openUrl,
       tryToDialPhone = tryToDialPhone,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
@@ -95,7 +97,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
   }
   entry<ClaimOutcomeNewClaimKey> {
     ClaimOutcomeNewClaimDestination(
-      backStack::navigateUp,
+      backstack::navigateUp,
     )
   }
   entry<UpdateAppKey> {

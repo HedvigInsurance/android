@@ -61,7 +61,7 @@ internal fun ChooseInsuranceToChangeTierDestination(
   navigateUp: () -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
 ) {
   val uiState: ChooseInsuranceUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -76,7 +76,7 @@ internal fun ChooseInsuranceToChangeTierDestination(
       navigateToNextStep(params)
     },
     onNavigateToNewConversation = onNavigateToNewConversation,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
   )
 }
 
@@ -89,7 +89,7 @@ private fun ChooseInsuranceScreen(
   selectInsurance: (insuranceId: String) -> Unit,
   navigateToNextStep: (params: InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
 ) {
   when (uiState) {
     ChooseInsuranceUiState.NotAllowed -> {
@@ -220,7 +220,7 @@ private fun ChooseInsuranceScreen(
       DeflectScreen(
         uiState.title,
         uiState.message,
-        closeFlow = popBackStack,
+        closeFlow = popBackstack,
         onNavigateToNewConversation = onNavigateToNewConversation,
         navigateUp = navigateUp,
       )

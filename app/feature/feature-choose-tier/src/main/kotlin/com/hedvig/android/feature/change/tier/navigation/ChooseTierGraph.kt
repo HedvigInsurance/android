@@ -13,9 +13,11 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierFailureSc
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessScreen
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
-import com.hedvig.android.navigation.compose.popBackStack
+import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
@@ -24,7 +26,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   onNavigateToNewConversation: () -> Unit,
 ) {
   entry<StartTierFlowKey> { key ->
@@ -35,14 +37,14 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
       }
     StartChangeTierFlowDestination(
       viewModel = viewModel,
-      popBackStack = {
-        backStack.popBackStack()
+      popBackstack = {
+        backstack.popBackstack()
       },
       launchFlow = { params: InsuranceCustomizationParameters ->
-        backStack.navigateAndPopUpTo<StartTierFlowKey>(ChooseTierKey(params), inclusive = true)
+        backstack.navigateAndPopUpTo<StartTierFlowKey>(ChooseTierKey(params), inclusive = true)
       },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -50,15 +52,15 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
     val viewModel: ChooseInsuranceViewModel = metroViewModel()
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToNextStep = { params: InsuranceCustomizationParameters ->
-        backStack.navigateAndPopUpTo<StartTierFlowChooseInsuranceKey>(
+        backstack.navigateAndPopUpTo<StartTierFlowChooseInsuranceKey>(
           ChooseTierKey(params),
           inclusive = true,
         )
       },
-      popBackStack = {
-        backStack.popBackStack()
+      popBackstack = {
+        backstack.popBackstack()
       },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
     )
@@ -72,9 +74,9 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
       }
     SelectTierDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToSummary = { quote ->
-        backStack.add(
+        backstack.add(
           SummaryKey(
             SummaryParameters(
               quoteIdToSubmit = quote.id,
@@ -84,11 +86,11 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
           ),
         )
       },
-      popBackStack = {
-        backStack.popBackStack()
+      popBackstack = {
+        backstack.popBackstack()
       },
       navigateToComparison = { listOfQuotes, selectedTerms ->
-        backStack.add(
+        backstack.add(
           ComparisonKey(
             ComparisonParameters(
               termsIds = listOfQuotes.map {
@@ -110,7 +112,7 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
       }
     ComparisonDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -122,15 +124,15 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
       }
     ChangeTierSummaryDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       onExitTierFlow = {
-        backStack.popUpTo<ChooseTierKey>(inclusive = true)
+        backstack.popUpTo<ChooseTierKey>(inclusive = true)
       },
       onFailure = {
-        backStack.add(SubmitFailureKey)
+        backstack.add(SubmitFailureKey)
       },
       onSuccess = {
-        backStack.navigateAndPopUpTo<ChooseTierKey>(
+        backstack.navigateAndPopUpTo<ChooseTierKey>(
           SubmitSuccessKey(key.params.activationDate),
           inclusive = true,
         )
@@ -141,13 +143,13 @@ fun EntryProviderScope<HedvigNavKey>.changeTierGraph(
   entry<SubmitSuccessKey> { key ->
     SubmitTierSuccessScreen(
       key.activationDate,
-      popBackStack = backStack::popBackStack,
+      popBackstack = backstack::popBackstack,
     )
   }
 
   entry<SubmitFailureKey> {
     SubmitTierFailureScreen(
-      popBackStack = backStack::popBackStack,
+      popBackstack = backstack::popBackstack,
     )
   }
 }

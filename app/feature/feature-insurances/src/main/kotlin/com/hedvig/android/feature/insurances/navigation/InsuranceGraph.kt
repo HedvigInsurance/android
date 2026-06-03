@@ -16,16 +16,18 @@ import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewM
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateUp
-import com.hedvig.android.navigation.compose.popBackStack
+import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
   nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
@@ -51,11 +53,11 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
     InsuranceDestination(
       viewModel = viewModel,
       onInsuranceCardClick = dropUnlessResumed { contractId: String ->
-        backStack.add(InsuranceContractDetailKey(contractId))
+        backstack.add(InsuranceContractDetailKey(contractId))
       },
       onCrossSellClick = dropUnlessResumed { url: String -> openCrossSellUrl(url) },
       navigateToCancelledInsurances = dropUnlessResumed {
-        backStack.add(TerminatedInsurancesKey)
+        backstack.add(TerminatedInsurancesKey)
       },
       onNavigateToMovingFlow = dropUnlessResumed { startMovingFlow() },
       imageLoader = imageLoader,
@@ -86,8 +88,8 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
       },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       openUrl = openUrl,
-      navigateUp = backStack::navigateUp,
-      navigateBack = backStack::popBackStack,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
       imageLoader = imageLoader,
       onChangeTierClick = dropUnlessResumed { contractId: String ->
         onNavigateToStartChangeTier(contractId)
@@ -105,9 +107,9 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
     TerminatedContractsDestination(
       viewModel = viewModel,
       navigateToContractDetail = dropUnlessResumed { contractId: String ->
-        backStack.add(InsuranceContractDetailKey(contractId))
+        backstack.add(InsuranceContractDetailKey(contractId))
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       imageLoader = imageLoader,
     )
   }

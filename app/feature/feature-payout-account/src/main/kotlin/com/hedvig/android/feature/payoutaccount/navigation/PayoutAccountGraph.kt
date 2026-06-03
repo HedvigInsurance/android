@@ -14,13 +14,15 @@ import com.hedvig.android.feature.payoutaccount.ui.setupinvoice.SetupInvoicePayo
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutDestination
 import com.hedvig.android.feature.payoutaccount.ui.setupswish.SetupSwishPayoutViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateUp
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
 
 fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateToConnectPayment: () -> Unit,
   navigateUp: () -> Unit,
@@ -31,14 +33,14 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
       viewModel = viewModel,
       onConnectPayoutMethodClicked = dropUnlessResumed {
         val content = viewModel.uiState.value as? PayoutAccountOverviewUiState.Content
-        backStack.add(
+        backstack.add(
           SelectPayoutMethodKey(
             availableProviders = content?.availablePayoutMethods?.map { it.rawValue } ?: emptyList(),
           ),
         )
       },
       navigateToConnectPayment = dropUnlessResumed {
-        backStack.popUpTo<PayoutAccountKey>(inclusive = true)
+        backstack.popUpTo<PayoutAccountKey>(inclusive = true)
         navigateToConnectPayment()
       },
       navigateUp = navigateUp,
@@ -49,13 +51,13 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
     SelectPayoutMethodDestination(
       availableProviders = key.availableProviders.map { MemberPaymentProvider.safeValueOf(it) },
       onTrustlySelected = dropUnlessResumed {
-        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         navigateToConnectPayment()
       },
-      onNordeaSelected = dropUnlessResumed { backStack.add(EditBankAccountKey) },
-      onSwishSelected = dropUnlessResumed { backStack.add(SetupSwishPayoutKey) },
-      onInvoiceSelected = dropUnlessResumed { backStack.add(SetupInvoicePayoutKey) },
-      navigateUp = backStack::navigateUp,
+      onNordeaSelected = dropUnlessResumed { backstack.add(EditBankAccountKey) },
+      onSwishSelected = dropUnlessResumed { backstack.add(SetupSwishPayoutKey) },
+      onInvoiceSelected = dropUnlessResumed { backstack.add(SetupInvoicePayoutKey) },
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -65,9 +67,9 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       onSuccessfullyConnected = {
-        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -77,9 +79,9 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       onSuccessfullyConnected = {
-        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -89,9 +91,9 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       onSuccessfullyConnected = {
-        backStack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
+        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 }

@@ -16,13 +16,13 @@ import com.hedvig.android.navigation.core.TopLevelGraph
 import org.junit.Test
 
 /**
- * End-to-end coverage of [HedvigBackStackController] against the Nav2 behavior oracle: system-back
- * dispatch ([HedvigBackStackController.handleBack]) and rail/bar taps
- * ([HedvigBackStackController.selectTopLevel]). The pure run-logic functions these compose are
+ * End-to-end coverage of [BackstackController] against the Nav2 behavior oracle: system-back
+ * dispatch ([BackstackController.handleBack]) and rail/bar taps
+ * ([BackstackController.selectTopLevel]). The pure run-logic functions these compose are
  * covered by [TopLevelRunLogicTest]; this guards the controller wiring around them.
  */
-internal class HedvigBackStackControllerTest {
-  private fun controllerWith(vararg keys: HedvigNavKey) = HedvigBackStackController(mutableStateListOf(*keys))
+internal class BackstackControllerTest {
+  private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(mutableStateListOf(*keys))
 
   @Test
   fun `system-back at a drill-down pops one entry`() {
@@ -31,7 +31,7 @@ internal class HedvigBackStackControllerTest {
     val handled = controller.handleBack()
 
     assertThat(handled).isTrue()
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
@@ -41,7 +41,7 @@ internal class HedvigBackStackControllerTest {
     val handled = controller.handleBack()
 
     assertThat(handled).isTrue()
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
@@ -51,7 +51,7 @@ internal class HedvigBackStackControllerTest {
     val handled = controller.handleBack()
 
     assertThat(handled).isFalse()
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
@@ -60,7 +60,7 @@ internal class HedvigBackStackControllerTest {
 
     controller.selectTopLevel(TopLevelGraph.Home)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
@@ -69,7 +69,7 @@ internal class HedvigBackStackControllerTest {
 
     controller.selectTopLevel(TopLevelGraph.Profile)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey, InsurancesKey, ProfileKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey, ProfileKey)
   }
 
   @Test
@@ -78,7 +78,7 @@ internal class HedvigBackStackControllerTest {
 
     controller.selectTopLevel(TopLevelGraph.Home)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
@@ -87,7 +87,7 @@ internal class HedvigBackStackControllerTest {
 
     controller.setLoggedIn()
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.isLoggedIn).isTrue()
   }
 
@@ -97,7 +97,7 @@ internal class HedvigBackStackControllerTest {
 
     controller.setLoggedOut()
 
-    assertThat(controller.backStack.toList()).containsExactly(LoginKey)
+    assertThat(controller.entries.toList()).containsExactly(LoginKey)
     assertThat(controller.isLoggedIn).isFalse()
   }
 

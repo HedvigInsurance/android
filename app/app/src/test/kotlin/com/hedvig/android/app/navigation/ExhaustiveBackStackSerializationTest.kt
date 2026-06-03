@@ -83,7 +83,7 @@ import org.junit.Test
  * every registered serializer through the production module to prove the wire path works, and
  * round-trip a sample of every publicly constructible key.
  */
-internal class ExhaustiveBackStackSerializationTest {
+internal class ExhaustiveBackstackSerializationTest {
   /**
    * The exact production module. Each anonymous object invokes the feature's default-interface
    * `provide*` method, producing the identical [SerializersModule] Metro injects at runtime; the

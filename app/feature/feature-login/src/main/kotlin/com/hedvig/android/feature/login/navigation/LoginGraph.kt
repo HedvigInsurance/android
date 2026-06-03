@@ -16,12 +16,14 @@ import com.hedvig.android.language.Language
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.loginGraph(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   appVersionName: String,
   urlBaseWeb: String,
   openUrl: (String) -> Unit,
@@ -40,7 +42,7 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
         openUrl(uri)
       },
       navigateToLoginScreen = dropUnlessResumed {
-        backStack.add(SwedishLoginKey)
+        backstack.add(SwedishLoginKey)
       },
     )
   }
@@ -48,10 +50,10 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
     val swedishLoginViewModel: SwedishLoginViewModel = assistedMetroViewModel()
     SwedishLoginDestination(
       swedishLoginViewModel = swedishLoginViewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToEmailLogin = dropUnlessResumed {
         logcat(LogPriority.INFO) { "Login with OTP clicked" }
-        backStack.add(GenericAuthCredentialsInputKey)
+        backstack.add(GenericAuthCredentialsInputKey)
       },
       onNavigateToLoggedIn = onNavigateToLoggedIn,
     )
@@ -60,9 +62,9 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
     val viewModel: GenericAuthViewModel = metroViewModel()
     GenericAuthDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       onStartOtpInput = { verifyUrl: String, resendUrl: String, email: String ->
-        backStack.add(
+        backstack.add(
           OtpInputKey(OtpInputKey.OtpInformation(verifyUrl, resendUrl, email)),
         )
       },
@@ -76,7 +78,7 @@ fun EntryProviderScope<HedvigNavKey>.loginGraph(
       }
     OtpInputDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       onNavigateToLoggedIn = onNavigateToLoggedIn,
       onOpenEmailApp = dropUnlessResumed { onOpenEmailApp() },
     )

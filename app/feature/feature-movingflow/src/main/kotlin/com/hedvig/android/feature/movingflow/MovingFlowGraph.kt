@@ -16,9 +16,11 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
-import com.hedvig.android.navigation.compose.popBackStack
+import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
@@ -71,20 +73,20 @@ internal data class SuccessfulMoveKey(
   }
 }
 
-fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<HedvigNavKey>, goToChat: () -> Unit) {
+fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backstack: Backstack, goToChat: () -> Unit) {
   entry<SelectContractForMovingKey> {
     SelectContractDestination(
       viewModel = metroViewModel<SelectContractViewModel>(),
-      navigateUp = backStack::navigateUp,
-      exitFlow = { backStack.popUpTo<SelectContractForMovingKey>(inclusive = true) },
+      navigateUp = backstack::navigateUp,
+      exitFlow = { backstack.popUpTo<SelectContractForMovingKey>(inclusive = true) },
       onNavigateToNextStep = { moveIntentId, shouldPopUp ->
         if (shouldPopUp) {
-          backStack.navigateAndPopUpTo<SelectContractForMovingKey>(
+          backstack.navigateAndPopUpTo<SelectContractForMovingKey>(
             HousingTypeKey(moveIntentId),
             inclusive = true,
           )
         } else {
-          backStack.add(HousingTypeKey(moveIntentId))
+          backstack.add(HousingTypeKey(moveIntentId))
         }
       },
       goToChat = goToChat,
@@ -95,10 +97,10 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
     val moveIntentId = key.moveIntentId
     HousingTypeDestination(
       viewModel = metroViewModel<HousingTypeViewModel>(),
-      navigateUp = backStack::navigateUp,
-      exitFlow = { backStack.exitMovingFlow() },
+      navigateUp = backstack::navigateUp,
+      exitFlow = { backstack.exitMovingFlow() },
       onNavigateToNextStep = {
-        backStack.add(EnterNewAddressKey(moveIntentId))
+        backstack.add(EnterNewAddressKey(moveIntentId))
       },
     )
   }
@@ -108,14 +110,14 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       viewModel = assistedMetroViewModel<EnterNewAddressViewModel, EnterNewAddressViewModel.Factory> {
         create(moveIntentId)
       },
-      navigateUp = backStack::navigateUp,
-      popBackStack = backStack::popBackStack,
-      exitFlow = { backStack.exitMovingFlow() },
+      navigateUp = backstack::navigateUp,
+      popBackstack = backstack::popBackstack,
+      exitFlow = { backstack.exitMovingFlow() },
       onNavigateToAddHouseInformation = {
-        backStack.add(AddHouseInformationKey(moveIntentId))
+        backstack.add(AddHouseInformationKey(moveIntentId))
       },
       onNavigateToChoseCoverageLevelAndDeductible = {
-        backStack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
+        backstack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
       },
     )
   }
@@ -125,11 +127,11 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       viewModel = assistedMetroViewModel<AddHouseInformationViewModel, AddHouseInformationViewModel.Factory> {
         create(moveIntentId)
       },
-      navigateUp = backStack::navigateUp,
-      popBackStack = backStack::popBackStack,
-      exitFlow = { backStack.exitMovingFlow() },
+      navigateUp = backstack::navigateUp,
+      popBackstack = backstack::popBackstack,
+      exitFlow = { backstack.exitMovingFlow() },
       onNavigateToChoseCoverageLevelAndDeductible = {
-        backStack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
+        backstack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
       },
     )
   }
@@ -142,14 +144,14 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       > {
         create(moveIntentId)
       },
-      navigateUp = backStack::navigateUp,
-      popBackStack = backStack::popBackStack,
-      exitFlow = { backStack.exitMovingFlow() },
+      navigateUp = backstack::navigateUp,
+      popBackstack = backstack::popBackstack,
+      exitFlow = { backstack.exitMovingFlow() },
       onNavigateToSummaryScreen = { homeQuoteId ->
-        backStack.add(SummaryKey(moveIntentId, homeQuoteId))
+        backstack.add(SummaryKey(moveIntentId, homeQuoteId))
       },
       navigateToComparison = { parameters ->
-        backStack.add(CompareCoverageKey(parameters))
+        backstack.add(CompareCoverageKey(parameters))
       },
     )
   }
@@ -162,7 +164,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       }
     ComparisonDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -172,12 +174,12 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
       viewModel = assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
         create(summaryRoute)
       },
-      navigateUp = backStack::navigateUp,
-      navigateBack = backStack::popBackStack,
-      exitFlow = { backStack.exitMovingFlow() },
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
+      exitFlow = { backstack.exitMovingFlow() },
       onNavigateToFinishedScreen = { moveDate ->
-        backStack.popUpTo<SelectContractForMovingKey>(inclusive = true)
-        backStack.navigateAndPopUpTo<HousingTypeKey>(
+        backstack.popUpTo<SelectContractForMovingKey>(inclusive = true)
+        backstack.navigateAndPopUpTo<HousingTypeKey>(
           SuccessfulMoveKey(moveDate),
           inclusive = true,
         )
@@ -188,8 +190,8 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
   entry<SuccessfulMoveKey> { key ->
     SuccessfulMoveDestination(
       moveDate = key.moveDate,
-      navigateUp = backStack::navigateUp,
-      popBackStack = backStack::popBackStack,
+      navigateUp = backstack::navigateUp,
+      popBackstack = backstack::popBackstack,
     )
   }
 }
@@ -199,7 +201,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backStack: MutableList<Hedv
  * [SelectContractForMovingKey] (deep-link entry) or at [HousingTypeKey] (direct
  * entry), so both are popped inclusively to leave nothing behind.
  */
-private fun MutableList<HedvigNavKey>.exitMovingFlow() {
+private fun Backstack.exitMovingFlow() {
   popUpTo<HousingTypeKey>(inclusive = true)
   popUpTo<SelectContractForMovingKey>(inclusive = true)
 }

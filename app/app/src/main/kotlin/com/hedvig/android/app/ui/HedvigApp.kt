@@ -27,7 +27,7 @@ import androidx.media3.datasource.cache.SimpleCache
 import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
-import com.hedvig.android.app.navigation.HedvigBackStackController
+import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigApp(
-  backStackController: HedvigBackStackController,
+  backstackController: BackstackController,
   deepLinkChannel: Channel<String>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
@@ -91,7 +91,7 @@ internal fun HedvigApp(
   dismissSplashScreen: () -> Unit,
 ) {
   val hedvigAppState = rememberHedvigAppState(
-    backStackController = backStackController,
+    backstackController = backstackController,
     windowSizeClass = windowSizeClass,
     settingsDataStore = settingsDataStore,
     getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
@@ -99,7 +99,7 @@ internal fun HedvigApp(
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
   DetermineStartDestinationEffect(
-    backStackController = backStackController,
+    backstackController = backstackController,
     authTokenService = authTokenService,
     demoManager = demoManager,
     onLoggedIn = hedvigAppState::navigateToLoggedIn,
@@ -126,14 +126,14 @@ internal fun HedvigApp(
       }
       val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
         matcher = deepLinkMatcher,
-        backStackController = backStackController,
+        backstackController = backstackController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
-      LaunchedEffect(deepLinkFirstUriHandler, backStackController, deepLinkChannel) {
+      LaunchedEffect(deepLinkFirstUriHandler, backstackController, deepLinkChannel) {
         deepLinkChannel.receiveAsFlow().collect { uri ->
           // Buffer external/notification deep links until the member is logged in, so they don't
           // land on (and get cleared with) the login back stack.
-          snapshotFlow { backStackController.isLoggedIn }.first { it }
+          snapshotFlow { backstackController.isLoggedIn }.first { it }
           deepLinkFirstUriHandler.openUri(uri)
         }
       }
@@ -206,7 +206,7 @@ private fun openCrossSellUrl(
  */
 @Composable
 private fun DetermineStartDestinationEffect(
-  backStackController: HedvigBackStackController,
+  backstackController: BackstackController,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   onLoggedIn: () -> Unit,
@@ -219,8 +219,8 @@ private fun DetermineStartDestinationEffect(
       { demoManager.isDemoMode().first { it } },
     ).fold({ it }, { it })
     when {
-      showLoggedInScene && !backStackController.isLoggedIn -> onLoggedIn()
-      !showLoggedInScene && backStackController.isLoggedIn -> onLoggedOut()
+      showLoggedInScene && !backstackController.isLoggedIn -> onLoggedIn()
+      !showLoggedInScene && backstackController.isLoggedIn -> onLoggedOut()
     }
     dismissSplashScreen()
   }
@@ -304,7 +304,7 @@ private fun LogoutOnInvalidCredentialsEffect(
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
         demoManager.isDemoMode().distinctUntilChanged(),
-        snapshotFlow { hedvigAppState.backStackController.isLoggedIn },
+        snapshotFlow { hedvigAppState.backstackController.isLoggedIn },
       ) { authStatus: AuthStatus, isDemoMode: Boolean, isLoggedIn: Boolean ->
         logcat {
           "LogoutOnInvalidCredentialsEffect: " +

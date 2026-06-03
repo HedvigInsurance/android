@@ -30,7 +30,7 @@ import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
-import com.hedvig.android.app.navigation.rememberHedvigBackStackController
+import com.hedvig.android.app.navigation.rememberHedvigBackstackController
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
@@ -156,9 +156,9 @@ class MainActivity : AppCompatActivity() {
             serializersModule = serializersModules.merge()
           }
         }
-        val backStackController = rememberHedvigBackStackController(savedStateConfiguration)
+        val backstackController = rememberHedvigBackstackController(savedStateConfiguration)
         HedvigApp(
-          backStackController = backStackController,
+          backstackController = backstackController,
           deepLinkChannel = deepLinkChannel,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,

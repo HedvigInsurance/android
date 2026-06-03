@@ -33,7 +33,7 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun RemoveAddonSuccessScreen(activationDate: LocalDate, popBackStack: () -> Unit) {
+internal fun RemoveAddonSuccessScreen(activationDate: LocalDate, popBackstack: () -> Unit) {
   val locale = getLocale()
   val formattedDate = remember(activationDate, locale) {
     HedvigDateTimeFormatterDefaults
@@ -64,7 +64,7 @@ internal fun RemoveAddonSuccessScreen(activationDate: LocalDate, popBackStack: (
     Spacer(Modifier.weight(1f))
     HedvigTextButton(
       stringResource(Res.string.general_close_button),
-      onClick = dropUnlessResumed { popBackStack() },
+      onClick = dropUnlessResumed { popBackstack() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
     )

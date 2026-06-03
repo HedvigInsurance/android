@@ -10,6 +10,8 @@ import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
@@ -20,7 +22,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
   navigateUp: () -> Unit,
   navigateToConversation: (String) -> Unit,
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   applicationId: String,
 ) {
   entry<ClaimDetailsKey> { key ->
@@ -37,7 +39,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
       },
       onFilesToUploadSelected = { filesUri: List<Uri>, uploadUri: String ->
         if (filesUri.isNotEmpty()) {
-          backStack.add(
+          backstack.add(
             AddFilesKey(
               targetUploadUrl = uploadUri,
               initialFilesUri = filesUri.map { it.toString() },

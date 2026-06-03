@@ -8,6 +8,8 @@ import com.hedvig.android.feature.chip.id.ui.AddChipIdViewModel
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdDestination
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
@@ -15,16 +17,16 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
-  popBackStackOrFinish: () -> Unit,
+  popBackstackOrFinish: () -> Unit,
   goHome: () -> Unit,
 ) {
   entry<AddChipIdTriageKey> { key ->
     val contractId = key.contractId
     LaunchedEffect(Unit) {
-      backStack.navigateAndPopUpTo<AddChipIdTriageKey>(
+      backstack.navigateAndPopUpTo<AddChipIdTriageKey>(
         ChipIdKey(contractId = contractId),
         inclusive = true,
       )
@@ -40,12 +42,12 @@ fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
     SelectInsuranceForChipIdDestination(
       viewModel = viewModel,
       navigateUp = navigateUp,
-      popBackStack = popBackStackOrFinish,
+      popBackstack = popBackstackOrFinish,
       navigateToAddChipId = { contractId: String, popSelectInsurance: Boolean ->
         if (popSelectInsurance) {
-          backStack.navigateAndPopUpTo<ChipIdKey>(AddChipIdKey(contractId), inclusive = true)
+          backstack.navigateAndPopUpTo<ChipIdKey>(AddChipIdKey(contractId), inclusive = true)
         } else {
-          backStack.add(AddChipIdKey(contractId))
+          backstack.add(AddChipIdKey(contractId))
         }
       },
     )
@@ -61,13 +63,13 @@ fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       navigateUp = {
-        if (!backStack.navigateUp()) {
+        if (!backstack.navigateUp()) {
           goHome()
         }
       },
       popFlowOnSuccess = {
-        if (backStack.findLastOrNull<ChipIdKey>() != null) {
-          backStack.popUpTo<ChipIdKey>(inclusive = true)
+        if (backstack.findLastOrNull<ChipIdKey>() != null) {
+          backstack.popUpTo<ChipIdKey>(inclusive = true)
         } else {
           goHome()
         }

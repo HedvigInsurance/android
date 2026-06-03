@@ -11,12 +11,13 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageDestination
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
-import com.hedvig.android.navigation.compose.popBackStack
+import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<HedvigNavKey>) {
+fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backstack: Backstack) {
   entry<EditCoInsuredTriageKey> { key ->
     val triageContractId = key.contractId
     val triageType = key.type
@@ -26,15 +27,15 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<H
       }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToAddMissingInfo = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        backStack.navigateAndPopUpTo<EditCoInsuredTriageKey>(
+        backstack.navigateAndPopUpTo<EditCoInsuredTriageKey>(
           CoInsuredAddInfoKey(contract.id, contract.type),
           inclusive = true,
         )
       },
       navigateToAddOrRemoveCoInsured = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        backStack.navigateAndPopUpTo<EditCoInsuredTriageKey>(
+        backstack.navigateAndPopUpTo<EditCoInsuredTriageKey>(
           CoInsuredAddOrRemoveKey(contract.id, contract.type),
           inclusive = true,
         )
@@ -50,15 +51,15 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<H
       }
     EditCoInsuredTriageDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToAddMissingInfo = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        backStack.navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(
+        backstack.navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(
           CoInsuredAddInfoKey(contract.id, contract.type),
           inclusive = true,
         )
       },
       navigateToAddOrRemoveCoInsured = dropUnlessResumed { contract: InsuranceForEditOrAddCoInsured ->
-        backStack.navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(
+        backstack.navigateAndPopUpTo<EditCoOwnersTriageDeepLinkKey>(
           CoInsuredAddOrRemoveKey(contract.id, contract.type),
           inclusive = true,
         )
@@ -74,12 +75,12 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<H
         create(addInfoContractId, addInfoType)
       },
       navigateToSuccessScreen = {
-        backStack.navigateAndPopUpTo<CoInsuredAddInfoKey>(
+        backstack.navigateAndPopUpTo<CoInsuredAddInfoKey>(
           EditCoInsuredSuccessKey(it, key.type),
           inclusive = true,
         )
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
   entry<CoInsuredAddOrRemoveKey> { key ->
@@ -90,20 +91,20 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backStack: MutableList<H
         create(addOrRemoveContractId, addOrRemoveType)
       },
       navigateToSuccessScreen = {
-        backStack.navigateAndPopUpTo<CoInsuredAddOrRemoveKey>(
+        backstack.navigateAndPopUpTo<CoInsuredAddOrRemoveKey>(
           EditCoInsuredSuccessKey(it, key.type),
           inclusive = true,
         )
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
   entry<EditCoInsuredSuccessKey> { key ->
     EditCoInsuredSuccessDestination(
       date = key.date,
       type = key.type,
-      navigateUp = backStack::navigateUp,
-      navigateBack = backStack::popBackStack,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
     )
   }
 }

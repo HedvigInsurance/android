@@ -10,15 +10,17 @@ import com.hedvig.android.feature.home.home.ui.FirstVetDestination
 import com.hedvig.android.feature.home.home.ui.HomeDestination
 import com.hedvig.android.feature.home.home.ui.HomeViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateUp
-import com.hedvig.android.navigation.compose.popBackStack
+import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.homeGraph(
   nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
@@ -57,7 +59,7 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
       openCrossSellUrl = openCrossSellUrl,
       openAppSettings = openAppSettings,
       navigateToFirstVet = dropUnlessResumed { sections ->
-        backStack.add(FirstVetKey(sections))
+        backstack.add(FirstVetKey(sections))
       },
       navigateToContactInfo = dropUnlessResumed {
         navigateToContactInfo()
@@ -69,8 +71,8 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
   entry<FirstVetKey> { key ->
     FirstVetDestination(
       key.sections,
-      navigateUp = backStack::navigateUp,
-      navigateBack = backStack::popBackStack,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
       openUrl = openUrl,
     )
   }

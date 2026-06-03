@@ -10,13 +10,13 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import org.junit.Test
 
 /**
- * Guards [HedvigBackStackController.navigateToDeepLink] against re-introducing the value-equal
+ * Guards [BackstackController.navigateToDeepLink] against re-introducing the value-equal
  * duplicate-key crash: Nav3's `NavDisplay` renders every entry under `key.toString()`, so two
  * value-equal keys in the stack crash with "key … used multiple times". A deep link that resolves
  * to a key already on the stack must therefore never blind-append.
  */
 internal class DeepLinkNavigationTest {
-  private fun controllerWith(vararg keys: HedvigNavKey) = HedvigBackStackController(mutableStateListOf(*keys))
+  private fun controllerWith(vararg keys: HedvigNavKey) = BackstackController(mutableStateListOf(*keys))
 
   @Test
   fun `deep link to the current tab root does not duplicate it`() {
@@ -24,7 +24,7 @@ internal class DeepLinkNavigationTest {
 
     controller.navigateToDeepLink(HomeKey)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
@@ -33,7 +33,7 @@ internal class DeepLinkNavigationTest {
 
     controller.navigateToDeepLink(InsurancesKey)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey, InsurancesKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
   }
 
   @Test
@@ -42,7 +42,7 @@ internal class DeepLinkNavigationTest {
 
     controller.navigateToDeepLink(HelpCenterKey)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey, HelpCenterKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, HelpCenterKey)
   }
 
   @Test
@@ -51,7 +51,7 @@ internal class DeepLinkNavigationTest {
 
     controller.navigateToDeepLink(HelpCenterKey)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey, HelpCenterKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, HelpCenterKey)
   }
 
   @Test
@@ -60,6 +60,6 @@ internal class DeepLinkNavigationTest {
 
     controller.navigateToDeepLink(InsurancesKey)
 
-    assertThat(controller.backStack.toList()).containsExactly(HomeKey, InsurancesKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
   }
 }

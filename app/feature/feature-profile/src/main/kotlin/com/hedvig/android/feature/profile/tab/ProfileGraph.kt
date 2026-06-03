@@ -27,7 +27,9 @@ import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -36,8 +38,8 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
   settingsDestinationNestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
   nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
   globalSnackBarState: GlobalSnackBarState,
-  backStack: MutableList<HedvigNavKey>,
-  popBackStackOrFinish: () -> Unit,
+  backstack: Backstack,
+  popBackstackOrFinish: () -> Unit,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -59,20 +61,20 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
     val viewModel: ProfileViewModel = metroViewModel()
     ProfileDestination(
       navigateToEurobonus = dropUnlessResumed {
-        backStack.add(EurobonusKey)
+        backstack.add(EurobonusKey)
       },
       navigateToClaimHistory = dropUnlessResumed { navigateToClaimHistory() },
       navigateToContactInfo = dropUnlessResumed {
-        backStack.add(ContactInfoKey)
+        backstack.add(ContactInfoKey)
       },
       navigateToAboutApp = dropUnlessResumed {
-        backStack.add(InformationKey)
+        backstack.add(InformationKey)
       },
       navigateToSettings = dropUnlessResumed {
-        backStack.add(SettingsKey)
+        backstack.add(SettingsKey)
       },
       navigateToCertificates = dropUnlessResumed {
-        backStack.add(CertificatesKey)
+        backstack.add(CertificatesKey)
       },
       navigateToConnectPayment = dropUnlessResumed { navigateToConnectPayment() },
       navigateToConnectPayout = dropUnlessResumed { navigateToConnectPayout() },
@@ -93,7 +95,7 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
     val viewModel: EurobonusViewModel = metroViewModel()
     EurobonusDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
   entry<ContactInfoKey> {
@@ -101,17 +103,17 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
     ContactInfoDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      navigateUp = backStack::navigateUp,
-      popBackStack = popBackStackOrFinish,
+      navigateUp = backstack::navigateUp,
+      popBackstack = popBackstackOrFinish,
     )
   }
   entry<InformationKey> {
     val viewModel: AboutAppViewModel = metroViewModel()
     InformationDestination(
       viewModel = viewModel,
-      onBackPressed = backStack::navigateUp,
+      onBackPressed = backstack::navigateUp,
       showOpenSourceLicenses = dropUnlessResumed {
-        backStack.add(LicensesKey)
+        backstack.add(LicensesKey)
       },
       navigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       hedvigBuildConstants = hedvigBuildConstants,
@@ -121,14 +123,14 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
   }
   entry<LicensesKey> {
     LicensesDestination(
-      onBackPressed = backStack::navigateUp,
+      onBackPressed = backstack::navigateUp,
     )
   }
   entry<CertificatesKey> {
     val viewModel: CertificatesViewModel = metroViewModel()
     CertificatesDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       onNavigateToInsuranceEvidence = dropUnlessResumed { onNavigateToInsuranceEvidence() },
       onNavigateToTravelCertificate = dropUnlessResumed { onNavigateToTravelCertificate() },
     )
@@ -137,7 +139,7 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
     val viewModel: SettingsViewModel = metroViewModel()
     SettingsDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       openAppSettings = openAppSettings,
       onNavigateToDeleteAccountFeature = dropUnlessResumed { navigateToDeleteAccountFeature() },
     )

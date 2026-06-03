@@ -20,14 +20,14 @@ import org.junit.Test
 /**
  * Verifies the polymorphic [HedvigNavKey] registration that the back stack relies on for
  * process-death persistence: a flat list of keys round-trips through the same
- * [PolymorphicSerializer] + [SerializersModule] used by [rememberHedvigBackStackController].
+ * [PolymorphicSerializer] + [SerializersModule] used by [rememberHedvigBackstackController].
  *
  * The production code feeds this into a `SavedStateConfiguration`; the SavedState encoder itself
  * is androidx's concern and would require an Android `Bundle`. What we own — and what this test
  * guards — is that every key is registered with no serial-name collisions, which is independent
  * of the wire format, so a plain JSON round-trip exercises it without an Android runtime.
  */
-internal class BackStackSerializationTest {
+internal class BackstackSerializationTest {
   private val json = Json {
     serializersModule = SerializersModule {
       polymorphic(HedvigNavKey::class) {

@@ -20,7 +20,9 @@ import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryTransitionMetadata
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
@@ -30,7 +32,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
@@ -45,21 +47,21 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     PaymentsDestination(
       viewModel = viewModel,
       onPaymentHistoryClicked = dropUnlessResumed {
-        backStack.add(PaymentHistoryKey)
+        backstack.add(PaymentHistoryKey)
       },
       onPayoutAccountClicked = dropUnlessResumed { navigateToPayoutAccount() },
       onChangeBankAccount = dropUnlessResumed { navigateToConnectPayment() },
       onDiscountClicked = dropUnlessResumed {
-        backStack.add(DiscountsKey)
+        backstack.add(DiscountsKey)
       },
       onPaymentClicked = dropUnlessResumed { id: String? ->
-        backStack.add(PaymentDetailsKey(id))
+        backstack.add(PaymentDetailsKey(id))
       },
       onMemberPaymentDetailsClicked = dropUnlessResumed {
-        backStack.add(MemberPaymentDetailsKey)
+        backstack.add(MemberPaymentDetailsKey)
       },
       onOpenManualCharge = {
-        backStack.add(ManualChargeKey)
+        backstack.add(ManualChargeKey)
       },
     )
   }
@@ -68,12 +70,12 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     val viewModel: ManualChargeViewModel = metroViewModel()
     ManualChargeDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
-        backStack.add(PaymentDetailsKey(chargeId))
+        backstack.add(PaymentDetailsKey(chargeId))
       },
       onNavigateToSuccess = { showCancellationWarning ->
-        backStack.navigateAndPopUpTo<ManualChargeKey>(
+        backstack.navigateAndPopUpTo<ManualChargeKey>(
           ManualChargeSuccessKey(
             showCancellationWarning = showCancellationWarning,
           ),
@@ -87,7 +89,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
   entry<ManualChargeSuccessKey> { key ->
     ManualChargeSuccessDestination(
       key.showCancellationWarning,
-      backStack::navigateUp,
+      backstack::navigateUp,
     )
   }
 
@@ -97,7 +99,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
       assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModel.Factory> { create(memberChargeId) }
     PaymentDetailsDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -106,9 +108,9 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     PaymentHistoryDestination(
       viewModel = viewModel,
       onChargeClicked = dropUnlessResumed { memberChargeId: String ->
-        backStack.add(PaymentDetailsKey(memberChargeId))
+        backstack.add(PaymentDetailsKey(memberChargeId))
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 
@@ -125,9 +127,9 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     val viewModel: DiscountsViewModel = metroViewModel()
     DiscountsDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToForever = dropUnlessResumed {
-        backStack.add(ForeverKey)
+        backstack.add(ForeverKey)
       },
     )
   }
@@ -137,7 +139,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
     MemberPaymentDetailsDestination(
       viewModel,
       onChangeBankAccount = navigateToConnectPayment,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 }

@@ -23,14 +23,16 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
-import com.hedvig.android.navigation.compose.popBackStack
+import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
   windowSizeClass: WindowSizeClass,
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
   navigateToMovingFlow: () -> Unit,
@@ -44,16 +46,16 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
       windowSizeClass = windowSizeClass,
       errorMessage = ErrorMessage(key.message),
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
-      navigateUp = backStack::navigateUp,
-      navigateBack = backStack::popBackStack,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
     )
   }
   entry<UnknownScreenKey> {
     UnknownScreenDestination(
       windowSizeClass = windowSizeClass,
       openPlayStore = openPlayStore,
-      navigateUp = backStack::navigateUp,
-      navigateBack = backStack::popBackStack,
+      navigateUp = backstack::navigateUp,
+      navigateBack = backstack::popBackstack,
     )
   }
 
@@ -61,7 +63,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
     TerminationSuccessDestination(
       terminationDate = key.terminationDate,
       onDone = {
-        if (!backStack.popBackStack()) {
+        if (!backstack.popBackstack()) {
           navigateToInsurances()
         }
       },
@@ -76,7 +78,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
       }
     ChooseInsuranceToTerminateDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       closeTerminationFlow = closeTerminationFlow,
       navigateToNextStep = { surveyData, insuranceForCancellation ->
@@ -86,7 +88,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
           insuranceForCancellation.contractExposure,
           insuranceForCancellation.contractGroup,
         )
-        backStack.navigateToTerminateFlowDestination(
+        backstack.navigateToTerminateFlowDestination(
           TerminationSurveyFirstStepKey(
             options = surveyData.options,
             action = surveyData.action,
@@ -107,15 +109,15 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
       }
     TerminationSurveyDestination(
       viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
       navigateToSubOptions = { subOptions ->
-        backStack.add(
+        backstack.add(
           TerminationSurveySecondStepKey(subOptions, key.action, key.commonParams),
         )
       },
       navigateToNextStep = { navStep ->
-        navigateFromSurvey(backStack, navStep, key.commonParams)
+        navigateFromSurvey(backstack, navStep, key.commonParams)
       },
       navigateToMovingFlow = navigateToMovingFlow,
       openUrl = openUrl,
@@ -135,10 +137,10 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
       }
     TerminationSurveyDestination(
       viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
       navigateToSubOptions = { nestedSubOptions ->
-        backStack.add(
+        backstack.add(
           TerminationSurveySecondStepKey(
             nestedSubOptions,
             key.action,
@@ -147,7 +149,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
         )
       },
       navigateToNextStep = { navStep ->
-        navigateFromSurvey(backStack, navStep, key.commonParams)
+        navigateFromSurvey(backstack, navStep, key.commonParams)
       },
       navigateToMovingFlow = navigateToMovingFlow,
       openUrl = openUrl,
@@ -170,7 +172,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
     TerminationDateDestination(
       viewModel = viewModel,
       onContinue = { localDate ->
-        backStack.add(
+        backstack.add(
           TerminationConfirmationKey(
             terminationType = TerminationConfirmationKey.TerminationType.Termination(
               localDate,
@@ -182,7 +184,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
           ),
         )
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
     )
   }
@@ -192,7 +194,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
       displayName = key.commonParams.insuranceDisplayName,
       exposureName = key.commonParams.exposureName,
       onContinue = {
-        backStack.add(
+        backstack.add(
           TerminationConfirmationKey(
             terminationType = TerminationConfirmationKey.TerminationType.Deletion,
             extraCoverageItems = key.extraCoverageItems,
@@ -202,7 +204,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
           ),
         )
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
     )
   }
@@ -230,11 +232,11 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
       },
       navigateToSuccess = { terminationDate ->
         viewModel.emit(TerminationConfirmationEvent.HandledNavigation)
-        backStack.navigateToTerminateFlowDestination(
+        backstack.navigateToTerminateFlowDestination(
           TerminationSuccessKey(terminationDate),
         )
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
     )
   }
@@ -243,13 +245,13 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
     DeflectSuggestionDestination(
       description = key.description,
       suggestionType = key.suggestionType,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       closeTerminationFlow = closeTerminationFlow,
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       onContinueTermination = {
         when (val terminationAction = key.action) {
           is TerminationAction.TerminateWithDate -> {
-            backStack.add(
+            backstack.add(
               TerminationDateKey(
                 minDate = terminationAction.minDate,
                 maxDate = terminationAction.maxDate,
@@ -262,7 +264,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
           }
 
           is TerminationAction.DeleteInsurance -> {
-            backStack.add(
+            backstack.add(
               InsuranceDeletionKey(
                 commonParams = key.commonParams,
                 extraCoverageItems = terminationAction.extraCoverageItems,
@@ -278,7 +280,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
 }
 
 private fun navigateFromSurvey(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   navStep: SurveyNavigationStep.NavigateToNextTerminationStep,
   commonParams: TerminationGraphParameters,
 ) {
@@ -289,7 +291,7 @@ private fun navigateFromSurvey(
   if (suggestion != null &&
     suggestion.type in SuggestionType.DEFLECT_TYPES
   ) {
-    backStack.add(
+    backstack.add(
       DeflectSuggestionKey(
         description = suggestion.description,
         url = suggestion.url,
@@ -306,7 +308,7 @@ private fun navigateFromSurvey(
   // Navigate based on the termination action
   when (val terminationAction = navStep.action) {
     is TerminationAction.TerminateWithDate -> {
-      backStack.add(
+      backstack.add(
         TerminationDateKey(
           minDate = terminationAction.minDate,
           maxDate = terminationAction.maxDate,
@@ -319,7 +321,7 @@ private fun navigateFromSurvey(
     }
 
     is TerminationAction.DeleteInsurance -> {
-      backStack.add(
+      backstack.add(
         InsuranceDeletionKey(
           commonParams = commonParams,
           extraCoverageItems = terminationAction.extraCoverageItems,
@@ -331,7 +333,7 @@ private fun navigateFromSurvey(
   }
 }
 
-private fun MutableList<HedvigNavKey>.navigateToTerminateFlowDestination(destination: HedvigNavKey) {
+private fun Backstack.navigateToTerminateFlowDestination(destination: HedvigNavKey) {
   when (destination) {
     is TerminationSuccessKey,
     is TerminationFailureKey,

@@ -14,7 +14,7 @@ import kotlinx.serialization.modules.subclass
 
 /**
  * Exercises the real [encodeToSavedState] / [decodeFromSavedState] + [SavedStateConfiguration] path
- * that `rememberHedvigBackStackController` uses for process-death persistence. On JVM/iOS the
+ * that `rememberHedvigBackstackController` uses for process-death persistence. On JVM/iOS the
  * `SavedState` is a Map-backed implementation, so this runs without a `Bundle` or Robolectric.
  *
  * The real feature keys live in Android feature modules and aren't reachable here, so these
@@ -40,7 +40,7 @@ internal class HedvigNavKeySavedStateTest {
   private val serializer = ListSerializer(PolymorphicSerializer(HedvigNavKey::class))
 
   @Test
-  fun backStackRoundTripsThroughRealSavedState() {
+  fun backstackRoundTripsThroughRealSavedState() {
     val original: List<HedvigNavKey> = listOf(TestHomeKey, TestDetailKey("abc"), TestHomeKey)
 
     val savedState = encodeToSavedState(serializer, original, configuration)

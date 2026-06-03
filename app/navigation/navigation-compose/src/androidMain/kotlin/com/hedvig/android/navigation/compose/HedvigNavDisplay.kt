@@ -16,7 +16,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.hedvig.android.navigation.common.HedvigNavKey
 
 /**
- * Nav3 replacement for the Nav2 `NavHost`. Renders [backStack] (a list of [HedvigNavKey] keys) and
+ * Nav3 replacement for the Nav2 `NavHost`. Renders [backstack] (a list of [HedvigNavKey] keys) and
  * resolves each key to a [androidx.navigation3.runtime.NavEntry] via the [builder] DSL
  * (`entry`).
  *
@@ -31,7 +31,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HedvigNavDisplay(
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
   onBack: () -> Unit,
   enterTransition: EnterTransition,
   exitTransition: ExitTransition,
@@ -43,7 +43,7 @@ fun HedvigNavDisplay(
   builder: EntryProviderScope<HedvigNavKey>.() -> Unit,
 ) {
   NavDisplay(
-    backStack = backStack,
+    backstack = backstack.entries,
     modifier = modifier,
     onBack = { onBack() },
     entryDecorators = listOf(

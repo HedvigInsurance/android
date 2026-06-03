@@ -105,7 +105,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun EnterNewAddressDestination(
   viewModel: EnterNewAddressViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   onNavigateToAddHouseInformation: () -> Unit,
   onNavigateToChoseCoverageLevelAndDeductible: () -> Unit,
@@ -126,7 +126,7 @@ internal fun EnterNewAddressDestination(
   EnterNewAddressScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     exitFlow = exitFlow,
     submitInput = { viewModel.emit(EnterNewAddressEvent.Submit) },
     dismissSubmissionError = { viewModel.emit(EnterNewAddressEvent.DismissSubmissionError) },
@@ -137,7 +137,7 @@ internal fun EnterNewAddressDestination(
 private fun EnterNewAddressScreen(
   uiState: EnterNewAddressUiState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   submitInput: () -> Unit,
   dismissSubmissionError: () -> Unit,
@@ -156,7 +156,7 @@ private fun EnterNewAddressScreen(
           Loading -> HedvigFullScreenCenterAlignedProgress()
 
           MissingOngoingMovingFlow -> HedvigErrorSection(
-            onButtonClick = popBackStack,
+            onButtonClick = popBackstack,
             subTitle = null,
             buttonText = stringResource(Res.string.app_info_submit_bug_go_back),
           )

@@ -130,7 +130,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun CustomizeAddonDestination(
   viewModel: CustomizeAddonViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   popAddonFlow: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
   onNavigateToTravelInsurancePlusExplanation: (PerilComparisonParams) -> Unit,
@@ -140,7 +140,7 @@ internal fun CustomizeAddonDestination(
   CustomizeTravelAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     popAddonFlow = popAddonFlow,
     submitSelected = {
       viewModel.emit(SubmitSelected)
@@ -176,7 +176,7 @@ internal fun CustomizeAddonDestination(
 private fun CustomizeTravelAddonScreen(
   uiState: CustomizeAddonState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   submitSelected: () -> Unit,
   submitToggled: () -> Unit,
   navigateToSummary: (summaryParameters: SummaryParameters) -> Unit,
@@ -197,7 +197,7 @@ private fun CustomizeTravelAddonScreen(
         FailureScreen(
           uiState = uiState,
           reload = reload,
-          popBackStack = popBackStack,
+          popBackstack = popBackstack,
           navigateToChangeTier = navigateToChangeTier,
         )
       }
@@ -234,7 +234,7 @@ private fun CustomizeTravelAddonScreen(
 private fun FailureScreen(
   uiState: CustomizeAddonState.Failure,
   reload: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   navigateToChangeTier: (contractId: String) -> Unit,
 ) {
   Box(Modifier.fillMaxSize()) {
@@ -296,7 +296,7 @@ private fun FailureScreen(
             }
 
             AddonOfferDeflectType.GENERAL_CLOSE -> {
-              dropUnlessResumed { popBackStack() }
+              dropUnlessResumed { popBackstack() }
             }
           }
         }
@@ -313,7 +313,7 @@ private fun FailureScreen(
       if (!isDeflectClose) {
         HedvigTextButton(
           stringResource(Res.string.general_close_button),
-          onClick = dropUnlessResumed { popBackStack() },
+          onClick = dropUnlessResumed { popBackstack() },
           buttonSize = Large,
           modifier = Modifier.fillMaxWidth(),
         )

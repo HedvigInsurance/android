@@ -10,6 +10,8 @@ import com.hedvig.android.feature.chat.CbmChatViewModel
 import com.hedvig.android.feature.chat.inbox.InboxDestination
 import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateUp
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -21,15 +23,15 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-  backStack: MutableList<HedvigNavKey>,
+  backstack: Backstack,
 ) {
   entry<InboxKey> {
     val viewModel: InboxViewModel = metroViewModel()
     InboxDestination(
       viewModel = viewModel,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       onConversationClick = dropUnlessResumed { conversationId ->
-        backStack.add(ChatKey(conversationId))
+        backstack.add(ChatKey(conversationId))
       },
     )
   }
@@ -45,7 +47,7 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
       openUrl = openUrl,
       onNavigateToClaimDetails = onNavigateToClaimDetails,
       onNavigateToImageViewer = onNavigateToImageViewer,
-      onNavigateUp = backStack::navigateUp,
+      onNavigateUp = backstack::navigateUp,
       simpleVideoCache = simpleVideoCache,
     )
   }

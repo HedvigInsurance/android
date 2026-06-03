@@ -12,7 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
-import com.hedvig.android.app.navigation.HedvigBackStackController
+import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.notification.senders.CurrentDestinationInMemoryStorage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
@@ -39,7 +39,7 @@ import kotlinx.coroutines.flow.stateIn
 
 @Composable
 internal fun rememberHedvigAppState(
-  backStackController: HedvigBackStackController,
+  backstackController: BackstackController,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
   getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>,
@@ -48,7 +48,7 @@ internal fun rememberHedvigAppState(
   coroutineScope: CoroutineScope = rememberCoroutineScope(),
 ): HedvigAppState {
   val appState = remember(
-    backStackController,
+    backstackController,
     windowSizeClass,
     coroutineScope,
     settingsDataStore,
@@ -57,7 +57,7 @@ internal fun rememberHedvigAppState(
     missedPaymentNotificationServiceProvider,
   ) {
     HedvigAppState(
-      backStackController = backStackController,
+      backstackController = backstackController,
       windowSizeClass = windowSizeClass,
       coroutineScope = coroutineScope,
       settingsDataStore = settingsDataStore,
@@ -77,7 +77,7 @@ internal fun rememberHedvigAppState(
 
 @Stable
 internal class HedvigAppState(
-  val backStackController: HedvigBackStackController,
+  val backstackController: BackstackController,
   val windowSizeClass: WindowSizeClass,
   coroutineScope: CoroutineScope,
   private val settingsDataStore: SettingsDataStore,
@@ -86,10 +86,10 @@ internal class HedvigAppState(
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
   val currentDestination: HedvigNavKey?
-    get() = backStackController.currentDestination
+    get() = backstackController.currentDestination
 
   val currentTopLevelGraph: TopLevelGraph
-    get() = backStackController.currentTopLevel
+    get() = backstackController.currentTopLevel
 
   val navigationSuiteType: NavigationSuiteType
     get() = when (windowSizeClass.widthSizeClass) {
@@ -157,15 +157,15 @@ internal class HedvigAppState(
    * selecting another tab brings its run forward (or returns to Home), keeping Home pinned at the base.
    */
   fun navigateToTopLevelGraph(topLevelGraph: TopLevelGraph) {
-    backStackController.selectTopLevel(topLevelGraph)
+    backstackController.selectTopLevel(topLevelGraph)
   }
 
   fun navigateToLoggedIn() {
-    backStackController.setLoggedIn()
+    backstackController.setLoggedIn()
   }
 
   fun navigateToLoggedOut() {
-    backStackController.setLoggedOut()
+    backstackController.setLoggedOut()
   }
 
   val darkTheme: Boolean

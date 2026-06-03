@@ -8,10 +8,12 @@ import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.navigateUp
-import com.hedvig.android.navigation.compose.popBackStack
+import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.feature.remove.addons.data.CurrentlyActiveAddon
 import com.hedvig.feature.remove.addons.ui.RemoveAddonFailureScreen
@@ -82,7 +84,7 @@ internal data class RemoveAddonSubmitSuccessKey(val activationDate: LocalDate) :
 @Serializable
 internal data object RemoveAddonSubmitFailureKey : HedvigNavKey
 
-fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList<HedvigNavKey>) {
+fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backstack: Backstack) {
   // Flow anchor / insurance picker. When seeded with an insuranceId it jumps straight to the addon
   // picker (popping itself, so back leaves the flow); otherwise the member picks an insurance.
   entry<RemoveAddonsKey> { key ->
@@ -90,7 +92,7 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
     val preselectedAddonVariant = key.preselectedAddonVariant
     if (insuranceId != null) {
       LaunchedEffect(Unit) {
-        backStack.navigateAndPopUpTo<RemoveAddonsKey>(
+        backstack.navigateAndPopUpTo<RemoveAddonsKey>(
           ChooseAddonToRemoveKey(
             insuranceId = insuranceId,
             preselectedAddonVariant = preselectedAddonVariant,
@@ -100,9 +102,9 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
       }
     } else {
       SelectInsuranceToRemoveAddonDestination(
-        navigateUp = backStack::navigateUp,
+        navigateUp = backstack::navigateUp,
         navigateToChooseAddon = { contractId ->
-          backStack.add(
+          backstack.add(
             ChooseAddonToRemoveKey(
               insuranceId = contractId,
               preselectedAddonVariant = null,
@@ -117,7 +119,7 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
     SelectAddonToRemoveDestination(
       contractId = key.insuranceId,
       preselectedAddonProduct = key.preselectedAddonVariant,
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToSummary = {
         contractId: ContractId,
         addons: List<CurrentlyActiveAddon>,
@@ -140,9 +142,9 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
           ),
         )
         if (popDestination) {
-          backStack.navigateAndPopUpTo<ChooseAddonToRemoveKey>(summary, inclusive = true)
+          backstack.navigateAndPopUpTo<ChooseAddonToRemoveKey>(summary, inclusive = true)
         } else {
-          backStack.add(summary)
+          backstack.add(summary)
         }
       },
     )
@@ -151,7 +153,7 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
   entry<RemoveAddonSummaryKey> { key ->
     RemoveAddonSummaryDestination(
       navigateToSuccess = {
-        backStack.navigateExitingRemoveAddonFlow(
+        backstack.navigateExitingRemoveAddonFlow(
           RemoveAddonSubmitSuccessKey(key.params.activationDate),
         )
       },
@@ -161,12 +163,12 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
       baseCost = key.params.baseCost,
       currentTotalCost = key.params.currentTotalCost,
       onFailure = {
-        backStack.add(RemoveAddonSubmitFailureKey)
+        backstack.add(RemoveAddonSubmitFailureKey)
       },
       onCloseFlow = {
-        backStack.popUpToRemoveAddonAnchor(inclusive = true)
+        backstack.popUpToRemoveAddonAnchor(inclusive = true)
       },
-      navigateUp = backStack::navigateUp,
+      navigateUp = backstack::navigateUp,
       existingAddonsToRemove = key.params.existingAddons,
       productVariant = key.params.productVariant,
     )
@@ -174,14 +176,14 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
 
   entry<RemoveAddonSubmitFailureKey> {
     RemoveAddonFailureScreen(
-      popBackStack = backStack::popBackStack,
+      popBackstack = backstack::popBackstack,
     )
   }
 
   entry<RemoveAddonSubmitSuccessKey> { key ->
     RemoveAddonSuccessScreen(
       key.activationDate,
-      popBackStack = backStack::popBackStack,
+      popBackstack = backstack::popBackstack,
     )
   }
 }
@@ -191,7 +193,7 @@ fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backStack: MutableList
  * [ChooseAddonToRemoveKey] when the flow was seeded with an insuranceId (the anchor having popped
  * itself during the jump to the addon picker).
  */
-private fun MutableList<HedvigNavKey>.popUpToRemoveAddonAnchor(inclusive: Boolean) {
+private fun Backstack.popUpToRemoveAddonAnchor(inclusive: Boolean) {
   if (findLastOrNull<RemoveAddonsKey>() != null) {
     popUpTo<RemoveAddonsKey>(inclusive)
   } else {
@@ -199,7 +201,7 @@ private fun MutableList<HedvigNavKey>.popUpToRemoveAddonAnchor(inclusive: Boolea
   }
 }
 
-private fun MutableList<HedvigNavKey>.navigateExitingRemoveAddonFlow(destination: HedvigNavKey) {
+private fun Backstack.navigateExitingRemoveAddonFlow(destination: HedvigNavKey) {
   popUpToRemoveAddonAnchor(inclusive = true)
   add(destination)
 }

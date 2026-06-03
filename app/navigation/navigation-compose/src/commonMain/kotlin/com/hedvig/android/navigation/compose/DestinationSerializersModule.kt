@@ -19,7 +19,7 @@ import kotlinx.serialization.modules.plus
  *
  * Features contribute their module via Metro `@IntoSet`; `:app` injects the resulting
  * `Set<SerializersModule>`, folds it with [merge], and feeds the result into the
- * `SavedStateConfiguration` used by `rememberHedvigBackStackController` / `rememberSerializable`.
+ * `SavedStateConfiguration` used by `rememberHedvigBackstackController` / `rememberSerializable`.
  */
 val HedvigBaseSerializersModule: SerializersModule = SerializersModule {}
 

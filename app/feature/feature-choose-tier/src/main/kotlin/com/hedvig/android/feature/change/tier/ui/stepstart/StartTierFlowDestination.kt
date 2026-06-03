@@ -52,7 +52,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun StartChangeTierFlowDestination(
   viewModel: StartTierFlowViewModel,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   launchFlow: (InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateUp: () -> Unit,
@@ -60,7 +60,7 @@ internal fun StartChangeTierFlowDestination(
   val uiState: StartTierChangeState by viewModel.uiState.collectAsStateWithLifecycle()
   StartChangeTierFlowScreen(
     uiState = uiState,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     reload = {
       viewModel.emit(StartTierChangeEvent.Reload)
     },
@@ -73,7 +73,7 @@ internal fun StartChangeTierFlowDestination(
 @Composable
 private fun StartChangeTierFlowScreen(
   uiState: StartTierChangeState,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   reload: () -> Unit,
   launchFlow: (InsuranceCustomizationParameters) -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -83,7 +83,7 @@ private fun StartChangeTierFlowScreen(
     is Failure -> {
       FailureScreen(
         reload = reload,
-        popBackStack = popBackStack,
+        popBackstack = popBackstack,
         reason = uiState.reason,
       )
     }
@@ -105,7 +105,7 @@ private fun StartChangeTierFlowScreen(
       DeflectScreen(
         title = uiState.title,
         message = uiState.message,
-        closeFlow = popBackStack,
+        closeFlow = popBackstack,
         onNavigateToNewConversation = onNavigateToNewConversation,
         navigateUp = navigateUp,
       )
@@ -162,7 +162,7 @@ internal fun DeflectScreen(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: FailureReason) {
+private fun FailureScreen(reload: () -> Unit, popBackstack: () -> Unit, reason: FailureReason) {
   Box(Modifier.fillMaxSize()) {
     when (reason) {
       GENERAL -> {
@@ -195,7 +195,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit, reason: 
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
             stringResource(Res.string.general_close_button),
-            onClick = popBackStack,
+            onClick = popBackstack,
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),
           )
