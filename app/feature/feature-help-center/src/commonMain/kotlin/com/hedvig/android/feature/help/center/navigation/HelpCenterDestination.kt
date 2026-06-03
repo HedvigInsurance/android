@@ -14,9 +14,6 @@ import kotlinx.serialization.Serializable
 data object HelpCenterKey : HedvigNavKey
 
 @Serializable
-internal data object HelpCenterHomeKey : HedvigNavKey
-
-@Serializable
 internal data class HelpCenterTopicKey(
   /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
   @SerialName("id")
@@ -53,7 +50,7 @@ internal data object PuppyGuideKey : HedvigNavKey
 internal data class PuppyGuideArticleKey(val storyName: String) : HedvigNavKey
 
 val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  HelpCenterHomeKey::class,
+  HelpCenterKey::class,
   HelpCenterTopicKey::class,
   HelpCenterQuestionKey::class,
 )

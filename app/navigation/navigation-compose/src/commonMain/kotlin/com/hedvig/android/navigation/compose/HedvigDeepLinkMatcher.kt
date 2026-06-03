@@ -22,7 +22,7 @@ class HedvigDeepLinkMatcher(private val matchers: List<DeepLinkMatcher<out Hedvi
     matchers.forEach { matcher ->
       // A matcher for a destination with a required (no-default) argument throws when that argument is absent from the
       // URI, rather than returning null. Treat any throw as a non-match.
-      val result = matcher.match(request) ?: return@forEach
+      val result = runCatching { matcher.match(request) }.getOrNull() ?: return@forEach
       val currentBest = best
       if (currentBest == null || result.isHigherPriorityThan(currentBest)) {
         best = result

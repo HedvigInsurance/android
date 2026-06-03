@@ -16,7 +16,6 @@ interface HelpCenterSerializersModuleProvider {
   fun provideHelpCenterSerializersModule(): SerializersModule = SerializersModule {
     polymorphic(HedvigNavKey::class) {
       subclass(HelpCenterKey::class)
-      subclass(HelpCenterHomeKey::class)
       subclass(HelpCenterTopicKey::class)
       subclass(HelpCenterQuestionKey::class)
       subclass(EmergencyKey::class)

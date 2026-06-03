@@ -15,7 +15,7 @@ internal class HelpCenterDeepLinkMatcherProvider(
   private val container: HedvigDeepLinkContainer,
 ) : DeepLinkMatcherProvider {
   override fun matchers(): List<DeepLinkMatcher<out HedvigNavKey>> =
-    uriDeepLinkMatchers(container.helpCenter, HelpCenterHomeKey.serializer()) +
+    uriDeepLinkMatchers(container.helpCenter, HelpCenterKey.serializer()) +
       uriDeepLinkMatchers(container.helpCenterCommonTopic, HelpCenterTopicKey.serializer()) +
       uriDeepLinkMatchers(container.helpCenterQuestion, HelpCenterQuestionKey.serializer()) +
       uriDeepLinkMatchers(container.puppyGuide, PuppyGuideKey.serializer())

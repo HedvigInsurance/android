@@ -21,7 +21,6 @@ interface ProfileSerializersModuleProvider {
       subclass(CertificatesKey::class)
       subclass(InformationKey::class)
       subclass(LicensesKey::class)
-      subclass(SettingsGraphKey::class)
       subclass(SettingsKey::class)
     }
   }

@@ -126,7 +126,7 @@ internal fun HedvigApp(
       }
       val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
         matcher = deepLinkMatcher,
-        backStack = backStackController.backStack,
+        backStackController = backStackController,
         delegate = SafeAndroidUriHandler(LocalContext.current),
       )
       LaunchedEffect(deepLinkFirstUriHandler, backStackController, deepLinkChannel) {

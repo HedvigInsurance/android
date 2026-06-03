@@ -23,9 +23,6 @@ internal data object InformationKey : HedvigNavKey
 internal data object LicensesKey : HedvigNavKey
 
 @Serializable
-internal data object SettingsGraphKey : HedvigNavKey
-
-@Serializable
 internal data object SettingsKey : HedvigNavKey
 
 /*

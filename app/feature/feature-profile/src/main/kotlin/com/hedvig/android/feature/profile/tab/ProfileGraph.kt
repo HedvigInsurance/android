@@ -22,7 +22,6 @@ import com.hedvig.android.feature.profile.navigation.EurobonusKey
 import com.hedvig.android.feature.profile.navigation.InformationKey
 import com.hedvig.android.feature.profile.navigation.LicensesKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
-import com.hedvig.android.feature.profile.navigation.SettingsGraphKey
 import com.hedvig.android.feature.profile.navigation.SettingsKey
 import com.hedvig.android.feature.profile.settings.SettingsDestination
 import com.hedvig.android.feature.profile.settings.SettingsViewModel
@@ -70,7 +69,7 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
         backStack.add(InformationKey)
       },
       navigateToSettings = dropUnlessResumed {
-        backStack.add(SettingsGraphKey)
+        backStack.add(SettingsKey)
       },
       navigateToCertificates = dropUnlessResumed {
         backStack.add(CertificatesKey)

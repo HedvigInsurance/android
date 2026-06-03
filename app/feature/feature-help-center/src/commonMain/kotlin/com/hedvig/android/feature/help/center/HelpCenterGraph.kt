@@ -13,7 +13,7 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.help.center.navigation.FirstVetKey
-import com.hedvig.android.feature.help.center.navigation.HelpCenterHomeKey
+import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.help.center.navigation.HelpCenterQuestionKey
 import com.hedvig.android.feature.help.center.navigation.HelpCenterTopicKey
 import com.hedvig.android.feature.help.center.navigation.PuppyGuideArticleKey
@@ -42,7 +42,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
   tryToDialPhone: (String) -> Unit,
   imageLoader: ImageLoader,
 ) {
-  entry<HelpCenterHomeKey> {
+  entry<HelpCenterKey> {
     val viewModel = metroViewModel<HelpCenterViewModel>()
     HelpCenterHomeDestination(
       viewModel = viewModel,

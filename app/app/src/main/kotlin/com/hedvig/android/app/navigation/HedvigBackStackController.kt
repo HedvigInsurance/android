@@ -44,9 +44,9 @@ internal class HedvigBackStackController(
    */
   fun selectTopLevel(topLevelGraph: TopLevelGraph) {
     Snapshot.withMutableSnapshot {
-      val target = when {
-        topLevelGraph == currentTopLevel -> popTopRunToStart(backStack)
-        topLevelGraph == TopLevelGraph.Home -> collapseToHome(backStack)
+      val target = when (topLevelGraph) {
+        currentTopLevel -> popTopRunToStart(backStack)
+        TopLevelGraph.Home -> collapseToHome(backStack)
         else -> moveRunToTop(backStack, topLevelGraph)
       }
       backStack.replaceWith(target)
@@ -68,6 +68,24 @@ internal class HedvigBackStackController(
       }
     }
     return true
+  }
+
+  /**
+   * Routes a resolved deep-link key onto the stack without ever creating a value-equal duplicate.
+   * Nav3 renders each entry under `key.toString()`, so two equal keys crash. Tab roots go through
+   * [selectTopLevel] (a deduped tab switch); any other key already present is moved to the top
+   * rather than re-appended; a genuinely new key is appended.
+   */
+  fun navigateToDeepLink(key: HedvigNavKey) {
+    val topLevelGraph = key.topLevelGraphOrNull()
+    if (topLevelGraph != null) {
+      selectTopLevel(topLevelGraph)
+      return
+    }
+    Snapshot.withMutableSnapshot {
+      backStack.remove(key)
+      backStack.add(key)
+    }
   }
 
   /** Move into the tabbed shell, Home pinned at the base. */
