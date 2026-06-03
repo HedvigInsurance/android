@@ -203,7 +203,12 @@ private data class NavUpBarScene<T : Any>(
   override val content: @Composable () -> Unit = {
     Column(Modifier.fillMaxSize()) {
       upBarContent()
-      Box(Modifier.weight(1f).fillMaxWidth()) {
+      Box(
+        Modifier
+          .weight(1f)
+          .fillMaxWidth()
+          .consumeWindowInsets(WindowInsets.systemBars.only(WindowInsetsSides.Top)),
+      ) {
         scene.content()
       }
     }

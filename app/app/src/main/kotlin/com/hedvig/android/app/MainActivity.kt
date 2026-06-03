@@ -142,6 +142,7 @@ class MainActivity : AppCompatActivity() {
     if (savedInstanceState == null) {
       handleDeepLinkIntent(intent)
     }
+    addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     setContent {
@@ -190,12 +191,6 @@ class MainActivity : AppCompatActivity() {
         )
       }
     }
-  }
-
-  override fun onNewIntent(intent: Intent) {
-    super.onNewIntent(intent)
-    setIntent(intent)
-    handleDeepLinkIntent(intent)
   }
 
   private fun handleDeepLinkIntent(intent: Intent) {
