@@ -24,6 +24,7 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
 import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
@@ -71,6 +72,15 @@ internal fun HedvigAppUi(
             },
           )
         },
+        upBarContent = {
+          // TODO: Add "" / "" to Lokalise — bare Up-bar shown only when a tab root is deep-linked
+          // alone; a back arrow with no title is the intended minimal affordance.
+          TopAppBarWithBack(
+            title = "",
+            onClick = { hedvigAppState.backstackController.navigateUp() },
+          )
+        },
+        loneDeepLinkChrome = { hedvigAppState.backstackController.loneDeepLinkChrome },
       ),
     )
   } else {
