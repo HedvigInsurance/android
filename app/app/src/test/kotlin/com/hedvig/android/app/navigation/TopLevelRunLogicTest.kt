@@ -32,17 +32,6 @@ class TopLevelRunLogicTest {
     assertThat(nearestTopLevelGraph(listOf(Drill("login")))).isNull()
   }
 
-  @Test fun moveRunToTop_appendsWhenAbsent() {
-    assertThat(moveRunToTop(listOf(HomeKey), TopLevelGraph.Insurances))
-      .isEqualTo(listOf(HomeKey, InsurancesKey))
-  }
-
-  @Test fun moveRunToTop_movesExistingRunPreservingHomeBaseAndOtherOrder() {
-    val stack = listOf(HomeKey, Drill("h"), InsurancesKey, Drill("i"), PaymentsKey, Drill("p"))
-    assertThat(moveRunToTop(stack, TopLevelGraph.Insurances))
-      .isEqualTo(listOf(HomeKey, Drill("h"), PaymentsKey, Drill("p"), InsurancesKey, Drill("i")))
-  }
-
   @Test fun collapseToHome_keepsHomeRunDiscardsSideRuns() {
     val stack = listOf(HomeKey, Drill("h"), InsurancesKey, Drill("i"), PaymentsKey)
     assertThat(collapseToHome(stack)).isEqualTo(listOf(HomeKey, Drill("h")))

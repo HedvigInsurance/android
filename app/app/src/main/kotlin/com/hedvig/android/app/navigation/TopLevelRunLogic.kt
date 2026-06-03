@@ -28,18 +28,6 @@ internal fun nearestTopLevelGraph(stack: List<HedvigNavKey>): TopLevelGraph? {
   return null
 }
 
-/**
- * Moves [tab]'s contiguous run to the end, preserving the relative order of the remaining runs.
- * If [tab] has no run yet, appends a fresh `[tab.startDestination]` run.
- */
-internal fun moveRunToTop(stack: List<HedvigNavKey>, tab: TopLevelGraph): List<HedvigNavKey> {
-  val start = stack.indexOfFirst { it.topLevelGraphOrNull() == tab }
-  if (start == -1) return stack + tab.startDestination
-  val end = ((start + 1)..stack.lastIndex).firstOrNull { stack[it].topLevelGraphOrNull() != null } ?: stack.size
-  val run = stack.subList(start, end).toList()
-  return stack.subList(0, start) + stack.subList(end, stack.size) + run
-}
-
 /** Truncates to Home's run (Home + its drill-downs), discarding every parked side-tab run. */
 internal fun collapseToHome(stack: List<HedvigNavKey>): List<HedvigNavKey> {
   val firstSideRunStart = (1..stack.lastIndex).firstOrNull { stack[it].topLevelGraphOrNull() != null }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.savedstate.compose.serialization.serializers.SnapshotStateListSerializer
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.hedvig.android.feature.home.home.navigation.HomeKey
@@ -16,17 +17,10 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.core.TopLevelGraph
 import kotlinx.serialization.PolymorphicSerializer
 
-/**
- * Owns the app's single Nav3 back stack for [androidx.navigation3.ui.NavDisplay].
- *
- * One flat [SnapshotStateList] is the sole source of truth. Logged out it is `[LoginKey, …]`. Logged
- * in, [HomeKey] is pinned at index 0 and contiguous per-tab "runs" sit above it. Feature graphs
- * mutate [entries] directly; the NavDisplay renders the same instance. [isLoggedIn] and
- * [currentTopLevel] are derived, so process-death restore reconstructs them for free.
- */
 @Stable
 internal class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
+  internal val parkedRuns: SnapshotStateMap<TopLevelGraph, List<HedvigNavKey>>,
 ) : Backstack {
   val isLoggedIn: Boolean
     get() = entries.firstOrNull()?.topLevelGraphOrNull() != null
@@ -39,43 +33,63 @@ internal class BackstackController(
     get() = entries.lastOrNull()
 
   /**
-   * Rail/bar tap. Re-tapping the current tab pops its run to the root; selecting Home from a side tab
-   * returns to Home (discarding parked runs); selecting a different side tab moves its run to the top
-   * (preserving Home at the base and the other runs).
+   * Every key whose decorator state must survive: the rendered stack plus all parked runs, mapped
+   * to their `contentKey` (`toString()`). The retained decorators consult this set in `onPop` so a
+   * key that merely moved into [parkedRuns] keeps its saved state and ViewModel.
+   */
+  val allLiveContentKeys: Set<Any>
+    get() = buildSet {
+      entries.forEach { add(it.toString()) }
+      parkedRuns.values.forEach { run -> run.forEach { add(it.toString()) } }
+    }
+
+  /**
+   * Rail/bar tap. Re-tapping the current tab pops its run to the root. Switching tabs stashes the
+   * leaving side-tab's run into [parkedRuns] (Home is never parked — it stays in the rendered stack)
+   * and restores the target tab's parked run, or starts a fresh one.
    */
   fun selectTopLevel(topLevelGraph: TopLevelGraph) {
     Snapshot.withMutableSnapshot {
-      val target = when (topLevelGraph) {
-        currentTopLevel -> popTopRunToStart(entries)
-        TopLevelGraph.Home -> collapseToHome(entries)
-        else -> moveRunToTop(entries, topLevelGraph)
+      if (topLevelGraph == currentTopLevel) {
+        entries.replaceWith(popTopRunToStart(entries))
+        return@withMutableSnapshot
       }
-      entries.replaceWith(target)
+      val leavingSideTab = nearestTopLevelGraph(entries)?.takeIf { it != TopLevelGraph.Home }
+      val homeRun = collapseToHome(entries)
+      if (leavingSideTab != null) {
+        parkedRuns[leavingSideTab] = activeSideRun(entries)
+      }
+      val restored = if (topLevelGraph == TopLevelGraph.Home) {
+        homeRun
+      } else {
+        homeRun + (parkedRuns.remove(topLevelGraph) ?: listOf(topLevelGraph.startDestination))
+      }
+      entries.replaceWith(restored)
     }
   }
 
   /**
-   * System-back handler. Returns false when the app should finish. Drains the active run, returns a
-   * non-Home tab root straight to Home (no wandering into parked tabs), and exits from the root.
+   * System-back handler. Returns false when the app should finish. A plain pop: the rendered stack
+   * is always `homeRun + at most one side run`, so popping walks up the active run, returns a side
+   * root to Home, and exits from the Home root.
+   *
+   * It deliberately does **not** park the run it drains. Draining a side tab with system back is the
+   * Nav2 "drop it completely" path: each popped key leaves the rendered stack and is absent from
+   * [parkedRuns], so [allLiveContentKeys] stops covering it and the decorators dispose its saved
+   * state. Only [selectTopLevel] parks a run. (Parked runs for *other* tabs are untouched here.)
    */
   fun handleBack(): Boolean {
     if (entries.size <= 1) return false
-    val topTab = entries.last().topLevelGraphOrNull()
     Snapshot.withMutableSnapshot {
-      if (topTab != null && topTab != TopLevelGraph.Home) {
-        entries.replaceWith(collapseToHome(entries))
-      } else {
-        entries.removeAt(entries.lastIndex)
-      }
+      entries.removeAt(entries.lastIndex)
     }
     return true
   }
 
   /**
-   * Routes a resolved deep-link key onto the stack without ever creating a value-equal duplicate.
-   * Nav3 renders each entry under `key.toString()`, so two equal keys crash. Tab roots go through
-   * [selectTopLevel] (a deduped tab switch); any other key already present is moved to the top
-   * rather than re-appended; a genuinely new key is appended.
+   * Routes a resolved deep-link key onto the stack without creating a value-equal duplicate. Tab
+   * roots go through [selectTopLevel] (which restores any parked run); any other key already present
+   * is moved to the top rather than re-appended; a genuinely new key is appended.
    */
   fun navigateToDeepLink(key: HedvigNavKey) {
     val topLevelGraph = key.topLevelGraphOrNull()
@@ -89,17 +103,19 @@ internal class BackstackController(
     }
   }
 
-  /** Move into the tabbed shell, Home pinned at the base. */
+  /** Move into the tabbed shell, Home pinned at the base; forget any parked runs. */
   fun setLoggedIn() {
     Snapshot.withMutableSnapshot {
+      parkedRuns.clear()
       entries.clear()
       entries.add(HomeKey)
     }
   }
 
-  /** Drop back to the login root. */
+  /** Drop back to the login root; forget any parked runs. */
   fun setLoggedOut() {
     Snapshot.withMutableSnapshot {
+      parkedRuns.clear()
       entries.clear()
       entries.add(LoginKey)
     }
@@ -115,9 +131,7 @@ private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKe
 }
 
 @Composable
-internal fun rememberHedvigBackstackController(
-  savedStateConfiguration: SavedStateConfiguration,
-): BackstackController {
+internal fun rememberHedvigBackstackController(savedStateConfiguration: SavedStateConfiguration): BackstackController {
   val backstack = rememberSerializable(
     configuration = savedStateConfiguration,
     serializer = SnapshotStateListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
