@@ -2,10 +2,14 @@ package com.hedvig.android.feature.profile.navigation
 
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.core.TopLevelGraphRoot
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object ProfileKey : HedvigNavKey, DeliberateLogoutOrigin
+data object ProfileKey : HedvigNavKey, DeliberateLogoutOrigin, TopLevelGraphRoot {
+  override val topLevelGraph: TopLevelGraph = TopLevelGraph.Profile
+}
 
 @Serializable
 data object ContactInfoKey : HedvigNavKey

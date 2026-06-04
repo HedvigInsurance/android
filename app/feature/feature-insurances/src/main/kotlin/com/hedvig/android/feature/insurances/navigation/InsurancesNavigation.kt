@@ -4,11 +4,14 @@ import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.DeepLinkAncestry
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.core.TopLevelGraphRoot
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object InsurancesKey : HedvigNavKey, CrossSellEligibleDestination
+data object InsurancesKey : HedvigNavKey, CrossSellEligibleDestination, TopLevelGraphRoot {
+  override val topLevelGraph: TopLevelGraph = TopLevelGraph.Insurances
+}
 
 @Serializable
 internal data class InsuranceContractDetailKey(

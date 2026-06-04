@@ -1,24 +1,14 @@
 package com.hedvig.android.app.navigation
 
 import com.hedvig.android.app.ui.startDestination
-import com.hedvig.android.feature.forever.navigation.ForeverKey
 import com.hedvig.android.feature.home.home.navigation.HomeKey
-import com.hedvig.android.feature.insurances.navigation.InsurancesKey
-import com.hedvig.android.feature.payments.navigation.PaymentsKey
-import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.core.DeepLinkAncestry
 import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.core.TopLevelGraphRoot
 
 /** Reverse of [startDestination]: the tab this key is the root of, or null if it is not a tab root. */
-internal fun HedvigNavKey.topLevelGraphOrNull(): TopLevelGraph? = when (this) {
-  is HomeKey -> TopLevelGraph.Home
-  is InsurancesKey -> TopLevelGraph.Insurances
-  is ForeverKey -> TopLevelGraph.Forever
-  is PaymentsKey -> TopLevelGraph.Payments
-  is ProfileKey -> TopLevelGraph.Profile
-  else -> null
-}
+internal fun HedvigNavKey.topLevelGraphOrNull(): TopLevelGraph? = (this as? TopLevelGraphRoot)?.topLevelGraph
 
 /** The tab owning the top entry: nearest tab key at or below the top. Null if the stack has no tab key. */
 internal fun nearestTopLevelGraph(stack: List<HedvigNavKey>): TopLevelGraph? {
