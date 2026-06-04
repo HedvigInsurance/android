@@ -121,8 +121,8 @@ internal fun HedvigApp(
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
   val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(sessionReconciler, backstackController, lifecycle) {
-    sessionReconciler.reconcile(backstackController, lifecycle)
+  LaunchedEffect(sessionReconciler, backstackController) {
+    sessionReconciler.reconcile(backstackController)
   }
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
@@ -133,6 +133,9 @@ internal fun HedvigApp(
         goToPlayStore = externalNavigator::tryOpenPlayStore,
       )
     } else {
+      LaunchedEffect(sessionReconciler, backstackController, lifecycle) {
+        sessionReconciler.observeForcedLogout(backstackController, lifecycle)
+      }
       TryShowAppStoreReviewDialogEffect(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,

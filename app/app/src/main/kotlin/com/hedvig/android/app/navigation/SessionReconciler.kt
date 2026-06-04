@@ -12,7 +12,6 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,14 +26,15 @@ import kotlinx.coroutines.launch
 /**
  * Owns the auth↔backstack reconciliation that used to live as loose effects in `HedvigApp`. Two jobs,
  * both narrowly about the rendered root:
- *  1. Pick the start scene (Home when logged in / in demo, Login otherwise) before the splash is
- *     dismissed, so the first frame is correct rather than the seeded Login root. [isReady] flips true
- *     once that resolves and drives the Activity's splash keep-condition.
- *  2. Keep the root honest while running: log out when we leave demo mode and no longer hold tokens.
+ *  1. [reconcile] picks the start scene (Home when logged in / in demo, Login otherwise) before the
+ *     splash is dismissed, so the first frame is correct rather than the seeded Login root. [isReady]
+ *     flips true once that resolves and drives the Activity's splash keep-condition.
+ *  2. [observeForcedLogout] keeps the root honest while running: log out when we leave demo mode and no
+ *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
  * Deliberately narrow — only auth and the backstack root. Deep-links, notifications and the rest stay
  * in their own observers. [BackstackController] is composition + saved-state scoped, so it can't be a
- * constructor dependency; it (and the [Lifecycle]) are handed to [reconcile] by the composition.
+ * constructor dependency; it (and the [Lifecycle]) are handed in by the composition.
  */
 @SingleIn(AppScope::class)
 @Inject
@@ -45,22 +45,33 @@ internal class SessionReconciler(
 ) {
   private val isReadyState = MutableStateFlow(false)
 
-  /** False until the start scene has been resolved; latches true for the process lifetime. */
+  /** False until the start scene has been resolved; latches true once the first splash is dismissed. */
   val isReady: StateFlow<Boolean> = isReadyState.asStateFlow()
 
   private var lastKnownMemberId: String? = null
 
-  suspend fun reconcile(backstackController: BackstackController, lifecycle: Lifecycle): Unit = coroutineScope {
-    launch {
-      memberIdService.getMemberId().collect { id ->
-        if (id != null) lastKnownMemberId = id
-      }
-    }
-    if (!isReadyState.value) {
-      determineStartScene(backstackController)
-      isReadyState.value = true
-    }
+  /**
+   * Resolves the start scene once, before the splash is dismissed. A no-op on subsequent calls because
+   * [isReady] has already latched true.
+   */
+  suspend fun reconcile(backstackController: BackstackController) {
+    if (isReadyState.value) return
+    memberIdService.getMemberId().first()?.let { lastKnownMemberId = it }
+    determineStartScene(backstackController)
+    isReadyState.value = true
+  }
+
+  /**
+   * Lifecycle-gated observers that keep the rendered root honest while the UI is STARTED: tracks the
+   * latest member id and logs out when we leave demo mode without holding tokens.
+   */
+  suspend fun observeForcedLogout(backstackController: BackstackController, lifecycle: Lifecycle) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+      launch {
+        memberIdService.getMemberId().collect { id ->
+          if (id != null) lastKnownMemberId = id
+        }
+      }
       logoutOnInvalidCredentials(backstackController)
     }
   }
