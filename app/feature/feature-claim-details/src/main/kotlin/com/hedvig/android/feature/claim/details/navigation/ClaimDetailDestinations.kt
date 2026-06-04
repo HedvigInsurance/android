@@ -1,6 +1,7 @@
 package com.hedvig.android.feature.claim.details.navigation
 
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.SuppressesChatPushNotification
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,7 +12,7 @@ data class ClaimDetailsKey(
    */
   @SerialName("claimId")
   val claimId: String,
-) : HedvigNavKey
+) : HedvigNavKey, SuppressesChatPushNotification
 
 @Serializable
 internal data class AddFilesKey(

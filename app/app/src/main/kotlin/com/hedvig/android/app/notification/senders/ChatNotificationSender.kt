@@ -20,13 +20,10 @@ import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.feature.chat.navigation.ChatKey
-import com.hedvig.android.feature.chat.navigation.InboxKey
-import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
-import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.SuppressesChatPushNotification
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
@@ -47,13 +44,6 @@ object CurrentDestinationInMemoryStorage {
   var currentDestination: HedvigNavKey? = null
 }
 
-private val listOfDestinationsWhichShouldNotShowChatNotification = setOf(
-  ChatKey::class,
-  InboxKey::class,
-  HomeKey::class,
-  ClaimDetailsKey::class,
-)
-
 class ChatNotificationSender(
   private val context: Context,
   private val permissionManager: PermissionManager,
@@ -67,9 +57,7 @@ class ChatNotificationSender(
     val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
     val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
     val currentlyOnDestinationWhichForbidsShowingChatNotification =
-      listOfDestinationsWhichShouldNotShowChatNotification.any { clazz ->
-        clazz.isInstance(currentDestination)
-      }
+      currentDestination is SuppressesChatPushNotification
     if (currentlyOnDestinationWhichForbidsShowingChatNotification && isAppForegrounded) {
       logcat { "ChatNotificationSender ignoring notification since we are showing destination $currentDestination" }
       return
