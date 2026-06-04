@@ -17,19 +17,15 @@ import com.hedvig.android.app.notification.senders.CurrentDestinationInMemorySto
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.feature.help.center.navigation.helpCenterCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.home.home.navigation.homeCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.insurances.navigation.insurancesCrossSellBottomSheetPermittingDestinations
-import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateCrossSellBottomSheetPermittingDestinations
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.logcat
+import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
-import kotlin.reflect.KClass
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -113,10 +109,7 @@ internal class HedvigAppState(
     )
 
   val isInScreenEligibleForCrossSells: Boolean
-    get() {
-      val destination = currentDestination ?: return false
-      return crossSellBottomSheetPermittingDestinations.any { it.isInstance(destination) }
-    }
+    get() = currentDestination is CrossSellEligibleDestination
 
   val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
@@ -178,20 +171,4 @@ internal class HedvigAppState(
         else -> isSystemInDarkTheme()
       }
     }
-}
-
-/**
- * Destinations that must show the cross-sell bottom sheet after finishing some flow
- */
-private val crossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = buildList {
-  // Screens that a member will end up in after finishing any of the following flows
-  // 1. Moving flow
-  // 2. Edit co-insured
-  // 3. Add/Upgrade addon
-  // 4. Change tier
-  addAll(insurancesCrossSellBottomSheetPermittingDestinations)
-  addAll(helpCenterCrossSellBottomSheetPermittingDestinations)
-  addAll(travelCertificateCrossSellBottomSheetPermittingDestinations)
-  // One could finish those flows after a deep link, so the app's start destination must also be included
-  addAll(homeCrossSellBottomSheetPermittingDestinations)
 }

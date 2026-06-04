@@ -1,16 +1,16 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.NavKeyTypeAware
-import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object TravelCertificateKey : HedvigNavKey
+data object TravelCertificateKey : HedvigNavKey, CrossSellEligibleDestination
 
 @Serializable
 internal data object TravelCertificateChooseContractKey : HedvigNavKey
@@ -44,7 +44,3 @@ internal data class ShowCertificateKey(
     override val typeList: List<KType> = listOf(typeOf<TravelCertificateUrl>())
   }
 }
-
-val travelCertificateCrossSellBottomSheetPermittingDestinations: List<KClass<out HedvigNavKey>> = listOf(
-  TravelCertificateKey::class,
-)
