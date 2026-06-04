@@ -17,8 +17,8 @@ import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
-import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.CoroutineScope

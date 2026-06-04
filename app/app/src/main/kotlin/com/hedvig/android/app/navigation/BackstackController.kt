@@ -22,10 +22,10 @@ import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelGraph
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popBackstack
-import com.hedvig.android.navigation.common.TopLevelGraph
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable

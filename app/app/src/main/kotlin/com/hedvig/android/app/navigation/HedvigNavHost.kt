@@ -86,6 +86,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelGraph
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.entryDecorators
@@ -93,7 +94,6 @@ import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
-import com.hedvig.android.navigation.common.TopLevelGraph
 import com.hedvig.feature.claim.chat.ClaimChatKey
 import com.hedvig.feature.claim.chat.claimChatGraph
 import com.hedvig.feature.remove.addons.RemoveAddonsKey

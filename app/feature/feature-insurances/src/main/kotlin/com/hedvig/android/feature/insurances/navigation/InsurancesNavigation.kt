@@ -1,8 +1,8 @@
 package com.hedvig.android.feature.insurances.navigation
 
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
-import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.DeepLinkAncestry
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelGraph
 import com.hedvig.android.navigation.common.TopLevelGraphRoot
 import kotlinx.serialization.SerialName

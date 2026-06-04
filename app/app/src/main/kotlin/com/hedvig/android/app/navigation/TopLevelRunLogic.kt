@@ -2,8 +2,8 @@ package com.hedvig.android.app.navigation
 
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
-import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.DeepLinkAncestry
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelGraph
 import com.hedvig.android.navigation.common.TopLevelGraphRoot
 
