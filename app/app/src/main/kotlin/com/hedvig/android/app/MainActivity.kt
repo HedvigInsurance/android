@@ -30,6 +30,7 @@ import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
+import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.rememberHedvigBackstackController
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
@@ -94,6 +95,8 @@ class MainActivity : AppCompatActivity() {
   @Inject private lateinit var memberIdService: MemberIdService
 
   @Inject private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
+
+  @Inject private lateinit var currentDestinationHolder: CurrentDestinationHolder
 
   @Inject private lateinit var serializersModules: Set<SerializersModule>
 
@@ -202,6 +205,7 @@ class MainActivity : AppCompatActivity() {
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
           missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
+          currentDestinationHolder = currentDestinationHolder,
           dismissSplashScreen = { showSplash.update { false } },
         )
       }

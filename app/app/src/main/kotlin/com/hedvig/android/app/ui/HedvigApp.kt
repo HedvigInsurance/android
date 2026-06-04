@@ -29,6 +29,7 @@ import arrow.fx.coroutines.raceN
 import coil3.ImageLoader
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
+import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -91,8 +92,10 @@ internal fun HedvigApp(
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
+  currentDestinationHolder: CurrentDestinationHolder,
   dismissSplashScreen: () -> Unit,
 ) {
+  ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   val hedvigAppState = rememberHedvigAppState(
     backstackController = backstackController,
     windowSizeClass = windowSizeClass,
@@ -245,6 +248,24 @@ private fun DetermineStartDestinationEffect(
       }
     }
     dismissSplashScreen()
+  }
+}
+
+/**
+ * Mirrors the destination on top of the rendered stack into [CurrentDestinationHolder] so non-Composable
+ * consumers (e.g. the FCM-thread [com.hedvig.android.app.notification.senders.ChatNotificationSender]) can
+ * read it. Kept non-persistent on purpose: a process death wipes it, which is the desired behavior.
+ */
+@Composable
+private fun ReportCurrentDestinationEffect(
+  backstackController: BackstackController,
+  currentDestinationHolder: CurrentDestinationHolder,
+) {
+  LaunchedEffect(backstackController, currentDestinationHolder) {
+    snapshotFlow { backstackController.currentDestination }.collect { destination ->
+      logcat { "Navigated to destination:$destination" }
+      currentDestinationHolder.update(destination)
+    }
   }
 }
 

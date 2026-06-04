@@ -5,21 +5,17 @@ import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import com.hedvig.android.app.navigation.BackstackController
-import com.hedvig.android.app.notification.senders.CurrentDestinationInMemoryStorage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
-import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.NavigationSuiteType
@@ -61,12 +57,6 @@ internal fun rememberHedvigAppState(
       featureManager = featureManager,
       missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
     )
-  }
-  LaunchedEffect(appState) {
-    snapshotFlow { appState.currentDestination }.collect { destination ->
-      logcat { "Navigated to destination:$destination" }
-      CurrentDestinationInMemoryStorage.currentDestination = destination
-    }
   }
   return appState
 }

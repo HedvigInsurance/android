@@ -18,11 +18,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.benasher44.uuid.Uuid
 import com.google.firebase.messaging.RemoteMessage
+import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.SuppressesChatPushNotification
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
@@ -31,31 +31,19 @@ import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.android.permission.PermissionManager
 import hedvig.resources.R
 
-/**
- * An in-memory storage of the current route, used to *not* show the chat notification if we are in a select list of
- * screens where we do not want to show the system notification, but we want to let the in-app screen indicate that
- * there is a new message.
- * This is not persistent storage, and will just be wiped in scenarios like the process being killed, but this is part
- * of what we want, since we only care to do this if the app is resumed anyway. On top of this, we'd rather experience
- * cases where we show the notification when we shouldn't rather than cases where we do not show the notification even
- * thought we should.
- */
-object CurrentDestinationInMemoryStorage {
-  var currentDestination: HedvigNavKey? = null
-}
-
 class ChatNotificationSender(
   private val context: Context,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
   private val notificationChannel: HedvigNotificationChannel,
+  private val currentDestinationHolder: CurrentDestinationHolder,
 ) : NotificationSender {
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {
     val isAppForegrounded = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-    val currentDestination = CurrentDestinationInMemoryStorage.currentDestination
+    val currentDestination = currentDestinationHolder.currentDestination.value
     val currentlyOnDestinationWhichForbidsShowingChatNotification =
       currentDestination is SuppressesChatPushNotification
     if (currentlyOnDestinationWhichForbidsShowingChatNotification && isAppForegrounded) {

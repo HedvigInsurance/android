@@ -21,6 +21,7 @@ import coil3.svg.SvgDecoder
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
+import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.notification.senders.CarAddonSender
 import com.hedvig.android.app.notification.senders.ChatNotificationSender
 import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
@@ -215,12 +216,14 @@ interface ApplicationMetroProviders {
     permissionManager: PermissionManager,
     buildConstants: HedvigBuildConstants,
     deepLinkContainer: HedvigDeepLinkContainer,
+    currentDestinationHolder: CurrentDestinationHolder,
   ): NotificationSender = ChatNotificationSender(
     applicationContext,
     permissionManager,
     buildConstants,
     deepLinkContainer,
     HedvigNotificationChannel.Chat,
+    currentDestinationHolder,
   )
 
   @Provides
