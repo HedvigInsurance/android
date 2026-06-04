@@ -1,11 +1,11 @@
 package com.hedvig.android.feature.profile.navigation
 
+import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
-import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object ProfileKey : HedvigNavKey
+data object ProfileKey : HedvigNavKey, DeliberateLogoutOrigin
 
 @Serializable
 data object ContactInfoKey : HedvigNavKey
@@ -24,8 +24,3 @@ internal data object LicensesKey : HedvigNavKey
 
 @Serializable
 internal data object SettingsKey : HedvigNavKey
-
-/*
-* Not saving navigation state when explicitly logging out from Profile
-*/
-val destinationToExcludeFromSavingState: KClass<out HedvigNavKey> = ProfileKey::class
