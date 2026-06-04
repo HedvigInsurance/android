@@ -20,7 +20,6 @@ import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.navigation.HedvigNavHost
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.MemberIdService
-import com.hedvig.android.compose.ui.LocalSharedTransitionScope
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.design.system.hedvig.DemoModeLabel
@@ -93,7 +92,7 @@ internal fun HedvigAppUi(
       Box(propagateMinConstraints = true, modifier = Modifier.fillMaxSize()) {
         GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
         HedvigNavHost(
-          backstackController = hedvigAppState.backstackController,
+          backstack = hedvigAppState.backstackController,
           windowSizeClass = hedvigAppState.windowSizeClass,
           memberIdService = memberIdService,
           globalSnackBarState = globalSnackBarState,
