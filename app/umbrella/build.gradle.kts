@@ -38,6 +38,7 @@ kotlin {
         export(projectToExport)
       }
       binaryOption("bundleId", frameworkName)
+      binaryOption("smallBinary", "true")
       baseName = frameworkName
       xcf.add(this)
     }
