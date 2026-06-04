@@ -1,4 +1,4 @@
-package com.hedvig.android.navigation.core
+package com.hedvig.android.navigation.common
 
 import kotlinx.serialization.Serializable
 

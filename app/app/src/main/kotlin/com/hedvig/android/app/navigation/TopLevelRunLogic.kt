@@ -3,9 +3,9 @@ package com.hedvig.android.app.navigation
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.core.DeepLinkAncestry
-import com.hedvig.android.navigation.core.TopLevelGraph
-import com.hedvig.android.navigation.core.TopLevelGraphRoot
+import com.hedvig.android.navigation.common.DeepLinkAncestry
+import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraphRoot
 
 /** Reverse of [startDestination]: the tab this key is the root of, or null if it is not a tab root. */
 internal fun HedvigNavKey.topLevelGraphOrNull(): TopLevelGraph? = (this as? TopLevelGraphRoot)?.topLevelGraph

@@ -31,7 +31,7 @@ import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.rememberNavSuiteSceneDecoratorStrategy
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraph
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
 import hedvig.resources.Res
 import org.jetbrains.compose.resources.stringResource

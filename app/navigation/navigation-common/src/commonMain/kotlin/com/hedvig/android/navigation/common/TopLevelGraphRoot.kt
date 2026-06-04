@@ -1,4 +1,4 @@
-package com.hedvig.android.navigation.core
+package com.hedvig.android.navigation.common
 
 /**
  * Marker letting the root destination of a top-level tab declare its [TopLevelGraph], so the

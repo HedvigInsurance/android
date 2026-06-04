@@ -3,8 +3,8 @@ package com.hedvig.android.feature.home.home.navigation
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.SuppressesChatPushNotification
-import com.hedvig.android.navigation.core.TopLevelGraph
-import com.hedvig.android.navigation.core.TopLevelGraphRoot
+import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraphRoot
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlinx.serialization.Serializable
 

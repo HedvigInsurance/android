@@ -18,7 +18,7 @@ import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraph
 import org.junit.Test
 
 internal class BackstackControllerTest {

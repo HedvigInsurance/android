@@ -50,7 +50,7 @@ kotlin {
       implementation(projects.coreResources)
       implementation(projects.coreUiData)
       implementation(projects.designSystemInternals)
-      implementation(projects.navigationCore)
+      implementation(projects.navigationCommon)
     }
     androidMain.dependencies {
       implementation(libs.androidx.other.core)

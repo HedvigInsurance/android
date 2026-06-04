@@ -11,7 +11,7 @@ import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraph
 import kotlinx.serialization.Serializable
 import org.junit.Test
 

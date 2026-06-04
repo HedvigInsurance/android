@@ -5,8 +5,8 @@ import assertk.assertions.containsExactly
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.core.DeepLinkAncestry
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.DeepLinkAncestry
+import com.hedvig.android.navigation.common.TopLevelGraph
 import kotlinx.serialization.Serializable
 import org.junit.Test
 

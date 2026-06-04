@@ -93,7 +93,7 @@ import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraph
 import com.hedvig.feature.claim.chat.ClaimChatKey
 import com.hedvig.feature.claim.chat.claimChatGraph
 import com.hedvig.feature.remove.addons.RemoveAddonsKey

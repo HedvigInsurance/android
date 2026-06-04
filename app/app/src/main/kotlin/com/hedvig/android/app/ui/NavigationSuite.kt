@@ -10,7 +10,7 @@ import com.hedvig.android.design.system.hedvig.NavigationBar
 import com.hedvig.android.design.system.hedvig.NavigationRail
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.navigation.compose.NavigationSuiteType
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraph
 
 /**
  * Renders just the navigation chrome (bottom bar, rail, or extra-tall rail) for the given

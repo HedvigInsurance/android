@@ -25,7 +25,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popBackstack
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraph
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable

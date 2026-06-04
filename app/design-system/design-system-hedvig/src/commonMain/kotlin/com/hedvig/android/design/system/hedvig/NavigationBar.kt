@@ -61,7 +61,7 @@ import com.hedvig.android.design.system.hedvig.internal.MappedInteractionSource
 import com.hedvig.android.design.system.hedvig.tokens.NavigationBarTokens
 import com.hedvig.android.design.system.hedvig.tokens.NavigationRailTokens
 import com.hedvig.android.design.system.hedvig.tokens.NavigationTokens
-import com.hedvig.android.navigation.core.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelGraph
 import hedvig.resources.Res
 import hedvig.resources.TAB_HOME_TITLE
 import hedvig.resources.TAB_INSURANCES_TITLE

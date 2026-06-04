@@ -1,6 +1,4 @@
-package com.hedvig.android.navigation.core
-
-import com.hedvig.android.navigation.common.HedvigNavKey
+package com.hedvig.android.navigation.common
 
 /**
  * Opt-in marker letting a deep-linkable key declare how to rebuild a synthetic back stack to its
