@@ -32,10 +32,11 @@ private fun Project.configureKotlinMultiplatform() {
   project.configure<KotlinMultiplatformExtension> {
     targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
       binaries.all {
-        // DevirtualizationAnalysis is the phase that OOMs when building the release XCFramework
-        // (https://youtrack.jetbrains.com/issue/KT-76047). DCEPhase is left enabled so dead code is
-        // stripped from the shared framework, which keeps the iOS binary smaller.
-        freeCompilerArgs += "-Xdisable-phases=DevirtualizationAnalysis"
+        // DevirtualizationAnalysis and RemoveRedundantCallsToStaticInitializersPhase both OOM when
+        // building the release XCFramework (https://youtrack.jetbrains.com/issue/KT-76047), so they
+        // stay disabled. DCEPhase is left enabled so dead code is stripped from the shared framework,
+        // which keeps the iOS binary smaller.
+        freeCompilerArgs += "-Xdisable-phases=DevirtualizationAnalysis,RemoveRedundantCallsToStaticInitializersPhase"
       }
     }
 
