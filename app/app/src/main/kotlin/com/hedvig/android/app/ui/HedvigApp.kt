@@ -42,6 +42,7 @@ import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
 import com.hedvig.android.app.AndroidAppHost
 import com.hedvig.android.app.GlobalHedvigSnackBar
+import com.hedvig.android.app.crosssell.CrossSellUriOpener
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
@@ -143,12 +144,17 @@ internal fun HedvigApp(
       )
       val scope = rememberCoroutineScope()
       val context = LocalContext.current
-      val deepLinkFirstUriHandler = remember(deepLinkMatcher, backstackController, getMemberAuthorizationCodeUseCase) {
+      val deepLinkFirstUriHandler = remember(deepLinkMatcher, backstackController, context) {
         DeepLinkFirstUriHandler(
           matcher = deepLinkMatcher,
           backstackController = backstackController,
           delegate = SafeAndroidUriHandler(context),
+        )
+      }
+      val crossSellUriOpener = remember(getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, scope) {
+        CrossSellUriOpener(
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
+          uriHandler = deepLinkFirstUriHandler,
           scope = scope,
         )
       }
@@ -159,7 +165,7 @@ internal fun HedvigApp(
       }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = deepLinkFirstUriHandler::openCrossSellUri,
+        onCrossSellClick = crossSellUriOpener::open,
         imageLoader,
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
@@ -204,7 +210,7 @@ internal fun HedvigApp(
                       externalNavigator = externalNavigator,
                       androidAppHost = androidAppHost,
                       openUrl = deepLinkFirstUriHandler::openUri,
-                      openCrossSellUrl = deepLinkFirstUriHandler::openCrossSellUri,
+                      openCrossSellUrl = crossSellUriOpener::open,
                       imageLoader = imageLoader,
                       languageService = languageService,
                       hedvigBuildConstants = hedvigBuildConstants,
