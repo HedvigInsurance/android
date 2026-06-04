@@ -1,6 +1,7 @@
 package com.hedvig.android.navigation.compose
 
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.navigation.common.HedvigNavKey
 
 /**
@@ -24,10 +25,10 @@ interface Backstack {
 fun Backstack.add(key: HedvigNavKey): Boolean = entries.add(key)
 
 /** Pops the top entry. Returns false if the back stack is at its root (nothing popped). */
-fun Backstack.popBackstack(): Boolean {
-  if (entries.size <= 1) return false
+fun Backstack.popBackstack(): Boolean = Snapshot.withMutableSnapshot {
+  if (entries.size <= 1) return@withMutableSnapshot false
   entries.removeAt(entries.lastIndex)
-  return true
+  true
 }
 
 /** Pops up to (and optionally including) the most recent entry of [T]. No-op if absent. */

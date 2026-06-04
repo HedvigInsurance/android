@@ -19,6 +19,7 @@ import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelGraph
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
+import com.hedvig.android.navigation.compose.popBackstack
 import org.junit.Test
 
 internal class BackstackControllerTest {
@@ -32,14 +33,14 @@ internal class BackstackControllerTest {
   @Test
   fun `system-back at a drill-down pops one entry`() {
     val controller = controllerWith(HomeKey, HelpCenterKey)
-    assertThat(controller.handleBack()).isTrue()
+    assertThat(controller.popBackstack()).isTrue()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
   @Test
   fun `system-back at a side-tab root returns to Home and parks nothing`() {
     val controller = controllerWith(HomeKey, InsurancesKey)
-    assertThat(controller.handleBack()).isTrue()
+    assertThat(controller.popBackstack()).isTrue()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.parkedRuns).isEmpty()
   }
@@ -47,10 +48,10 @@ internal class BackstackControllerTest {
   @Test
   fun `system-back draining a drilled side tab drops it completely, parking nothing`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    assertThat(controller.handleBack()).isTrue() // pop Help
+    assertThat(controller.popBackstack()).isTrue() // pop Help
     assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
     assertThat(controller.parkedRuns).isEmpty()
-    assertThat(controller.handleBack()).isTrue() // pop Insurances root
+    assertThat(controller.popBackstack()).isTrue() // pop Insurances root
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.parkedRuns).isEmpty()
   }
@@ -59,7 +60,7 @@ internal class BackstackControllerTest {
   fun `system-back never parks the active tab but leaves other parked runs intact`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
     controller.selectTopLevel(TopLevelGraph.Profile) // park Insurances run, render Profile root
-    controller.handleBack() // drain Profile back to Home
+    controller.popBackstack() // drain Profile back to Home
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.parkedRuns[TopLevelGraph.Profile]).isEqualTo(null)
     assertThat(controller.parkedRuns[TopLevelGraph.Insurances])
@@ -69,7 +70,7 @@ internal class BackstackControllerTest {
   @Test
   fun `system-back at the Home root exits the app`() {
     val controller = controllerWith(HomeKey)
-    assertThat(controller.handleBack()).isFalse()
+    assertThat(controller.popBackstack()).isFalse()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 
@@ -386,7 +387,7 @@ internal class BackstackControllerTest {
     // Resolve while live so the accumulator records it (mirrors the spec running on the tab switch).
     assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
       .isEqualTo(TopLevelGraph.Insurances)
-    controller.handleBack() // system-back to Home: InsurancesKey is removed and never parked
+    controller.popBackstack() // system-back to Home: InsurancesKey is removed and never parked
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     // The outgoing Insurances root must still classify as Insurances so its exit fades, not slides.
     assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))

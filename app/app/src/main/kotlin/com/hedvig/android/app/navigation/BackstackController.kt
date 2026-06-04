@@ -106,7 +106,7 @@ internal class BackstackController(
    * (which run it sits in), so it can't be read off a single key in isolation; this resolves it from
    * the full rendered stack plus all [parkedRuns].
    *
-   * The map accumulates and is never cleared: a key just popped by [handleBack] (gone from both
+   * The map accumulates and is never cleared: a key just popped by [popBackstack] (gone from both
    * [entries] and [parkedRuns]) keeps its last-known owner so the *outgoing* scene of that pop can
    * still be classified (e.g. system-back from a side-tab root to Home stays a fade). A given key
    * type only ever lives in one tab's run, so a retained owner can't go stale.
@@ -164,24 +164,6 @@ internal class BackstackController(
       }
       entries.replaceWith(restored)
     }
-  }
-
-  /**
-   * System-back handler. Returns false when the app should finish. A plain pop: the rendered stack
-   * is always `homeRun + at most one side run`, so popping walks up the active run, returns a side
-   * root to Home, and exits from the Home root.
-   *
-   * It deliberately does **not** park the run it drains. Draining a side tab with system back is the
-   * Nav2 "drop it completely" path: each popped key leaves the rendered stack and is absent from
-   * [parkedRuns], so [allLiveContentKeys] stops covering it and the decorators dispose its saved
-   * state. Only [selectTopLevel] parks a run. (Parked runs for *other* tabs are untouched here.)
-   */
-  fun handleBack(): Boolean {
-    if (entries.size <= 1) return false
-    Snapshot.withMutableSnapshot {
-      entries.removeAt(entries.lastIndex)
-    }
-    return true
   }
 
   /**
