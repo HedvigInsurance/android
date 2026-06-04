@@ -56,7 +56,7 @@ internal data class RemoveAddonSubmitSuccessKey(val activationDate: LocalDate) :
 @Serializable
 internal data object RemoveAddonSubmitFailureKey : HedvigNavKey
 
-fun EntryProviderScope<HedvigNavKey>.removeAddonsNavGraph(backstack: Backstack) {
+fun EntryProviderScope<HedvigNavKey>.removeAddonsEntries(backstack: Backstack) {
   // Flow anchor / insurance picker. When seeded with an insuranceId it jumps straight to the addon
   // picker (popping itself, so back leaves the flow); otherwise the member picks an insurance.
   entry<RemoveAddonsKey> { key ->

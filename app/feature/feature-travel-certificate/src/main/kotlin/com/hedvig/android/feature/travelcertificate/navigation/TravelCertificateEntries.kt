@@ -21,7 +21,7 @@ import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.travelCertificateGraph(
+fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
   backstack: Backstack,
   applicationId: String,
   onNavigateToCoInsuredAddInfo: (String) -> Unit,

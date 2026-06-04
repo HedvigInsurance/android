@@ -12,30 +12,30 @@ import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.design.system.hedvig.GlobalSnackBarState
 import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
-import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseNavGraph
+import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
-import com.hedvig.android.feature.change.tier.navigation.changeTierGraph
+import com.hedvig.android.feature.change.tier.navigation.changeTierEntries
 import com.hedvig.android.feature.chat.navigation.ChatKey
 import com.hedvig.android.feature.chat.navigation.InboxKey
-import com.hedvig.android.feature.chat.navigation.cbmChatGraph
+import com.hedvig.android.feature.chat.navigation.cbmChatEntries
 import com.hedvig.android.feature.chip.id.navigation.ChipIdKey
-import com.hedvig.android.feature.chip.id.navigation.chipIdGraph
+import com.hedvig.android.feature.chip.id.navigation.chipIdEntries
 import com.hedvig.android.feature.claim.details.navigation.ClaimDetailsKey
-import com.hedvig.android.feature.claim.details.navigation.claimDetailsGraph
+import com.hedvig.android.feature.claim.details.navigation.claimDetailsEntries
 import com.hedvig.android.feature.claimhistory.nav.ClaimHistoryKey
-import com.hedvig.android.feature.claimhistory.nav.claimHistoryGraph
-import com.hedvig.android.feature.connect.payment.connectPaymentGraph
+import com.hedvig.android.feature.claimhistory.nav.claimHistoryEntries
+import com.hedvig.android.feature.connect.payment.connectPaymentEntries
 import com.hedvig.android.feature.connect.payment.trustly.ui.TrustlyKey
 import com.hedvig.android.feature.deleteaccount.navigation.DeleteAccountKey
-import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountGraph
+import com.hedvig.android.feature.deleteaccount.navigation.deleteAccountEntries
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddInfoKey
 import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveKey
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
-import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredGraph
-import com.hedvig.android.feature.forever.navigation.foreverGraph
+import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
+import com.hedvig.android.feature.forever.navigation.foreverEntries
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
@@ -47,41 +47,41 @@ import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDes
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTermination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
-import com.hedvig.android.feature.help.center.helpCenterGraph
+import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
-import com.hedvig.android.feature.home.home.navigation.homeGraph
+import com.hedvig.android.feature.home.home.navigation.homeEntries
 import com.hedvig.android.feature.imageviewer.navigation.ImageViewerKey
-import com.hedvig.android.feature.imageviewer.navigation.imageViewerGraph
+import com.hedvig.android.feature.imageviewer.navigation.imageViewerEntries
 import com.hedvig.android.feature.insurance.certificate.navigation.InsuranceEvidenceKey
-import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceGraph
+import com.hedvig.android.feature.insurance.certificate.navigation.insuranceEvidenceEntries
 import com.hedvig.android.feature.insurances.data.CancelInsuranceData
-import com.hedvig.android.feature.insurances.navigation.insuranceGraph
-import com.hedvig.android.feature.login.navigation.loginGraph
+import com.hedvig.android.feature.insurances.navigation.insuranceEntries
+import com.hedvig.android.feature.login.navigation.loginEntries
 import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
-import com.hedvig.android.feature.movingflow.movingFlowGraph
-import com.hedvig.android.feature.payments.navigation.paymentsGraph
+import com.hedvig.android.feature.movingflow.movingFlowEntries
+import com.hedvig.android.feature.payments.navigation.paymentsEntries
 import com.hedvig.android.feature.payoutaccount.navigation.PayoutAccountKey
-import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountGraph
+import com.hedvig.android.feature.payoutaccount.navigation.payoutAccountEntries
 import com.hedvig.android.feature.profile.navigation.ContactInfoKey
-import com.hedvig.android.feature.profile.tab.profileGraph
+import com.hedvig.android.feature.profile.tab.profileEntries
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceKey
-import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceGraph
+import com.hedvig.android.feature.terminateinsurance.navigation.terminateInsuranceEntries
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
-import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateGraph
+import com.hedvig.android.feature.travelcertificate.navigation.travelCertificateEntries
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.feature.claim.chat.ClaimChatKey
-import com.hedvig.feature.claim.chat.claimChatGraph
+import com.hedvig.feature.claim.chat.claimChatEntries
 import com.hedvig.feature.remove.addons.RemoveAddonsKey
-import com.hedvig.feature.remove.addons.removeAddonsNavGraph
+import com.hedvig.feature.remove.addons.removeAddonsEntries
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -125,8 +125,8 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     Unit
   }
 
-  loginEntries(backstack, hedvigBuildConstants, openUrl, externalNavigator, scope, memberIdService)
-  homeEntries(
+  addLoginEntries(backstack, hedvigBuildConstants, openUrl, externalNavigator, scope, memberIdService)
+  addHomeEntries(
     backstack = backstack,
     hedvigBuildConstants = hedvigBuildConstants,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -141,7 +141,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
   )
-  insuranceEntries(
+  addInsuranceEntries(
     backstack = backstack,
     windowSizeClass = windowSizeClass,
     imageLoader = imageLoader,
@@ -152,15 +152,15 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToNewConversation = navigateToNewConversation,
     navigateToMovingFlow = navigateToMovingFlow,
   )
-  foreverGraph()
-  paymentsEntries(
+  foreverEntries()
+  addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
   )
-  profileEntries(
+  addProfileEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     hedvigBuildConstants = hedvigBuildConstants,
@@ -172,14 +172,14 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
   )
-  chatEntries(
+  addChatEntries(
     backstack = backstack,
     hedvigBuildConstants = hedvigBuildConstants,
     imageLoader = imageLoader,
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
   )
-  sharedFlowEntries(
+  addSharedFlowEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     imageLoader = imageLoader,
@@ -193,7 +193,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   )
 }
 
-private fun EntryProviderScope<HedvigNavKey>.loginEntries(
+private fun EntryProviderScope<HedvigNavKey>.addLoginEntries(
   backstack: BackstackController,
   hedvigBuildConstants: HedvigBuildConstants,
   openUrl: (String) -> Unit,
@@ -201,7 +201,7 @@ private fun EntryProviderScope<HedvigNavKey>.loginEntries(
   scope: CoroutineScope,
   memberIdService: MemberIdService,
 ) {
-  loginGraph(
+  loginEntries(
     backstack = backstack,
     appVersionName = hedvigBuildConstants.appVersionName,
     urlBaseWeb = hedvigBuildConstants.urlBaseWeb,
@@ -215,7 +215,7 @@ private fun EntryProviderScope<HedvigNavKey>.loginEntries(
   )
 }
 
-private fun EntryProviderScope<HedvigNavKey>.homeEntries(
+private fun EntryProviderScope<HedvigNavKey>.addHomeEntries(
   backstack: BackstackController,
   hedvigBuildConstants: HedvigBuildConstants,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -230,9 +230,9 @@ private fun EntryProviderScope<HedvigNavKey>.homeEntries(
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
 ) {
-  homeGraph(
-    nestedGraphs = {
-      nestedHomeGraphs(
+  homeEntries(
+    nestedEntries = {
+      addNestedHomeEntries(
         backstack = backstack,
         appPackageId = hedvigBuildConstants.appPackageId,
         shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
@@ -269,7 +269,7 @@ private fun EntryProviderScope<HedvigNavKey>.homeEntries(
   )
 }
 
-private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
+private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
   backstack: BackstackController,
   appPackageId: String,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
@@ -280,7 +280,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
   navigateToNewConversation: () -> Unit,
   navigateToConversation: (String) -> Unit,
 ) {
-  claimChatGraph(
+  claimChatEntries(
     backstack = backstack,
     shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
     openAppSettings = externalNavigator::openAppSettings,
@@ -294,7 +294,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
     onNavigateToNewConversation = navigateToNewConversation,
     openPlayStore = externalNavigator::tryOpenPlayStore,
   )
-  claimDetailsGraph(
+  claimDetailsEntries(
     imageLoader = imageLoader,
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
@@ -304,7 +304,7 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
     backstack = backstack,
     applicationId = appPackageId,
   )
-  travelCertificateGraph(
+  travelCertificateEntries(
     backstack = backstack,
     applicationId = appPackageId,
     onNavigateToCoInsuredAddInfo = { contractId ->
@@ -320,13 +320,13 @@ private fun EntryProviderScope<HedvigNavKey>.nestedHomeGraphs(
       )
     },
   )
-  insuranceEvidenceGraph(
+  insuranceEvidenceEntries(
     backstack = backstack,
     applicationId = appPackageId,
   )
 }
 
-private fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
+private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   backstack: BackstackController,
   windowSizeClass: WindowSizeClass,
   imageLoader: ImageLoader,
@@ -337,9 +337,9 @@ private fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   navigateToNewConversation: () -> Unit,
   navigateToMovingFlow: () -> Unit,
 ) {
-  insuranceGraph(
-    nestedGraphs = {
-      terminateInsuranceGraph(
+  insuranceEntries(
+    nestedEntries = {
+      terminateInsuranceEntries(
         windowSizeClass = windowSizeClass,
         backstack = backstack,
         onNavigateToNewConversation = navigateToNewConversation,
@@ -347,7 +347,7 @@ private fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
         openPlayStore = externalNavigator::tryOpenPlayStore,
         navigateToInsurances = {
           backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
-          backstack.selectTopLevel(TopLevelGraph.Insurances)
+          backstack.selectTopLevel(TopLevelTab.Insurances)
         },
         navigateToMovingFlow = {
           backstack.navigateAndPopUpTo<TerminateInsuranceKey>(SelectContractForMovingKey, inclusive = true)
@@ -426,29 +426,29 @@ private fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   )
 }
 
-private fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
+private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
   backstack: BackstackController,
   globalSnackBarState: GlobalSnackBarState,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
 ) {
-  paymentsGraph(
+  paymentsEntries(
     backstack = backstack,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     openConversation = navigateToNewConversation,
   )
-  payoutAccountGraph(
+  payoutAccountEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateUp = backstack::navigateUp,
   )
-  connectPaymentGraph(backstack = backstack)
+  connectPaymentEntries(backstack = backstack)
 }
 
-private fun EntryProviderScope<HedvigNavKey>.profileEntries(
+private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   backstack: BackstackController,
   globalSnackBarState: GlobalSnackBarState,
   hedvigBuildConstants: HedvigBuildConstants,
@@ -460,12 +460,12 @@ private fun EntryProviderScope<HedvigNavKey>.profileEntries(
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
 ) {
-  profileGraph(
+  profileEntries(
     settingsDestinationNestedGraphs = {
-      deleteAccountGraph(backstack)
+      deleteAccountEntries(backstack)
     },
-    nestedGraphs = {
-      claimHistoryGraph(
+    nestedEntries = {
+      claimHistoryEntries(
         navigateUp = backstack::navigateUp,
         navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
       )
@@ -491,14 +491,14 @@ private fun EntryProviderScope<HedvigNavKey>.profileEntries(
   )
 }
 
-private fun EntryProviderScope<HedvigNavKey>.chatEntries(
+private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
   backstack: BackstackController,
   hedvigBuildConstants: HedvigBuildConstants,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
 ) {
-  cbmChatGraph(
+  cbmChatEntries(
     hedvigBuildConstants = hedvigBuildConstants,
     imageLoader = imageLoader,
     openUrl = openUrl,
@@ -515,7 +515,7 @@ private fun EntryProviderScope<HedvigNavKey>.chatEntries(
  * Cross-cutting flows reachable from more than one tab: addon purchase/removal, tier changes,
  * co-insured editing, moving, chip-id, the help center and the full-screen image viewer.
  */
-private fun EntryProviderScope<HedvigNavKey>.sharedFlowEntries(
+private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   backstack: BackstackController,
   globalSnackBarState: GlobalSnackBarState,
   imageLoader: ImageLoader,
@@ -527,7 +527,7 @@ private fun EntryProviderScope<HedvigNavKey>.sharedFlowEntries(
   navigateToMovingFlow: () -> Unit,
   navigateToInbox: () -> Unit,
 ) {
-  addonPurchaseNavGraph(
+  addonPurchaseEntries(
     backstack = backstack,
     popBackstack = popBackstackOrFinish,
     finishApp = finishApp,
@@ -536,26 +536,26 @@ private fun EntryProviderScope<HedvigNavKey>.sharedFlowEntries(
       backstack.add(StartTierFlowKey(insuranceId = contractId))
     },
   )
-  changeTierGraph(
+  changeTierEntries(
     backstack = backstack,
     onNavigateToNewConversation = navigateToNewConversation,
   )
-  chipIdGraph(
+  chipIdEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateUp = backstack::navigateUp,
     popBackstackOrFinish = popBackstackOrFinish,
     goHome = {
       backstack.popUpTo<ChipIdKey>(inclusive = true)
-      backstack.selectTopLevel(TopLevelGraph.Home)
+      backstack.selectTopLevel(TopLevelTab.Home)
     },
   )
-  movingFlowGraph(
+  movingFlowEntries(
     backstack = backstack,
     goToChat = navigateToNewConversation,
   )
-  editCoInsuredGraph(backstack)
-  helpCenterGraph(
+  editCoInsuredEntries(backstack)
+  helpCenterEntries(
     backstack = backstack,
     onNavigateUp = backstack::navigateUp,
     onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
@@ -613,6 +613,6 @@ private fun EntryProviderScope<HedvigNavKey>.sharedFlowEntries(
     tryToDialPhone = externalNavigator::tryToDialPhone,
     imageLoader = imageLoader,
   )
-  imageViewerGraph(backstack, imageLoader)
-  removeAddonsNavGraph(backstack = backstack)
+  imageViewerEntries(backstack, imageLoader)
+  removeAddonsEntries(backstack = backstack)
 }

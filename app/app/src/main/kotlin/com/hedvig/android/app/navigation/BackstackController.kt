@@ -22,7 +22,7 @@ import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popBackstack
@@ -43,13 +43,13 @@ import kotlinx.serialization.builtins.nullable
 internal data class StashedSession(
   val memberId: String,
   val entries: List<@Polymorphic HedvigNavKey>,
-  val parkedRuns: Map<TopLevelGraph, List<@Polymorphic HedvigNavKey>>,
+  val parkedRuns: Map<TopLevelTab, List<@Polymorphic HedvigNavKey>>,
 )
 
 @Stable
 internal class BackstackController(
   override val entries: SnapshotStateList<HedvigNavKey>,
-  internal val parkedRuns: SnapshotStateMap<TopLevelGraph, List<HedvigNavKey>>,
+  internal val parkedRuns: SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>,
   pendingDeepLinkState: MutableState<HedvigNavKey?>,
   stashedSessionState: MutableState<StashedSession?>,
   /**
@@ -82,8 +82,8 @@ internal class BackstackController(
   val isLoggedIn: Boolean
     get() = entries.firstOrNull() !is LoginKey
 
-  val currentTopLevel: TopLevelGraph
-    get() = nearestTopLevelGraph(entries) ?: TopLevelGraph.Home
+  val currentTopLevel: TopLevelTab
+    get() = nearestTopLevelTab(entries) ?: TopLevelTab.Home
 
   /** The destination on top of the rendered stack — replaces Nav2's `navController.currentDestination`. */
   val currentDestination: HedvigNavKey?
@@ -101,7 +101,7 @@ internal class BackstackController(
     }
 
   /**
-   * `contentKey` (`toString()`) → the top-level graph that owns it, used by the [HedvigNavDisplay]
+   * `contentKey` (`toString()`) → the top-level tab that owns it, used by the [HedvigNavDisplay]
    * transition classifier to fade between tabs and slide within one. A screen's owner is *positional*
    * (which run it sits in), so it can't be read off a single key in isolation; this resolves it from
    * the full rendered stack plus all [parkedRuns].
@@ -111,13 +111,13 @@ internal class BackstackController(
    * still be classified (e.g. system-back from a side-tab root to Home stays a fade). A given key
    * type only ever lives in one tab's run, so a retained owner can't go stale.
    */
-  private val owningTabByContentKey = mutableMapOf<String, TopLevelGraph>()
+  private val owningTabByContentKey = mutableMapOf<String, TopLevelTab>()
 
-  fun owningTopLevelGraphForContentKey(contentKey: Any?): TopLevelGraph? {
+  fun owningTopLevelTabForContentKey(contentKey: Any?): TopLevelTab? {
     if (contentKey == null) return null
-    var tab: TopLevelGraph? = null
+    var tab: TopLevelTab? = null
     entries.forEach { key ->
-      tab = key.topLevelGraphOrNull() ?: tab
+      tab = key.topLevelTabOrNull() ?: tab
       tab?.let { owningTabByContentKey[key.toString()] = it }
     }
     parkedRuns.forEach { (parkedTab, run) ->
@@ -136,7 +136,7 @@ internal class BackstackController(
       val isAlone = entries.size == 1 && first !is HomeKey && first !is LoginKey
       return when {
         !isAlone -> LoneDeepLinkChrome.ShowSuite
-        first?.topLevelGraphOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
+        first?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
         else -> LoneDeepLinkChrome.ShowNothing
       }
     }
@@ -146,21 +146,21 @@ internal class BackstackController(
    * leaving side-tab's run into [parkedRuns] (Home is never parked — it stays in the rendered stack)
    * and restores the target tab's parked run, or starts a fresh one.
    */
-  fun selectTopLevel(topLevelGraph: TopLevelGraph) {
+  fun selectTopLevel(topLevelTab: TopLevelTab) {
     Snapshot.withMutableSnapshot {
-      if (topLevelGraph == currentTopLevel) {
+      if (topLevelTab == currentTopLevel) {
         entries.replaceWith(popTopRunToStart(entries))
         return@withMutableSnapshot
       }
-      val leavingSideTab = nearestTopLevelGraph(entries)?.takeIf { it != TopLevelGraph.Home }
+      val leavingSideTab = nearestTopLevelTab(entries)?.takeIf { it != TopLevelTab.Home }
       val homeRun = collapseToHome(entries)
       if (leavingSideTab != null) {
         parkedRuns[leavingSideTab] = activeSideRun(entries)
       }
-      val restored = if (topLevelGraph == TopLevelGraph.Home) {
+      val restored = if (topLevelTab == TopLevelTab.Home) {
         homeRun
       } else {
-        homeRun + (parkedRuns.remove(topLevelGraph) ?: listOf(topLevelGraph.startDestination))
+        homeRun + (parkedRuns.remove(topLevelTab) ?: listOf(topLevelTab.startDestination))
       }
       entries.replaceWith(restored)
     }
@@ -287,11 +287,11 @@ internal fun rememberHedvigBackstackController(
   val parkedRuns = rememberSerializable(
     configuration = savedStateConfiguration,
     serializer = SnapshotStateMapSerializer(
-      TopLevelGraph.serializer(),
+      TopLevelTab.serializer(),
       ListSerializer(PolymorphicSerializer(HedvigNavKey::class)),
     ),
   ) {
-    mutableStateMapOf<TopLevelGraph, List<HedvigNavKey>>()
+    mutableStateMapOf<TopLevelTab, List<HedvigNavKey>>()
   }
   val pendingDeepLink = rememberSerializable(
     configuration = savedStateConfiguration,

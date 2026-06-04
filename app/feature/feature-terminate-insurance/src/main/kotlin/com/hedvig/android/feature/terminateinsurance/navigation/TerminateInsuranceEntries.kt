@@ -29,7 +29,7 @@ import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.terminateInsuranceGraph(
+fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
   windowSizeClass: WindowSizeClass,
   backstack: Backstack,
   onNavigateToNewConversation: () -> Unit,

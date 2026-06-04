@@ -33,7 +33,7 @@ internal data class PerilComparisonParams(
   val perilList: List<Pair<String?, List<TravelInsurancePlusExplanationKey.TravelPerilData>>>,
 )
 
-fun EntryProviderScope<HedvigNavKey>.addonPurchaseNavGraph(
+fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
   backstack: Backstack,
   popBackstack: () -> Unit,
   finishApp: () -> Unit,

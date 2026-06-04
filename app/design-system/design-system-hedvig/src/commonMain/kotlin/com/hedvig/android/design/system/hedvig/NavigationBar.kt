@@ -61,7 +61,7 @@ import com.hedvig.android.design.system.hedvig.internal.MappedInteractionSource
 import com.hedvig.android.design.system.hedvig.tokens.NavigationBarTokens
 import com.hedvig.android.design.system.hedvig.tokens.NavigationRailTokens
 import com.hedvig.android.design.system.hedvig.tokens.NavigationTokens
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import hedvig.resources.Res
 import hedvig.resources.TAB_HOME_TITLE
 import hedvig.resources.TAB_INSURANCES_TITLE
@@ -73,11 +73,11 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun NavigationBar(
-  destinations: Set<TopLevelGraph>,
-  onNavigateToDestination: (TopLevelGraph) -> Unit,
-  getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
+  destinations: Set<TopLevelTab>,
+  onNavigateToDestination: (TopLevelTab) -> Unit,
+  getIsCurrentlySelected: (TopLevelTab) -> Boolean,
   modifier: Modifier = Modifier,
-  getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
+  getShowNotificationBadge: (TopLevelTab) -> Boolean = { false },
 ) {
   val borderColor = NavigationTokens.BorderColor.value
   NavigationContainer(modifier) {
@@ -125,12 +125,12 @@ fun NavigationBar(
 
 @Composable
 fun NavigationRail(
-  destinations: Set<TopLevelGraph>,
-  onNavigateToDestination: (TopLevelGraph) -> Unit,
-  getIsCurrentlySelected: (TopLevelGraph) -> Boolean,
+  destinations: Set<TopLevelTab>,
+  onNavigateToDestination: (TopLevelTab) -> Unit,
+  getIsCurrentlySelected: (TopLevelTab) -> Boolean,
   isExtraTall: Boolean,
   modifier: Modifier = Modifier,
-  getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
+  getShowNotificationBadge: (TopLevelTab) -> Boolean = { false },
 ) {
   val borderColor = NavigationTokens.BorderColor.value
   NavigationContainer(modifier.fillMaxHeight()) {
@@ -280,33 +280,33 @@ private fun NavigationItem(
   }
 }
 
-private fun TopLevelGraph.selectedIcon(): ImageVector {
+private fun TopLevelTab.selectedIcon(): ImageVector {
   return when (this) {
-    TopLevelGraph.Home -> HedvigIcons.HelipadFilled
-    TopLevelGraph.Insurances -> HedvigIcons.ShieldFilled
-    TopLevelGraph.Forever -> HedvigIcons.ForeverFilled
-    TopLevelGraph.Payments -> HedvigIcons.PaymentFilled
-    TopLevelGraph.Profile -> HedvigIcons.ProfileFilled
+    TopLevelTab.Home -> HedvigIcons.HelipadFilled
+    TopLevelTab.Insurances -> HedvigIcons.ShieldFilled
+    TopLevelTab.Forever -> HedvigIcons.ForeverFilled
+    TopLevelTab.Payments -> HedvigIcons.PaymentFilled
+    TopLevelTab.Profile -> HedvigIcons.ProfileFilled
   }
 }
 
-private fun TopLevelGraph.unselectedIcon(): ImageVector {
+private fun TopLevelTab.unselectedIcon(): ImageVector {
   return when (this) {
-    TopLevelGraph.Home -> HedvigIcons.HelipadOutline
-    TopLevelGraph.Insurances -> HedvigIcons.ShieldOutline
-    TopLevelGraph.Forever -> HedvigIcons.ForeverOutline
-    TopLevelGraph.Payments -> HedvigIcons.PaymentOutline
-    TopLevelGraph.Profile -> HedvigIcons.ProfileOutline
+    TopLevelTab.Home -> HedvigIcons.HelipadOutline
+    TopLevelTab.Insurances -> HedvigIcons.ShieldOutline
+    TopLevelTab.Forever -> HedvigIcons.ForeverOutline
+    TopLevelTab.Payments -> HedvigIcons.PaymentOutline
+    TopLevelTab.Profile -> HedvigIcons.ProfileOutline
   }
 }
 
-private fun TopLevelGraph.titleTextId(): StringResource {
+private fun TopLevelTab.titleTextId(): StringResource {
   return when (this) {
-    TopLevelGraph.Home -> Res.string.TAB_HOME_TITLE
-    TopLevelGraph.Insurances -> Res.string.TAB_INSURANCES_TITLE
-    TopLevelGraph.Forever -> Res.string.TAB_REFERRALS_TITLE
-    TopLevelGraph.Payments -> Res.string.TAB_PAYMENTS_TITLE
-    TopLevelGraph.Profile -> Res.string.TAB_PROFILE_TITLE
+    TopLevelTab.Home -> Res.string.TAB_HOME_TITLE
+    TopLevelTab.Insurances -> Res.string.TAB_INSURANCES_TITLE
+    TopLevelTab.Forever -> Res.string.TAB_REFERRALS_TITLE
+    TopLevelTab.Payments -> Res.string.TAB_PAYMENTS_TITLE
+    TopLevelTab.Profile -> Res.string.TAB_PROFILE_TITLE
   }
 }
 
@@ -319,7 +319,7 @@ private fun PreviewNavigationBar(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationBar(
-        destinations = TopLevelGraph.entries.toSet(),
+        destinations = TopLevelTab.entries.toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { selected },
       )
@@ -336,7 +336,7 @@ private fun PreviewNavigationRail(
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationRail(
-        destinations = TopLevelGraph.entries.toSet(),
+        destinations = TopLevelTab.entries.toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { selected },
         isExtraTall = false,
@@ -351,7 +351,7 @@ private fun PreviewTallNavigationRail() {
   HedvigTheme {
     Surface(Modifier.fillMaxHeight(), color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationRail(
-        destinations = TopLevelGraph.entries.toSet(),
+        destinations = TopLevelTab.entries.toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { false },
         isExtraTall = true,
@@ -366,7 +366,7 @@ private fun PreviewShortNavigationRail() {
   HedvigTheme {
     Surface(Modifier.fillMaxHeight(), color = HedvigTheme.colorScheme.backgroundPrimary) {
       NavigationRail(
-        destinations = TopLevelGraph.entries.toSet(),
+        destinations = TopLevelTab.entries.toSet(),
         onNavigateToDestination = {},
         getIsCurrentlySelected = { false },
         isExtraTall = false,

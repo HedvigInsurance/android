@@ -21,7 +21,7 @@ import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.loginGraph(
+fun EntryProviderScope<HedvigNavKey>.loginEntries(
   backstack: Backstack,
   appVersionName: String,
   urlBaseWeb: String,

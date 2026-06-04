@@ -22,8 +22,8 @@ import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
-  nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
+fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
+  nestedEntries: EntryProviderScope<HedvigNavKey>.() -> Unit,
   backstack: Backstack,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
@@ -41,7 +41,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceGraph(
   navigateToUpgradeAddon: (ContractId?, AddonVariant?) -> Unit,
   navigateToChipIdScreen: (String) -> Unit,
 ) {
-  nestedGraphs()
+  nestedEntries()
   entry<InsurancesKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: InsuranceViewModel = metroViewModel()
     InsuranceDestination(

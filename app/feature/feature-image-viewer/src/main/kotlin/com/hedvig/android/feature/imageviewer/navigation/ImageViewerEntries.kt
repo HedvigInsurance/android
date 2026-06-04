@@ -6,7 +6,7 @@ import com.hedvig.android.feature.imageviewer.ImageViewerDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 
-fun EntryProviderScope<HedvigNavKey>.imageViewerGraph(backstack: Backstack, imageLoader: ImageLoader) {
+fun EntryProviderScope<HedvigNavKey>.imageViewerEntries(backstack: Backstack, imageLoader: ImageLoader) {
   entry<ImageViewerKey> { key ->
     ImageViewerDestination(
       imageLoader = imageLoader,

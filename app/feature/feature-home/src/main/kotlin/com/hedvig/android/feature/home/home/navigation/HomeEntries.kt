@@ -15,8 +15,8 @@ import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.homeGraph(
-  nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
+fun EntryProviderScope<HedvigNavKey>.homeEntries(
+  nestedEntries: EntryProviderScope<HedvigNavKey>.() -> Unit,
   backstack: Backstack,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -70,5 +70,5 @@ fun EntryProviderScope<HedvigNavKey>.homeGraph(
       openUrl = openUrl,
     )
   }
-  nestedGraphs()
+  nestedEntries()
 }

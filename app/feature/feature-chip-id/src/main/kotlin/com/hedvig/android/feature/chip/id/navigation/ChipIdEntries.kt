@@ -15,7 +15,7 @@ import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.chipIdGraph(
+fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,

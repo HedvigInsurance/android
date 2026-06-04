@@ -61,7 +61,7 @@ internal data class SuccessfulMoveKey(
   val moveDate: LocalDate,
 ) : HedvigNavKey
 
-fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backstack: Backstack, goToChat: () -> Unit) {
+fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goToChat: () -> Unit) {
   entry<SelectContractForMovingKey> {
     SelectContractDestination(
       viewModel = metroViewModel<SelectContractViewModel>(),

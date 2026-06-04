@@ -6,7 +6,7 @@ import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.navigation.common.DeepLinkAncestry
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import kotlinx.serialization.Serializable
 import org.junit.Test
 
@@ -16,7 +16,7 @@ internal class SyntheticStackTest {
 
   @Serializable
   private data object FakeLeafKey : HedvigNavKey, DeepLinkAncestry {
-    override val owningTab = TopLevelGraph.Insurances
+    override val owningTab = TopLevelTab.Insurances
     override val syntheticParents = listOf<HedvigNavKey>(FakeParentKey)
   }
 

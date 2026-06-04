@@ -33,7 +33,7 @@ import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.helpCenterGraph(
+fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
   backstack: Backstack,
   onNavigateUp: () -> Unit,
   onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,

@@ -20,7 +20,7 @@ import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import octopus.type.MemberPaymentProvider
 
-fun EntryProviderScope<HedvigNavKey>.payoutAccountGraph(
+fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateToConnectPayment: () -> Unit,

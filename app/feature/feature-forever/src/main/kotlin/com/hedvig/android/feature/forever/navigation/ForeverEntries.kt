@@ -7,7 +7,7 @@ import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.foreverGraph() {
+fun EntryProviderScope<HedvigNavKey>.foreverEntries() {
   entry<ForeverKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) {
     val viewModel: ForeverViewModel = metroViewModel()
     ForeverDestination(viewModel = viewModel)

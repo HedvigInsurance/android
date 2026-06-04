@@ -14,7 +14,7 @@ import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
+fun EntryProviderScope<HedvigNavKey>.cbmChatEntries(
   hedvigBuildConstants: HedvigBuildConstants,
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,

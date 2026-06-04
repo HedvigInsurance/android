@@ -12,7 +12,7 @@ import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceGraph(backstack: Backstack, applicationId: String) {
+fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceEntries(backstack: Backstack, applicationId: String) {
   entry<InsuranceEvidenceKey> {
     val viewModel: InsuranceEvidenceEmailInputViewModel = metroViewModel()
     InsuranceEvidenceEmailInputDestination(

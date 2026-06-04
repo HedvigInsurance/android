@@ -8,7 +8,7 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.deleteAccountGraph(backstack: Backstack) {
+fun EntryProviderScope<HedvigNavKey>.deleteAccountEntries(backstack: Backstack) {
   entry<DeleteAccountKey> {
     val viewModel: DeleteAccountViewModel = metroViewModel()
     DeleteAccountDestination(

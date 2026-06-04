@@ -8,7 +8,7 @@ package com.hedvig.android.navigation.common
  */
 interface DeepLinkAncestry {
   /** The tab this key's task lives under. The synthetic stack starts `[HomeKey, owningTab.root, …]`. */
-  val owningTab: TopLevelGraph
+  val owningTab: TopLevelTab
 
   /**
    * Ordered intermediate ancestors, ROOT → NEAR. Same-module invariant: a key may only reference

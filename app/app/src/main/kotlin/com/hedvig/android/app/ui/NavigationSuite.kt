@@ -16,13 +16,13 @@ import com.hedvig.android.design.system.hedvig.NavigationRail
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TopAppBarWithBack
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.compose.rememberNavSuiteSceneDecoratorStrategy
 
 /**
  * Builds the navigation chrome (bottom bar / rail) as a [SceneDecoratorStrategy]. The badge and
- * top-level-graph state is read inside [chromeContent] on purpose, so changes recompose only the
+ * top-level-tab state is read inside [chromeContent] on purpose, so changes recompose only the
  * chrome and never the hosted destination content.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -37,14 +37,14 @@ internal fun rememberHedvigChromeStrategy(
       navigationSuiteType = { hedvigAppState.navigationSuiteType },
       chromeContent = {
         val showPaymentsBadge by hedvigAppState.showPaymentsBadge.collectAsState()
-        val topLevelGraphs by hedvigAppState.topLevelGraphs.collectAsState()
+        val topLevelTabs by hedvigAppState.topLevelTabs.collectAsState()
         NavigationSuiteChrome(
           navigationSuiteType = hedvigAppState.navigationSuiteType,
-          topLevelGraphs = topLevelGraphs,
-          currentTopLevelGraph = hedvigAppState.backstackController.currentTopLevel,
-          onNavigateToTopLevelGraph = hedvigAppState.backstackController::selectTopLevel,
-          getShowNotificationBadge = { graph ->
-            if (graph == TopLevelGraph.Payments) showPaymentsBadge else false
+          topLevelTabs = topLevelTabs,
+          currentTopLevelTab = hedvigAppState.backstackController.currentTopLevel,
+          onNavigateToTopLevelTab = hedvigAppState.backstackController::selectTopLevel,
+          getShowNotificationBadge = { tab ->
+            if (tab == TopLevelTab.Payments) showPaymentsBadge else false
           },
         )
       },
@@ -69,25 +69,25 @@ internal fun rememberHedvigChromeStrategy(
 @Composable
 internal fun NavigationSuiteChrome(
   navigationSuiteType: NavigationSuiteType,
-  topLevelGraphs: Set<TopLevelGraph>,
-  currentTopLevelGraph: TopLevelGraph?,
-  onNavigateToTopLevelGraph: (TopLevelGraph) -> Unit,
+  topLevelTabs: Set<TopLevelTab>,
+  currentTopLevelTab: TopLevelTab?,
+  onNavigateToTopLevelTab: (TopLevelTab) -> Unit,
   modifier: Modifier = Modifier,
-  getShowNotificationBadge: (TopLevelGraph) -> Boolean = { false },
+  getShowNotificationBadge: (TopLevelTab) -> Boolean = { false },
 ) {
   when (navigationSuiteType) {
     NavigationSuiteType.NavigationBar -> NavigationBar(
-      destinations = topLevelGraphs,
-      onNavigateToDestination = onNavigateToTopLevelGraph,
-      getIsCurrentlySelected = { it == currentTopLevelGraph },
+      destinations = topLevelTabs,
+      onNavigateToDestination = onNavigateToTopLevelTab,
+      getIsCurrentlySelected = { it == currentTopLevelTab },
       getShowNotificationBadge = getShowNotificationBadge,
       modifier = modifier,
     )
 
     else -> NavigationRail(
-      destinations = topLevelGraphs,
-      onNavigateToDestination = onNavigateToTopLevelGraph,
-      getIsCurrentlySelected = { it == currentTopLevelGraph },
+      destinations = topLevelTabs,
+      onNavigateToDestination = onNavigateToTopLevelTab,
+      getIsCurrentlySelected = { it == currentTopLevelTab },
       isExtraTall = navigationSuiteType == NavigationSuiteType.NavigationRailXLarge,
       getShowNotificationBadge = getShowNotificationBadge,
       modifier = modifier,
@@ -111,9 +111,9 @@ private fun PreviewNavigationSuiteChrome(
         } else {
           NavigationSuiteType.NavigationRail
         },
-        topLevelGraphs = TopLevelGraph.entries.toSet(),
-        currentTopLevelGraph = null,
-        onNavigateToTopLevelGraph = {},
+        topLevelTabs = TopLevelTab.entries.toSet(),
+        currentTopLevelTab = null,
+        onNavigateToTopLevelTab = {},
       )
     }
   }

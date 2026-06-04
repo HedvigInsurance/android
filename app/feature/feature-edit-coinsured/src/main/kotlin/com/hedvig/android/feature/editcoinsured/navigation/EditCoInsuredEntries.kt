@@ -16,7 +16,7 @@ import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.editCoInsuredGraph(backstack: Backstack) {
+fun EntryProviderScope<HedvigNavKey>.editCoInsuredEntries(backstack: Backstack) {
   entry<EditCoInsuredTriageKey> { key ->
     val triageContractId = key.contractId
     val triageType = key.type

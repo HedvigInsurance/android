@@ -83,7 +83,7 @@ internal class SelectInsuranceForAddonPresenter(
         // should be impossible btw
         currentState = SelectInsuranceForAddonState.Failure
       } else if (ids.size == 1) {
-        // should be impossible: we reroute earlier in the navGraph
+        // should be impossible: we reroute earlier in the navigation entries
         currentState = SelectInsuranceForAddonState.Success(
           listOfInsurances = emptyList(),
           insuranceIdToContinue = ids[0],

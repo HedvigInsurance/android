@@ -26,7 +26,7 @@ import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
+fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   backstack: Backstack,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,

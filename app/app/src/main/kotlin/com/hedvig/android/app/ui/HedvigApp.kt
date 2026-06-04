@@ -232,8 +232,8 @@ private fun hedvigTransitionSpec(
   backstack: BackstackController,
   density: Density,
 ): AnimatedContentTransitionScope<Scene<HedvigNavKey>>.() -> ContentTransform = {
-  val fromTab = backstack.owningTopLevelGraphForContentKey(initialState.entries.lastOrNull()?.contentKey)
-  val toTab = backstack.owningTopLevelGraphForContentKey(targetState.entries.lastOrNull()?.contentKey)
+  val fromTab = backstack.owningTopLevelTabForContentKey(initialState.entries.lastOrNull()?.contentKey)
+  val toTab = backstack.owningTopLevelTabForContentKey(targetState.entries.lastOrNull()?.contentKey)
   if (shouldFadeThrough(fromTab, toTab)) {
     MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
   } else {
@@ -245,8 +245,8 @@ private fun hedvigPopTransitionSpec(
   backstack: BackstackController,
   density: Density,
 ): AnimatedContentTransitionScope<Scene<HedvigNavKey>>.() -> ContentTransform = {
-  val fromTab = backstack.owningTopLevelGraphForContentKey(initialState.entries.lastOrNull()?.contentKey)
-  val toTab = backstack.owningTopLevelGraphForContentKey(targetState.entries.lastOrNull()?.contentKey)
+  val fromTab = backstack.owningTopLevelTabForContentKey(initialState.entries.lastOrNull()?.contentKey)
+  val toTab = backstack.owningTopLevelTabForContentKey(targetState.entries.lastOrNull()?.contentKey)
   if (shouldFadeThrough(fromTab, toTab)) {
     MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
   } else {

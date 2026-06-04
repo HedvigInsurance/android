@@ -11,27 +11,27 @@ import com.hedvig.android.feature.insurances.navigation.InsurancesKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import kotlinx.serialization.Serializable
 import org.junit.Test
 
 @Serializable private data class Drill(val id: String) : HedvigNavKey
 
 class TopLevelRunLogicTest {
-  @Test fun topLevelGraphOrNull_mapsTabRoots() {
-    assertThat(HomeKey.topLevelGraphOrNull()).isEqualTo(TopLevelGraph.Home)
-    assertThat(InsurancesKey.topLevelGraphOrNull()).isEqualTo(TopLevelGraph.Insurances)
-    assertThat(ForeverKey.topLevelGraphOrNull()).isEqualTo(TopLevelGraph.Forever)
-    assertThat(PaymentsKey.topLevelGraphOrNull()).isEqualTo(TopLevelGraph.Payments)
-    assertThat(ProfileKey.topLevelGraphOrNull()).isEqualTo(TopLevelGraph.Profile)
-    assertThat(Drill("x").topLevelGraphOrNull()).isNull()
+  @Test fun topLevelTabOrNull_mapsTabRoots() {
+    assertThat(HomeKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Home)
+    assertThat(InsurancesKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Insurances)
+    assertThat(ForeverKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Forever)
+    assertThat(PaymentsKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Payments)
+    assertThat(ProfileKey.topLevelTabOrNull()).isEqualTo(TopLevelTab.Profile)
+    assertThat(Drill("x").topLevelTabOrNull()).isNull()
   }
 
-  @Test fun nearestTopLevelGraph_isOwnerOfTop() {
-    assertThat(nearestTopLevelGraph(listOf(HomeKey, Drill("h"), InsurancesKey, Drill("i"))))
-      .isEqualTo(TopLevelGraph.Insurances)
-    assertThat(nearestTopLevelGraph(listOf(HomeKey, Drill("h")))).isEqualTo(TopLevelGraph.Home)
-    assertThat(nearestTopLevelGraph(listOf(Drill("login")))).isNull()
+  @Test fun nearestTopLevelTab_isOwnerOfTop() {
+    assertThat(nearestTopLevelTab(listOf(HomeKey, Drill("h"), InsurancesKey, Drill("i"))))
+      .isEqualTo(TopLevelTab.Insurances)
+    assertThat(nearestTopLevelTab(listOf(HomeKey, Drill("h")))).isEqualTo(TopLevelTab.Home)
+    assertThat(nearestTopLevelTab(listOf(Drill("login")))).isNull()
   }
 
   @Test fun collapseToHome_keepsHomeRunDiscardsSideRuns() {
@@ -62,18 +62,18 @@ class TopLevelRunLogicTest {
   }
 
   @Test fun shouldFadeThrough_trueWhenTabsDiffer() {
-    assertThat(shouldFadeThrough(TopLevelGraph.Forever, TopLevelGraph.Insurances)).isTrue()
-    assertThat(shouldFadeThrough(TopLevelGraph.Home, TopLevelGraph.Profile)).isTrue()
+    assertThat(shouldFadeThrough(TopLevelTab.Forever, TopLevelTab.Insurances)).isTrue()
+    assertThat(shouldFadeThrough(TopLevelTab.Home, TopLevelTab.Profile)).isTrue()
   }
 
   @Test fun shouldFadeThrough_falseWithinSameTab() {
-    assertThat(shouldFadeThrough(TopLevelGraph.Insurances, TopLevelGraph.Insurances)).isFalse()
+    assertThat(shouldFadeThrough(TopLevelTab.Insurances, TopLevelTab.Insurances)).isFalse()
   }
 
   @Test fun shouldFadeThrough_falseWhenEitherTabIsNull() {
     // A tab-less screen (e.g. pre-login Login) is never a tab change.
-    assertThat(shouldFadeThrough(null, TopLevelGraph.Home)).isFalse()
-    assertThat(shouldFadeThrough(TopLevelGraph.Home, null)).isFalse()
+    assertThat(shouldFadeThrough(null, TopLevelTab.Home)).isFalse()
+    assertThat(shouldFadeThrough(TopLevelTab.Home, null)).isFalse()
     assertThat(shouldFadeThrough(null, null)).isFalse()
   }
 }

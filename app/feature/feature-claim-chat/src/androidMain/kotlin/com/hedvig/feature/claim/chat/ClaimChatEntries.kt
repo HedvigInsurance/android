@@ -34,7 +34,7 @@ internal data class ClaimOutcomeNewClaimKey(
 @Serializable
 internal data object UpdateAppKey : HedvigNavKey
 
-fun EntryProviderScope<HedvigNavKey>.claimChatGraph(
+fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   backstack: Backstack,
   shouldShowRequestPermissionRationale: (String) -> Boolean,
   openAppSettings: () -> Unit,

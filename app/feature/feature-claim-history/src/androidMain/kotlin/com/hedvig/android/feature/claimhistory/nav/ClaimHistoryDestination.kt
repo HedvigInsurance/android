@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object ClaimHistoryKey : HedvigNavKey
 
-fun EntryProviderScope<HedvigNavKey>.claimHistoryGraph(
+fun EntryProviderScope<HedvigNavKey>.claimHistoryEntries(
   navigateUp: () -> Unit,
   navigateToClaimDetails: (claimId: String) -> Unit,
 ) {

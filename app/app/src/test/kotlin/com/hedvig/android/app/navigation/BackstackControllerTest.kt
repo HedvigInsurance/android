@@ -17,7 +17,7 @@ import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.feature.payments.navigation.PaymentsKey
 import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
 import com.hedvig.android.navigation.compose.popBackstack
 import org.junit.Test
@@ -59,11 +59,11 @@ internal class BackstackControllerTest {
   @Test
   fun `system-back never parks the active tab but leaves other parked runs intact`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Profile) // park Insurances run, render Profile root
+    controller.selectTopLevel(TopLevelTab.Profile) // park Insurances run, render Profile root
     controller.popBackstack() // drain Profile back to Home
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
-    assertThat(controller.parkedRuns[TopLevelGraph.Profile]).isEqualTo(null)
-    assertThat(controller.parkedRuns[TopLevelGraph.Insurances])
+    assertThat(controller.parkedRuns[TopLevelTab.Profile]).isEqualTo(null)
+    assertThat(controller.parkedRuns[TopLevelTab.Insurances])
       .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
   }
 
@@ -77,57 +77,57 @@ internal class BackstackControllerTest {
   @Test
   fun `re-tapping the current tab pops its run to the root`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Insurances)
+    controller.selectTopLevel(TopLevelTab.Insurances)
     assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey)
   }
 
   @Test
   fun `switching from a drilled side tab stashes its full run`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Profile)
+    controller.selectTopLevel(TopLevelTab.Profile)
     assertThat(controller.entries.toList()).containsExactly(HomeKey, ProfileKey)
-    assertThat(controller.parkedRuns[TopLevelGraph.Insurances])
+    assertThat(controller.parkedRuns[TopLevelTab.Insurances])
       .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
   }
 
   @Test
   fun `returning to a stashed tab restores its whole run`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Profile) // stash Insurances run
-    controller.selectTopLevel(TopLevelGraph.Insurances) // restore it
+    controller.selectTopLevel(TopLevelTab.Profile) // stash Insurances run
+    controller.selectTopLevel(TopLevelTab.Insurances) // restore it
     assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey, HelpCenterKey)
-    assertThat(controller.parkedRuns[TopLevelGraph.Profile]).isEqualTo(listOf(ProfileKey))
-    assertThat(controller.parkedRuns[TopLevelGraph.Insurances]).isEqualTo(null)
+    assertThat(controller.parkedRuns[TopLevelTab.Profile]).isEqualTo(listOf(ProfileKey))
+    assertThat(controller.parkedRuns[TopLevelTab.Insurances]).isEqualTo(null)
   }
 
   @Test
   fun `selecting Home from a side tab stashes the side run instead of discarding it`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Home)
+    controller.selectTopLevel(TopLevelTab.Home)
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
-    assertThat(controller.parkedRuns[TopLevelGraph.Insurances])
+    assertThat(controller.parkedRuns[TopLevelTab.Insurances])
       .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
   }
 
   @Test
   fun `re-selecting a side tab after going Home restores its run`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Home)
-    controller.selectTopLevel(TopLevelGraph.Insurances)
+    controller.selectTopLevel(TopLevelTab.Home)
+    controller.selectTopLevel(TopLevelTab.Insurances)
     assertThat(controller.entries.toList()).containsExactly(HomeKey, InsurancesKey, HelpCenterKey)
   }
 
   @Test
   fun `switching to a never-visited side tab starts a fresh run`() {
     val controller = controllerWith(HomeKey)
-    controller.selectTopLevel(TopLevelGraph.Payments)
+    controller.selectTopLevel(TopLevelTab.Payments)
     assertThat(controller.entries.toList()).containsExactly(HomeKey, PaymentsKey)
   }
 
   @Test
   fun `allLiveContentKeys includes parked runs`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Home) // Insurances run now parked
+    controller.selectTopLevel(TopLevelTab.Home) // Insurances run now parked
     assertThat(controller.allLiveContentKeys).containsExactlyInAnyOrder(
       HomeKey.toString(),
       InsurancesKey.toString(),
@@ -138,7 +138,7 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedIn pins Home and clears parked runs`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Home) // park Insurances
+    controller.selectTopLevel(TopLevelTab.Home) // park Insurances
     controller.setLoggedIn("mem-1")
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     assertThat(controller.parkedRuns).isEmpty()
@@ -148,7 +148,7 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedOut drops to login root and clears parked runs`() {
     val controller = controllerWith(HomeKey, InsurancesKey)
-    controller.selectTopLevel(TopLevelGraph.Home)
+    controller.selectTopLevel(TopLevelTab.Home)
     controller.setLoggedOut(null)
     assertThat(controller.entries.toList()).containsExactly(LoginKey)
     assertThat(controller.parkedRuns).isEmpty()
@@ -158,14 +158,14 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedOut stashes the live session tagged with the member id`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Payments) // park Insurances run, render Payments root
+    controller.selectTopLevel(TopLevelTab.Payments) // park Insurances run, render Payments root
     controller.setLoggedOut("mem-1")
     assertThat(controller.entries.toList()).containsExactly(LoginKey)
     assertThat(controller.parkedRuns).isEmpty()
     val stash = controller.stashedSession!!
     assertThat(stash.memberId).isEqualTo("mem-1")
     assertThat(stash.entries).containsExactly(HomeKey, PaymentsKey)
-    assertThat(stash.parkedRuns[TopLevelGraph.Insurances])
+    assertThat(stash.parkedRuns[TopLevelTab.Insurances])
       .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
   }
 
@@ -189,7 +189,7 @@ internal class BackstackControllerTest {
   @Test
   fun `currentTopLevel tracks the nearest tab below the top`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    assertThat(controller.currentTopLevel).isEqualTo(TopLevelGraph.Insurances)
+    assertThat(controller.currentTopLevel).isEqualTo(TopLevelTab.Insurances)
   }
 
   @Test
@@ -286,11 +286,11 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedIn restores the stash for the same member`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Payments)
+    controller.selectTopLevel(TopLevelTab.Payments)
     controller.setLoggedOut("mem-1")
     controller.setLoggedIn("mem-1")
     assertThat(controller.entries.toList()).containsExactly(HomeKey, PaymentsKey)
-    assertThat(controller.parkedRuns[TopLevelGraph.Insurances])
+    assertThat(controller.parkedRuns[TopLevelTab.Insurances])
       .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
     assertThat(controller.stashedSession).isEqualTo(null)
   }
@@ -362,41 +362,41 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `owningTopLevelGraph resolves positionally for the rendered stack`() {
+  fun `owningTopLevelTab resolves positionally for the rendered stack`() {
     val controller = controllerWith(HomeKey, HelpCenterKey, InsurancesKey, HelpCenterKey)
     // HelpCenter sitting in the Home run belongs to Home; the Insurances run owns its own keys.
-    assertThat(controller.owningTopLevelGraphForContentKey(HomeKey.toString()))
-      .isEqualTo(TopLevelGraph.Home)
-    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
-      .isEqualTo(TopLevelGraph.Insurances)
+    assertThat(controller.owningTopLevelTabForContentKey(HomeKey.toString()))
+      .isEqualTo(TopLevelTab.Home)
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelTab.Insurances)
   }
 
   @Test
-  fun `owningTopLevelGraph resolves keys parked in another run`() {
+  fun `owningTopLevelTab resolves keys parked in another run`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Profile) // park the Insurances run
-    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
-      .isEqualTo(TopLevelGraph.Insurances)
-    assertThat(controller.owningTopLevelGraphForContentKey(ProfileKey.toString()))
-      .isEqualTo(TopLevelGraph.Profile)
+    controller.selectTopLevel(TopLevelTab.Profile) // park the Insurances run
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelTab.Insurances)
+    assertThat(controller.owningTopLevelTabForContentKey(ProfileKey.toString()))
+      .isEqualTo(TopLevelTab.Profile)
   }
 
   @Test
-  fun `owningTopLevelGraph remembers a key after it is popped, so its exit still classifies`() {
+  fun `owningTopLevelTab remembers a key after it is popped, so its exit still classifies`() {
     val controller = controllerWith(HomeKey, InsurancesKey)
     // Resolve while live so the accumulator records it (mirrors the spec running on the tab switch).
-    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
-      .isEqualTo(TopLevelGraph.Insurances)
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelTab.Insurances)
     controller.popBackstack() // system-back to Home: InsurancesKey is removed and never parked
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
     // The outgoing Insurances root must still classify as Insurances so its exit fades, not slides.
-    assertThat(controller.owningTopLevelGraphForContentKey(InsurancesKey.toString()))
-      .isEqualTo(TopLevelGraph.Insurances)
+    assertThat(controller.owningTopLevelTabForContentKey(InsurancesKey.toString()))
+      .isEqualTo(TopLevelTab.Insurances)
   }
 
   @Test
-  fun `owningTopLevelGraph is null for an unknown key`() {
+  fun `owningTopLevelTab is null for an unknown key`() {
     val controller = controllerWith(HomeKey)
-    assertThat(controller.owningTopLevelGraphForContentKey(LoginKey.toString())).isEqualTo(null)
+    assertThat(controller.owningTopLevelTabForContentKey(LoginKey.toString())).isEqualTo(null)
   }
 }

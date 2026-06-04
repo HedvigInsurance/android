@@ -31,9 +31,9 @@ import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.profileGraph(
+fun EntryProviderScope<HedvigNavKey>.profileEntries(
   settingsDestinationNestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
-  nestedGraphs: EntryProviderScope<HedvigNavKey>.() -> Unit,
+  nestedEntries: EntryProviderScope<HedvigNavKey>.() -> Unit,
   globalSnackBarState: GlobalSnackBarState,
   backstack: Backstack,
   popBackstackOrFinish: () -> Unit,
@@ -139,5 +139,5 @@ fun EntryProviderScope<HedvigNavKey>.profileGraph(
     )
   }
   settingsDestinationNestedGraphs()
-  nestedGraphs()
+  nestedEntries()
 }

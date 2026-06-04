@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.platform.AndroidUiDispatcher
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -26,7 +27,6 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.flatMap
 import androidx.paging.map
-import androidx.media3.datasource.cache.SimpleCache
 import androidx.room.RoomDatabase
 import arrow.core.Either
 import com.benasher44.uuid.Uuid

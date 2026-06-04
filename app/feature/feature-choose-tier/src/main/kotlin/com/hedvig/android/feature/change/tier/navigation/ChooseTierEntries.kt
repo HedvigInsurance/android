@@ -24,7 +24,7 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.changeTierGraph(backstack: Backstack, onNavigateToNewConversation: () -> Unit) {
+fun EntryProviderScope<HedvigNavKey>.changeTierEntries(backstack: Backstack, onNavigateToNewConversation: () -> Unit) {
   entry<StartTierFlowKey> { key ->
     val insuranceId = key.insuranceId
     val viewModel: StartTierFlowViewModel =

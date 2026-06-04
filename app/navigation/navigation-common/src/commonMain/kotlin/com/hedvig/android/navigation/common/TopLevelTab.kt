@@ -3,7 +3,7 @@ package com.hedvig.android.navigation.common
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class TopLevelGraph {
+enum class TopLevelTab {
   Home,
   Insurances,
   Forever,

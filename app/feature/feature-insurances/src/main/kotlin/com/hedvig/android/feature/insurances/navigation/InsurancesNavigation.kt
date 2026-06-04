@@ -3,14 +3,14 @@ package com.hedvig.android.feature.insurances.navigation
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.DeepLinkAncestry
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.TopLevelGraph
-import com.hedvig.android.navigation.common.TopLevelGraphRoot
+import com.hedvig.android.navigation.common.TopLevelTab
+import com.hedvig.android.navigation.common.TopLevelTabRoot
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object InsurancesKey : HedvigNavKey, CrossSellEligibleDestination, TopLevelGraphRoot {
-  override val topLevelGraph: TopLevelGraph = TopLevelGraph.Insurances
+data object InsurancesKey : HedvigNavKey, CrossSellEligibleDestination, TopLevelTabRoot {
+  override val topLevelTab: TopLevelTab = TopLevelTab.Insurances
 }
 
 @Serializable
@@ -19,7 +19,7 @@ internal data class InsuranceContractDetailKey(
   @SerialName("contractId")
   val contractId: String,
 ) : HedvigNavKey, DeepLinkAncestry, CrossSellEligibleDestination {
-  override val owningTab = TopLevelGraph.Insurances
+  override val owningTab = TopLevelTab.Insurances
   override val syntheticParents = emptyList<HedvigNavKey>()
 }
 

@@ -17,7 +17,7 @@ import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
-import com.hedvig.android.navigation.common.TopLevelGraph
+import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
@@ -94,27 +94,27 @@ internal class HedvigAppState(
   val isInScreenEligibleForCrossSells: Boolean
     get() = backstackController.currentDestination is CrossSellEligibleDestination
 
-  val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
+  val topLevelTabs: StateFlow<Set<TopLevelTab>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
     emit(
       buildList {
-        add(TopLevelGraph.Home)
-        add(TopLevelGraph.Insurances)
+        add(TopLevelTab.Home)
+        add(TopLevelTab.Insurances)
         if (onlyHasNonPayingContracts != true) {
-          add(TopLevelGraph.Forever)
+          add(TopLevelTab.Forever)
         }
-        add(TopLevelGraph.Payments)
-        add(TopLevelGraph.Profile)
+        add(TopLevelTab.Payments)
+        add(TopLevelTab.Profile)
       }.toSet(),
     )
   }.stateIn(
     coroutineScope,
     SharingStarted.Eagerly,
     setOf(
-      TopLevelGraph.Home,
-      TopLevelGraph.Insurances,
-      TopLevelGraph.Payments,
-      TopLevelGraph.Profile,
+      TopLevelTab.Home,
+      TopLevelTab.Insurances,
+      TopLevelTab.Payments,
+      TopLevelTab.Profile,
     ),
   )
 

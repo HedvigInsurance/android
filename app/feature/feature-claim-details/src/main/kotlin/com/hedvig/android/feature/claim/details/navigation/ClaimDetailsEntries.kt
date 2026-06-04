@@ -15,7 +15,7 @@ import com.hedvig.android.navigation.compose.add
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
-fun EntryProviderScope<HedvigNavKey>.claimDetailsGraph(
+fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
   imageLoader: ImageLoader,
   appPackageId: String,
   openUrl: (String) -> Unit,
