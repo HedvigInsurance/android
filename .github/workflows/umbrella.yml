@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - eng/operation-shrink-umbrella-size
   workflow_dispatch:
 
 concurrency:
