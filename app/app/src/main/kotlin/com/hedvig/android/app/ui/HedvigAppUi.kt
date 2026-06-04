@@ -67,8 +67,8 @@ internal fun HedvigAppUi(
         NavigationSuiteChrome(
           navigationSuiteType = hedvigAppState.navigationSuiteType,
           topLevelGraphs = topLevelGraphs,
-          currentTopLevelGraph = hedvigAppState.currentTopLevelGraph,
-          onNavigateToTopLevelGraph = hedvigAppState::navigateToTopLevelGraph,
+          currentTopLevelGraph = hedvigAppState.backstackController.currentTopLevel,
+          onNavigateToTopLevelGraph = hedvigAppState.backstackController::selectTopLevel,
           getShowNotificationBadge = { graph ->
             if (graph == TopLevelGraph.Payments) showPaymentsBadge else false
           },
@@ -93,7 +93,8 @@ internal fun HedvigAppUi(
       Box(propagateMinConstraints = true, modifier = Modifier.fillMaxSize()) {
         GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
         HedvigNavHost(
-          hedvigAppState = hedvigAppState,
+          backstackController = hedvigAppState.backstackController,
+          windowSizeClass = hedvigAppState.windowSizeClass,
           memberIdService = memberIdService,
           globalSnackBarState = globalSnackBarState,
           externalNavigator = externalNavigator,

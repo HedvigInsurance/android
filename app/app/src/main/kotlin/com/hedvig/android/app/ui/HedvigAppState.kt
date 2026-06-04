@@ -17,7 +17,6 @@ import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
-import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.core.TopLevelGraph
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
@@ -71,12 +70,6 @@ internal class HedvigAppState(
   featureManager: FeatureManager,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
-  val currentDestination: HedvigNavKey?
-    get() = backstackController.currentDestination
-
-  val currentTopLevelGraph: TopLevelGraph
-    get() = backstackController.currentTopLevel
-
   val navigationSuiteType: NavigationSuiteType
     get() = when (windowSizeClass.widthSizeClass) {
       WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
@@ -99,7 +92,7 @@ internal class HedvigAppState(
     )
 
   val isInScreenEligibleForCrossSells: Boolean
-    get() = currentDestination is CrossSellEligibleDestination
+    get() = backstackController.currentDestination is CrossSellEligibleDestination
 
   val topLevelGraphs: StateFlow<Set<TopLevelGraph>> = flow {
     val onlyHasNonPayingContracts = getOnlyHasNonPayingContractsUseCase.provide().invoke().getOrNull()
@@ -134,22 +127,6 @@ internal class HedvigAppState(
     SharingStarted.WhileSubscribed(5_000),
     false,
   )
-
-  /**
-   * Navigate to a top level destination. Selecting the current tab again pops it back to its start;
-   * selecting another tab brings its run forward (or returns to Home), keeping Home pinned at the base.
-   */
-  fun navigateToTopLevelGraph(topLevelGraph: TopLevelGraph) {
-    backstackController.selectTopLevel(topLevelGraph)
-  }
-
-  fun navigateToLoggedIn(memberId: String?) {
-    backstackController.setLoggedIn(memberId)
-  }
-
-  fun navigateToLoggedOut(memberId: String?) {
-    backstackController.setLoggedOut(memberId)
-  }
 
   val darkTheme: Boolean
     @Composable

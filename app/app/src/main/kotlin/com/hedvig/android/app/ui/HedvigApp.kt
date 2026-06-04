@@ -115,8 +115,8 @@ internal fun HedvigApp(
     authTokenService = authTokenService,
     demoManager = demoManager,
     memberIdService = memberIdService,
-    onLoggedIn = { memberId -> hedvigAppState.navigateToLoggedIn(memberId) },
-    onLoggedOut = { hedvigAppState.navigateToLoggedOut(lastKnownMemberId.value) },
+    onLoggedIn = { memberId -> backstackController.setLoggedIn(memberId) },
+    onLoggedOut = { backstackController.setLoggedOut(lastKnownMemberId.value) },
     dismissSplashScreen = dismissSplashScreen,
   )
   val darkTheme = hedvigAppState.darkTheme
@@ -134,7 +134,7 @@ internal fun HedvigApp(
         tryShowAppStoreReviewDialog,
       )
       LogoutOnInvalidCredentialsEffect(
-        hedvigAppState,
+        backstackController,
         authTokenService,
         demoManager,
         lastKnownMemberId = { lastKnownMemberId.value },
@@ -323,7 +323,7 @@ private fun TryShowAppStoreReviewDialogEffect(
  */
 @Composable
 private fun LogoutOnInvalidCredentialsEffect(
-  hedvigAppState: HedvigAppState,
+  backstackController: BackstackController,
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   lastKnownMemberId: () -> String?,
@@ -343,12 +343,12 @@ private fun LogoutOnInvalidCredentialsEffect(
     }
   }
   val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(lifecycle, hedvigAppState, authTokenService, demoManager) {
+  LaunchedEffect(lifecycle, backstackController, authTokenService, demoManager) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
       combine(
         authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
         demoManager.isDemoMode().distinctUntilChanged(),
-        snapshotFlow { hedvigAppState.backstackController.isLoggedIn },
+        snapshotFlow { backstackController.isLoggedIn },
       ) { authStatus: AuthStatus, isDemoMode: Boolean, isLoggedIn: Boolean ->
         logcat {
           "LogoutOnInvalidCredentialsEffect: " +
@@ -360,7 +360,7 @@ private fun LogoutOnInvalidCredentialsEffect(
           return@combine
         }
         if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
-          hedvigAppState.navigateToLoggedOut(lastKnownMemberId())
+          backstackController.setLoggedOut(lastKnownMemberId())
         }
       }.collect()
     }
