@@ -33,7 +33,7 @@ kotlin {
     iosSimulatorArm64(),
   ).forEach { iosTarget ->
     iosTarget.binaries.framework {
-      isStatic = true
+      isStatic = false
       for (projectToExport in projectsToExport) {
         export(projectToExport)
       }
