@@ -3,7 +3,6 @@ package com.hedvig.android.feature.payments.navigation
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
-import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
@@ -17,7 +16,6 @@ import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPayment
 import com.hedvig.android.feature.payments.ui.memberpaymentdetails.MemberPaymentDetailsViewModel
 import com.hedvig.android.feature.payments.ui.payments.PaymentsDestination
 import com.hedvig.android.feature.payments.ui.payments.PaymentsViewModel
-import com.hedvig.android.language.LanguageService
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
@@ -30,8 +28,6 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
   backstack: Backstack,
-  languageService: LanguageService,
-  hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   openConversation: () -> Unit,
@@ -110,11 +106,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsGraph(
 
   entry<ForeverKey> {
     val viewModel: ForeverViewModel = metroViewModel()
-    ForeverDestination(
-      viewModel = viewModel,
-      languageService = languageService,
-      hedvigBuildConstants = hedvigBuildConstants,
-    )
+    ForeverDestination(viewModel = viewModel)
   }
 
   entry<DiscountsKey> {

@@ -1,6 +1,5 @@
 package com.hedvig.android.feature.chat.navigation
 
-import androidx.media3.datasource.cache.SimpleCache
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
@@ -18,7 +17,6 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
   hedvigBuildConstants: HedvigBuildConstants,
   imageLoader: ImageLoader,
-  simpleVideoCache: SimpleCache,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
@@ -47,7 +45,6 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatGraph(
       onNavigateToClaimDetails = onNavigateToClaimDetails,
       onNavigateToImageViewer = onNavigateToImageViewer,
       onNavigateUp = backstack::navigateUp,
-      simpleVideoCache = simpleVideoCache,
     )
   }
 }

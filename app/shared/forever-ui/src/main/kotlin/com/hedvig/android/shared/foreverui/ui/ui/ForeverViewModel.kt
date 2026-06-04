@@ -1,5 +1,6 @@
 package com.hedvig.android.shared.foreverui.ui.ui
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import arrow.core.raise.either
+import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.logger.LogPriority
@@ -16,6 +18,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.language.LanguageService
 import com.hedvig.android.shared.foreverui.ui.data.ForeverData
 import com.hedvig.android.shared.foreverui.ui.data.ForeverRepository
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverEvent.RetryLoadReferralData
@@ -31,12 +34,22 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
+  private val languageService: LanguageService,
+  private val hedvigBuildConstants: HedvigBuildConstants,
 ) : MoleculeViewModel<ForeverEvent, ForeverUiState>(
     ForeverUiState.Loading,
     ForeverPresenter(
       foreverRepositoryProvider = foreverRepositoryProvider,
     ),
-  )
+  ) {
+  fun referralShareUrl(code: String): String = buildString {
+    append(hedvigBuildConstants.urlBaseWeb)
+    append("/")
+    append(languageService.getLanguage().webPath())
+    append("/forever/")
+    append(Uri.encode(code))
+  }
+}
 
 internal class ForeverPresenter(
   private val foreverRepositoryProvider: Provider<ForeverRepository>,

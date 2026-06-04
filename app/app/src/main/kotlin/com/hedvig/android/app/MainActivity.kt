@@ -23,7 +23,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media3.datasource.cache.SimpleCache
 import androidx.savedstate.serialization.SavedStateConfiguration
 import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
@@ -31,6 +30,7 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
+import com.hedvig.android.app.navigation.SessionReconciler
 import com.hedvig.android.app.navigation.rememberHedvigBackstackController
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
@@ -48,7 +48,7 @@ import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
+import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.merge
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
@@ -56,49 +56,64 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import java.util.Locale
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.SerializersModule
 
 class MainActivity : AppCompatActivity() {
-  @Inject private lateinit var authTokenService: AuthTokenService
+  @Inject
+  private lateinit var authTokenService: AuthTokenService
 
-  @Inject private lateinit var demoManager: DemoManager
+  @Inject
+  private lateinit var demoManager: DemoManager
 
-  @Inject private lateinit var featureManager: FeatureManager
+  @Inject
+  private lateinit var featureManager: FeatureManager
 
-  @Inject private lateinit var getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>
+  @Inject
+  private lateinit var getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>
 
-  @Inject private lateinit var hedvigBuildConstants: HedvigBuildConstants
+  @Inject
+  private lateinit var hedvigBuildConstants: HedvigBuildConstants
 
-  @Inject private lateinit var deepLinkMatcherProviders: Set<DeepLinkMatcherProvider>
+  @Inject
+  private lateinit var deepLinkMatcher: HedvigDeepLinkMatcher
 
-  @Inject private lateinit var imageLoader: ImageLoader
+  @Inject
+  private lateinit var imageLoader: ImageLoader
 
-  @Inject private lateinit var languageService: LanguageService
+  @Inject
+  private lateinit var languageService: LanguageService
 
-  @Inject private lateinit var settingsDataStore: SettingsDataStore
+  @Inject
+  private lateinit var settingsDataStore: SettingsDataStore
 
   @Inject
   private lateinit var waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase
 
-  @Inject private lateinit var languageLaunchCheckUseCase: LanguageLaunchCheckUseCase
+  @Inject
+  private lateinit var languageLaunchCheckUseCase: LanguageLaunchCheckUseCase
 
-  @Inject private lateinit var simpleVideoCache: SimpleCache
+  @Inject
+  private lateinit var logoutUseCase: LogoutUseCase
 
-  @Inject private lateinit var logoutUseCase: LogoutUseCase
+  @Inject
+  private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
 
-  @Inject private lateinit var getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase
+  @Inject
+  private lateinit var memberIdService: MemberIdService
 
-  @Inject private lateinit var memberIdService: MemberIdService
+  @Inject
+  private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
 
-  @Inject private lateinit var missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>
+  @Inject
+  private lateinit var currentDestinationHolder: CurrentDestinationHolder
 
-  @Inject private lateinit var currentDestinationHolder: CurrentDestinationHolder
+  @Inject
+  private lateinit var sessionReconciler: SessionReconciler
 
-  @Inject private lateinit var serializersModules: Set<SerializersModule>
+  @Inject
+  private lateinit var serializersModules: Set<SerializersModule>
 
   /**
    * External/notification VIEW intents are forwarded here as raw URI strings. [HedvigApp] collects them and routes
@@ -106,9 +121,6 @@ class MainActivity : AppCompatActivity() {
    * deep-link handling on the (now removed) NavController.
    */
   private val deepLinkChannel = Channel<String>(Channel.UNLIMITED)
-
-  // Shows the splash screen as long as the auth status or the demo mode status is still undetermined
-  private val showSplash = MutableStateFlow(true)
 
   /**
    * A channel to report whenever the splash screen has stopped showing. This is used to let `enableEdgeToEdge` be run
@@ -122,7 +134,7 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     (application as HedvigApplication).appGraph.inject(this)
     installSplashScreen().apply {
-      setKeepOnScreenCondition { showSplash.value }
+      setKeepOnScreenCondition { !sessionReconciler.isReady.value }
       setOnExitAnimationListener {
         logcat(LogPriority.INFO) { "Splash screen will be removed" }
         it.remove()
@@ -151,22 +163,35 @@ class MainActivity : AppCompatActivity() {
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
+    val androidAppHost = object : AndroidAppHost {
+      override fun finishApp() = finish()
+
+      override fun applyEdgeToEdgeStyle(systemBarStyle: SystemBarStyle) {
+        enableEdgeToEdge(
+          statusBarStyle = systemBarStyle,
+          navigationBarStyle = systemBarStyle,
+        )
+      }
+
+      override fun shouldShowPermissionRationale(permission: String): Boolean =
+        shouldShowRequestPermissionRationale(permission)
+
+      override fun tryShowAppStoreReviewDialog() = tryShowPlayStoreReviewDialog()
+    }
+    RiveInitializer.init(this)
+    val savedStateConfiguration = SavedStateConfiguration {
+      serializersModule = serializersModules.merge()
+    }
+    val restoredBackstack = if (savedInstanceState != null) {
+      null
+    } else {
+      RestoredBackstackTransfer.readFrom(intent, serializersModules)
+    }
     setContent {
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides (application as HedvigApplication).appGraph.metroViewModelFactory,
       ) {
-        val context = LocalContext.current
-        RiveInitializer.init(context)
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
-        val savedStateConfiguration = remember(serializersModules) {
-          SavedStateConfiguration {
-            serializersModule = serializersModules.merge()
-          }
-        }
-        val restoredBackstack = remember(serializersModules) {
-          if (savedInstanceState != null) return@remember null
-          RestoredBackstackTransfer.readFrom(intent, serializersModules)
-        }
         val backstackController = rememberHedvigBackstackController(
           savedStateConfiguration = savedStateConfiguration,
           initialBackstack = restoredBackstack,
@@ -177,6 +202,7 @@ class MainActivity : AppCompatActivity() {
         )
         HedvigApp(
           backstackController = backstackController,
+          sessionReconciler = sessionReconciler,
           deepLinkChannel = deepLinkChannel,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
@@ -186,27 +212,17 @@ class MainActivity : AppCompatActivity() {
           authTokenService = authTokenService,
           demoManager = demoManager,
           memberIdService = memberIdService,
-          deepLinkMatcherProviders = deepLinkMatcherProviders,
+          deepLinkMatcher = deepLinkMatcher,
           imageLoader = imageLoader,
-          simpleVideoCache = simpleVideoCache,
           languageService = languageService,
           hedvigBuildConstants = hedvigBuildConstants,
           waitUntilAppReviewDialogShouldBeOpenedUseCase = waitUntilAppReviewDialogShouldBeOpenedUseCase,
-          enableEdgeToEdge = { systemBarStyle ->
-            enableEdgeToEdge(
-              statusBarStyle = systemBarStyle,
-              navigationBarStyle = systemBarStyle,
-            )
-          },
-          shouldShowRequestPermissionRationale = ::shouldShowRequestPermissionRationale,
-          finishApp = ::finish,
-          tryShowAppStoreReviewDialog = ::tryShowAppStoreReviewDialog,
+          androidAppHost = androidAppHost,
           externalNavigator = externalNavigator,
           logoutUseCase = logoutUseCase,
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
           missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
           currentDestinationHolder = currentDestinationHolder,
-          dismissSplashScreen = { showSplash.update { false } },
         )
       }
     }
@@ -254,7 +270,7 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
   }
 }
 
-private fun Activity.tryShowAppStoreReviewDialog() {
+private fun Activity.tryShowPlayStoreReviewDialog() {
   val tag = "PlayStoreReview"
   val manager = ReviewManagerFactory.create(this)
   logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
@@ -266,7 +282,7 @@ private fun Activity.tryShowAppStoreReviewDialog() {
         logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
         val reviewInfo = task.result
         logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
-        manager.launchReviewFlow(this@tryShowAppStoreReviewDialog, reviewInfo).apply {
+        manager.launchReviewFlow(this@tryShowPlayStoreReviewDialog, reviewInfo).apply {
           addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
           addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
           addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }

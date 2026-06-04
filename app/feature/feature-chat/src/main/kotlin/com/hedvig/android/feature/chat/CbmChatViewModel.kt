@@ -26,6 +26,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.flatMap
 import androidx.paging.map
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.room.RoomDatabase
 import arrow.core.Either
 import com.benasher44.uuid.Uuid
@@ -79,6 +80,7 @@ import kotlinx.coroutines.launch
 
 internal class CbmChatViewModel @AssistedInject constructor(
   @Assisted conversationId: String,
+  val simpleVideoCache: SimpleCache,
   database: RoomDatabase,
   chatDao: ChatDao,
   remoteKeyDao: RemoteKeyDao,

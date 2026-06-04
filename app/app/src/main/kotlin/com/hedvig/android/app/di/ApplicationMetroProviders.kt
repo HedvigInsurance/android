@@ -42,6 +42,8 @@ import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.common.di.DatabaseFile
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
+import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
+import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
 import com.hedvig.android.notification.core.HedvigNotificationChannel
@@ -118,6 +120,11 @@ interface ApplicationMetroProviders {
       "hedvig_shared_preference",
       MODE_PRIVATE,
     )
+
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideHedvigDeepLinkMatcher(deepLinkMatcherProviders: Set<DeepLinkMatcherProvider>): HedvigDeepLinkMatcher =
+    HedvigDeepLinkMatcher(deepLinkMatcherProviders.flatMap { it.matchers() })
 
   @Provides
   @SingleIn(AppScope::class)

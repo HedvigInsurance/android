@@ -2,34 +2,52 @@ package com.hedvig.android.app.ui
 
 import android.graphics.Color
 import androidx.activity.SystemBarStyle
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.core.net.toUri
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media3.datasource.cache.SimpleCache
-import arrow.fx.coroutines.raceN
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.scene.Scene
+import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
+import com.hedvig.android.app.AndroidAppHost
+import com.hedvig.android.app.GlobalHedvigSnackBar
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
+import com.hedvig.android.app.navigation.SessionReconciler
+import com.hedvig.android.app.navigation.hedvigEntryProvider
+import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -43,32 +61,35 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.design.system.hedvig.DemoModeLabel
+import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
+import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.activity.ExternalNavigator
-import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
+import com.hedvig.android.navigation.compose.entryDecorators
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
-import kotlinx.coroutines.CoroutineScope
+import hedvig.resources.EXIT_DEMO_MODE_BUTTON
+import hedvig.resources.Res
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun HedvigApp(
   backstackController: BackstackController,
+  sessionReconciler: SessionReconciler,
   deepLinkChannel: Channel<String>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
@@ -78,22 +99,17 @@ internal fun HedvigApp(
   authTokenService: AuthTokenService,
   demoManager: DemoManager,
   memberIdService: MemberIdService,
-  deepLinkMatcherProviders: Set<DeepLinkMatcherProvider>,
+  deepLinkMatcher: HedvigDeepLinkMatcher,
   imageLoader: ImageLoader,
-  simpleVideoCache: SimpleCache,
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
   waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase,
-  enableEdgeToEdge: (SystemBarStyle) -> Unit,
-  shouldShowRequestPermissionRationale: (String) -> Boolean,
-  finishApp: () -> Unit,
-  tryShowAppStoreReviewDialog: () -> Unit,
+  androidAppHost: AndroidAppHost,
   externalNavigator: ExternalNavigator,
   logoutUseCase: LogoutUseCase,
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
   currentDestinationHolder: CurrentDestinationHolder,
-  dismissSplashScreen: () -> Unit,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   val hedvigAppState = rememberHedvigAppState(
@@ -104,24 +120,13 @@ internal fun HedvigApp(
     featureManager = featureManager,
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
-  val lastKnownMemberId = remember { mutableStateOf<String?>(null) }
-  LaunchedEffect(memberIdService) {
-    memberIdService.getMemberId().collect { id ->
-      if (id != null) lastKnownMemberId.value = id
-    }
+  val lifecycle = LocalLifecycleOwner.current.lifecycle
+  LaunchedEffect(sessionReconciler, backstackController, lifecycle) {
+    sessionReconciler.reconcile(backstackController, lifecycle)
   }
-  DetermineStartDestinationEffect(
-    backstackController = backstackController,
-    authTokenService = authTokenService,
-    demoManager = demoManager,
-    memberIdService = memberIdService,
-    onLoggedIn = { memberId -> backstackController.setLoggedIn(memberId) },
-    onLoggedOut = { backstackController.setLoggedOut(lastKnownMemberId.value) },
-    dismissSplashScreen = dismissSplashScreen,
-  )
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
-    EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal, enableEdgeToEdge)
+    EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal, androidAppHost::applyEdgeToEdgeStyle)
     val mustForceUpdate by hedvigAppState.mustForceUpdate.collectAsStateWithLifecycle()
     if (mustForceUpdate) {
       ForceUpgradeBlockingScreen(
@@ -131,123 +136,130 @@ internal fun HedvigApp(
       TryShowAppStoreReviewDialogEffect(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
-        tryShowAppStoreReviewDialog,
+        androidAppHost::tryShowAppStoreReviewDialog,
       )
-      LogoutOnInvalidCredentialsEffect(
-        backstackController,
-        authTokenService,
-        demoManager,
-        lastKnownMemberId = { lastKnownMemberId.value },
-      )
-      val deepLinkMatcher = remember(deepLinkMatcherProviders) {
-        HedvigDeepLinkMatcher(deepLinkMatcherProviders.flatMap { it.matchers() })
+      val scope = rememberCoroutineScope()
+      val context = LocalContext.current
+      val deepLinkFirstUriHandler = remember(deepLinkMatcher, backstackController, getMemberAuthorizationCodeUseCase) {
+        DeepLinkFirstUriHandler(
+          matcher = deepLinkMatcher,
+          backstackController = backstackController,
+          delegate = SafeAndroidUriHandler(context),
+          getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
+          scope = scope,
+        )
       }
-      val deepLinkFirstUriHandler = DeepLinkFirstUriHandler(
-        matcher = deepLinkMatcher,
-        backstackController = backstackController,
-        delegate = SafeAndroidUriHandler(LocalContext.current),
-      )
       LaunchedEffect(deepLinkFirstUriHandler, deepLinkChannel) {
         deepLinkChannel.receiveAsFlow().collect { uri ->
           deepLinkFirstUriHandler.openUri(uri)
         }
       }
-      val scope = rememberCoroutineScope()
-      val openCrossSellUrl: (String) -> Unit = { url ->
-        openCrossSellUrl(scope, getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, url)
-      }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = openCrossSellUrl,
+        onCrossSellClick = deepLinkFirstUriHandler::openCrossSellUri,
         imageLoader,
-//        onNavigateToAddonPurchaseFlow = { insuranceIds ->
-//          navHostController.navigate(
-//            AddonPurchaseGraphDestination(
-//              insuranceIds,
-//              TravelAddonBannerSource.AFTER_FINISHING_SUCCESSFUL_FLOW,
-//            ),
-//          )
-//        },
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
         CompositionLocalProvider(
           LocalUriHandler provides deepLinkFirstUriHandler,
           LocalSharedTransitionScope provides this,
         ) {
-          HedvigAppUi(
+          val globalSnackBarState = rememberGlobalSnackBarState()
+          val sceneDecoratorStrategies = rememberHedvigChromeStrategy(
             hedvigAppState = hedvigAppState,
-            sharedTransitionScope = this,
-            memberIdService = memberIdService,
-            externalNavigator = externalNavigator,
-            shouldShowRequestPermissionRationale = shouldShowRequestPermissionRationale,
-            openUrl = deepLinkFirstUriHandler::openUri,
-            openCrossSellUrl = openCrossSellUrl,
-            finishApp = finishApp,
-            imageLoader = imageLoader,
-            languageService = languageService,
-            hedvigBuildConstants = hedvigBuildConstants,
-            simpleVideoCache = simpleVideoCache,
-            demoManager = demoManager,
-            logoutUseCase = logoutUseCase,
+            sharedTransitionScope = this@SharedTransitionLayout,
           )
+          val density = LocalDensity.current
+          val popSpec = hedvigPopTransitionSpec(backstackController, density)
+          Box(Modifier.fillMaxSize()) {
+            Surface(
+              color = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.backgroundPrimary,
+              contentColor = com.hedvig.android.design.system.hedvig.HedvigTheme.colorScheme.textPrimary,
+            ) {
+              Box(propagateMinConstraints = true, modifier = Modifier.fillMaxSize()) {
+                GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
+                NavDisplay(
+                  backStack = backstackController.entries,
+                  onBack = {
+                    if (!backstackController.handleBack()) {
+                      androidAppHost.finishApp()
+                    }
+                  },
+                  entryDecorators = entryDecorators { backstackController.allLiveContentKeys },
+                  sharedTransitionScope = this@SharedTransitionLayout,
+                  sceneDecoratorStrategies = sceneDecoratorStrategies,
+                  transitionSpec = hedvigTransitionSpec(backstackController, density),
+                  popTransitionSpec = popSpec,
+                  predictivePopTransitionSpec = { popSpec() },
+                  entryProvider = entryProvider {
+                    hedvigEntryProvider(
+                      backstack = backstackController,
+                      scope = scope,
+                      windowSizeClass = windowSizeClass,
+                      memberIdService = memberIdService,
+                      globalSnackBarState = globalSnackBarState,
+                      externalNavigator = externalNavigator,
+                      androidAppHost = androidAppHost,
+                      openUrl = deepLinkFirstUriHandler::openUri,
+                      openCrossSellUrl = deepLinkFirstUriHandler::openCrossSellUri,
+                      imageLoader = imageLoader,
+                      languageService = languageService,
+                      hedvigBuildConstants = hedvigBuildConstants,
+                    )
+                  },
+                )
+              }
+            }
+            DemoModeOverlay(demoManager, logoutUseCase)
+          }
         }
       }
     }
   }
 }
 
-private fun openCrossSellUrl(
-  scope: CoroutineScope,
-  getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
-  deepLinkFirstUriHandler: DeepLinkFirstUriHandler,
-  url: String,
-) {
-  scope.launch {
-    val code = getMemberAuthorizationCodeUseCase.invoke()
-    val finalUrl = if (code != null) {
-      url.toUri().buildUpon().appendQueryParameter("authorization_code", code).build().toString()
-    } else {
-      url
-    }
-    deepLinkFirstUriHandler.openUri(finalUrl)
+private fun hedvigTransitionSpec(
+  backstack: BackstackController,
+  density: Density,
+): AnimatedContentTransitionScope<Scene<HedvigNavKey>>.() -> ContentTransform = {
+  val fromTab = backstack.owningTopLevelGraphForContentKey(initialState.entries.lastOrNull()?.contentKey)
+  val toTab = backstack.owningTopLevelGraphForContentKey(targetState.entries.lastOrNull()?.contentKey)
+  if (shouldFadeThrough(fromTab, toTab)) {
+    MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
+  } else {
+    MotionDefaults.sharedXAxisEnter(density) togetherWith MotionDefaults.sharedXAxisExit(density)
+  }
+}
+
+private fun hedvigPopTransitionSpec(
+  backstack: BackstackController,
+  density: Density,
+): AnimatedContentTransitionScope<Scene<HedvigNavKey>>.() -> ContentTransform = {
+  val fromTab = backstack.owningTopLevelGraphForContentKey(initialState.entries.lastOrNull()?.contentKey)
+  val toTab = backstack.owningTopLevelGraphForContentKey(targetState.entries.lastOrNull()?.contentKey)
+  if (shouldFadeThrough(fromTab, toTab)) {
+    MotionDefaults.fadeThroughEnter togetherWith MotionDefaults.fadeThroughExit
+  } else {
+    MotionDefaults.sharedXAxisPopEnter(density) togetherWith MotionDefaults.sharedXAxisPopExit(density)
   }
 }
 
 /**
- * Holds the splash screen until the auth state resolves, then makes the back stack root match it
- * before [dismissSplashScreen] lets the splash go — so the first frame shown is the correct scene
- * (Home when logged in, Login when logged out) instead of the seeded login root.
- *
- * On process-death restore the back stack already reflects the previous session, so a matching root
- * is left untouched and any deeper stack is preserved.
+ * Demo-mode affordance overlaid on top of the app content. Reads `isDemoMode` itself so the read
+ * stays scoped here and doesn't recompose the hosted [NavDisplay].
  */
 @Composable
-private fun DetermineStartDestinationEffect(
-  backstackController: BackstackController,
-  authTokenService: AuthTokenService,
-  demoManager: DemoManager,
-  memberIdService: MemberIdService,
-  onLoggedIn: (memberId: String?) -> Unit,
-  onLoggedOut: () -> Unit,
-  dismissSplashScreen: () -> Unit,
-) {
-  LaunchedEffect(Unit) {
-    val showLoggedInScene = raceN(
-      { authTokenService.authStatus.filterNotNull().first() is AuthStatus.LoggedIn },
-      { demoManager.isDemoMode().first { it } },
-    ).fold({ it }, { it })
-    when {
-      showLoggedInScene && !backstackController.isLoggedIn -> {
-        // Token is present now (authStatus is LoggedIn); read the member id straight from the JWT.
-        val memberId = memberIdService.getMemberId().first()
-        onLoggedIn(memberId)
-      }
-
-      !showLoggedInScene && backstackController.isLoggedIn -> {
-        onLoggedOut()
-      }
-    }
-    dismissSplashScreen()
+private fun BoxScope.DemoModeOverlay(demoManager: DemoManager, logoutUseCase: LogoutUseCase) {
+  val isDemoMode by demoManager.isDemoMode().collectAsState(false)
+  if (isDemoMode) {
+    DemoModeLabel(
+      stringResource(Res.string.EXIT_DEMO_MODE_BUTTON),
+      onButtonClick = { logoutUseCase.invoke() },
+      modifier = Modifier
+        .padding(start = 16.dp, end = 32.dp, bottom = 86.dp)
+        .align(Alignment.BottomEnd)
+        .windowInsetsPadding(WindowInsets.systemBars),
+    )
   }
 }
 
@@ -306,63 +318,14 @@ private fun TryShowAppStoreReviewDialogEffect(
   waitUntilAppReviewDialogShouldBeOpenedUseCase: WaitUntilAppReviewDialogShouldBeOpenedUseCase,
   tryShowAppStoreReviewDialog: () -> Unit,
 ) {
-  val REVIEW_DIALOG_DELAY_MILLIS = 2000L
+  val reviewDialogDelay = 2.seconds
   val lifecycle = LocalLifecycleOwner.current.lifecycle
   LaunchedEffect(lifecycle) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
       authTokenService.authStatus.first { it is AuthStatus.LoggedIn }
       waitUntilAppReviewDialogShouldBeOpenedUseCase.invoke()
-      delay(REVIEW_DIALOG_DELAY_MILLIS)
+      delay(reviewDialogDelay)
       tryShowAppStoreReviewDialog()
-    }
-  }
-}
-
-/**
- * Automatically logs out when we are no longer in demo mode and we are also not considered to have active tokens
- */
-@Composable
-private fun LogoutOnInvalidCredentialsEffect(
-  backstackController: BackstackController,
-  authTokenService: AuthTokenService,
-  demoManager: DemoManager,
-  lastKnownMemberId: () -> String?,
-) {
-  val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
-    logcat {
-      buildString {
-        append("Owner: MainActivity | Received authStatus: ")
-        append(
-          when (authStatus) {
-            is AuthStatus.LoggedIn -> "LoggedIn"
-            AuthStatus.LoggedOut -> "LoggedOut"
-            null -> "null"
-          },
-        )
-      }
-    }
-  }
-  val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(lifecycle, backstackController, authTokenService, demoManager) {
-    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-      combine(
-        authTokenService.authStatus.onEach(authStatusLog).filterNotNull().distinctUntilChanged(),
-        demoManager.isDemoMode().distinctUntilChanged(),
-        snapshotFlow { backstackController.isLoggedIn },
-      ) { authStatus: AuthStatus, isDemoMode: Boolean, isLoggedIn: Boolean ->
-        logcat {
-          "LogoutOnInvalidCredentialsEffect: " +
-            "authStatus:$authStatus | " +
-            "isDemoMode:$isDemoMode | " +
-            "isLoggedIn:$isLoggedIn"
-        }
-        if (!isLoggedIn) {
-          return@combine
-        }
-        if (!isDemoMode && authStatus !is AuthStatus.LoggedIn) {
-          backstackController.setLoggedOut(lastKnownMemberId())
-        }
-      }.collect()
     }
   }
 }
