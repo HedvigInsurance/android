@@ -2,11 +2,8 @@ package com.hedvig.android.feature.help.center.navigation
 
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -30,18 +27,10 @@ internal data class HelpCenterQuestionKey(
 @Serializable
 internal data class EmergencyKey(
   val deflectData: DeflectData,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<DeflectData>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
-internal data class FirstVetKey(val sections: List<FirstVetSection>) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
-  }
-}
+internal data class FirstVetKey(val sections: List<FirstVetSection>) : HedvigNavKey
 
 @Serializable
 internal data object PuppyGuideKey : HedvigNavKey

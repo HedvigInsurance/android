@@ -15,7 +15,6 @@ import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDes
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
@@ -26,8 +25,6 @@ import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -51,11 +48,7 @@ internal data class ChoseCoverageLevelAndDeductibleKey(
 ) : HedvigNavKey
 
 @Serializable
-internal data class CompareCoverageKey(val comparisonParameters: ComparisonParameters) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
-  }
-}
+internal data class CompareCoverageKey(val comparisonParameters: ComparisonParameters) : HedvigNavKey
 
 @Serializable
 internal data class SummaryKey(
@@ -66,11 +59,7 @@ internal data class SummaryKey(
 @Serializable
 internal data class SuccessfulMoveKey(
   val moveDate: LocalDate,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<LocalDate>())
-  }
-}
+) : HedvigNavKey
 
 fun EntryProviderScope<HedvigNavKey>.movingFlowGraph(backstack: Backstack, goToChat: () -> Unit) {
   entry<SelectContractForMovingKey> {

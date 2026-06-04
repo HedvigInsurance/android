@@ -1,9 +1,6 @@
 package com.hedvig.android.feature.login.navigation
 
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -31,8 +28,4 @@ internal data class OtpInputKey(
     val resendUrl: String,
     val credential: String,
   )
-
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<OtpInformation>())
-  }
 }

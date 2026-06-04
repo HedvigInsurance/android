@@ -6,9 +6,6 @@ import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -17,11 +14,7 @@ data class AddonPurchaseKey(
   val insuranceIds: List<String> = emptyList(),
   val preselectedAddonDisplayName: String? = null,
   val source: AddonBannerSource = AddonBannerSource.TRAVEL_DEEPLINK,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
-  }
-}
+) : HedvigNavKey
 
 /**
  * Deep-link entry for the travel/car addon flow. The URI → key mapping (path-derived [source] and
@@ -31,11 +24,7 @@ data class AddonPurchaseKey(
 data class TravelAddonTriageKey(
   val source: AddonBannerSource,
   val contractId: String?,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
 internal data class CustomizeAddonKey(
@@ -55,29 +44,15 @@ internal data class TravelInsurancePlusExplanationKey(
     val colorCode: String?,
     val isEnabled: Boolean = true,
   )
-
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<PerilComparisonParams>())
-  }
 }
 
 @Serializable
 internal data class SummaryKey(
   val params: SummaryParameters,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
-internal data class SubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(
-      typeOf<LocalDate>(),
-    )
-  }
-}
+internal data class SubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey
 
 @Serializable
 internal data object SubmitFailureKey : HedvigNavKey

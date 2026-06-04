@@ -7,7 +7,6 @@ import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.AddonVariant
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.findLastOrNull
@@ -20,8 +19,6 @@ import com.hedvig.feature.remove.addons.ui.RemoveAddonSuccessScreen
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryDestination
 import com.hedvig.feature.remove.addons.ui.SelectAddonToRemoveDestination
 import com.hedvig.feature.remove.addons.ui.SelectInsuranceToRemoveAddonDestination
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -40,45 +37,21 @@ internal data class SummaryParameters(
 data class RemoveAddonsKey(
   val insuranceId: ContractId?,
   val preselectedAddonVariant: AddonVariant?,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(
-      typeOf<ContractId?>(),
-      typeOf<AddonVariant?>(),
-    )
-  }
-}
+) : HedvigNavKey
 
 @Serializable
 internal data class ChooseAddonToRemoveKey(
   val insuranceId: ContractId,
   val preselectedAddonVariant: AddonVariant?,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(
-      typeOf<ContractId>(),
-      typeOf<AddonVariant?>(),
-    )
-  }
-}
+) : HedvigNavKey
 
 @Serializable
 internal data class RemoveAddonSummaryKey(
   val params: SummaryParameters,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
-internal data class RemoveAddonSubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(
-      typeOf<LocalDate>(),
-    )
-  }
-}
+internal data class RemoveAddonSubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey
 
 @Serializable
 internal data object RemoveAddonSubmitFailureKey : HedvigNavKey

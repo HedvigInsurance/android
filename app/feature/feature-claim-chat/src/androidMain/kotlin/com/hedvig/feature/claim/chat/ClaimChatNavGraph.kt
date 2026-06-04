@@ -4,7 +4,6 @@ import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
@@ -14,8 +13,6 @@ import com.hedvig.feature.claim.chat.data.StepContent
 import com.hedvig.feature.claim.chat.ui.ClaimChatDestination
 import com.hedvig.feature.claim.chat.ui.outcome.ClaimOutcomeDeflectDestination
 import com.hedvig.feature.claim.chat.ui.outcome.ClaimOutcomeNewClaimDestination
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,20 +24,12 @@ data class ClaimChatKey(
 @Serializable
 internal data class ClaimOutcomeDeflectKey(
   val deflect: StepContent.Deflect,
-) : HedvigNavKey {
-  companion object Companion : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<StepContent.Deflect>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
 internal data class ClaimOutcomeNewClaimKey(
   val outcome: ClaimIntentOutcome.Claim,
-) : HedvigNavKey {
-  companion object Companion : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<ClaimIntentOutcome.Claim>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
 internal data object UpdateAppKey : HedvigNavKey

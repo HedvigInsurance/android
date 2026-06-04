@@ -2,9 +2,6 @@ package com.hedvig.android.feature.editcoinsured.navigation
 
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -35,8 +32,4 @@ internal data class EditCoOwnersTriageDeepLinkKey(
 ) : HedvigNavKey
 
 @Serializable
-internal data class EditCoInsuredSuccessKey(val date: LocalDate, val type: CoInsuredFlowType) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<LocalDate>())
-  }
-}
+internal data class EditCoInsuredSuccessKey(val date: LocalDate, val type: CoInsuredFlowType) : HedvigNavKey

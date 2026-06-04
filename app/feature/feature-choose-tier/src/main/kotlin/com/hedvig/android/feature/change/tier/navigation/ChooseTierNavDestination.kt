@@ -1,10 +1,7 @@
 package com.hedvig.android.feature.change.tier.navigation
 
 import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.NavKeyTypeAware
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -32,36 +29,18 @@ data class ChooseTierKey(
    * The ID to the contract and the change tier intent info with activation date, current tier level and all quote ids
    */
   val parameters: InsuranceCustomizationParameters,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<InsuranceCustomizationParameters>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
-internal data class ComparisonKey(val comparisonParameters: ComparisonParameters) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<ComparisonParameters>())
-  }
-}
+internal data class ComparisonKey(val comparisonParameters: ComparisonParameters) : HedvigNavKey
 
 @Serializable
 internal data class SummaryKey(
   val params: SummaryParameters,
-) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
-  }
-}
+) : HedvigNavKey
 
 @Serializable
-internal data class SubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey {
-  companion object : NavKeyTypeAware {
-    override val typeList: List<KType> = listOf(
-      typeOf<LocalDate>(),
-    )
-  }
-}
+internal data class SubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey
 
 @Serializable
 internal data object SubmitFailureKey : HedvigNavKey
