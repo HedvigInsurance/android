@@ -172,7 +172,6 @@ private fun PuppyGuideSuccessScreen(
     ) {
       val consumedWindowInsets = remember { MutableWindowInsets() }
       PuppyTopAppBar(
-        title = "",
         onBack = onNavigateUp,
         Modifier.onSizeChanged {
           consumedWindowInsets.insets = WindowInsets(top = it.height)
