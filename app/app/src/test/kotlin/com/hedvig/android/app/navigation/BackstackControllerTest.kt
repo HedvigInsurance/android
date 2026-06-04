@@ -157,15 +157,24 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedOut stashes the live session tagged with the member id`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Profile) // park Insurances run, render Profile root
+    controller.selectTopLevel(TopLevelGraph.Payments) // park Insurances run, render Payments root
     controller.setLoggedOut("mem-1")
     assertThat(controller.entries.toList()).containsExactly(LoginKey)
     assertThat(controller.parkedRuns).isEmpty()
     val stash = controller.stashedSession!!
     assertThat(stash.memberId).isEqualTo("mem-1")
-    assertThat(stash.entries).containsExactly(HomeKey, ProfileKey)
+    assertThat(stash.entries).containsExactly(HomeKey, PaymentsKey)
     assertThat(stash.parkedRuns[TopLevelGraph.Insurances])
       .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
+  }
+
+  @Test
+  fun `setLoggedOut from a deliberate-logout origin stashes nothing even with a member id`() {
+    val controller = controllerWith(HomeKey, ProfileKey)
+    controller.setLoggedOut("mem-1")
+    assertThat(controller.entries.toList()).containsExactly(LoginKey)
+    assertThat(controller.parkedRuns).isEmpty()
+    assertThat(controller.stashedSession).isEqualTo(null)
   }
 
   @Test
@@ -276,10 +285,10 @@ internal class BackstackControllerTest {
   @Test
   fun `setLoggedIn restores the stash for the same member`() {
     val controller = controllerWith(HomeKey, InsurancesKey, HelpCenterKey)
-    controller.selectTopLevel(TopLevelGraph.Profile)
+    controller.selectTopLevel(TopLevelGraph.Payments)
     controller.setLoggedOut("mem-1")
     controller.setLoggedIn("mem-1")
-    assertThat(controller.entries.toList()).containsExactly(HomeKey, ProfileKey)
+    assertThat(controller.entries.toList()).containsExactly(HomeKey, PaymentsKey)
     assertThat(controller.parkedRuns[TopLevelGraph.Insurances])
       .isEqualTo(listOf(InsurancesKey, HelpCenterKey))
     assertThat(controller.stashedSession).isEqualTo(null)

@@ -20,6 +20,7 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import com.hedvig.android.app.ui.startDestination
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
+import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
@@ -255,11 +256,15 @@ internal class BackstackController(
    * Drop to the login root. Stashes the live session (tagged with [memberId]) so a same-member
    * re-login can restore the history; the stash is excluded from [allLiveContentKeys], so the
    * decorators dispose every key's per-entry state while it waits. A null [memberId] (demo mode /
-   * unknown identity) stashes nothing — that session can never be safely restored.
+   * unknown identity) stashes nothing — that session can never be safely restored. Logging out while
+   * the top destination is a [DeliberateLogoutOrigin] (Profile) is treated as an intentional sign-out,
+   * so nothing is stashed even with a known [memberId] — restoring the member onto that screen would
+   * be wrong.
    */
   fun setLoggedOut(memberId: String?) {
     Snapshot.withMutableSnapshot {
-      stashedSession = if (memberId != null) {
+      val isDeliberateLogout = entries.lastOrNull() is DeliberateLogoutOrigin
+      stashedSession = if (memberId != null && !isDeliberateLogout) {
         StashedSession(memberId, entries.toList(), parkedRuns.toMap())
       } else {
         null
