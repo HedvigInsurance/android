@@ -168,6 +168,14 @@ fun NavGraphBuilder.featureGraph(
 
 **Top-level navigation graphs:** Home, Insurances, Forever, Payments, Profile
 
+**Critical navigation rule — `navigateUp` is reserved for the top app bar back button:**
+
+`backstack.navigateUp()` may **only** be wired to the back arrow in a screen's top app bar. In every other case — "done"/"close"/"continue" buttons, success screens, dismissing a flow, programmatic pops after an action — call `backstack.popBackstack()` instead.
+
+**Why:** `navigateUp` carries deep-link/synthetic-stack semantics (the `:app` `BackstackController` overrides it to rebuild a parent stack when the user arrived via a lone deep link). That behavior is correct for the top app bar's "up" affordance, but wrong for an in-content button, where the user expects a plain temporal pop of the current entry. Mixing them makes a button behave differently depending on how the screen was reached, and can diverge from predictive (system) back.
+
+**How to apply:** When arranging the backstack for a flow, do it *at navigation time* (when navigating to a screen), so that a later plain `popBackstack()` and the system back gesture always land in the same place — never special-case the pop inside a button handler.
+
 ### Dependency Injection
 
 Uses Koin with modular configuration:
@@ -195,6 +203,14 @@ val applicationModule = module {
 - Each feature/data module has its own DI module
 - Common dependencies (logging, tracking) auto-injected by build plugin
 - When a Presenter or ViewModel needs to call a use case, always inject the use case directly as a typed dependency — never abstract it into an anonymous `suspend () -> T` lambda. If two separate operations are needed (e.g. payin vs payout setup), create two separate, dedicated use case classes and two separate presenters. Do not create a shared interface just to enable reuse through a single presenter.
+
+**Critical Metro KMP rule — never put a platform-overridable `@ContributesBinding` default in `commonMain`:**
+
+If an interface needs a different implementation per platform, bind it **per-platform** with explicit `@Provides`/`@ContributesBinding` in each platform source set (`androidMain`, `iosMain`/`nativeMain`, `jvmMain`) — the way `:featureflags:feature-flags` binds `FeatureManager` (`UnleashFeatureFlagProvider` on Android, provided via `FeatureFlagsAndroidMetroProviders`). Do **not** annotate a `commonMain` default impl with `@ContributesBinding`.
+
+**Why:** a `commonMain` `@ContributesBinding` contributes that binding to **every** target. A platform-specific impl (e.g. an `androidMain` class) that forgets its own contribution annotation is then **silently shadowed** by the common default at runtime — no compile error, just wrong behavior. This actually happened: `NoopPermissionManager` (commonMain, `isPermissionGranted` always `false`) shadowed the real `ActivityCompatPermissionManager` on Android, so every notification sender behaved as if `POST_NOTIFICATIONS` was never granted. With per-platform binding instead, a missing binding is a **compile-time** error (loud), not a silent fallback.
+
+**How to apply:** When you see a `commonMain` interface with platform-specific impls, bind per-platform and keep `commonMain` free of the default binding. If you must keep a `commonMain` default (Metro 1.1.1 has no `rank`), the platform override **must** carry `@ContributesBinding(AppScope::class, replaces = [TheCommonDefault::class])` — but prefer the per-platform pattern, since `replaces` only protects the impls that exist today and silently re-breaks if a future platform impl forgets to contribute.
 
 ### Data Layer
 
