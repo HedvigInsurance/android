@@ -355,7 +355,7 @@ private sealed interface TopLevelDestination {
   val destination: Destination
 
   object Home : TopLevelDestination {
-    override val destination: Destination = HomeDestination.Home
+    override val destination: Destination = HomeDestination.Home()
   }
 
   object Insurances : TopLevelDestination {

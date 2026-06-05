@@ -38,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -153,6 +154,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HomeDestination(
   viewModel: HomeViewModel,
+  startClaimFlow: Boolean,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   navigateToClaimChat: () -> Unit,
@@ -174,6 +176,7 @@ internal fun HomeDestination(
   val notificationPermissionState = rememberNotificationPermissionState()
   HomeScreen(
     uiState = uiState,
+    startClaimFlow = startClaimFlow,
     notificationPermissionState = notificationPermissionState,
     reload = { viewModel.emit(HomeEvent.RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
@@ -203,6 +206,7 @@ internal fun HomeDestination(
 @Composable
 private fun HomeScreen(
   uiState: HomeUiState,
+  startClaimFlow: Boolean,
   notificationPermissionState: NotificationPermissionState,
   reload: () -> Unit,
   onNavigateToInbox: () -> Unit,
@@ -247,6 +251,17 @@ private fun HomeScreen(
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
+  // Auto-open the start-claim consent sheet when arriving via the `/submit-claim` deep link, mirroring a tap on the
+  // "Start claim" button. Guarded so it only happens once per entry, surviving recompositions and configuration changes.
+  if (startClaimFlow) {
+    var hasOpenedStartClaimSheet by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+      if (!hasOpenedStartClaimSheet) {
+        hasOpenedStartClaimSheet = true
+        startClaimBottomSheetState.show()
+      }
+    }
+  }
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
     val transition = updateTransition(targetState = uiState, label = "home ui state")
@@ -802,6 +817,7 @@ private fun PreviewHomeScreen(
           ),
           isProduction = true,
         ),
+        startClaimFlow = false,
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
@@ -835,6 +851,7 @@ private fun PreviewHomeScreenWithError() {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       HomeScreen(
         uiState = HomeUiState.Error(null),
+        startClaimFlow = false,
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},
@@ -889,6 +906,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           addonBannerInfo = null,
           isProduction = true,
         ),
+        startClaimFlow = false,
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
         reload = {},
         onNavigateToInbox = {},

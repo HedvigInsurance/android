@@ -1,6 +1,9 @@
 package com.hedvig.android.feature.home.home.navigation
 
+import android.content.Intent
+import androidx.core.os.BundleCompat
 import androidx.lifecycle.compose.dropUnlessResumed
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import coil3.ImageLoader
@@ -45,8 +48,10 @@ fun NavGraphBuilder.homeGraph(
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
       val viewModel: HomeViewModel = koinViewModel()
+      val startClaimFlow = startClaimFlow || it.wasLaunchedFromClaimDeepLink(hedvigDeepLinkContainer)
       HomeDestination(
         viewModel = viewModel,
+        startClaimFlow = startClaimFlow,
         onNavigateToInbox = dropUnlessResumed { onNavigateToInbox() },
         onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
         navigateToClaimChat = dropUnlessResumed { navigateToClaimChat() },
@@ -83,4 +88,15 @@ fun NavGraphBuilder.homeGraph(
     }
     nestedGraphs()
   }
+}
+
+/**
+ * Whether this back stack entry was opened by the claim flow deep link (`/submit-claim`). The deep link does not carry
+ * any route argument, so we inspect the launching intent's URI and match it against the known claim flow patterns.
+ */
+private fun NavBackStackEntry.wasLaunchedFromClaimDeepLink(hedvigDeepLinkContainer: HedvigDeepLinkContainer): Boolean {
+  val arguments = arguments ?: return false
+  val deepLinkIntent = BundleCompat.getParcelable(arguments, NavController.KEY_DEEP_LINK_INTENT, Intent::class.java)
+  val deepLinkUri = deepLinkIntent?.data?.toString() ?: return false
+  return hedvigDeepLinkContainer.claimFlow.any { claimFlowUri -> deepLinkUri.startsWith(claimFlowUri) }
 }
