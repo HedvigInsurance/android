@@ -43,108 +43,6 @@ class ProfilePresenterTest {
   }
 
   @Test
-  fun `when payment-feature is not activated, should not show payment-data`() = runTest {
-    val certificatesAvailabilityUseCase = FakeCheckCertificatesAvailabilityUseCase()
-    val presenter = ProfilePresenter(
-      FakeGetEurobonusStatusUseCase().apply {
-        turbine.add(GetEurobonusError.EurobonusNotApplicable.left())
-      },
-      certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
-      TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(
-        fixedMap = mapOf(
-          Feature.PAYMENT_SCREEN to false,
-          Feature.HELP_CENTER to true,
-          Feature.ENABLE_CLAIM_HISTORY to false,
-        ),
-      ),
-      noopLogoutUseCase,
-    )
-
-    presenter.test(ProfileUiState.Loading) {
-      assertThat(awaitItem()).isInstanceOf<ProfileUiState.Loading>()
-      runCurrent()
-      assertThat(awaitItem()).isEqualTo(
-        ProfileUiState.Success(
-          euroBonus = null,
-          certificatesAvailable = true,
-          showPaymentScreen = false,
-          showClaimHistory = false,
-          memberReminders = MemberReminders(),
-        ),
-      )
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `when payment-feature is activated, should show payment data`() = runTest {
-    val certificatesAvailabilityUseCase = FakeCheckCertificatesAvailabilityUseCase()
-    val presenter = ProfilePresenter(
-      FakeGetEurobonusStatusUseCase().apply {
-        turbine.add(GetEurobonusError.EurobonusNotApplicable.left())
-      },
-      certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
-      TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(
-        fixedMap = mapOf(
-          Feature.PAYMENT_SCREEN to true,
-          Feature.HELP_CENTER to true,
-          Feature.ENABLE_CLAIM_HISTORY to false,
-        ),
-      ),
-      noopLogoutUseCase,
-    )
-
-    presenter.test(ProfileUiState.Loading) {
-      assertThat(awaitItem()).isInstanceOf<ProfileUiState.Loading>()
-      runCurrent()
-      assertThat(awaitItem()).isEqualTo(
-        ProfileUiState.Success(
-          euroBonus = null,
-          certificatesAvailable = true,
-          showPaymentScreen = true,
-          showClaimHistory = false,
-          memberReminders = MemberReminders(),
-        ),
-      )
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `when payment-feature is activated, but response fails, should not show payment data`() = runTest {
-    val certificatesAvailabilityUseCase = FakeCheckCertificatesAvailabilityUseCase()
-    val presenter = ProfilePresenter(
-      FakeGetEurobonusStatusUseCase().apply {
-        turbine.add(GetEurobonusError.EurobonusNotApplicable.left())
-      },
-      certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) },
-      TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
-      TestEnableNotificationsReminderSnoozeManager(),
-      FakeFeatureManager(fixedReturnForAll = false),
-      noopLogoutUseCase,
-    )
-
-    presenter.test(ProfileUiState.Loading) {
-      assertThat(awaitItem()).isInstanceOf<ProfileUiState.Loading>()
-      runCurrent()
-      assertThat(awaitItem()).isEqualTo(
-        ProfileUiState.Success(
-          euroBonus = null,
-          certificatesAvailable = true,
-          showPaymentScreen = false,
-          showClaimHistory = false,
-          memberReminders = MemberReminders(),
-        ),
-      )
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
   fun `claims history feature flag hides the navigation option`(
     @TestParameter claimHistoryFlag: Boolean,
   ) = runTest {
@@ -155,7 +53,6 @@ class ProfilePresenterTest {
       TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(
         mapOf(
-          Feature.PAYMENT_SCREEN to false,
           Feature.ENABLE_CLAIM_HISTORY to claimHistoryFlag,
         ),
       ),
@@ -195,7 +92,7 @@ class ProfilePresenterTest {
         ProfileUiState.Success(
           euroBonus = null,
           certificatesAvailable = true,
-          showPaymentScreen = false,
+          showPaymentScreen = true,
           showClaimHistory = false,
           memberReminders = MemberReminders(),
         ),
@@ -225,7 +122,7 @@ class ProfilePresenterTest {
         ProfileUiState.Success(
           euroBonus = EuroBonus("code1234"),
           certificatesAvailable = true,
-          showPaymentScreen = false,
+          showPaymentScreen = true,
           showClaimHistory = false,
           memberReminders = MemberReminders(),
         ),
@@ -254,7 +151,7 @@ class ProfilePresenterTest {
         ProfileUiState.Success(
           euroBonus = EuroBonus("code1234"),
           certificatesAvailable = true,
-          showPaymentScreen = false,
+          showPaymentScreen = true,
           showClaimHistory = false,
           memberReminders = MemberReminders(),
         ),
@@ -285,7 +182,7 @@ class ProfilePresenterTest {
         ProfileUiState.Success(
           euroBonus = EuroBonus("code1234"),
           certificatesAvailable = false,
-          showPaymentScreen = false,
+          showPaymentScreen = true,
           showClaimHistory = false,
           memberReminders = MemberReminders(),
         ),
@@ -298,8 +195,6 @@ class ProfilePresenterTest {
   fun `Initially all optional items are off, and as they come in, they show one by one`() = runTest {
     val featureManager = FakeFeatureManager(
       fixedMap = mapOf(
-        Feature.PAYMENT_SCREEN to true,
-        Feature.HELP_CENTER to true,
         Feature.ENABLE_CLAIM_HISTORY to false,
       ),
     )
@@ -361,8 +256,6 @@ class ProfilePresenterTest {
       TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(
         mapOf(
-          Feature.PAYMENT_SCREEN to false,
-          Feature.HELP_CENTER to true,
           Feature.ENABLE_CLAIM_HISTORY to false,
         ),
       ),
@@ -381,7 +274,7 @@ class ProfilePresenterTest {
           certificatesAvailable = false,
           memberReminders = MemberReminders(),
           showClaimHistory = false,
-          showPaymentScreen = false,
+          showPaymentScreen = true,
         ),
       )
 
@@ -402,8 +295,6 @@ class ProfilePresenterTest {
       TestEnableNotificationsReminderSnoozeManager(),
       FakeFeatureManager(
         mapOf(
-          Feature.PAYMENT_SCREEN to false,
-          Feature.HELP_CENTER to true,
           Feature.ENABLE_CLAIM_HISTORY to false,
         ),
       ),
@@ -456,13 +347,12 @@ class ProfilePresenterTest {
       )
       getMemberRemindersUseCase.memberReminders.add(MemberReminders())
       getEurobonusStatusUseCase.turbine.add(GetEurobonusError.Error(ErrorMessage()).left())
-      featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to false)
       runCurrent()
       assertThat(awaitItem()).isEqualTo(
         ProfileUiState.Success(
           euroBonus = null,
           certificatesAvailable = false,
-          showPaymentScreen = false,
+          showPaymentScreen = true,
           showClaimHistory = false,
           memberReminders = MemberReminders(),
         ),
@@ -472,7 +362,6 @@ class ProfilePresenterTest {
       runCurrent()
       getEurobonusStatusUseCase.turbine.add(EuroBonus("abc").right())
       certificatesAvailabilityUseCase.apply { turbine.add(Unit.right()) }
-      featureManager.featureTurbine.add(Feature.PAYMENT_SCREEN to true)
       getMemberRemindersUseCase.memberReminders.add(
         MemberReminders(connectPayment = MemberReminder.PaymentReminder.ConnectPayment(id = testId)),
       )

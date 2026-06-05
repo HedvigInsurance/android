@@ -80,20 +80,18 @@ internal class ProfilePresenter(
       }
       combine(
         getMemberRemindersUseCase.invoke(),
-        featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN),
         featureManager.isFeatureEnabled(Feature.ENABLE_CLAIM_HISTORY),
         flow { emit(getEuroBonusStatusUseCase.invoke()) },
         flow { emit(checkCertificatesAvailabilityUseCase.invoke()) },
       ) {
         memberReminders,
-        isPaymentScreenFeatureEnabled,
         isClaimHistoryFeatureEnabled,
         eurobonusResponse,
         certificatesAvailability,
         ->
         ProfileUiState.Success(
           euroBonus = eurobonusResponse.getOrNull(),
-          showPaymentScreen = isPaymentScreenFeatureEnabled,
+          showPaymentScreen = true,
           memberReminders = memberReminders,
           showClaimHistory = isClaimHistoryFeatureEnabled,
           certificatesAvailable = certificatesAvailability.isRight(),

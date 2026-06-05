@@ -16,18 +16,13 @@ internal class UnleashFeatureFlagProvider(
         when (feature) {
           // Kill switches: the remote toggle being on means the feature is off.
           Feature.TERMINATION_FLOW,
-          Feature.HELP_CENTER,
           Feature.PUPPY_GUIDE,
           -> !hedvigUnleashClient.client.isEnabled(key)
 
           Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT,
-          Feature.MOVING_FLOW,
-          Feature.PAYMENT_SCREEN,
           Feature.UPDATE_NECESSARY,
-          Feature.EDIT_COINSURED,
           Feature.TRAVEL_ADDON,
           Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES,
-          Feature.DISABLE_REDEEM_CAMPAIGN,
           Feature.ENABLE_CLAIM_HISTORY,
           -> hedvigUnleashClient.client.isEnabled(key)
         }

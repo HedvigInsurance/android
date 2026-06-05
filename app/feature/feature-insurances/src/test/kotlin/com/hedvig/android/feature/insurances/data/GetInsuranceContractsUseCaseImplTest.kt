@@ -125,9 +125,6 @@ class GetInsuranceContractsUseCaseImplTest {
     runTest {
       val featureManager = FakeFeatureManager(
         fixedMap = mapOf(
-          Feature.MOVING_FLOW to true,
-          Feature.EDIT_COINSURED to true,
-          Feature.PAYMENT_SCREEN to true,
           Feature.TRAVEL_ADDON to false,
         ),
       )
@@ -150,9 +147,6 @@ class GetInsuranceContractsUseCaseImplTest {
     runTest {
       val featureManager = FakeFeatureManager(
         fixedMap = mapOf(
-          Feature.MOVING_FLOW to true,
-          Feature.EDIT_COINSURED to true,
-          Feature.PAYMENT_SCREEN to true,
           Feature.TRAVEL_ADDON to false,
         ),
       )

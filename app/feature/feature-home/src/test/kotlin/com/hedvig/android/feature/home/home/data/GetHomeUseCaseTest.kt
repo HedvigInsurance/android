@@ -478,7 +478,6 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.HELP_CENTER to true,
         Feature.ENABLE_CLAIM_HISTORY to true,
         // With the inbox-always-available kill switch off, the icon depends purely on existing conversations
         Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
@@ -543,7 +542,6 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.HELP_CENTER to true,
         Feature.ENABLE_CLAIM_HISTORY to true,
         Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to inboxAlwaysAvailable,
       ),
@@ -598,54 +596,12 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `the disable help center feature flag determines if we show it or not`(
-    @TestParameter helpCenterIsEnabled: Boolean,
-  ) = runTest {
-    val featureManager = FakeFeatureManager(
-      mapOf(
-        Feature.HELP_CENTER to helpCenterIsEnabled,
-        Feature.ENABLE_CLAIM_HISTORY to true,
-        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
-      ),
-    )
-    val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
-
-    apolloClient.registerTestResponse(
-      HomeQuery(true),
-      HomeQuery.Data(OctopusFakeResolver),
-    )
-    apolloClient.registerTestResponse(
-      UnreadMessageCountQuery(),
-      UnreadMessageCountQuery.Data(OctopusFakeResolver),
-    )
-    apolloClient.registerTestResponse(
-      CbmNumberOfChatMessagesQuery(),
-      CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
-    )
-
-    val result = getHomeDataUseCase.invoke(true).first()
-
-    assertThat(result)
-      .isNotNull()
-      .isRight()
-      .prop(HomeData::showHelpCenter)
-      .apply {
-        if (helpCenterIsEnabled) {
-          isTrue()
-        } else {
-          isFalse()
-        }
-      }
-  }
-
-  @Test
   fun `without legacy conversations, show the chat icon depending on the other conversations status`(
     @TestParameter hasAtLeastOneOpenConversation: Boolean,
     @TestParameter closedConversationHasAtLeastOneMessage: Boolean,
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.HELP_CENTER to true,
         Feature.ENABLE_CLAIM_HISTORY to true,
         // Inbox-always-available off, so the icon reflects the conversation state being tested here
         Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,

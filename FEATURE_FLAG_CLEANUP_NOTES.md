@@ -43,13 +43,9 @@ Key distinction:
 
 ## Action plan
 
-### 1. Safe, unambiguous win — delete `DISABLE_REDEEM_CAMPAIGN` (dead code)
-Defined in the enum, `unleashKey`, and the provider, but read **nowhere** in the app
-(verified by grep — no references outside those three files). Safe to remove regardless of
-dashboard state.
-- Remove the enum value from `Feature.kt` (commonMain).
-- Remove its arm from `Feature.unleashKey` (`FeatureUnleashKey.kt`, androidMain).
-- Remove its arm from `UnleashFeatureFlagProvider` (it's in the positive `isEnabled` group).
+### 1. Safe, unambiguous win — delete `DISABLE_REDEEM_CAMPAIGN` (dead code) — DONE 2026-05-30
+Was defined in the enum, `unleashKey`, and the provider, but read **nowhere** in the app.
+Removed from all three files.
 
 ### 2. Make permanent — after confirming 100% rollout in Unleash
 `MOVING_FLOW`, `PAYMENT_SCREEN`, `EDIT_COINSURED`, `HELP_CENTER`. For each:
