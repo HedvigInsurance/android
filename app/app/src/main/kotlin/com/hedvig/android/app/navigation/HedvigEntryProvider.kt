@@ -78,6 +78,7 @@ import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
+import com.hedvig.android.navigation.compose.removeAllOf
 import com.hedvig.feature.claim.chat.ClaimChatKey
 import com.hedvig.feature.claim.chat.claimChatEntries
 import com.hedvig.feature.remove.addons.RemoveAddonsKey
@@ -294,12 +295,8 @@ private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
     appPackageId = appPackageId,
     onNavigateToNewConversation = navigateToNewConversation,
     openPlayStore = externalNavigator::tryOpenPlayStore,
-    closeFlowOnSuccess = {
-      if (backstack.findLastOrNull<InboxKey>() != null) {
-        backstack.popUpTo<InboxKey>(inclusive = true)
-      } else {
-        backstack.popBackstack()
-      }
+    clearClaimEntryPoints = {
+      backstack.removeAllOf<InboxKey>()
     },
   )
   claimDetailsEntries(

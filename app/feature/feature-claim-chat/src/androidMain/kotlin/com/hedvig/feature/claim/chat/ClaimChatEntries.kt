@@ -1,5 +1,6 @@
 package com.hedvig.feature.claim.chat
 
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.navigation3.runtime.EntryProviderScope
 import coil3.ImageLoader
@@ -7,6 +8,7 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.StepContent
@@ -47,7 +49,9 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   imageLoader: ImageLoader,
   onNavigateToNewConversation: () -> Unit,
   openPlayStore: () -> Unit,
-  closeFlowOnSuccess: () -> Unit,
+  // Lets the host drop the entries that launched this flow (e.g. the inbox) once a claim is
+  // committed, so leaving the outcome screen returns past them rather than back into the launcher.
+  clearClaimEntryPoints: () -> Unit,
 ) {
   entry<ClaimChatKey> { key ->
     ClaimChatDestination(
@@ -58,10 +62,13 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
       navigateToClaimOutcome = { outcome ->
         when (outcome) {
           is ClaimIntentOutcome.Claim -> {
-            backstack.navigateAndPopUpTo<ClaimChatKey>(
-              ClaimOutcomeNewClaimKey(outcome = outcome),
-              inclusive = true,
-            )
+            Snapshot.withMutableSnapshot {
+              clearClaimEntryPoints()
+              backstack.navigateAndPopUpTo<ClaimChatKey>(
+                ClaimOutcomeNewClaimKey(outcome = outcome),
+                inclusive = true,
+              )
+            }
           }
         }
       },
@@ -85,9 +92,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
     )
   }
   entry<ClaimOutcomeNewClaimKey> {
-    ClaimOutcomeNewClaimDestination(
-      closeFlowOnSuccess,
-    )
+    ClaimOutcomeNewClaimDestination(backstack::popBackstack)
   }
   entry<UpdateAppKey> {
     ForceUpgradeBlockingScreen(
