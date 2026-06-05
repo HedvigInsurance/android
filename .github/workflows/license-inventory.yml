@@ -1,0 +1,52 @@
+# Weekly OSS license inventory for the Android app.
+#
+# Uses the build-resolved jaredsburrows licenseReleaseReport (accurate, full dependency
+# closure) — not a manifest scanner. Commits the sorted JSON as annual-review evidence;
+# "what changed since last year" is `git diff` on .license/inventory.json.
+name: license-inventory
+
+on:
+  schedule:
+    - cron: "0 5 * * 1" # Mondays ~06:00 Europe/Stockholm
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest-8-vcpu
+    steps:
+      - uses: actions/checkout@v5
+      - name: Setup CI
+        uses: ./.github/actions/common-setup
+        with:
+          gradle-cache-read-only: "true"
+          datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+          lokalise-id: ${{ secrets.LOKALISE_ID }}
+          lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
+
+      - name: Generate license report
+        run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
+
+      - name: Stage inventory (sorted for stable diffs)
+        run: |
+          mkdir -p .license
+          rm -f .license/inventory.cdx.json   # remove the old Trivy-based inventory
+          jq 'sort_by(.dependency)' \
+            app/app/build/reports/licenses/licenseReleaseReport.json \
+            > .license/inventory.json
+
+      - name: Open PR if inventory changed
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          add-paths: .license
+          branch: chore/license-inventory
+          title: "chore: update license inventory"
+          commit-message: "chore: update license inventory"
+          labels: dependencies
+          body: |
+            Build-resolved OSS license inventory (jaredsburrows `licenseReleaseReport`),
+            kept as annual-review evidence. Opens only when the dependency/license set
+            changed since the last snapshot.

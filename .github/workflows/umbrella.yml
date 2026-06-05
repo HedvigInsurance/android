@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - eng/metro-with-ios
   workflow_dispatch:
 
 concurrency:

@@ -32,6 +32,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,7 +63,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
-import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.compose.ui.rememberStickyHeaderTopInset
@@ -78,8 +80,11 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.blockSwipeBackOnIos
 import com.hedvig.android.design.system.hedvig.icon.Checkmark
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.A11Y_READ_LABEL_HACK
 import hedvig.resources.PUPPY_GUIDE_INFO
 import hedvig.resources.PUPPY_GUIDE_LABEL_READ
@@ -377,17 +382,26 @@ private fun ArticleItem(
       contentAlignment = Alignment.TopEnd,
     ) {
       val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
-      AsyncImage(
+      val painter = rememberAsyncImagePainter(
         model = story.image,
-        contentDescription = EmptyContentDescription,
-        placeholder = fallbackPainter,
+        imageLoader = imageLoader,
         error = fallbackPainter,
         fallback = fallbackPainter,
-        imageLoader = imageLoader,
+        contentScale = ContentScale.Crop,
+      )
+      val state by painter.state.collectAsState()
+      Image(
+        painter = painter,
+        contentDescription = EmptyContentDescription,
         contentScale = ContentScale.Crop,
         modifier = Modifier
           .size(size)
-          .clip(shape),
+          .clip(shape)
+          .hedvigPlaceholder(
+            visible = state is AsyncImagePainter.State.Empty || state is AsyncImagePainter.State.Loading,
+            shape = shape,
+            highlight = PlaceholderHighlight.shimmer(),
+          ),
       )
       if (isRead) {
         Box(

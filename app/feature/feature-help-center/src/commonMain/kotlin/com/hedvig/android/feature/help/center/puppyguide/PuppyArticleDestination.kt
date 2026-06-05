@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.help.center.puppyguide
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -24,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -44,7 +46,8 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.ImageLoader
-import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.hedvig.android.compose.ui.EmptyContentDescription
 import com.hedvig.android.design.system.hedvig.HedvigCard
 import com.hedvig.android.design.system.hedvig.HedvigErrorSection
@@ -55,10 +58,13 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.ProvideTextStyle
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
+import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberPreviewImageLoader
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.ui.MarkdownText
 import com.hedvig.android.feature.help.center.ui.rememberPerformRatingHaptic
+import com.hedvig.android.placeholder.PlaceholderHighlight
 import hedvig.resources.PUPPY_GUIDE_RATING_NOT_HELPFUL
 import hedvig.resources.PUPPY_GUIDE_RATING_QUESTION
 import hedvig.resources.PUPPY_GUIDE_RATING_VERY_HELPFUL
@@ -180,18 +186,27 @@ private fun PuppyArticleSuccessScreen(
             .fillMaxWidth(),
         ) {
           val fallbackPainter: Painter = ColorPainter(Color.Black.copy(alpha = 0.7f))
-          AsyncImage(
+          val painter = rememberAsyncImagePainter(
             model = uiState.story.image,
-            contentDescription = EmptyContentDescription,
-            placeholder = fallbackPainter,
+            imageLoader = imageLoader,
             error = fallbackPainter,
             fallback = fallbackPainter,
-            imageLoader = imageLoader,
+            contentScale = ContentScale.Crop,
+          )
+          val state by painter.state.collectAsState()
+          Image(
+            painter = painter,
+            contentDescription = EmptyContentDescription,
             contentScale = ContentScale.Crop,
             modifier = Modifier
               .fillMaxWidth()
               .defaultMinSize(minHeight = 200.dp)
-              .clip(HedvigTheme.shapes.cornerMedium),
+              .clip(HedvigTheme.shapes.cornerMedium)
+              .hedvigPlaceholder(
+                visible = state is AsyncImagePainter.State.Empty || state is AsyncImagePainter.State.Loading,
+                shape = HedvigTheme.shapes.cornerMedium,
+                highlight = PlaceholderHighlight.shimmer(),
+              ),
           )
         }
         Spacer(Modifier.height(16.dp))
