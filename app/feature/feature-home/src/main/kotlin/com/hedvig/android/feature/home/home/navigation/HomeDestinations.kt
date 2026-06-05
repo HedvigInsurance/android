@@ -13,7 +13,11 @@ sealed interface HomeDestination {
   data object Graph : HomeDestination, Destination
 
   @Serializable
-  data object Home : HomeDestination, Destination
+  data class Home(
+    // When true, the home screen automatically opens the start-claim consent sheet on arrival. Defaults to false for
+    // regular home navigation; set to true when arriving via the `/submit-claim` deep link (see homeGraph).
+    val startClaimFlow: Boolean = false,
+  ) : HomeDestination, Destination
 
   @Serializable
   data class FirstVet(val sections: List<FirstVetSection>) : HomeDestination, Destination {
