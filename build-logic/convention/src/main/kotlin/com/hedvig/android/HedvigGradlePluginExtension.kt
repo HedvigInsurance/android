@@ -44,6 +44,8 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     project.objects.newInstance<AndroidResHandler>()
   private val roomHandler: RoomHandler =
     project.objects.newInstance<RoomHandler>()
+  private val navKeysHandler: NavKeysHandler =
+    project.objects.newInstance<NavKeysHandler>()
 
   fun apolloSchema(apolloServiceAction: Action<Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
@@ -70,6 +72,16 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
 
   fun room(isTestOnly: Boolean = false, resolveSchemaRelativeToRootDir: File.() -> File) {
     roomHandler.configure(project, pluginManager, libs, isTestOnly, resolveSchemaRelativeToRootDir)
+  }
+
+  /**
+   * Wires the [:navigation-keys-processor] KSP processor into this module. The processor scans for
+   * concrete `@Serializable HedvigNavKey` subclasses and generates a Metro `@ContributesTo(AppScope)`
+   * provider that registers them all into the polymorphic [HedvigNavKey] serializers module, so the
+   * Nav3 back stack survives process death without any hand-written per-module provider.
+   */
+  fun navKeys() {
+    navKeysHandler.configure(project, pluginManager, libs)
   }
 
   companion object {
@@ -279,6 +291,20 @@ private abstract class RoomHandler {
       project.extensions.findByType<Lint>()?.apply {
         disable.add("RestrictedApi")
       }
+    }
+  }
+}
+
+private abstract class NavKeysHandler {
+  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
+    pluginManager.apply(libs.plugins.ksp.get().pluginId)
+    // A KMP module's android-target KSP (kspAndroid) sees commonMain symbols too, so attaching the
+    // processor to the android compilation alone covers main/androidMain/commonMain keys in one pass
+    // and avoids the double-emission that per-target wiring would cause.
+    val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
+    val kspConfiguration = if (isMultiplatform) "kspAndroid" else "ksp"
+    project.dependencies {
+      add(kspConfiguration, project.project(":navigation-keys-processor"))
     }
   }
 }

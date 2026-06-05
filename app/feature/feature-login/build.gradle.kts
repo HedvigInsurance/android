@@ -7,6 +7,7 @@ hedvig {
   androidResources()
   compose()
   serialization()
+  navKeys()
 }
 
 android {

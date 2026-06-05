@@ -51,6 +51,18 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
     report.set(rootDir.resolve("build/reports/ktlint/${project.path}.xml"))
   }
 
+  // Detach lint/format from codegen — see detachGeneratedSourceTaskDependencies. Run in
+  // projectsEvaluated so it lands after every kotlinter source-wiring, including late-created
+  // source sets (e.g. the jvm "dev" compilation) that aren't present yet during afterEvaluate.
+  gradle.projectsEvaluated {
+    tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
+      detachGeneratedSourceTaskDependencies()
+    }
+    tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>().configureEach {
+      detachGeneratedSourceTaskDependencies()
+    }
+  }
+
   tasks.register("ktlintCheck") {
     dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>())
   }
@@ -58,6 +70,17 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
   tasks.register("ktlintFormat") {
     dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>())
   }
+}
+
+// kotlinter derives a lint/format task's source from the Kotlin source sets, which include
+// codegen output dirs (e.g. KSP) carrying a `builtBy` back to the generating task. On KMP
+// modules that transitively pulls every target's KSP + compile task into the ktlint graph,
+// so `ktlintFormat` ends up compiling iOS/JVM. We already exclude generated files from being
+// linted, so the dependency is pure overhead — re-set the source through a plain provider that
+// resolves the same files but carries no task dependencies.
+private fun org.gradle.api.tasks.SourceTask.detachGeneratedSourceTaskDependencies() {
+  val original = source
+  setSource(project.provider { original.files })
 }
 
 private fun Project.configureFeatureModuleGuidelines() {

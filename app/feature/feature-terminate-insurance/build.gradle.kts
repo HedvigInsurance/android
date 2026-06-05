@@ -7,6 +7,7 @@ hedvig {
   apollo("octopus")
   compose()
   serialization()
+  navKeys()
 }
 
 android {

@@ -8,6 +8,7 @@ hedvig {
   apollo("octopus")
   compose()
   serialization()
+  navKeys()
 }
 
 kotlin {

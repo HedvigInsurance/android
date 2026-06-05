@@ -6,6 +6,7 @@ plugins {
 hedvig {
   compose()
   serialization()
+  navKeys()
 }
 
 dependencies {

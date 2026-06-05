@@ -7,6 +7,7 @@ hedvig {
   apollo(packageName = "octopus.feature.movingflow")
   serialization()
   compose()
+  navKeys()
 }
 
 dependencies {
