@@ -8,6 +8,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
@@ -18,11 +19,19 @@ import com.mikepenz.markdown.model.MarkdownTypography
 
 /**
  * Renders Markdown content with Hedvig theming.
+ *
+ * [style], when provided, is applied to the body-level elements (paragraphs, lists, quotes, tables)
+ * instead of the default body style. Headings and code keep their own styling.
  */
 @Composable
-fun HedvigMarkdownText(content: String, modifier: Modifier = Modifier) {
+fun HedvigMarkdownText(content: String, modifier: Modifier = Modifier, style: TextStyle? = null) {
   val colors = HedvigTheme.colorScheme
   val typography = HedvigTheme.typography
+
+  val bodyStyle = style ?: typography.bodySmall.copy(color = colors.textPrimary)
+  val linkSpanStyle = bodyStyle
+    .copy(color = colors.link, textDecoration = TextDecoration.Underline)
+    .toSpanStyle()
 
   val markdownColors = object : MarkdownColors {
     override val text: Color = colors.textPrimary
@@ -39,20 +48,20 @@ fun HedvigMarkdownText(content: String, modifier: Modifier = Modifier) {
     override val h4 = typography.displaySmall.copy(color = colors.textPrimary)
     override val h5 = typography.bodyLarge.copy(color = colors.textPrimary)
     override val h6 = typography.bodyMedium.copy(color = colors.textPrimary)
-    override val text = typography.bodySmall.copy(color = colors.textPrimary)
-    override val paragraph = typography.bodySmall.copy(color = colors.textPrimary)
+    override val text = bodyStyle
+    override val paragraph = bodyStyle
     override val code = typography.label
     override val inlineCode = typography.label
-    override val bullet = typography.bodySmall.copy(color = colors.textPrimary)
-    override val list = typography.bodySmall.copy(color = colors.textPrimary)
-    override val ordered = typography.bodySmall.copy(color = colors.textPrimary)
-    override val quote = typography.bodySmall.copy(color = colors.textPrimary)
-    override val table = typography.bodySmall.copy(color = colors.textPrimary)
+    override val bullet = bodyStyle
+    override val list = bodyStyle
+    override val ordered = bodyStyle
+    override val quote = bodyStyle
+    override val table = bodyStyle
     override val textLink = TextLinkStyles(
-      style = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-      focusedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-      hoveredStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
-      pressedStyle = typography.bodySmall.copy(color = colors.link).toSpanStyle(),
+      style = linkSpanStyle,
+      focusedStyle = linkSpanStyle,
+      hoveredStyle = linkSpanStyle,
+      pressedStyle = linkSpanStyle,
     )
   }
 
