@@ -5,16 +5,23 @@ import arrow.core.raise.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecuteAllowingPartialResponses
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.AddonId
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.ConfirmAddonRemovalMutation
 
 internal interface SubmitAddonRemovalUseCase {
   suspend fun invoke(contractId: ContractId, addonIds: List<AddonId>): Either<ErrorMessage, Unit>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class SubmitAddonRemovalUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : SubmitAddonRemovalUseCase {

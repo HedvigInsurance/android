@@ -5,7 +5,9 @@ import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
+import dev.zacsweers.metro.Inject
 
+@Inject
 internal class ContactInfoRepositoryDemo : ContactInfoRepository {
   private var contactInformation = ContactInformation(
     PhoneNumber("072102103"),

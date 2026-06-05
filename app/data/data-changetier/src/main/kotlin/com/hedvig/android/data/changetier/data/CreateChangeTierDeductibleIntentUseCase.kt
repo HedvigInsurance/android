@@ -6,6 +6,7 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.productvariant.toAddonVariant
 import com.hedvig.android.data.productvariant.toProductVariant
@@ -15,6 +16,9 @@ import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.first
 import octopus.ChangeTierDeductibleCreateIntentMutation
 import octopus.fragment.DeductibleFragment
@@ -28,6 +32,9 @@ internal interface CreateChangeTierDeductibleIntentUseCase {
   ): Either<ErrorMessage, ChangeTierDeductibleIntent>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class CreateChangeTierDeductibleIntentUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,

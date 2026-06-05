@@ -8,8 +8,10 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.toContractType
+import dev.zacsweers.metro.Inject
 import octopus.ActiveInsuranceContractTypesQuery
 
+@Inject
 internal class GetOnlyHasNonPayingContractsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetOnlyHasNonPayingContractsUseCase {

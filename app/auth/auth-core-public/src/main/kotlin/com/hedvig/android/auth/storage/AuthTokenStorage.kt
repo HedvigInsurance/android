@@ -7,16 +7,21 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.hedvig.android.auth.token.AuthTokens
 import com.hedvig.android.auth.token.LocalAccessToken
 import com.hedvig.android.auth.token.LocalRefreshToken
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.authlib.AccessToken
 import com.hedvig.authlib.RefreshToken
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+@SingleIn(AppScope::class)
+@Inject
 class AuthTokenStorage(
   private val dataStore: DataStore<Preferences>,
   private val clock: Clock = Clock.System,

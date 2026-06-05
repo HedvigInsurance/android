@@ -5,6 +5,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.Preferences.Key
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
@@ -20,6 +24,9 @@ internal interface ChangeTierQuoteStorage {
   suspend fun getQuotesById(ids: List<String>): List<TierDeductibleQuote>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class ChangeTierQuoteStorageImpl(
   private val datastore: DataStore<Preferences>,
 ) : ChangeTierQuoteStorage {

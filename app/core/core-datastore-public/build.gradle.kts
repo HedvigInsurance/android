@@ -12,7 +12,6 @@ kotlin {
       api(libs.androidx.datastore.preferencesCore)
 
       implementation(libs.coroutines.core)
-      implementation(libs.koin.core)
       implementation(libs.uuid)
       implementation(projects.coreCommonPublic)
     }

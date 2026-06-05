@@ -6,11 +6,16 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.ClaimIntentSubmitSelectMutation
 import octopus.type.ClaimIntentSubmitSelectInput
 
+@SingleIn(AppScope::class)
+@Inject
 internal class SubmitSelectUseCase(
   private val apolloClient: ApolloClient,
   private val languageService: LanguageService,

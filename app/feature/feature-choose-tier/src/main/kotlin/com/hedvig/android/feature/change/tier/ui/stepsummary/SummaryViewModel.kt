@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
@@ -25,10 +26,17 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.datetime.LocalDate
 
+@AssistedInject
 internal class SummaryViewModel(
-  params: SummaryParameters,
+  @Assisted params: SummaryParameters,
   tierRepository: ChangeTierRepository,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
 ) : MoleculeViewModel<SummaryEvent, SummaryState>(
@@ -38,7 +46,16 @@ internal class SummaryViewModel(
       tierRepository = tierRepository,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted params: SummaryParameters,
+    ): SummaryViewModel
+  }
+}
 
 private class SummaryPresenter(
   private val params: SummaryParameters,

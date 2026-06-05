@@ -2,15 +2,22 @@ package com.hedvig.android.feature.login.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.authlib.AuthAttemptResult
 import com.hedvig.authlib.AuthRepository
 import com.hedvig.authlib.LoginMethod
 import com.hedvig.authlib.OtpMarket
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 internal class GenericAuthViewModel(
   private val authRepository: AuthRepository,
 ) : ViewModel() {
@@ -104,7 +111,7 @@ internal class GenericAuthViewModel(
   }
 }
 
-data class GenericAuthViewState(
+internal data class GenericAuthViewState(
   val emailInput: String = "",
   val error: TextFieldError? = null,
   val verifyUrl: String? = null,

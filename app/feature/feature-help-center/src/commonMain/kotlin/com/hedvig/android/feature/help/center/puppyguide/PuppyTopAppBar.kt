@@ -4,4 +4,4 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal expect fun PuppyTopAppBar(title: String, onBack: () -> Unit, modifier: Modifier = Modifier)
+internal expect fun PuppyTopAppBar(onBack: () -> Unit, modifier: Modifier = Modifier)

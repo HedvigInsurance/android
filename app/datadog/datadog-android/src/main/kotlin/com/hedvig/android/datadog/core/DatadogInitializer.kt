@@ -21,13 +21,11 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import io.opentelemetry.api.GlobalOpenTelemetry
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import timber.log.Timber
 
 // Used in /app/src/main/AndroidManifest.xml
-abstract class DatadogInitializer : Initializer<Unit>, KoinComponent {
-  private val hedvigBuildConstants by inject<HedvigBuildConstants>()
+abstract class DatadogInitializer : Initializer<Unit> {
+  protected abstract val hedvigBuildConstants: HedvigBuildConstants
 
   override fun create(context: Context) {
     val clientToken = "pub185bcba7ed324e83d068b80e25a81359"

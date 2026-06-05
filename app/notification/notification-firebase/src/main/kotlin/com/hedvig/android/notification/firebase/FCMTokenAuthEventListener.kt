@@ -2,11 +2,18 @@ package com.hedvig.android.notification.firebase
 
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.auth.event.AuthEventListener
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
+@ContributesIntoSet(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class FCMTokenAuthEventListener(
   private val fcmTokenManager: FCMTokenManager,
 ) : AuthEventListener {

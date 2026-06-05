@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.data.changetier.data.Tier
@@ -32,9 +33,16 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
+@AssistedInject
 internal class SelectCoverageViewModel(
-  params: InsuranceCustomizationParameters,
+  @Assisted params: InsuranceCustomizationParameters,
   tierRepository: ChangeTierRepository,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
 ) : MoleculeViewModel<SelectCoverageEvent, SelectCoverageState>(
@@ -44,7 +52,16 @@ internal class SelectCoverageViewModel(
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
       tierRepository = tierRepository,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted params: InsuranceCustomizationParameters,
+    ): SelectCoverageViewModel
+  }
+}
 
 internal class SelectCoveragePresenter(
   private val params: InsuranceCustomizationParameters,

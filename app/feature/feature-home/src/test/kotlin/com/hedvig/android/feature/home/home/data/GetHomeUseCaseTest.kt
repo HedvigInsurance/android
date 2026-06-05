@@ -25,11 +25,10 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
@@ -72,15 +71,8 @@ internal class GetHomeUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  val travelBannerProvider = GetTravelAddonBannerInfoUseCaseProvider(
-    demoManager = object : DemoManager {
-      override fun isDemoMode(): Flow<Boolean> {
-        return flowOf(false)
-      }
-
-      override suspend fun setDemoMode(demoMode: Boolean) {}
-    },
-    demoImpl = object : GetAddonBannerInfoUseCase {
+  val travelBannerProvider = Provider<GetAddonBannerInfoUseCase> {
+    object : GetAddonBannerInfoUseCase {
       override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
         return flowOf(
           either {
@@ -88,17 +80,8 @@ internal class GetHomeUseCaseTest {
           },
         )
       }
-    },
-    prodImpl = object : GetAddonBannerInfoUseCase {
-      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
-        return flowOf(
-          either {
-            emptyList()
-          },
-        )
-      }
-    },
-  )
+    }
+  }
 
   @get:Rule
   val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
@@ -123,7 +106,6 @@ internal class GetHomeUseCaseTest {
           CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
       },
-
       testGetMemberRemindersUseCase,
       FakeFeatureManager(true),
       TestClock(),
@@ -173,7 +155,6 @@ internal class GetHomeUseCaseTest {
           CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
       },
-
       testGetMemberRemindersUseCase,
       FakeFeatureManager(true),
       TestClock(),
@@ -772,7 +753,6 @@ internal class GetHomeUseCaseTest {
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
-
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       featureManager,
       testClock,

@@ -33,7 +33,7 @@ import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun SuccessfulMoveDestination(moveDate: LocalDate, navigateUp: () -> Unit, popBackStack: () -> Unit) {
+internal fun SuccessfulMoveDestination(moveDate: LocalDate, navigateUp: () -> Unit, popBackstack: () -> Unit) {
   val locale = getLocale()
   val formattedDate = remember(moveDate, locale) {
     HedvigDateTimeFormatterDefaults.dateMonthAndYear(locale).format(moveDate)
@@ -41,7 +41,7 @@ internal fun SuccessfulMoveDestination(moveDate: LocalDate, navigateUp: () -> Un
 
   Surface(color = HedvigTheme.colorScheme.backgroundPrimary, modifier = Modifier.fillMaxSize()) {
     Column {
-      MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = popBackStack, withExitConfirmation = false)
+      MovingFlowTopAppBar(navigateUp = navigateUp, exitFlow = popBackstack, withExitConfirmation = false)
       Column(
         Modifier
           .fillMaxWidth()
@@ -60,7 +60,7 @@ internal fun SuccessfulMoveDestination(moveDate: LocalDate, navigateUp: () -> Un
         )
         HedvigTextButton(
           text = stringResource(Res.string.general_close_button),
-          onClick = popBackStack,
+          onClick = popBackstack,
           buttonSize = Large,
           modifier = Modifier
             .fillMaxWidth()

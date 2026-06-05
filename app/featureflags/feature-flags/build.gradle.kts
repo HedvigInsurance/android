@@ -13,7 +13,6 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.coroutines.core)
-      implementation(libs.koin.core)
     }
     androidMain.dependencies {
       implementation(libs.unleash)

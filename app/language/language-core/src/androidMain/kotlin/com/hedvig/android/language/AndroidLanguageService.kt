@@ -3,11 +3,18 @@ package com.hedvig.android.language
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.locale.CommonLocale
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import java.util.Locale
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class AndroidLanguageService() : LanguageService {
   /**
    * Sets the language, and as a side effect, restarts all running activities.

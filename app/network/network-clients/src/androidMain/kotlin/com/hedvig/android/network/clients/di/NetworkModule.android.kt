@@ -1,19 +1,18 @@
 package com.hedvig.android.network.clients.di
 
 import com.hedvig.android.auth.AccessTokenProvider
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.network.clients.AccessTokenFetcher
-import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
-import com.hedvig.android.network.clients.NoopExtraApolloClientConfiguration
-import org.koin.core.module.Module
-import org.koin.dsl.module
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
-internal actual val platformNetworkModule: Module = module {
-  single<AccessTokenFetcher> {
-    val provider = get<AccessTokenProvider>()
+@ContributesTo(AppScope::class)
+interface AndroidNetworkMetroProviders {
+  @Provides
+  @SingleIn(AppScope::class)
+  fun provideAccessTokenFetcher(accessTokenProvider: AccessTokenProvider): AccessTokenFetcher =
     object : AccessTokenFetcher {
-      override suspend fun fetch(): String? {
-        return provider.provide()
-      }
+      override suspend fun fetch(): String? = accessTokenProvider.provide()
     }
-  }
 }

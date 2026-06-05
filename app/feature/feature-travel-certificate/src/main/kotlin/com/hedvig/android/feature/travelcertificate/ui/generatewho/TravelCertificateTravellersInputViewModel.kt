@@ -10,21 +10,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContractUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
+@AssistedInject
 internal class TravelCertificateTravellersInputViewModel(
-  primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+  @Assisted primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
 ) : MoleculeViewModel<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState>(
@@ -34,10 +42,20 @@ internal class TravelCertificateTravellersInputViewModel(
       createTravelCertificateUseCase,
       getCoInsuredForContractUseCase,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted
+      primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
+    ): TravelCertificateTravellersInputViewModel
+  }
+}
 
 internal class TravelCertificateTravellersInputPresenter(
-  private val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+  private val primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
 ) : MoleculePresenter<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState> {

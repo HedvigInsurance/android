@@ -8,6 +8,7 @@ hedvig {
   apollo("octopus")
   compose()
   serialization()
+  navKeys()
 }
 
 kotlin {
@@ -22,7 +23,8 @@ kotlin {
       implementation(libs.jetbrains.compose.ui)
       implementation(libs.jetbrains.compose.ui.tooling.preview)
       implementation(libs.jetbrains.navigationevent.compose)
-      implementation(libs.koin.composeViewModel)
+      implementation(libs.metro.viewmodel)
+      implementation(libs.metro.viewmodel.compose)
       implementation(libs.kotlinx.serialization.core)
       implementation(libs.kotlinx.serialization.json)
       implementation(projects.apolloCore)
@@ -46,7 +48,6 @@ kotlin {
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
-      implementation(projects.navigationComposeTyped)
       implementation(projects.dataProductVariantPublic)
     }
   }

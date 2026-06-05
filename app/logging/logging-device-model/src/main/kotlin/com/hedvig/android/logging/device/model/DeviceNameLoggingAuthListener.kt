@@ -3,12 +3,19 @@ package com.hedvig.android.logging.device.model
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.auth.event.AuthEventListener
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.permission.Permission
 import com.hedvig.android.permission.PermissionManager
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.MemberLogDeviceMutation
 
+@ContributesIntoSet(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class DeviceNameLoggingAuthListener(
   private val apolloClient: ApolloClient,
   private val permissionManager: PermissionManager,

@@ -1,45 +1,35 @@
 package com.hedvig.android.feature.editcoinsured.navigation
 
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
-import com.hedvig.android.feature.editcoinsured.data.InsuranceForEditOrAddCoInsured
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-sealed interface EditCoInsuredDestination : Destination {
-  @Serializable
-  data class CoInsuredAddInfo(
-    val contractId: String,
-    val type: CoInsuredFlowType,
-  ) : Destination
+@Serializable
+data class CoInsuredAddInfoKey(
+  val contractId: String,
+  val type: CoInsuredFlowType,
+) : HedvigNavKey
 
-  @Serializable
-  data class CoInsuredAddOrRemove(
-    val contractId: String,
-    val type: CoInsuredFlowType,
-  ) : Destination
+@Serializable
+data class CoInsuredAddOrRemoveKey(
+  val contractId: String,
+  val type: CoInsuredFlowType,
+) : HedvigNavKey
 
-  @Serializable
-  data class EditCoInsuredTriage(
-    @SerialName("contractId")
-    val contractId: String? = null,
-    val type: CoInsuredFlowType = CoInsuredFlowType.CoInsured,
-  ) : Destination
+@Serializable
+data class EditCoInsuredTriageKey(
+  @SerialName("contractId")
+  val contractId: String? = null,
+  val type: CoInsuredFlowType = CoInsuredFlowType.CoInsured,
+) : HedvigNavKey
 
-  @Serializable
-  data class EditCoOwnersTriageDeepLink(
-    @SerialName("contractId")
-    val contractId: String? = null,
-  ) : Destination
+@Serializable
+internal data class EditCoOwnersTriageDeepLinkKey(
+  @SerialName("contractId")
+  val contractId: String? = null,
+) : HedvigNavKey
 
-  @Serializable
-  data class Success(val date: LocalDate, val type: CoInsuredFlowType) : Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<LocalDate>())
-    }
-  }
-}
+@Serializable
+internal data class EditCoInsuredSuccessKey(val date: LocalDate, val type: CoInsuredFlowType) : HedvigNavKey

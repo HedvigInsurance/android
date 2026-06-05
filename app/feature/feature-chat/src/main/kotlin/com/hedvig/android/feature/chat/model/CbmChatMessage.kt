@@ -15,7 +15,7 @@ import java.util.UUID
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-internal sealed interface CbmChatMessage {
+sealed interface CbmChatMessage {
   val id: String
   val sender: Sender
   val sentAt: Instant

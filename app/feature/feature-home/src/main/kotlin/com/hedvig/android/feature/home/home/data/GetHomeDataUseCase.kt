@@ -12,12 +12,13 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.BundleProgress
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
+import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
@@ -29,6 +30,7 @@ import com.hedvig.android.memberreminders.GetMemberRemindersUseCase
 import com.hedvig.android.memberreminders.MemberReminders
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.android.ui.emergency.FirstVetSection
+import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
@@ -50,13 +52,14 @@ internal interface GetHomeDataUseCase {
   fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>>
 }
 
+@Inject
 internal class GetHomeDataUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getMemberRemindersUseCase: GetMemberRemindersUseCase,
   private val featureManager: FeatureManager,
   private val clock: Clock,
   private val timeZone: TimeZone,
-  private val getTravelAddonBannerInfoUseCaseProvider: GetTravelAddonBannerInfoUseCaseProvider,
+  private val getTravelAddonBannerInfoUseCaseProvider: Provider<GetAddonBannerInfoUseCase>,
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
 ) : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> {
@@ -90,7 +93,7 @@ internal class GetHomeDataUseCaseImpl(
       travelBannerInfo,
       isHelpCenterEnabled,
       inboxAlwaysAvailable,
-      anyActiveConversations
+      anyActiveConversations,
       ->
       either {
         val homeQueryData: HomeQuery.Data = homeQueryDataResult.bind()
@@ -145,7 +148,7 @@ internal class GetHomeDataUseCaseImpl(
         )
         val showChatIcon = shouldShowChatButton(
           isInboxEnabledFromKillSwitch = inboxAlwaysAvailable,
-          hasActiveConversations = anyActiveConversations.bind()
+          hasActiveConversations = anyActiveConversations.bind(),
         )
         val unreadMessageCountData = unreadMessageCountResult.bind()
         val hasUnseenChatMessages = unreadMessageCountData
@@ -182,10 +185,7 @@ internal class GetHomeDataUseCaseImpl(
     }
   }
 
-  private fun shouldShowChatButton(
-    isInboxEnabledFromKillSwitch: Boolean,
-    hasActiveConversations: Boolean,
-  ): Boolean {
+  private fun shouldShowChatButton(isInboxEnabledFromKillSwitch: Boolean, hasActiveConversations: Boolean): Boolean {
     if (isInboxEnabledFromKillSwitch) return true
     return hasActiveConversations
   }
@@ -275,7 +275,7 @@ private fun HomeQuery.Data.claimStatusCards(): HomeData.ClaimStatusCardsData? {
   )
 }
 
-internal data class HomeData(
+data class HomeData(
   val contractStatus: ContractStatus,
   val claimStatusCardsData: ClaimStatusCardsData?,
   val veryImportantMessages: List<VeryImportantMessage>,

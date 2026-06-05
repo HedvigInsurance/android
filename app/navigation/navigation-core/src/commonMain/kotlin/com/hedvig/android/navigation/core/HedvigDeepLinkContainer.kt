@@ -1,6 +1,10 @@
 package com.hedvig.android.navigation.core
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
 interface HedvigDeepLinkContainer {
   val home: List<String> // Home destination, the start destination of the app
@@ -85,6 +89,9 @@ interface HedvigDeepLinkContainer {
   val manualCharge: List<String>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class HedvigDeepLinkContainerImpl(
   hedvigBuildConstants: HedvigBuildConstants,
 ) : HedvigDeepLinkContainer {
@@ -210,45 +217,3 @@ internal class HedvigDeepLinkContainerImpl(
     "$baseDeepLinkDomain/manual-charge"
   }
 }
-
-val HedvigDeepLinkContainer.allDeepLinkUriPatterns: List<String>
-  get() = listOf(
-    carAddon.first(),
-    carAddonWithContractId.first(),
-    changeTierWithContractId.first(),
-    changeTierWithoutContractId.first(),
-    chat.first(),
-    claimDetails.first(),
-    claimFlow.first(),
-    connectPayment.first(),
-    contactInfo.first(),
-    contract.first(),
-    contractWithoutContractId.first(),
-    conversation.first(),
-    deleteAccount.first(),
-    directDebit.first(),
-    editCoInsured.first(),
-    editCoInsuredWithoutContractId.first(),
-    editCoOwners.first(),
-    eurobonus.first(),
-    forever.first(),
-    helpCenter.first(),
-    helpCenterCommonTopic.first(),
-    helpCenterQuestion.first(),
-    home.first(),
-    inbox.first(),
-    insuranceEvidence.first(),
-    insurances.first(),
-    manualCharge.first(),
-    moveContract.first(),
-    payments.first(),
-    payout.first(),
-    petIdWithContractId.first(),
-    petIdWithoutContractId.first(),
-    profile.first(),
-    puppyGuide.first(),
-    terminateInsurance.first(),
-    travelAddon.first(),
-    travelAddonWithContractId.first(),
-    travelCertificate.first(),
-  )

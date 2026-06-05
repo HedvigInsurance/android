@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import arrow.fx.coroutines.parMap
 import com.eygraber.uri.Uri
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.DownloadPdfUseCase
 import com.hedvig.android.core.fileupload.DownloadedFile
@@ -24,14 +25,21 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.ui.claimstatus.model.ClaimStatusCardUiState
 import com.hedvig.audio.player.data.SignedAudioUrl
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import java.io.File
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.datetime.LocalDateTime
 
+@AssistedInject
 internal class ClaimDetailsViewModel(
-  claimId: String,
+  @Assisted claimId: String,
   getClaimDetailUiStateUseCase: GetClaimDetailUiStateUseCase,
   claimsServiceUploadFileUseCase: ClaimsServiceUploadFileUseCase,
   downloadPdfUseCase: DownloadPdfUseCase,
@@ -43,7 +51,16 @@ internal class ClaimDetailsViewModel(
       claimsServiceUploadFileUseCase,
       downloadPdfUseCase,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted claimId: String,
+    ): ClaimDetailsViewModel
+  }
+}
 
 private class ClaimDetailPresenter(
   private val claimId: String,

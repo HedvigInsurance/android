@@ -3,6 +3,7 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.right
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ChipIdState
@@ -10,10 +11,14 @@ import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.insurances.data.InsuranceContract.EstablishedInsuranceContract
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
 
+@Inject
+@SingleIn(AppScope::class)
 internal class GetInsuranceContractsUseCaseDemo : GetInsuranceContractsUseCase {
   override fun invoke(): Flow<Either<ErrorMessage, List<InsuranceContract>>> {
     return flowOf(

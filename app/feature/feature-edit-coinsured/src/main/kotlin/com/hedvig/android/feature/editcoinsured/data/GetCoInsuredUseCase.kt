@@ -6,6 +6,10 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.CoInsuredQuery
 import octopus.fragment.CoInsuredFragment
 import octopus.fragment.CoOwnerFragment
@@ -14,6 +18,9 @@ internal interface GetCoInsuredUseCase {
   suspend fun invoke(contractId: String): Either<CoInsuredError, CoInsuredResult>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetCoInsuredUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetCoInsuredUseCase {

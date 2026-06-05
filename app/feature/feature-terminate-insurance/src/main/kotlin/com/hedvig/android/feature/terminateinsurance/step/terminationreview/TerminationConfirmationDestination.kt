@@ -52,8 +52,8 @@ import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
 import com.hedvig.android.design.system.hedvig.rememberHedvigDateTimeFormatter
 import com.hedvig.android.design.system.hedvig.show
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.feature.terminateinsurance.ui.TerminationScaffold
 import hedvig.resources.GENERAL_ARE_YOU_SURE

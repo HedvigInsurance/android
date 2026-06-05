@@ -1,7 +1,11 @@
 package com.hedvig.android.auth
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import java.util.UUID
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
@@ -9,6 +13,9 @@ import kotlin.time.Instant
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class AndroidAccessTokenProvider(
   private val authTokenService: AuthTokenService,
   private val clock: Clock = Clock.System,
