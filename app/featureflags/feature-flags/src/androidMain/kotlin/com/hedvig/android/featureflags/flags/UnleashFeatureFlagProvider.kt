@@ -12,32 +12,24 @@ internal class UnleashFeatureFlagProvider(
   override fun isFeatureEnabled(feature: Feature): Flow<Boolean> {
     return hedvigUnleashClient.featureUpdatedFlow
       .map {
+        val key = feature.unleashKey
         when (feature) {
-          Feature.DISABLE_CHAT -> hedvigUnleashClient.client.isEnabled("disable_chat")
+          // Kill switches: the remote toggle being on means the feature is off.
+          Feature.TERMINATION_FLOW,
+          Feature.HELP_CENTER,
+          Feature.PUPPY_GUIDE,
+          -> !hedvigUnleashClient.client.isEnabled(key)
 
-          Feature.MOVING_FLOW -> hedvigUnleashClient.client.isEnabled("moving_flow")
-
-          Feature.PAYMENT_SCREEN -> hedvigUnleashClient.client.isEnabled("payment_screen")
-
-          Feature.TERMINATION_FLOW -> !hedvigUnleashClient.client.isEnabled("disable_termination_flow")
-
-          Feature.UPDATE_NECESSARY -> hedvigUnleashClient.client.isEnabled("update_necessary")
-
-          Feature.EDIT_COINSURED -> hedvigUnleashClient.client.isEnabled("edit_coinsured")
-
-          Feature.HELP_CENTER -> !hedvigUnleashClient.client.isEnabled("disable_help_center")
-
-          Feature.TRAVEL_ADDON -> hedvigUnleashClient.client.isEnabled("enable_addons")
-
-          Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES -> hedvigUnleashClient.client.isEnabled(
-            "enable_video_player_in_chat_messages",
-          )
-
-          Feature.DISABLE_REDEEM_CAMPAIGN -> hedvigUnleashClient.client.isEnabled("disable_redeem_campaign")
-
-          Feature.ENABLE_CLAIM_HISTORY -> hedvigUnleashClient.client.isEnabled("enable_claim_history")
-
-          Feature.PUPPY_GUIDE -> !hedvigUnleashClient.client.isEnabled("disable_puppy_guide")
+          Feature.DISABLE_CHAT,
+          Feature.MOVING_FLOW,
+          Feature.PAYMENT_SCREEN,
+          Feature.UPDATE_NECESSARY,
+          Feature.EDIT_COINSURED,
+          Feature.TRAVEL_ADDON,
+          Feature.ENABLE_VIDEO_PLAYER_IN_CHAT_MESSAGES,
+          Feature.DISABLE_REDEEM_CAMPAIGN,
+          Feature.ENABLE_CLAIM_HISTORY,
+          -> hedvigUnleashClient.client.isEnabled(key)
         }
       }.distinctUntilChanged()
   }

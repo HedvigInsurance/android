@@ -2,9 +2,12 @@ package com.hedvig.android.featureflags
 
 import android.content.Context
 import com.hedvig.android.auth.MemberIdService
+import com.hedvig.android.featureflags.flags.Feature
+import com.hedvig.android.featureflags.flags.unleashKey
 import com.hedvig.android.logger.logcat
 import io.getunleash.android.DefaultUnleash
 import io.getunleash.android.UnleashConfig
+import io.getunleash.android.data.Toggle
 import io.getunleash.android.data.UnleashContext
 import io.getunleash.android.events.HeartbeatEvent
 import io.getunleash.android.events.UnleashFetcherHeartbeatListener
@@ -66,7 +69,9 @@ class HedvigUnleashClient(
         )
       }
     }
-    client.start()
+    // Bootstrap the puppy guide kill switch to on, so the feature stays hidden until the first
+    // successful fetch. Once toggles are fetched, the remote value takes over.
+    client.start(bootstrap = listOf(Toggle(name = Feature.PUPPY_GUIDE.unleashKey, enabled = true)))
   }
 
   private fun createConfig(): UnleashConfig {

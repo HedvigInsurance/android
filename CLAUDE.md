@@ -469,6 +469,26 @@ dependencies {
 3. Build generates type-safe Kotlin code
 4. Use generated query class in repository/use case
 
+### Working with Feature Flags
+
+Feature flags are backed by Unleash. Before adding or changing a flag, read
+`app/featureflags/feature-flags/FEATURE_FLAG_DEFAULTS.md` — it explains why we never use
+the SDK's `defaultValue` parameter (Unleash Android SDK issue #141), how a flag's value is
+resolved when Unleash has never been fetched, and when bootstrap is required.
+
+To add a new flag:
+1. Add the enum value to `Feature` (commonMain) with a short explanation.
+2. Map it to its raw Unleash key in `Feature.unleashKey` (androidMain).
+3. Add it to the correct arm in `UnleashFeatureFlagProvider`: positive `isEnabled(key)` or
+   kill switch `!isEnabled(key)`.
+
+**IMPORTANT — always reconsider bootstrap when adding a feature:** Decide what the flag
+should resolve to when it has *never been fetched* (offline first launch / fresh install
+before the first poll returns). If the natural polarity default is acceptable, do nothing.
+If a rollout needs the opposite default, add a `Toggle(...)` to the bootstrap list in
+`HedvigUnleashClient.start(...)`. Never bootstrap an app-gating flag (e.g.
+`UPDATE_NECESSARY`) into its blocking state — that can brick the app for offline users.
+
 ### Working with Translations
 
 ```bash
