@@ -659,6 +659,7 @@ private fun WelcomeMessage(homeText: HomeText, modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .wrapContentWidth(Alignment.CenterHorizontally)
+        .height(40.dp)
         .padding(horizontal = 16.dp)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
