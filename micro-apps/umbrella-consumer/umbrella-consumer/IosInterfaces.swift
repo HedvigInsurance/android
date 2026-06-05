@@ -20,7 +20,7 @@ protocol KeychainAbstraction {
 class IosKeychainAbstraction: KeychainAbstraction {
     func getToken() async throws -> String {
         try await Task.sleep(for: .seconds(1))
-        return "eyJraWQiOiJCSnd5VGNnek5WUmpmX0VuZjFKUFgxd3lrUjZSMElOTXRiR015UkduVkhNIiwiYWxnIjoiUlMyNTYifQ.eyJpbXBlcnNvbmF0ZWQtYnkiOiJhZG1fNWNmOTA4ZjAtMGZhMi00ZGE0LWExNzAtMjcyNjQwNTc3MDVhIiwic3ViIjoibWVtXzMzMDY3MTM3NiIsImV4cCI6MTc3ODA4MzQ2NSwiaWF0IjoxNzc4MDc5ODY1fQ.Tw40qwWJ9P3C8zxUYB4EKPXEbE3UfeCvTvF0fDh5bkhl0g6kZLO847ePJiBYEq9IGg6UXLEJfKx7veBNnU5aSIAtVrftKv167IANvyZBIEJR20rYi4qU_eayLaaCkFbp2L-9bVb3ZWNbErHlF9-f1tnEddajm3WPlrJ_eXklLdnXfA3dX6JTAkY-D-O5NdgVcjMVFJWuKMEv72fpHL1XMM51jWuAE4f6-ezJH3yviynBzIdxMAYuOPo8weeMPN7hieCFF95AFY8quwN8K2T9a6rE4-U8lTKr88Q6YLq_OBAq3RfSoG22WBFRb1WYj4yK2L9er4PWtzVNj3KbCkUIhA"
+        return "eyJraWQiOiJCSnd5VGNnek5WUmpmX0VuZjFKUFgxd3lrUjZSMElOTXRiR015UkduVkhNIiwiYWxnIjoiUlMyNTYifQ.eyJpbXBlcnNvbmF0ZWQtYnkiOiJhZG1fNWNmOTA4ZjAtMGZhMi00ZGE0LWExNzAtMjcyNjQwNTc3MDVhIiwic3ViIjoibWVtXzMzMDY3MTM3NiIsImV4cCI6MTc4MDY1NjI5MywiaWF0IjoxNzgwNjUyNjkzfQ.HGpV9q1YxhrP8eNlgQmD-qvpfCLEezXXaU1qKzczrTsDz4Qj1J-ZRuAR59jycIjdu9PQjXumSzNAJRzTUTGyQfqzIJdaKytgtXm07tsy19tlZpIvmRD5AHlNhSxPK5NkiqFuCOreTO2fdL0F0gH4fwZfslUDA7sGdvgvijFXYkbqnLeatH0CvfGuLvkdxY_yyiOkUjY825rBLgYeqYPr421uzClLY9639LR1VSEu-XKS1vxEriXwcALp4n8JGMrh1NUqVYrbDVifZGXcElBiA30HG6C6hbqbwTSjWefCcITJyB8tYMetIUaLFnEWc7srf28KQyI_EjNrtyftCXq2qg"
     }
 }
 
@@ -28,6 +28,12 @@ class IosDeviceIdFetcher: DeviceIdFetcher {
     func fetch() async throws -> String? {
         return UIDevice.current.identifierForVendor?.uuidString
     }
+}
+
+class IosLanguageStorage: LanguageStorage {
+    func getCurrentLanguageTag() -> String { "en-SE" }
+    func getSelectedLanguageTag() -> String? { "en-SE" }
+    func setLanguageTag(tag: String) {}
 }
 
 func iosFeatureManager() -> FeatureManager {
