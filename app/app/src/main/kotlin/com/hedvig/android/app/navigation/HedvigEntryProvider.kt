@@ -178,6 +178,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     imageLoader = imageLoader,
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
+    navigateToNewConversation = navigateToNewConversation,
   )
   addSharedFlowEntries(
     backstack = backstack,
@@ -293,6 +294,13 @@ private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
     appPackageId = appPackageId,
     onNavigateToNewConversation = navigateToNewConversation,
     openPlayStore = externalNavigator::tryOpenPlayStore,
+    closeFlowOnSuccess = {
+      if (backstack.findLastOrNull<InboxKey>() != null) {
+        backstack.popUpTo<InboxKey>(inclusive = true)
+      } else {
+        backstack.popBackstack()
+      }
+    },
   )
   claimDetailsEntries(
     imageLoader = imageLoader,
@@ -497,6 +505,7 @@ private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  navigateToNewConversation: () -> Unit,
 ) {
   cbmChatEntries(
     hedvigBuildConstants = hedvigBuildConstants,
@@ -507,6 +516,10 @@ private fun EntryProviderScope<HedvigNavKey>.addChatEntries(
       backstack.add(ClaimDetailsKey(claimId))
     },
     onNavigateToImageViewer = onNavigateToImageViewer,
+    onNavigateToNewConversation = navigateToNewConversation,
+    navigateToClaimChat = {
+      backstack.add(ClaimChatKey(messageId = null, isDevelopmentFlow = false))
+    },
     backstack = backstack,
   )
 }
