@@ -13,6 +13,7 @@ import com.hedvig.android.feature.chat.inbox.InboxViewModel
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
 import com.hedvig.android.navigation.compose.navgraph
+import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -25,7 +26,9 @@ fun NavGraphBuilder.cbmChatGraph(
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
   navController: NavController,
+  navigateToClaimChat: () -> Unit,
 ) {
   navgraph<ChatDestination>(
     startDestination = ChatDestinations.Inbox::class,
@@ -43,6 +46,8 @@ fun NavGraphBuilder.cbmChatGraph(
         onConversationClick = dropUnlessResumed { conversationId ->
           navController.navigate(ChatDestinations.Chat(conversationId))
         },
+        onNavigateToNewConversation = onNavigateToNewConversation,
+        navigateToClaimChat = navigateToClaimChat
       )
     }
     navdestination<ChatDestinations.Chat>(

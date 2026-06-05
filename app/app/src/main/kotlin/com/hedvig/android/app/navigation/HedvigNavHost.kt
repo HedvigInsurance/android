@@ -112,6 +112,7 @@ internal fun HedvigNavHost(
   fun navigateToConnectPayment(builder: NavOptionsBuilder.() -> Unit = {}) {
     navController.navigate(TrustlyDestination, builder)
   }
+
   val navigateToInbox = {
     navController.navigate(ChatDestination)
   }
@@ -413,6 +414,17 @@ internal fun HedvigNavHost(
       },
       onNavigateToImageViewer = onNavigateToImageViewer,
       navController = navController,
+      onNavigateToNewConversation = {
+        navigateToNewConversation()
+      },
+      navigateToClaimChat = {
+        navController.navigate(
+          ClaimChatDestination(
+            messageId = null,
+            isDevelopmentFlow = false,
+          ),
+        )
+      },
     )
     addonPurchaseNavGraph(
       navController = navController,
@@ -558,6 +570,11 @@ private fun NavGraphBuilder.nestedHomeGraphs(
       navigateToNewConversation(null)
     },
     openPlayStore = externalNavigator::tryOpenPlayStore,
+    closeFlowOnSuccess = {
+      if (!navController.typedPopBackStack<ChatDestination>(inclusive = true)) {
+        navController.popBackStack()
+      }
+    }
   )
   claimDetailsGraph(
     navController = navController,

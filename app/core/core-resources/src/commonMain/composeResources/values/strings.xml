@@ -499,6 +499,11 @@
   <string name="HONESTY_PLEDGE_NOTE_2">Have receipts or other documentation ready to help us help you faster</string>
   <string name="HONESTY_PLEDGE_NOTE_3">We’ll contact you if we need more information</string>
   <string name="HONESTY_PLEDGE_TITLE">Before we start</string>
+  <string name="INBOX_EMPTY_STATE_SUBTITLE">No conversations yet. Start one by writing a message</string>
+  <string name="INBOX_EMPTY_STATE_TITLE">Your inbox is empty</string>
+  <string name="INBOX_NEW_MESSAGE">New</string>
+  <string name="INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION">Make a claim for something that's happened to you or your things</string>
+  <string name="INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION">Questions about your insurance, payments and more</string>
   <string name="INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE">Discounts available</string>
   <string name="INSURANCES_NO_ACTIVE">You don't have any active insurances</string>
   <string name="INSURANCE_ADDONS_SUBHEADING">Addons</string>

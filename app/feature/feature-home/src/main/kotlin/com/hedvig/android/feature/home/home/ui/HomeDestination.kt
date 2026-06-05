@@ -85,6 +85,7 @@ import com.hedvig.android.design.system.hedvig.HedvigTooltip
 import com.hedvig.android.design.system.hedvig.LocalContentColor
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
+import com.hedvig.android.design.system.hedvig.StartClaimBottomSheet
 import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.TooltipDefaults
 import com.hedvig.android.design.system.hedvig.TooltipDefaults.BeakDirection.TopEnd
@@ -883,7 +884,7 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           hasUnseenChatMessages = false,
           crossSellsAction = null,
           firstVetAction = null,
-          chatAction = null,
+          chatAction = ChatAction,
           addonBannerInfo = null,
           isProduction = true,
         ),

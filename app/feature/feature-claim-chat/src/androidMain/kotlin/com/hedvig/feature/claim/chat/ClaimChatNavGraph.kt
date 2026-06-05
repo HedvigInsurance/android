@@ -8,6 +8,7 @@ import com.hedvig.android.navigation.common.Destination
 import com.hedvig.android.navigation.common.DestinationNavTypeAware
 import com.hedvig.android.navigation.compose.navDeepLinks
 import com.hedvig.android.navigation.compose.navdestination
+import com.hedvig.android.navigation.compose.typedPopBackStack
 import com.hedvig.android.navigation.compose.typedPopUpTo
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
@@ -61,6 +62,7 @@ fun NavGraphBuilder.claimChatGraph(
   imageLoader: ImageLoader,
   onNavigateToNewConversation: () -> Unit,
   openPlayStore: () -> Unit,
+  closeFlowOnSuccess: ()-> Unit,
 ) {
   navdestination<ClaimChatDestination> {
     ClaimChatDestination(
@@ -100,7 +102,7 @@ fun NavGraphBuilder.claimChatGraph(
   }
   navdestination<ClaimOutcomeNewClaimDestination>(ClaimOutcomeNewClaimDestination) {
     ClaimOutcomeNewClaimDestination(
-      navController::navigateUp,
+      closeFlowOnSuccess,
     )
   }
   navdestination<UpdateAppDestination> {
