@@ -21,6 +21,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.common.SuppressesChatPushNotification
@@ -29,16 +30,23 @@ import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.android.permission.PermissionManager
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import hedvig.resources.R
 
+@ContributesIntoSet(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class ChatNotificationSender(
   private val context: Context,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  private val notificationChannel: HedvigNotificationChannel,
   private val currentDestinationHolder: CurrentDestinationHolder,
 ) : NotificationSender {
+  private val notificationChannel = HedvigNotificationChannel.Chat
+
   override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
   override suspend fun sendNotification(type: String, remoteMessage: RemoteMessage) {

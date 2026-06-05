@@ -21,22 +21,9 @@ import coil3.svg.SvgDecoder
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.app.apollo.LoggingInterceptor
 import com.hedvig.android.app.apollo.LogoutOnUnauthenticatedInterceptor
-import com.hedvig.android.app.navigation.CurrentDestinationHolder
-import com.hedvig.android.app.notification.senders.CarAddonSender
-import com.hedvig.android.app.notification.senders.ChatNotificationSender
-import com.hedvig.android.app.notification.senders.ClaimClosedNotificationSender
-import com.hedvig.android.app.notification.senders.ContactInfoSender
-import com.hedvig.android.app.notification.senders.CrossSellNotificationSender
-import com.hedvig.android.app.notification.senders.GenericNotificationSender
-import com.hedvig.android.app.notification.senders.InsuranceEvidenceNotificationSender
-import com.hedvig.android.app.notification.senders.InsuranceTabNotificationSender
-import com.hedvig.android.app.notification.senders.PaymentNotificationSender
-import com.hedvig.android.app.notification.senders.ReferralsNotificationSender
-import com.hedvig.android.app.notification.senders.TravelAddonSender
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.core.buildconstants.AppBuildConfig
 import com.hedvig.android.core.buildconstants.Flavor
-import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.common.di.BaseHttpClient
 import com.hedvig.android.core.common.di.DatabaseFile
@@ -44,14 +31,9 @@ import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.design.system.hedvig.pdfrenderer.PdfDecoder
 import com.hedvig.android.navigation.compose.DeepLinkMatcherProvider
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
-import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.network.clients.ExtraApolloClientConfiguration
-import com.hedvig.android.notification.core.HedvigNotificationChannel
-import com.hedvig.android.notification.core.NotificationSender
-import com.hedvig.android.permission.PermissionManager
 import com.hedvig.app.BuildConfig
 import dev.zacsweers.metro.ContributesTo
-import dev.zacsweers.metro.IntoSet
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
@@ -152,182 +134,6 @@ interface ApplicationMetroProviders {
           .build()
       }.build()
   }
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun providePaymentNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = PaymentNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Payments,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideCrossSellNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-  ): NotificationSender = CrossSellNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    HedvigNotificationChannel.CrossSell,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideReferralsNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = ReferralsNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Referrals,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideGenericNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = GenericNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Other,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideChatNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-    currentDestinationHolder: CurrentDestinationHolder,
-  ): NotificationSender = ChatNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Chat,
-    currentDestinationHolder,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideClaimClosedNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = ClaimClosedNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Payments,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideContactInfoSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = ContactInfoSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Other,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideInsuranceTabNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = InsuranceTabNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Other,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideTravelAddonSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = TravelAddonSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.CrossSell,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideCarAddonSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = CarAddonSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.CrossSell,
-  )
-
-  @Provides
-  @SingleIn(AppScope::class)
-  @IntoSet
-  fun provideInsuranceEvidenceNotificationSender(
-    applicationContext: Context,
-    permissionManager: PermissionManager,
-    buildConstants: HedvigBuildConstants,
-    deepLinkContainer: HedvigDeepLinkContainer,
-  ): NotificationSender = InsuranceEvidenceNotificationSender(
-    applicationContext,
-    permissionManager,
-    buildConstants,
-    deepLinkContainer,
-    HedvigNotificationChannel.Other,
-  )
 }
 
 private class AndroidBuildConfig : AppBuildConfig {
