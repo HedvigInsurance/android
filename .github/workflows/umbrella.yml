@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - develop
-      - feat/help-center-kmp
-      - feat/puppy-guide-kmp
+      - eng/metro-with-ios
   workflow_dispatch:
 
 concurrency:

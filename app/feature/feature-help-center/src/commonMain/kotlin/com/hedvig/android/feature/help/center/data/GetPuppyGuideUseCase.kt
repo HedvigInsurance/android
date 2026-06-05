@@ -58,7 +58,7 @@ internal class GetPuppyGuideUseCaseImpl(
 }
 
 @Serializable
-data class PuppyGuide(
+internal data class PuppyGuide(
   val stories: List<PuppyGuideStory>,
   val isForYoungDog: Boolean?,
 )
