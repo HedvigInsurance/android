@@ -2,24 +2,44 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools">
 
-    <application
+  <application
     android:name="com.hedvig.android.app.HedvigApplication">
     <!--
-    Uncomment the receiver below to allow testing notifications locally through ADB
-    Try doing for example:
-    ```
-    adb shell am broadcast -n com.hedvig.dev.app/com.google.firebase.iid.FirebaseInstanceIdReceiver \
-      -c com.hedvig.dev.app \
-      -a com.google.android.c2dm.intent.RECEIVE \
-      - -es "TYPE" "NEW_MESSAGE" \
-      - -es "title" "Title" \
-      - -es "body" "Body"
-    ```
+    DEBUG-ONLY test harness for push notifications and FCM token handling.
+
+    Firebase delivers pushes by binding this receiver from Google Play Services, so a real
+    message never arrives through an Intent we can craft from the shell. Firebase also guards
+    the receiver with a Google-signed permission, which blocks the `adb shell` uid from poking
+    it. Re-declaring it here with android:permission="@null" drops that guard so we can hand-feed
+    intents over ADB and exercise the real on-device code path (Metro-injected NotificationSenders,
+    the WorkManager factory wiring, etc.) without a backend or a live FCM token.
+
+    This removes a security guard, so it MUST stay debug-only: it lives in src/debug and never
+    merges into staging/release builds. Do not move it to the main manifest.
+
+    Note: an XML comment cannot contain a double-dash, so the adb string-extra flag (dash dash es)
+    is written below as `- -es`. Remove the space between the dashes when you actually run them.
+
+    Simulate an incoming notification (routes to PushNotificationService.onMessageReceived,
+    which dispatches to the matching NotificationSender):
+      adb shell am broadcast -n com.hedvig.dev.app/com.google.firebase.iid.FirebaseInstanceIdReceiver \
+        -c com.hedvig.dev.app -a com.google.android.c2dm.intent.RECEIVE \
+        - -es TYPE NEW_MESSAGE - -es title "Title" - -es body "Body"
+
+    Simulate a token refresh (routes to PushNotificationService.onNewToken, which enqueues
+    FCMTokenUploadWorker through the Metro-provided WorkerFactory):
+      adb shell am broadcast -n com.hedvig.dev.app/com.google.firebase.iid.FirebaseInstanceIdReceiver \
+        -c com.hedvig.dev.app -a com.google.firebase.messaging.NEW_TOKEN - -es token fake-token
     -->
-<!--    <receiver-->
-<!--      android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"-->
-<!--      android:exported="true"-->
-<!--      android:permission="@null"-->
-<!--      tools:replace="android:permission" />-->
+    <receiver
+      android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+      android:exported="true"
+      android:permission="@null"
+      tools:replace="android:permission">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        <category android:name="com.hedvig.dev.app" />
+      </intent-filter>
+    </receiver>
   </application>
 </manifest>

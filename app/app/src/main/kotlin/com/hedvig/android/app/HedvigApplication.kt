@@ -2,6 +2,7 @@ package com.hedvig.android.app
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.work.Configuration
 import com.hedvig.android.app.di.AppGraph
 import com.hedvig.android.core.common.di.MetroGraphProvider
 import com.hedvig.android.notification.firebase.PushNotificationGraphProvider
@@ -13,11 +14,17 @@ import dev.zacsweers.metro.Inject
 open class HedvigApplication :
   Application(),
   PushNotificationGraphProvider,
-  MetroGraphProvider {
+  MetroGraphProvider,
+  Configuration.Provider {
   internal lateinit var appGraph: AppGraph
 
   override val metroGraph: Any
     get() = appGraph
+
+  override val workManagerConfiguration: Configuration
+    get() = Configuration.Builder()
+      .setWorkerFactory(appGraph.workerFactory)
+      .build()
 
   @Inject private lateinit var appInitializers: AppInitializers
 
