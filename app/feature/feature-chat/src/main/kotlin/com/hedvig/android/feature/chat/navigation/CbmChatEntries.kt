@@ -20,6 +20,8 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatEntries(
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (claimId: String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
+  onNavigateToNewConversation: () -> Unit,
+  navigateToClaimChat: () -> Unit,
   backstack: Backstack,
 ) {
   entry<InboxKey> {
@@ -30,6 +32,8 @@ fun EntryProviderScope<HedvigNavKey>.cbmChatEntries(
       onConversationClick = dropUnlessResumed { conversationId ->
         backstack.add(ChatKey(conversationId))
       },
+      onNavigateToNewConversation = onNavigateToNewConversation,
+      navigateToClaimChat = navigateToClaimChat,
     )
   }
   entry<ChatKey> { key ->

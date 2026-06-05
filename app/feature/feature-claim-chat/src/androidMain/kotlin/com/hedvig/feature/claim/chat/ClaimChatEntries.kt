@@ -47,6 +47,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   imageLoader: ImageLoader,
   onNavigateToNewConversation: () -> Unit,
   openPlayStore: () -> Unit,
+  closeFlowOnSuccess: () -> Unit,
 ) {
   entry<ClaimChatKey> { key ->
     ClaimChatDestination(
@@ -85,7 +86,7 @@ fun EntryProviderScope<HedvigNavKey>.claimChatEntries(
   }
   entry<ClaimOutcomeNewClaimKey> {
     ClaimOutcomeNewClaimDestination(
-      backstack::navigateUp,
+      closeFlowOnSuccess,
     )
   }
   entry<UpdateAppKey> {
