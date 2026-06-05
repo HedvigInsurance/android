@@ -9,20 +9,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.hedvig.android.feature.chat.data.GetAllConversationsUseCase
 import com.hedvig.android.feature.chat.model.InboxConversation
+import com.hedvig.android.featureflags.FeatureManager
+import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 
 internal class InboxViewModel(
   getAllConversationsUseCase: GetAllConversationsUseCase,
+  featureManager: FeatureManager,
 ) : MoleculeViewModel<InboxEvent, InboxUiState>(
     initialState = InboxUiState.Loading,
-    presenter = InboxPresenter(getAllConversationsUseCase),
+    presenter = InboxPresenter(getAllConversationsUseCase,featureManager),
   )
 
 internal class InboxPresenter(
   private val getAllConversationsUseCase: GetAllConversationsUseCase,
+  private val featureManager: FeatureManager,
 ) : MoleculePresenter<InboxEvent, InboxUiState> {
   @Composable
   override fun MoleculePresenterScope<InboxEvent>.present(lastState: InboxUiState): InboxUiState {
@@ -43,15 +48,22 @@ internal class InboxPresenter(
       if (currentState !is InboxUiState.Success) {
         currentState = InboxUiState.Loading
       }
-      getAllConversationsUseCase.invoke().collectLatest { result ->
-        result.fold(
+      combine(
+        getAllConversationsUseCase.invoke(),
+        featureManager.isFeatureEnabled(Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT)
+        ) { conversations, newChatButtonAvailable ->
+        conversations to newChatButtonAvailable
+      }.collectLatest { (conversations, newChatButtonAvailable) ->
+        conversations.fold(
           ifLeft = {
             if (currentState is InboxUiState.Loading) {
               currentState = InboxUiState.Failure
             }
           },
           ifRight = { conversations ->
-            currentState = InboxUiState.Success(conversations)
+            currentState = InboxUiState.Success(
+              conversations,
+              newChatButtonAvailable)
           },
         )
       }
@@ -67,6 +79,7 @@ internal sealed interface InboxUiState {
 
   data class Success(
     val inboxConversations: List<InboxConversation>,
+    val newConversationButtonAvailable: Boolean
   ) : InboxUiState
 }
 

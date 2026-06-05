@@ -5,9 +5,6 @@ enum class Feature(
   @Suppress("unused") val explanation: String,
 ) {
   @Suppress("ktlint:standard:max-line-length")
-  DISABLE_CHAT(
-    "This flag determines if the chat feature inside the app should be disabled. This does not disable the ability to navigate to the chat, only that in the chat feature itself, some information should be shown describing that the chat is currently unavailable and they should check back later.",
-  ),
   MOVING_FLOW("Lets a user change their address and get a new offer"),
   PAYMENT_SCREEN("Controls whether the payment screen should be accessible from the profile tab"),
   TERMINATION_FLOW("Shows the button which enters the insurance termination flow from the insurance tab"),
@@ -22,4 +19,7 @@ enum class Feature(
   ),
   DISABLE_REDEEM_CAMPAIGN("Disables the ability to redeem a campaign code"),
   ENABLE_CLAIM_HISTORY("Enables claim history"),
+  ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT("Enables inbox icon always available on the Home screen " +
+    "and New conversation button inside the inbox")
+
 }

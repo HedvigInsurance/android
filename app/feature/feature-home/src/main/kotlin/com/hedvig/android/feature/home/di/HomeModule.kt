@@ -22,13 +22,13 @@ import org.koin.dsl.module
 val homeModule = module {
   single<GetHomeDataUseCaseImpl> {
     GetHomeDataUseCaseImpl(
-      get<ApolloClient>(),
-      get<HasAnyActiveConversationUseCase>(),
-      get<GetMemberRemindersUseCase>(),
-      get<FeatureManager>(),
-      get<Clock>(),
-      get<TimeZone>(),
-      get<GetTravelAddonBannerInfoUseCaseProvider>(),
+      apolloClient = get<ApolloClient>(),
+      getMemberRemindersUseCase = get<GetMemberRemindersUseCase>(),
+      featureManager = get<FeatureManager>(),
+      clock = get<Clock>(),
+      timeZone = get<TimeZone>(),
+      getTravelAddonBannerInfoUseCaseProvider = get<GetTravelAddonBannerInfoUseCaseProvider>(),
+      hasAnyActiveConversationUseCase = get<HasAnyActiveConversationUseCase>(),
     )
   }
   single<SeenImportantMessagesStorage> {
