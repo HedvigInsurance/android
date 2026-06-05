@@ -136,6 +136,7 @@ private fun MarketingScreen(
           Modifier
             .align(Alignment.CenterHorizontally)
             .padding(horizontal = 16.dp)
+            .height(40.dp)
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         )
         Column(
