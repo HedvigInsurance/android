@@ -8,7 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.DismissStartError
@@ -18,8 +20,15 @@ import com.hedvig.android.feature.movingflow.ui.start.HousingTypeEvent.SubmitHou
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.collectLatest
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class HousingTypeViewModel(
   movingFlowRepository: MovingFlowRepository,
 ) : MoleculeViewModel<HousingTypeEvent, HousingTypeUiState>(

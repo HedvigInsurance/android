@@ -21,6 +21,7 @@ class HedvigGradlePlugin : Plugin<Project> {
       configureFeatureModuleGuidelines()
       configureKtlint(libs)
       configureCommonDependencies(libs)
+      configureMetro(libs)
       apply<HedvigLintConventionPlugin>()
       with(pluginManager) {
         apply(libs.plugins.dependencyAnalysis.get().pluginId)
@@ -50,6 +51,18 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
     report.set(rootDir.resolve("build/reports/ktlint/${project.path}.xml"))
   }
 
+  // Detach lint/format from codegen — see detachGeneratedSourceTaskDependencies. Run in
+  // projectsEvaluated so it lands after every kotlinter source-wiring, including late-created
+  // source sets (e.g. the jvm "dev" compilation) that aren't present yet during afterEvaluate.
+  gradle.projectsEvaluated {
+    tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>().configureEach {
+      detachGeneratedSourceTaskDependencies()
+    }
+    tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>().configureEach {
+      detachGeneratedSourceTaskDependencies()
+    }
+  }
+
   tasks.register("ktlintCheck") {
     dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.LintTask>())
   }
@@ -57,6 +70,17 @@ private fun Project.configureKtlint(libs: LibrariesForLibs) {
   tasks.register("ktlintFormat") {
     dependsOn(tasks.withType<org.jmailen.gradle.kotlinter.tasks.FormatTask>())
   }
+}
+
+// kotlinter derives a lint/format task's source from the Kotlin source sets, which include
+// codegen output dirs (e.g. KSP) carrying a `builtBy` back to the generating task. On KMP
+// modules that transitively pulls every target's KSP + compile task into the ktlint graph,
+// so `ktlintFormat` ends up compiling iOS/JVM. We already exclude generated files from being
+// linted, so the dependency is pure overhead — re-set the source through a plain provider that
+// resolves the same files but carries no task dependencies.
+private fun org.gradle.api.tasks.SourceTask.detachGeneratedSourceTaskDependencies() {
+  val original = source
+  setSource(project.provider { original.files })
 }
 
 private fun Project.configureFeatureModuleGuidelines() {
@@ -81,6 +105,34 @@ private fun Project.configureFeatureModuleGuidelines() {
         }
       }
     }
+  }
+}
+
+private fun Project.configureMetro(libs: LibrariesForLibs) {
+  // Metro hooks into the Kotlin compiler, so it can only be applied once a Kotlin plugin is present.
+  // Applying it lazily also makes us independent of plugin ordering within each module's plugins {} block.
+  val metroPluginId = libs.plugins.metro.get().pluginId
+  pluginManager.withPlugin(libs.plugins.kotlinMultiplatform.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  pluginManager.withPlugin(libs.plugins.kotlinJvm.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+  pluginManager.withPlugin(libs.plugins.kotlin.get().pluginId) {
+    pluginManager.apply(metroPluginId)
+  }
+
+  // metrox ViewModel artifacts are only needed by Android modules, which host the ViewModels resolved
+  // through the central factory. Gating on the Android Gradle plugin keeps the Compose-bearing runtime
+  // out of pure-JVM library modules. withPlugin fires after the plugin is applied, so ordering is irrelevant.
+  pluginManager.withPlugin("com.android.library") { addMetroViewModelDependencies(libs) }
+  pluginManager.withPlugin("com.android.application") { addMetroViewModelDependencies(libs) }
+}
+
+private fun Project.addMetroViewModelDependencies(libs: LibrariesForLibs) {
+  dependencies {
+    add("implementation", libs.metro.viewmodel)
+    add("implementation", libs.metro.viewmodel.compose)
   }
 }
 
@@ -117,10 +169,8 @@ private fun DependencyHandlerScope.configureCommonDependencies(project: Project,
 }
 
 private fun Project.configureCommonDependencies(libs: LibrariesForLibs, configurationName: String) {
-  val koinBom = libs.koin.bom
   val composeBom = libs.androidx.compose.bom
   dependencies {
-    add(configurationName, platform(koinBom))
     add(configurationName, platform(composeBom))
 
     with(project.name) {

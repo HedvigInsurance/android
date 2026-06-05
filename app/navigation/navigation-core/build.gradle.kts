@@ -3,12 +3,16 @@ plugins {
   id("hedvig.gradle.plugin")
 }
 
+hedvig {
+  serialization()
+}
+
 kotlin {
   sourceSets {
     commonMain.dependencies {
       api(libs.jetbrains.navigation.common)
-      implementation(libs.koin.core)
       implementation(projects.coreBuildConstants)
+      implementation(projects.coreCommonPublic)
       implementation(projects.navigationCommon)
     }
   }

@@ -38,7 +38,7 @@ import hedvig.resources.general_close_button
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ManualChargeSuccessDestination(showCancellationWarning: Boolean, popBackStack: () -> Unit) {
+internal fun ManualChargeSuccessDestination(showCancellationWarning: Boolean, popBackstack: () -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
@@ -77,7 +77,7 @@ internal fun ManualChargeSuccessDestination(showCancellationWarning: Boolean, po
     }
     HedvigButton(
       stringResource(Res.string.general_close_button),
-      onClick = dropUnlessResumed { popBackStack() },
+      onClick = dropUnlessResumed { popBackstack() },
       buttonSize = Large,
       modifier = Modifier.fillMaxWidth(),
       enabled = true,

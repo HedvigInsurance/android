@@ -5,163 +5,97 @@ import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TerminateInsuranceGraphDestination(
+data class TerminateInsuranceKey(
   @SerialName("contractId")
   val insuranceId: String? = null,
-) : Destination
+) : HedvigNavKey
 
-internal sealed interface TerminateInsuranceDestination {
-  @Serializable
-  data object StartStep : TerminateInsuranceDestination, Destination
+@Serializable
+internal data class TerminationSurveyFirstStepKey(
+  val options: List<TerminationSurveyOption>,
+  val action: TerminationAction,
+  val commonParams: TerminationGraphParameters,
+) : HedvigNavKey
 
-  @Serializable
-  data class TerminationSurveyFirstStep(
-    val options: List<TerminationSurveyOption>,
-    val action: TerminationAction,
-    val commonParams: TerminationGraphParameters,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<List<TerminationSurveyOption>>(),
-        typeOf<TerminationAction>(),
-        typeOf<TerminationGraphParameters>(),
-      )
-    }
-  }
+@Serializable
+internal data class TerminationSurveySecondStepKey(
+  val subOptions: List<TerminationSurveyOption>,
+  val action: TerminationAction,
+  val commonParams: TerminationGraphParameters,
+) : HedvigNavKey
 
-  @Serializable
-  data class TerminationSurveySecondStep(
-    val subOptions: List<TerminationSurveyOption>,
-    val action: TerminationAction,
-    val commonParams: TerminationGraphParameters,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<List<TerminationSurveyOption>>(),
-        typeOf<TerminationAction>(),
-        typeOf<TerminationGraphParameters>(),
-      )
-    }
-  }
+@Serializable
+internal data class TerminationDateKey(
+  val minDate: LocalDate,
+  val maxDate: LocalDate,
+  val extraCoverageItems: List<ExtraCoverageItem>,
+  val commonParams: TerminationGraphParameters,
+  val selectedReasonId: String,
+  val feedbackComment: String?,
+) : HedvigNavKey
 
+@Serializable
+internal data class TerminationConfirmationKey(
+  val terminationType: TerminationType,
+  val extraCoverageItems: List<ExtraCoverageItem>,
+  val commonParams: TerminationGraphParameters,
+  val selectedReasonId: String,
+  val feedbackComment: String?,
+) : HedvigNavKey {
   @Serializable
-  data class TerminationDate(
-    val minDate: LocalDate,
-    val maxDate: LocalDate,
-    val extraCoverageItems: List<ExtraCoverageItem>,
-    val commonParams: TerminationGraphParameters,
-    val selectedReasonId: String,
-    val feedbackComment: String?,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<LocalDate>(),
-        typeOf<List<ExtraCoverageItem>>(),
-        typeOf<TerminationGraphParameters>(),
-      )
-    }
-  }
-
-  @Serializable
-  data class TerminationConfirmation(
-    val terminationType: TerminationType,
-    val extraCoverageItems: List<ExtraCoverageItem>,
-    val commonParams: TerminationGraphParameters,
-    val selectedReasonId: String,
-    val feedbackComment: String?,
-  ) : TerminateInsuranceDestination, Destination {
+  sealed interface TerminationType {
     @Serializable
-    sealed interface TerminationType {
-      @Serializable
-      data object Deletion : TerminationType
+    data object Deletion : TerminationType
 
-      @Serializable
-      data class Termination(val terminationDate: LocalDate) : TerminationType
-    }
-
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<TerminationType>(),
-        typeOf<List<ExtraCoverageItem>>(),
-        typeOf<TerminationGraphParameters>(),
-      )
-    }
-  }
-
-  @Serializable
-  data class InsuranceDeletion(
-    val commonParams: TerminationGraphParameters,
-    val extraCoverageItems: List<ExtraCoverageItem>,
-    val selectedReasonId: String,
-    val feedbackComment: String?,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<TerminationGraphParameters>(),
-        typeOf<List<ExtraCoverageItem>>(),
-      )
-    }
-  }
-
-  @Serializable
-  data class TerminationSuccess(
-    val terminationDate: LocalDate?,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<LocalDate?>())
-    }
-  }
-
-  @Serializable
-  data class TerminationFailure(
-    val message: String?,
-  ) : TerminateInsuranceDestination, Destination
-
-  @Serializable
-  data object UnknownScreen : TerminateInsuranceDestination, Destination
-
-  @Serializable
-  data class DeflectSuggestion(
-    val description: String,
-    val url: String?,
-    val suggestionType: SuggestionType,
-    val commonParams: TerminationGraphParameters,
-    val action: TerminationAction,
-    val selectedReasonId: String,
-    val feedbackComment: String?,
-  ) : TerminateInsuranceDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<SuggestionType>(),
-        typeOf<TerminationGraphParameters>(),
-        typeOf<TerminationAction>(),
-      )
-    }
+    @Serializable
+    data class Termination(val terminationDate: LocalDate) : TerminationType
   }
 }
+
+@Serializable
+internal data class InsuranceDeletionKey(
+  val commonParams: TerminationGraphParameters,
+  val extraCoverageItems: List<ExtraCoverageItem>,
+  val selectedReasonId: String,
+  val feedbackComment: String?,
+) : HedvigNavKey
+
+@Serializable
+internal data class TerminationSuccessKey(
+  val terminationDate: LocalDate?,
+) : HedvigNavKey
+
+@Serializable
+internal data class TerminationFailureKey(
+  val message: String?,
+) : HedvigNavKey
+
+@Serializable
+internal data object UnknownScreenKey : HedvigNavKey
+
+@Serializable
+internal data class DeflectSuggestionKey(
+  val description: String,
+  val url: String?,
+  val suggestionType: SuggestionType,
+  val commonParams: TerminationGraphParameters,
+  val action: TerminationAction,
+  val selectedReasonId: String,
+  val feedbackComment: String?,
+) : HedvigNavKey
 
 @Serializable
 internal data class TerminationDateParameters(
   val minDate: LocalDate,
   val maxDate: LocalDate,
   val commonParams: TerminationGraphParameters,
-) {
-  companion object : DestinationNavTypeAware {
-    override val typeList: List<KType> = listOf(
-      typeOf<LocalDate>(),
-      typeOf<TerminationGraphParameters>(),
-    )
-  }
-}
+)
 
 @Serializable
 internal data class TerminationGraphParameters(

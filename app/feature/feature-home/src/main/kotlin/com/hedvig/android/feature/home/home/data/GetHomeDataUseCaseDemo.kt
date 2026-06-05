@@ -8,9 +8,11 @@ import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
 import com.hedvig.android.memberreminders.MemberReminders
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
+@Inject
 internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
   override fun invoke(forceNetworkFetch: Boolean): Flow<Either<ApolloOperationError, HomeData>> = flowOf(
     HomeData(
@@ -22,7 +24,6 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         upcomingRenewals = null,
         enableNotifications = null,
       ),
-      showChatIcon = false,
       hasUnseenChatMessages = false,
       showHelpCenter = true,
       firstVetSections = listOf(),
@@ -54,6 +55,7 @@ internal class GetHomeDataUseCaseDemo : GetHomeDataUseCase {
         ),
       ),
       travelBannerInfo = null,
+      showChatIcon = false,
     ).right(),
   )
 }

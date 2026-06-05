@@ -9,9 +9,9 @@ hedvig {
 
 dependencies {
   implementation(libs.coroutines.core)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.room.paging)
-  implementation(libs.room.runtime)
-  implementation(projects.dataChat)
+  api(libs.room.runtime)
+  implementation(projects.coreCommonPublic)
+  api(projects.dataChat)
 }

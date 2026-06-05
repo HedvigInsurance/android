@@ -7,6 +7,7 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  navKeys()
 }
 
 dependencies {
@@ -19,12 +20,12 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
-  implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
   implementation(projects.coreCommonPublic)
+  implementation(projects.coreDemoMode)
   implementation(projects.coreFileUpload)
   implementation(projects.coreResources)
   implementation(projects.dataAddons)
@@ -36,7 +37,6 @@ dependencies {
   implementation(projects.navigationActivity)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
 
   testImplementation(libs.apollo.testingSupport)

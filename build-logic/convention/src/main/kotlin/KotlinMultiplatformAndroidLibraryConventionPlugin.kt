@@ -67,7 +67,7 @@ private fun Project.configureKotlinAndroidMultiplatform() {
             if (this is KotlinJvmCompilerOptions) {
               this.jvmTarget.set(JvmTarget.JVM_21)
             }
-            this.languageVersion.set(KotlinVersion.KOTLIN_2_2)
+            this.languageVersion.set(KotlinVersion.KOTLIN_2_3)
           }
         }
       }

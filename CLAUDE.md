@@ -159,7 +159,7 @@ fun NavGraphBuilder.featureGraph(
   navigator: Navigator,
 ) {
   navgraph<FeatureDestination.Graph> {
-    navdestination<FeatureDestination.Detail> { backStackEntry ->
+    navdestination<FeatureDestination.Detail> { backstackEntry ->
       // Composable UI
     }
   }

@@ -18,10 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-        Main_nativeKt.doInitKoin(
+        Main_nativeKt.doInitDiGraph(
             accessTokenFetcher: IosAccessTokenFetcher(IosKeychainAbstraction()),
             deviceIdFetcher: IosDeviceIdFetcher(),
             featureManager: iosFeatureManager(),
+            languageStorage: IosLanguageStorage(),
             appBuildConfig: IosAppBuildConfig(),
         )
         IosLogcatLogger.companion.install()

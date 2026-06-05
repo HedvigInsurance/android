@@ -20,7 +20,7 @@ internal class UnleashFeatureFlagProvider(
           Feature.PUPPY_GUIDE,
           -> !hedvigUnleashClient.client.isEnabled(key)
 
-          Feature.DISABLE_CHAT,
+          Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT,
           Feature.MOVING_FLOW,
           Feature.PAYMENT_SCREEN,
           Feature.UPDATE_NECESSARY,

@@ -7,17 +7,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
-import com.hedvig.android.feature.movingflow.MovingFlowDestinations.Summary
+import com.hedvig.android.feature.movingflow.SummaryKey
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.AddonQuote.HomeAddonQuote
@@ -36,11 +35,18 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
+@AssistedInject
 internal class SummaryViewModel(
-  savedStateHandle: SavedStateHandle,
+  @Assisted summaryRoute: SummaryKey,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
@@ -48,16 +54,25 @@ internal class SummaryViewModel(
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
     SummaryPresenter(
-      summaryRoute = savedStateHandle.toRoute<Summary>(),
+      summaryRoute = summaryRoute,
       movingFlowRepository = movingFlowRepository,
       apolloClient = apolloClient,
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       getMoveIntentCostUseCase = getMoveIntentCostUseCase,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted summaryRoute: SummaryKey,
+    ): SummaryViewModel
+  }
+}
 
 internal class SummaryPresenter(
-  private val summaryRoute: Summary,
+  private val summaryRoute: SummaryKey,
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,

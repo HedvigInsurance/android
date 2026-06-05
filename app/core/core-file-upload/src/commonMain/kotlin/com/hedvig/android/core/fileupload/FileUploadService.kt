@@ -3,10 +3,13 @@ package com.hedvig.android.core.fileupload
 import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.NetworkError
 import com.hedvig.android.network.clients.safePost
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.request.forms.FormBuilder
 import io.ktor.client.request.forms.InputProvider
@@ -19,6 +22,8 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 
+@SingleIn(AppScope::class)
+@Inject
 class FileUploadService(
   private val client: HttpClient,
 ) {

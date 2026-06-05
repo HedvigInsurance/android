@@ -6,29 +6,36 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.GetTerminationNotificationUseCase
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationResult
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Deletion
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType.Termination
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType.Deletion
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType.Termination
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlin.time.Clock
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-internal class TerminationConfirmationViewModel(
-  terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
-  insuranceInfo: TerminationGraphParameters,
-  extraCoverageItems: List<ExtraCoverageItem>,
-  selectedReasonId: String,
-  feedbackComment: String?,
+internal class TerminationConfirmationViewModel @AssistedInject constructor(
+  @Assisted terminationType: TerminationConfirmationKey.TerminationType,
+  @Assisted insuranceInfo: TerminationGraphParameters,
+  @Assisted extraCoverageItems: List<ExtraCoverageItem>,
+  @Assisted selectedReasonId: String,
+  @Assisted feedbackComment: String?,
   terminateInsuranceRepository: TerminateInsuranceRepository,
   getTerminationNotificationUseCase: GetTerminationNotificationUseCase,
   clock: Clock,
@@ -51,7 +58,20 @@ internal class TerminationConfirmationViewModel(
       getTerminationNotificationUseCase,
       clock,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted terminationType: TerminationConfirmationKey.TerminationType,
+      @Assisted insuranceInfo: TerminationGraphParameters,
+      @Assisted extraCoverageItems: List<ExtraCoverageItem>,
+      @Assisted selectedReasonId: String,
+      @Assisted feedbackComment: String?,
+    ): TerminationConfirmationViewModel
+  }
+}
 
 sealed interface TerminationConfirmationEvent {
   data object Submit : TerminationConfirmationEvent
@@ -60,7 +80,7 @@ sealed interface TerminationConfirmationEvent {
 }
 
 internal class TerminationConfirmationPresenter(
-  private val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+  private val terminationType: TerminationConfirmationKey.TerminationType,
   private val insuranceInfo: TerminationGraphParameters,
   private val selectedReasonId: String,
   private val feedbackComment: String?,
@@ -148,7 +168,7 @@ internal class TerminationConfirmationPresenter(
 internal data class TerminationSuccessResult(val terminationDate: LocalDate?)
 
 internal data class OverviewUiState(
-  val terminationType: TerminateInsuranceDestination.TerminationConfirmation.TerminationType,
+  val terminationType: TerminationConfirmationKey.TerminationType,
   val insuranceInfo: TerminationGraphParameters,
   val extraCoverageItems: List<ExtraCoverageItem>,
   val notificationMessage: String?,

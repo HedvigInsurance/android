@@ -224,25 +224,26 @@ class ContractDetailPresenterTest {
   }
 
   @Test
-  fun `if termination is enabled but contract does not support termination not show cancel insurance button`() = runTest {
-    val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
-    val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
-    val presenter = ContractDetailPresenter(
-      contractId = getContractForContractIdUseCase.getValIdWithTerminationDate(),
-      featureManager = featureManager,
-      getContractForContractIdUseCase = getContractForContractIdUseCase,
-    )
-    presenter.test(ContractDetailsUiState.Loading) {
-      assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
-      getContractForContractIdUseCase.addInsuranceWithTerminationDateToResponseTurbine()
-      assertThat(awaitItem()).isEqualTo(
-        ContractDetailsUiState.Success(
-          insuranceContract = getContractForContractIdUseCase.getInsuranceWithTerminationDate(),
-          allowTerminatingInsurance = false,
-        ),
+  fun `if termination is enabled but contract does not support termination not show cancel insurance button`() =
+    runTest {
+      val getContractForContractIdUseCase = FakeGetContractForContractIdUseCase()
+      val featureManager = FakeFeatureManager(fixedMap = mapOf(Feature.TERMINATION_FLOW to true))
+      val presenter = ContractDetailPresenter(
+        contractId = getContractForContractIdUseCase.getValIdWithTerminationDate(),
+        featureManager = featureManager,
+        getContractForContractIdUseCase = getContractForContractIdUseCase,
       )
+      presenter.test(ContractDetailsUiState.Loading) {
+        assertThat(awaitItem()).isEqualTo(ContractDetailsUiState.Loading)
+        getContractForContractIdUseCase.addInsuranceWithTerminationDateToResponseTurbine()
+        assertThat(awaitItem()).isEqualTo(
+          ContractDetailsUiState.Success(
+            insuranceContract = getContractForContractIdUseCase.getInsuranceWithTerminationDate(),
+            allowTerminatingInsurance = false,
+          ),
+        )
+      }
     }
-  }
 
   internal class FakeGetContractForContractIdUseCase : GetContractForContractIdUseCase {
     private val insuranceWithNoTerminationDate = EstablishedInsuranceContract(

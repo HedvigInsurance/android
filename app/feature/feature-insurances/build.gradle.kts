@@ -7,6 +7,7 @@ hedvig {
   apollo("octopus")
   serialization()
   compose()
+  navKeys()
 }
 
 android {
@@ -22,8 +23,6 @@ dependencies {
   implementation(libs.arrow.fx)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.navigation.compose)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(projects.apolloCore)
   implementation(projects.apolloOctopusPublic)
@@ -43,7 +42,6 @@ dependencies {
   implementation(projects.moleculePublic)
   implementation(projects.navigationCommon)
   implementation(projects.navigationCompose)
-  implementation(projects.navigationComposeTyped)
   implementation(projects.navigationCore)
   implementation(projects.notificationBadgeDataPublic)
   implementation(projects.pullrefresh)

@@ -8,6 +8,10 @@ import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.appreview.SelfServiceCompletedEventManager
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import octopus.CommitMidtermChangeMutation
 import octopus.type.MidtermChangeIntentState
@@ -16,6 +20,9 @@ internal interface CommitMidtermChangeUseCase {
   suspend fun invoke(intentId: String): Either<ErrorMessage, CommitMidtermChangeSuccess>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class CommitMidtermChangeUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,

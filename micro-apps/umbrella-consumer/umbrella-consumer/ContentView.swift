@@ -1,11 +1,10 @@
+@preconcurrency import HedvigShared
 import SwiftUI
-import HedvigShared
 
 struct ContentView: View {
     @State private var presented: Destination?
 
     enum Destination: Identifiable {
-        case helpCenter
         case puppyGuide
         var id: Self { self }
     }
@@ -13,16 +12,12 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             List {
-                Button("Help Center") { presented = .helpCenter }
                 Button("Puppy Guide") { presented = .puppyGuide }
             }
             .navigationTitle("Umbrella consumer")
         }
         .fullScreenCover(item: $presented) { destination in
             switch destination {
-            case .helpCenter:
-                HelpCenterScreen(onDismiss: { presented = nil })
-                    .ignoresSafeArea(.all)
             case .puppyGuide:
                 PuppyGuideStack(onDismiss: { presented = nil })
                     .ignoresSafeArea(.all)
@@ -31,30 +26,11 @@ struct ContentView: View {
     }
 }
 
-private struct HelpCenterScreen: UIViewControllerRepresentable {
-    let onDismiss: () -> Void
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        return HelpCenterViewControllerKt.HelpCenterViewController(
-            onNavigateUp: onDismiss,
-            onNavigateToInbox: {},
-            onNavigateToNewConversation: {},
-            onNavigateToQuickLink: { _ in },
-            openUrl: { url in
-                if let nsUrl = URL(string: url) {
-                    UIApplication.shared.open(nsUrl)
-                }
-            },
-            tryToDialPhone: { number in
-                let cleaned = number.components(separatedBy: .whitespaces).joined()
-                if let url = URL(string: "tel://\(cleaned)") {
-                    UIApplication.shared.open(url)
-                }
-            }
-        )
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+// The umbrella-exported Compose screens drive the system swipe-back gesture and the
+// nav bar scroll-edge appearance through these hooks. This test harness hosts them in a
+// plain NavigationStack without that infra, so a no-op controller is enough.
+private final class NoopSwipeBackController: NSObject, IosSwipeBackController {
+    func setSwipeBackEnabled(isEnabled: Bool) {}
 }
 
 private struct PuppyGuideStack: View {
@@ -88,7 +64,9 @@ private struct PuppyGuideScreen: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         return PuppyGuideViewControllersKt.PuppyGuideViewController(
             onNavigateUp: onNavigateUp,
-            onNavigateToArticle: onNavigateToArticle
+            onNavigateToArticle: onNavigateToArticle,
+            swipeBackController: NoopSwipeBackController(),
+            onScrollOffsetChanged: { _ in }
         )
     }
 
@@ -102,7 +80,9 @@ private struct PuppyArticleScreen: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         return PuppyGuideViewControllersKt.PuppyArticleViewController(
             storyName: storyName,
-            navigateUp: navigateUp
+            navigateUp: navigateUp,
+            swipeBackController: NoopSwipeBackController(),
+            onScrollOffsetChanged: { _ in }
         )
     }
 

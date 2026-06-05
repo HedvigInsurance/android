@@ -1,12 +1,11 @@
 package com.hedvig.android.feature.forever.navigation
 
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelTab
+import com.hedvig.android.navigation.common.TopLevelTabRoot
 import kotlinx.serialization.Serializable
 
-sealed interface ForeverDestination {
-  @Serializable
-  data object Graph : ForeverDestination, Destination
-
-  @Serializable
-  data object Forever : ForeverDestination, Destination
+@Serializable
+data object ForeverKey : HedvigNavKey, TopLevelTabRoot {
+  override val topLevelTab: TopLevelTab = TopLevelTab.Forever
 }

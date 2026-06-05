@@ -18,7 +18,7 @@ internal data class DiscountsDetails(
 )
 
 @Serializable
-internal data class Discount(
+data class Discount(
   val code: String,
   val description: String?,
   val status: DiscountStatus,

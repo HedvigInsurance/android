@@ -3,9 +3,14 @@ package com.hedvig.android.feature.insurances.data
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
+@Inject
+@SingleIn(AppScope::class)
 internal class GetCrossSellsUseCaseDemo : GetCrossSellsUseCase {
   override suspend fun invoke(): Either<ErrorMessage, CrossSellResult> {
     return either {

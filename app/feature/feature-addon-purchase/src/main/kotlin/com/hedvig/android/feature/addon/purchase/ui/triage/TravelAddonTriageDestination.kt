@@ -41,7 +41,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun TravelAddonTriageDestination(
   viewModel: TravelAddonTriageViewModel,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   launchFlow: (insuranceIds: List<String>) -> Unit,
   onNavigateToNewConversation: () -> Unit,
 ) {
@@ -53,7 +53,7 @@ internal fun TravelAddonTriageDestination(
     },
     launchFlow = launchFlow,
     onNavigateToNewConversation = onNavigateToNewConversation,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
   )
 }
 
@@ -61,7 +61,7 @@ internal fun TravelAddonTriageDestination(
 private fun StartChangeTierFlowScreen(
   uiState: TravelAddonTriageState,
   reload: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   launchFlow: (List<String>) -> Unit,
   onNavigateToNewConversation: () -> Unit,
 ) {
@@ -73,7 +73,7 @@ private fun StartChangeTierFlowScreen(
       is Failure -> {
         FailureScreen(
           reload = reload,
-          popBackStack = popBackStack,
+          popBackstack = popBackstack,
           reason = uiState.reason,
           onNavigateToNewConversation = onNavigateToNewConversation,
         )
@@ -96,7 +96,7 @@ private fun StartChangeTierFlowScreen(
 @Composable
 private fun FailureScreen(
   reload: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   reason: FailureReason,
   onNavigateToNewConversation: () -> Unit,
 ) {
@@ -133,7 +133,7 @@ private fun FailureScreen(
           Spacer(Modifier.weight(1f))
           HedvigTextButton(
             stringResource(Res.string.general_close_button),
-            onClick = dropUnlessResumed { popBackStack() },
+            onClick = dropUnlessResumed { popBackstack() },
             buttonSize = Large,
             modifier = Modifier.fillMaxWidth(),
           )

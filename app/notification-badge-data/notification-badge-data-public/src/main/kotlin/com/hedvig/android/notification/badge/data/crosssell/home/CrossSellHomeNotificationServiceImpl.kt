@@ -4,21 +4,31 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.notification.badge.data.crosssell.CrossSellNotificationBadgeService
 import com.hedvig.android.notification.badge.data.storage.NotificationBadge
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
-class CrossSellHomeNotificationServiceProvider(
+@Inject
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding<Provider<CrossSellHomeNotificationService>>())
+internal class CrossSellHomeNotificationServiceProvider(
   override val demoManager: DemoManager,
-  override val demoImpl: CrossSellHomeNotificationService,
-  override val prodImpl: CrossSellHomeNotificationService,
+  override val prodImpl: CrossSellHomeNotificationServiceImpl,
+  override val demoImpl: DemoCrossSellHomeNotificationService,
 ) : ProdOrDemoProvider<CrossSellHomeNotificationService>
 
+@Inject
 internal class DemoCrossSellHomeNotificationService() : CrossSellHomeNotificationService {
   var showNotification = true
 
@@ -48,6 +58,8 @@ interface CrossSellHomeNotificationService {
   suspend fun setLastEpochDayNewRecommendationNotificationWasShown(epochDay: Long)
 }
 
+@Inject
+@SingleIn(AppScope::class)
 internal class CrossSellHomeNotificationServiceImpl(
   private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
   private val dataStore: DataStore<Preferences>,

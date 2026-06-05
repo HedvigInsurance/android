@@ -1,55 +1,35 @@
 package com.hedvig.android.feature.travelcertificate.navigation
 
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import com.hedvig.android.navigation.common.CrossSellEligibleDestination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object TravelCertificateGraphDestination : Destination
+data object TravelCertificateKey : HedvigNavKey, CrossSellEligibleDestination
 
-internal sealed interface TravelCertificateDestination {
+@Serializable
+internal data object TravelCertificateChooseContractKey : HedvigNavKey
+
+@Serializable
+internal data class TravelCertificateDateInputKey(
+  val contractId: String?,
+) : HedvigNavKey
+
+@Serializable
+internal data class TravelCertificateTravellersInputKey(
+  val primaryInput: TravelCertificatePrimaryInput,
+) : HedvigNavKey {
   @Serializable
-  data object TravelCertificateHistory : TravelCertificateDestination, Destination
-
-  @Serializable
-  data object TravelCertificateChooseContract : TravelCertificateDestination, Destination
-
-  @Serializable
-  data class TravelCertificateDateInput(
-    val contractId: String?,
-  ) : TravelCertificateDestination, Destination
-
-  @Serializable
-  data class TravelCertificateTravellersInput(
-    val primaryInput: TravelCertificatePrimaryInput,
-  ) : TravelCertificateDestination, Destination {
-    @Serializable
-    data class TravelCertificatePrimaryInput(
-      val email: String,
-      val travelDate: LocalDate,
-      val contractId: String,
-    )
-
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<TravelCertificatePrimaryInput>())
-    }
-  }
-
-  @Serializable
-  data class ShowCertificate(
-    val travelCertificateUrl: TravelCertificateUrl,
-  ) : TravelCertificateDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<TravelCertificateUrl>())
-    }
-  }
+  data class TravelCertificatePrimaryInput(
+    val email: String,
+    val travelDate: LocalDate,
+    val contractId: String,
+  )
 }
 
-val travelCertificateCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
-  TravelCertificateDestination.TravelCertificateHistory::class,
-)
+@Serializable
+internal data class ShowCertificateKey(
+  val travelCertificateUrl: TravelCertificateUrl,
+) : HedvigNavKey

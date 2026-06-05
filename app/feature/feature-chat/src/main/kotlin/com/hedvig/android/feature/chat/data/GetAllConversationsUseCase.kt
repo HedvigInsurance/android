@@ -7,9 +7,13 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy.CacheAndNetwork
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ApolloOperationError
 import com.hedvig.android.apollo.safeFlow
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.chat.model.InboxConversation
 import com.hedvig.android.feature.chat.model.InboxConversation.LatestMessage
 import com.hedvig.android.feature.chat.model.toSender
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -28,6 +32,9 @@ internal interface GetAllConversationsUseCase {
   suspend fun invoke(): Flow<Either<ApolloOperationError, List<InboxConversation>>>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetAllConversationsUseCaseImpl(
   private val apolloClient: ApolloClient,
 ) : GetAllConversationsUseCase {

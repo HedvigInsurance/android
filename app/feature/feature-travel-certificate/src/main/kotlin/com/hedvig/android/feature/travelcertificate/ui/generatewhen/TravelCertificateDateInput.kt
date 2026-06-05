@@ -38,7 +38,7 @@ import com.hedvig.android.design.system.hedvig.api.HedvigDisplayMode
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePicker
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputUiState.Success
 import hedvig.resources.PROFILE_MY_INFO_EMAIL_LABEL
 import hedvig.resources.Res
@@ -54,7 +54,7 @@ internal fun TravelCertificateDateInputDestination(
   viewModel: TravelCertificateDateInputViewModel,
   navigateUp: () -> Unit,
   onNavigateToFellowTravellers: (
-    TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+    TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   ) -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
 ) {
@@ -78,7 +78,7 @@ private fun TravelCertificateDateInput(
   reload: () -> Unit,
   navigateUp: () -> Unit,
   onNavigateToFellowTravellers: (
-    TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput,
+    TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   ) -> Unit,
   onNavigateToOverview: (TravelCertificateUrl) -> Unit,
   submitInput: () -> Unit,

@@ -1,5 +1,9 @@
 package com.hedvig.android.core.appreview
 
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -11,6 +15,9 @@ interface WaitUntilAppReviewDialogShouldBeOpenedUseCase {
   suspend fun invoke()
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class WaitUntilAppReviewDialogShouldBeOpenedUseCaseImpl(
   private val dataStore: SelfServiceCompletedEventStore,
 ) : WaitUntilAppReviewDialogShouldBeOpenedUseCase {

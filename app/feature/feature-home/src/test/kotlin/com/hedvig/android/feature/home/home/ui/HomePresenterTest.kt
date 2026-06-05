@@ -14,6 +14,7 @@ import assertk.assertions.prop
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
@@ -60,7 +61,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
 
@@ -87,7 +88,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
 
@@ -112,7 +113,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
 
@@ -185,7 +186,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
 
@@ -236,7 +237,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
 
@@ -260,7 +261,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
 
@@ -297,7 +298,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
 
@@ -344,7 +345,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
     val firstVet = FirstVetSection(
@@ -398,7 +399,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
     val crossSell = CrossSell(
@@ -455,7 +456,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
     homePresenter.test(HomeUiState.Loading) {
@@ -501,7 +502,7 @@ internal class HomePresenterTest {
       { getHomeDataUseCase },
       SeenImportantMessagesStorageImpl(),
       { FakeCrossSellHomeNotificationService() },
-      backgroundScope,
+      ApplicationScope(backgroundScope),
       false,
     )
     homePresenter.test(HomeUiState.Loading) {

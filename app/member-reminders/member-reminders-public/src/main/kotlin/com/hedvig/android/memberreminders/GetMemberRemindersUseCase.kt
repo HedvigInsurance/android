@@ -4,8 +4,12 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.merge
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.memberreminders.MemberReminder.ContactInfoUpdateNeeded
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import java.util.UUID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -17,6 +21,9 @@ interface GetMemberRemindersUseCase {
   fun invoke(): Flow<MemberReminders>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetMemberRemindersUseCaseImpl(
   private val enableNotificationsReminderSnoozeManager: EnableNotificationsReminderSnoozeManager,
   private val getConnectPaymentReminderUseCase: GetConnectPaymentReminderUseCase,
@@ -63,7 +70,8 @@ internal class GetMemberRemindersUseCaseImpl(
       val enableNotifications = values[0] as MemberReminder.EnableNotifications?
       val connectPayment = values[1] as MemberReminder.PaymentReminder?
       val upcomingRenewalReminders = values[2] as? NonEmptyList<MemberReminder.UpcomingRenewal>?
-      val coInsuredInfoResult = values[3] as? Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
+      val coInsuredInfoResult =
+        values[3] as? Either<CoInsuredInfoReminderError, NonEmptyList<MemberReminder.CoInsuredInfo>>
       val contactInfoReminder = values[4] as? Either<ErrorMessage, ContactInfoUpdateNeeded?>
       val missingChipIdReminder = values[5] as? Either<ErrorMessage, MemberReminder.MissingChipId?>
 

@@ -25,11 +25,10 @@ import com.hedvig.android.apollo.test.TestApolloClientRule
 import com.hedvig.android.apollo.test.TestNetworkTransportType
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.test.isRight
-import com.hedvig.android.core.demomode.DemoManager
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.AddonBannerInfo
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
-import com.hedvig.android.data.addons.data.GetTravelAddonBannerInfoUseCaseProvider
 import com.hedvig.android.data.conversations.HasAnyActiveConversationUseCase
 import com.hedvig.android.feature.home.home.data.HomeData.VeryImportantMessage.LinkInfo
 import com.hedvig.android.featureflags.FeatureManager
@@ -72,15 +71,8 @@ internal class GetHomeUseCaseTest {
   @get:Rule
   val testLogcatLogger = TestLogcatLoggingRule()
 
-  val travelBannerProvider = GetTravelAddonBannerInfoUseCaseProvider(
-    demoManager = object : DemoManager {
-      override fun isDemoMode(): Flow<Boolean> {
-        return flowOf(false)
-      }
-
-      override suspend fun setDemoMode(demoMode: Boolean) {}
-    },
-    demoImpl = object : GetAddonBannerInfoUseCase {
+  val travelBannerProvider = Provider<GetAddonBannerInfoUseCase> {
+    object : GetAddonBannerInfoUseCase {
       override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
         return flowOf(
           either {
@@ -88,17 +80,8 @@ internal class GetHomeUseCaseTest {
           },
         )
       }
-    },
-    prodImpl = object : GetAddonBannerInfoUseCase {
-      override fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>> {
-        return flowOf(
-          either {
-            emptyList()
-          },
-        )
-      }
-    },
-  )
+    }
+  }
 
   @get:Rule
   val testApolloClientRule = TestApolloClientRule(TestNetworkTransportType.MAP)
@@ -123,12 +106,12 @@ internal class GetHomeUseCaseTest {
           CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
       },
-      HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
       FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
       getTravelAddonBannerInfoUseCaseProvider = travelBannerProvider,
+      HasAnyActiveConversationUseCase(apolloClient),
     )
     val testId = "test"
 
@@ -172,12 +155,12 @@ internal class GetHomeUseCaseTest {
           CbmNumberOfChatMessagesQuery.Data(OctopusFakeResolver),
         )
       },
-      HasAnyActiveConversationUseCase(apolloClient),
       testGetMemberRemindersUseCase,
       FakeFeatureManager(true),
       TestClock(),
       TimeZone.UTC,
       travelBannerProvider,
+      HasAnyActiveConversationUseCase(apolloClient),
     )
 
     testGetMemberRemindersUseCase.memberReminders.add(MemberReminders())
@@ -495,9 +478,10 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
         Feature.ENABLE_CLAIM_HISTORY to true,
+        // With the inbox-always-available kill switch off, the icon depends purely on existing conversations
+        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -553,16 +537,15 @@ internal class GetHomeUseCaseTest {
   }
 
   @Test
-  fun `showChatIcon depends on if there are existing messages, and on the help center and chat feature flags`(
-    @TestParameter chatIsKillSwitched: Boolean,
-    @TestParameter helpCenterIsEnabled: Boolean,
+  fun `showChatIcon is true when the inbox is always available, or when there are existing eligible messages`(
+    @TestParameter inboxAlwaysAvailable: Boolean,
     @TestParameter isEligibleToSeeTheChatButton: Boolean,
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.DISABLE_CHAT to chatIsKillSwitched,
-        Feature.HELP_CENTER to helpCenterIsEnabled,
+        Feature.HELP_CENTER to true,
         Feature.ENABLE_CLAIM_HISTORY to true,
+        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to inboxAlwaysAvailable,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -602,22 +585,14 @@ internal class GetHomeUseCaseTest {
       .isRight()
       .prop(HomeData::showChatIcon)
       .apply {
-        if (chatIsKillSwitched) {
-          // No matter what, if the chat is disabled, we do not show the chat button
-          isFalse()
+        if (inboxAlwaysAvailable) {
+          // When the inbox-always-available kill switch is on, we always show the chat button
+          isTrue()
+        } else if (isEligibleToSeeTheChatButton) {
+          // Otherwise we show it only when there is an active conversation to get back to
+          isTrue()
         } else {
-          if (isEligibleToSeeTheChatButton) {
-            // If they are eligible to see the chat button, we just show it
-            isTrue()
-          } else {
-            if (helpCenterIsEnabled) {
-              isFalse()
-            } else {
-              // Despite not being eligible to see the chat button, if the help center is disabled, we must show the
-              // chat button to allow them to still get to the chat in some way
-              isTrue()
-            }
-          }
+          isFalse()
         }
       }
   }
@@ -628,9 +603,9 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.DISABLE_CHAT to true,
         Feature.HELP_CENTER to helpCenterIsEnabled,
         Feature.ENABLE_CLAIM_HISTORY to true,
+        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -670,9 +645,10 @@ internal class GetHomeUseCaseTest {
   ) = runTest {
     val featureManager = FakeFeatureManager(
       mapOf(
-        Feature.DISABLE_CHAT to false,
         Feature.HELP_CENTER to true,
         Feature.ENABLE_CLAIM_HISTORY to true,
+        // Inbox-always-available off, so the icon reflects the conversation state being tested here
+        Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT to false,
       ),
     )
     val getHomeDataUseCase = testUseCaseWithoutReminders(featureManager)
@@ -777,12 +753,12 @@ internal class GetHomeUseCaseTest {
   ): GetHomeDataUseCase {
     return GetHomeDataUseCaseImpl(
       apolloClient,
-      HasAnyActiveConversationUseCase(apolloClient),
       TestGetMemberRemindersUseCase().apply { memberReminders.add(MemberReminders()) },
       featureManager,
       testClock,
       timeZone,
       travelBannerProvider,
+      HasAnyActiveConversationUseCase(apolloClient),
     )
   }
 }

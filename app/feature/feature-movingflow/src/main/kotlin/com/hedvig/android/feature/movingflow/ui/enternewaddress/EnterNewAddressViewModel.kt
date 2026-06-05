@@ -9,8 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
@@ -21,7 +19,7 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.feature.movingflow.MovingFlowDestinations
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
@@ -57,6 +55,12 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -68,20 +72,30 @@ import octopus.type.MoveIntentRequestInput
 import octopus.type.MoveToAddressInput
 import octopus.type.MoveToApartmentInput
 
+@AssistedInject
 internal class EnterNewAddressViewModel(
-  savedStateHandle: SavedStateHandle,
+  @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   featureManager: FeatureManager,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
     Loading,
     EnterNewAddressPresenter(
-      savedStateHandle.toRoute<MovingFlowDestinations.EnterNewAddress>().moveIntentId,
+      moveIntentId,
       movingFlowRepository,
       apolloClient,
       featureManager,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted moveIntentId: String,
+    ): EnterNewAddressViewModel
+  }
+}
 
 private class EnterNewAddressPresenter(
   private val moveIntentId: String,

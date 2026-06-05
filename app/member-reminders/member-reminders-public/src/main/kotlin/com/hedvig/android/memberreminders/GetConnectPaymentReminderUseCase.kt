@@ -9,9 +9,13 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import octopus.GetPayinMethodStatusQuery
 import octopus.type.MemberPaymentConnectionStatus
@@ -20,6 +24,9 @@ internal interface GetConnectPaymentReminderUseCase {
   suspend fun invoke(): Either<ConnectPaymentReminderError, PaymentReminder>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetConnectPaymentReminderUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val getOnlyHasNonPayingContractsUseCaseProvider: Provider<GetOnlyHasNonPayingContractsUseCase>,

@@ -1,7 +1,11 @@
 package com.hedvig.android.language
 
 import androidx.appcompat.app.AppCompatDelegate
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import java.util.Locale
 
 /**
@@ -12,6 +16,9 @@ interface LanguageLaunchCheckUseCase {
   fun invoke(defLocale: Locale)
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class AndroidLanguageLaunchCheckUseCase(
   private val languageService: LanguageService,
 ) : LanguageLaunchCheckUseCase {

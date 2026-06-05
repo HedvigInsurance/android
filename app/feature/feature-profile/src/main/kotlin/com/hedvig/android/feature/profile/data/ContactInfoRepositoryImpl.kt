@@ -13,9 +13,11 @@ import com.hedvig.android.feature.profile.data.ContactInformation.Email
 import com.hedvig.android.feature.profile.data.ContactInformation.PhoneNumber
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
 import octopus.ContactInformationQuery
 import octopus.MemberUpdateContactInfoMutation
 
+@Inject
 internal class ContactInfoRepositoryImpl(
   private val apolloClient: ApolloClient,
   private val networkCacheManager: NetworkCacheManager,

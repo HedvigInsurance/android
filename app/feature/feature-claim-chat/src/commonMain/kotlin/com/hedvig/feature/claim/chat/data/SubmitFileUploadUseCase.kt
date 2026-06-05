@@ -8,9 +8,12 @@ import com.apollographql.apollo.ApolloClient
 import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.jvm.JvmInline
 import octopus.ClaimIntentSubmitFileUploadMutation
 import octopus.type.ClaimIntentSubmitFileUploadInput
@@ -18,6 +21,8 @@ import octopus.type.ClaimIntentSubmitFileUploadInput
 @JvmInline
 internal value class CommonFileId(val value: String)
 
+@SingleIn(AppScope::class)
+@Inject
 internal class SubmitFileUploadUseCase(
   private val apolloClient: ApolloClient,
   private val uploadFileUseCase: UploadFileUseCase,

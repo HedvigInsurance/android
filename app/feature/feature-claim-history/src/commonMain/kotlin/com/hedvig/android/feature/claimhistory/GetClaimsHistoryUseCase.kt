@@ -6,6 +6,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import dev.zacsweers.metro.Inject
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -14,6 +15,7 @@ import kotlinx.datetime.atStartOfDayIn
 import octopus.ClaimsHistoryQuery
 import octopus.type.ClaimOutcome
 
+@Inject
 internal class GetClaimsHistoryUseCase(
   private val apolloClient: ApolloClient,
 ) {

@@ -12,6 +12,10 @@ import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -31,6 +35,9 @@ internal interface GetUpcomingRenewalRemindersUseCase {
   fun invoke(): Flow<Either<UpcomingRenewalReminderError, NonEmptyList<MemberReminder.UpcomingRenewal>>>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetUpcomingRenewalRemindersUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val clock: Clock,

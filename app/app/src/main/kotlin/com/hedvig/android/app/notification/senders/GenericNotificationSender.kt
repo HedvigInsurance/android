@@ -10,22 +10,29 @@ import com.hedvig.android.app.notification.DATA_MESSAGE_BODY
 import com.hedvig.android.app.notification.DATA_MESSAGE_TITLE
 import com.hedvig.android.app.notification.intentForNotification
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.navigation.core.HedvigDeepLinkContainer
 import com.hedvig.android.notification.core.HedvigNotificationChannel
 import com.hedvig.android.notification.core.NotificationSender
 import com.hedvig.android.notification.core.sendHedvigNotification
 import com.hedvig.android.permission.PermissionManager
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import hedvig.resources.R
 import java.util.concurrent.atomic.AtomicInteger
 
+@ContributesIntoSet(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 class GenericNotificationSender(
   private val context: Context,
   private val permissionManager: PermissionManager,
   private val buildConstants: HedvigBuildConstants,
   private val hedvigDeepLinkContainer: HedvigDeepLinkContainer,
-  private val notificationChannel: HedvigNotificationChannel,
 ) : NotificationSender {
+  private val notificationChannel = HedvigNotificationChannel.Other
   private val id = AtomicInteger(100)
 
   override fun handlesNotificationType(notificationType: String) =

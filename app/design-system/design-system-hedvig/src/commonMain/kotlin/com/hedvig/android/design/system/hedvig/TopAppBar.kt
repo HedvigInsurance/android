@@ -94,10 +94,10 @@ fun TopAppBar(
 
 @Composable
 fun TopAppBar(
-  title: String,
   actionType: TopAppBarActionType,
   onActionClick: () -> Unit,
   modifier: Modifier = Modifier,
+  title: String? = null,
   topAppBarActions: @Composable (RowScope.() -> Unit)? = null,
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
   customTopAppBarColors: TopAppBarColors? = null,
@@ -139,16 +139,18 @@ fun TopAppBar(
                 )
               },
             )
-            Spacer(Modifier.width(TopAppBarTokens.IconTitleSpacerWidth))
-            HedvigText(
-              text = title,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-              modifier = Modifier.padding(top = 10.dp, bottom = 10.dp).semantics(mergeDescendants = true) {
-                heading()
-              },
-              style = TopAppBarTokens.TextStyle.value,
-            )
+            if (title != null) {
+              Spacer(Modifier.width(TopAppBarTokens.IconTitleSpacerWidth))
+              HedvigText(
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = 10.dp, bottom = 10.dp).semantics(mergeDescendants = true) {
+                  heading()
+                },
+                style = TopAppBarTokens.TextStyle.value,
+              )
+            }
           }
         },
         endSlot = {
@@ -192,9 +194,9 @@ fun TopAppBarLayoutForActions(
 
 @Composable
 fun TopAppBarWithBack(
-  title: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  title: String? = null,
   windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
 ) {
   TopAppBar(

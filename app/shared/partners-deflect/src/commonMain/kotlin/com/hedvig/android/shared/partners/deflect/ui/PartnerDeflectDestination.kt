@@ -76,7 +76,7 @@ fun PartnerDeflectDestination(
     Column {
       val topAppbarInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
       TopAppBar(
-        title = deflect.title ?: "",
+        title = deflect.title,
         actionType = TopAppBarActionType.BACK,
         onActionClick = dropUnlessResumed(block = navigateUp),
         topAppBarActions = null,

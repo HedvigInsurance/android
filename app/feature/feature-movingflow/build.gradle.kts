@@ -7,6 +7,7 @@ hedvig {
   apollo(packageName = "octopus.feature.movingflow")
   serialization()
   compose()
+  navKeys()
 }
 
 dependencies {
@@ -19,7 +20,6 @@ dependencies {
   implementation(libs.arrow.core)
   implementation(libs.coroutines.core)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
-  implementation(libs.koin.composeViewModel)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)

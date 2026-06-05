@@ -5,7 +5,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.theme.Theme
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -22,7 +26,10 @@ interface SettingsDataStore {
   fun observeEmailSubscriptionPreference(): Flow<Boolean>
 }
 
-class SettingsDataStoreImpl(
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
+internal class SettingsDataStoreImpl(
   private val dataStore: DataStore<Preferences>,
 ) : SettingsDataStore {
   override suspend fun setTheme(theme: Theme) {

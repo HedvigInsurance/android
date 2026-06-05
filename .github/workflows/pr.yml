@@ -19,7 +19,11 @@ jobs:
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Unit tests
-        run: ./gradlew test
+        # `test` only runs tasks literally named `test` (Android `testDebugUnitTest`, JVM-library
+        # `test`). KMP modules expose their commonTest as `jvmTest`, which `test` never triggers, so
+        # add it explicitly. `jvmTest` (not `allTests`/`check`) keeps this off the iOS targets that
+        # can't run on the Linux runner.
+        run: ./gradlew test jvmTest
   lint:
     runs-on: ubuntu-latest-8-vcpu
     steps:
@@ -73,6 +77,12 @@ jobs:
           versionCode: ${{ env.VERSION_CODE }}
       - name: Run license release report
         run: ./gradlew licenseReleaseReport --no-configuration-cache --continue
+        continue-on-error: true
+      - name: OSS license gate (warn-only)
+        # Reuses the report generated just above (no extra Gradle run). Warn-only for the
+        # pilot: continue-on-error + enforce=false. To enforce: pass `true` and drop
+        # continue-on-error so a forbidden license blocks the build.
+        run: bash .github/scripts/license-gate.sh app/app/build/reports/licenses/licenseReleaseReport.json false
         continue-on-error: true
       - name: Build
         run: "./gradlew :app:bundleDebug"

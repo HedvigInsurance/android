@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import arrow.core.Either
 import com.hedvig.android.apollo.ApolloOperationError
+import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
@@ -23,7 +24,6 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.notification.badge.data.crosssell.home.CrossSellHomeNotificationService
 import com.hedvig.android.ui.emergency.FirstVetSection
 import kotlin.time.Clock
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ internal class HomePresenter(
   private val getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   private val seenImportantMessagesStorage: SeenImportantMessagesStorage,
   private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
-  private val applicationScope: CoroutineScope,
+  private val applicationScope: ApplicationScope,
   private val isProduction: Boolean,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
@@ -206,11 +206,11 @@ private data class SuccessData(
         veryImportantMessages = lastState.veryImportantMessages,
         memberReminders = lastState.memberReminders,
         showHelpCenter = lastState.isHelpCenterEnabled,
-        chatAction = lastState.chatAction,
         crossSellsAction = lastState.crossSellsAction,
         firstVetAction = lastState.firstVetAction,
         hasUnseenChatMessages = lastState.hasUnseenChatMessages,
         addonBannerInfo = lastState.addonBannerInfo,
+        chatAction = lastState.chatAction,
       )
     }
 
@@ -226,7 +226,6 @@ private data class SuccessData(
         null
       }
 
-      val chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null
       val firstVetAction = if (homeData.firstVetSections.isNotEmpty()) {
         HomeTopBarAction.FirstVetAction(homeData.firstVetSections)
       } else {
@@ -254,11 +253,11 @@ private data class SuccessData(
           enableNotifications = null,
         ),
         showHelpCenter = homeData.showHelpCenter,
-        chatAction = chatAction,
         firstVetAction = firstVetAction,
         crossSellsAction = crossSellsAction,
         hasUnseenChatMessages = homeData.hasUnseenChatMessages,
         addonBannerInfo = homeData.travelBannerInfo,
+        chatAction = if (homeData.showChatIcon) HomeTopBarAction.ChatAction else null,
       )
     }
   }

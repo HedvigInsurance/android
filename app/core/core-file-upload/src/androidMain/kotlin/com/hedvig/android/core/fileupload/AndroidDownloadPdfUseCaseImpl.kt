@@ -4,8 +4,12 @@ import android.content.Context
 import arrow.core.Either
 import arrow.core.raise.either
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.bodyAsChannel
@@ -25,6 +29,9 @@ import okio.sink
 private const val FILE_NAME = "hedvig_"
 private const val FILE_EXT = ".pdf"
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class AndroidDownloadPdfUseCaseImpl(
   private val context: Context,
   private val clock: Clock,

@@ -7,13 +7,14 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.design.system.hedvig.api.HedvigDatePickerState
 import com.hedvig.android.design.system.hedvig.api.HedvigSelectableDates
 import com.hedvig.android.design.system.hedvig.datepicker.HedvigDatePickerState
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetTravelCertificateSpecificationsUseCase
 import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
-import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateDestination
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
@@ -21,6 +22,12 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.core.common.android.validation.validateEmail
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import hedvig.resources.PROFILE_MY_INFO_INVALID_EMAIL
 import hedvig.resources.Res
 import hedvig.resources.travel_certificate_email_empty_error
@@ -34,8 +41,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
 
+@AssistedInject
 internal class TravelCertificateDateInputViewModel(
-  contractId: String?,
+  @Assisted contractId: String?,
   getTravelCertificateSpecificationsUseCase: GetTravelCertificateSpecificationsUseCase,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   languageService: LanguageService,
@@ -48,7 +56,16 @@ internal class TravelCertificateDateInputViewModel(
       languageService,
     ),
     sharingStarted = SharingStarted.WhileSubscribed(5.seconds),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted contractId: String?,
+    ): TravelCertificateDateInputViewModel
+  }
+}
 
 internal class TravelCertificateDateInputPresenter(
   private val contractId: String?,
@@ -96,7 +113,7 @@ internal class TravelCertificateDateInputPresenter(
     }
 
     var primaryInput by remember {
-      mutableStateOf<TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?>(null)
+      mutableStateOf<TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput?>(null)
     }
 
     var invalidEmailErrorMessage by remember { mutableStateOf<StringResource?>(null) }
@@ -112,7 +129,7 @@ internal class TravelCertificateDateInputPresenter(
         ) {
           if (successScreenContent.details.hasCoInsured) {
             val travelCertificatePrimaryInput =
-              TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput(
+              TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput(
                 successScreenContent.details.email,
                 successScreenContent.details.travelDate,
                 successScreenContent.details.contractId,
@@ -299,7 +316,7 @@ internal sealed interface TravelCertificateDateInputUiState {
     val hasCoInsured: Boolean,
     val datePickerState: HedvigDatePickerState,
     val daysValid: Int,
-    val primaryInput: TravelCertificateDestination.TravelCertificateTravellersInput.TravelCertificatePrimaryInput?,
+    val primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput?,
     val errorMessageRes: StringResource?,
   ) : TravelCertificateDateInputUiState
 }

@@ -1,17 +1,13 @@
 package com.hedvig.android.feature.chat.navigation
 
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.SuppressesChatPushNotification
 import kotlinx.serialization.Serializable
 
 @Serializable
-object ChatDestination : Destination
+data object InboxKey : HedvigNavKey, SuppressesChatPushNotification
 
-sealed interface ChatDestinations {
-  @Serializable
-  object Inbox : ChatDestinations, Destination
-
-  @Serializable
-  data class Chat(
-    val conversationId: String,
-  ) : ChatDestinations, Destination
-}
+@Serializable
+data class ChatKey(
+  val conversationId: String,
+) : HedvigNavKey, SuppressesChatPushNotification
