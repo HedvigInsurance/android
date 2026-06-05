@@ -45,6 +45,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
+      implementation(libs.jetbrains.compose.runtime)
       for (projectToExport in projectsToExport) {
         api(projectToExport)
       }
