@@ -48,9 +48,6 @@ fun NavGraphBuilder.homeGraph(
       exitTransition = { MotionDefaults.fadeThroughExit },
     ) {
       val viewModel: HomeViewModel = koinViewModel()
-      // The `/submit-claim` deep link lands on Home but carries no route argument, so the typed `startClaimFlow`
-      // resolves to its default (false). Detect that entry point from the launching deep link intent instead, so the
-      // public URL stays clean while still auto-opening the start-claim consent sheet.
       val startClaimFlow = startClaimFlow || it.wasLaunchedFromClaimDeepLink(hedvigDeepLinkContainer)
       HomeDestination(
         viewModel = viewModel,
