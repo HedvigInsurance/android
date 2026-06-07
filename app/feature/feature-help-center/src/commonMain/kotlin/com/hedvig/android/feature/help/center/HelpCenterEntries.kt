@@ -6,9 +6,6 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
-import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination
-import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination.FirstVet
-import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination.QuickLinkSickAbroad
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.EmergencyKey
@@ -54,23 +51,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
         navigateToQuestion(question, backstack)
       },
       onNavigateToQuickLink = dropUnlessResumed { destination ->
-        when (destination) {
-          is QuickLinkDestination.OuterDestination -> {
-            onNavigateToQuickLink(destination)
-          }
-
-          is InnerHelpCenterDestination -> {
-            when (destination) {
-              is FirstVet -> {
-                backstack.add(FirstVetKey(destination.sections))
-              }
-
-              is QuickLinkSickAbroad -> {
-                backstack.add(EmergencyKey(destination.deflectData))
-              }
-            }
-          }
-        }
+        onNavigateToQuickLink(destination)
       },
       onNavigateToInbox = dropUnlessResumed {
         onNavigateToInbox()

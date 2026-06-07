@@ -10,9 +10,12 @@ import androidx.compose.runtime.setValue
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.addon.purchase.data.GetInsuranceForTravelAddonUseCase
 import com.hedvig.android.feature.addon.purchase.data.InsuranceForAddon
+import com.hedvig.android.feature.addon.purchase.navigation.CustomizeAddonKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -23,12 +26,16 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 @AssistedInject
 internal class SelectInsuranceForAddonViewModel(
   @Assisted ids: List<String>,
+  @Assisted preselectedAddonDisplayNames: List<String>,
   getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<SelectInsuranceForAddonEvent, SelectInsuranceForAddonState>(
     initialState = SelectInsuranceForAddonState.Loading,
     presenter = SelectInsuranceForAddonPresenter(
       ids = ids,
+      preselectedAddonDisplayNames = preselectedAddonDisplayNames,
       getInsuranceForTravelAddonUseCase = getInsuranceForTravelAddonUseCase,
+      backstack = backstack,
     ),
   ) {
   @AssistedFactory
@@ -37,13 +44,16 @@ internal class SelectInsuranceForAddonViewModel(
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted ids: List<String>,
+      @Assisted preselectedAddonDisplayNames: List<String>,
     ): SelectInsuranceForAddonViewModel
   }
 }
 
 internal class SelectInsuranceForAddonPresenter(
   private val ids: List<String>,
+  private val preselectedAddonDisplayNames: List<String>,
   private val getInsuranceForTravelAddonUseCase: GetInsuranceForTravelAddonUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SelectInsuranceForAddonEvent, SelectInsuranceForAddonState> {
   @Composable
   override fun MoleculePresenterScope<SelectInsuranceForAddonEvent>.present(
@@ -64,15 +74,8 @@ internal class SelectInsuranceForAddonPresenter(
 
         is SelectInsuranceForAddonEvent.SubmitSelected -> {
           val state = currentState as? SelectInsuranceForAddonState.Success ?: return@CollectEvents
-          currentState = state.copy(
-            currentlySelected = event.selected,
-            insuranceIdToContinue = event.selected.id,
-          )
-        }
-
-        SelectInsuranceForAddonEvent.ClearNavigation -> {
-          val state = currentState as? SelectInsuranceForAddonState.Success ?: return@CollectEvents
-          currentState = state.copy(insuranceIdToContinue = null)
+          currentState = state.copy(currentlySelected = event.selected)
+          backstack.add(CustomizeAddonKey(event.selected.id, preselectedAddonDisplayNames))
         }
       }
     }
@@ -84,11 +87,7 @@ internal class SelectInsuranceForAddonPresenter(
         currentState = SelectInsuranceForAddonState.Failure
       } else if (ids.size == 1) {
         // should be impossible: we reroute earlier in the navigation entries
-        currentState = SelectInsuranceForAddonState.Success(
-          listOfInsurances = emptyList(),
-          insuranceIdToContinue = ids[0],
-          currentlySelected = null,
-        )
+        backstack.add(CustomizeAddonKey(ids[0], preselectedAddonDisplayNames))
       } else {
         getInsuranceForTravelAddonUseCase.invoke(ids).collect { result ->
           result.fold(
@@ -98,7 +97,6 @@ internal class SelectInsuranceForAddonPresenter(
             ifRight = { loadedInsurances ->
               currentState = SelectInsuranceForAddonState.Success(
                 listOfInsurances = loadedInsurances,
-                insuranceIdToContinue = null,
                 currentlySelected = null,
               )
             },
@@ -116,7 +114,6 @@ internal sealed interface SelectInsuranceForAddonState {
   data class Success(
     val listOfInsurances: List<InsuranceForAddon>,
     val currentlySelected: InsuranceForAddon?,
-    val insuranceIdToContinue: String? = null,
   ) : SelectInsuranceForAddonState
 
   data object Failure : SelectInsuranceForAddonState
@@ -128,6 +125,4 @@ internal sealed interface SelectInsuranceForAddonEvent {
   data class SelectInsurance(val selected: InsuranceForAddon) : SelectInsuranceForAddonEvent
 
   data class SubmitSelected(val selected: InsuranceForAddon) : SelectInsuranceForAddonEvent
-
-  data object ClearNavigation : SelectInsuranceForAddonEvent
 }

@@ -26,10 +26,15 @@ import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterFAQUseCase
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.GetQuickLinksUseCase
+import com.hedvig.android.feature.help.center.data.InnerHelpCenterDestination
 import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.model.QuickAction
+import com.hedvig.android.feature.help.center.navigation.EmergencyKey
+import com.hedvig.android.feature.help.center.navigation.FirstVetKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
@@ -61,7 +66,7 @@ internal data class HelpCenterUiState(
   val selectedQuickAction: QuickAction?,
   val search: Search?,
   val showNavigateToInboxButton: Boolean,
-  val destinationToNavigate: QuickLinkDestination? = null,
+  val destinationToNavigate: QuickLinkDestination.OuterDestination? = null,
   val puppyGuide: PuppyGuidePresentation?,
 ) {
   data class QuickLink(val quickAction: QuickAction)
@@ -102,6 +107,7 @@ internal class HelpCenterPresenter(
   private val hasAnyActiveConversationUseCase: HasAnyActiveConversationUseCase,
   private val getHelpCenterFAQUseCase: GetHelpCenterFAQUseCase,
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<HelpCenterEvent, HelpCenterUiState> {
   @Composable
   override fun MoleculePresenterScope<HelpCenterEvent>.present(lastState: HelpCenterUiState): HelpCenterUiState {
@@ -154,7 +160,19 @@ internal class HelpCenterPresenter(
 
         is NavigateToQuickAction -> {
           selectedQuickAction = null
-          currentState = currentState.copy(destinationToNavigate = event.destination)
+          when (val destination = event.destination) {
+            is InnerHelpCenterDestination.FirstVet -> {
+              backstack.add(FirstVetKey(destination.sections))
+            }
+
+            is InnerHelpCenterDestination.QuickLinkSickAbroad -> {
+              backstack.add(EmergencyKey(destination.deflectData))
+            }
+
+            is QuickLinkDestination.OuterDestination -> {
+              currentState = currentState.copy(destinationToNavigate = destination)
+            }
+          }
         }
 
         HelpCenterEvent.ReloadFAQAndQuickLinks -> {

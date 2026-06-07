@@ -16,7 +16,6 @@ import com.hedvig.android.feature.travelcertificate.ui.overview.TravelCertificat
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -67,19 +66,6 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
     TravelCertificateDateInputDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onNavigateToFellowTravellers = { travelCertificatePrimaryInput ->
-        backstack.add(
-          TravelCertificateTravellersInputKey(
-            travelCertificatePrimaryInput,
-          ),
-        )
-      },
-      onNavigateToOverview = { travelCertificateUrl ->
-        backstack.navigateAndPopUpTo<TravelCertificateKey>(
-          ShowCertificateKey(travelCertificateUrl),
-          inclusive = false,
-        )
-      },
     )
   }
 
@@ -95,12 +81,6 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
     TravelCertificateTravellersInputDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      onNavigateToOverview = { travelCertificateUrl ->
-        backstack.navigateAndPopUpTo<TravelCertificateKey>(
-          ShowCertificateKey(travelCertificateUrl),
-          inclusive = false,
-        )
-      },
       onNavigateToCoInsuredAddInfo = { onNavigateToCoInsuredAddInfo(primaryInput.contractId) },
     )
   }

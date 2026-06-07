@@ -13,6 +13,9 @@ import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import com.hedvig.feature.remove.addons.ChooseAddonToRemoveKey
 import com.hedvig.feature.remove.addons.data.GetInsurancesWithRemovableAddonsUseCase
 import com.hedvig.feature.remove.addons.data.InsuranceForAddon
 import dev.zacsweers.metro.ContributesIntoMap
@@ -25,16 +28,18 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class SelectInsuranceToRemoveAddonViewModel(
   getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<
     SelectInsuranceToRemoveAddonEvent,
     SelectInsuranceToRemoveAddonState,
   >(
     initialState = SelectInsuranceToRemoveAddonState.Loading,
-    presenter = SelectInsuranceToRemoveAddonPresenter(getInsurancesWithRemovableAddonsUseCase),
+    presenter = SelectInsuranceToRemoveAddonPresenter(getInsurancesWithRemovableAddonsUseCase, backstack),
   )
 
 private class SelectInsuranceToRemoveAddonPresenter(
   val getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<
     SelectInsuranceToRemoveAddonEvent,
     SelectInsuranceToRemoveAddonState,
@@ -45,7 +50,6 @@ private class SelectInsuranceToRemoveAddonPresenter(
   ): SelectInsuranceToRemoveAddonState {
     var currentState: SelectInsuranceToRemoveAddonState by remember { mutableStateOf(lastState) }
     var loadIteration by remember { mutableIntStateOf(0) }
-    var insuranceIdToContinue by remember { mutableStateOf<ContractId?>(null) }
     var currentlySelected by remember { mutableStateOf<InsuranceForAddon?>(null) }
 
     LaunchedEffect(loadIteration) {
@@ -54,13 +58,15 @@ private class SelectInsuranceToRemoveAddonPresenter(
           currentState = SelectInsuranceToRemoveAddonState.Error
         },
         ifRight = {
-          currentState = if (it.isEmpty()) {
-            SelectInsuranceToRemoveAddonState.EmptyList
+          if (it.isEmpty()) {
+            currentState = SelectInsuranceToRemoveAddonState.EmptyList
+          } else if (it.size == 1) {
+            // Single eligible insurance: skip the picker and jump straight to the addon picker.
+            backstack.add(ChooseAddonToRemoveKey(it.first().contractId, preselectedAddonVariant = null))
           } else {
-            SelectInsuranceToRemoveAddonState.Success(
+            currentState = SelectInsuranceToRemoveAddonState.Success(
               listOfInsurances = it,
               currentlySelected = null,
-              insuranceIdToContinue = if (it.size == 1) it.first().contractId else null,
             )
           }
         },
@@ -73,10 +79,6 @@ private class SelectInsuranceToRemoveAddonPresenter(
           loadIteration++
         }
 
-        SelectInsuranceToRemoveAddonEvent.ClearNavigation -> {
-          insuranceIdToContinue = null
-        }
-
         is SelectInsuranceToRemoveAddonEvent.SelectInsurance -> {
           val state = currentState as? SelectInsuranceToRemoveAddonState.Success ?: return@CollectEvents
           val selected = state.listOfInsurances.firstOrNull { it.contractId == event.contractId }
@@ -85,7 +87,8 @@ private class SelectInsuranceToRemoveAddonPresenter(
         }
 
         is SelectInsuranceToRemoveAddonEvent.SubmitSelected -> {
-          insuranceIdToContinue = currentlySelected?.contractId
+          val selected = currentlySelected ?: return@CollectEvents
+          backstack.add(ChooseAddonToRemoveKey(selected.contractId, preselectedAddonVariant = null))
         }
       }
     }
@@ -96,7 +99,6 @@ private class SelectInsuranceToRemoveAddonPresenter(
       -> state
 
       is SelectInsuranceToRemoveAddonState.Success -> state.copy(
-        insuranceIdToContinue = insuranceIdToContinue,
         currentlySelected = currentlySelected,
       )
     }
@@ -107,7 +109,6 @@ internal sealed interface SelectInsuranceToRemoveAddonState {
   data class Success(
     val listOfInsurances: List<InsuranceForAddon>,
     val currentlySelected: InsuranceForAddon?,
-    val insuranceIdToContinue: ContractId? = null,
   ) : SelectInsuranceToRemoveAddonState
 
   data object Error : SelectInsuranceToRemoveAddonState
@@ -119,8 +120,6 @@ internal sealed interface SelectInsuranceToRemoveAddonState {
 
 internal sealed interface SelectInsuranceToRemoveAddonEvent {
   data object Reload : SelectInsuranceToRemoveAddonEvent
-
-  data object ClearNavigation : SelectInsuranceToRemoveAddonEvent
 
   data class SelectInsurance(val contractId: ContractId) : SelectInsuranceToRemoveAddonEvent
 

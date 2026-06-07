@@ -96,15 +96,12 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
     } else {
       val viewModel: SelectInsuranceForAddonViewModel =
         assistedMetroViewModel<SelectInsuranceForAddonViewModel, SelectInsuranceForAddonViewModel.Factory> {
-          create(insuranceIds)
+          create(insuranceIds, preselectedAddonDisplayNames)
         }
       SelectInsuranceForAddonDestination(
         viewModel = viewModel,
         navigateUp = backstack::navigateUp,
         popBackstack = popBackstack,
-        navigateToCustomizeAddon = { chosenInsuranceId: String ->
-          backstack.add(CustomizeAddonKey(chosenInsuranceId, preselectedAddonDisplayNames))
-        },
       )
     }
   }
@@ -139,15 +136,6 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
       navigateBack = popBackstack,
-      onFailure = {
-        backstack.add(SubmitFailureKey)
-      },
-      onSuccess = {
-        backstack.navigateAndPopUpTo<AddonPurchaseKey>(
-          SubmitSuccessKey(key.params.activationDate),
-          inclusive = true,
-        )
-      },
     )
   }
 
@@ -189,9 +177,6 @@ private fun CustomizeAddonContent(
       if (!backstack.popBackstack()) {
         finishApp()
       }
-    },
-    navigateToSummary = { summaryParameters: SummaryParameters ->
-      backstack.add(SummaryKey(summaryParameters))
     },
     onNavigateToTravelInsurancePlusExplanation = { perilData ->
       backstack.add(TravelInsurancePlusExplanationKey(perilData))

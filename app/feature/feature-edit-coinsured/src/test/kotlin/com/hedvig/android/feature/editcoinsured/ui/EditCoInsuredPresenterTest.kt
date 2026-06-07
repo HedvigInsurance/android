@@ -37,6 +37,7 @@ internal class EditCoInsuredPresenterTest {
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
       commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+      backstack = TestBackstack(),
     )
 
     presenter.test(EditCoInsuredState.Loading) {
@@ -73,6 +74,7 @@ internal class EditCoInsuredPresenterTest {
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
       commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+      backstack = TestBackstack(),
     )
 
     presenter.test(
@@ -119,6 +121,7 @@ internal class EditCoInsuredPresenterTest {
       fetchCoInsuredPersonalInformationUseCase = testFetchCoInsuredPersonalInformationUseCase,
       createMidtermChangeUseCase = testCreateMidTermChangeUseCase,
       commitMidtermChangeUseCase = testCommitMidtermChangeUseCase,
+      backstack = TestBackstack(),
     )
 
     presenter.test(

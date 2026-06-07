@@ -18,9 +18,12 @@ import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.payoutaccount.data.SetupNordeaPayoutUseCase
 import com.hedvig.android.feature.payoutaccount.data.bankNameForClearingNumber
+import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
@@ -31,6 +34,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class EditBankAccountViewModel(
   setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<EditBankAccountEvent, EditBankAccountUiState>(
     EditBankAccountUiState(
       accountNumberState = TextFieldState(),
@@ -39,7 +43,7 @@ internal class EditBankAccountViewModel(
       errorMessage = null,
       showSuccessSnackBar = false,
     ),
-    EditBankAccountPresenter(setupNordeaPayoutUseCase),
+    EditBankAccountPresenter(setupNordeaPayoutUseCase, backstack),
   )
 
 internal sealed interface EditBankAccountEvent {
@@ -64,6 +68,7 @@ internal data class EditBankAccountUiState(
 
 internal class EditBankAccountPresenter(
   private val setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<EditBankAccountEvent, EditBankAccountUiState> {
   @Composable
   override fun MoleculePresenterScope<EditBankAccountEvent>.present(
@@ -111,7 +116,7 @@ internal class EditBankAccountPresenter(
         }
 
         EditBankAccountEvent.ShowedSnackBar -> {
-          showSuccessSnackBar = false
+          backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         }
       }
     }

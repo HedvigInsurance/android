@@ -134,7 +134,7 @@ internal fun HelpCenterHomeDestination(
   viewModel: HelpCenterViewModel,
   onNavigateToTopic: (topicId: String) -> Unit,
   onNavigateToQuestion: (questionId: String) -> Unit,
-  onNavigateToQuickLink: (QuickLinkDestination) -> Unit,
+  onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,

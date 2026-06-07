@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,20 +76,10 @@ internal fun AddonSummaryDestination(
   viewModel: AddonSummaryViewModel,
   navigateBack: () -> Unit,
   navigateUp: () -> Unit,
-  onFailure: () -> Unit,
-  onSuccess: (activationDate: LocalDate) -> Unit,
 ) {
   val uiState: AddonSummaryState by viewModel.uiState.collectAsStateWithLifecycle()
   AddonSummaryScreen(
     uiState = uiState,
-    onSuccess = { date ->
-      viewModel.emit(AddonSummaryEvent.ReturnToInitialState)
-      onSuccess(date)
-    },
-    onFailure = {
-      viewModel.emit(AddonSummaryEvent.ReturnToInitialState)
-      onFailure()
-    },
     navigateUp = navigateUp,
     navigateBack = navigateBack,
     onSubmitQuoteClick = {
@@ -105,33 +94,17 @@ internal fun AddonSummaryDestination(
 @Composable
 private fun AddonSummaryScreen(
   uiState: AddonSummaryState,
-  onSuccess: (LocalDate) -> Unit,
   navigateBack: () -> Unit,
   navigateUp: () -> Unit,
-  onFailure: () -> Unit,
   reload: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
 ) {
   when (uiState) {
     is Loading -> {
-      LaunchedEffect(uiState.activationDateToNavigateToSuccess) {
-        val date = uiState.activationDateToNavigateToSuccess
-        if (date != null) {
-          onSuccess(date)
-        }
-      }
-
       HedvigFullScreenCenterAlignedProgress()
     }
 
     is Content -> {
-      LaunchedEffect(uiState.navigateToFailure) {
-        val fail = uiState.navigateToFailure
-        if (fail != null) {
-          onFailure()
-        }
-      }
-
       SummarySuccessScreen(
         uiState = uiState,
         navigateBack = navigateBack,
@@ -325,8 +298,6 @@ private fun PreviewAddonSummaryScreen(
         {},
         {},
         {},
-        {},
-        {},
       )
     }
   }
@@ -335,7 +306,7 @@ private fun PreviewAddonSummaryScreen(
 private class ChooseInsuranceForAddonUiStateProvider :
   CollectionPreviewParameterProvider<AddonSummaryState>(
     listOf(
-      Loading(activationDateToNavigateToSuccess = null),
+      Loading,
       Content(
         currentlyActiveAddons = listOf(
           CurrentlyActiveAddon(
@@ -387,7 +358,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
             addonSubtype = "DAYS_60",
           ),
         ),
-        navigateToFailure = null,
         insuranceExposure = "Exposure",
         notificationMessage = "Notification message",
         documents = emptyList(),
@@ -458,7 +428,6 @@ private class ChooseInsuranceForAddonUiStateProvider :
             addonSubtype = "DAYS_60",
           ),
         ),
-        navigateToFailure = null,
         insuranceExposure = "Exposure",
         notificationMessage = "Notification message",
         documents = emptyList(),

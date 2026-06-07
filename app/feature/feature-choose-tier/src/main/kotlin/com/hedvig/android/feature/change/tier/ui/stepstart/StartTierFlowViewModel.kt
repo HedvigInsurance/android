@@ -11,18 +11,21 @@ import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
+import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.GENERAL
 import com.hedvig.android.feature.change.tier.ui.stepstart.FailureReason.QUOTES_ARE_EMPTY
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeEvent.Reload
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Loading
-import com.hedvig.android.feature.change.tier.ui.stepstart.StartTierChangeState.Success
 import com.hedvig.android.logger.LogPriority.WARN
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -34,11 +37,13 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 internal class StartTierFlowViewModel(
   @Assisted insuranceID: String,
   tierRepository: ChangeTierRepository,
+  backstack: Backstack,
 ) : MoleculeViewModel<StartTierChangeEvent, StartTierChangeState>(
     initialState = Loading,
     presenter = StartTierChangePresenter(
       insuranceID = insuranceID,
       tierRepository = tierRepository,
+      backstack = backstack,
     ),
   ) {
   @AssistedFactory
@@ -54,6 +59,7 @@ internal class StartTierFlowViewModel(
 internal class StartTierChangePresenter(
   private val insuranceID: String,
   private val tierRepository: ChangeTierRepository,
+  private val backstack: Backstack,
 ) : MoleculePresenter<StartTierChangeEvent, StartTierChangeState> {
   @Composable
   override fun MoleculePresenterScope<StartTierChangeEvent>.present(
@@ -87,7 +93,7 @@ internal class StartTierChangePresenter(
                 activationDate = intent.activationDate,
                 quoteIds = intent.quotes.map { it.id },
               )
-              currentState = Success(parameters)
+              backstack.navigateAndPopUpTo<StartTierFlowKey>(ChooseTierKey(parameters), inclusive = true)
             }
           }
         },
@@ -105,10 +111,6 @@ internal class StartTierChangePresenter(
 
 internal sealed interface StartTierChangeState {
   data object Loading : StartTierChangeState
-
-  data class Success(
-    val paramsToNavigate: InsuranceCustomizationParameters,
-  ) : StartTierChangeState
 
   data class Failure(val reason: FailureReason) : StartTierChangeState
 

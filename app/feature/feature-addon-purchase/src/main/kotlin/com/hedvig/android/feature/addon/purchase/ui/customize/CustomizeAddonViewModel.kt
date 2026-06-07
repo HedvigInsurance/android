@@ -21,11 +21,14 @@ import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
 import com.hedvig.android.feature.addon.purchase.data.GenerateAddonOfferResult
 import com.hedvig.android.feature.addon.purchase.data.GetAddonOfferUseCase
 import com.hedvig.android.feature.addon.purchase.navigation.AddonType
+import com.hedvig.android.feature.addon.purchase.navigation.SummaryKey
 import com.hedvig.android.feature.addon.purchase.navigation.SummaryParameters
 import com.hedvig.android.feature.addon.purchase.ui.customize.updateTotalExtraForSelectedToggleable
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -39,12 +42,14 @@ internal class CustomizeAddonViewModel(
   @Assisted insuranceId: String,
   @Assisted preselectedAddonDisplayNames: List<String>,
   getAddonOfferUseCase: GetAddonOfferUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<CustomizeTravelAddonEvent, CustomizeAddonState>(
     initialState = CustomizeAddonState.Loading,
     presenter = CustomizeTravelAddonPresenter(
       insuranceId = insuranceId,
       preselectedAddonDisplayNames = preselectedAddonDisplayNames,
       getAddonOfferUseCase = getAddonOfferUseCase,
+      backstack = backstack,
     ),
   ) {
   @AssistedFactory
@@ -62,6 +67,7 @@ internal class CustomizeTravelAddonPresenter(
   private val insuranceId: String,
   private val preselectedAddonDisplayNames: List<String>,
   private val getAddonOfferUseCase: GetAddonOfferUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<CustomizeTravelAddonEvent, CustomizeAddonState> {
   @Composable
   override fun MoleculePresenterScope<CustomizeTravelAddonEvent>.present(
@@ -110,23 +116,6 @@ internal class CustomizeTravelAddonPresenter(
           selectedOptionInDialog = state.currentlyChosenOption
         }
 
-        CustomizeTravelAddonEvent.ClearNavigation -> {
-          val state = currentState as? CustomizeAddonState.Success ?: return@CollectEvents
-          currentState = when (state) {
-            is CustomizeAddonState.Success.Selectable -> state.copy(
-              commonParams = state.commonParams.copy(
-                summaryParamsToNavigateFurther = null,
-              ),
-            )
-
-            is CustomizeAddonState.Success.Toggleable -> state.copy(
-              commonParams = state.commonParams.copy(
-                summaryParamsToNavigateFurther = null,
-              ),
-            )
-          }
-        }
-
         CustomizeTravelAddonEvent.SubmitSelected -> {
           val state = currentState as? CustomizeAddonState.Success.Selectable ?: return@CollectEvents
           val summaryParams = SummaryParameters(
@@ -142,11 +131,7 @@ internal class CustomizeTravelAddonPresenter(
             productVariant = state.commonParams.productVariant,
             addonType = AddonType.SELECTABLE,
           )
-          currentState = state.copy(
-            commonParams = state.commonParams.copy(
-              summaryParamsToNavigateFurther = summaryParams,
-            ),
-          )
+          backstack.add(SummaryKey(summaryParams))
         }
 
         CustomizeTravelAddonEvent.SubmitToggled -> {
@@ -162,11 +147,7 @@ internal class CustomizeTravelAddonPresenter(
             contractId = state.commonParams.contractId,
             addonType = AddonType.TOGGLEABLE,
           )
-          currentState = state.copy(
-            commonParams = state.commonParams.copy(
-              summaryParamsToNavigateFurther = summaryParams,
-            ),
-          )
+          backstack.add(SummaryKey(summaryParams))
         }
 
         is CustomizeTravelAddonEvent.ToggleOption -> {
@@ -213,7 +194,6 @@ internal class CustomizeTravelAddonPresenter(
                   notificationMessage = result.notificationMessage,
                   productVariant = result.umbrellaAddonQuote.productVariant,
                   contractId = result.contractId,
-                  summaryParamsToNavigateFurther = null,
                   whatsIncludedPageTitle = result.whatsIncludedPageTitle,
                   whatsIncludedPageDescription = result.whatsIncludedPageDescription,
                 )
@@ -350,7 +330,6 @@ internal data class CommonSuccessParameters(
   val quoteId: String,
   val activationDate: LocalDate,
   val baseQuoteCost: ItemCost,
-  val summaryParamsToNavigateFurther: SummaryParameters?,
   val notificationMessage: String?,
   val productVariant: ProductVariant,
   val contractId: String,
@@ -366,8 +345,6 @@ internal sealed interface CustomizeTravelAddonEvent {
   data object ChooseSelectedOption : CustomizeTravelAddonEvent
 
   data object SetSelectedOptionBackToPreviouslyChosen : CustomizeTravelAddonEvent
-
-  data object ClearNavigation : CustomizeTravelAddonEvent
 
   data object SubmitSelected : CustomizeTravelAddonEvent
 

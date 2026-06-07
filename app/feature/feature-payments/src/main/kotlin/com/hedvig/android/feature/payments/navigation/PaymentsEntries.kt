@@ -20,7 +20,6 @@ import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.NavSuiteSceneDecoratorStrategy
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverDestination
 import com.hedvig.android.shared.foreverui.ui.ui.ForeverViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -63,14 +62,6 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
       navigateUp = backstack::navigateUp,
       onNavigateToPaymentDetails = dropUnlessResumed { chargeId: String ->
         backstack.add(PaymentDetailsKey(chargeId))
-      },
-      onNavigateToSuccess = { showCancellationWarning ->
-        backstack.navigateAndPopUpTo<ManualChargeKey>(
-          ManualChargeSuccessKey(
-            showCancellationWarning = showCancellationWarning,
-          ),
-          inclusive = true,
-        )
       },
       openConversation = openConversation,
     )

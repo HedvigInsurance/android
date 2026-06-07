@@ -39,14 +39,14 @@ kotlin {
       implementation(projects.moleculePublic)
       implementation(projects.uiTiersAndAddons)
       implementation(projects.dataProductVariantPublic)
+      implementation(projects.navigationCommon)
+      implementation(projects.navigationCompose)
     }
     androidMain.dependencies {
       api(libs.androidx.navigation.common)
       implementation(libs.androidx.navigation.compose)
       implementation(libs.bundles.kmpPreviewBugWorkaround)
       implementation(projects.composeUi)
-      implementation(projects.navigationCommon)
-      implementation(projects.navigationCompose)
       implementation(projects.navigationCore)
       implementation(projects.dataProductVariantPublic)
     }
