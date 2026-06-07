@@ -14,8 +14,8 @@ import kotlinx.serialization.modules.subclass
 
 /**
  * Exercises the real [encodeToSavedState] / [decodeFromSavedState] + [SavedStateConfiguration] path
- * that `rememberHedvigBackstackController` uses for process-death persistence. On JVM/iOS the
- * `SavedState` is a Map-backed implementation, so this runs without a `Bundle` or Robolectric.
+ * the hoisted navigation state uses for process-death persistence. On JVM/iOS the `SavedState` is a
+ * Map-backed implementation, so this runs without a `Bundle` or Robolectric.
  *
  * The real feature keys live in Android feature modules and aren't reachable here, so these
  * stand-ins reproduce the polymorphic shape. Registration of the actual keys is guarded separately
