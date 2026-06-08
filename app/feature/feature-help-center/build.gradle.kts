@@ -70,7 +70,7 @@ kotlin {
     }
     jvmMain.dependencies {
     }
-    androidInstrumentedTest.dependencies {
+    jvmTest.dependencies {
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)
