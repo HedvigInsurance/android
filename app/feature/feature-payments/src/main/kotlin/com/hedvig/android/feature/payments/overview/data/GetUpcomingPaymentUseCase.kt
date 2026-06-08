@@ -11,6 +11,8 @@ import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
@@ -36,12 +38,14 @@ internal interface GetUpcomingPaymentUseCase {
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
+  val getMemberTypeUseCase: GetMemberTypeUseCase,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
     val result = apolloClient.query(UpcomingPaymentQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
       .bind()
+    val memberType = getMemberTypeUseCase.invoke().bind()
 
     val missedChargeIdToChargeManually: String? =
       result.currentMember.missedChargeIdToChargeManually
@@ -71,6 +75,8 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         val paymentMethods = result.currentMember.paymentMethods
         val payinMethod = paymentMethods.defaultPayinMethod
           ?: paymentMethods.payinMethods.find { it.isDefault }
+        val payoutMethod = paymentMethods.defaultPayoutMethod
+          ?: paymentMethods.payinMethods.find { it.isDefault }
         if (payinMethod == null) {
           val firstKnownTerminationDateForContractTerminatedDueToMissedPayments = result
             .currentMember
@@ -79,12 +85,27 @@ internal data class GetUpcomingPaymentUseCaseImpl(
             .mapNotNull { it.terminationDate }
             .sorted()
             .firstOrNull()
-          return@run PaymentConnection.NeedsSetup(
-            firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
-          )
+
+          when (memberType) {
+
+            MemberType.STANDARD_MEMBER -> return@run PaymentConnection.NeedsPayinSetup(
+              firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
+            )
+
+            MemberType.QASA_ONLY_MEMBER -> {
+              if (payoutMethod == null) {
+                return@run PaymentConnection.NeedsPayoutSetup
+              } else return@run PaymentConnection.Active
+            }
+          }
         }
         when (payinMethod.status) {
-          MemberPaymentMethodStatus.ACTIVE -> PaymentConnection.Active
+          MemberPaymentMethodStatus.ACTIVE -> {
+            if (payoutMethod == null) {
+              return@run PaymentConnection.NeedsPayoutSetup
+            } else return@run PaymentConnection.Active
+          }
+
           MemberPaymentMethodStatus.PENDING -> PaymentConnection.Pending
           MemberPaymentMethodStatus.UNKNOWN__ -> PaymentConnection.Unknown
         }

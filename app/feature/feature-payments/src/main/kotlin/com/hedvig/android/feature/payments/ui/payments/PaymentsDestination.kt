@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -59,6 +58,7 @@ import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
 import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
@@ -106,6 +106,8 @@ import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BUTTON
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
+import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
+import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
 import hedvig.resources.R
@@ -299,20 +301,38 @@ private fun PaymentsContent(
         .padding(horizontal = 16.dp)
         .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     )
-    val showConnectedPaymentInfo = uiState is Content &&
-      uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsSetup
+    val showConnectPaymentInfo = uiState is Content &&
+      uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsPayinSetup
     AnimatedVisibility(
-      visibleState = remember { MutableTransitionState(showConnectedPaymentInfo) }.apply {
-        targetState = showConnectedPaymentInfo
+      visibleState = remember { MutableTransitionState(showConnectPaymentInfo) }.apply {
+        targetState = showConnectPaymentInfo
       },
       enter = expandVertically(expandFrom = Alignment.CenterVertically),
     ) {
       CardNotConnectedWarningCard(
-        connectedPaymentInfo = (uiState as? Content)?.connectedPaymentInfo as? ConnectedPaymentInfo.NeedsSetup,
+        connectedPaymentInfo = (uiState as? Content)?.connectedPaymentInfo as? ConnectedPaymentInfo.NeedsPayinSetup,
         onChangeBankAccount = onChangeBankAccount,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+      )
+    }
+    val showConnectPayoutInfo = uiState is Content &&
+      uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsPayoutSetup
+    AnimatedVisibility(
+      showConnectPayoutInfo,
+      enter = expandVertically(expandFrom = Alignment.CenterVertically),
+    ) {
+      HedvigNotificationCard(
+        message = stringResource(Res.string.PAYOUT_MISSING_INFO),
+        modifier = Modifier .padding(horizontal = 16.dp)
+          .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+        priority = NotificationPriority.Attention,
+        style = Button(
+          buttonText = stringResource(Res.string.PAYOUT_ADD_PAYOUT_METHOD),
+          onButtonClick = onPayoutAccountClicked,
+        ),
+        minLines = 1,
       )
     }
 
@@ -340,7 +360,8 @@ private fun PaymentsContent(
           )
         }
 
-        is ConnectedPaymentInfo.NeedsSetup,
+        is ConnectedPaymentInfo.NeedsPayinSetup,
+        ConnectedPaymentInfo.NeedsPayoutSetup,
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
         -> {
@@ -352,7 +373,7 @@ private fun PaymentsContent(
 
 @Composable
 private fun CardNotConnectedWarningCard(
-  connectedPaymentInfo: ConnectedPaymentInfo.NeedsSetup?,
+  connectedPaymentInfo: ConnectedPaymentInfo.NeedsPayinSetup?,
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -845,7 +866,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           null,
         ),
         showPayoutButton = false,
@@ -861,7 +882,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           null,
         ),
         showPayoutButton = false,
@@ -881,7 +902,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         showPayoutButton = false,
@@ -901,7 +922,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         showPayoutButton = false,

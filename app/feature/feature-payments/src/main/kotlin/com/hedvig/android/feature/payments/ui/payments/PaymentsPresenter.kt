@@ -13,10 +13,9 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
-import com.hedvig.android.feature.payments.data.MemberPaymentChargeMethod
 import com.hedvig.android.feature.payments.data.PaymentConnection
 import com.hedvig.android.feature.payments.data.PaymentConnection.Active
-import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsSetup
+import com.hedvig.android.feature.payments.data.PaymentConnection.NeedsPayinSetup
 import com.hedvig.android.feature.payments.data.PaymentConnection.Pending
 import com.hedvig.android.feature.payments.data.PaymentConnection.Unknown
 import com.hedvig.android.feature.payments.data.PaymentOverview
@@ -28,8 +27,6 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.datetime.LocalDate
 
 internal class PaymentsPresenter(
@@ -122,11 +119,12 @@ private fun PaymentConnection.toConnectedPaymentInfo(): ConnectedPaymentInfo {
 
     Pending -> ConnectedPaymentInfo.Pending
 
-    is NeedsSetup -> ConnectedPaymentInfo.NeedsSetup(
+    is NeedsPayinSetup -> ConnectedPaymentInfo.NeedsPayinSetup(
       dueDateToConnect = terminationDateIfNotConnected,
     )
 
     Unknown -> ConnectedPaymentInfo.Unknown
+    PaymentConnection.NeedsPayoutSetup -> ConnectedPaymentInfo.NeedsPayoutSetup
   }
 }
 
@@ -172,13 +170,15 @@ internal sealed interface PaymentsUiState {
     sealed interface ConnectedPaymentInfo {
       object Unknown : ConnectedPaymentInfo
 
-      data class NeedsSetup(
+      data class NeedsPayinSetup(
         val dueDateToConnect: LocalDate?,
       ) : ConnectedPaymentInfo
 
       data object Pending : ConnectedPaymentInfo
 
       data object Active : ConnectedPaymentInfo
+
+      data object NeedsPayoutSetup: ConnectedPaymentInfo
     }
   }
 }
