@@ -25,6 +25,13 @@ dependencyResolutionManagement {
     }
     mavenCentral()
     maven("https://jitpack.io")
+    // SPIKE: androidx.dev snapshot build 15580488, only for the unreleased androidx.appstate preview.
+    maven("https://androidx.dev/snapshots/builds/15580488/artifacts/repository") {
+      mavenContent {
+        includeGroup("androidx.appstate")
+        snapshotsOnly()
+      }
+    }
   }
 }
 

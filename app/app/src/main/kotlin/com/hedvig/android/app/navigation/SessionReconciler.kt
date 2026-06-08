@@ -33,8 +33,8 @@ import kotlinx.coroutines.launch
  *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
  * Deliberately narrow — only auth and the backstack root. Deep-links, notifications and the rest stay
- * in their own observers. [BackstackController] is composition + saved-state scoped, so it can't be a
- * constructor dependency; it (and the [Lifecycle]) are handed in by the composition.
+ * in their own observers. The [BackstackController] and the [Lifecycle] are handed in per call by the
+ * composition rather than injected, keeping this reconciler free of any Android/Compose lifetime.
  */
 @SingleIn(AppScope::class)
 @Inject
