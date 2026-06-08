@@ -135,8 +135,8 @@ internal fun HedvigApp(
         goToPlayStore = externalNavigator::tryOpenPlayStore,
       )
     } else {
-      LaunchedEffect(sessionReconciler, backstackController, lifecycle) {
-        sessionReconciler.observeForcedLogout(backstackController, lifecycle)
+      LaunchedEffect(sessionReconciler, lifecycle) {
+        sessionReconciler.observeForcedLogout(lifecycle)
       }
       TryShowAppStoreReviewDialogEffect(
         authTokenService,
