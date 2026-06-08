@@ -13,6 +13,7 @@ import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.contract.ContractType
 import com.hedvig.android.data.contract.toContractType
+import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -67,7 +68,7 @@ internal class GetMemberTypeUseCaseImpl(
         .map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
 
       val onlyQasaContracts = (activeContractsTypes.isNotEmpty()
-        || terminatedContractsTypes.isNotEmpty())
+        || terminatedContractsTypes.isNotEmpty()) &&
       activeContractsTypes.all { it == ContractType.SE_QASA_LANDLORD } &&
         terminatedContractsTypes.all { it == ContractType.SE_QASA_LANDLORD }
       if (onlyQasaContracts) return@either MemberType.QASA_ONLY_MEMBER

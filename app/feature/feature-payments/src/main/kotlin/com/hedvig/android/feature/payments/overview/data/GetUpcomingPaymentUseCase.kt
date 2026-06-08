@@ -9,6 +9,7 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.paying.member.GetMemberTypeUseCase
@@ -39,14 +40,14 @@ internal interface GetUpcomingPaymentUseCase {
 internal data class GetUpcomingPaymentUseCaseImpl(
   val apolloClient: ApolloClient,
   val clock: Clock,
-  val getMemberTypeUseCase: GetMemberTypeUseCase,
+  val getMemberTypeUseCaseProvider: Provider<GetMemberTypeUseCase>,
 ) : GetUpcomingPaymentUseCase {
   override suspend fun invoke(): Either<ErrorMessage, PaymentOverview> = either {
     val result = apolloClient.query(UpcomingPaymentQuery())
       .fetchPolicy(FetchPolicy.NetworkFirst)
       .safeExecute(::ErrorMessage)
       .bind()
-    val memberType = getMemberTypeUseCase.invoke().bind()
+    val memberType = getMemberTypeUseCaseProvider.provide().invoke().bind()
 
     val missedChargeIdToChargeManually: String? =
       result.currentMember.missedChargeIdToChargeManually
