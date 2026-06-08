@@ -1023,5 +1023,20 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         memberType = MemberType.QASA_ONLY_MEMBER,
       ),
     )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = UpcomingPayment.Content(
+          UiMoney(100.0, SEK),
+          System.now().toLocalDateTime(TimeZone.UTC).date,
+          "w345423t6",
+        ),
+        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayoutSetup,
+        showPayoutButton = true,
+        memberType = MemberType.STANDARD_MEMBER,
+      ),
+    )
   },
 )
