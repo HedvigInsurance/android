@@ -196,6 +196,10 @@ class MainActivity : AppCompatActivity() {
       isColdStart = savedInstanceState == null,
       serializersModules = serializersModules,
     )
+    lifecycleScope.launch {
+      sessionReconciler.reconcile()
+      sessionReconciler.observeForcedLogout(lifecycle)
+    }
     setContent {
       CompositionLocalProvider(
         LocalMetroViewModelFactory provides (application as HedvigApplication).appGraph.metroViewModelFactory,
@@ -203,7 +207,6 @@ class MainActivity : AppCompatActivity() {
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
         HedvigApp(
           backstackController = backstackController,
-          sessionReconciler = sessionReconciler,
           deepLinkChannel = deepLinkChannel,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,

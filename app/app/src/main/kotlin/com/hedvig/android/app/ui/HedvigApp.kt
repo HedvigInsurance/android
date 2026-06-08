@@ -46,7 +46,6 @@ import com.hedvig.android.app.crosssell.CrossSellUriOpener
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
-import com.hedvig.android.app.navigation.SessionReconciler
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
@@ -91,7 +90,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HedvigApp(
   backstackController: BackstackController,
-  sessionReconciler: SessionReconciler,
   deepLinkChannel: Channel<String>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
@@ -122,10 +120,6 @@ internal fun HedvigApp(
     featureManager = featureManager,
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
-  val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(sessionReconciler, backstackController) {
-    sessionReconciler.reconcile(backstackController)
-  }
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
     EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal, androidAppHost::applyEdgeToEdgeStyle)
@@ -135,9 +129,6 @@ internal fun HedvigApp(
         goToPlayStore = externalNavigator::tryOpenPlayStore,
       )
     } else {
-      LaunchedEffect(sessionReconciler, lifecycle) {
-        sessionReconciler.observeForcedLogout(lifecycle)
-      }
       TryShowAppStoreReviewDialogEffect(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
