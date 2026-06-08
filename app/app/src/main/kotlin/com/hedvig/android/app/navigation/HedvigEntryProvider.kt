@@ -15,7 +15,6 @@ import com.hedvig.android.feature.addon.purchase.navigation.AddonPurchaseKey
 import com.hedvig.android.feature.addon.purchase.navigation.addonPurchaseEntries
 import com.hedvig.android.feature.change.tier.navigation.ChooseTierKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
-import com.hedvig.android.feature.change.tier.navigation.StartTierFlowChooseInsuranceKey
 import com.hedvig.android.feature.change.tier.navigation.StartTierFlowKey
 import com.hedvig.android.feature.change.tier.navigation.changeTierEntries
 import com.hedvig.android.feature.chat.navigation.ChatKey
@@ -36,17 +35,6 @@ import com.hedvig.android.feature.editcoinsured.navigation.CoInsuredAddOrRemoveK
 import com.hedvig.android.feature.editcoinsured.navigation.EditCoInsuredTriageKey
 import com.hedvig.android.feature.editcoinsured.navigation.editCoInsuredEntries
 import com.hedvig.android.feature.forever.navigation.foreverEntries
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoInsured
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.ChooseInsuranceForEditCoOwners
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeAddress
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkChangeTier
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddInfo
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoInsuredAddOrRemove
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddInfo
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkCoOwnerAddOrRemove
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkConnectPayment
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTermination
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination.OuterDestination.QuickLinkTravelCertificate
 import com.hedvig.android.feature.help.center.helpCenterEntries
 import com.hedvig.android.feature.help.center.navigation.HelpCenterKey
 import com.hedvig.android.feature.home.home.navigation.homeEntries
@@ -568,55 +556,6 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   helpCenterEntries(
     backstack = backstack,
     onNavigateUp = backstack::navigateUp,
-    onNavigateToQuickLink = onNavigateToQuickLink@{ quickLinkDestination ->
-      val destination: HedvigNavKey = when (quickLinkDestination) {
-        QuickLinkChangeAddress -> {
-          navigateToMovingFlow()
-          return@onNavigateToQuickLink
-        }
-
-        is QuickLinkCoInsuredAddInfo -> {
-          CoInsuredAddInfoKey(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
-        }
-
-        is QuickLinkCoInsuredAddOrRemove -> {
-          CoInsuredAddOrRemoveKey(quickLinkDestination.contractId, CoInsuredFlowType.CoInsured)
-        }
-
-        is QuickLinkCoOwnerAddInfo -> {
-          CoInsuredAddInfoKey(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
-        }
-
-        is QuickLinkCoOwnerAddOrRemove -> {
-          CoInsuredAddOrRemoveKey(quickLinkDestination.contractId, CoInsuredFlowType.CoOwners)
-        }
-
-        QuickLinkConnectPayment -> {
-          TrustlyKey
-        }
-
-        QuickLinkTermination -> {
-          TerminateInsuranceKey(null)
-        }
-
-        QuickLinkTravelCertificate -> {
-          TravelCertificateKey
-        }
-
-        QuickLinkChangeTier -> {
-          StartTierFlowChooseInsuranceKey
-        }
-
-        ChooseInsuranceForEditCoInsured -> {
-          EditCoInsuredTriageKey()
-        }
-
-        ChooseInsuranceForEditCoOwners -> {
-          EditCoInsuredTriageKey(type = CoInsuredFlowType.CoOwners)
-        }
-      }
-      backstack.add(destination)
-    },
     onNavigateToNewConversation = navigateToNewConversation,
     onNavigateToInbox = navigateToInbox,
     openUrl = openUrl,

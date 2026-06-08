@@ -134,20 +134,12 @@ internal fun HelpCenterHomeDestination(
   viewModel: HelpCenterViewModel,
   onNavigateToTopic: (topicId: String) -> Unit,
   onNavigateToQuestion: (questionId: String) -> Unit,
-  onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateUp: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateToPuppyGuide: () -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  LaunchedEffect(uiState.destinationToNavigate) {
-    val destination = uiState.destinationToNavigate
-    if (destination != null && uiState.selectedQuickAction == null) {
-      viewModel.emit(HelpCenterEvent.ClearNavigation)
-      onNavigateToQuickLink(destination)
-    }
-  }
   HelpCenterHomeScreen(
     topics = uiState.topics,
     questions = uiState.questions,

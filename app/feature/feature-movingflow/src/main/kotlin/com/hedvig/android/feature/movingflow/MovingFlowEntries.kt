@@ -27,9 +27,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object SelectContractForMovingKey : HedvigNavKey
-
-@Serializable
 internal data class HousingTypeKey(val moveIntentId: String) : HedvigNavKey
 
 @Serializable
