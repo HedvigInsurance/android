@@ -25,11 +25,19 @@ interface GetMemberTypeUseCase {
 
 enum class MemberType {
   QASA_ONLY_MEMBER,
+
   // in Payments: hide discounts, payment history, member payment details,
   // in Payments: always show payout account;
+  // in Payments: show connect payout reminder if missing
   // HelpCenter: hide Payments section
   STANDARD_MEMBER,
+
   // current logic
+  STANDARD_TO_QASA_MEMBER
+  // in Payments: if no upcoming payments: hide discounts and member payment details
+  // in Payments: if upcoming payment and missing payin: show connect payin reminder,
+  // else show connect payout reminder if missing
+  // in Payments: always show payout account;
 }
 
 @Inject
@@ -57,10 +65,19 @@ internal class GetMemberTypeUseCaseImpl(
       val terminatedContractsTypes = result.currentMember
         .terminatedContracts
         .map { it.currentAgreement.productVariant.typeOfContract.toContractType() }
-      val onlyQasaLandlordContracts =
+
+      val onlyQasaContracts = (activeContractsTypes.isNotEmpty()
+        || terminatedContractsTypes.isNotEmpty())
+      activeContractsTypes.all { it == ContractType.SE_QASA_LANDLORD } &&
+        terminatedContractsTypes.all { it == ContractType.SE_QASA_LANDLORD }
+      if (onlyQasaContracts) return@either MemberType.QASA_ONLY_MEMBER
+
+      val standardToQasa = activeContractsTypes.isNotEmpty() &&
         activeContractsTypes.all { it == ContractType.SE_QASA_LANDLORD } &&
-          terminatedContractsTypes.all { it == ContractType.SE_QASA_LANDLORD }
-      if (onlyQasaLandlordContracts) MemberType.QASA_ONLY_MEMBER else MemberType.STANDARD_MEMBER
+        terminatedContractsTypes.any { it != ContractType.SE_QASA_LANDLORD }
+      if (standardToQasa) return@either MemberType.STANDARD_TO_QASA_MEMBER
+
+      MemberType.STANDARD_MEMBER
     }
   }
 }

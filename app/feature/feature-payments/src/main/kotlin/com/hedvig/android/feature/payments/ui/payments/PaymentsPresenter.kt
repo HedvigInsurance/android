@@ -11,6 +11,7 @@ import arrow.core.Either
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.PaymentConnection
@@ -84,6 +85,7 @@ internal class PaymentsPresenter(
           ongoingCharges = paymentOverview.ongoingCharges,
           connectedPaymentInfo = paymentOverview.paymentConnection.toConnectedPaymentInfo(),
           showPayoutButton = shouldShowPayout,
+          memberType = paymentOverview.memberType,
         )
       },
     )
@@ -144,6 +146,7 @@ internal sealed interface PaymentsUiState {
     val ongoingCharges: List<OngoingCharge>,
     val connectedPaymentInfo: ConnectedPaymentInfo,
     val showPayoutButton: Boolean,
+    val memberType: MemberType
   ) : PaymentsUiState {
     sealed interface UpcomingPayment {
       data object NoUpcomingPayment : UpcomingPayment

@@ -17,6 +17,7 @@ import com.hedvig.android.feature.payments.data.ManualChargeToPrompt
 import com.hedvig.android.feature.payments.data.MemberCharge
 import com.hedvig.android.feature.payments.data.MemberChargeShortInfo
 import com.hedvig.android.feature.payments.data.PaymentConnection
+import com.hedvig.android.feature.payments.data.PaymentConnection.*
 import com.hedvig.android.feature.payments.data.PaymentOverview
 import com.hedvig.android.feature.payments.data.PaymentOverview.OngoingCharge
 import com.hedvig.android.feature.payments.data.toFailedCharge
@@ -88,7 +89,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
 
           when (memberType) {
 
-            MemberType.STANDARD_MEMBER -> return@run PaymentConnection.NeedsPayinSetup(
+            MemberType.STANDARD_MEMBER -> return@run NeedsPayinSetup(
               firstKnownTerminationDateForContractTerminatedDueToMissedPayments,
             )
 
@@ -97,6 +98,8 @@ internal data class GetUpcomingPaymentUseCaseImpl(
                 return@run PaymentConnection.NeedsPayoutSetup
               } else return@run PaymentConnection.Active
             }
+
+            MemberType.STANDARD_TO_QASA_MEMBER -> TODO()
           }
         }
         when (payinMethod.status) {
@@ -111,6 +114,7 @@ internal data class GetUpcomingPaymentUseCaseImpl(
         }
       },
       isManualChargeAllowed = isManualChargeAllowed,
+      memberType = memberType
     )
   }
 }
@@ -145,6 +149,7 @@ internal class GetUpcomingPaymentUseCaseDemo(
       emptyList(),
       PaymentConnection.Unknown,
       isManualChargeAllowed = null,
+      memberType = MemberType.STANDARD_MEMBER
     ).right()
   }
 }
