@@ -16,17 +16,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.ComposeFoundationFlags
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.savedstate.SavedStateRegistry
-import androidx.savedstate.serialization.SavedStateConfiguration
-import androidx.savedstate.serialization.decodeFromSavedState
-import androidx.savedstate.serialization.encodeToSavedState
 import coil3.ImageLoader
 import com.google.android.play.core.review.ReviewException
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -46,17 +40,12 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
-import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
-import com.hedvig.android.navigation.common.HedvigNavKey
-import com.hedvig.android.navigation.common.StashedSession
-import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
-import com.hedvig.android.navigation.compose.merge
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import dev.zacsweers.metro.Inject
@@ -65,8 +54,6 @@ import java.util.Locale
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 
 class MainActivity : AppCompatActivity() {
@@ -194,59 +181,20 @@ class MainActivity : AppCompatActivity() {
       override fun tryShowAppStoreReviewDialog() = tryShowPlayStoreReviewDialog()
     }
     RiveInitializer.init(this)
-    val savedStateConfiguration = SavedStateConfiguration {
-      serializersModule = serializersModules.merge()
-    }
     // Attach the Activity-bound task hooks to the app-scoped controller. Done here (not at
     // construction) and re-attached on every recreation: the singleton outlives any single Activity,
     // so capturing an Activity-bound lambda in the constructor would be the stale-reference leak we
     // set out to avoid.
     backstackController.isOwnTask = { isTaskRoot }
     backstackController.escapeToOwnTask = { parentStack ->
-      RestoredBackstackTransfer.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
+      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
     }
-    val restoredBackstack = if (savedInstanceState != null) {
-      null
-    } else {
-      RestoredBackstackTransfer.readFrom(intent, serializersModules)
-    }
-    // Seed / restore the hoisted (app-scoped) navigation state. Precedence:
-    //  1. An explicit deep-link / escape re-root replaces everything.
-    //  2. Otherwise, on a cold start after process death, re-hydrate the full state from this
-    //     Activity's SavedStateRegistry. On a config change the live singleton is already populated,
-    //     so restoreFromSavedState is a no-op there and the live state wins.
-    //  3. Finally guarantee at least a Login root.
-    if (!restoredBackstack.isNullOrEmpty()) {
-      backstackController.reseed(restoredBackstack)
-    } else {
-      savedStateRegistry.consumeRestoredStateForKey(NAV_STATE_REGISTRY_KEY)
-        ?.let { decodeFromSavedState(NavStateSnapshot.serializer(), it, savedStateConfiguration) }
-        ?.let { snapshot ->
-          backstackController.restoreFromSavedState(
-            entries = snapshot.entries,
-            parkedRuns = snapshot.parkedRuns,
-            pendingDeepLink = snapshot.pendingDeepLink,
-            stashedSession = snapshot.stashedSession,
-          )
-        }
-      backstackController.seedIfEmpty(listOf(LoginKey))
-    }
-    // Persist the live navigation state across process death. The provider is invoked at save time
-    // and serializes whatever the singleton holds then, so a Presenter-driven navigation is captured.
-    savedStateRegistry.registerSavedStateProvider(
-      NAV_STATE_REGISTRY_KEY,
-      SavedStateRegistry.SavedStateProvider {
-        encodeToSavedState(
-          NavStateSnapshot.serializer(),
-          NavStateSnapshot(
-            entries = backstackController.entries.toList(),
-            parkedRuns = backstackController.parkedRuns.toMap(),
-            pendingDeepLink = backstackController.pendingDeepLink,
-            stashedSession = backstackController.stashedSession,
-          ),
-          savedStateConfiguration,
-        )
-      },
+    NavigationStateBridge.restoreAndPersist(
+      backstackController = backstackController,
+      savedStateRegistry = savedStateRegistry,
+      intent = intent,
+      isColdStart = savedInstanceState == null,
+      serializersModules = serializersModules,
     )
     setContent {
       CompositionLocalProvider(
@@ -352,21 +300,6 @@ private fun Activity.tryShowPlayStoreReviewDialog() {
     }
   }
 }
-
-private const val NAV_STATE_REGISTRY_KEY = "com.hedvig.android.app.NAV_STATE"
-
-/**
- * The full hoisted navigation state, serialized into the Activity's SavedStateRegistry so the
- * in-memory [BackstackController] singleton can be re-hydrated after process death. Mirrors the four
- * holders the controller owns.
- */
-@Serializable
-private data class NavStateSnapshot(
-  val entries: List<@Polymorphic HedvigNavKey>,
-  val parkedRuns: Map<TopLevelTab, List<@Polymorphic HedvigNavKey>>,
-  val pendingDeepLink: (@Polymorphic HedvigNavKey)?,
-  val stashedSession: StashedSession?,
-)
 
 private fun getSystemLocale(config: android.content.res.Configuration): Locale {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
