@@ -64,8 +64,6 @@ internal class DeleteAccountPresenter(
         if (mutationResult.isLeft()) {
           failedToPerformAccountDeletion = true
         } else {
-          // Navigation driven directly from the Presenter via the injected app-scoped backstack —
-          // the whole point of hoisting the back stack into AppState.
           backstack.popBackstack()
         }
         isPerformingDeletion = false
