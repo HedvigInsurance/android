@@ -64,7 +64,6 @@ import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
 import com.hedvig.feature.claim.chat.ClaimChatKey
@@ -107,13 +106,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   val onNavigateToImageViewer: (String, String) -> Unit = { imageUrl, cacheKey ->
     backstack.add(ImageViewerKey(imageUrl, cacheKey))
   }
-  val popBackstackOrFinish = {
-    if (!backstack.popBackstack()) {
-      finishApp()
-    }
-    Unit
-  }
-
   addLoginEntries(backstack, hedvigBuildConstants, openUrl, externalNavigator, scope, memberIdService)
   addHomeEntries(
     backstack = backstack,
@@ -156,7 +148,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     languageService = languageService,
     externalNavigator = externalNavigator,
     openUrl = openUrl,
-    popBackstackOrFinish = popBackstackOrFinish,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToPayoutAccount = navigateToPayoutAccount,
     navigateToNewConversation = navigateToNewConversation,
@@ -175,10 +166,7 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     imageLoader = imageLoader,
     openUrl = openUrl,
     externalNavigator = externalNavigator,
-    finishApp = finishApp,
-    popBackstackOrFinish = popBackstackOrFinish,
     navigateToNewConversation = navigateToNewConversation,
-    navigateToMovingFlow = navigateToMovingFlow,
     navigateToInbox = navigateToInbox,
   )
 }
@@ -448,7 +436,6 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
   languageService: LanguageService,
   externalNavigator: ExternalNavigator,
   openUrl: (String) -> Unit,
-  popBackstackOrFinish: () -> Unit,
   navigateToConnectPayment: () -> Unit,
   navigateToPayoutAccount: () -> Unit,
   navigateToNewConversation: () -> Unit,
@@ -465,7 +452,6 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     },
     globalSnackBarState = globalSnackBarState,
     backstack = backstack,
-    popBackstackOrFinish = popBackstackOrFinish,
     hedvigBuildConstants = hedvigBuildConstants,
     navigateToConnectPayment = navigateToConnectPayment,
     navigateToConnectPayout = navigateToPayoutAccount,
@@ -519,16 +505,11 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   imageLoader: ImageLoader,
   openUrl: (String) -> Unit,
   externalNavigator: ExternalNavigator,
-  finishApp: () -> Unit,
-  popBackstackOrFinish: () -> Unit,
   navigateToNewConversation: () -> Unit,
-  navigateToMovingFlow: () -> Unit,
   navigateToInbox: () -> Unit,
 ) {
   addonPurchaseEntries(
     backstack = backstack,
-    popBackstack = popBackstackOrFinish,
-    finishApp = finishApp,
     onNavigateToNewConversation = navigateToNewConversation,
     onNavigateToChangeTier = { contractId ->
       backstack.add(StartTierFlowKey(insuranceId = contractId))
@@ -542,7 +523,6 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateUp = backstack::navigateUp,
-    popBackstackOrFinish = popBackstackOrFinish,
     goHome = {
       backstack.popUpTo<ChipIdKey>(inclusive = true)
       backstack.selectTopLevel(TopLevelTab.Home)

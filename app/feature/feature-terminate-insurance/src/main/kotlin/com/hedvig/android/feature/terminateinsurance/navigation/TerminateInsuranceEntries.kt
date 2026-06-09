@@ -21,9 +21,10 @@ import com.hedvig.android.feature.terminateinsurance.step.terminationreview.Term
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.popBackstack
+import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
@@ -59,7 +60,11 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
     TerminationSuccessDestination(
       terminationDate = key.terminationDate,
       onDone = {
-        if (!backstack.popBackstack()) {
+        // Reached alone via deep link → land on the Insurances tab rather than exiting the app
+        // (popBackstack would finish the Activity at the root).
+        if (backstack.entries.size > 1) {
+          backstack.popBackstack()
+        } else {
           navigateToInsurances()
         }
       },

@@ -165,21 +165,7 @@ class MainActivity : AppCompatActivity() {
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
-    val androidAppHost = object : AndroidAppHost {
-      override fun finishApp() = finish()
-
-      override fun applyEdgeToEdgeStyle(systemBarStyle: SystemBarStyle) {
-        enableEdgeToEdge(
-          statusBarStyle = systemBarStyle,
-          navigationBarStyle = systemBarStyle,
-        )
-      }
-
-      override fun shouldShowPermissionRationale(permission: String): Boolean =
-        shouldShowRequestPermissionRationale(permission)
-
-      override fun tryShowAppStoreReviewDialog() = tryShowPlayStoreReviewDialog()
-    }
+    val androidAppHost = AndroidAppHostImpl(this)
     RiveInitializer.init(this)
     // Attach the Activity-bound task hooks to the app-scoped controller. Done here (not at
     // construction) and re-attached on every recreation: the singleton outlives any single Activity,
@@ -189,6 +175,7 @@ class MainActivity : AppCompatActivity() {
     backstackController.escapeToOwnTask = { parentStack ->
       NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
     }
+    backstackController.finishApp = androidAppHost::finishApp
     NavigationStateBridge.restoreAndPersist(
       backstackController = backstackController,
       savedStateRegistry = savedStateRegistry,
@@ -274,35 +261,6 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
   }
 }
 
-private fun Activity.tryShowPlayStoreReviewDialog() {
-  val tag = "PlayStoreReview"
-  val manager = ReviewManagerFactory.create(this)
-  logcat(LogPriority.INFO) { "$tag: requestReviewFlow" }
-  manager.requestReviewFlow().apply {
-    addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: requestReviewFlow failed:${it.message}" } }
-    addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: requestReviewFlow cancelled" } }
-    addOnCompleteListener { task ->
-      if (task.isSuccessful) {
-        logcat(LogPriority.INFO) { "$tag: requestReviewFlow completed" }
-        val reviewInfo = task.result
-        logcat(LogPriority.INFO) { "$tag: launchReviewFlow with ReviewInfo:$reviewInfo" }
-        manager.launchReviewFlow(this@tryShowPlayStoreReviewDialog, reviewInfo).apply {
-          addOnFailureListener { logcat(LogPriority.INFO, it) { "$tag: launchReviewFlow failed:${it.message}" } }
-          addOnCanceledListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow canceled" } }
-          addOnCompleteListener { logcat(LogPriority.INFO) { "$tag: launchReviewFlow completed" } }
-        }
-      } else {
-        val exception = task.exception
-        val errorMessage = if (exception != null && exception is ReviewException) {
-          "ReviewException:${exception.message}. ReviewException::errorCode:${exception.errorCode}"
-        } else {
-          "Unknown error with message: ${exception?.message}"
-        }
-        logcat(LogPriority.INFO, exception) { "$tag: requestReviewFlow failed. Error:$errorMessage" }
-      }
-    }
-  }
-}
 
 private fun getSystemLocale(config: android.content.res.Configuration): Locale {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

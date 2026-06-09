@@ -137,7 +137,7 @@ Metro is a **compile-time** DI framework. There is a single graph, `AppScope`, f
 **Core annotations you will actually use:**
 
 - `@Inject` — constructor (or, on `MainActivity`/Application/Service, field) injection.
-- `@SingleIn(AppScope::class)` — a singleton within the app graph. Apply to anything that must have exactly one instance (stateful services, caches, the back stack controller).
+- `@SingleIn(AppScope::class)` — a singleton within the app graph. Apply to anything that must have exactly one instance (stateful services, caches, the back stack controller). Put it *wherever the binding is declared*: on the `@Inject` constructor (e.g. `SessionReconciler`), or on the `@Provides` method when you can't annotate the constructor (e.g. `BackstackController`, whose constructor takes hand-built snapshot holders — it's provided via `BackstackControllerProviders`).
 - `@ContributesBinding(AppScope::class)` — on an implementation class, binds it to its interface in the graph. The standard way to provide an `Impl` for an interface.
 - `@Provides` inside a `@ContributesTo(AppScope::class) interface` — for bindings you can't annotate a constructor on (framework types, builders, things needing configuration). See `ApplicationMetroProviders`.
 - `@ContributesIntoSet` / `@ContributesIntoMap` — multibindings. Used for sets of `SerializersModule`, deep-link matcher providers, notification senders, and the ViewModel/worker maps.
@@ -229,7 +229,7 @@ Keys reachable cross-feature live in the feature's `-navigation` module and are 
 
 ```kotlin
 backstack.add(ChatKey(id))                              // push
-backstack.popBackstack()                                 // pop one
+backstack.popBackstack()                                 // pop one; at the root it finishes the app (Back/close exits)
 backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
 backstack.navigateAndPopUpTo<FooKey>(BarKey, inclusive = true)
 backstack.navigateUp()                                   // task-aware up (deep links)

@@ -15,7 +15,6 @@ import com.hedvig.android.feature.deleteaccount.data.RequestAccountDeletionUseCa
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.popBackstack
 import kotlinx.coroutines.flow.collectLatest
 
 internal class DeleteAccountPresenter(

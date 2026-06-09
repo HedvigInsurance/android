@@ -73,7 +73,6 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.entryDecorators
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
@@ -181,11 +180,7 @@ internal fun HedvigApp(
                 GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
                 NavDisplay(
                   backStack = backstackController.entries,
-                  onBack = {
-                    if (!backstackController.popBackstack()) {
-                      androidAppHost.finishApp()
-                    }
-                  },
+                  onBack = backstackController::popBackstack,
                   entryDecorators = entryDecorators { backstackController.allLiveContentKeys },
                   sharedTransitionScope = this@SharedTransitionLayout,
                   sceneDecoratorStrategies = sceneDecoratorStrategies,

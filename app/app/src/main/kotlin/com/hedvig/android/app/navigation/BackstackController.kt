@@ -20,7 +20,6 @@ import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
-import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -66,6 +65,13 @@ internal class BackstackController(
    * the target stack. Attached/replaced by the Activity like [isOwnTask]; no-op by default.
    */
   var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
+  /**
+   * Finishes the host Activity, used by [popBackstack] when a Back/close lands on the root (nothing
+   * left to pop) so the app exits instead of stranding the user on a dead screen. Attached/replaced
+   * by the Activity like [isOwnTask] and [escapeToOwnTask]; no-op by default so unit tests and any
+   * pre-attach use never try to finish.
+   */
+  var finishApp: () -> Unit = {},
 ) : Backstack {
   /**
    * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land
@@ -201,7 +207,19 @@ internal class BackstackController(
       }
       return true
     }
-    return popBackstack()
+    // Fall through to a *pure* pop (not our finishing override): an Up press at the root is a no-op,
+    // it must not exit the app the way Back does.
+    return super.popBackstack()
+  }
+
+  /**
+   * Back/close pop. Pops the top entry; if there is nothing to pop (we are at the root) the Activity
+   * is finished so the app exits rather than leaving the user on a screen where Back does nothing.
+   */
+  override fun popBackstack(): Boolean {
+    val popped = super.popBackstack()
+    if (!popped) finishApp()
+    return popped
   }
 
   /**
