@@ -359,7 +359,11 @@ type Agreement {
   """
   The cost details of this agreement on today's date or the date it starts
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use itemCost instead")
+  """
+  The cost details of this agreement on today's date or the date it starts
+  """
+  itemCost: ItemCost
   """
   The date this agreement took effect.
   """
@@ -3738,7 +3742,7 @@ type Mutation {
   Optional `attribution` is merged field-by-field over `ShopSession.attribution` for this confirm only (quotes and
   `PriceIntentConfirmed` events use the merged result).
   """
-  priceIntentConfirm(priceIntentId: UUID!, attribution: PriceIntentConfirmAttributionInput): PriceIntentMutationOutput!
+  priceIntentConfirm(priceIntentId: UUID!, attribution: PriceIntentConfirmAttributionInput, generateRecommendations: Boolean): PriceIntentMutationOutput!
   """
   Change the start date of the given `ProductOffer`s by their ID.
   This is used because it's common to want to change the start date AFTER getting the offer.
@@ -3981,7 +3985,11 @@ type PendingContract {
   """
   Calculated based on the pending agreement
   """
-  cost: ItemCost!
+  cost: ItemCost! @deprecated(reason: "Use itemCost instead")
+  """
+  Calculated based on the pending agreement
+  """
+  itemCost: ItemCost
   discountsDetails: ContractDiscountDetails!
   """
   Same as `Contract.exposureDisplayName`.
