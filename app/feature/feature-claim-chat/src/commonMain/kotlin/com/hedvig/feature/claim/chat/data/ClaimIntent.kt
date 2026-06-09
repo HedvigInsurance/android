@@ -168,6 +168,14 @@ internal sealed interface StepContent {
     override val isSkippable: Boolean = false
   }
 
+  @Serializable
+  data class DeflectMessage(
+    @Contextual
+    val message: String,
+  ) : StepContent {
+    override val isSkippable: Boolean = false
+  }
+
   object Unknown : StepContent {
     override val isSkippable: Boolean = false
   }

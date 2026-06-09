@@ -199,7 +199,8 @@ internal fun YourInfoTab(
   }
 
   val upcomingChangesBottomSheet = rememberHedvigBottomSheetState<Unit>()
-  if (upcomingChangesInsuranceAgreement != null) {
+  val upcomingChangesCost = upcomingChangesInsuranceAgreement?.cost
+  if (upcomingChangesInsuranceAgreement != null && upcomingChangesCost!=null) {
     val upcomingPriceInfoForBottomSheet = PriceInfoForBottomSheet(
       displayItems = buildList {
         add(
