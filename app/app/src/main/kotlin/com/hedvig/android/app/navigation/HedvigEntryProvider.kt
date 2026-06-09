@@ -279,7 +279,6 @@ private fun EntryProviderScope<HedvigNavKey>.addNestedHomeEntries(
     imageLoader = imageLoader,
     openUrl = openUrl,
     onNavigateToImageViewer = onNavigateToImageViewer,
-    navigateUp = backstack::navigateUp,
     appPackageId = appPackageId,
     navigateToConversation = { conversationId -> navigateToConversation(conversationId) },
     backstack = backstack,
@@ -424,7 +423,6 @@ private fun EntryProviderScope<HedvigNavKey>.addPaymentsEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
     navigateToConnectPayment = navigateToConnectPayment,
-    navigateUp = backstack::navigateUp,
   )
   connectPaymentEntries(backstack = backstack)
 }
@@ -446,7 +444,7 @@ private fun EntryProviderScope<HedvigNavKey>.addProfileEntries(
     },
     nestedEntries = {
       claimHistoryEntries(
-        navigateUp = backstack::navigateUp,
+        backstack = backstack,
         navigateToClaimDetails = { claimId -> backstack.add(ClaimDetailsKey(claimId)) },
       )
     },
@@ -522,7 +520,6 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   chipIdEntries(
     backstack = backstack,
     globalSnackBarState = globalSnackBarState,
-    navigateUp = backstack::navigateUp,
     goHome = {
       backstack.popUpTo<ChipIdKey>(inclusive = true)
       backstack.selectTopLevel(TopLevelTab.Home)
@@ -535,7 +532,6 @@ private fun EntryProviderScope<HedvigNavKey>.addSharedFlowEntries(
   editCoInsuredEntries(backstack)
   helpCenterEntries(
     backstack = backstack,
-    onNavigateUp = backstack::navigateUp,
     onNavigateToNewConversation = navigateToNewConversation,
     onNavigateToInbox = navigateToInbox,
     openUrl = openUrl,

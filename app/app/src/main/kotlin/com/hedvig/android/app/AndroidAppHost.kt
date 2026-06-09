@@ -24,7 +24,7 @@ internal interface AndroidAppHost {
   fun tryShowAppStoreReviewDialog()
 }
 
-internal class AndroidAppHostImpl(private val activity: ComponentActivity): AndroidAppHost {
+internal class AndroidAppHostImpl(private val activity: ComponentActivity) : AndroidAppHost {
   override fun finishApp() = activity.finish()
 
   override fun applyEdgeToEdgeStyle(systemBarStyle: SystemBarStyle) {

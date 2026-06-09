@@ -86,7 +86,6 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
         backstack = backstack,
         insuranceId = insuranceIds[0],
         preselectedAddonDisplayNames = preselectedAddonDisplayNames,
-        popBackstack = backstack::popBackstack,
         onNavigateToChangeTier = onNavigateToChangeTier,
       )
     } else {
@@ -107,7 +106,6 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       backstack = backstack,
       insuranceId = key.insuranceId,
       preselectedAddonDisplayNames = key.preselectedAddonDisplayNames,
-      popBackstack = backstack::popBackstack,
       onNavigateToChangeTier = onNavigateToChangeTier,
     )
   }
@@ -153,7 +151,6 @@ private fun CustomizeAddonContent(
   backstack: Backstack,
   insuranceId: String,
   preselectedAddonDisplayNames: List<String>,
-  popBackstack: () -> Unit,
   onNavigateToChangeTier: (contractId: String) -> Unit,
 ) {
   val viewModel: CustomizeAddonViewModel =
@@ -163,7 +160,7 @@ private fun CustomizeAddonContent(
   CustomizeAddonDestination(
     viewModel = viewModel,
     navigateUp = backstack::navigateUp,
-    popBackstack = popBackstack,
+    popBackstack = backstack::popBackstack,
     popAddonFlow = {
       backstack.popUpTo<AddonPurchaseKey>(inclusive = false)
       backstack.popBackstack()

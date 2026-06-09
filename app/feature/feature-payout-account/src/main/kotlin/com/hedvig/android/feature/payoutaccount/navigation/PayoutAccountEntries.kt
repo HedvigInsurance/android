@@ -24,7 +24,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateToConnectPayment: () -> Unit,
-  navigateUp: () -> Unit,
 ) {
   entry<PayoutAccountKey> {
     val viewModel: PayoutAccountOverviewViewModel = metroViewModel()
@@ -42,7 +41,7 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
         backstack.popUpTo<PayoutAccountKey>(inclusive = true)
         navigateToConnectPayment()
       },
-      navigateUp = navigateUp,
+      navigateUp = backstack::navigateUp,
     )
   }
 

@@ -17,7 +17,6 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
-  navigateUp: () -> Unit,
   goHome: () -> Unit,
 ) {
   entry<AddChipIdTriageKey> { key ->
@@ -38,7 +37,7 @@ fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
       }
     SelectInsuranceForChipIdDestination(
       viewModel = viewModel,
-      navigateUp = navigateUp,
+      navigateUp = backstack::navigateUp,
       popBackstack = backstack::popBackstack,
     )
   }

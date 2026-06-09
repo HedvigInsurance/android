@@ -20,7 +20,6 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToImageViewer: (imageUrl: String, cacheKey: String) -> Unit,
-  navigateUp: () -> Unit,
   navigateToConversation: (String) -> Unit,
   backstack: Backstack,
   applicationId: String,
@@ -33,7 +32,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
       viewModel = viewModel,
       imageLoader = imageLoader,
       appPackageId = appPackageId,
-      navigateUp = navigateUp,
+      navigateUp = backstack::navigateUp,
       navigateToConversation = dropUnlessResumed { conversationId: String ->
         navigateToConversation(conversationId)
       },
@@ -61,7 +60,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
       }
     AddFilesDestination(
       viewModel = viewModel,
-      navigateUp = navigateUp,
+      navigateUp = backstack::navigateUp,
       onNavigateToImageViewer = onNavigateToImageViewer,
       appPackageId = appPackageId,
       imageLoader = imageLoader,

@@ -261,7 +261,6 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
   }
 }
 
-
 private fun getSystemLocale(config: android.content.res.Configuration): Locale {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
     Resources.getSystem().configuration.locales[0]

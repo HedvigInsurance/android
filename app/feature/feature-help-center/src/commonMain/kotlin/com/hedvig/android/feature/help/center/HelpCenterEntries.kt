@@ -30,7 +30,6 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
   backstack: Backstack,
-  onNavigateUp: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
@@ -53,7 +52,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
       onNavigateToNewConversation = dropUnlessResumed {
         onNavigateToNewConversation()
       },
-      onNavigateUp = onNavigateUp,
+      onNavigateUp = backstack::navigateUp,
       onNavigateToPuppyGuide = dropUnlessResumed {
         backstack.add(PuppyGuideKey)
       },
