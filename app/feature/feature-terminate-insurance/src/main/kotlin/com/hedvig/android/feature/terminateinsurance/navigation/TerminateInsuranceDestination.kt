@@ -7,14 +7,7 @@ import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
 import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-
-@Serializable
-data class TerminateInsuranceKey(
-  @SerialName("contractId")
-  val insuranceId: String? = null,
-) : HedvigNavKey
 
 @Serializable
 internal data class TerminationSurveyFirstStepKey(

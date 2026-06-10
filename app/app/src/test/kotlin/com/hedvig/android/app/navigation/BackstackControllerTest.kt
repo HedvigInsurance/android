@@ -19,7 +19,6 @@ import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
-import com.hedvig.android.navigation.compose.popBackstack
 import org.junit.Test
 
 internal class BackstackControllerTest {
@@ -68,9 +67,17 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `system-back at the Home root exits the app`() {
-    val controller = controllerWith(HomeKey)
+  fun `system-back at the Home root finishes the app and keeps the root`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
     assertThat(controller.popBackstack()).isFalse()
+    assertThat(finished).isTrue()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }
 

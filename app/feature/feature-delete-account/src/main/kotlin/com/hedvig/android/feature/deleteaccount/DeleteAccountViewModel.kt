@@ -20,9 +20,6 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 internal class DeleteAccountViewModel(
   private val requestAccountDeletionUseCase: RequestAccountDeletionUseCase,
   private val deleteAccountStateUseCase: DeleteAccountStateUseCase,
-  // The app-scoped backstack is injected straight into the ViewModel and handed to the Presenter,
-  // which can drive navigation itself (see DeleteAccountPresenter). It outlives this ViewModel, so it
-  // stays valid across config changes — no stale back stack.
   backstack: Backstack,
 ) : MoleculeViewModel<DeleteAccountEvent, DeleteAccountUiState>(
     DeleteAccountUiState.Loading,

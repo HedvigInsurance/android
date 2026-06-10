@@ -19,17 +19,25 @@ interface Backstack {
    * task-aware synthetic-stack rebuilding for lone deep links (see BackstackController).
    */
   fun navigateUp(): Boolean = popBackstack()
+
+  /**
+   * Pops the top entry. Returns false when the back stack is already at its root (nothing popped).
+   *
+   * This default is a pure temporal pop. `:app`'s controller overrides it so that a pop at the root
+   * finishes the Activity instead of silently no-opping — i.e. Back/close from the last screen exits
+   * the app. A caller that needs a different at-root behavior (e.g. jump to another tab) must branch
+   * on the back stack itself rather than on this return value, since in `:app` the root case never
+   * returns: it finishes.
+   */
+  fun popBackstack(): Boolean = Snapshot.withMutableSnapshot {
+    if (entries.size <= 1) return@withMutableSnapshot false
+    entries.removeAt(entries.lastIndex)
+    true
+  }
 }
 
 /** Pushes [key] onto the top of the back stack. */
 fun Backstack.add(key: HedvigNavKey): Boolean = entries.add(key)
-
-/** Pops the top entry. Returns false if the back stack is at its root (nothing popped). */
-fun Backstack.popBackstack(): Boolean = Snapshot.withMutableSnapshot {
-  if (entries.size <= 1) return@withMutableSnapshot false
-  entries.removeAt(entries.lastIndex)
-  true
-}
 
 /** Pops up to (and optionally including) the most recent entry of [T]. No-op if absent. */
 inline fun <reified T : HedvigNavKey> Backstack.popUpTo(inclusive: Boolean) {

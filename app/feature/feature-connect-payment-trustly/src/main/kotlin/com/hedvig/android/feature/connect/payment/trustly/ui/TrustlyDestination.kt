@@ -46,18 +46,13 @@ import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebView
 import com.hedvig.android.feature.connect.payment.trustly.sdk.TrustlyWebViewClient
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import com.hedvig.android.navigation.common.HedvigNavKey
 import hedvig.resources.Res
 import hedvig.resources.general_done_button
 import hedvig.resources.pay_in_confirmation_direct_debit_headline
 import hedvig.resources.pay_in_error_body
 import hedvig.resources.pay_in_explainer_direct_debit_headline
 import hedvig.resources.something_went_wrong
-import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource
-
-@Serializable
-data object TrustlyKey : HedvigNavKey
 
 @Composable
 internal fun TrustlyDestination(

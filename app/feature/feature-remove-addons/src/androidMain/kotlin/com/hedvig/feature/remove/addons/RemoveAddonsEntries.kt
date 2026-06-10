@@ -5,7 +5,6 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.feature.remove.addons.ui.RemoveAddonFailureScreen
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSuccessScreen
 import com.hedvig.feature.remove.addons.ui.RemoveAddonSummaryDestination

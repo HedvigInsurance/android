@@ -6,7 +6,6 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.help.center.commonclaim.FirstVetDestination
 import com.hedvig.android.feature.help.center.commonclaim.emergency.EmergencyDestination
-import com.hedvig.android.feature.help.center.data.QuickLinkDestination
 import com.hedvig.android.feature.help.center.home.HelpCenterHomeDestination
 import com.hedvig.android.feature.help.center.navigation.EmergencyKey
 import com.hedvig.android.feature.help.center.navigation.FirstVetKey
@@ -26,14 +25,12 @@ import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
   backstack: Backstack,
   onNavigateUp: () -> Unit,
-  onNavigateToQuickLink: (QuickLinkDestination.OuterDestination) -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   openUrl: (String) -> Unit,
@@ -49,9 +46,6 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
       },
       onNavigateToQuestion = dropUnlessResumed { question ->
         navigateToQuestion(question, backstack)
-      },
-      onNavigateToQuickLink = dropUnlessResumed { destination ->
-        onNavigateToQuickLink(destination)
       },
       onNavigateToInbox = dropUnlessResumed {
         onNavigateToInbox()
