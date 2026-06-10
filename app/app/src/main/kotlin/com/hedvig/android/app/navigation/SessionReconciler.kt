@@ -3,6 +3,7 @@ package com.hedvig.android.app.navigation
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import arrow.core.identity
 import arrow.fx.coroutines.raceN
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
@@ -33,12 +34,14 @@ import kotlinx.coroutines.launch
  *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
  * Deliberately narrow — only auth and the backstack root. Deep-links, notifications and the rest stay
- * in their own observers. The [BackstackController] and the [Lifecycle] are handed in per call by the
- * composition rather than injected, keeping this reconciler free of any Android/Compose lifetime.
+ * in their own observers. The [BackstackController] is an app-scoped singleton injected here; only the
+ * [Lifecycle] is handed in per call by the composition, keeping this reconciler free of any
+ * Android/Compose lifetime.
  */
 @SingleIn(AppScope::class)
 @Inject
 internal class SessionReconciler(
+  private val backstackController: BackstackController,
   private val authTokenService: AuthTokenService,
   private val demoManager: DemoManager,
   private val memberIdService: MemberIdService,
@@ -54,10 +57,10 @@ internal class SessionReconciler(
    * Resolves the start scene once, before the splash is dismissed. A no-op on subsequent calls because
    * [isReady] has already latched true.
    */
-  suspend fun reconcile(backstackController: BackstackController) {
+  suspend fun reconcile() {
     if (isReadyState.value) return
     memberIdService.getMemberId().first()?.let { lastKnownMemberId = it }
-    determineStartScene(backstackController)
+    determineStartScene()
     isReadyState.value = true
   }
 
@@ -65,14 +68,14 @@ internal class SessionReconciler(
    * Lifecycle-gated observers that keep the rendered root honest while the UI is STARTED: tracks the
    * latest member id and logs out when we leave demo mode without holding tokens.
    */
-  suspend fun observeForcedLogout(backstackController: BackstackController, lifecycle: Lifecycle) {
+  suspend fun observeForcedLogout(lifecycle: Lifecycle) {
     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
       launch {
         memberIdService.getMemberId().collect { id ->
           if (id != null) lastKnownMemberId = id
         }
       }
-      logoutOnInvalidCredentials(backstackController)
+      logoutOnInvalidCredentials()
     }
   }
 
@@ -81,7 +84,7 @@ internal class SessionReconciler(
    * restore the back stack already reflects the previous session, so a matching root is left untouched
    * and any deeper stack is preserved.
    */
-  private suspend fun determineStartScene(backstackController: BackstackController) {
+  private suspend fun determineStartScene() {
     val showLoggedInScene = raceN(
       { authTokenService.authStatus.filterNotNull().first() is AuthStatus.LoggedIn },
       { demoManager.isDemoMode().first { it } },
@@ -103,7 +106,7 @@ internal class SessionReconciler(
    * Automatically logs out when we are no longer in demo mode and we are also not considered to have
    * active tokens.
    */
-  private suspend fun logoutOnInvalidCredentials(backstackController: BackstackController) {
+  private suspend fun logoutOnInvalidCredentials() {
     val authStatusLog: (AuthStatus?) -> Unit = { authStatus ->
       logcat {
         buildString {

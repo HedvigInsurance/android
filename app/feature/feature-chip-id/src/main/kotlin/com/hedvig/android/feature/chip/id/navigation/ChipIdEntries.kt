@@ -18,7 +18,6 @@ fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
-  popBackstackOrFinish: () -> Unit,
   goHome: () -> Unit,
 ) {
   entry<AddChipIdTriageKey> { key ->
@@ -40,7 +39,7 @@ fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
     SelectInsuranceForChipIdDestination(
       viewModel = viewModel,
       navigateUp = navigateUp,
-      popBackstack = popBackstackOrFinish,
+      popBackstack = backstack::popBackstack,
     )
   }
 
