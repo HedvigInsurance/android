@@ -13,6 +13,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isSameInstanceAs
 import assertk.assertions.isTrue
+import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
@@ -29,11 +30,15 @@ import com.hedvig.android.data.changetier.data.TotalCost
 import com.hedvig.android.data.contract.ContractGroup.RENTAL
 import com.hedvig.android.data.contract.ContractType.SE_APARTMENT_RENT
 import com.hedvig.android.data.productvariant.ProductVariant
+import com.hedvig.android.feature.terminateinsurance.TestBackstack
 import com.hedvig.android.feature.terminateinsurance.data.ExtraCoverageItem
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.SurveyOptionSuggestion
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveySecondStepKey
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test
 import kotlinx.coroutines.test.runTest
@@ -55,6 +60,13 @@ class TerminationSurveyPresenterTest {
     minDate = LocalDate(2024, 6, 1),
     maxDate = LocalDate(2024, 6, 29),
     extraCoverageItems = emptyList(),
+  )
+
+  private val testCommonParams = TerminationGraphParameters(
+    contractId = "contractId",
+    insuranceDisplayName = "displayName",
+    exposureName = "exposure",
+    contractGroup = RENTAL,
   )
 
   private val listOfOptionsForHome = listOf(
@@ -105,8 +117,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       options = listOfOptionsForHome,
       action = testAction,
+      commonParams = testCommonParams,
       changeTierRepository = changeTierRepository,
-      contractId = "contractId",
+      backstack = TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       assertThat(awaitItem().reasons).isEqualTo(listOfOptionsForHome)
@@ -123,8 +136,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -143,8 +157,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       assertThat(awaitItem().reasons).isEqualTo(listOfOptionsForHome)
@@ -157,8 +172,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -176,11 +192,14 @@ class TerminationSurveyPresenterTest {
   @Test
   fun `when survey is submitted for option with no subOptions navigate to next termination step`() = runTest {
     val changeTierRepository = FakeChangeTierRepository()
+    val backstack = TestBackstack()
+    val scheduler = testScheduler
     val presenter = TerminationSurveyPresenter(
-      listOfOptionsForHome,
-      testAction,
-      changeTierRepository,
-      "contractId",
+      options = listOfOptionsForHome,
+      action = testAction,
+      commonParams = testCommonParams,
+      changeTierRepository = changeTierRepository,
+      backstack = backstack,
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -189,31 +208,35 @@ class TerminationSurveyPresenterTest {
       sendEvent(TerminationSurveyEvent.EditTextFeedback("my feedback"))
       skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
-      val result = awaitItem()
-      assertThat(result.nextNavigationStep).isNotNull()
-        .isInstanceOf<SurveyNavigationStep.NavigateToNextTerminationStep>()
-      val navStep = result.nextNavigationStep as SurveyNavigationStep.NavigateToNextTerminationStep
-      assertThat(navStep.selectedOption).isEqualTo(listOfOptionsForHome[2])
-      assertThat(navStep.feedbackText).isEqualTo("my feedback")
-      assertThat(navStep.action).isEqualTo(testAction)
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last())
+        .isInstanceOf<TerminationDateKey>()
+        .prop(TerminationDateKey::selectedReasonId)
+        .isEqualTo(listOfOptionsForHome[2].id)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `when survey is submitted for option with subOptions navigate to next survey screen`() = runTest {
     val changeTierRepository = FakeChangeTierRepository()
+    val backstack = TestBackstack()
+    val scheduler = testScheduler
     val presenter = TerminationSurveyPresenter(
-      listOfOptionsForHome,
-      testAction,
-      changeTierRepository,
-      "contractId",
+      options = listOfOptionsForHome,
+      action = testAction,
+      commonParams = testCommonParams,
+      changeTierRepository = changeTierRepository,
+      backstack = backstack,
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[1]))
       skipItems(1)
       sendEvent(TerminationSurveyEvent.Continue)
-      assertThat(awaitItem().nextNavigationStep).isEqualTo(SurveyNavigationStep.NavigateToSubOptions)
+      scheduler.advanceUntilIdle()
+      assertThat(backstack.entries.last()).isInstanceOf<TerminationSurveySecondStepKey>()
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -223,8 +246,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -243,8 +267,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       skipItems(1)
@@ -278,8 +303,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
@@ -308,8 +334,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
@@ -332,8 +359,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))
@@ -366,8 +394,9 @@ class TerminationSurveyPresenterTest {
     val presenter = TerminationSurveyPresenter(
       listOfOptionsForHome,
       testAction,
+      testCommonParams,
       changeTierRepository,
-      "contractId",
+      TestBackstack(),
     )
     presenter.test(initialState = TerminationSurveyState(listOfOptionsForHome)) {
       sendEvent(TerminationSurveyEvent.SelectOption(listOfOptionsForHome[3]))

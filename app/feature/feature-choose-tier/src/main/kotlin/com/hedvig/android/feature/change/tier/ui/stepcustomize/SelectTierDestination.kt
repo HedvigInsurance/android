@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,8 +77,6 @@ import com.hedvig.android.design.system.hedvig.a11y.getDescription
 import com.hedvig.android.design.system.hedvig.a11y.getPerMonthDescription
 import com.hedvig.android.design.system.hedvig.icon.Close
 import com.hedvig.android.design.system.hedvig.icon.HedvigIcons
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Failure
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Loading
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageState.Success
@@ -112,8 +109,6 @@ internal fun SelectTierDestination(
   viewModel: SelectCoverageViewModel,
   navigateUp: () -> Unit,
   popBackstack: () -> Unit,
-  navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
-  navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>, selectedTermsVersion: String?) -> Unit,
 ) {
   val uiState: SelectCoverageState by viewModel.uiState.collectAsStateWithLifecycle()
   Box(
@@ -134,23 +129,6 @@ internal fun SelectTierDestination(
       }
 
       is Success -> {
-        LaunchedEffect(state.uiState.quoteToNavigateFurther) {
-          if (state.uiState.quoteToNavigateFurther != null) {
-            viewModel.emit(ClearNavigateFurtherStep)
-            navigateToSummary(state.uiState.quoteToNavigateFurther)
-          }
-        }
-        LaunchedEffect(state.uiState.quotesToCompare) {
-          if (state.uiState.quotesToCompare != null) {
-            viewModel.emit(ClearNavigateToComparison)
-            navigateToComparison(
-              state.uiState.quotesToCompare,
-              state.uiState.quotesToCompare.firstOrNull {
-                it.tier.tierName == state.uiState.chosenTier?.tierName
-              }?.productVariant?.termsVersion,
-            )
-          }
-        }
         SelectTierScreen(
           uiState = state.uiState,
           navigateUp = navigateUp,

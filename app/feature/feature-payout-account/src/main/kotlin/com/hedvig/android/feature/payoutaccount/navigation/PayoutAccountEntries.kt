@@ -65,9 +65,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     EditBankAccountDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      onSuccessfullyConnected = {
-        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-      },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -77,9 +74,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     SetupSwishPayoutDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      onSuccessfullyConnected = {
-        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-      },
       navigateUp = backstack::navigateUp,
     )
   }
@@ -89,9 +83,6 @@ fun EntryProviderScope<HedvigNavKey>.payoutAccountEntries(
     SetupInvoicePayoutDestination(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
-      onSuccessfullyConnected = {
-        backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
-      },
       navigateUp = backstack::navigateUp,
     )
   }

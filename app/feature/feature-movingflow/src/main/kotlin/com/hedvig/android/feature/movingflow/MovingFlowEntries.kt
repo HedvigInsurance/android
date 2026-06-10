@@ -16,9 +16,6 @@ import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
@@ -27,9 +24,6 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-
-@Serializable
-data object SelectContractForMovingKey : HedvigNavKey
 
 @Serializable
 internal data class HousingTypeKey(val moveIntentId: String) : HedvigNavKey
@@ -67,29 +61,17 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
       viewModel = metroViewModel<SelectContractViewModel>(),
       navigateUp = backstack::navigateUp,
       exitFlow = { backstack.popUpTo<SelectContractForMovingKey>(inclusive = true) },
-      onNavigateToNextStep = { moveIntentId, shouldPopUp ->
-        if (shouldPopUp) {
-          backstack.navigateAndPopUpTo<SelectContractForMovingKey>(
-            HousingTypeKey(moveIntentId),
-            inclusive = true,
-          )
-        } else {
-          backstack.add(HousingTypeKey(moveIntentId))
-        }
-      },
       goToChat = goToChat,
     )
   }
 
   entry<HousingTypeKey> { key ->
-    val moveIntentId = key.moveIntentId
     HousingTypeDestination(
-      viewModel = metroViewModel<HousingTypeViewModel>(),
+      viewModel = assistedMetroViewModel<HousingTypeViewModel, HousingTypeViewModel.Factory> {
+        create(key.moveIntentId)
+      },
       navigateUp = backstack::navigateUp,
       exitFlow = { backstack.exitMovingFlow() },
-      onNavigateToNextStep = {
-        backstack.add(EnterNewAddressKey(moveIntentId))
-      },
     )
   }
   entry<EnterNewAddressKey> { key ->
@@ -101,12 +83,6 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
       navigateUp = backstack::navigateUp,
       popBackstack = backstack::popBackstack,
       exitFlow = { backstack.exitMovingFlow() },
-      onNavigateToAddHouseInformation = {
-        backstack.add(AddHouseInformationKey(moveIntentId))
-      },
-      onNavigateToChoseCoverageLevelAndDeductible = {
-        backstack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
-      },
     )
   }
   entry<AddHouseInformationKey> { key ->
@@ -118,9 +94,6 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
       navigateUp = backstack::navigateUp,
       popBackstack = backstack::popBackstack,
       exitFlow = { backstack.exitMovingFlow() },
-      onNavigateToChoseCoverageLevelAndDeductible = {
-        backstack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
-      },
     )
   }
   entry<ChoseCoverageLevelAndDeductibleKey> { key ->
@@ -135,12 +108,6 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
       navigateUp = backstack::navigateUp,
       popBackstack = backstack::popBackstack,
       exitFlow = { backstack.exitMovingFlow() },
-      onNavigateToSummaryScreen = { homeQuoteId ->
-        backstack.add(SummaryKey(moveIntentId, homeQuoteId))
-      },
-      navigateToComparison = { parameters ->
-        backstack.add(CompareCoverageKey(parameters))
-      },
     )
   }
 
@@ -165,13 +132,6 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
       navigateUp = backstack::navigateUp,
       navigateBack = backstack::popBackstack,
       exitFlow = { backstack.exitMovingFlow() },
-      onNavigateToFinishedScreen = { moveDate ->
-        backstack.popUpTo<SelectContractForMovingKey>(inclusive = true)
-        backstack.navigateAndPopUpTo<HousingTypeKey>(
-          SuccessfulMoveKey(moveDate),
-          inclusive = true,
-        )
-      },
     )
   }
 

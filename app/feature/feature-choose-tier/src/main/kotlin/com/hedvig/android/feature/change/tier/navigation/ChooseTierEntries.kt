@@ -14,11 +14,7 @@ import com.hedvig.android.feature.change.tier.ui.stepsummary.SubmitTierSuccessSc
 import com.hedvig.android.feature.change.tier.ui.stepsummary.SummaryViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
-import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -36,9 +32,6 @@ fun EntryProviderScope<HedvigNavKey>.changeTierEntries(backstack: Backstack, onN
       popBackstack = {
         backstack.popBackstack()
       },
-      launchFlow = { params: InsuranceCustomizationParameters ->
-        backstack.navigateAndPopUpTo<StartTierFlowKey>(ChooseTierKey(params), inclusive = true)
-      },
       onNavigateToNewConversation = dropUnlessResumed { onNavigateToNewConversation() },
       navigateUp = backstack::navigateUp,
     )
@@ -49,12 +42,6 @@ fun EntryProviderScope<HedvigNavKey>.changeTierEntries(backstack: Backstack, onN
     ChooseInsuranceToChangeTierDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      navigateToNextStep = { params: InsuranceCustomizationParameters ->
-        backstack.navigateAndPopUpTo<StartTierFlowChooseInsuranceKey>(
-          ChooseTierKey(params),
-          inclusive = true,
-        )
-      },
       popBackstack = {
         backstack.popBackstack()
       },
@@ -71,31 +58,8 @@ fun EntryProviderScope<HedvigNavKey>.changeTierEntries(backstack: Backstack, onN
     SelectTierDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      navigateToSummary = { quote ->
-        backstack.add(
-          SummaryKey(
-            SummaryParameters(
-              quoteIdToSubmit = quote.id,
-              activationDate = parameters.activationDate,
-              insuranceId = parameters.insuranceId,
-            ),
-          ),
-        )
-      },
       popBackstack = {
         backstack.popBackstack()
-      },
-      navigateToComparison = { listOfQuotes, selectedTerms ->
-        backstack.add(
-          ComparisonKey(
-            ComparisonParameters(
-              termsIds = listOfQuotes.map {
-                it.productVariant.termsVersion
-              },
-              selectedTermsVersion = selectedTerms,
-            ),
-          ),
-        )
       },
     )
   }
@@ -123,15 +87,6 @@ fun EntryProviderScope<HedvigNavKey>.changeTierEntries(backstack: Backstack, onN
       navigateUp = backstack::navigateUp,
       onExitTierFlow = {
         backstack.popUpTo<ChooseTierKey>(inclusive = true)
-      },
-      onFailure = {
-        backstack.add(SubmitFailureKey)
-      },
-      onSuccess = {
-        backstack.navigateAndPopUpTo<ChooseTierKey>(
-          SubmitSuccessKey(key.params.activationDate),
-          inclusive = true,
-        )
       },
     )
   }

@@ -46,11 +46,18 @@ kotlin {
       implementation(projects.coreBuildConstants)
       implementation(projects.coreCommonPublic)
       implementation(projects.coreResources)
+      implementation(projects.dataCoinsured)
       implementation(projects.dataContract)
       implementation(projects.dataConversations)
       implementation(projects.dataTermination)
       implementation(projects.designSystemHedvig)
+      implementation(projects.featureChooseTierNavigation)
+      implementation(projects.featureConnectPaymentTrustlyNavigation)
+      implementation(projects.featureEditCoinsuredNavigation)
       implementation(projects.featureFlags)
+      implementation(projects.featureMovingflowNavigation)
+      implementation(projects.featureTerminateInsuranceNavigation)
+      implementation(projects.featureTravelCertificateNavigation)
       implementation(projects.moleculePublic)
       implementation(projects.navigationCommon)
       implementation(projects.navigationCompose)
@@ -63,7 +70,7 @@ kotlin {
     }
     jvmMain.dependencies {
     }
-    androidInstrumentedTest.dependencies {
+    jvmTest.dependencies {
       implementation(libs.apollo.testingSupport)
       implementation(libs.assertK)
       implementation(libs.coroutines.test)

@@ -16,6 +16,9 @@ import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
+import com.hedvig.android.feature.movingflow.HousingTypeKey
+import com.hedvig.android.feature.movingflow.SelectContractForMovingKey
+import com.hedvig.android.feature.movingflow.SuccessfulMoveKey
 import com.hedvig.android.feature.movingflow.SummaryKey
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes
@@ -33,6 +36,9 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
+import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import com.hedvig.ui.tiersandaddons.DisplayDocument
 import dev.zacsweers.metro.Assisted
@@ -51,6 +57,7 @@ internal class SummaryViewModel(
   apolloClient: ApolloClient,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<SummaryEvent, SummaryUiState>(
     Loading,
     SummaryPresenter(
@@ -59,6 +66,7 @@ internal class SummaryViewModel(
       apolloClient = apolloClient,
       crossSellAfterFlowRepository = crossSellAfterFlowRepository,
       getMoveIntentCostUseCase = getMoveIntentCostUseCase,
+      backstack = backstack,
     ),
   ) {
   @AssistedFactory
@@ -77,6 +85,7 @@ internal class SummaryPresenter(
   private val apolloClient: ApolloClient,
   private val crossSellAfterFlowRepository: CrossSellAfterFlowRepository,
   private val getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SummaryEvent, SummaryUiState> {
   @Composable
   override fun MoleculePresenterScope<SummaryEvent>.present(lastState: SummaryUiState): SummaryUiState {
@@ -84,7 +93,6 @@ internal class SummaryPresenter(
     var moveIntentCost: MoveIntentCost? by remember { mutableStateOf(null) }
     var submitChangesError: SubmitError? by remember { mutableStateOf(null) }
     var submitChangesWithData: SubmitChangesData? by remember { mutableStateOf(null) }
-    var navigateToFinishedScreenWithDate: LocalDate? by remember { mutableStateOf(null) }
 
     CollectEvents { event ->
       when (event) {
@@ -181,10 +189,12 @@ internal class SummaryPresenter(
                 crossSellAfterFlowRepository.completedCrossSellTriggeringSelfServiceSuccessfully(
                   CrossSellInfoType.MovingFlow,
                 )
-                Snapshot.withMutableSnapshot {
-                  submitChangesWithData = null
-                  navigateToFinishedScreenWithDate = submitChangesDataValue.forDate
-                }
+                submitChangesWithData = null
+                backstack.popUpTo<SelectContractForMovingKey>(inclusive = true)
+                backstack.navigateAndPopUpTo<HousingTypeKey>(
+                  SuccessfulMoveKey(submitChangesDataValue.forDate),
+                  inclusive = true,
+                )
               }
             },
           )
@@ -204,7 +214,6 @@ internal class SummaryPresenter(
         summaryInfo = summaryInfoValue.summaryInfo,
         isSubmitting = submitChangesWithData != null,
         submitError = submitChangesError,
-        navigateToFinishedScreenWithDate = navigateToFinishedScreenWithDate,
         moveIntentCost = moveIntentCost,
       )
     }
@@ -232,7 +241,6 @@ internal sealed interface SummaryUiState {
     private val summaryInfo: SummaryInfo,
     val isSubmitting: Boolean,
     val submitError: SubmitError?,
-    val navigateToFinishedScreenWithDate: LocalDate?,
     private val moveIntentCost: MoveIntentCost?,
   ) : SummaryUiState {
     val cards: List<CardContent> = buildList {
@@ -251,8 +259,7 @@ internal sealed interface SummaryUiState {
     val totalPremium: UiMoney? = moveIntentCost?.monthlyNet
     val grossPremium: UiMoney? = moveIntentCost?.monthlyGross
     val shouldDisableInput: Boolean = isSubmitting ||
-      submitError != null ||
-      navigateToFinishedScreenWithDate != null
+      submitError != null
 
     sealed interface SubmitError {
       data object Generic : SubmitError

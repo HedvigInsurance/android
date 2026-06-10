@@ -10,9 +10,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.payoutaccount.data.SetupInvoicePayoutUseCase
+import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
@@ -23,9 +26,10 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class SetupInvoicePayoutViewModel(
   setupInvoicePayoutUseCase: SetupInvoicePayoutUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState>(
     SetupInvoicePayoutUiState(false, null, false),
-    SetupInvoicePayoutPresenter(setupInvoicePayoutUseCase),
+    SetupInvoicePayoutPresenter(setupInvoicePayoutUseCase, backstack),
   )
 
 internal sealed interface SetupInvoicePayoutEvent {
@@ -42,6 +46,7 @@ internal data class SetupInvoicePayoutUiState(
 
 internal class SetupInvoicePayoutPresenter(
   private val setupInvoicePayoutUseCase: SetupInvoicePayoutUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SetupInvoicePayoutEvent, SetupInvoicePayoutUiState> {
   @Composable
   override fun MoleculePresenterScope<SetupInvoicePayoutEvent>.present(
@@ -82,7 +87,7 @@ internal class SetupInvoicePayoutPresenter(
         }
 
         SetupInvoicePayoutEvent.ShowedSnackBar -> {
-          showSuccessSnackBar = false
+          backstack.popUpTo<SelectPayoutMethodKey>(inclusive = true)
         }
       }
     }

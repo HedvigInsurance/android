@@ -15,7 +15,6 @@ import com.hedvig.android.feature.deleteaccount.data.RequestAccountDeletionUseCa
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.popBackstack
 import kotlinx.coroutines.flow.collectLatest
 
 internal class DeleteAccountPresenter(
@@ -64,8 +63,6 @@ internal class DeleteAccountPresenter(
         if (mutationResult.isLeft()) {
           failedToPerformAccountDeletion = true
         } else {
-          // Navigation driven directly from the Presenter via the injected app-scoped backstack —
-          // the whole point of hoisting the back stack into AppState.
           backstack.popBackstack()
         }
         isPerformingDeletion = false

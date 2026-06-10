@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -96,22 +95,12 @@ internal fun ChangeTierSummaryDestination(
   viewModel: SummaryViewModel,
   navigateUp: () -> Unit,
   onExitTierFlow: () -> Unit,
-  onSuccess: () -> Unit,
-  onFailure: () -> Unit,
 ) {
   val uiState: SummaryState by viewModel.uiState.collectAsStateWithLifecycle()
   SummaryScreen(
     uiState = uiState,
     onReload = {
       viewModel.emit(SummaryEvent.Reload)
-    },
-    onSuccess = {
-      viewModel.emit(SummaryEvent.ClearNavigation)
-      onSuccess()
-    },
-    onFailure = {
-      viewModel.emit(SummaryEvent.ClearNavigation)
-      onFailure()
     },
     navigateUp = navigateUp,
     onSubmitQuoteClick = {
@@ -125,9 +114,7 @@ internal fun ChangeTierSummaryDestination(
 private fun SummaryScreen(
   uiState: SummaryState,
   onReload: () -> Unit,
-  onSuccess: () -> Unit,
   navigateUp: () -> Unit,
-  onFailure: () -> Unit,
   onSubmitQuoteClick: () -> Unit,
   onExitTierFlow: () -> Unit,
 ) {
@@ -147,23 +134,11 @@ private fun SummaryScreen(
       HedvigFullScreenCenterAlignedProgress()
     }
 
-    is MakingChanges -> {
-      LaunchedEffect(uiState.navigateToSuccess) {
-        val success = uiState.navigateToSuccess
-        if (success) {
-          onSuccess()
-        }
-      }
+    MakingChanges -> {
       MakingChangesScreen()
     }
 
     is Success -> {
-      LaunchedEffect(uiState.navigateToFail) {
-        if (uiState.navigateToFail) {
-          onFailure()
-        }
-      }
-
       SummarySuccessScreen(
         uiState = uiState,
         navigateUp = navigateUp,
@@ -399,8 +374,6 @@ private fun PreviewSummaryScreen(
         {},
         {},
         {},
-        {},
-        {},
       )
     }
   }
@@ -478,6 +451,6 @@ private class SummaryUiStateProvider :
       ),
       Failure,
       Loading,
-      MakingChanges(false),
+      MakingChanges,
     ),
   )

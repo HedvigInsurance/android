@@ -16,7 +16,11 @@ import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.SuggestionType
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyOption
-import com.hedvig.android.feature.terminateinsurance.step.survey.SurveyNavigationStep.NavigateToSubOptions
+import com.hedvig.android.feature.terminateinsurance.navigation.DeflectSuggestionKey
+import com.hedvig.android.feature.terminateinsurance.navigation.InsuranceDeletionKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationDateKey
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationSurveySecondStepKey
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearEmptyQuotesDialog
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.ClearNextStep
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyEvent.CloseFullScreenEditText
@@ -31,6 +35,8 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -41,15 +47,17 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 internal class TerminationSurveyViewModel @AssistedInject constructor(
   @Assisted options: List<TerminationSurveyOption>,
   @Assisted action: TerminationAction,
+  @Assisted commonParams: TerminationGraphParameters,
   changeTierRepository: ChangeTierRepository,
-  @Assisted contractId: String,
+  backstack: Backstack,
 ) : MoleculeViewModel<TerminationSurveyEvent, TerminationSurveyState>(
     initialState = TerminationSurveyState(options),
     presenter = TerminationSurveyPresenter(
       options,
       action,
+      commonParams,
       changeTierRepository,
-      contractId,
+      backstack,
     ),
   ) {
   @AssistedFactory
@@ -59,7 +67,7 @@ internal class TerminationSurveyViewModel @AssistedInject constructor(
     fun create(
       @Assisted options: List<TerminationSurveyOption>,
       @Assisted action: TerminationAction,
-      @Assisted contractId: String,
+      @Assisted commonParams: TerminationGraphParameters,
     ): TerminationSurveyViewModel
   }
 }
@@ -67,15 +75,17 @@ internal class TerminationSurveyViewModel @AssistedInject constructor(
 internal class TerminationSurveyPresenter(
   private val options: List<TerminationSurveyOption>,
   private val action: TerminationAction,
+  private val commonParams: TerminationGraphParameters,
   private val changeTierRepository: ChangeTierRepository,
-  private val contractId: String,
+  private val backstack: Backstack,
 ) : MoleculePresenter<TerminationSurveyEvent, TerminationSurveyState> {
+  private val contractId: String = commonParams.contractId
+
   @Composable
   override fun MoleculePresenterScope<TerminationSurveyEvent>.present(
     lastState: TerminationSurveyState,
   ): TerminationSurveyState {
     var loadBetterQuotesSource by remember { mutableStateOf<ChangeTierCreateSource?>(null) }
-    var loadNextStep by remember { mutableStateOf(false) }
     var feedbackText: String? by remember { mutableStateOf(lastState.feedbackText) }
 
     var showFullScreenTextField by remember {
@@ -102,14 +112,16 @@ internal class TerminationSurveyPresenter(
           val selectedOption = currentState.selectedOption ?: return@CollectEvents
           currentState = currentState.copy(errorWhileLoadingNextStep = false)
           if (selectedOption.subOptions.isNotEmpty()) {
-            currentState = currentState.copy(nextNavigationStep = NavigateToSubOptions)
+            backstack.add(
+              TerminationSurveySecondStepKey(selectedOption.subOptions, action, commonParams),
+            )
           } else {
-            loadNextStep = true
+            backstack.navigateAfterSurvey(selectedOption, feedbackText, action, commonParams)
           }
         }
 
         ClearNextStep -> {
-          currentState = currentState.copy(nextNavigationStep = null, intentAndIdToRedirectToChangeTierFlow = null)
+          currentState = currentState.copy(intentAndIdToRedirectToChangeTierFlow = null)
         }
 
         is ShowFullScreenEditText -> {
@@ -202,20 +214,6 @@ internal class TerminationSurveyPresenter(
       )
     }
 
-    if (loadNextStep) {
-      LaunchedEffect(Unit) {
-        val reasonToSubmit = currentState.selectedOption ?: return@LaunchedEffect
-        loadNextStep = false
-        currentState = currentState.copy(
-          nextNavigationStep = SurveyNavigationStep.NavigateToNextTerminationStep(
-            selectedOption = reasonToSubmit,
-            feedbackText = feedbackText,
-            action = action,
-          ),
-        )
-      }
-    }
-
     return currentState.copy(
       reasons = options.map { option ->
         if (option.id in disabledOptionsIdsDueToEmptyResultingQuotes) {
@@ -255,8 +253,6 @@ internal data class TerminationSurveyState(
   val feedbackText: String?,
   val showFullScreenEditText: Boolean,
   val selectedOptionId: String?,
-  val nextNavigationStep: SurveyNavigationStep?,
-  val navigationStepLoading: Boolean,
   val errorWhileLoadingNextStep: Boolean,
   val showEmptyQuotesDialog: DeflectType? = null,
   val intentAndIdToRedirectToChangeTierFlow: Pair<String, IntentOutput>?,
@@ -276,8 +272,6 @@ internal data class TerminationSurveyState(
     feedbackText = null,
     showFullScreenEditText = false,
     selectedOptionId = null,
-    nextNavigationStep = null,
-    navigationStepLoading = false,
     errorWhileLoadingNextStep = false,
     showEmptyQuotesDialog = null,
     intentAndIdToRedirectToChangeTierFlow = null,
@@ -294,12 +288,46 @@ internal sealed interface DeflectType {
   ) : DeflectType
 }
 
-internal sealed interface SurveyNavigationStep {
-  data class NavigateToNextTerminationStep(
-    val selectedOption: TerminationSurveyOption,
-    val feedbackText: String?,
-    val action: TerminationAction,
-  ) : SurveyNavigationStep
+private fun Backstack.navigateAfterSurvey(
+  selectedOption: TerminationSurveyOption,
+  feedbackText: String?,
+  action: TerminationAction,
+  commonParams: TerminationGraphParameters,
+) {
+  val suggestion = selectedOption.suggestion
+  if (suggestion != null && suggestion.type in SuggestionType.DEFLECT_TYPES) {
+    add(
+      DeflectSuggestionKey(
+        description = suggestion.description,
+        url = suggestion.url,
+        suggestionType = suggestion.type,
+        commonParams = commonParams,
+        action = action,
+        selectedReasonId = selectedOption.id,
+        feedbackComment = feedbackText,
+      ),
+    )
+    return
+  }
+  when (val terminationAction = action) {
+    is TerminationAction.TerminateWithDate -> add(
+      TerminationDateKey(
+        minDate = terminationAction.minDate,
+        maxDate = terminationAction.maxDate,
+        extraCoverageItems = terminationAction.extraCoverageItems,
+        commonParams = commonParams,
+        selectedReasonId = selectedOption.id,
+        feedbackComment = feedbackText,
+      ),
+    )
 
-  data object NavigateToSubOptions : SurveyNavigationStep
+    is TerminationAction.DeleteInsurance -> add(
+      InsuranceDeletionKey(
+        commonParams = commonParams,
+        extraCoverageItems = terminationAction.extraCoverageItems,
+        selectedReasonId = selectedOption.id,
+        feedbackComment = feedbackText,
+      ),
+    )
+  }
 }

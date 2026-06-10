@@ -74,8 +74,6 @@ internal fun TerminationSurveyDestination(
   navigateToMovingFlow: () -> Unit,
   closeTerminationFlow: () -> Unit,
   openUrl: (String) -> Unit,
-  navigateToNextStep: (SurveyNavigationStep.NavigateToNextTerminationStep) -> Unit,
-  navigateToSubOptions: ((List<TerminationSurveyOption>) -> Unit)?,
   redirectToChangeTierFlow: (Pair<String, IntentOutput>) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -84,24 +82,6 @@ internal fun TerminationSurveyDestination(
     if (intent != null) {
       viewModel.emit(TerminationSurveyEvent.ClearNextStep)
       redirectToChangeTierFlow(intent)
-    }
-  }
-  LaunchedEffect(uiState.nextNavigationStep) {
-    val nextStep = uiState.nextNavigationStep
-    if (nextStep != null) {
-      when (nextStep) {
-        is SurveyNavigationStep.NavigateToNextTerminationStep -> {
-          viewModel.emit(TerminationSurveyEvent.ClearNextStep)
-          navigateToNextStep(nextStep)
-        }
-
-        SurveyNavigationStep.NavigateToSubOptions -> {
-          viewModel.emit(TerminationSurveyEvent.ClearNextStep)
-          uiState.selectedOption?.let {
-            navigateToSubOptions?.invoke(it.subOptions)
-          }
-        }
-      }
     }
   }
   TerminationSurveyScreen(
@@ -257,7 +237,7 @@ private fun TerminationSurveyScreen(
               .fillMaxWidth()
               .padding(horizontal = 16.dp),
             onClick = onContinueClick,
-            isLoading = uiState.navigationStepLoading,
+            isLoading = false,
           )
         }
         Spacer(Modifier.height(16.dp))

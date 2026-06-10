@@ -6,9 +6,9 @@ import arrow.core.left
 import arrow.core.nonEmptyListOf
 import arrow.core.right
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
-import assertk.assertions.isNull
 import assertk.assertions.prop
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.uidata.ItemCost
@@ -48,6 +48,7 @@ class CustomizeTravelAddonPresenterTest {
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
       preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(CustomizeAddonState.Loading) {
       skipItems(1)
@@ -64,6 +65,7 @@ class CustomizeTravelAddonPresenterTest {
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
       preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(
       CustomizeAddonState.Success.Selectable(
@@ -84,10 +86,12 @@ class CustomizeTravelAddonPresenterTest {
   @Test
   fun `if receive good response return correct data, pre-choose first addon and do not navigate further`() = runTest {
     val useCase = FakeGetAddonOfferUseCase()
+    val backstack = TestBackstack()
     val presenter = CustomizeTravelAddonPresenter(
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
       preselectedAddonDisplayNames = emptyList(),
+      backstack = backstack,
     )
     presenter.test(
       CustomizeAddonState.Loading,
@@ -95,11 +99,9 @@ class CustomizeTravelAddonPresenterTest {
       skipItems(1)
       useCase.turbine.add(fakeGenerateAddonOfferResultTwoOptions.right())
       val state = awaitItem()
+      assertThat(backstack.entries).isEmpty()
       assertThat(state).isInstanceOf(CustomizeAddonState.Success.Selectable::class)
         .apply {
-          prop(CustomizeAddonState.Success.Selectable::commonParams)
-            .prop(CommonSuccessParameters::summaryParamsToNavigateFurther)
-            .isNull()
           prop(CustomizeAddonState.Success.Selectable::addonOffer).isEqualTo(fakeTravelOfferTwoOptions)
           prop(
             CustomizeAddonState.Success.Selectable::currentlyChosenOption,
@@ -119,6 +121,7 @@ class CustomizeTravelAddonPresenterTest {
         getAddonOfferUseCase = useCase,
         insuranceId = insuranceId,
         preselectedAddonDisplayNames = emptyList(),
+        backstack = TestBackstack(),
       )
       presenter.test(
         CustomizeAddonState.Loading,
@@ -147,6 +150,7 @@ class CustomizeTravelAddonPresenterTest {
       getAddonOfferUseCase = useCase,
       insuranceId = insuranceId,
       preselectedAddonDisplayNames = emptyList(),
+      backstack = TestBackstack(),
     )
     presenter.test(
       CustomizeAddonState.Loading,
@@ -264,7 +268,6 @@ private val fakeCommonSuccessParameters = CommonSuccessParameters(
     monthlyNet = UiMoney(100.0, UiCurrencyCode.SEK),
     discounts = emptyList(),
   ),
-  summaryParamsToNavigateFurther = null,
   notificationMessage = null,
   productVariant = fakeProductVariant,
   contractId = "test",

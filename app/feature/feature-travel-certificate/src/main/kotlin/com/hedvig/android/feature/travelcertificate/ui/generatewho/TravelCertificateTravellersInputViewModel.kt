@@ -14,12 +14,15 @@ import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.travelcertificate.data.CoInsuredData
 import com.hedvig.android.feature.travelcertificate.data.CreateTravelCertificateUseCase
 import com.hedvig.android.feature.travelcertificate.data.GetCoInsuredForContractUseCase
-import com.hedvig.android.feature.travelcertificate.data.TravelCertificateUrl
+import com.hedvig.android.feature.travelcertificate.navigation.ShowCertificateKey
+import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateKey
 import com.hedvig.android.feature.travelcertificate.navigation.TravelCertificateTravellersInputKey
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.CoInsured.CoInsuredId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -35,12 +38,14 @@ internal class TravelCertificateTravellersInputViewModel(
   @Assisted primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState>(
     initialState = TravelCertificateTravellersInputUiState.Loading,
     presenter = TravelCertificateTravellersInputPresenter(
       primaryInput,
       createTravelCertificateUseCase,
       getCoInsuredForContractUseCase,
+      backstack,
     ),
   ) {
   @AssistedFactory
@@ -58,6 +63,7 @@ internal class TravelCertificateTravellersInputPresenter(
   private val primaryInput: TravelCertificateTravellersInputKey.TravelCertificatePrimaryInput,
   private val createTravelCertificateUseCase: CreateTravelCertificateUseCase,
   private val getCoInsuredForContractUseCase: GetCoInsuredForContractUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<TravelCertificateTravellersInputEvent, TravelCertificateTravellersInputUiState> {
   @Composable
   override fun MoleculePresenterScope<TravelCertificateTravellersInputEvent>.present(
@@ -148,7 +154,7 @@ internal class TravelCertificateTravellersInputPresenter(
             TravelersInputScreenContent.Failure
           },
           ifRight = { url ->
-            screenContent = TravelersInputScreenContent.UrlFetched(url)
+            backstack.navigateAndPopUpTo<TravelCertificateKey>(ShowCertificateKey(url), inclusive = false)
           },
         )
       }
@@ -172,12 +178,6 @@ internal class TravelCertificateTravellersInputPresenter(
           isButtonLoading = screenContentValue.isButtonLoading,
         )
       }
-
-      is TravelersInputScreenContent.UrlFetched -> {
-        TravelCertificateTravellersInputUiState.UrlFetched(
-          screenContentValue.travelCertificateUrl,
-        )
-      }
     }
   }
 }
@@ -186,8 +186,6 @@ private sealed interface TravelersInputScreenContent {
   data object Loading : TravelersInputScreenContent
 
   data object Failure : TravelersInputScreenContent
-
-  data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelersInputScreenContent
 
   data class Success(
     val coInsuredHasMissingInfo: Boolean,
@@ -200,8 +198,6 @@ internal sealed interface TravelCertificateTravellersInputUiState {
   data object Loading : TravelCertificateTravellersInputUiState
 
   data object Failure : TravelCertificateTravellersInputUiState
-
-  data class UrlFetched(val travelCertificateUrl: TravelCertificateUrl) : TravelCertificateTravellersInputUiState
 
   data class Success(
     val coInsuredHasMissingInfo: Boolean,

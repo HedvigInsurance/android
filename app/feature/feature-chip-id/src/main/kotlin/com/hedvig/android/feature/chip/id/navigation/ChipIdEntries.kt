@@ -9,7 +9,6 @@ import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForC
 import com.hedvig.android.feature.chip.id.ui.selectinsurance.SelectInsuranceForChipIdViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
@@ -19,7 +18,6 @@ fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
   backstack: Backstack,
   globalSnackBarState: GlobalSnackBarState,
   navigateUp: () -> Unit,
-  popBackstackOrFinish: () -> Unit,
   goHome: () -> Unit,
 ) {
   entry<AddChipIdTriageKey> { key ->
@@ -41,14 +39,7 @@ fun EntryProviderScope<HedvigNavKey>.chipIdEntries(
     SelectInsuranceForChipIdDestination(
       viewModel = viewModel,
       navigateUp = navigateUp,
-      popBackstack = popBackstackOrFinish,
-      navigateToAddChipId = { contractId: String, popSelectInsurance: Boolean ->
-        if (popSelectInsurance) {
-          backstack.navigateAndPopUpTo<ChipIdKey>(AddChipIdKey(contractId), inclusive = true)
-        } else {
-          backstack.add(AddChipIdKey(contractId))
-        }
-      },
+      popBackstack = backstack::popBackstack,
     )
   }
 

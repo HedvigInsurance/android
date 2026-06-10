@@ -8,7 +8,6 @@ import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvi
 import com.hedvig.android.feature.insurance.certificate.ui.overview.InsuranceEvidenceOverviewViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
-import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.core.common.android.sharePDF
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -18,12 +17,6 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEvidenceEntries(backstack: Backsta
     InsuranceEvidenceEmailInputDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      navigateToShowCertificate = { url ->
-        backstack.navigateAndPopUpTo<InsuranceEvidenceKey>(
-          ShowCertificateKey(url),
-          inclusive = true,
-        )
-      },
     )
   }
   entry<ShowCertificateKey> { key ->

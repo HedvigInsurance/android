@@ -20,6 +20,8 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.feature.movingflow.AddHouseInformationKey
+import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
 import com.hedvig.android.feature.movingflow.compose.ValidatedInput
@@ -33,8 +35,6 @@ import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.
 import com.hedvig.android.feature.movingflow.data.MovingFlowState.PropertyState.HouseState
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.DismissSubmissionError
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.NavigatedToAddHouseInformation
-import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.NavigatedToChoseCoverage
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressEvent.Submit
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressUiState.Content.PropertyType.Apartment
@@ -55,6 +55,8 @@ import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -78,6 +80,7 @@ internal class EnterNewAddressViewModel(
   movingFlowRepository: MovingFlowRepository,
   apolloClient: ApolloClient,
   featureManager: FeatureManager,
+  backstack: Backstack,
 ) : MoleculeViewModel<EnterNewAddressEvent, EnterNewAddressUiState>(
     Loading,
     EnterNewAddressPresenter(
@@ -85,6 +88,7 @@ internal class EnterNewAddressViewModel(
       movingFlowRepository,
       apolloClient,
       featureManager,
+      backstack,
     ),
   ) {
   @AssistedFactory
@@ -102,6 +106,7 @@ private class EnterNewAddressPresenter(
   private val movingFlowRepository: MovingFlowRepository,
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
+  private val backstack: Backstack,
 ) : MoleculePresenter<EnterNewAddressEvent, EnterNewAddressUiState> {
   @Composable
   override fun MoleculePresenterScope<EnterNewAddressEvent>.present(
@@ -117,8 +122,6 @@ private class EnterNewAddressPresenter(
       )
     }
     var submittingInfoFailure: SubmittingInfoFailure? by remember { mutableStateOf(null) }
-    var navigateToChoseCoverage by remember { mutableStateOf(false) }
-    var navigateToAddHouseInformation by remember { mutableStateOf(false) }
     var inputForSubmission: InputForSubmission? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
@@ -132,14 +135,6 @@ private class EnterNewAddressPresenter(
     val coroutineScope = rememberCoroutineScope()
     CollectEvents { event ->
       when (event) {
-        NavigatedToChoseCoverage -> {
-          navigateToChoseCoverage = false
-        }
-
-        NavigatedToAddHouseInformation -> {
-          navigateToAddHouseInformation = false
-        }
-
         DismissSubmissionError -> {
           submittingInfoFailure = null
         }
@@ -160,7 +155,7 @@ private class EnterNewAddressPresenter(
             )
             when (content.propertyType) {
               House -> {
-                navigateToAddHouseInformation = true
+                backstack.add(AddHouseInformationKey(moveIntentId))
               }
 
               is Apartment -> {
@@ -202,7 +197,7 @@ private class EnterNewAddressPresenter(
 
                 else -> {
                   movingFlowRepository.updateWithMoveIntentQuotes(moveIntentQuotesFragment)
-                  navigateToChoseCoverage = true
+                  backstack.add(ChoseCoverageLevelAndDeductibleKey(moveIntentId))
                 }
               }
             },
@@ -222,8 +217,6 @@ private class EnterNewAddressPresenter(
 
           else -> state.copy(
             submittingInfoFailure = submittingInfoFailure,
-            navigateToChoseCoverage = navigateToChoseCoverage,
-            navigateToAddHouseInformation = navigateToAddHouseInformation,
             isLoadingNextStep = inputForSubmission != null,
           )
         }
@@ -277,10 +270,6 @@ private data class InputForSubmission(
 internal sealed interface EnterNewAddressEvent {
   data object Submit : EnterNewAddressEvent
 
-  data object NavigatedToChoseCoverage : EnterNewAddressEvent
-
-  data object NavigatedToAddHouseInformation : EnterNewAddressEvent
-
   data object DismissSubmissionError : EnterNewAddressEvent
 }
 
@@ -301,13 +290,9 @@ internal sealed interface EnterNewAddressUiState {
     val propertyType: PropertyType,
     val submittingInfoFailure: SubmittingInfoFailure?,
     val isLoadingNextStep: Boolean,
-    val navigateToChoseCoverage: Boolean,
-    val navigateToAddHouseInformation: Boolean,
   ) : EnterNewAddressUiState {
     val shouldDisableInput: Boolean = submittingInfoFailure != null ||
-      isLoadingNextStep == true ||
-      navigateToChoseCoverage == true ||
-      navigateToAddHouseInformation == true
+      isLoadingNextStep == true
 
     sealed interface PropertyType {
       data object House : PropertyType
@@ -468,8 +453,6 @@ private fun MovingFlowState.toContent(): Content {
     },
     submittingInfoFailure = null,
     isLoadingNextStep = false,
-    navigateToChoseCoverage = false,
-    navigateToAddHouseInformation = false,
   )
 }
 

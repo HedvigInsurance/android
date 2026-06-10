@@ -14,13 +14,14 @@ import com.hedvig.android.data.changetier.data.Tier
 import com.hedvig.android.data.changetier.data.TierDeductibleQuote
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.feature.change.tier.data.GetCurrentContractDataUseCase
+import com.hedvig.android.feature.change.tier.navigation.ComparisonKey
 import com.hedvig.android.feature.change.tier.navigation.InsuranceCustomizationParameters
+import com.hedvig.android.feature.change.tier.navigation.SummaryKey
+import com.hedvig.android.feature.change.tier.navigation.SummaryParameters
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeDeductibleForChosenTier
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeDeductibleInDialog
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeTier
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ChangeTierInDialog
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateFurtherStep
-import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.ClearNavigateToComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.LaunchComparison
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.Reload
 import com.hedvig.android.feature.change.tier.ui.stepcustomize.SelectCoverageEvent.SetDeductibleToPreviouslyChosen
@@ -33,6 +34,9 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
+import com.hedvig.android.navigation.compose.add
+import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -45,12 +49,14 @@ internal class SelectCoverageViewModel(
   @Assisted params: InsuranceCustomizationParameters,
   tierRepository: ChangeTierRepository,
   getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<SelectCoverageEvent, SelectCoverageState>(
     initialState = Loading,
     presenter = SelectCoveragePresenter(
       params = params,
       getCurrentContractDataUseCase = getCurrentContractDataUseCase,
       tierRepository = tierRepository,
+      backstack = backstack,
     ),
   ) {
   @AssistedFactory
@@ -67,6 +73,7 @@ internal class SelectCoveragePresenter(
   private val params: InsuranceCustomizationParameters,
   private val tierRepository: ChangeTierRepository,
   val getCurrentContractDataUseCase: GetCurrentContractDataUseCase,
+  private val backstack: Backstack,
 ) : MoleculePresenter<SelectCoverageEvent, SelectCoverageState> {
   @Composable
   override fun MoleculePresenterScope<SelectCoverageEvent>.present(
@@ -80,9 +87,6 @@ internal class SelectCoveragePresenter(
     var chosenQuoteInDialog by remember {
       mutableStateOf(if (lastState is Success) lastState.uiState.chosenQuote else null)
     }
-    var quoteToNavigateFurther by remember { mutableStateOf<TierDeductibleQuote?>(null) }
-    var quotesToCompare by remember { mutableStateOf<List<TierDeductibleQuote>?>(null) }
-
     var currentPartialState by remember { mutableStateOf(mapLastStateToPartial(state = lastState)) }
 
     var currentContractLoadIteration by remember { mutableIntStateOf(0) }
@@ -103,15 +107,20 @@ internal class SelectCoveragePresenter(
           chosenQuoteInDialog = quoteToChoose
         }
 
-        ClearNavigateFurtherStep -> {
-          quoteToNavigateFurther = null
-        }
-
         SubmitChosenQuoteToContinue -> {
           val state = currentPartialState
           if (state !is PartialUiState.Success) return@CollectEvents
-          if (chosenQuote != state.currentActiveQuote) {
-            quoteToNavigateFurther = chosenQuote
+          val quoteToContinue = chosenQuote
+          if (quoteToContinue != null && quoteToContinue != state.currentActiveQuote) {
+            backstack.add(
+              SummaryKey(
+                SummaryParameters(
+                  quoteIdToSubmit = quoteToContinue.id,
+                  activationDate = params.activationDate,
+                  insuranceId = params.insuranceId,
+                ),
+              ),
+            )
           }
         }
 
@@ -123,8 +132,16 @@ internal class SelectCoveragePresenter(
           if (currentPartialState !is PartialUiState.Success) return@CollectEvents
           val notFiltered = (currentPartialState as PartialUiState.Success).map.values.flatten()
           val filtered = notFiltered.distinctBy { it.tier.tierName }
-          quotesToCompare =
-            filtered
+          backstack.add(
+            ComparisonKey(
+              ComparisonParameters(
+                termsIds = filtered.map { it.productVariant.termsVersion },
+                selectedTermsVersion = filtered.firstOrNull {
+                  it.tier.tierName == chosenTier?.tierName
+                }?.productVariant?.termsVersion,
+              ),
+            ),
+          )
         }
 
         is ChangeDeductibleInDialog -> {
@@ -141,10 +158,6 @@ internal class SelectCoveragePresenter(
 
         SetTierToPreviouslyChosen -> {
           chosenTierInDialog = chosenTier
-        }
-
-        ClearNavigateToComparison -> {
-          quotesToCompare = null
         }
       }
     }
@@ -218,8 +231,6 @@ internal class SelectCoveragePresenter(
             quotesForChosenTier = currentPartialStateValue.map[chosenTier]!!,
             isTierChoiceEnabled = currentPartialStateValue.map.keys.size > 1,
             contractData = currentPartialStateValue.contractData,
-            quoteToNavigateFurther = quoteToNavigateFurther,
-            quotesToCompare = quotesToCompare,
             chosenInDialogQuote = chosenQuoteInDialog,
             chosenInDialogTier = chosenTierInDialog,
             chosenTierIndex = chosenTierIndex,
@@ -275,10 +286,6 @@ internal sealed interface SelectCoverageEvent {
 
   data object LaunchComparison : SelectCoverageEvent
 
-  data object ClearNavigateFurtherStep : SelectCoverageEvent
-
-  data object ClearNavigateToComparison : SelectCoverageEvent
-
   data object Reload : SelectCoverageEvent
 }
 
@@ -330,8 +337,6 @@ internal data class SelectCoverageSuccessUiState(
   val chosenInDialogQuote: TierDeductibleQuote?,
   val isCurrentChosen: Boolean,
   val isTierChoiceEnabled: Boolean,
-  val quoteToNavigateFurther: TierDeductibleQuote? = null,
-  val quotesToCompare: List<TierDeductibleQuote>? = null,
   // sorted list of tiers with corresponding premiums (depending on selected deductible)
   val tiers: List<Pair<Tier, UiMoney>>,
   val quotesForChosenTier: List<TierDeductibleQuote>,

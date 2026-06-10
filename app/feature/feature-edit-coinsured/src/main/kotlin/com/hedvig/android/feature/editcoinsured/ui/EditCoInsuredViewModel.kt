@@ -7,6 +7,7 @@ import com.hedvig.android.feature.editcoinsured.data.CreateMidtermChangeUseCase
 import com.hedvig.android.feature.editcoinsured.data.FetchCoInsuredPersonalInformationUseCase
 import com.hedvig.android.feature.editcoinsured.data.GetCoInsuredUseCase
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -22,6 +23,7 @@ internal class EditCoInsuredViewModel(
   fetchCoInsuredPersonalInformationUseCaseProvider: FetchCoInsuredPersonalInformationUseCase,
   createMidtermChangeUseCase: CreateMidtermChangeUseCase,
   commitMidtermChangeUseCase: CommitMidtermChangeUseCase,
+  backstack: Backstack,
 ) : MoleculeViewModel<EditCoInsuredEvent, EditCoInsuredState>(
     EditCoInsuredState.Loading,
     EditCoInsuredPresenter(
@@ -31,6 +33,7 @@ internal class EditCoInsuredViewModel(
       fetchCoInsuredPersonalInformationUseCase = fetchCoInsuredPersonalInformationUseCaseProvider,
       createMidtermChangeUseCase = createMidtermChangeUseCase,
       commitMidtermChangeUseCase = commitMidtermChangeUseCase,
+      backstack = backstack,
     ),
   ) {
   @AssistedFactory
