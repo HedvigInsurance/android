@@ -42,13 +42,13 @@ import androidx.navigation3.ui.NavDisplay
 import coil3.ImageLoader
 import com.hedvig.android.app.AndroidAppHost
 import com.hedvig.android.app.GlobalHedvigSnackBar
-import com.hedvig.android.app.crosssell.CrossSellUriOpener
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.SessionReconciler
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
+import com.hedvig.android.app.urihandler.AuthorizationCodeUriHandler
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
 import com.hedvig.android.auth.AuthStatus
@@ -149,10 +149,10 @@ internal fun HedvigApp(
           delegate = SafeAndroidUriHandler(context),
         )
       }
-      val crossSellUriOpener = remember(getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, scope) {
-        CrossSellUriOpener(
+      val authorizationCodeUriHandler = remember(getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, scope) {
+        AuthorizationCodeUriHandler(
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
-          uriHandler = deepLinkFirstUriHandler,
+          delegate = deepLinkFirstUriHandler,
           scope = scope,
         )
       }
@@ -163,12 +163,12 @@ internal fun HedvigApp(
       }
       CrossSellSheet(
         isInScreenEligibleForCrossSells = hedvigAppState.isInScreenEligibleForCrossSells,
-        onCrossSellClick = crossSellUriOpener::open,
+        onCrossSellClick = authorizationCodeUriHandler::openUri,
         imageLoader,
       )
       SharedTransitionLayout(Modifier.fillMaxSize()) {
         CompositionLocalProvider(
-          LocalUriHandler provides deepLinkFirstUriHandler,
+          LocalUriHandler provides authorizationCodeUriHandler,
           LocalSharedTransitionScope provides this,
         ) {
           val globalSnackBarState = rememberGlobalSnackBarState()
@@ -207,8 +207,8 @@ internal fun HedvigApp(
                       globalSnackBarState = globalSnackBarState,
                       externalNavigator = externalNavigator,
                       androidAppHost = androidAppHost,
-                      openUrl = deepLinkFirstUriHandler::openUri,
-                      openCrossSellUrl = crossSellUriOpener::open,
+                      openUrl = authorizationCodeUriHandler::openUri,
+                      openCrossSellUrl = authorizationCodeUriHandler::openUri,
                       imageLoader = imageLoader,
                       languageService = languageService,
                       hedvigBuildConstants = hedvigBuildConstants,
