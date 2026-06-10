@@ -1,6 +1,5 @@
 package com.hedvig.android.app
 
-import android.app.Activity
 import android.app.UiModeManager
 import android.app.UiModeManager.MODE_NIGHT_CUSTOM
 import android.content.Intent
@@ -22,8 +21,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil3.ImageLoader
-import com.google.android.play.core.review.ReviewException
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
 import com.hedvig.android.app.navigation.BackstackController
@@ -133,6 +130,14 @@ class MainActivity : AppCompatActivity() {
    */
   private val splashIsRemovedSignal = Channel<Unit>(Channel.UNLIMITED)
 
+  /**
+   * Per-Activity host for finish/relaunch mechanics, shared between the task hooks and HedvigApp.
+   * Lazy on purpose: a plain `val` initializer runs during construction, before `appGraph.inject(this)`
+   * in onCreate, so it must not touch any @Inject field. Deferring to first access (in/after onCreate)
+   * keeps this safe even if someone later gives AndroidAppHostImpl an injected dependency.
+   */
+  private val androidAppHost: AndroidAppHostImpl by lazy { AndroidAppHostImpl(this) }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     (application as HedvigApplication).appGraph.inject(this)
     installSplashScreen().apply {
@@ -165,17 +170,7 @@ class MainActivity : AppCompatActivity() {
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
-    val androidAppHost = AndroidAppHostImpl(this)
     RiveInitializer.init(this)
-    // Attach the Activity-bound task hooks to the app-scoped controller. Done here (not at
-    // construction) and re-attached on every recreation: the singleton outlives any single Activity,
-    // so capturing an Activity-bound lambda in the constructor would be the stale-reference leak we
-    // set out to avoid.
-    backstackController.isOwnTask = { isTaskRoot }
-    backstackController.escapeToOwnTask = { parentStack ->
-      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
-    }
-    backstackController.finishApp = androidAppHost::finishApp
     NavigationStateBridge.restoreAndPersist(
       backstackController = backstackController,
       savedStateRegistry = savedStateRegistry,
@@ -217,6 +212,38 @@ class MainActivity : AppCompatActivity() {
         )
       }
     }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    attachBackstackTaskHooks()
+  }
+
+  /**
+   * Precise focus signal for split-screen / multi-resume, where two Activities can both be RESUMED at
+   * once and plain [onResume] ordering is ambiguous about which one is actually focused. The Activity
+   * that gains top focus re-claims the hooks. Drop this override if the multi-resume corner isn't
+   * worth covering — [onResume] alone already handles the common single-foreground case.
+   */
+  override fun onTopResumedActivityChanged(isTopResumedActivity: Boolean) {
+    super.onTopResumedActivityChanged(isTopResumedActivity)
+    if (isTopResumedActivity) attachBackstackTaskHooks()
+  }
+
+  /**
+   * Re-points the app-scoped controller's Activity-bound task hooks at *this* instance. The
+   * [BackstackController] is an app-scoped singleton shared by every Activity in the process, so these
+   * hooks are attached on resume (not in onCreate) to keep them tracking the *foreground* Activity:
+   * Android resumes the foreground Activity last, and only the foreground Activity drives
+   * navigateUp()/popBackstack(). Attaching in onCreate would let a later-created but backgrounded
+   * Activity win and act on the wrong task.
+   */
+  private fun attachBackstackTaskHooks() {
+    backstackController.isOwnTask = { isTaskRoot }
+    backstackController.escapeToOwnTask = { parentStack ->
+      NavigationStateBridge.escapeToOwnTask(this@MainActivity, parentStack, serializersModules)
+    }
+    backstackController.finishApp = androidAppHost::finishApp
   }
 
   private fun handleDeepLinkIntent(intent: Intent) {

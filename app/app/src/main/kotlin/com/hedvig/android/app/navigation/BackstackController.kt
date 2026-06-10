@@ -53,10 +53,10 @@ internal class BackstackController(
    * caller's task by an external deep link, so an Up press must escape into our own task rather than
    * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
    *
-   * Attached by `MainActivity.onCreate` (and replaced on each recreation) rather than captured at
-   * construction: this controller is an app-singleton that outlives any single Activity, so capturing
-   * an Activity-bound lambda in the constructor would be the exact stale-reference leak we set out to
-   * avoid. Defaults to `true` so unit tests and any pre-attach use stay fully in-process.
+   * Attached by `MainActivity` on resume (not at construction): this controller is an app-singleton
+   * shared by every Activity in the process, so re-pointing the hook on each resume keeps it tracking
+   * the foreground Activity instead of letting a later-created but backgrounded Activity win. Defaults
+   * to `true` so unit tests and any pre-attach use stay fully in-process.
    */
   var isOwnTask: () -> Boolean = { true },
   /**
