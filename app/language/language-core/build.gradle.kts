@@ -8,7 +8,6 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(libs.androidx.annotation)
-      implementation(libs.koin.core)
       implementation(projects.coreCommonPublic)
       implementation(projects.coreLocale)
     }

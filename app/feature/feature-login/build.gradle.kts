@@ -7,6 +7,7 @@ hedvig {
   androidResources()
   compose()
   serialization()
+  navKeys()
 }
 
 android {
@@ -19,8 +20,6 @@ dependencies {
   implementation(libs.jetbrains.lifecycle.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.lifecycle.viewmodel)
-  implementation(libs.koin.composeViewModel)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.ui)

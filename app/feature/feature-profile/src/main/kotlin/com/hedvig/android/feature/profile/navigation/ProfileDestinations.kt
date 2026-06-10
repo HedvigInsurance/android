@@ -1,47 +1,30 @@
 package com.hedvig.android.feature.profile.navigation
 
-import com.hedvig.android.navigation.common.Destination
-import kotlin.reflect.KClass
+import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelTab
+import com.hedvig.android.navigation.common.TopLevelTabRoot
 import kotlinx.serialization.Serializable
 
-sealed interface ProfileDestination {
-  @Serializable
-  data object Graph : ProfileDestination, Destination
-
-  @Serializable
-  data object Profile : ProfileDestination, Destination
-
-  @Serializable
-  data object ContactInfo : ProfileDestination, Destination
+@Serializable
+data object ProfileKey : HedvigNavKey, DeliberateLogoutOrigin, TopLevelTabRoot {
+  override val topLevelTab: TopLevelTab = TopLevelTab.Profile
 }
 
-internal sealed interface ProfileDestinations {
-  @Serializable
-  data object Eurobonus : ProfileDestinations, Destination
+@Serializable
+data object ContactInfoKey : HedvigNavKey
 
-  @Serializable
-  data object Certificates : ProfileDestinations, Destination
+@Serializable
+internal data object EurobonusKey : HedvigNavKey
 
-  @Serializable
-  data object Information : ProfileDestinations, Destination
+@Serializable
+internal data object CertificatesKey : HedvigNavKey
 
-  @Serializable
-  data object Licenses : ProfileDestinations, Destination
+@Serializable
+internal data object InformationKey : HedvigNavKey
 
-  @Serializable
-  data object SettingsGraph : ProfileDestinations, Destination
-}
+@Serializable
+internal data object LicensesKey : HedvigNavKey
 
-internal sealed interface SettingsDestinations {
-  @Serializable
-  data object Settings : SettingsDestinations, Destination
-}
-
-val profileBottomNavPermittedDestinations: List<KClass<out Destination>> = listOf(
-  ProfileDestinations.Eurobonus::class,
-)
-
-/*
-* Not saving navigation state when explicitly logging out from Profile
-*/
-val destinationToExcludeFromSavingState: KClass<out Destination> = ProfileDestination.Profile::class
+@Serializable
+internal data object SettingsKey : HedvigNavKey

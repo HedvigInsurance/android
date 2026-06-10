@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCase
@@ -18,18 +19,35 @@ import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageUiS
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
+@AssistedInject
 internal class EditCoInsuredTriageViewModel(
   getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
-  insuranceId: String?,
-  type: CoInsuredFlowType,
+  @Assisted insuranceId: String?,
+  @Assisted type: CoInsuredFlowType,
 ) : MoleculeViewModel<
     EditCoInsuredTriageEvent,
     EditCoInsuredTriageUiState,
   >(
     initialState = Loading,
     presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, insuranceId, type),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted insuranceId: String?,
+      @Assisted type: CoInsuredFlowType,
+    ): EditCoInsuredTriageViewModel
+  }
+}
 
 internal class EditCoInsuredTriagePresenter(
   private val getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,

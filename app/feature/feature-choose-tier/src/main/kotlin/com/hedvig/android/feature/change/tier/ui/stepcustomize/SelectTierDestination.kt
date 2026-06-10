@@ -111,7 +111,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectTierDestination(
   viewModel: SelectCoverageViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   navigateToSummary: (quote: TierDeductibleQuote) -> Unit,
   navigateToComparison: (listOfQuotes: List<TierDeductibleQuote>, selectedTermsVersion: String?) -> Unit,
 ) {
@@ -125,7 +125,7 @@ internal fun SelectTierDestination(
           reload = {
             viewModel.emit(SelectCoverageEvent.Reload)
           },
-          popBackStack = popBackStack,
+          popBackstack = popBackstack,
         )
       }
 
@@ -185,7 +185,7 @@ internal fun SelectTierDestination(
 }
 
 @Composable
-private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
+private fun FailureScreen(reload: () -> Unit, popBackstack: () -> Unit) {
   Box(Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
@@ -206,7 +206,7 @@ private fun FailureScreen(reload: () -> Unit, popBackStack: () -> Unit) {
       Spacer(Modifier.weight(1f))
       HedvigTextButton(
         stringResource(Res.string.general_close_button),
-        onClick = popBackStack,
+        onClick = popBackstack,
         buttonSize = Large,
         modifier = Modifier.fillMaxWidth(),
       )

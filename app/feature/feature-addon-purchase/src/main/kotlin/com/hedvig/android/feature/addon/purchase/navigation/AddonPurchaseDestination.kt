@@ -2,81 +2,60 @@ package com.hedvig.android.feature.addon.purchase.navigation
 
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.data.addons.data.AddonBannerSource
-import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.data.productvariant.ProductVariant
 import com.hedvig.android.feature.addon.purchase.data.AddonQuote
 import com.hedvig.android.feature.addon.purchase.data.CurrentlyActiveAddon
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import com.hedvig.android.navigation.common.HedvigNavKey
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
-import octopus.type.AvailableAddon
 
 @Serializable
-data class AddonPurchaseGraphDestination(
+data class AddonPurchaseKey(
   val insuranceIds: List<String> = emptyList(),
   val preselectedAddonDisplayName: String? = null,
   val source: AddonBannerSource = AddonBannerSource.TRAVEL_DEEPLINK,
-) : Destination {
-  companion object : DestinationNavTypeAware {
-    override val typeList: List<KType> = listOf(typeOf<AddonBannerSource>())
-  }
+) : HedvigNavKey
+
+/**
+ * Deep-link entry for the travel/car addon flow. The URI → key mapping (path-derived [source] and
+ * the optional `contractId` query param) is resolved by the centralized deep-link matcher in `:app`.
+ */
+@Serializable
+data class TravelAddonTriageKey(
+  val source: AddonBannerSource,
+  val contractId: String?,
+) : HedvigNavKey
+
+@Serializable
+internal data class CustomizeAddonKey(
+  val insuranceId: String,
+  val preselectedAddonDisplayNames: List<String>,
+) : HedvigNavKey
+
+@Serializable
+internal data class TravelInsurancePlusExplanationKey(
+  val perilData: PerilComparisonParams,
+) : HedvigNavKey {
+  @Serializable
+  data class TravelPerilData(
+    val title: String,
+    val description: String?,
+    val covered: List<String>,
+    val colorCode: String?,
+    val isEnabled: Boolean = true,
+  )
 }
 
-internal sealed interface AddonPurchaseDestination {
-  @Serializable
-  data object ChooseInsuranceToAddAddonDestination : AddonPurchaseDestination, Destination
+@Serializable
+internal data class SummaryKey(
+  val params: SummaryParameters,
+) : HedvigNavKey
 
-  @Serializable
-  data class CustomizeAddon(
-    val insuranceId: String,
-    val preselectedAddonDisplayNames: List<String>,
-  ) : AddonPurchaseDestination, Destination
+@Serializable
+internal data class SubmitSuccessKey(val activationDate: LocalDate) : HedvigNavKey
 
-  @Serializable
-  data class TravelInsurancePlusExplanation(
-    val perilData: PerilComparisonParams,
-  ) : AddonPurchaseDestination, Destination {
-    @Serializable
-    data class TravelPerilData(
-      val title: String,
-      val description: String?,
-      val covered: List<String>,
-      val colorCode: String?,
-      val isEnabled: Boolean = true,
-    )
-
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<PerilComparisonParams>())
-    }
-  }
-
-  @Serializable
-  data class Summary(
-    val params: SummaryParameters,
-  ) : AddonPurchaseDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<SummaryParameters>())
-    }
-  }
-
-  @Serializable
-  data class SubmitSuccess(val activationDate: LocalDate) : AddonPurchaseDestination, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(
-        typeOf<LocalDate>(),
-      )
-    }
-  }
-
-  @Serializable
-  data object SubmitFailure : AddonPurchaseDestination, Destination
-
-  @Serializable
-  data object TravelAddonTriage : AddonPurchaseDestination, Destination
-}
+@Serializable
+internal data object SubmitFailureKey : HedvigNavKey
 
 @Serializable
 internal data class SummaryParameters(

@@ -117,7 +117,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ChoseCoverageLevelAndDeductibleDestination(
   viewModel: ChoseCoverageLevelAndDeductibleViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   onNavigateToSummaryScreen: (homeQuoteId: String) -> Unit,
   navigateToComparison: (comparisonParameters: ComparisonParameters) -> Unit,
@@ -141,7 +141,7 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
     },
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     exitFlow = exitFlow,
     onSubmit = { selectedHomeQuoteId ->
       viewModel.emit(ChoseCoverageLevelAndDeductibleEvent.SubmitSelectedHomeQuoteId(selectedHomeQuoteId))
@@ -158,7 +158,7 @@ internal fun ChoseCoverageLevelAndDeductibleDestination(
 private fun ChoseCoverageLevelAndDeductibleScreen(
   uiState: ChoseCoverageLevelAndDeductibleUiState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   onSubmit: (String) -> Unit,
   onSelectCoverageOption: (String) -> Unit,
@@ -186,7 +186,7 @@ private fun ChoseCoverageLevelAndDeductibleScreen(
 
           MissingOngoingMovingFlow -> {
             HedvigErrorSection(
-              onButtonClick = popBackStack,
+              onButtonClick = popBackstack,
               buttonText = stringResource(Res.string.general_back_button),
             )
           }
@@ -709,7 +709,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreen() {
       comparisonParameters = null,
     ),
     navigateUp = {},
-    popBackStack = {},
+    popBackstack = {},
     onSubmit = {},
     exitFlow = {},
     onSelectCoverageOption = {},
@@ -725,7 +725,7 @@ fun PreviewChoseCoverageLevelAndDeductibleScreenFailure() {
   ChoseCoverageLevelAndDeductibleScreen(
     uiState = MissingOngoingMovingFlow,
     navigateUp = {},
-    popBackStack = {},
+    popBackstack = {},
     onSubmit = {},
     exitFlow = {},
     onSelectCoverageOption = {},

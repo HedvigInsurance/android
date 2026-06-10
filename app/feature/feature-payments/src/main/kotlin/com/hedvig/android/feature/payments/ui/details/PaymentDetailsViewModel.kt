@@ -7,14 +7,22 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCase
 import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
+@AssistedInject
 internal class PaymentDetailsViewModel(
-  chargeId: String?,
+  @Assisted chargeId: String?,
   getChargeDetailsUseCase: GetChargeDetailsUseCase,
 ) : MoleculeViewModel<PaymentDetailsEvent, PaymentDetailsUiState>(
     initialState = PaymentDetailsUiState.Loading,
@@ -22,7 +30,16 @@ internal class PaymentDetailsViewModel(
       chargeId,
       getChargeDetailsUseCase,
     ),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted chargeId: String?,
+    ): PaymentDetailsViewModel
+  }
+}
 
 private class PaymentDetailsPresenter(
   private val chargeId: String?,

@@ -10,10 +10,13 @@ import com.apollographql.apollo.cache.normalized.FetchPolicy.CacheAndNetwork
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -25,6 +28,8 @@ interface GetAddonBannerInfoUseCase {
   fun invoke(source: AddonBannerSource): Flow<Either<ErrorMessage, List<AddonBannerInfo>>>
 }
 
+@SingleIn(AppScope::class)
+@Inject
 internal class GetAddonBannerInfoUseCaseImpl(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,

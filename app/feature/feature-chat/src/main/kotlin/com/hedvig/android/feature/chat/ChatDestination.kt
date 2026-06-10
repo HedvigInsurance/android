@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.media3.datasource.cache.Cache
-import androidx.media3.datasource.cache.SimpleCache
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.preview.BooleanCollectionPreviewParameterProvider
 import com.hedvig.android.design.system.hedvig.ErrorSnackbarState
@@ -69,7 +68,6 @@ import org.jetbrains.compose.resources.stringResource
 internal fun CbmChatDestination(
   viewModel: CbmChatViewModel,
   imageLoader: ImageLoader,
-  simpleVideoCache: SimpleCache,
   appPackageId: String,
   openUrl: (String) -> Unit,
   onNavigateToClaimDetails: (String) -> Unit,
@@ -96,7 +94,7 @@ internal fun CbmChatDestination(
     },
     onRetrySendChatMessage = { messageId -> viewModel.emit(CbmChatEvent.RetrySendChatMessage(messageId)) },
     onRetryLoadingChat = { viewModel.emit(CbmChatEvent.RetryLoadingChat) },
-    simpleVideoCache = simpleVideoCache,
+    simpleVideoCache = viewModel.simpleVideoCache,
     showedFileTooBigError = { viewModel.emit(CbmChatEvent.ClearFileTooBigToast) },
     showedFileFailedToBeSentToast = { viewModel.emit(CbmChatEvent.ClearFileFailedToBeSentToast) },
     onCloseBannerClick = {

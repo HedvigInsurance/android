@@ -5,19 +5,24 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.notification.core.NotificationSender
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.getKoin
-import org.koin.android.ext.android.inject
 
 class PushNotificationService : FirebaseMessagingService() {
   private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-  private val notificationSenders by lazy { getKoin().getAll<NotificationSender>().toSet<NotificationSender>() }
-  private val fcmTokenManager: FCMTokenManager by inject()
+  @Inject private lateinit var notificationSenders: Set<NotificationSender>
+
+  @Inject private lateinit var fcmTokenManager: FCMTokenManager
+
+  override fun onCreate() {
+    super.onCreate()
+    (applicationContext as PushNotificationGraphProvider).inject(this)
+  }
 
   override fun onNewToken(token: String) {
     logcat(LogPriority.INFO) { "FCM onNewToken:$token" }

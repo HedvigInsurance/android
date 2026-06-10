@@ -70,7 +70,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectInsuranceForChipIdDestination(
   viewModel: SelectInsuranceForChipIdViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   navigateToAddChipId: (contractId: String, popSelectInsurance: Boolean) -> Unit,
 ) {
   val uiState: SelectInsuranceForChipIdState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -78,7 +78,7 @@ internal fun SelectInsuranceForChipIdDestination(
   SelectInsuranceForChipIdScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     navigateToAddChipId = { contractId, popSelectInsurance ->
       navigateToAddChipId(contractId, popSelectInsurance)
       viewModel.emit(SelectInsuranceForChipIdEvent.ClearNavigation)
@@ -96,7 +96,7 @@ internal fun SelectInsuranceForChipIdDestination(
 private fun SelectInsuranceForChipIdScreen(
   uiState: SelectInsuranceForChipIdState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   reload: () -> Unit,
   selectContract: (PetContractForChipId) -> Unit,
   navigateToAddChipId: (contractId: String, popSelectInsurance: Boolean) -> Unit,
@@ -127,7 +127,7 @@ private fun SelectInsuranceForChipIdScreen(
         SelectInsuranceForChipIdContentScreen(
           uiState = uiState,
           navigateUp = navigateUp,
-          popBackStack = popBackStack,
+          popBackstack = popBackstack,
           selectInsurance = selectContract,
           navigateToAddChipId = navigateToAddChipId,
         )
@@ -140,7 +140,7 @@ private fun SelectInsuranceForChipIdScreen(
 private fun SelectInsuranceForChipIdContentScreen(
   uiState: SelectInsuranceForChipIdState.Success,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   selectInsurance: (selected: PetContractForChipId) -> Unit,
   navigateToAddChipId: (contractId: String, popSelectInsurance: Boolean) -> Unit,
 ) {
@@ -150,7 +150,7 @@ private fun SelectInsuranceForChipIdContentScreen(
     topAppBarActions = {
       IconButton(
         modifier = Modifier.size(24.dp),
-        onClick = dropUnlessResumed { popBackStack() },
+        onClick = dropUnlessResumed { popBackstack() },
         content = {
           Icon(
             imageVector = HedvigIcons.Close,

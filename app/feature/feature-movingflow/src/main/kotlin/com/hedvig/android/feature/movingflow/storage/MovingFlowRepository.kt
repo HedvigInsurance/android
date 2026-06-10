@@ -1,5 +1,6 @@
 package com.hedvig.android.feature.movingflow.storage
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.data.MovingFlowState
@@ -12,11 +13,15 @@ import com.hedvig.android.feature.movingflow.data.fromFragments
 import com.hedvig.android.feature.movingflow.data.toMovingFlowQuotes
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 import octopus.feature.movingflow.fragment.MoveIntentQuotesFragment
 
+@SingleIn(AppScope::class)
+@Inject
 internal class MovingFlowRepository(
   private val movingFlowStorage: MovingFlowStorage,
 ) {

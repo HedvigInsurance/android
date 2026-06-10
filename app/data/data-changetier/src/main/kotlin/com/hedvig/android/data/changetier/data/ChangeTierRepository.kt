@@ -6,10 +6,14 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellInfoType
 import com.hedvig.android.logger.LogPriority.ERROR
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.ChangeTierDeductibleCommitIntentMutation
 
 interface ChangeTierRepository {
@@ -29,6 +33,9 @@ interface ChangeTierRepository {
   suspend fun getCurrentQuoteId(): String
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class ChangeTierRepositoryImpl(
   private val createChangeTierDeductibleIntentUseCase: CreateChangeTierDeductibleIntentUseCase,
   private val changeTierQuoteStorage: ChangeTierQuoteStorage,

@@ -12,6 +12,7 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import arrow.core.some
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.data.AddonId
 import com.hedvig.android.feature.movingflow.data.MovingFlowQuotes.MoveHomeQuote
@@ -35,17 +36,33 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AssistedInject
 internal class ChoseCoverageLevelAndDeductibleViewModel(
-  intentId: String,
+  @Assisted intentId: String,
   movingFlowRepository: MovingFlowRepository,
   getMoveIntentCostUseCase: GetMoveIntentCostUseCase,
 ) : MoleculeViewModel<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState>(
     ChoseCoverageLevelAndDeductibleUiState.Loading,
     ChoseCoverageLevelAndDeductiblePresenter(intentId, movingFlowRepository, getMoveIntentCostUseCase),
-  )
+  ) {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted intentId: String,
+    ): ChoseCoverageLevelAndDeductibleViewModel
+  }
+}
 
 private class ChoseCoverageLevelAndDeductiblePresenter(
   private val intentId: String,
@@ -283,7 +300,7 @@ internal sealed interface ChoseCoverageLevelAndDeductibleUiState {
   }
 }
 
-data class CoverageInfo(
+internal data class CoverageInfo(
   val moveHomeQuoteId: String,
   val tierName: String,
   val tierDescription: String?,

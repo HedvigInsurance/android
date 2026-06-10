@@ -1,9 +1,12 @@
 package com.hedvig.android.app.crosssell
 
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
 import com.hedvig.android.network.clients.safePost
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.isSuccess
@@ -11,6 +14,8 @@ import io.ktor.utils.io.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+@SingleIn(AppScope::class)
+@Inject
 internal class GetMemberAuthorizationCodeUseCase(
   private val httpClient: HttpClient,
   private val hedvigBuildConstants: HedvigBuildConstants,

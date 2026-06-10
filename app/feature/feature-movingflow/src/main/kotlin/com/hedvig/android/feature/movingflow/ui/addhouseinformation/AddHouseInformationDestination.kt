@@ -124,7 +124,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun AddHouseInformationDestination(
   viewModel: AddHouseInformationViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   onNavigateToChoseCoverageLevelAndDeductible: () -> Unit,
 ) {
@@ -138,7 +138,7 @@ internal fun AddHouseInformationDestination(
   AddHouseInformationScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     exitFlow = exitFlow,
     dismissSubmissionError = { viewModel.emit(DismissSubmissionError) },
     onSubmit = { viewModel.emit(Submit) },
@@ -149,7 +149,7 @@ internal fun AddHouseInformationDestination(
 private fun AddHouseInformationScreen(
   uiState: AddHouseInformationUiState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   exitFlow: () -> Unit,
   dismissSubmissionError: () -> Unit,
   onSubmit: () -> Unit,
@@ -171,7 +171,7 @@ private fun AddHouseInformationScreen(
           Loading -> HedvigFullScreenCenterAlignedProgress()
 
           MissingOngoingMovingFlow -> HedvigErrorSection(
-            onButtonClick = popBackStack,
+            onButtonClick = popBackstack,
             subTitle = null,
             buttonText = stringResource(Res.string.app_info_submit_bug_go_back),
           )
@@ -512,7 +512,7 @@ private fun PreviewAddHouseInformationScreen() {
           navigateToChoseCoverage = false,
         ),
         navigateUp = {},
-        popBackStack = {},
+        popBackstack = {},
         exitFlow = {},
         dismissSubmissionError = {},
         onSubmit = {},
@@ -529,7 +529,7 @@ private fun PreviewAddHouseInformationScreenFailure() {
       AddHouseInformationScreen(
         uiState = MissingOngoingMovingFlow,
         navigateUp = {},
-        popBackStack = {},
+        popBackstack = {},
         exitFlow = {},
         dismissSubmissionError = {},
         onSubmit = {},

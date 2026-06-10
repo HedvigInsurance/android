@@ -88,7 +88,7 @@ private fun MovingFlowTopAppBar(
     }
   }
   TopAppBar(
-    title = topAppBarText ?: "",
+    title = topAppBarText,
     actionType = BACK,
     onActionClick = dropUnlessResumed(block = navigateUp),
     topAppBarActions = {

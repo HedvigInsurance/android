@@ -47,14 +47,14 @@ import org.jetbrains.compose.resources.stringResource
 internal fun SelectInsuranceForAddonDestination(
   viewModel: SelectInsuranceForAddonViewModel,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   navigateToCustomizeAddon: (chosenInsuranceId: String) -> Unit,
 ) {
   val uiState: SelectInsuranceForAddonState by viewModel.uiState.collectAsStateWithLifecycle()
   SelectInsuranceForAddonScreen(
     uiState = uiState,
     navigateUp = navigateUp,
-    popBackStack = popBackStack,
+    popBackstack = popBackstack,
     navigateToCustomizeAddon = { id ->
       navigateToCustomizeAddon(id)
       viewModel.emit(SelectInsuranceForAddonEvent.ClearNavigation)
@@ -75,7 +75,7 @@ internal fun SelectInsuranceForAddonDestination(
 private fun SelectInsuranceForAddonScreen(
   uiState: SelectInsuranceForAddonState,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   reload: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
@@ -102,7 +102,7 @@ private fun SelectInsuranceForAddonScreen(
       }
       SelectInsuranceForAddonContentScreen(
         uiState = uiState,
-        popBackStack = popBackStack,
+        popBackstack = popBackstack,
         navigateUp = navigateUp,
         selectInsurance = selectInsurance,
         submitSelected = submitSelected,
@@ -115,7 +115,7 @@ private fun SelectInsuranceForAddonScreen(
 private fun SelectInsuranceForAddonContentScreen(
   uiState: Success,
   navigateUp: () -> Unit,
-  popBackStack: () -> Unit,
+  popBackstack: () -> Unit,
   selectInsurance: (selected: InsuranceForAddon) -> Unit,
   submitSelected: (selected: InsuranceForAddon) -> Unit,
 ) {
@@ -125,7 +125,7 @@ private fun SelectInsuranceForAddonContentScreen(
     topAppBarActions = {
       IconButton(
         modifier = Modifier.size(24.dp),
-        onClick = dropUnlessResumed { popBackStack() },
+        onClick = dropUnlessResumed { popBackstack() },
         content = {
           Icon(
             imageVector = HedvigIcons.Close,

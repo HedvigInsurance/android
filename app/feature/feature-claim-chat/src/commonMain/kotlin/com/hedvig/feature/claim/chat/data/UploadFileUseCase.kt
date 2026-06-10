@@ -4,8 +4,11 @@ import arrow.core.raise.Raise
 import arrow.core.raise.context.raise
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.fileupload.CommonFile
 import com.hedvig.android.core.fileupload.FileUploadService
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.request.forms.InputProvider
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -14,6 +17,8 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
+@SingleIn(AppScope::class)
+@Inject
 internal class UploadFileUseCase(
   private val fileUploadService: FileUploadService,
   private val buildConstants: HedvigBuildConstants,

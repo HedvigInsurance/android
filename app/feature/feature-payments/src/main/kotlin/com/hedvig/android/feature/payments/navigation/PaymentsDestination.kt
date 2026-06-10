@@ -1,39 +1,36 @@
 package com.hedvig.android.feature.payments.navigation
 
-import com.hedvig.android.navigation.common.Destination
+import com.hedvig.android.navigation.common.HedvigNavKey
+import com.hedvig.android.navigation.common.TopLevelTab
+import com.hedvig.android.navigation.common.TopLevelTabRoot
 import kotlinx.serialization.Serializable
 
-sealed interface PaymentsDestination {
-  @Serializable
-  data object Graph : PaymentsDestination, Destination
-
-  @Serializable
-  data object Payments : PaymentsDestination, Destination
+@Serializable
+data object PaymentsKey : HedvigNavKey, TopLevelTabRoot {
+  override val topLevelTab: TopLevelTab = TopLevelTab.Payments
 }
 
-internal sealed interface PaymentsDestinations {
-  @Serializable
-  data class Details(
-    val memberChargeId: String?,
-  ) : PaymentsDestinations, Destination
+@Serializable
+internal data class PaymentDetailsKey(
+  val memberChargeId: String?,
+) : HedvigNavKey
 
-  @Serializable
-  data object History : PaymentsDestinations, Destination
+@Serializable
+internal data object PaymentHistoryKey : HedvigNavKey
 
-  @Serializable
-  data object Discounts : PaymentsDestinations, Destination
+@Serializable
+internal data object DiscountsKey : HedvigNavKey
 
-  @Serializable
-  data object Forever : PaymentsDestinations, Destination
+@Serializable
+internal data object ForeverKey : HedvigNavKey
 
-  @Serializable
-  data object MemberPaymentDetails : PaymentsDestinations, Destination
+@Serializable
+internal data object MemberPaymentDetailsKey : HedvigNavKey
 
-  @Serializable
-  data object ManualCharge : PaymentsDestinations, Destination
+@Serializable
+internal data object ManualChargeKey : HedvigNavKey
 
-  @Serializable
-  data class ManualChargeSuccess(
-    val showCancellationWarning: Boolean,
-  ) : PaymentsDestinations, Destination
-}
+@Serializable
+internal data class ManualChargeSuccessKey(
+  val showCancellationWarning: Boolean,
+) : HedvigNavKey

@@ -1,8 +1,15 @@
 package com.hedvig.android.language
 
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.locale.CommonLocale
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import platform.Foundation.NSLocale
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class NativeLanguageService(
   private val storage: LanguageStorage,
 ) : LanguageService {

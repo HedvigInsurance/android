@@ -1,15 +1,14 @@
 package com.hedvig.android.feature.help.center.ui
 
-import coil3.ImageLoader
 import com.hedvig.android.design.system.hedvig.HedvigComposeUIViewController
+import com.hedvig.android.design.system.hedvig.IosDiHolder
 import com.hedvig.android.design.system.hedvig.api.IosSwipeBackController
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import platform.UIKit.UIViewController
 
 @Suppress("unused", "FunctionName") // Used from iOS
@@ -20,12 +19,11 @@ fun PuppyGuideViewController(
   onScrollOffsetChanged: (Float) -> Unit,
 ): UIViewController {
   return HedvigComposeUIViewController(swipeBackController) {
-    val imageLoader = koinInject<ImageLoader>()
-    val viewModel = koinViewModel<PuppyGuideViewModel>()
+    val viewModel = metroViewModel<PuppyGuideViewModel>()
     PuppyGuideDestination(
       viewModel = viewModel,
       onNavigateUp = onNavigateUp,
-      imageLoader = imageLoader,
+      imageLoader = IosDiHolder.imageLoader,
       onNavigateToArticle = { story -> onNavigateToArticle(story.name) },
       onScrollOffsetChanged = onScrollOffsetChanged,
     )
@@ -40,12 +38,13 @@ fun PuppyArticleViewController(
   onScrollOffsetChanged: (Float) -> Unit,
 ): UIViewController {
   return HedvigComposeUIViewController(swipeBackController) {
-    val imageLoader = koinInject<ImageLoader>()
-    val viewModel = koinViewModel<PuppyArticleViewModel> { parametersOf(storyName) }
+    val viewModel = assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
+      create(storyName)
+    }
     PuppyArticleDestination(
       viewModel = viewModel,
       navigateUp = navigateUp,
-      imageLoader = imageLoader,
+      imageLoader = IosDiHolder.imageLoader,
       onScrollOffsetChanged = onScrollOffsetChanged,
     )
   }

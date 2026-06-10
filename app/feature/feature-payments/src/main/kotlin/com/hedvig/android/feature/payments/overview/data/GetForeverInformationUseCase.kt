@@ -7,8 +7,12 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import octopus.ForeverInformationQuery
 import octopus.type.MemberReferralStatus
 
@@ -16,6 +20,9 @@ internal interface GetForeverInformationUseCase {
   suspend fun invoke(): Either<ErrorMessage, ForeverInformation>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class GetForeverInformationUseCaseImpl(private val apolloClient: ApolloClient) : GetForeverInformationUseCase {
   override suspend fun invoke(): Either<ErrorMessage, ForeverInformation> {
     return apolloClient

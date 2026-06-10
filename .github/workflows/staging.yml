@@ -3,8 +3,7 @@ on:
   push:
     branches:
       - develop
-      - feat/manual-charge
-      - feat/puppy-guide-kmp
+      - eng/metro-nav3-pr2-nav2-to-nav3
   workflow_dispatch:
 
 concurrency:

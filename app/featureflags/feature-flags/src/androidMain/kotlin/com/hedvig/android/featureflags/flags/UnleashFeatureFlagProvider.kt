@@ -13,7 +13,6 @@ internal class UnleashFeatureFlagProvider(
     return hedvigUnleashClient.featureUpdatedFlow
       .map {
         when (feature) {
-
           Feature.MOVING_FLOW -> hedvigUnleashClient.client.isEnabled("moving_flow")
 
           Feature.PAYMENT_SCREEN -> hedvigUnleashClient.client.isEnabled("payment_screen")
@@ -36,7 +35,9 @@ internal class UnleashFeatureFlagProvider(
 
           Feature.ENABLE_CLAIM_HISTORY -> hedvigUnleashClient.client.isEnabled("enable_claim_history")
 
-          Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT -> hedvigUnleashClient.client.isEnabled("enable_new_conversation_from_inbox")
+          Feature.ALWAYS_AVAILABLE_INBOX_AND_NEW_CHAT -> hedvigUnleashClient.client.isEnabled(
+            "enable_new_conversation_from_inbox",
+          )
         }
       }.distinctUntilChanged()
   }

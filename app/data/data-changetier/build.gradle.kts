@@ -13,7 +13,6 @@ dependencies {
   implementation(libs.androidx.datastore.preferencesCore)
   implementation(libs.apollo.runtime)
   implementation(libs.arrow.core)
-  implementation(libs.koin.core)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)

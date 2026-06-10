@@ -162,7 +162,6 @@ val HedvigIcons.HedvigLogotype: ImageVector
 @Suppress("ObjectPropertyName")
 private var _HedvigLogotype1: ImageVector? = null
 
-
 @Preview
 @Composable
 private fun IconPreview() {

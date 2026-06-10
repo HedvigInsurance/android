@@ -8,12 +8,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import androidx.lifecycle.ViewModel
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractState.NotEmpty.Content
@@ -21,9 +23,16 @@ import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractSta
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import octopus.feature.movingflow.MoveIntentV2CreateMutation
 import octopus.feature.movingflow.fragment.MoveIntentFragment
 
+@Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 internal class SelectContractViewModel(
   apolloClient: ApolloClient,
   movingFlowRepository: MovingFlowRepository,

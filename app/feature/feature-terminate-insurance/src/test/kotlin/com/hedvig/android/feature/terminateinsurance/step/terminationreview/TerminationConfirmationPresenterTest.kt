@@ -14,7 +14,7 @@ import com.hedvig.android.data.contract.ContractGroup.HOMEOWNER
 import com.hedvig.android.feature.terminateinsurance.data.TerminateInsuranceRepository
 import com.hedvig.android.feature.terminateinsurance.data.TerminationResult
 import com.hedvig.android.feature.terminateinsurance.data.TerminationSurveyData
-import com.hedvig.android.feature.terminateinsurance.navigation.TerminateInsuranceDestination.TerminationConfirmation.TerminationType
+import com.hedvig.android.feature.terminateinsurance.navigation.TerminationConfirmationKey.TerminationType
 import com.hedvig.android.feature.terminateinsurance.navigation.TerminationGraphParameters
 import com.hedvig.android.logger.TestLogcatLoggingRule
 import com.hedvig.android.molecule.test.test

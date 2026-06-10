@@ -1,61 +1,39 @@
 package com.hedvig.android.feature.help.center.navigation
 
-import com.hedvig.android.navigation.common.Destination
-import com.hedvig.android.navigation.common.DestinationNavTypeAware
+import com.hedvig.android.navigation.common.CrossSellEligibleDestination
+import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.shared.partners.deflect.DeflectData
 import com.hedvig.android.ui.emergency.FirstVetSection
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HelpCenterDestination : Destination
+data object HelpCenterKey : HedvigNavKey, CrossSellEligibleDestination
 
-internal sealed interface HelpCenterDestinations {
-  @Serializable
-  data object HelpCenter : HelpCenterDestinations, Destination
+@Serializable
+internal data class HelpCenterTopicKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
+  @SerialName("id")
+  val topicId: String = "",
+) : HedvigNavKey, CrossSellEligibleDestination
 
-  @Serializable
-  data class Topic(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
-    @SerialName("id")
-    val topicId: String = "",
-  ) : HelpCenterDestinations, Destination
+@Serializable
+internal data class HelpCenterQuestionKey(
+  /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
+  @SerialName("id")
+  val questionId: String = "",
+) : HedvigNavKey, CrossSellEligibleDestination
 
-  @Serializable
-  data class Question(
-    /** Must match the name of the param inside [com.hedvig.android.navigation.core.HedvigDeepLinkContainer] */
-    @SerialName("id")
-    val questionId: String = "",
-  ) : HelpCenterDestinations, Destination
+@Serializable
+internal data class EmergencyKey(
+  val deflectData: DeflectData,
+) : HedvigNavKey
 
-  @Serializable
-  data class Emergency(
-    val deflectData: DeflectData,
-  ) : HelpCenterDestinations, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<DeflectData>())
-    }
-  }
+@Serializable
+internal data class FirstVetKey(val sections: List<FirstVetSection>) : HedvigNavKey
 
-  @Serializable
-  data class FirstVet(val sections: List<FirstVetSection>) : HelpCenterDestinations, Destination {
-    companion object : DestinationNavTypeAware {
-      override val typeList: List<KType> = listOf(typeOf<List<FirstVetSection>>())
-    }
-  }
+@Serializable
+internal data object PuppyGuideKey : HedvigNavKey
 
-  @Serializable
-  data object PuppyGuide : HelpCenterDestinations, Destination
-
-  @Serializable
-  data class PuppyGuideArticle(val storyName: String) : HelpCenterDestinations, Destination
-}
-
-val helpCenterCrossSellBottomSheetPermittingDestinations: List<KClass<out Destination>> = listOf(
-  HelpCenterDestinations.HelpCenter::class,
-  HelpCenterDestinations.Topic::class,
-  HelpCenterDestinations.Question::class,
-)
+@Serializable
+internal data class PuppyGuideArticleKey(val storyName: String) : HedvigNavKey

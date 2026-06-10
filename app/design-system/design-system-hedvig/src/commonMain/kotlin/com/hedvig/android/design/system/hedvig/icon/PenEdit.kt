@@ -28,11 +28,11 @@ val HedvigIcons.PenEdit: ImageVector
       defaultWidth = 24.dp,
       defaultHeight = 24.dp,
       viewportWidth = 24f,
-      viewportHeight = 24f
+      viewportHeight = 24f,
     ).apply {
       path(
         fill = SolidColor(Color(0xFF121212)),
-        pathFillType = PathFillType.EvenOdd
+        pathFillType = PathFillType.EvenOdd,
       ) {
         moveTo(18.457f, 10.64f)
         lineTo(13.367f, 5.545f)
@@ -43,7 +43,7 @@ val HedvigIcons.PenEdit: ImageVector
       }
       path(
         fill = SolidColor(Color(0xFF121212)),
-        pathFillType = PathFillType.EvenOdd
+        pathFillType = PathFillType.EvenOdd,
       ) {
         moveTo(15.297f, 3.098f)
         curveTo(16.427f, 1.967f, 18.258f, 1.967f, 19.388f, 3.098f)
@@ -85,7 +85,6 @@ val HedvigIcons.PenEdit: ImageVector
 
 @Suppress("ObjectPropertyName")
 private var _PenEdit: ImageVector? = null
-
 
 @Preview
 @Composable

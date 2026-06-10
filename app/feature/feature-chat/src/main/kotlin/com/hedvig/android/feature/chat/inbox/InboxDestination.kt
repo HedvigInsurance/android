@@ -116,7 +116,7 @@ internal fun InboxDestination(
     onConversationClick = onConversationClick,
     reload = { viewModel.emit(InboxEvent.Reload) },
     onNavigateToNewConversation = onNavigateToNewConversation,
-    navigateToClaimChat = navigateToClaimChat
+    navigateToClaimChat = navigateToClaimChat,
   )
 }
 
@@ -201,10 +201,7 @@ private fun InboxScreen(
 }
 
 @Composable
-private fun NewConversationButton(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
+private fun NewConversationButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
   Row(
     modifier = modifier
       .clip(HedvigTheme.shapes.cornerXSmall)
@@ -339,10 +336,14 @@ private fun InboxSuccessScreen(
         text = stringResource(Res.string.INBOX_EMPTY_STATE_TITLE),
         description = if (showNewConversationButton) stringResource(Res.string.INBOX_EMPTY_STATE_SUBTITLE) else null,
         iconStyle = EmptyStateDefaults.EmptyStateIconStyle.NO_ICON,
-        buttonStyle = if (showNewConversationButton) EmptyStateDefaults.EmptyStateButtonStyle.Button(
-          stringResource(Res.string.open_chat),
-          onNavigateToNewConversation,
-        ) else EmptyStateDefaults.EmptyStateButtonStyle.NoButton,
+        buttonStyle = if (showNewConversationButton) {
+          EmptyStateDefaults.EmptyStateButtonStyle.Button(
+            stringResource(Res.string.open_chat),
+            onNavigateToNewConversation,
+          )
+        } else {
+          EmptyStateDefaults.EmptyStateButtonStyle.NoButton
+        },
       )
     }
   }
@@ -475,11 +476,12 @@ private fun EmptyInboxSuccessScreenPreview(
         InboxUiState.Success(
           listOf(),
           case,
-
-          ),
+        ),
         {},
         {},
-        {}, {}, {}
+        {},
+        {},
+        {},
       )
     }
   }
@@ -487,8 +489,7 @@ private fun EmptyInboxSuccessScreenPreview(
 
 @HedvigPreview
 @Composable
-private fun BottomSheetPreview(
-) {
+private fun BottomSheetPreview() {
   HedvigTheme {
     Surface(color = HedvigTheme.colorScheme.backgroundPrimary) {
       NewChatSelectBottomSheetContent({}, {}, {})
@@ -517,7 +518,9 @@ private fun InboxSuccessScreenPreview(
         ),
         {},
         {},
-        {}, {}, {}
+        {},
+        {},
+        {},
       )
     }
   }

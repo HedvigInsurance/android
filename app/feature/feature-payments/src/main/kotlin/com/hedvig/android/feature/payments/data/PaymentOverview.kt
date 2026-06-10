@@ -3,7 +3,7 @@ package com.hedvig.android.feature.payments.data
 import com.hedvig.android.core.uidata.UiMoney
 import kotlinx.datetime.LocalDate
 
-internal data class PaymentOverview(
+data class PaymentOverview(
   val memberChargeShortInfo: MemberChargeShortInfo?,
   val ongoingCharges: List<OngoingCharge>,
   val paymentConnection: PaymentConnection,
@@ -16,11 +16,11 @@ internal data class PaymentOverview(
   )
 }
 
-internal data class ManualChargeToPrompt(
+data class ManualChargeToPrompt(
   val sum: UiMoney,
 )
 
-internal data class MemberChargeShortInfo(
+data class MemberChargeShortInfo(
   val netAmount: UiMoney,
   val dueDate: LocalDate,
   val id: String?,

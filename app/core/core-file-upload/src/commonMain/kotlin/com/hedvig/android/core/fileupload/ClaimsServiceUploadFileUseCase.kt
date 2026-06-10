@@ -7,8 +7,12 @@ import arrow.core.raise.ensureNotNull
 import com.eygraber.uri.Uri
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.LogPriority
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -18,6 +22,9 @@ interface ClaimsServiceUploadFileUseCase {
   suspend fun invoke(url: String, uris: List<Uri>): Either<ErrorMessage, UploadSuccess>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal data class ClaimsServiceUploadFileUseCaseImpl(
   private val fileUploadService: FileUploadService,
   private val buildConstants: HedvigBuildConstants,

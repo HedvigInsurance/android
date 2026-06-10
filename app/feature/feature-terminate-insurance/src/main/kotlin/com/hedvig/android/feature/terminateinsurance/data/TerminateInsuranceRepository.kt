@@ -10,7 +10,11 @@ import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.logger.logcat
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.datetime.LocalDate
 import octopus.DeleteContractMutation
 import octopus.TerminateContractMutation
@@ -37,6 +41,9 @@ internal interface TerminateInsuranceRepository {
   ): Either<ErrorMessage, TerminationResult>
 }
 
+@ContributesBinding(AppScope::class)
+@SingleIn(AppScope::class)
+@Inject
 internal class TerminateInsuranceRepositoryImpl(
   private val apolloClient: ApolloClient,
 ) : TerminateInsuranceRepository {
@@ -111,7 +118,8 @@ internal class TerminateInsuranceRepositoryImpl(
   }
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData(): Either<ErrorMessage, TerminationSurveyData> {
+private fun TerminationSurveyQuery.Data.TerminationSurvey.toTerminationSurveyData():
+  Either<ErrorMessage, TerminationSurveyData> {
   return either {
     TerminationSurveyData(
       options = options.mapIndexed { index, option -> option.toTerminationSurveyOption(index) },
@@ -160,7 +168,8 @@ private fun TerminationSurveyQuery.Data.TerminationSurvey.Option.toTerminationSu
   )
 }
 
-private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction(): Either<ErrorMessage, TerminationAction> {
+private fun TerminationSurveyQuery.Data.TerminationSurvey.Action.toTerminationAction():
+  Either<ErrorMessage, TerminationAction> {
   return when (this) {
     is TerminationSurveyQuery.Data.TerminationSurvey.TerminationFlowActionTerminateWithDateAction -> {
       Either.Right(

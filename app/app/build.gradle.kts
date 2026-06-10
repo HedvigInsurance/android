@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.3.2"
+    versionName = "14.3.3"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -114,10 +114,14 @@ dependencies {
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.navigation.common)
   implementation(libs.androidx.navigation.compose)
+  implementation(libs.androidx.navigation3.runtime)
+  implementation(libs.androidx.navigation3.ui)
+  implementation(libs.androidx.lifecycle.viewmodel.navigation3)
   implementation(libs.androidx.other.appCompat)
   implementation(libs.androidx.other.coreKtx)
   implementation(libs.androidx.other.splashscreen)
   implementation(libs.androidx.other.startup)
+  implementation(libs.androidx.other.workManager)
   implementation(libs.apollo.normalizedCache)
   implementation(libs.arrow.core)
   implementation(libs.arrow.fx)
@@ -137,14 +141,11 @@ dependencies {
   implementation(libs.jetbrains.lifecycle.runtime)
   implementation(libs.jetbrains.lifecycle.runtime.compose)
   implementation(libs.jetbrains.lifecycle.viewmodel)
-  implementation(libs.koin.android)
-  implementation(libs.koin.workManager)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.media3.exoplayer)
   implementation(libs.media3.exoplayer.dash)
-  implementation(libs.navigationRecentsUrlSharing)
   implementation(libs.playReview)
   implementation(libs.playServicesBase)
   implementation(libs.timber)
@@ -237,6 +238,13 @@ dependencies {
   // OkHttp for ProGuard rules only - not available at compile time
   runtimeOnly(platform(libs.okhttp.bom))
   runtimeOnly(libs.okhttp.core)
+
+  testImplementation(libs.assertK)
+  testImplementation(libs.classgraph)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.junit)
+  testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.loggingTest)
 
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)

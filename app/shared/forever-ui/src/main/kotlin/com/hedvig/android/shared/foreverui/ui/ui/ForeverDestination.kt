@@ -1,7 +1,6 @@
 package com.hedvig.android.shared.foreverui.ui.ui
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -36,7 +35,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
@@ -49,8 +47,6 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.hedvig.android.compose.ui.withoutPlacement
-import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.design.system.hedvig.ButtonDefaults.ButtonSize.Large
@@ -74,7 +70,6 @@ import com.hedvig.android.design.system.hedvig.icon.InfoOutline
 import com.hedvig.android.design.system.hedvig.placeholder.hedvigPlaceholder
 import com.hedvig.android.design.system.hedvig.placeholder.shimmer
 import com.hedvig.android.design.system.hedvig.rememberHedvigBottomSheetState
-import com.hedvig.android.language.LanguageService
 import com.hedvig.android.placeholder.PlaceholderHighlight
 import com.hedvig.android.pullrefresh.PullRefreshDefaults
 import com.hedvig.android.pullrefresh.PullRefreshIndicator
@@ -108,11 +103,7 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ForeverDestination(
-  viewModel: ForeverViewModel,
-  languageService: LanguageService,
-  hedvigBuildConstants: HedvigBuildConstants,
-) {
+fun ForeverDestination(viewModel: ForeverViewModel) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val context = LocalContext.current
   val shareSheetTitle = stringResource(Res.string.REFERRALS_SHARE_SHEET_TITLE)
@@ -130,13 +121,7 @@ fun ForeverDestination(
         val string = getString(
           Res.string.REFERRAL_SMS_MESSAGE,
           incentive.toString(),
-          buildString {
-            append(hedvigBuildConstants.urlBaseWeb)
-            append("/")
-            append(languageService.getLanguage().webPath())
-            append("/forever/")
-            append(Uri.encode(code))
-          },
+          viewModel.referralShareUrl(code),
         )
         context.showShareSheet(shareSheetTitle) { intent ->
           intent.putExtra(

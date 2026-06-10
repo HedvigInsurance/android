@@ -19,7 +19,11 @@ jobs:
           lokalise-id: ${{ secrets.LOKALISE_ID }}
           lokalise-token: ${{ secrets.LOKALISE_TOKEN }}
       - name: Unit tests
-        run: ./gradlew test
+        # `test` only runs tasks literally named `test` (Android `testDebugUnitTest`, JVM-library
+        # `test`). KMP modules expose their commonTest as `jvmTest`, which `test` never triggers, so
+        # add it explicitly. `jvmTest` (not `allTests`/`check`) keeps this off the iOS targets that
+        # can't run on the Linux runner.
+        run: ./gradlew test jvmTest
   lint:
     runs-on: ubuntu-latest-8-vcpu
     steps:
