@@ -1122,6 +1122,7 @@ private fun ClaimIntentStep.clearContent(): ClaimIntentStep = when (val content 
   is StepContent.Summary,
   is StepContent.Task,
   is StepContent.Deflect,
+  is StepContent.DeflectMessage,
   StepContent.Unknown,
   -> this
 }

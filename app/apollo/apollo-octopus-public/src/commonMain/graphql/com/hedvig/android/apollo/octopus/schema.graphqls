@@ -1003,7 +1003,7 @@ type ClaimIntentStep {
 """
 A union of all the different kinds of "step content".
 """
-union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentDeflection
+union ClaimIntentStepContent = ClaimIntentStepContentForm|ClaimIntentStepContentSelect|ClaimIntentStepContentTask|ClaimIntentStepContentAudioRecording|ClaimIntentStepContentFileUpload|ClaimIntentStepContentSummary|ClaimIntentStepContentDeflection|ClaimIntentStepContentDeflectionMessage
 """
 An audio recording step is one where the user is meant to record some audio.
 Submitted using `Mutation.claimIntentSubmitAudio`.
@@ -1044,6 +1044,13 @@ type ClaimIntentStepContentDeflection {
 type ClaimIntentStepContentDeflectionInfoBlock {
   title: String!
   description: String!
+}
+"""
+A minimal variant of a deflection step which only carries a text message - no button.
+This is a terminal step - and cannot be submitted.
+"""
+type ClaimIntentStepContentDeflectionMessage {
+  message: String!
 }
 type ClaimIntentStepContentDeflectionPartner {
   id: ID!
