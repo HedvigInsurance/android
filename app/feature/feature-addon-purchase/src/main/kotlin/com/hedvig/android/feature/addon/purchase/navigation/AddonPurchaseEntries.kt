@@ -21,7 +21,6 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.navigation.compose.popUpTo
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.serialization.Serializable
@@ -35,8 +34,6 @@ internal data class PerilComparisonParams(
 
 fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
   backstack: Backstack,
-  popBackstack: () -> Unit,
-  finishApp: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
   onNavigateToChangeTier: (contractId: String) -> Unit,
 ) {
@@ -89,8 +86,7 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
         backstack = backstack,
         insuranceId = insuranceIds[0],
         preselectedAddonDisplayNames = preselectedAddonDisplayNames,
-        popBackstack = popBackstack,
-        finishApp = finishApp,
+        popBackstack = backstack::popBackstack,
         onNavigateToChangeTier = onNavigateToChangeTier,
       )
     } else {
@@ -101,7 +97,7 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       SelectInsuranceForAddonDestination(
         viewModel = viewModel,
         navigateUp = backstack::navigateUp,
-        popBackstack = popBackstack,
+        popBackstack = backstack::popBackstack,
       )
     }
   }
@@ -111,8 +107,7 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       backstack = backstack,
       insuranceId = key.insuranceId,
       preselectedAddonDisplayNames = key.preselectedAddonDisplayNames,
-      popBackstack = popBackstack,
-      finishApp = finishApp,
+      popBackstack = backstack::popBackstack,
       onNavigateToChangeTier = onNavigateToChangeTier,
     )
   }
@@ -135,20 +130,20 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
     AddonSummaryDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,
-      navigateBack = popBackstack,
+      navigateBack = backstack::popBackstack,
     )
   }
 
   entry<SubmitFailureKey> {
     SubmitAddonFailureScreen(
-      popBackstack = popBackstack,
+      popBackstack = backstack::popBackstack,
     )
   }
 
   entry<SubmitSuccessKey> { key ->
     SubmitAddonSuccessScreen(
       activationDate = key.activationDate,
-      popBackstack = popBackstack,
+      popBackstack = backstack::popBackstack,
     )
   }
 }
@@ -159,7 +154,6 @@ private fun CustomizeAddonContent(
   insuranceId: String,
   preselectedAddonDisplayNames: List<String>,
   popBackstack: () -> Unit,
-  finishApp: () -> Unit,
   onNavigateToChangeTier: (contractId: String) -> Unit,
 ) {
   val viewModel: CustomizeAddonViewModel =
@@ -171,12 +165,8 @@ private fun CustomizeAddonContent(
     navigateUp = backstack::navigateUp,
     popBackstack = popBackstack,
     popAddonFlow = {
-      // Drop everything above the anchor, then the anchor itself; if it was the root there is
-      // nothing left to show, so finish.
       backstack.popUpTo<AddonPurchaseKey>(inclusive = false)
-      if (!backstack.popBackstack()) {
-        finishApp()
-      }
+      backstack.popBackstack()
     },
     onNavigateToTravelInsurancePlusExplanation = { perilData ->
       backstack.add(TravelInsurancePlusExplanationKey(perilData))

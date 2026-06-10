@@ -46,7 +46,6 @@ import com.hedvig.android.app.crosssell.CrossSellUriOpener
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
-import com.hedvig.android.app.navigation.SessionReconciler
 import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
@@ -74,7 +73,6 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.HedvigDeepLinkMatcher
 import com.hedvig.android.navigation.compose.entryDecorators
-import com.hedvig.android.navigation.compose.popBackstack
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.ui.force.upgrade.ForceUpgradeBlockingScreen
 import hedvig.resources.EXIT_DEMO_MODE_BUTTON
@@ -91,7 +89,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun HedvigApp(
   backstackController: BackstackController,
-  sessionReconciler: SessionReconciler,
   deepLinkChannel: Channel<String>,
   windowSizeClass: WindowSizeClass,
   settingsDataStore: SettingsDataStore,
@@ -122,10 +119,6 @@ internal fun HedvigApp(
     featureManager = featureManager,
     missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
   )
-  val lifecycle = LocalLifecycleOwner.current.lifecycle
-  LaunchedEffect(sessionReconciler, backstackController) {
-    sessionReconciler.reconcile(backstackController)
-  }
   val darkTheme = hedvigAppState.darkTheme
   HedvigTheme(darkTheme = darkTheme) {
     EnableEdgeToEdgeSideEffect(darkTheme, splashIsRemovedSignal, androidAppHost::applyEdgeToEdgeStyle)
@@ -135,9 +128,6 @@ internal fun HedvigApp(
         goToPlayStore = externalNavigator::tryOpenPlayStore,
       )
     } else {
-      LaunchedEffect(sessionReconciler, backstackController, lifecycle) {
-        sessionReconciler.observeForcedLogout(backstackController, lifecycle)
-      }
       TryShowAppStoreReviewDialogEffect(
         authTokenService,
         waitUntilAppReviewDialogShouldBeOpenedUseCase,
@@ -190,11 +180,7 @@ internal fun HedvigApp(
                 GlobalHedvigSnackBar(globalSnackBarState = globalSnackBarState)
                 NavDisplay(
                   backStack = backstackController.entries,
-                  onBack = {
-                    if (!backstackController.popBackstack()) {
-                      androidAppHost.finishApp()
-                    }
-                  },
+                  onBack = backstackController::popBackstack,
                   entryDecorators = entryDecorators { backstackController.allLiveContentKeys },
                   sharedTransitionScope = this@SharedTransitionLayout,
                   sceneDecoratorStrategies = sceneDecoratorStrategies,

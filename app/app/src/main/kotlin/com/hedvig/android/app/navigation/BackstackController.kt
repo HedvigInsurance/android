@@ -1,7 +1,5 @@
 package com.hedvig.android.app.navigation
 
-import androidx.appstate.AppState
-import androidx.appstate.AppStateKey
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -22,7 +20,6 @@ import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
-import com.hedvig.android.navigation.compose.popBackstack
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -36,10 +33,9 @@ import dev.zacsweers.metro.SingleIn
  * `MainActivity.setContent`, so a config change recreated the Activity and deserialized it into a
  * brand-new instance — while Metro ViewModels survive a config change as the same instance via their
  * per-entry `ViewModelStore`. Handing a long-lived Presenter a reference to the composition-scoped
- * stack would therefore go stale on the next rotation. Holding the state in an app-scoped [AppState]
- * (see [BackstackControllerProviders]) makes this controller outlive every ViewModel, so a Presenter
- * can mutate the live, rendered stack through [Backstack]. AppState is "just an object you choose the
- * scope of" — here that scope is the application graph.
+ * stack would therefore go stale on the next rotation. Owning the snapshot state in this app-scoped
+ * singleton (see [BackstackControllerProviders]) makes the controller outlive every ViewModel, so a
+ * Presenter can mutate the live, rendered stack through [Backstack].
  *
  * Process-death persistence is bridged at the Activity seam: an in-memory singleton is wiped when the
  * process dies, so `MainActivity` serializes the four holders into its `SavedStateRegistry` and
@@ -69,6 +65,13 @@ internal class BackstackController(
    * the target stack. Attached/replaced by the Activity like [isOwnTask]; no-op by default.
    */
   var escapeToOwnTask: (List<HedvigNavKey>) -> Unit = {},
+  /**
+   * Finishes the host Activity, used by [popBackstack] when a Back/close lands on the root (nothing
+   * left to pop) so the app exits instead of stranding the user on a dead screen. Attached/replaced
+   * by the Activity like [isOwnTask] and [escapeToOwnTask]; no-op by default so unit tests and any
+   * pre-attach use never try to finish.
+   */
+  var finishApp: () -> Unit = {},
 ) : Backstack {
   /**
    * A deep link resolved while logged out, held until [setLoggedIn] consumes it (so it can land
@@ -204,7 +207,19 @@ internal class BackstackController(
       }
       return true
     }
-    return popBackstack()
+    // Fall through to a *pure* pop (not our finishing override): an Up press at the root is a no-op,
+    // it must not exit the app the way Back does.
+    return super.popBackstack()
+  }
+
+  /**
+   * Back/close pop. Pops the top entry; if there is nothing to pop (we are at the root) the Activity
+   * is finished so the app exits rather than leaving the user on a screen where Back does nothing.
+   */
+  override fun popBackstack(): Boolean {
+    val popped = super.popBackstack()
+    if (!popped) finishApp()
+    return popped
   }
 
   /**
@@ -313,29 +328,21 @@ private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKe
   }
 }
 
-private val EntriesKey = AppStateKey<SnapshotStateList<HedvigNavKey>>()
-private val ParkedRunsKey = AppStateKey<SnapshotStateMap<TopLevelTab, List<HedvigNavKey>>>()
-private val PendingDeepLinkKey = AppStateKey<MutableState<HedvigNavKey?>>()
-private val StashedSessionKey = AppStateKey<MutableState<StashedSession?>>()
-
 /**
- * Wires the app-scoped navigation state. [AppState] is the process-lifetime store; the four nav
- * holders are read out of it (created once, on first access) and handed to the singleton
- * [BackstackController], which is exposed to feature Presenters as a plain [Backstack].
+ * Wires the app-scoped navigation state. The four snapshot holders are created once and owned by the
+ * singleton [BackstackController] — their lifetime is the application graph, so they survive a config
+ * change while remaining the live objects the UI renders. The controller is exposed to feature
+ * Presenters as a plain [Backstack].
  */
 @ContributesTo(AppScope::class)
 internal interface BackstackControllerProviders {
   @Provides
   @SingleIn(AppScope::class)
-  fun provideAppState(): AppState = AppState()
-
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideBackstackController(appState: AppState): BackstackController = BackstackController(
-    entries = appState.getState(EntriesKey, mutableStateListOf()).value,
-    parkedRuns = appState.getState(ParkedRunsKey, mutableStateMapOf()).value,
-    pendingDeepLinkState = appState.getState(PendingDeepLinkKey, mutableStateOf(null)).value,
-    stashedSessionState = appState.getState(StashedSessionKey, mutableStateOf(null)).value,
+  fun provideBackstackController(): BackstackController = BackstackController(
+    entries = mutableStateListOf(),
+    parkedRuns = mutableStateMapOf(),
+    pendingDeepLinkState = mutableStateOf(null),
+    stashedSessionState = mutableStateOf(null),
   )
 
   @Provides

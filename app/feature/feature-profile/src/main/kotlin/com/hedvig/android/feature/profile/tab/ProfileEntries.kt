@@ -36,7 +36,6 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
   nestedEntries: EntryProviderScope<HedvigNavKey>.() -> Unit,
   globalSnackBarState: GlobalSnackBarState,
   backstack: Backstack,
-  popBackstackOrFinish: () -> Unit,
   hedvigBuildConstants: HedvigBuildConstants,
   navigateToConnectPayment: () -> Unit,
   navigateToConnectPayout: () -> Unit,
@@ -98,7 +97,7 @@ fun EntryProviderScope<HedvigNavKey>.profileEntries(
       viewModel = viewModel,
       globalSnackBarState = globalSnackBarState,
       navigateUp = backstack::navigateUp,
-      popBackstack = popBackstackOrFinish,
+      popBackstack = backstack::popBackstack,
     )
   }
   entry<InformationKey> {
