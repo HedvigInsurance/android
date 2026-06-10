@@ -27,8 +27,11 @@ import kotlinx.coroutines.launch
  * Owns the auth↔backstack reconciliation that used to live as loose effects in `HedvigApp`. Two jobs,
  * both narrowly about the rendered root:
  *  1. [reconcile] picks the start scene (Home when logged in / in demo, Login otherwise) before the
- *     splash is dismissed, so the first frame is correct rather than the seeded Login root. [isReady]
- *     flips true once that resolves and drives the Activity's splash keep-condition.
+ *     splash is dismissed, so the first frame is correct rather than the seeded Login root. It runs for
+ *     every [BackstackController] handed in — not once per process — so a warm-process relaunch that
+ *     seeds a fresh Login root can't strand a logged-in member on the marketing screen. [isReady] gates
+ *     the Activity's splash keep-condition: it drops to false while resolving and latches true again
+ *     once the root matches the auth state.
  *  2. [observeForcedLogout] keeps the root honest while running: log out when we leave demo mode and no
  *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
@@ -51,11 +54,21 @@ internal class SessionReconciler(
   private var lastKnownMemberId: String? = null
 
   /**
-   * Resolves the start scene once, before the splash is dismissed. A no-op on subsequent calls because
-   * [isReady] has already latched true.
+   * Resolves the start scene for [backstackController] before the splash is dismissed, and re-runs for
+   * every controller instance handed in — not just the first.
+   *
+   * [BackstackController] is composition + saved-state scoped, so a new MainActivity launched into an
+   * already-warm process (the process — and therefore this singleton — is still alive, but there is no
+   * saved instance state to restore) seeds a fresh `LoginKey` root. A once-per-process guard would
+   * skip such a controller and strand a still-logged-in member on the marketing screen. Re-running is
+   * safe because [determineStartScene] is idempotent — it only touches the root on a genuine mismatch.
+   *
+   * [isReady] drops to false while resolving so the splash keep-condition holds for this controller too,
+   * then latches true once the root matches the auth state. The hosting `LaunchedEffect` is keyed on the
+   * controller, so this runs once per controller — [isReady] never flips back to false mid-session.
    */
   suspend fun reconcile(backstackController: BackstackController) {
-    if (isReadyState.value) return
+    isReadyState.value = false
     memberIdService.getMemberId().first()?.let { lastKnownMemberId = it }
     determineStartScene(backstackController)
     isReadyState.value = true

@@ -241,7 +241,10 @@ dependencies {
 
   testImplementation(libs.assertK)
   testImplementation(libs.classgraph)
+  testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.loggingTest)
 
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
