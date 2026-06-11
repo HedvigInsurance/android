@@ -19,6 +19,7 @@ import com.hedvig.android.feature.profile.navigation.ProfileKey
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
+import com.hedvig.android.navigation.compose.popUpTo
 import org.junit.Test
 
 internal class BackstackControllerTest {
@@ -77,6 +78,51 @@ internal class BackstackControllerTest {
       finishApp = { finished = true },
     )
     assertThat(controller.popBackstack()).isFalse()
+    assertThat(finished).isTrue()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `popUpTo clearing the whole stack finishes the app and keeps the base`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HelpCenterKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
+    controller.popUpTo<HelpCenterKey>(inclusive = true)
+    assertThat(finished).isTrue()
+    assertThat(controller.entries.toList()).containsExactly(HelpCenterKey)
+  }
+
+  @Test
+  fun `popUpTo that leaves entries behind does not finish the app`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey, HelpCenterKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
+    controller.popUpTo<HelpCenterKey>(inclusive = true)
+    assertThat(finished).isFalse()
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
+  fun `popUpToIndex with a negative index finishes the app and keeps the base`() {
+    var finished = false
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey, HelpCenterKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      finishApp = { finished = true },
+    )
+    controller.popUpToIndex(-1)
     assertThat(finished).isTrue()
     assertThat(controller.entries.toList()).containsExactly(HomeKey)
   }

@@ -62,7 +62,6 @@ import com.hedvig.android.navigation.activity.ExternalNavigator
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.add
-import com.hedvig.android.navigation.compose.findLastOrNull
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.navigation.compose.removeAllOf
@@ -95,7 +94,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
   languageService: LanguageService,
   hedvigBuildConstants: HedvigBuildConstants,
 ) {
-  val finishApp: () -> Unit = androidAppHost::finishApp
   val shouldShowRequestPermissionRationale: (String) -> Boolean = androidAppHost::shouldShowPermissionRationale
   val navigateToConnectPayment: () -> Unit = { backstack.add(TrustlyKey) }
   val navigateToPayoutAccount: () -> Unit = { backstack.add(PayoutAccountKey) }
@@ -129,7 +127,6 @@ internal fun EntryProviderScope<HedvigNavKey>.hedvigEntryProvider(
     openUrl = openUrl,
     openCrossSellUrl = openCrossSellUrl,
     externalNavigator = externalNavigator,
-    finishApp = finishApp,
     navigateToNewConversation = navigateToNewConversation,
     navigateToMovingFlow = navigateToMovingFlow,
   )
@@ -313,7 +310,6 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
   openUrl: (String) -> Unit,
   openCrossSellUrl: (String) -> Unit,
   externalNavigator: ExternalNavigator,
-  finishApp: () -> Unit,
   navigateToNewConversation: () -> Unit,
   navigateToMovingFlow: () -> Unit,
 ) {
@@ -333,15 +329,7 @@ private fun EntryProviderScope<HedvigNavKey>.addInsuranceEntries(
           backstack.navigateAndPopUpTo<TerminateInsuranceKey>(SelectContractForMovingKey, inclusive = true)
         },
         closeTerminationFlow = {
-          // If we fail to pop the backstack including TerminateInsuranceKey here it means we were deep
-          //  linked into this screen only, and they do not wish to continue with the flow they were deep linked to.
-          //  The right way to handle this is to simply finish the app as per the docs:
-          //  https://developer.android.com/guide/navigation/backstack#handle-failure
-          if (backstack.findLastOrNull<TerminateInsuranceKey>() != null) {
-            backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
-          } else {
-            finishApp()
-          }
+          backstack.popUpTo<TerminateInsuranceKey>(inclusive = true)
         },
         redirectToChangeTierFlow = { idWithIntent ->
           backstack.navigateAndPopUpTo<TerminateInsuranceKey>(

@@ -34,25 +34,56 @@ interface Backstack {
     entries.removeAt(entries.lastIndex)
     true
   }
+
+  /**
+   * Pops every entry above [index] so the entry at [index] becomes the new top. The stack is never
+   * emptied: an [index] below 0 asks to clear the base too (e.g. an inclusive pop of a lone deep-link
+   * entry with no app ancestry below it). `:app`'s controller overrides the `index < 0` case to
+   * finish the App instead — same finish-at-root contract as [popBackstack].
+   */
+  fun popUpToIndex(index: Int) = Snapshot.withMutableSnapshot {
+    val keepCount = maxOf(index + 1, 1)
+    if (entries.size > keepCount) {
+      entries.subList(keepCount, entries.size).clear()
+    }
+  }
 }
 
 /** Pushes [key] onto the top of the back stack. */
 fun Backstack.add(key: HedvigNavKey): Boolean = entries.add(key)
 
-/** Pops up to (and optionally including) the most recent entry of [T]. No-op if absent. */
+/**
+ * Pops up to (and optionally including) the most recent entry of [T]. No-op if absent.
+ *
+ * Delegates to [Backstack.popUpToIndex] with the index of the entry that should remain on top: [T]
+ * itself when exclusive, the entry below it when inclusive. An inclusive pop of a base [T] therefore
+ * targets index -1 — clearing the whole stack — which [popUpToIndex] resolves to its finish-at-root
+ * behavior rather than emptying. Use [navigateAndPopUpTo] when a replacement is pushed immediately —
+ * that never lands on an empty stack, so the finish is neither needed nor wanted.
+ */
 inline fun <reified T : HedvigNavKey> Backstack.popUpTo(inclusive: Boolean) {
   val index = entries.indexOfLast { it is T }
   if (index == -1) return
-  val removeFrom = if (inclusive) index else index + 1
-  while (entries.size > removeFrom) {
-    entries.removeAt(entries.lastIndex)
-  }
+  popUpToIndex(if (inclusive) index - 1 else index)
 }
 
-/** Pops up to (and optionally including) the most recent [T], then pushes [key]. */
+/**
+ * Pops up to (and optionally including) the most recent [T], then pushes [key]. Never finishes — when
+ * [T] is absent nothing is popped and [key] is simply appended.
+ */
 inline fun <reified T : HedvigNavKey> Backstack.navigateAndPopUpTo(key: HedvigNavKey, inclusive: Boolean) {
-  popUpTo<T>(inclusive)
-  add(key)
+  val index = entries.indexOfLast { it is T }
+  val removeFrom = when {
+    index == -1 -> entries.size
+    inclusive -> index
+    else -> index + 1
+  }
+  Snapshot.withMutableSnapshot {
+    if (entries.size > removeFrom) {
+      entries.subList(removeFrom, entries.size).clear()
+    }
+    entries.add(key)
+  }
 }
 
 /** Most recent back-stack entry of [T], or null. */

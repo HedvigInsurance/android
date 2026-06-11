@@ -223,6 +223,16 @@ internal class BackstackController(
   }
 
   /**
+   * Pops to [index] (see [Backstack.popUpToIndex]). A negative [index] means the caller asked to clear
+   * the base too; super keeps the base rendered (never an empty stack) and we finish the host so the
+   * app exits — same finish-at-root contract as [popBackstack].
+   */
+  override fun popUpToIndex(index: Int) {
+    super.popUpToIndex(index)
+    if (index < 0) finishApp()
+  }
+
+  /**
    * Enter the logged-in app. Precedence: a pending deep link lands alone (re-enabling the runs model
    * on the next Up); otherwise a stash tagged with this same [memberId] is restored (history comes
    * back, per-entry state having been disposed while stashed); otherwise a fresh Home. Any stash is
