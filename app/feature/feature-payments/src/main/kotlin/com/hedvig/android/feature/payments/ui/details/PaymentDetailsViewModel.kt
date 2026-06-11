@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.payments.data.GetChargeDetailsUseCase
 import com.hedvig.android.feature.payments.data.PaymentDetails
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -33,7 +33,7 @@ internal class PaymentDetailsViewModel(
   ) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted chargeId: String?,

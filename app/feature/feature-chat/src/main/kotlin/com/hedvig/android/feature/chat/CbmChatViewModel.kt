@@ -30,7 +30,7 @@ import androidx.paging.map
 import androidx.room.RoomDatabase
 import arrow.core.Either
 import com.benasher44.uuid.Uuid
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.chat.database.ChatDao
 import com.hedvig.android.data.chat.database.ChatMessageEntity
@@ -111,7 +111,7 @@ internal class CbmChatViewModel @AssistedInject constructor(
   ) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted conversationId: String,

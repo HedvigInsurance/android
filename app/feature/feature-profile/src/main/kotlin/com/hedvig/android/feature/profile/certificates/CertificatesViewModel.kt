@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.profile.data.CheckInsuranceEvidenceAvailabilityUseCase
 import com.hedvig.android.feature.profile.data.CheckTravelCertificateDestinationAvailabilityUseCase
 import com.hedvig.android.logger.logcat
@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.flow
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class CertificatesViewModel(
   checkTravelCertificateDestinationAvailabilityUseCase: CheckTravelCertificateDestinationAvailabilityUseCase,
   checkInsuranceEvidenceAvailabilityUseCase: CheckInsuranceEvidenceAvailabilityUseCase,

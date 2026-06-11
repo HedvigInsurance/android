@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_COVERAGE
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.TERMINATION_BETTER_PRICE
@@ -62,7 +62,7 @@ internal class TerminationSurveyViewModel @AssistedInject constructor(
   ) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted options: List<TerminationSurveyOption>,

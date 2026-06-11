@@ -110,6 +110,7 @@ dependencies {
   implementation(libs.androidx.compose.animationCore)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.material3.windowSizeClass)
+  implementation(libs.androidx.compose.runtime.retain)
   implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.lifecycle.process)
   implementation(libs.androidx.navigation.common)

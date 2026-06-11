@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.uidata.ItemCost
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiMoney
@@ -54,7 +54,7 @@ internal class CustomizeAddonViewModel(
   ) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted insuranceId: String,

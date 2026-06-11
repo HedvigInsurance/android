@@ -11,7 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import arrow.core.raise.either
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.LogPriority
@@ -31,7 +31,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 class ForeverViewModel(
   foreverRepositoryProvider: Provider<ForeverRepository>,
   private val languageService: LanguageService,

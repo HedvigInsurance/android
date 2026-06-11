@@ -15,6 +15,7 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
@@ -51,7 +52,7 @@ import octopus.type.UserFlow
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,

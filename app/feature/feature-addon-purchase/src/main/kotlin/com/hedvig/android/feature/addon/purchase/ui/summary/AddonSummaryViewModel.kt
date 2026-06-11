@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.tracking.ActionType
 import com.hedvig.android.core.tracking.logAction
 import com.hedvig.android.core.uidata.UiMoney
@@ -64,7 +64,7 @@ internal class AddonSummaryViewModel(
   ) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted summaryParameters: SummaryParameters,

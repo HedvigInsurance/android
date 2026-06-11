@@ -19,7 +19,7 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.safeExecute
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.movingflow.AddHouseInformationKey
 import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
@@ -93,7 +93,7 @@ internal class EnterNewAddressViewModel(
   ) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted moveIntentId: String,

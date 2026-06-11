@@ -3,7 +3,7 @@ package com.hedvig.android.feature.profile.settings
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.apollo.NetworkCacheManager
 import com.hedvig.android.apollo.auth.listeners.UploadLanguagePreferenceToBackendUseCase
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.feature.profile.data.ChangeEmailSubscriptionPreferencesUseCase
 import com.hedvig.android.language.LanguageService
@@ -16,7 +16,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class SettingsViewModel(
   languageService: LanguageService,
   settingsDataStore: SettingsDataStore,

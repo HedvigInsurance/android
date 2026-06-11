@@ -18,14 +18,16 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.content.getSystemService
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import coil3.ImageLoader
 import com.hedvig.android.app.crosssell.GetMemberAuthorizationCodeUseCase
 import com.hedvig.android.app.externalnavigator.ExternalNavigatorImpl
-import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
-import com.hedvig.android.app.navigation.SessionReconciler
+import com.hedvig.android.app.navigation.NavRetainedViewModel
 import com.hedvig.android.app.ui.HedvigApp
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
@@ -103,16 +105,23 @@ class MainActivity : AppCompatActivity() {
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
 
   @Inject
-  private lateinit var sessionReconciler: SessionReconciler
-
-  // The single app-scoped backstack controller. Injected here to seed/restore it, attach the
-  // Activity-bound task hooks, and hand it to HedvigApp/NavDisplay; the same singleton is exposed to
-  // Presenters as a plain Backstack.
-  @Inject
-  private lateinit var backstackController: BackstackController
-
-  @Inject
   private lateinit var serializersModules: Set<SerializersModule>
+
+  /**
+   * Per-Activity host for the navigation state. A retained `ViewModel`, so it (and the
+   * [BackstackController] it owns) survives a config change but dies with this Activity — giving each
+   * `MainActivity` instance its own back stack instead of sharing one app-singleton. Resolved at the
+   * top of [onCreate]; the controller, session reconciler and merged ViewModel factory are read off it.
+   */
+  private val navRetainedViewModel: NavRetainedViewModel by lazy {
+    ViewModelProvider(
+      this,
+      viewModelFactory { initializer { NavRetainedViewModel((application as HedvigApplication).appGraph) } },
+    )[NavRetainedViewModel::class.java]
+  }
+
+  private val backstackController get() = navRetainedViewModel.backstackController
+  private val sessionReconciler get() = navRetainedViewModel.sessionReconciler
 
   /**
    * External/notification VIEW intents are forwarded here as raw URI strings. [HedvigApp] collects them and routes
@@ -154,6 +163,10 @@ class MainActivity : AppCompatActivity() {
     )
     ComposeFoundationFlags.isNewContextMenuEnabled = false
     super.onCreate(savedInstanceState)
+    logcat(LogPriority.INFO) {
+      "MainActivity@${System.identityHashCode(this)} using " +
+        "BackstackController@${System.identityHashCode(backstackController)}"
+    }
     val defaultLocale = getSystemLocale(resources.configuration)
     languageLaunchCheckUseCase.invoke(defaultLocale)
     val uiModeManager = getSystemService<UiModeManager>()
@@ -169,6 +182,7 @@ class MainActivity : AppCompatActivity() {
     }
     addOnNewIntentListener { newIntent -> handleDeepLinkIntent(newIntent) }
 
+    attachBackstackTaskHooks()
     val externalNavigator = ExternalNavigatorImpl(this, hedvigBuildConstants.appPackageId)
     RiveInitializer.init(this)
     NavigationStateBridge.restoreAndPersist(
@@ -184,7 +198,7 @@ class MainActivity : AppCompatActivity() {
     }
     setContent {
       CompositionLocalProvider(
-        LocalMetroViewModelFactory provides (application as HedvigApplication).appGraph.metroViewModelFactory,
+        LocalMetroViewModelFactory provides navRetainedViewModel.viewModelFactory,
       ) {
         val windowSizeClass = calculateWindowSizeClass(this@MainActivity)
         HedvigApp(
@@ -214,29 +228,12 @@ class MainActivity : AppCompatActivity() {
     }
   }
 
-  override fun onResume() {
-    super.onResume()
-    attachBackstackTaskHooks()
-  }
-
   /**
-   * Precise focus signal for split-screen / multi-resume, where two Activities can both be RESUMED at
-   * once and plain [onResume] ordering is ambiguous about which one is actually focused. The Activity
-   * that gains top focus re-claims the hooks. Drop this override if the multi-resume corner isn't
-   * worth covering — [onResume] alone already handles the common single-foreground case.
-   */
-  override fun onTopResumedActivityChanged(isTopResumedActivity: Boolean) {
-    super.onTopResumedActivityChanged(isTopResumedActivity)
-    if (isTopResumedActivity) attachBackstackTaskHooks()
-  }
-
-  /**
-   * Re-points the app-scoped controller's Activity-bound task hooks at *this* instance. The
-   * [BackstackController] is an app-scoped singleton shared by every Activity in the process, so these
-   * hooks are attached on resume (not in onCreate) to keep them tracking the *foreground* Activity:
-   * Android resumes the foreground Activity last, and only the foreground Activity drives
-   * navigateUp()/popBackstack(). Attaching in onCreate would let a later-created but backgrounded
-   * Activity win and act on the wrong task.
+   * Points this Activity's [com.hedvig.android.app.navigation.BackstackController] task hooks at
+   * *this* instance. The controller is owned by [navRetainedViewModel] and is 1:1 with this Activity
+   * (created with it, retained across config changes, dies on finish), so the hooks are attached once
+   * in onCreate — there is no shared, process-wide controller that a backgrounded Activity could
+   * steal, which is why no resume/top-resume re-attachment is needed.
    */
   private fun attachBackstackTaskHooks() {
     backstackController.isOwnTask = { isTaskRoot }

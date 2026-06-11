@@ -11,7 +11,7 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import arrow.core.some
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.CompareCoverageKey
 import com.hedvig.android.feature.movingflow.SummaryKey
@@ -58,7 +58,7 @@ internal class ChoseCoverageLevelAndDeductibleViewModel(
   ) {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted intentId: String,

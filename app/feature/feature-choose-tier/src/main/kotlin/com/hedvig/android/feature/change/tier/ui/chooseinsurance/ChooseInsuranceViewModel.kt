@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.data.changetier.data.ChangeTierCreateSource.SELF_SERVICE
 import com.hedvig.android.data.changetier.data.ChangeTierRepository
 import com.hedvig.android.feature.change.tier.data.CustomisableInsurance
@@ -33,7 +33,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class ChooseInsuranceViewModel(
   getCustomizableInsurancesUseCase: GetCustomizableInsurancesUseCase,
   tierRepository: ChangeTierRepository,

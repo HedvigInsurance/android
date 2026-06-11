@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModel
 import arrow.core.Either
 import arrow.core.getOrElse
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
@@ -108,7 +108,7 @@ internal sealed interface ContactInfoUiState {
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class ContactInfoViewModel(
   repository: Provider<ContactInfoRepository>,
 ) : MoleculeViewModel<ContactInfoEvent, ContactInfoUiState>(

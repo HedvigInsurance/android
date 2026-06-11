@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.chat
 
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.deleteaccount.DeleteAccountEvent
 import com.hedvig.android.feature.deleteaccount.DeleteAccountPresenter
 import com.hedvig.android.feature.deleteaccount.DeleteAccountUiState
@@ -16,7 +16,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class DeleteAccountViewModel(
   private val requestAccountDeletionUseCase: RequestAccountDeletionUseCase,
   private val deleteAccountStateUseCase: DeleteAccountStateUseCase,

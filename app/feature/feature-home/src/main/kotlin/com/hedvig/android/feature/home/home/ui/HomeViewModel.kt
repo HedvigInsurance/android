@@ -3,7 +3,7 @@ package com.hedvig.android.feature.home.home.ui
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -16,7 +16,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class HomeViewModel(
   getHomeDataUseCaseProvider: Provider<GetHomeDataUseCase>,
   seenImportantMessagesStorage: SeenImportantMessagesStorage,

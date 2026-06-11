@@ -1,7 +1,7 @@
 package com.hedvig.android.feature.insurances.insurance.presentation
 
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.data.addons.data.GetAddonBannerInfoUseCase
 import com.hedvig.android.feature.insurances.data.GetCrossSellsUseCase
@@ -14,7 +14,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class InsuranceViewModel(
   getInsuranceContractsUseCaseProvider: Provider<GetInsuranceContractsUseCase>,
   getCrossSellsUseCaseProvider: Provider<GetCrossSellsUseCase>,

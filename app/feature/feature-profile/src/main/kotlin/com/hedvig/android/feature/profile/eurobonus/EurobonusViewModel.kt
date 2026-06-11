@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.profile.data.GetEurobonusDataUseCase
 import com.hedvig.android.feature.profile.data.UpdateEurobonusNumberUseCase
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -21,7 +21,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class EurobonusViewModel(
   getEurobonusDataUseCase: GetEurobonusDataUseCase,
   updateEurobonusNumberUseCase: UpdateEurobonusNumberUseCase,

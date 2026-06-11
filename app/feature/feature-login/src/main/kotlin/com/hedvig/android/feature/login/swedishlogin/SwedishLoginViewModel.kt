@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.hedvig.android.auth.AuthTokenService
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.authlib.AuthRepository
@@ -29,7 +29,7 @@ internal class SwedishLoginViewModel(
   ) {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(SwedishLoginViewModel::class)
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ViewModelAssistedFactory {
     override fun create(extras: CreationExtras): SwedishLoginViewModel = create(extras.createSavedStateHandle())
 

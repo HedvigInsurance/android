@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class PuppyGuideViewModel(
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
 ) : MoleculeViewModel<PuppyGuideEvent, PuppyGuideUiState>(

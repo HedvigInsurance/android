@@ -8,7 +8,7 @@ import arrow.fx.coroutines.raceN
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.MemberIdService
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.logger.logcat
 import dev.zacsweers.metro.Inject
@@ -34,11 +34,11 @@ import kotlinx.coroutines.launch
  *     longer hold tokens. It is lifecycle-gated so it only observes while the UI is STARTED.
  *
  * Deliberately narrow — only auth and the backstack root. Deep-links, notifications and the rest stay
- * in their own observers. The [BackstackController] is an app-scoped singleton injected here; only the
- * [Lifecycle] is handed in per call by the composition, keeping this reconciler free of any
- * Android/Compose lifetime.
+ * in their own observers. Scoped to the per-Activity [ActivityRetainedScope] so it shares this
+ * Activity's [BackstackController]; only the [Lifecycle] is handed in per call by the composition,
+ * keeping this reconciler free of any Android/Compose lifetime.
  */
-@SingleIn(AppScope::class)
+@SingleIn(ActivityRetainedScope::class)
 @Inject
 internal class SessionReconciler(
   private val backstackController: BackstackController,

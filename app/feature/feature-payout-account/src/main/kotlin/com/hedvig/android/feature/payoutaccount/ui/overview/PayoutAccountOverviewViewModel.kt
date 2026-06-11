@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.payoutaccount.data.GetPayoutAccountUseCase
 import com.hedvig.android.feature.payoutaccount.data.PayoutAccount
 import com.hedvig.android.molecule.public.MoleculePresenter
@@ -22,7 +22,7 @@ import octopus.type.MemberPaymentProvider
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class PayoutAccountOverviewViewModel(
   getPayoutAccountUseCase: GetPayoutAccountUseCase,
 ) : MoleculeViewModel<PayoutAccountOverviewEvent, PayoutAccountOverviewUiState>(

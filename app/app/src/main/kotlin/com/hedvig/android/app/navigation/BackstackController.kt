@@ -3,15 +3,11 @@ package com.hedvig.android.app.navigation
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.hedvig.android.app.ui.startDestination
-import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.feature.home.home.navigation.HomeKey
 import com.hedvig.android.feature.login.navigation.LoginKey
 import com.hedvig.android.navigation.common.DeliberateLogoutOrigin
@@ -20,27 +16,26 @@ import com.hedvig.android.navigation.common.StashedSession
 import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.LoneDeepLinkChrome
-import dev.zacsweers.metro.ContributesTo
-import dev.zacsweers.metro.Provides
-import dev.zacsweers.metro.SingleIn
 
 /**
- * The single, app-scoped source of truth for all navigation state and the one [Backstack] every
- * caller talks to — the UI via this concrete type, Presenters via the injected [Backstack] interface
- * (bound in [BackstackControllerProviders]).
+ * The per-Activity source of truth for all navigation state and the one [Backstack] every caller in
+ * that Activity talks to — the UI via this concrete type, Presenters via the injected [Backstack]
+ * interface (bound in the per-Activity `ActivityRetainedGraph`).
  *
- * Why app-scoped instead of composition: the state used to live in `rememberSerializable` inside
- * `MainActivity.setContent`, so a config change recreated the Activity and deserialized it into a
- * brand-new instance — while Metro ViewModels survive a config change as the same instance via their
+ * Why activity-retained instead of composition: the state used to live in `rememberSerializable`
+ * inside `MainActivity.setContent`, so a config change recreated the Activity and deserialized it into
+ * a brand-new instance — while Metro ViewModels survive a config change as the same instance via their
  * per-entry `ViewModelStore`. Handing a long-lived Presenter a reference to the composition-scoped
- * stack would therefore go stale on the next rotation. Owning the snapshot state in this app-scoped
- * singleton (see [BackstackControllerProviders]) makes the controller outlive every ViewModel, so a
- * Presenter can mutate the live, rendered stack through [Backstack].
+ * stack would therefore go stale on the next rotation. The controller is instead built by
+ * [com.hedvig.android.app.navigation.NavRetainedViewModel] (a retained `ViewModel`), so it outlives
+ * the composition and every screen ViewModel across a config change, yet — unlike the previous
+ * app-singleton — dies with its Activity. Two `MainActivity` instances therefore get two independent
+ * controllers instead of sharing one.
  *
- * Process-death persistence is bridged at the Activity seam: an in-memory singleton is wiped when the
+ * Process-death persistence is bridged at the Activity seam: the retained instance is wiped when the
  * process dies, so `MainActivity` serializes the four holders into its `SavedStateRegistry` and
  * re-hydrates them on a cold start via [restoreFromSavedState]. A config change reuses the live
- * singleton untouched (the restore is a no-op once populated).
+ * retained instance untouched (the restore is a no-op once populated).
  */
 @Stable
 internal class BackstackController(
@@ -53,10 +48,10 @@ internal class BackstackController(
    * caller's task by an external deep link, so an Up press must escape into our own task rather than
    * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
    *
-   * Attached by `MainActivity` on resume (not at construction): this controller is an app-singleton
-   * shared by every Activity in the process, so re-pointing the hook on each resume keeps it tracking
-   * the foreground Activity instead of letting a later-created but backgrounded Activity win. Defaults
-   * to `true` so unit tests and any pre-attach use stay fully in-process.
+   * Attached by `MainActivity` on resume (not at construction): the controller is owned by a retained
+   * `ViewModel`, so it can outlive `onCreate`/finish boundaries; re-pointing the hook on resume keeps
+   * the finish/relaunch mechanics bound to the live foreground Activity. Defaults to `true` so unit
+   * tests and any pre-attach use stay fully in-process.
    */
   var isOwnTask: () -> Boolean = { true },
   /**
@@ -336,25 +331,4 @@ private fun SnapshotStateList<HedvigNavKey>.replaceWith(target: List<HedvigNavKe
     clear()
     addAll(target)
   }
-}
-
-/**
- * Wires the app-scoped navigation state. The four snapshot holders are created once and owned by the
- * singleton [BackstackController] — their lifetime is the application graph, so they survive a config
- * change while remaining the live objects the UI renders. The controller is exposed to feature
- * Presenters as a plain [Backstack].
- */
-@ContributesTo(AppScope::class)
-internal interface BackstackControllerProviders {
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provideBackstackController(): BackstackController = BackstackController(
-    entries = mutableStateListOf(),
-    parkedRuns = mutableStateMapOf(),
-    pendingDeepLinkState = mutableStateOf(null),
-    stashedSessionState = mutableStateOf(null),
-  )
-
-  @Provides
-  fun bindBackstack(controller: BackstackController): Backstack = controller
 }

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.raise.either
 import com.eygraber.uri.Uri
 import com.hedvig.android.apollo.NetworkCacheManager
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.fileupload.ClaimsServiceUploadFileUseCase
 import com.hedvig.android.core.fileupload.FileService
 import com.hedvig.android.core.uidata.UiFile
@@ -31,7 +31,7 @@ internal class AddFilesViewModel(
 ) : ViewModel() {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(ActivityRetainedScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted targetUploadUrl: String,

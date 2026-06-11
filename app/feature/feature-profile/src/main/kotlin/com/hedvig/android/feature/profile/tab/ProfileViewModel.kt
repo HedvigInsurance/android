@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.hedvig.android.auth.LogoutUseCase
-import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.feature.profile.data.CheckCertificatesAvailabilityUseCase
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Logout
 import com.hedvig.android.feature.profile.tab.ProfileUiEvent.Reload
@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.flow
 
 @Inject
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
 internal class ProfileViewModel(
   getEuroBonusStatusUseCase: GetEurobonusStatusUseCase,
   checkCertificatesAvailabilityUseCase: CheckCertificatesAvailabilityUseCase,
