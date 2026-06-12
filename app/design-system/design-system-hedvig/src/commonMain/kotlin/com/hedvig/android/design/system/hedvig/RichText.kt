@@ -16,15 +16,27 @@ import com.mikepenz.markdown.compose.Markdown
 import com.mikepenz.markdown.model.MarkdownColors
 import com.mikepenz.markdown.model.MarkdownPadding
 import com.mikepenz.markdown.model.MarkdownTypography
+import com.mikepenz.markdown.model.markdownAnnotator
+import com.mikepenz.markdown.model.markdownAnnotatorConfig
 
 /**
  * Renders Markdown content with Hedvig theming.
  *
  * [style], when provided, is applied to the body-level elements (paragraphs, lists, quotes, tables)
  * instead of the default body style. Headings and code keep their own styling.
+ *
+ * [eolAsNewLine] controls how a single newline inside a paragraph (a CommonMark "soft line break")
+ * is rendered. CommonMark leaves this to the renderer: by default the library collapses it to a
+ * space, but some content (e.g. chat messages mirroring iOS) is authored expecting the newline to
+ * be preserved. Set this to true to render soft line breaks as actual line breaks.
  */
 @Composable
-fun HedvigMarkdownText(content: String, modifier: Modifier = Modifier, style: TextStyle? = null) {
+fun HedvigMarkdownText(
+  content: String,
+  modifier: Modifier = Modifier,
+  style: TextStyle? = null,
+  eolAsNewLine: Boolean = false,
+) {
   val colors = HedvigTheme.colorScheme
   val typography = HedvigTheme.typography
 
@@ -70,6 +82,7 @@ fun HedvigMarkdownText(content: String, modifier: Modifier = Modifier, style: Te
     modifier = modifier,
     colors = markdownColors,
     typography = markdownTypography,
+    annotator = markdownAnnotator(config = markdownAnnotatorConfig(eolAsNewLine = eolAsNewLine)),
     padding = object : MarkdownPadding {
       override val block = 0.dp
       override val blockQuote = PaddingValues(0.dp)
