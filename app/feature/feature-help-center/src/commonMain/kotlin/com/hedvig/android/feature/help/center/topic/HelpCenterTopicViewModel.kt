@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.help.center.data.FAQTopic
 import com.hedvig.android.feature.help.center.data.GetHelpCenterTopicUseCase
 import com.hedvig.android.feature.help.center.data.HelpCenterTopicError.GenericError
@@ -16,29 +16,17 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel
 internal class HelpCenterTopicViewModel(
   @Assisted topicId: String?,
   getHelpCenterTopicUseCase: GetHelpCenterTopicUseCase,
 ) : MoleculeViewModel<HelpCenterTopicEvent, HelpCenterTopicUiState>(
     presenter = HelpCenterTopicPresenter(topicId, getHelpCenterTopicUseCase),
     initialState = HelpCenterTopicUiState.Loading,
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted topicId: String?,
-    ): HelpCenterTopicViewModel
-  }
-}
+  )
 
 private class HelpCenterTopicPresenter(
   private val topicId: String?,

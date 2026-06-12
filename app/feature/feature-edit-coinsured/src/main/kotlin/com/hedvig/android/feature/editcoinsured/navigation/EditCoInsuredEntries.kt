@@ -6,8 +6,10 @@ import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddMissingInfoDe
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredAddOrRemoveDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredSuccessDestination
 import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModel
+import com.hedvig.android.feature.editcoinsured.ui.EditCoInsuredViewModelFactory
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageDestination
 import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModel
+import com.hedvig.android.feature.editcoinsured.ui.triage.EditCoInsuredTriageViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -17,7 +19,7 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredEntries(backstack: Backstack) 
     val triageContractId = key.contractId
     val triageType = key.type
     val viewModel: EditCoInsuredTriageViewModel =
-      assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
+      assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModelFactory> {
         create(triageContractId, triageType)
       }
     EditCoInsuredTriageDestination(
@@ -29,7 +31,7 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredEntries(backstack: Backstack) 
   entry<EditCoOwnersTriageDeepLinkKey> { key ->
     val coOwnersContractId = key.contractId
     val viewModel: EditCoInsuredTriageViewModel =
-      assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModel.Factory> {
+      assistedMetroViewModel<EditCoInsuredTriageViewModel, EditCoInsuredTriageViewModelFactory> {
         create(coOwnersContractId, CoInsuredFlowType.CoOwners)
       }
     EditCoInsuredTriageDestination(
@@ -42,7 +44,7 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredEntries(backstack: Backstack) 
     val addInfoContractId = key.contractId
     val addInfoType = key.type
     EditCoInsuredAddMissingInfoDestination(
-      viewModel = assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModel.Factory> {
+      viewModel = assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModelFactory> {
         create(addInfoContractId, addInfoType)
       },
       navigateUp = backstack::navigateUp,
@@ -52,7 +54,7 @@ fun EntryProviderScope<HedvigNavKey>.editCoInsuredEntries(backstack: Backstack) 
     val addOrRemoveContractId = key.contractId
     val addOrRemoveType = key.type
     EditCoInsuredAddOrRemoveDestination(
-      assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModel.Factory> {
+      assistedMetroViewModel<EditCoInsuredViewModel, EditCoInsuredViewModelFactory> {
         create(addOrRemoveContractId, addOrRemoveType)
       },
       navigateUp = backstack::navigateUp,

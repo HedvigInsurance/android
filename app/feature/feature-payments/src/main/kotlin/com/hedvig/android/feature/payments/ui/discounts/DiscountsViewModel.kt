@@ -1,17 +1,13 @@
 package com.hedvig.android.feature.payments.ui.discounts
 
-import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payments.data.GetDiscountsOverviewUseCase
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
+@HedvigViewModel
 internal class DiscountsViewModel(
   getDiscountsOverviewUseCase: GetDiscountsOverviewUseCase,
 ) : MoleculeViewModel<DiscountsEvent, DiscountsUiState>(

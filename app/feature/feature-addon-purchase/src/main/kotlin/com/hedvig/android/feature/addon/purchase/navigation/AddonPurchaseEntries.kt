@@ -7,15 +7,19 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.data.addons.data.AddonBannerSource
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonDestination
 import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonViewModel
+import com.hedvig.android.feature.addon.purchase.ui.customize.CustomizeAddonViewModelFactory
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonDestination
 import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModel
+import com.hedvig.android.feature.addon.purchase.ui.selectinsurance.SelectInsuranceForAddonViewModelFactory
 import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonFailureScreen
 import com.hedvig.android.feature.addon.purchase.ui.success.SubmitAddonSuccessScreen
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryDestination
 import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModel
+import com.hedvig.android.feature.addon.purchase.ui.summary.AddonSummaryViewModelFactory
 import com.hedvig.android.feature.addon.purchase.ui.travelinsuranceplusexplanation.TravelInsurancePlusExplanationDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageDestination
 import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModel
+import com.hedvig.android.feature.addon.purchase.ui.triage.TravelAddonTriageViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
@@ -55,7 +59,7 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       }
     } else {
       val viewModel: TravelAddonTriageViewModel =
-        assistedMetroViewModel<TravelAddonTriageViewModel, TravelAddonTriageViewModel.Factory> {
+        assistedMetroViewModel<TravelAddonTriageViewModel, TravelAddonTriageViewModelFactory> {
           create(source)
         }
       TravelAddonTriageDestination(
@@ -90,7 +94,7 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
       )
     } else {
       val viewModel: SelectInsuranceForAddonViewModel =
-        assistedMetroViewModel<SelectInsuranceForAddonViewModel, SelectInsuranceForAddonViewModel.Factory> {
+        assistedMetroViewModel<SelectInsuranceForAddonViewModel, SelectInsuranceForAddonViewModelFactory> {
           create(insuranceIds, preselectedAddonDisplayNames)
         }
       SelectInsuranceForAddonDestination(
@@ -122,7 +126,7 @@ fun EntryProviderScope<HedvigNavKey>.addonPurchaseEntries(
     val source = backstack.findLastOrNull<AddonPurchaseKey>()?.source
       ?: AddonBannerSource.TRAVEL_DEEPLINK
     val viewModel: AddonSummaryViewModel =
-      assistedMetroViewModel<AddonSummaryViewModel, AddonSummaryViewModel.Factory> {
+      assistedMetroViewModel<AddonSummaryViewModel, AddonSummaryViewModelFactory> {
         create(summaryParameters, source)
       }
     AddonSummaryDestination(
@@ -154,7 +158,7 @@ private fun CustomizeAddonContent(
   onNavigateToChangeTier: (contractId: String) -> Unit,
 ) {
   val viewModel: CustomizeAddonViewModel =
-    assistedMetroViewModel<CustomizeAddonViewModel, CustomizeAddonViewModel.Factory> {
+    assistedMetroViewModel<CustomizeAddonViewModel, CustomizeAddonViewModelFactory> {
       create(insuranceId, preselectedAddonDisplayNames)
     }
   CustomizeAddonDestination(

@@ -46,6 +46,8 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
     project.objects.newInstance<RoomHandler>()
   private val navKeysHandler: NavKeysHandler =
     project.objects.newInstance<NavKeysHandler>()
+  private val viewModelsHandler: ViewModelsHandler =
+    project.objects.newInstance<ViewModelsHandler>()
 
   fun apolloSchema(apolloServiceAction: Action<Service>) {
     apolloSchemaHandler.configure(project, apolloServiceAction)
@@ -82,6 +84,21 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
    */
   fun navKeys() {
     navKeysHandler.configure(project, pluginManager, libs)
+  }
+
+  /**
+   * Wires the [:viewmodel-processor] KSP processor into this module. The processor scans for
+   * `@HedvigViewModel`-annotated ViewModels and generates their Metro map contribution (no-arg) or
+   * assisted factory, so no VM hand-writes `@ViewModelKey` / `@ContributesIntoMap` / a nested factory.
+   *
+   * @param iosShared only meaningful for KMP modules. When true (the default) the VMs live in
+   *   commonMain and their generated DI must be visible to every target, including iOS — so
+   *   generation runs through `kspCommonMainMetadata`. Set false for the rare KMP module whose VMs
+   *   live only in `androidMain` (e.g. a screen iOS never renders); generation then runs through
+   *   `kspAndroid`, exactly like [navKeys]. Non-KMP modules ignore this flag.
+   */
+  fun viewModels(iosShared: Boolean = true) {
+    viewModelsHandler.configure(project, pluginManager, libs, iosShared)
   }
 
   companion object {
@@ -305,6 +322,48 @@ private abstract class NavKeysHandler {
     val kspConfiguration = if (isMultiplatform) "kspAndroid" else "ksp"
     project.dependencies {
       add(kspConfiguration, project.project(":navigation-keys-processor"))
+    }
+  }
+}
+
+private abstract class ViewModelsHandler {
+  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs, iosShared: Boolean) {
+    pluginManager.apply(libs.plugins.ksp.get().pluginId)
+    val processor = project.project(":viewmodel-processor")
+    val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
+    if (!isMultiplatform) {
+      project.dependencies {
+        add("ksp", processor)
+      }
+      return
+    }
+    if (!iosShared) {
+      // KMP module whose VMs live only in androidMain — generate into the android source set, like
+      // nav-keys. kspAndroid sees commonMain symbols too, so this also covers any commonMain VMs.
+      project.dependencies {
+        add("kspAndroid", processor)
+      }
+      return
+    }
+    // Unlike nav-key serializers (android-only), VM map contributions for commonMain VMs must be
+    // visible to every target — notably iOS via IosGraph. So generate into commonMain through
+    // kspCommonMainMetadata rather than kspAndroid. KSP for KMP does not auto-wire this: the
+    // generated commonMain sources must be added to the source set and every compile task must
+    // depend on the metadata-generation task, or platform compilations won't see (or will race) it.
+    project.dependencies {
+      add("kspCommonMainMetadata", processor)
+    }
+    project.extensions.configure<KotlinMultiplatformExtension> {
+      sourceSets.getByName("commonMain").kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+    }
+    // The generated dir is a commonMain source root, so every per-target compile *and* every other
+    // per-target KSP task (e.g. the nav-keys kspAndroidMain) reads it. Gradle won't infer that
+    // ordering, so make all of them run after the metadata generation. The metadata task itself is
+    // excluded to avoid a self-cycle.
+    project.tasks.configureEach {
+      if (name != "kspCommonMainKotlinMetadata" && (name.startsWith("compile") || name.startsWith("ksp"))) {
+        dependsOn("kspCommonMainKotlinMetadata")
+      }
     }
   }
 }

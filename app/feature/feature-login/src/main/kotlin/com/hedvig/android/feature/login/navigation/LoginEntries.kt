@@ -10,6 +10,7 @@ import com.hedvig.android.feature.login.marketing.MarketingDestination
 import com.hedvig.android.feature.login.marketing.MarketingViewModel
 import com.hedvig.android.feature.login.otpinput.OtpInputDestination
 import com.hedvig.android.feature.login.otpinput.OtpInputViewModel
+import com.hedvig.android.feature.login.otpinput.OtpInputViewModelFactory
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginDestination
 import com.hedvig.android.feature.login.swedishlogin.SwedishLoginViewModel
 import com.hedvig.android.language.Language
@@ -72,7 +73,7 @@ fun EntryProviderScope<HedvigNavKey>.loginEntries(
   entry<OtpInputKey> { key ->
     val otpInputInformation: OtpInputKey.OtpInformation = key.otpInformation
     val viewModel: OtpInputViewModel =
-      assistedMetroViewModel<OtpInputViewModel, OtpInputViewModel.Factory> {
+      assistedMetroViewModel<OtpInputViewModel, OtpInputViewModelFactory> {
         create(otpInputInformation.verifyUrl, otpInputInformation.resendUrl, otpInputInformation.credential)
       }
     OtpInputDestination(

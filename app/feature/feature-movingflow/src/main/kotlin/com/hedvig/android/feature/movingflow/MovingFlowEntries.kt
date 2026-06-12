@@ -3,23 +3,29 @@ package com.hedvig.android.feature.movingflow
 import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationDestination
 import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModel
+import com.hedvig.android.feature.movingflow.ui.addhouseinformation.AddHouseInformationViewModelFactory
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleDestination
 import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModel
+import com.hedvig.android.feature.movingflow.ui.chosecoveragelevelanddeductible.ChoseCoverageLevelAndDeductibleViewModelFactory
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressDestination
 import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModel
+import com.hedvig.android.feature.movingflow.ui.enternewaddress.EnterNewAddressViewModelFactory
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractDestination
 import com.hedvig.android.feature.movingflow.ui.selectcontract.SelectContractViewModel
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeDestination
 import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModel
+import com.hedvig.android.feature.movingflow.ui.start.HousingTypeViewModelFactory
 import com.hedvig.android.feature.movingflow.ui.successfulmove.SuccessfulMoveDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryDestination
 import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModel
+import com.hedvig.android.feature.movingflow.ui.summary.SummaryViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.popUpTo
 import com.hedvig.android.shared.tier.comparison.navigation.ComparisonParameters
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonDestination
 import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModel
+import com.hedvig.android.shared.tier.comparison.ui.ComparisonViewModelFactory
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.datetime.LocalDate
@@ -67,7 +73,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
 
   entry<HousingTypeKey> { key ->
     HousingTypeDestination(
-      viewModel = assistedMetroViewModel<HousingTypeViewModel, HousingTypeViewModel.Factory> {
+      viewModel = assistedMetroViewModel<HousingTypeViewModel, HousingTypeViewModelFactory> {
         create(key.moveIntentId)
       },
       navigateUp = backstack::navigateUp,
@@ -77,7 +83,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
   entry<EnterNewAddressKey> { key ->
     val moveIntentId = key.moveIntentId
     EnterNewAddressDestination(
-      viewModel = assistedMetroViewModel<EnterNewAddressViewModel, EnterNewAddressViewModel.Factory> {
+      viewModel = assistedMetroViewModel<EnterNewAddressViewModel, EnterNewAddressViewModelFactory> {
         create(moveIntentId)
       },
       navigateUp = backstack::navigateUp,
@@ -88,7 +94,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
   entry<AddHouseInformationKey> { key ->
     val moveIntentId = key.moveIntentId
     AddHouseInformationDestination(
-      viewModel = assistedMetroViewModel<AddHouseInformationViewModel, AddHouseInformationViewModel.Factory> {
+      viewModel = assistedMetroViewModel<AddHouseInformationViewModel, AddHouseInformationViewModelFactory> {
         create(moveIntentId)
       },
       navigateUp = backstack::navigateUp,
@@ -101,7 +107,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
     ChoseCoverageLevelAndDeductibleDestination(
       viewModel = assistedMetroViewModel<
         ChoseCoverageLevelAndDeductibleViewModel,
-        ChoseCoverageLevelAndDeductibleViewModel.Factory,
+        ChoseCoverageLevelAndDeductibleViewModelFactory,
       > {
         create(moveIntentId)
       },
@@ -114,7 +120,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
   entry<CompareCoverageKey> { key ->
     val comparisonParameters = key.comparisonParameters
     val viewModel: ComparisonViewModel =
-      assistedMetroViewModel<ComparisonViewModel, ComparisonViewModel.Factory> {
+      assistedMetroViewModel<ComparisonViewModel, ComparisonViewModelFactory> {
         create(comparisonParameters)
       }
     ComparisonDestination(
@@ -126,7 +132,7 @@ fun EntryProviderScope<HedvigNavKey>.movingFlowEntries(backstack: Backstack, goT
   entry<SummaryKey> { key ->
     val summaryRoute = key
     SummaryDestination(
-      viewModel = assistedMetroViewModel<SummaryViewModel, SummaryViewModel.Factory> {
+      viewModel = assistedMetroViewModel<SummaryViewModel, SummaryViewModelFactory> {
         create(summaryRoute)
       },
       navigateUp = backstack::navigateUp,

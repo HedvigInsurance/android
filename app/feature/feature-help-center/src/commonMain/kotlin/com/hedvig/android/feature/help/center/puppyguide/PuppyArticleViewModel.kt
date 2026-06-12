@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.help.center.data.GetPuppyGuideUseCase
 import com.hedvig.android.feature.help.center.data.PuppyGuideStory
 import com.hedvig.android.feature.help.center.data.SetArticleRatingUseCase
@@ -17,13 +17,10 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel
 internal class PuppyArticleViewModel(
   getPuppyGuideUseCase: GetPuppyGuideUseCase,
   setArticleRatingUseCase: SetArticleRatingUseCase,
@@ -37,16 +34,7 @@ internal class PuppyArticleViewModel(
       setArticleReadUseCase,
     ),
     initialState = PuppyArticleUiState.Loading,
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted storyName: String,
-    ): PuppyArticleViewModel
-  }
-}
+  )
 
 private class PuppyArticlePresenter(
   private val getPuppyGuideUseCase: GetPuppyGuideUseCase,

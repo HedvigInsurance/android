@@ -6,8 +6,10 @@ import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForC
 import com.hedvig.android.feature.travelcertificate.ui.choose.ChooseContractForCertificateViewModel
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputDestination
 import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewhen.TravelCertificateDateInputViewModelFactory
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputDestination
 import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModel
+import com.hedvig.android.feature.travelcertificate.ui.generatewho.TravelCertificateTravellersInputViewModelFactory
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryEvent
 import com.hedvig.android.feature.travelcertificate.ui.history.CertificateHistoryViewModel
 import com.hedvig.android.feature.travelcertificate.ui.history.TravelCertificateHistoryDestination
@@ -60,7 +62,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
   entry<TravelCertificateDateInputKey> { key ->
     val contractId = key.contractId
     val viewModel: TravelCertificateDateInputViewModel =
-      assistedMetroViewModel<TravelCertificateDateInputViewModel, TravelCertificateDateInputViewModel.Factory> {
+      assistedMetroViewModel<TravelCertificateDateInputViewModel, TravelCertificateDateInputViewModelFactory> {
         create(contractId)
       }
     TravelCertificateDateInputDestination(
@@ -74,7 +76,7 @@ fun EntryProviderScope<HedvigNavKey>.travelCertificateEntries(
     val viewModel: TravelCertificateTravellersInputViewModel =
       assistedMetroViewModel<
         TravelCertificateTravellersInputViewModel,
-        TravelCertificateTravellersInputViewModel.Factory,
+        TravelCertificateTravellersInputViewModelFactory,
       > {
         create(primaryInput)
       }

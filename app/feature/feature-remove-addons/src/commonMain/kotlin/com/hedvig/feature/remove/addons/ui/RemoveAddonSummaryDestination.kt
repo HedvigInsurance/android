@@ -72,7 +72,7 @@ internal fun RemoveAddonSummaryDestination(
   onCloseFlow: () -> Unit,
 ) {
   val viewModel: RemoveAddonSummaryViewModel =
-    assistedMetroViewModel<RemoveAddonSummaryViewModel, RemoveAddonSummaryViewModel.Factory> {
+    assistedMetroViewModel<RemoveAddonSummaryViewModel, RemoveAddonSummaryViewModelFactory> {
       create(
         SummaryParameters(
           contractId = contractId,

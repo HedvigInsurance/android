@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.EntryProviderScope
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsDestination
 import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModel
+import com.hedvig.android.feature.payments.ui.details.PaymentDetailsViewModelFactory
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsDestination
 import com.hedvig.android.feature.payments.ui.discounts.DiscountsViewModel
 import com.hedvig.android.feature.payments.ui.history.PaymentHistoryDestination
@@ -77,7 +78,7 @@ fun EntryProviderScope<HedvigNavKey>.paymentsEntries(
   entry<PaymentDetailsKey> { key ->
     val memberChargeId = key.memberChargeId
     val viewModel: PaymentDetailsViewModel =
-      assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModel.Factory> { create(memberChargeId) }
+      assistedMetroViewModel<PaymentDetailsViewModel, PaymentDetailsViewModelFactory> { create(memberChargeId) }
     PaymentDetailsDestination(
       viewModel = viewModel,
       navigateUp = backstack::navigateUp,

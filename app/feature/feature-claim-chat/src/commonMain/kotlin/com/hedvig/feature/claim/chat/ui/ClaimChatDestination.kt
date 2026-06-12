@@ -82,6 +82,7 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.feature.claim.chat.ClaimChatEvent
 import com.hedvig.feature.claim.chat.ClaimChatUiState
 import com.hedvig.feature.claim.chat.ClaimChatViewModel
+import com.hedvig.feature.claim.chat.ClaimChatViewModelFactory
 import com.hedvig.feature.claim.chat.data.ClaimChatErrorMessage
 import com.hedvig.feature.claim.chat.data.ClaimIntentOutcome
 import com.hedvig.feature.claim.chat.data.ClaimIntentStep
@@ -132,7 +133,7 @@ internal fun ClaimChatDestination(
   openPlayStore: () -> Unit,
 ) {
   val claimChatViewModel =
-    assistedMetroViewModel<ClaimChatViewModel, ClaimChatViewModel.Factory> {
+    assistedMetroViewModel<ClaimChatViewModel, ClaimChatViewModelFactory> {
       create(isDevelopmentFlow)
     }
   Box(Modifier.fillMaxSize(), propagateMinConstraints = true) {

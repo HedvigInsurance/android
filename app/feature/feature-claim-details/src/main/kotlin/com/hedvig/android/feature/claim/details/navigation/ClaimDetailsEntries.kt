@@ -7,8 +7,10 @@ import coil3.ImageLoader
 import com.hedvig.android.compose.ui.dropUnlessResumed
 import com.hedvig.android.feature.claim.details.ui.AddFilesDestination
 import com.hedvig.android.feature.claim.details.ui.AddFilesViewModel
+import com.hedvig.android.feature.claim.details.ui.AddFilesViewModelFactory
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsDestination
 import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModel
+import com.hedvig.android.feature.claim.details.ui.ClaimDetailsViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
@@ -26,7 +28,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
 ) {
   entry<ClaimDetailsKey> { key ->
     val viewModel: ClaimDetailsViewModel =
-      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModel.Factory> { create(key.claimId) }
+      assistedMetroViewModel<ClaimDetailsViewModel, ClaimDetailsViewModelFactory> { create(key.claimId) }
     val context = LocalContext.current
     ClaimDetailsDestination(
       viewModel = viewModel,
@@ -55,7 +57,7 @@ fun EntryProviderScope<HedvigNavKey>.claimDetailsEntries(
   }
   entry<AddFilesKey> { key ->
     val viewModel: AddFilesViewModel =
-      assistedMetroViewModel<AddFilesViewModel, AddFilesViewModel.Factory> {
+      assistedMetroViewModel<AddFilesViewModel, AddFilesViewModelFactory> {
         create(key.targetUploadUrl, key.initialFilesUri)
       }
     AddFilesDestination(

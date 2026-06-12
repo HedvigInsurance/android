@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.chip.id.data.GetContractsWithMissingChipIdUseCase
 import com.hedvig.android.feature.chip.id.data.PetContractForChipId
 import com.hedvig.android.feature.chip.id.navigation.AddChipIdKey
@@ -19,13 +19,10 @@ import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
 import com.hedvig.android.navigation.compose.navigateAndPopUpTo
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel
 internal class SelectInsuranceForChipIdViewModel(
   @Assisted preselectedContractId: String?,
   getContractsWithMissingChipIdUseCase: GetContractsWithMissingChipIdUseCase,
@@ -37,16 +34,7 @@ internal class SelectInsuranceForChipIdViewModel(
       getContractsWithMissingChipIdUseCase,
       backstack,
     ),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted preselectedContractId: String?,
-    ): SelectInsuranceForChipIdViewModel
-  }
-}
+  )
 
 internal class SelectInsuranceForChipIdPresenter(
   private val preselectedContractId: String?,

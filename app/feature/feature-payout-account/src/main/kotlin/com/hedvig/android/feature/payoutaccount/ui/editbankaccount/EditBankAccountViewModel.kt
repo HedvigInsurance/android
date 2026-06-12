@@ -14,8 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.lifecycle.ViewModel
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.payoutaccount.data.SetupNordeaPayoutUseCase
 import com.hedvig.android.feature.payoutaccount.data.bankNameForClearingNumber
 import com.hedvig.android.feature.payoutaccount.navigation.SelectPayoutMethodKey
@@ -24,14 +24,10 @@ import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.popUpTo
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
+@HedvigViewModel
 internal class EditBankAccountViewModel(
   setupNordeaPayoutUseCase: SetupNordeaPayoutUseCase,
   backstack: Backstack,

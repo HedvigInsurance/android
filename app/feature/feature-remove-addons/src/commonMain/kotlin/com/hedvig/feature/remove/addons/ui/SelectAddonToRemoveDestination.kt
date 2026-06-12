@@ -68,7 +68,7 @@ internal fun SelectAddonToRemoveDestination(
   navigateUp: () -> Unit,
 ) {
   val viewModel: SelectAddonToRemoveViewModel =
-    assistedMetroViewModel<SelectAddonToRemoveViewModel, SelectAddonToRemoveViewModel.Factory> {
+    assistedMetroViewModel<SelectAddonToRemoveViewModel, SelectAddonToRemoveViewModelFactory> {
       create(contractId, preselectedAddonProduct)
     }
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()

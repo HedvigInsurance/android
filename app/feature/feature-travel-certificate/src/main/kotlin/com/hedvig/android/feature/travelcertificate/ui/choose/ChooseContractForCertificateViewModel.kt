@@ -7,8 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.travelcertificate.data.ContractEligibleWithAddress
 import com.hedvig.android.feature.travelcertificate.data.GetEligibleContractsWithAddressUseCase
 import com.hedvig.android.logger.LogPriority
@@ -16,14 +15,10 @@ import com.hedvig.android.logger.logcat
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
+@HedvigViewModel
 internal class ChooseContractForCertificateViewModel(
   getEligibleContractsWithAddressUseCase: GetEligibleContractsWithAddressUseCase,
 ) : MoleculeViewModel<ChooseContractEvent, ChooseContractUiState>(

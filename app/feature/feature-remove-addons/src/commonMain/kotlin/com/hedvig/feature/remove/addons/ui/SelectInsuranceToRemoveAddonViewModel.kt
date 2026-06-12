@@ -7,8 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.contract.ContractId
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
@@ -18,14 +17,10 @@ import com.hedvig.android.navigation.compose.add
 import com.hedvig.feature.remove.addons.ChooseAddonToRemoveKey
 import com.hedvig.feature.remove.addons.data.GetInsurancesWithRemovableAddonsUseCase
 import com.hedvig.feature.remove.addons.data.InsuranceForAddon
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
+@HedvigViewModel
 internal class SelectInsuranceToRemoveAddonViewModel(
   getInsurancesWithRemovableAddonsUseCase: GetInsurancesWithRemovableAddonsUseCase,
   backstack: Backstack,

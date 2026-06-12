@@ -12,6 +12,7 @@ import arrow.core.Option
 import arrow.core.Some
 import arrow.core.some
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.feature.movingflow.CompareCoverageKey
 import com.hedvig.android.feature.movingflow.SummaryKey
@@ -40,13 +41,11 @@ import com.hedvig.ui.tiersandaddons.CostBreakdownEntry
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AssistedInject
+@HedvigViewModel
 internal class ChoseCoverageLevelAndDeductibleViewModel(
   @Assisted intentId: String,
   movingFlowRepository: MovingFlowRepository,
@@ -55,16 +54,7 @@ internal class ChoseCoverageLevelAndDeductibleViewModel(
 ) : MoleculeViewModel<ChoseCoverageLevelAndDeductibleEvent, ChoseCoverageLevelAndDeductibleUiState>(
     ChoseCoverageLevelAndDeductibleUiState.Loading,
     ChoseCoverageLevelAndDeductiblePresenter(intentId, movingFlowRepository, getMoveIntentCostUseCase, backstack),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted intentId: String,
-    ): ChoseCoverageLevelAndDeductibleViewModel
-  }
-}
+  )
 
 private class ChoseCoverageLevelAndDeductiblePresenter(
   private val intentId: String,

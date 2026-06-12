@@ -12,6 +12,7 @@ import com.hedvig.android.feature.insurances.insurance.InsuranceDestination
 import com.hedvig.android.feature.insurances.insurance.presentation.InsuranceViewModel
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailDestination
 import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModel
+import com.hedvig.android.feature.insurances.insurancedetail.ContractDetailViewModelFactory
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsDestination
 import com.hedvig.android.feature.insurances.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -62,7 +63,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(
   entry<InsuranceContractDetailKey>(metadata = NavSuiteSceneDecoratorStrategy.showNavBar()) { key ->
     val contractDetail = key
     val viewModel: ContractDetailViewModel =
-      assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModel.Factory> {
+      assistedMetroViewModel<ContractDetailViewModel, ContractDetailViewModelFactory> {
         create(contractDetail.contractId)
       }
     ContractDetailDestination(

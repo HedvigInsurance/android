@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.movingflow.EnterNewAddressKey
 import com.hedvig.android.feature.movingflow.data.HousingType
 import com.hedvig.android.feature.movingflow.storage.MovingFlowRepository
@@ -24,12 +25,10 @@ import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.collectLatest
 
 @AssistedInject
+@HedvigViewModel
 internal class HousingTypeViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,
@@ -37,16 +36,7 @@ internal class HousingTypeViewModel(
 ) : MoleculeViewModel<HousingTypeEvent, HousingTypeUiState>(
     HousingTypeUiState.Loading,
     HousingTypePresenter(moveIntentId, movingFlowRepository, backstack),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted moveIntentId: String,
-    ): HousingTypeViewModel
-  }
-}
+  )
 
 private class HousingTypePresenter(
   private val moveIntentId: String,

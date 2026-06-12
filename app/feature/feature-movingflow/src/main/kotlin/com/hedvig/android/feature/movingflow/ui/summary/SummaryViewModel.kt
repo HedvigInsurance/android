@@ -12,6 +12,7 @@ import arrow.core.toNonEmptyListOrNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.uidata.UiMoney
 import com.hedvig.android.data.contract.ContractGroup
 import com.hedvig.android.data.cross.sell.after.flow.CrossSellAfterFlowRepository
@@ -44,13 +45,11 @@ import com.hedvig.ui.tiersandaddons.DisplayDocument
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.datetime.LocalDate
 import octopus.feature.movingflow.MoveIntentV2CommitMutation
 
 @AssistedInject
+@HedvigViewModel
 internal class SummaryViewModel(
   @Assisted summaryRoute: SummaryKey,
   movingFlowRepository: MovingFlowRepository,
@@ -68,16 +67,7 @@ internal class SummaryViewModel(
       getMoveIntentCostUseCase = getMoveIntentCostUseCase,
       backstack = backstack,
     ),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted summaryRoute: SummaryKey,
-    ): SummaryViewModel
-  }
-}
+  )
 
 internal class SummaryPresenter(
   private val summaryRoute: SummaryKey,

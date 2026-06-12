@@ -18,6 +18,7 @@ import arrow.core.raise.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.apollo.safeExecute
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.feature.movingflow.ChoseCoverageLevelAndDeductibleKey
 import com.hedvig.android.feature.movingflow.compose.BooleanInput
 import com.hedvig.android.feature.movingflow.compose.ConstrainedNumberInput
@@ -44,9 +45,6 @@ import com.hedvig.android.navigation.compose.add
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import octopus.feature.movingflow.MoveIntentV2RequestMutation
@@ -56,6 +54,7 @@ import octopus.type.MoveToAddressInput
 import octopus.type.MoveToHouseInput
 
 @AssistedInject
+@HedvigViewModel
 internal class AddHouseInformationViewModel(
   @Assisted moveIntentId: String,
   movingFlowRepository: MovingFlowRepository,
@@ -71,16 +70,7 @@ internal class AddHouseInformationViewModel(
       featureManager,
       backstack,
     ),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted moveIntentId: String,
-    ): AddHouseInformationViewModel
-  }
-}
+  )
 
 internal class AddHouseInformationPresenter(
   private val moveIntentId: String,

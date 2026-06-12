@@ -8,16 +8,20 @@ import com.hedvig.android.data.changetier.data.IntentOutput
 import com.hedvig.android.feature.terminateinsurance.data.TerminationAction
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateDestination
 import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModel
+import com.hedvig.android.feature.terminateinsurance.step.choose.ChooseInsuranceToTerminateViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.deflect.DeflectSuggestionDestination
 import com.hedvig.android.feature.terminateinsurance.step.deletion.InsuranceDeletionDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyDestination
 import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModel
+import com.hedvig.android.feature.terminateinsurance.step.survey.TerminationSurveyViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModel
+import com.hedvig.android.feature.terminateinsurance.step.terminationdate.TerminationDateViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.terminationfailure.TerminationFailureDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationDestination
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationEvent
 import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModel
+import com.hedvig.android.feature.terminateinsurance.step.terminationreview.TerminationConfirmationViewModelFactory
 import com.hedvig.android.feature.terminateinsurance.step.terminationsuccess.TerminationSuccessDestination
 import com.hedvig.android.feature.terminateinsurance.step.unknown.UnknownScreenDestination
 import com.hedvig.android.navigation.common.HedvigNavKey
@@ -74,7 +78,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
   entry<TerminateInsuranceKey> { key ->
     val insuranceId = key.insuranceId
     val viewModel: ChooseInsuranceToTerminateViewModel =
-      assistedMetroViewModel<ChooseInsuranceToTerminateViewModel, ChooseInsuranceToTerminateViewModel.Factory> {
+      assistedMetroViewModel<ChooseInsuranceToTerminateViewModel, ChooseInsuranceToTerminateViewModelFactory> {
         create(insuranceId)
       }
     ChooseInsuranceToTerminateDestination(
@@ -89,7 +93,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
     val surveyOptions = key.options
     val surveyAction = key.action
     val viewModel: TerminationSurveyViewModel =
-      assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
+      assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModelFactory> {
         create(surveyOptions, surveyAction, key.commonParams)
       }
     TerminationSurveyDestination(
@@ -108,7 +112,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
     val surveySubOptions = key.subOptions
     val surveyAction = key.action
     val viewModel: TerminationSurveyViewModel =
-      assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModel.Factory> {
+      assistedMetroViewModel<TerminationSurveyViewModel, TerminationSurveyViewModelFactory> {
         create(surveySubOptions, surveyAction, key.commonParams)
       }
     TerminationSurveyDestination(
@@ -130,7 +134,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
       key.commonParams,
     )
     val viewModel: TerminationDateViewModel =
-      assistedMetroViewModel<TerminationDateViewModel, TerminationDateViewModel.Factory> {
+      assistedMetroViewModel<TerminationDateViewModel, TerminationDateViewModelFactory> {
         create(terminationDateParameters)
       }
     TerminationDateDestination(
@@ -180,7 +184,7 @@ fun EntryProviderScope<HedvigNavKey>.terminateInsuranceEntries(
     val confirmationSelectedReasonId = key.selectedReasonId
     val confirmationFeedbackComment = key.feedbackComment
     val viewModel: TerminationConfirmationViewModel =
-      assistedMetroViewModel<TerminationConfirmationViewModel, TerminationConfirmationViewModel.Factory> {
+      assistedMetroViewModel<TerminationConfirmationViewModel, TerminationConfirmationViewModelFactory> {
         create(
           confirmationTerminationType,
           confirmationInsuranceInfo,

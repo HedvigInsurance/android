@@ -16,12 +16,15 @@ import com.hedvig.android.feature.help.center.navigation.PuppyGuideArticleKey
 import com.hedvig.android.feature.help.center.navigation.PuppyGuideKey
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModel
+import com.hedvig.android.feature.help.center.puppyguide.PuppyArticleViewModelFactory
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideDestination
 import com.hedvig.android.feature.help.center.puppyguide.PuppyGuideViewModel
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionDestination
 import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModel
+import com.hedvig.android.feature.help.center.question.HelpCenterQuestionViewModelFactory
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicDestination
 import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModel
+import com.hedvig.android.feature.help.center.topic.HelpCenterTopicViewModelFactory
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import com.hedvig.android.navigation.compose.add
@@ -63,7 +66,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
     val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
     val topicId = key.topicId
     val helpCenterTopicViewModel =
-      assistedMetroViewModel<HelpCenterTopicViewModel, HelpCenterTopicViewModel.Factory> {
+      assistedMetroViewModel<HelpCenterTopicViewModel, HelpCenterTopicViewModelFactory> {
         create(topicId)
       }
     HelpCenterTopicDestination(
@@ -82,7 +85,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
     val showNavigateToInboxViewModel = metroViewModel<ShowNavigateToInboxViewModel>()
     val questionId = key.questionId
     val helpCenterQuestionViewModel =
-      assistedMetroViewModel<HelpCenterQuestionViewModel, HelpCenterQuestionViewModel.Factory> {
+      assistedMetroViewModel<HelpCenterQuestionViewModel, HelpCenterQuestionViewModelFactory> {
         create(questionId)
       }
     HelpCenterQuestionDestination(
@@ -128,7 +131,7 @@ fun EntryProviderScope<HedvigNavKey>.helpCenterEntries(
   entry<PuppyGuideArticleKey> { key ->
     val storyName = key.storyName
     val viewModel =
-      assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModel.Factory> {
+      assistedMetroViewModel<PuppyArticleViewModel, PuppyArticleViewModelFactory> {
         create(storyName)
       }
     PuppyArticleDestination(

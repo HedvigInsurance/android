@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.raise.either
@@ -15,8 +14,8 @@ import com.apollographql.apollo.api.Optional
 import com.hedvig.android.apollo.ErrorMessage
 import com.hedvig.android.apollo.safeFlow
 import com.hedvig.android.core.common.ErrorMessage
-import com.hedvig.android.core.common.di.ActivityRetainedScope
 import com.hedvig.android.core.common.di.AppScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.ProdOrDemoProvider
 import com.hedvig.android.core.demomode.Provider
@@ -31,11 +30,9 @@ import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emitAll
@@ -51,8 +48,7 @@ import octopus.type.FlowSource
 import octopus.type.UserFlow
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
+@HedvigViewModel
 internal class CrossSellSheetViewModel(
   getCrossSellSheetDataUseCaseProvider: Provider<GetCrossSellSheetDataUseCase>,
   crossSellAfterFlowRepository: CrossSellAfterFlowRepository,

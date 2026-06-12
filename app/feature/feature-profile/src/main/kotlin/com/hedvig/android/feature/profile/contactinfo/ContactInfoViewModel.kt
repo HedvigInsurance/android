@@ -13,11 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.text.TextRange
-import androidx.lifecycle.ViewModel
 import arrow.core.Either
 import arrow.core.getOrElse
 import com.hedvig.android.core.common.ErrorMessage
 import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.RetryLoadData
 import com.hedvig.android.feature.profile.contactinfo.ContactInfoEvent.SubmitData
@@ -34,10 +34,7 @@ import com.hedvig.android.feature.profile.data.valueForTextField
 import com.hedvig.android.molecule.public.MoleculePresenter
 import com.hedvig.android.molecule.public.MoleculePresenterScope
 import com.hedvig.android.molecule.public.MoleculeViewModel
-import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.binding
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
@@ -107,8 +104,7 @@ internal sealed interface ContactInfoUiState {
 }
 
 @Inject
-@ViewModelKey
-@ContributesIntoMap(ActivityRetainedScope::class, binding<ViewModel>())
+@HedvigViewModel
 internal class ContactInfoViewModel(
   repository: Provider<ContactInfoRepository>,
 ) : MoleculeViewModel<ContactInfoEvent, ContactInfoUiState>(

@@ -9,6 +9,7 @@ hedvig {
   compose()
   serialization()
   navKeys()
+  viewModels()
 }
 
 kotlin {

@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.hedvig.android.core.common.di.ActivityRetainedScope
+import com.hedvig.android.core.common.di.HedvigViewModel
 import com.hedvig.android.data.coinsured.CoInsuredFlowType
 import com.hedvig.android.feature.editcoinsured.data.EditCoInsuredDestination
 import com.hedvig.android.feature.editcoinsured.data.GetInsurancesForEditCoInsuredUseCase
@@ -25,13 +25,10 @@ import com.hedvig.android.molecule.public.MoleculeViewModel
 import com.hedvig.android.navigation.common.HedvigNavKey
 import com.hedvig.android.navigation.compose.Backstack
 import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 
 @AssistedInject
+@HedvigViewModel
 internal class EditCoInsuredTriageViewModel(
   getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,
   backstack: Backstack,
@@ -43,17 +40,7 @@ internal class EditCoInsuredTriageViewModel(
   >(
     initialState = Loading,
     presenter = EditCoInsuredTriagePresenter(getInsuranceForEditCoInsuredUseCase, backstack, insuranceId, type),
-  ) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(ActivityRetainedScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted insuranceId: String?,
-      @Assisted type: CoInsuredFlowType,
-    ): EditCoInsuredTriageViewModel
-  }
-}
+  )
 
 internal class EditCoInsuredTriagePresenter(
   private val getInsuranceForEditCoInsuredUseCase: GetInsurancesForEditCoInsuredUseCase,

@@ -6,6 +6,7 @@ plugins {
 hedvig {
   compose()
   apollo("octopus")
+  viewModels()
 }
 
 dependencies {

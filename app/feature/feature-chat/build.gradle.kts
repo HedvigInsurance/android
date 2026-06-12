@@ -9,6 +9,7 @@ hedvig {
   }
   serialization()
   compose()
+  viewModels()
   navKeys()
 }
 
