@@ -46,6 +46,7 @@ import com.hedvig.android.core.common.safeCast
 import com.hedvig.android.core.uidata.UiCurrencyCode
 import com.hedvig.android.core.uidata.UiCurrencyCode.SEK
 import com.hedvig.android.core.uidata.UiMoney
+import com.hedvig.android.data.paying.member.MemberType
 import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.HedvigButton
 import com.hedvig.android.design.system.hedvig.HedvigCard
@@ -58,11 +59,12 @@ import com.hedvig.android.design.system.hedvig.HedvigTheme
 import com.hedvig.android.design.system.hedvig.HorizontalDivider
 import com.hedvig.android.design.system.hedvig.HorizontalItemsWithMaximumSpaceTaken
 import com.hedvig.android.design.system.hedvig.Icon
-import com.hedvig.android.design.system.hedvig.NotificationDefaults
+import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.InfoCardStyle.Button
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority
 import com.hedvig.android.design.system.hedvig.NotificationDefaults.NotificationPriority.Info
 import com.hedvig.android.design.system.hedvig.Surface
+import com.hedvig.android.design.system.hedvig.debugBorder
 import com.hedvig.android.design.system.hedvig.hedvigDropShadow
 import com.hedvig.android.design.system.hedvig.icon.Campaign
 import com.hedvig.android.design.system.hedvig.icon.Card
@@ -106,6 +108,8 @@ import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_BUTTON
 import hedvig.resources.PAYMENTS_PAYMENT_OVERDUE_TITLE
 import hedvig.resources.PAYMENTS_PROCESSING_PAYMENT
 import hedvig.resources.PAYMENTS_UPCOMING_PAYMENT
+import hedvig.resources.PAYOUT_ADD_PAYOUT_METHOD
+import hedvig.resources.PAYOUT_MISSING_INFO
 import hedvig.resources.PAYOUT_PAGE_HEADING
 import hedvig.resources.PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_TITLE
 import hedvig.resources.R
@@ -276,7 +280,7 @@ private fun PaymentsContent(
     }
     val upcomingPayment = (uiState as? Content)?.upcomingPayment
     if (upcomingPayment == NoUpcomingPayment) {
-      if (ongoingCharges.isNullOrEmpty()) {
+      if (ongoingCharges.isNullOrEmpty() && uiState.memberType != MemberType.QASA_ONLY_MEMBER) {
         HedvigInformationSection(
           stringResource(Res.string.PAYMENTS_NO_PAYMENTS_IN_PROGRESS),
           modifier = Modifier
@@ -293,38 +297,14 @@ private fun PaymentsContent(
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       )
     }
-    UpcomingPaymentInfoCard(
-      upcomingPaymentInfo = (uiState as? Content)?.upcomingPaymentInfo,
-      modifier = Modifier
-        .padding(horizontal = 16.dp)
-        .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
-    )
-    val showConnectedPaymentInfo = uiState is Content &&
-      uiState.connectedPaymentInfo is ConnectedPaymentInfo.NeedsSetup
-    AnimatedVisibility(
-      visibleState = remember { MutableTransitionState(showConnectedPaymentInfo) }.apply {
-        targetState = showConnectedPaymentInfo
-      },
-      enter = expandVertically(expandFrom = Alignment.CenterVertically),
-    ) {
-      CardNotConnectedWarningCard(
-        connectedPaymentInfo = (uiState as? Content)?.connectedPaymentInfo as? ConnectedPaymentInfo.NeedsSetup,
-        onChangeBankAccount = onChangeBankAccount,
+    if (uiState is Content) {
+      UpcomingPaymentInfoCard(
+        upcomingPaymentInfo = uiState.upcomingPaymentInfo,
         modifier = Modifier
           .padding(horizontal = 16.dp)
           .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
       )
-    }
 
-    PaymentsListItems(
-      uiState,
-      onDiscountClicked = onDiscountClicked,
-      onPaymentHistoryClicked = onPaymentHistoryClicked,
-      onPayoutAccountClicked = onPayoutAccountClicked,
-      onPaymentDetailsClicked = onPaymentDetailsClicked,
-      showPayoutButton = (uiState as? Content)?.showPayoutButton == true,
-    )
-    if (uiState is Content) {
       when (uiState.connectedPaymentInfo) {
         ConnectedPaymentInfo.Pending -> {
           HedvigNotificationCard(
@@ -340,19 +320,51 @@ private fun PaymentsContent(
           )
         }
 
-        is ConnectedPaymentInfo.NeedsSetup,
+        is ConnectedPaymentInfo.NeedsPayinSetup -> {
+          CardNotConnectedWarningCard(
+            connectedPaymentInfo = uiState.connectedPaymentInfo as? ConnectedPaymentInfo.NeedsPayinSetup,
+            onChangeBankAccount = onChangeBankAccount,
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+          )
+        }
+
+        ConnectedPaymentInfo.NeedsPayoutSetup -> {
+          HedvigNotificationCard(
+            message = stringResource(Res.string.PAYOUT_MISSING_INFO),
+            modifier = Modifier
+              .padding(horizontal = 16.dp)
+              .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
+            priority = NotificationPriority.Attention,
+            style = Button(
+              buttonText = stringResource(Res.string.PAYOUT_ADD_PAYOUT_METHOD),
+              onButtonClick = onPayoutAccountClicked,
+            ),
+            minLines = 1,
+          )
+        }
+
         ConnectedPaymentInfo.Unknown,
         is ConnectedPaymentInfo.Active,
-        -> {
-        }
+          -> {}
       }
     }
+
+    PaymentsListItems(
+      uiState,
+      onDiscountClicked = onDiscountClicked,
+      onPaymentHistoryClicked = onPaymentHistoryClicked,
+      onPayoutAccountClicked = onPayoutAccountClicked,
+      onPaymentDetailsClicked = onPaymentDetailsClicked,
+      showPayoutButton = (uiState as? Content)?.showPayoutButton == true,
+    )
   }
 }
 
 @Composable
 private fun CardNotConnectedWarningCard(
-  connectedPaymentInfo: ConnectedPaymentInfo.NeedsSetup?,
+  connectedPaymentInfo: ConnectedPaymentInfo.NeedsPayinSetup?,
   onChangeBankAccount: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -379,9 +391,10 @@ private fun CardNotConnectedWarningCard(
 
 @Composable
 private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, modifier: Modifier = Modifier) {
+  if (upcomingPaymentInfo == NoInfo || upcomingPaymentInfo == null) return
   Box(modifier) {
     when (upcomingPaymentInfo) {
-      NoInfo -> {}
+      NoInfo, null -> {}
 
       InProgress -> {
         HedvigNotificationCard(
@@ -401,13 +414,11 @@ private fun UpcomingPaymentInfoCard(upcomingPaymentInfo: UpcomingPaymentInfo?, m
                 monthDateFormatter.format(upcomingPaymentInfo.failedPaymentStartDate),
                 monthDateFormatter.format(upcomingPaymentInfo.failedPaymentEndDate),
               ),
-              style = NotificationDefaults.InfoCardStyle.Default,
+              style = InfoCardStyle.Default,
             )
           }
         }
       }
-
-      null -> {}
     }
   }
 }
@@ -425,41 +436,67 @@ private fun PaymentsListItems(
     .padding(horizontal = 16.dp)
     .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
   Column {
-    PaymentsListItem(
-      text = stringResource(Res.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
-      icon = {
-        Icon(
-          imageVector = HedvigIcons.Campaign,
-          contentDescription = null,
-          tint = HedvigTheme.colorScheme.signalGreenElement,
-          modifier = Modifier.size(24.dp),
-        )
-      },
-      modifier = Modifier
-        .clickable(onClick = onDiscountClicked)
-        .then(listItemsSideSpacingModifier)
-        .padding(vertical = 16.dp)
-        .fillMaxWidth(),
-    )
-    HorizontalDivider(modifier = listItemsSideSpacingModifier)
-    PaymentsListItem(
-      text = stringResource(Res.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL),
-      icon = {
-        Icon(
-          imageVector = HedvigIcons.Clock,
-          contentDescription = null,
-          modifier = Modifier.size(24.dp),
-        )
-      },
-      modifier = Modifier
-        .clickable(onClick = onPaymentHistoryClicked)
-        .then(listItemsSideSpacingModifier)
-        .padding(vertical = 16.dp)
-        .fillMaxWidth(),
-    )
     if (uiState is Content) {
-      if (uiState.connectedPaymentInfo is ConnectedPaymentInfo.Active) {
+      val showDiscountsItem = when (uiState.memberType) {
+        MemberType.QASA_ONLY_MEMBER,
+        MemberType.STANDARD_TO_QASA_MEMBER,
+          -> false
+
+        MemberType.STANDARD_MEMBER -> true
+      }
+      if (showDiscountsItem) {
+        PaymentsListItem(
+          text = stringResource(Res.string.PAYMENTS_DISCOUNTS_SECTION_TITLE),
+          icon = {
+            Icon(
+              imageVector = HedvigIcons.Campaign,
+              contentDescription = null,
+              tint = HedvigTheme.colorScheme.signalGreenElement,
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          modifier = Modifier
+            .clickable(onClick = onDiscountClicked)
+            .then(listItemsSideSpacingModifier)
+            .padding(vertical = 16.dp)
+            .fillMaxWidth(),
+        )
+        HorizontalDivider(modifier = listItemsSideSpacingModifier)
+      }
+
+
+      val showPaymentHistoryItem = when (uiState.memberType) {
+        MemberType.QASA_ONLY_MEMBER -> false
+        MemberType.STANDARD_MEMBER,
+        MemberType.STANDARD_TO_QASA_MEMBER,
+          -> true
+      }
+      if (showPaymentHistoryItem) {
+        PaymentsListItem(
+          text = stringResource(Res.string.PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL),
+          icon = {
+            Icon(
+              imageVector = HedvigIcons.Clock,
+              contentDescription = null,
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          modifier = Modifier
+            .clickable(onClick = onPaymentHistoryClicked)
+            .then(listItemsSideSpacingModifier)
+            .padding(vertical = 16.dp)
+            .fillMaxWidth(),
+        )
         HorizontalDivider(listItemsSideSpacingModifier)
+      }
+
+      val showPaymentDetailsItem = when (uiState.memberType) {
+        MemberType.QASA_ONLY_MEMBER -> false
+        MemberType.STANDARD_MEMBER,
+        MemberType.STANDARD_TO_QASA_MEMBER,
+          -> uiState.connectedPaymentInfo is ConnectedPaymentInfo.Active
+      }
+      if (showPaymentDetailsItem) {
         PaymentsListItem(
           text = stringResource(Res.string.PAYMENTS_PAYMENT_DETAILS_INFO_TITLE),
           icon = {
@@ -475,25 +512,34 @@ private fun PaymentsListItems(
             .padding(vertical = 16.dp)
             .fillMaxWidth(),
         )
+        HorizontalDivider(modifier = listItemsSideSpacingModifier)
       }
-    }
-    if (showPayoutButton) {
-      HorizontalDivider(modifier = listItemsSideSpacingModifier)
-      PaymentsListItem(
-        text = stringResource(Res.string.PAYOUT_PAGE_HEADING),
-        icon = {
-          Icon(
-            imageVector = HedvigIcons.PaymentOutline,
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-          )
-        },
-        modifier = Modifier
-          .clickable(onClick = onPayoutAccountClicked)
-          .then(listItemsSideSpacingModifier)
-          .padding(vertical = 16.dp)
-          .fillMaxWidth(),
-      )
+
+      val showPayoutItem = when (uiState.memberType) {
+        MemberType.QASA_ONLY_MEMBER,
+        MemberType.STANDARD_TO_QASA_MEMBER,
+          -> true
+
+        MemberType.STANDARD_MEMBER -> showPayoutButton
+      }
+      if (showPayoutItem) {
+        PaymentsListItem(
+          text = stringResource(Res.string.PAYOUT_PAGE_HEADING),
+          icon = {
+            Icon(
+              imageVector = HedvigIcons.PaymentOutline,
+              contentDescription = null,
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          modifier = Modifier
+            .clickable(onClick = onPayoutAccountClicked)
+            .then(listItemsSideSpacingModifier)
+            .padding(vertical = 16.dp)
+            .fillMaxWidth(),
+        )
+        HorizontalDivider(modifier = listItemsSideSpacingModifier)
+      }
     }
   }
 }
@@ -767,6 +813,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = listOf(OngoingCharge("id", LocalDate.fromEpochDays(401), UiMoney(200.0, SEK))),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = true,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
     add(
@@ -781,6 +828,24 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
+      ),
+    )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = UpcomingPayment.Content(
+          UiMoney(100.0, SEK),
+          System.now().toLocalDateTime(TimeZone.UTC).date,
+          "rdg",
+        ),
+        upcomingPaymentInfo = NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
+          null,
+        ),
+        showPayoutButton = false,
+        memberType = MemberType.STANDARD_TO_QASA_MEMBER,
       ),
     )
     add(
@@ -795,6 +860,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
     add(
@@ -815,6 +881,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Active,
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
     add(
@@ -829,6 +896,7 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ongoingCharges = emptyList(),
         connectedPaymentInfo = ConnectedPaymentInfo.Pending,
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
     add(
@@ -845,10 +913,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           null,
         ),
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
     add(
@@ -861,10 +930,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
         ),
         upcomingPaymentInfo = NoInfo,
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           null,
         ),
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
     add(
@@ -881,10 +951,11 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           dueDateToConnect = System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
     add(
@@ -901,10 +972,70 @@ private class PaymentsStatePreviewProvider : CollectionPreviewParameterProvider<
           isManualChargeAllowed = null,
         ),
         ongoingCharges = emptyList(),
-        connectedPaymentInfo = ConnectedPaymentInfo.NeedsSetup(
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayinSetup(
           System.now().plus(30.days).toLocalDateTime(TimeZone.UTC).date,
         ),
         showPayoutButton = false,
+        memberType = MemberType.STANDARD_MEMBER,
+      ),
+    )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = NoUpcomingPayment,
+        upcomingPaymentInfo = NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayoutSetup,
+        showPayoutButton = false,
+        memberType = MemberType.STANDARD_TO_QASA_MEMBER,
+      ),
+    )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = NoUpcomingPayment,
+        upcomingPaymentInfo = NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
+        showPayoutButton = false,
+        memberType = MemberType.STANDARD_TO_QASA_MEMBER,
+      ),
+    )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = NoUpcomingPayment,
+        upcomingPaymentInfo = NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayoutSetup,
+        showPayoutButton = false,
+        memberType = MemberType.QASA_ONLY_MEMBER,
+      ),
+    )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = NoUpcomingPayment,
+        upcomingPaymentInfo = NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.Active,
+        showPayoutButton = false,
+        memberType = MemberType.QASA_ONLY_MEMBER,
+      ),
+    )
+    add(
+      Content(
+        isRetrying = false,
+        upcomingPayment = UpcomingPayment.Content(
+          UiMoney(100.0, SEK),
+          System.now().toLocalDateTime(TimeZone.UTC).date,
+          "w345423t6",
+        ),
+        upcomingPaymentInfo = UpcomingPaymentInfo.NoInfo,
+        ongoingCharges = emptyList(),
+        connectedPaymentInfo = ConnectedPaymentInfo.NeedsPayoutSetup,
+        showPayoutButton = true,
+        memberType = MemberType.STANDARD_MEMBER,
       ),
     )
   },

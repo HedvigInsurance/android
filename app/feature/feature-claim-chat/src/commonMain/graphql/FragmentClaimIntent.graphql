@@ -24,6 +24,11 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
   ...FileUploadFragment
   ...SummaryFragment
   ...DeflectionFragment
+  ...DeflectionMessageFragment
+}
+
+fragment DeflectionMessageFragment on ClaimIntentStepContentDeflectionMessage {
+  message
 }
 
 fragment FormFragment on ClaimIntentStepContentForm {

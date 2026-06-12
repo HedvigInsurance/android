@@ -41,7 +41,6 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.demomode.DemoManager
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
-import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
@@ -69,9 +68,6 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var featureManager: FeatureManager
-
-  @Inject
-  private lateinit var getOnlyHasNonPayingContractsUseCase: Provider<GetOnlyHasNonPayingContractsUseCase>
 
   @Inject
   private lateinit var hedvigBuildConstants: HedvigBuildConstants
@@ -206,7 +202,6 @@ class MainActivity : AppCompatActivity() {
           deepLinkChannel = deepLinkChannel,
           windowSizeClass = windowSizeClass,
           settingsDataStore = settingsDataStore,
-          getOnlyHasNonPayingContractsUseCase = getOnlyHasNonPayingContractsUseCase,
           featureManager = featureManager,
           splashIsRemovedSignal = splashIsRemovedSignal,
           authTokenService = authTokenService,
