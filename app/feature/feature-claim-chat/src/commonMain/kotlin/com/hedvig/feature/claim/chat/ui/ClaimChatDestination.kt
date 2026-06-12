@@ -63,6 +63,7 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import coil3.ImageLoader
 import com.hedvig.android.compose.ui.plus
 import com.hedvig.android.core.uidata.UiFile
+import com.hedvig.android.design.system.hedvig.ButtonDefaults
 import com.hedvig.android.design.system.hedvig.ErrorDialog
 import com.hedvig.android.design.system.hedvig.HedvigAlertDialog
 import com.hedvig.android.design.system.hedvig.HedvigButton
@@ -898,12 +899,13 @@ private fun StepBottomContent(
 
       is StepContent.DeflectMessage -> {
         HedvigButton(
-          modifier = modifier,
+          modifier = modifier.fillMaxWidth(),
           text = stringResource(Res.string.general_close_button),
           onClick = dropUnlessResumed {
             closeFlow()
           },
           enabled = true,
+          buttonStyle = ButtonDefaults.ButtonStyle.Secondary
         )
       }
     }
