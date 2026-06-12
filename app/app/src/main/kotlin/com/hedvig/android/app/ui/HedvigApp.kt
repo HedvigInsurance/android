@@ -50,6 +50,7 @@ import com.hedvig.android.app.navigation.hedvigEntryProvider
 import com.hedvig.android.app.navigation.shouldFadeThrough
 import com.hedvig.android.app.urihandler.DeepLinkFirstUriHandler
 import com.hedvig.android.app.urihandler.SafeAndroidUriHandler
+import com.hedvig.android.app.urihandler.StartClaimDeepLinkRecognizer
 import com.hedvig.android.auth.AuthStatus
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
@@ -66,6 +67,7 @@ import com.hedvig.android.design.system.hedvig.Surface
 import com.hedvig.android.design.system.hedvig.motion.MotionDefaults
 import com.hedvig.android.design.system.hedvig.rememberGlobalSnackBarState
 import com.hedvig.android.feature.cross.sell.sheet.CrossSellSheet
+import com.hedvig.android.feature.home.home.StartClaimSheetSignal
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageService
 import com.hedvig.android.logger.logcat
@@ -109,6 +111,8 @@ internal fun HedvigApp(
   getMemberAuthorizationCodeUseCase: GetMemberAuthorizationCodeUseCase,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
   currentDestinationHolder: CurrentDestinationHolder,
+  startClaimDeepLinkRecognizer: StartClaimDeepLinkRecognizer,
+  startClaimSheetSignal: StartClaimSheetSignal,
 ) {
   ReportCurrentDestinationEffect(backstackController, currentDestinationHolder)
   val hedvigAppState = rememberHedvigAppState(
@@ -135,11 +139,19 @@ internal fun HedvigApp(
       )
       val scope = rememberCoroutineScope()
       val context = LocalContext.current
-      val deepLinkFirstUriHandler = remember(deepLinkMatcher, backstackController, context) {
+      val deepLinkFirstUriHandler = remember(
+        deepLinkMatcher,
+        backstackController,
+        context,
+        startClaimDeepLinkRecognizer,
+        startClaimSheetSignal,
+      ) {
         DeepLinkFirstUriHandler(
           matcher = deepLinkMatcher,
           backstackController = backstackController,
           delegate = SafeAndroidUriHandler(context),
+          startClaimDeepLinkRecognizer = startClaimDeepLinkRecognizer,
+          startClaimSheetSignal = startClaimSheetSignal,
         )
       }
       val crossSellUriOpener = remember(getMemberAuthorizationCodeUseCase, deepLinkFirstUriHandler, scope) {

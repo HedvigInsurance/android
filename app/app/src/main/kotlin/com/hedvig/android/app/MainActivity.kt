@@ -30,6 +30,7 @@ import com.hedvig.android.app.navigation.BackstackController
 import com.hedvig.android.app.navigation.CurrentDestinationHolder
 import com.hedvig.android.app.navigation.SessionReconciler
 import com.hedvig.android.app.ui.HedvigApp
+import com.hedvig.android.app.urihandler.StartClaimDeepLinkRecognizer
 import com.hedvig.android.auth.AuthTokenService
 import com.hedvig.android.auth.LogoutUseCase
 import com.hedvig.android.auth.MemberIdService
@@ -40,6 +41,7 @@ import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.core.rive.RiveInitializer
 import com.hedvig.android.data.paying.member.GetOnlyHasNonPayingContractsUseCase
 import com.hedvig.android.data.settings.datastore.SettingsDataStore
+import com.hedvig.android.feature.home.home.StartClaimSheetSignal
 import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.language.LanguageLaunchCheckUseCase
 import com.hedvig.android.language.LanguageService
@@ -104,6 +106,12 @@ class MainActivity : AppCompatActivity() {
 
   @Inject
   private lateinit var currentDestinationHolder: CurrentDestinationHolder
+
+  @Inject
+  private lateinit var startClaimDeepLinkRecognizer: StartClaimDeepLinkRecognizer
+
+  @Inject
+  private lateinit var startClaimSheetSignal: StartClaimSheetSignal
 
   @Inject
   private lateinit var sessionReconciler: SessionReconciler
@@ -214,6 +222,8 @@ class MainActivity : AppCompatActivity() {
           getMemberAuthorizationCodeUseCase = getMemberAuthorizationCodeUseCase,
           missedPaymentNotificationServiceProvider = missedPaymentNotificationServiceProvider,
           currentDestinationHolder = currentDestinationHolder,
+          startClaimDeepLinkRecognizer = startClaimDeepLinkRecognizer,
+          startClaimSheetSignal = startClaimSheetSignal,
         )
       }
     }
@@ -260,7 +270,6 @@ private fun applyTheme(theme: Theme?, uiModeManager: UiModeManager?) {
     }
   }
 }
-
 
 private fun getSystemLocale(config: android.content.res.Configuration): Locale {
   return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

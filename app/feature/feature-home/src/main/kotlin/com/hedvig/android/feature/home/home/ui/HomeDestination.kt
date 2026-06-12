@@ -175,6 +175,8 @@ internal fun HomeDestination(
   HomeScreen(
     uiState = uiState,
     notificationPermissionState = notificationPermissionState,
+    shouldOpenStartClaimSheet = (uiState as? Success)?.shouldOpenStartClaimSheet ?: false,
+    onStartClaimSheetOpened = { viewModel.emit(HomeEvent.StartClaimSheetConsumed) },
     reload = { viewModel.emit(HomeEvent.RefreshData) },
     onNavigateToInbox = onNavigateToInbox,
     onNavigateToNewConversation = onNavigateToNewConversation,
@@ -204,6 +206,8 @@ internal fun HomeDestination(
 private fun HomeScreen(
   uiState: HomeUiState,
   notificationPermissionState: NotificationPermissionState,
+  shouldOpenStartClaimSheet: Boolean,
+  onStartClaimSheetOpened: () -> Unit,
   reload: () -> Unit,
   onNavigateToInbox: () -> Unit,
   onNavigateToNewConversation: () -> Unit,
@@ -247,6 +251,14 @@ private fun HomeScreen(
     navigateToClaimChatInDevMode = navigateToClaimChatInDevMode,
     isStagingEnvironment = (uiState as? Success)?.isProduction?.not() ?: false,
   )
+  // Auto-open the start claim sheet when Home was reached via the submit-claim deep link. The signal
+  // persists until consumed, so this fires once Home composes regardless of login timing.
+  LaunchedEffect(shouldOpenStartClaimSheet) {
+    if (shouldOpenStartClaimSheet) {
+      startClaimBottomSheetState.show()
+      onStartClaimSheetOpened()
+    }
+  }
   Box(Modifier.fillMaxSize()) {
     val toolbarHeight = 64.dp
     val transition = updateTransition(targetState = uiState, label = "home ui state")
@@ -803,6 +815,8 @@ private fun PreviewHomeScreen(
           isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
+        shouldOpenStartClaimSheet = false,
+        onStartClaimSheetOpened = {},
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
@@ -836,6 +850,8 @@ private fun PreviewHomeScreenWithError() {
       HomeScreen(
         uiState = HomeUiState.Error(null),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
+        shouldOpenStartClaimSheet = false,
+        onStartClaimSheetOpened = {},
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},
@@ -890,6 +906,8 @@ private fun PreviewHomeScreenAllHomeTextTypes(
           isProduction = true,
         ),
         notificationPermissionState = rememberPreviewNotificationPermissionState(),
+        shouldOpenStartClaimSheet = false,
+        onStartClaimSheetOpened = {},
         reload = {},
         onNavigateToInbox = {},
         onNavigateToNewConversation = {},

@@ -5,6 +5,7 @@ import com.hedvig.android.core.buildconstants.HedvigBuildConstants
 import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.common.di.AppScope
 import com.hedvig.android.core.demomode.Provider
+import com.hedvig.android.feature.home.home.StartClaimSheetSignal
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
 import com.hedvig.android.molecule.public.MoleculeViewModel
@@ -23,6 +24,7 @@ internal class HomeViewModel(
   crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   applicationScope: ApplicationScope,
   hedvigBuildConstants: HedvigBuildConstants,
+  startClaimSheetSignal: StartClaimSheetSignal,
 ) : MoleculeViewModel<HomeEvent, HomeUiState>(
     HomeUiState.Loading,
     HomePresenter(
@@ -31,5 +33,6 @@ internal class HomeViewModel(
       crossSellHomeNotificationServiceProvider,
       applicationScope,
       hedvigBuildConstants.isProduction,
+      startClaimSheetSignal,
     ),
   )

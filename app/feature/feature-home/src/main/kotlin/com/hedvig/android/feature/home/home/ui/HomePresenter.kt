@@ -15,6 +15,7 @@ import com.hedvig.android.core.common.ApplicationScope
 import com.hedvig.android.core.demomode.Provider
 import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.data.addons.data.AddonBannerInfo
+import com.hedvig.android.feature.home.home.StartClaimSheetSignal
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorage
@@ -37,6 +38,7 @@ internal class HomePresenter(
   private val crossSellHomeNotificationServiceProvider: Provider<CrossSellHomeNotificationService>,
   private val applicationScope: ApplicationScope,
   private val isProduction: Boolean,
+  private val startClaimSheetSignal: StartClaimSheetSignal,
 ) : MoleculePresenter<HomeEvent, HomeUiState> {
   @Composable
   override fun MoleculePresenterScope<HomeEvent>.present(lastState: HomeUiState): HomeUiState {
@@ -47,6 +49,7 @@ internal class HomePresenter(
     var crossSellToolTipShownEpochDay by remember { mutableStateOf<Long?>(null) }
     val alreadySeenImportantMessages: List<String>
       by seenImportantMessagesStorage.seenMessages.collectAsState()
+    val shouldOpenStartClaimSheet by startClaimSheetSignal.pending.collectAsState()
 
     CollectEvents { homeEvent: HomeEvent ->
       when (homeEvent) {
@@ -66,6 +69,10 @@ internal class HomePresenter(
 
         is HomeEvent.CrossSellToolTipShown -> {
           crossSellToolTipShownEpochDay = homeEvent.epochDay
+        }
+
+        HomeEvent.StartClaimSheetConsumed -> {
+          startClaimSheetSignal.consume()
         }
       }
     }
@@ -139,6 +146,7 @@ internal class HomePresenter(
           crossSellsAction = successData.crossSellsAction,
           addonBannerInfo = successData.addonBannerInfo,
           isProduction = isProduction,
+          shouldOpenStartClaimSheet = shouldOpenStartClaimSheet,
         )
       }
     }
@@ -153,6 +161,8 @@ internal sealed interface HomeEvent {
   data object MarkCardCrossSellsAsSeen : HomeEvent
 
   data class CrossSellToolTipShown(val epochDay: Long) : HomeEvent
+
+  data object StartClaimSheetConsumed : HomeEvent
 }
 
 internal sealed interface HomeUiState {
@@ -178,6 +188,7 @@ internal sealed interface HomeUiState {
     val isProduction: Boolean,
     override val isHelpCenterEnabled: Boolean,
     override val hasUnseenChatMessages: Boolean,
+    val shouldOpenStartClaimSheet: Boolean = false,
   ) : HomeUiState
 
   data class Error(val message: String?) : HomeUiState

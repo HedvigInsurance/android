@@ -19,6 +19,7 @@ import com.hedvig.android.crosssells.CrossSellSheetData
 import com.hedvig.android.crosssells.RecommendedCrossSell
 import com.hedvig.android.data.contract.CrossSell
 import com.hedvig.android.data.contract.ImageAsset
+import com.hedvig.android.feature.home.home.StartClaimSheetSignal
 import com.hedvig.android.feature.home.home.data.GetHomeDataUseCase
 import com.hedvig.android.feature.home.home.data.HomeData
 import com.hedvig.android.feature.home.home.data.SeenImportantMessagesStorageImpl
@@ -63,6 +64,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -90,6 +92,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -115,6 +118,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -188,6 +192,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -239,6 +244,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -263,6 +269,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -300,6 +307,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
 
     homePresenter.test(HomeUiState.Loading) {
@@ -347,6 +355,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
     val firstVet = FirstVetSection(
       buttonTitle = "ButtonTitle",
@@ -401,6 +410,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
     val crossSell = CrossSell(
       id = "id",
@@ -458,6 +468,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -504,6 +515,7 @@ internal class HomePresenterTest {
       { FakeCrossSellHomeNotificationService() },
       ApplicationScope(backgroundScope),
       false,
+      StartClaimSheetSignal(),
     )
     homePresenter.test(HomeUiState.Loading) {
       assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
@@ -538,6 +550,40 @@ internal class HomePresenterTest {
           isProduction = false,
         ),
       )
+    }
+  }
+
+  @Test
+  fun `raising the start claim signal makes success ask to open the sheet, then clears on consume`() = runTest {
+    val getHomeDataUseCase = TestGetHomeDataUseCase()
+    val startClaimSheetSignal = StartClaimSheetSignal()
+    val homePresenter = HomePresenter(
+      { getHomeDataUseCase },
+      SeenImportantMessagesStorageImpl(),
+      { FakeCrossSellHomeNotificationService() },
+      ApplicationScope(backgroundScope),
+      false,
+      startClaimSheetSignal,
+    )
+    homePresenter.test(HomeUiState.Loading) {
+      assertThat(awaitItem()).isEqualTo(HomeUiState.Loading)
+      getHomeDataUseCase.responseTurbine.add(someIrrelevantHomeDataInstance.right())
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::shouldOpenStartClaimSheet)
+        .isFalse()
+
+      startClaimSheetSignal.request()
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::shouldOpenStartClaimSheet)
+        .isTrue()
+
+      sendEvent(HomeEvent.StartClaimSheetConsumed)
+      assertThat(awaitItem())
+        .isInstanceOf<HomeUiState.Success>()
+        .prop(HomeUiState.Success::shouldOpenStartClaimSheet)
+        .isFalse()
     }
   }
 
