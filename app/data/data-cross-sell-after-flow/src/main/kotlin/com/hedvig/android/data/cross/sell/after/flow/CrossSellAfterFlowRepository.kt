@@ -19,11 +19,11 @@ interface CrossSellAfterFlowRepository {
 }
 
 sealed class CrossSellInfoType() {
-  abstract val loggableName: String
+  abstract val source: String
   protected abstract val extraInfo: Map<String, Any?>?
   val attributes: Map<String, Any?>
     get() = buildMap {
-      this.put("type", loggableName)
+      this.put("source", source)
       if (extraInfo != null) {
         this.put("info", extraInfo)
       }
@@ -32,7 +32,7 @@ sealed class CrossSellInfoType() {
   data class ClosedClaim(
     val info: ClaimInfo,
   ) : CrossSellInfoType() {
-    override val loggableName: String = "claim"
+    override val source: String = "closedClaim"
     override val extraInfo: Map<String, Any?> = with(info) {
       buildMap {
         this.put("id", id)
@@ -53,22 +53,22 @@ sealed class CrossSellInfoType() {
   }
 
   data object ChangeTier : CrossSellInfoType() {
-    override val loggableName: String = "changeTier"
+    override val source: String = "changeTier"
     override val extraInfo: Map<String, Any?>? = null
   }
 
   data object Addon : CrossSellInfoType() {
-    override val loggableName: String = "addon"
+    override val source: String = "addon"
     override val extraInfo: Map<String, Any?>? = null
   }
 
   data object EditCoInsured : CrossSellInfoType() {
-    override val loggableName: String = "editCoInsured"
+    override val source: String = "editCoInsured"
     override val extraInfo: Map<String, Any?>? = null
   }
 
   data object MovingFlow : CrossSellInfoType() {
-    override val loggableName: String = "moveFlow"
+    override val source: String = "movingFlow"
     override val extraInfo: Map<String, Any?>? = null
   }
 }
@@ -93,9 +93,10 @@ class CrossSellAfterFlowRepositoryImpl() : CrossSellAfterFlowRepository {
   override fun showedCrossSellSheet(type: CrossSellInfoType?) {
     logcat { "CrossSellAfterFlowRepository: showedCrossSellSheet type:$type" }
     if (type != null) {
+      val actionName = "crossSell"
       logAction(
         ActionType.CUSTOM,
-        type.loggableName,
+        actionName,
         type.attributes,
       )
     }
