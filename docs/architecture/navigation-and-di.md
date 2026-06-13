@@ -191,6 +191,25 @@ internal class ContractDetailViewModel(
 
 **The ViewModel lifetime is the Nav3 entry's `ViewModelStore`.** This is the linchpin that makes the app-scoped back stack safe (see II.4): a ViewModel survives a configuration change as the *same* instance, while the `BackstackController` outlives all of them.
 
+### `@HedvigViewModel`: generating the registration
+
+The annotations in the example above are **not hand-written**. A ViewModel is marked `@HedvigViewModel` and the `:viewmodel-processor` KSP processor generates the matching contribution. A module opts in with `viewModels()` in its `hedvig { }` block. The processor branches on the primary constructor's `@Assisted` params:
+
+- **no assisted params** → a `@ContributesTo` module with `@Provides @IntoMap @ViewModelKey(VM::class)` (the `metroViewModel()` path).
+- **a single `SavedStateHandle`** → a `<VM>Factory : ViewModelAssistedFactory` that pulls the handle out of `CreationExtras`, so the call site stays the zero-arg `assistedMetroViewModel<VM>()`.
+- **anything else** (nav args, optionally with a `SavedStateHandle`) → a `<VM>Factory : ManualViewModelAssistedFactory` whose `create(...)` takes the assisted params, resolved by `assistedMetroViewModel<VM, VM.Factory>`.
+
+The scope defaults to `ActivityRetainedScope` and can be overridden via `@HedvigViewModel(scope = …)`.
+
+**KMP wiring (the non-obvious part).** A ViewModel is fundamentally an Android-screen concern, but VMs live in `commonMain` so iOS can share their Presenter logic, and their generated DI must be visible to every target (including iOS's `IosGraph`, see I.6). So a KMP module wires the processor into **two** passes:
+
+- `kspCommonMainMetadata` — generates into `commonMain`, the common *ancestor* every target sees.
+- `kspAndroid` — covers `androidMain`-only VMs (a screen iOS never renders).
+
+`kspAndroid` re-sees `commonMain` and would emit those contributions a second time, so the processor detects the single-target leaf pass (`environment.platforms.size == 1`) and skips `commonMain`-located symbols there — only the metadata pass emits them. Non-KMP modules just wire plain `ksp`. This is unconditional: there is no per-module flag, because the dedupe is fully determined by the pass and the source path.
+
+**Why not per-target KSP** (`kspIosArm64`/`kspJvm`/…, the "idiomatic" KMP-KSP setup): per-target KSP only ever generates into *leaf* source sets, and a parent/intermediate source set (`commonMain`, `nativeMain`, `iosMain`) cannot see symbols defined in its descendants. This repo has shared code referencing generated factories in `commonMain` *and* in `nativeMain` (the iOS view controllers), and KSP has no task for an intermediate source set — `kspNativeMain` does not exist. So the only KSP-processable ancestor of the native iOS code is `commonMain` itself, which is exactly what `kspCommonMainMetadata` targets. (This was spiked and confirmed; see git history.)
+
 ## I.4 Workers
 
 WorkManager workers can't be constructed by us directly, so they go through a multibound map and a custom `WorkerFactory`:
