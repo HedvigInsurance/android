@@ -426,8 +426,8 @@ internal class BackstackControllerTest {
     val controller = BackstackController(
       mutableStateListOf(HomeKey),
       mutableStateMapOf(),
-      mutableStateOf(null),
-      mutableStateOf(null),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
       isOwnTask = { false },
     )
     assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
@@ -438,8 +438,8 @@ internal class BackstackControllerTest {
     val controller = BackstackController(
       mutableStateListOf(HomeKey),
       mutableStateMapOf(),
-      mutableStateOf(null),
-      mutableStateOf(null),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
       isOwnTask = { true },
     )
     assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
