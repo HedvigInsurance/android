@@ -218,6 +218,7 @@ internal class BackstackController(
         }
       }
     }
+    // No escape needed (own-task lone root, or a normal multi-entry stack): a pure pop, a no-op at the root.
     return super.popBackstack()
   }
 
