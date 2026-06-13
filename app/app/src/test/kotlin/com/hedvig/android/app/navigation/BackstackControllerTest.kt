@@ -454,6 +454,23 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `navigateUp at a foreign-hosted lone Home escapes to own task seeded with Home`() {
+    var escaped: List<HedvigNavKey>? = null
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
+      isOwnTask = { false },
+      escapeToOwnTask = { escaped = it },
+    )
+    assertThat(controller.navigateUp()).isTrue()
+    assertThat(escaped).isEqualTo(listOf(HomeKey))
+    // The foreign-hosted stack is left untouched; the relaunched task owns the rebuilt root.
+    assertThat(controller.entries.toList()).containsExactly(HomeKey)
+  }
+
+  @Test
   fun `owningTopLevelTab resolves positionally for the rendered stack`() {
     val controller = controllerWith(HomeKey, HelpCenterKey, InsurancesKey, HelpCenterKey)
     // HelpCenter sitting in the Home run belongs to Home; the Insurances run owns its own keys.

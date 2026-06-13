@@ -192,27 +192,32 @@ internal class BackstackController(
   }
 
   /**
-   * Task-aware Up. For a lone deep link (size 1 with a non-trivial synthetic stack) it materializes
-   * the parent ancestry — `[Home]` for a lone tab root, `[Home, Insurances]` for a lone contract
-   * detail — so Up behaves exactly like Back would have inside the app. When we were launched into a
-   * foreign task ([isOwnTask] is false) that parent stack is handed to [escapeToOwnTask], which
-   * re-roots the app in its own task; otherwise it is materialized in place. Everywhere else Up is a
-   * plain temporal pop, identical to Back.
+   * Task-aware Up. For a lone deep link it materializes the parent ancestry — `[Home]` for a lone
+   * tab root, `[Home, Insurances]` for a lone contract detail — so Up behaves exactly like Back would
+   * have inside the app. When we were launched into a foreign task ([isOwnTask] is false) that parent
+   * stack is handed to [escapeToOwnTask], which re-roots the app in its own task; otherwise it is
+   * materialized in place. A lone leaf with no ancestry (e.g. Home) hosted in a foreign task has no
+   * parent to rebuild, but must still escape so the runs model — and its nav bar — come alive; the
+   * escape is seeded with the leaf itself. Everywhere else Up is a plain temporal pop, identical to
+   * Back (a no-op at the root — it must not exit the app the way Back does).
    */
   override fun navigateUp(): Boolean {
     val top = entries.lastOrNull() ?: return false
-    val synthetic = syntheticStackFor(top)
-    if (entries.size == 1 && synthetic.size > 1) {
+    if (entries.size == 1) {
+      val synthetic = syntheticStackFor(top)
       val parentStack = synthetic.dropLast(1)
-      if (isOwnTask()) {
-        entries.replaceWith(parentStack)
-      } else {
-        escapeToOwnTask(parentStack)
+      when {
+        parentStack.isNotEmpty() -> {
+          if (isOwnTask()) entries.replaceWith(parentStack) else escapeToOwnTask(parentStack)
+          return true
+        }
+
+        !isOwnTask() -> {
+          escapeToOwnTask(synthetic)
+          return true
+        }
       }
-      return true
     }
-    // Fall through to a *pure* pop (not our finishing override): an Up press at the root is a no-op,
-    // it must not exit the app the way Back does.
     return super.popBackstack()
   }
 
