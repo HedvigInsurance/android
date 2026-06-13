@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.doesNotContain
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import com.tschuchort.compiletesting.JvmCompilationResult
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.SourceFile
@@ -156,6 +157,34 @@ class HedvigViewModelProcessorTest {
   }
 
   @Test
+  fun `commonMain view model is skipped in a single-target leaf pass while non-common VMs are emitted`() {
+    // A single-target (e.g. kspAndroid) pass re-sees a commonMain VM that the multi-target metadata
+    // pass already generated; it must NOT re-emit it, or the VM's Metro contribution is declared twice.
+    // A VM outside commonMain (here under androidMain) in the same pass is still generated. The
+    // metadata-pass side — where commonMain VMs ARE emitted — needs a multiplatform compilation the
+    // kctfork harness can't produce, so it's covered by the real app build (feature-claim-history).
+    val result = compile(
+      vmAt(
+        "commonMain/CommonViewModels.kt",
+        """
+        @HedvigViewModel
+        class SharedViewModel @Inject constructor(val dep: String) : ViewModel()
+        """.trimIndent(),
+      ),
+      vmAt(
+        "androidMain/AndroidViewModels.kt",
+        """
+        @HedvigViewModel
+        class AndroidOnlyViewModel @Inject constructor(val dep: String) : ViewModel()
+        """.trimIndent(),
+      ),
+    )
+
+    assertThat(result.generatedFile("SharedViewModelModule.kt")).isNull()
+    assertThat(result.generatedFile("AndroidOnlyViewModelModule.kt")).isNotNull()
+  }
+
+  @Test
   fun `internal view model produces an internal generated declaration`() {
     val text = compile(
       vm(
@@ -169,8 +198,12 @@ class HedvigViewModelProcessorTest {
     assertThat(text).contains("internal interface SecretViewModelModule")
   }
 
-  private fun vm(body: String): SourceFile = SourceFile.kotlin(
-    "ViewModels.kt",
+  private fun vm(body: String): SourceFile = vmAt("ViewModels.kt", body)
+
+  // [fileName] may include directory segments (e.g. "commonMain/X.kt"); the processor's leaf-dedupe
+  // keys off "/commonMain/" appearing in the symbol's file path, so the path is part of the fixture.
+  private fun vmAt(fileName: String, body: String): SourceFile = SourceFile.kotlin(
+    fileName,
     """
     package com.hedvig.test
 

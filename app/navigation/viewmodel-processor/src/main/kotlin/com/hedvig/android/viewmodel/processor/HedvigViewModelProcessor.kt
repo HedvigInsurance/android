@@ -70,13 +70,20 @@ private val viewModelAssistedFactoryKey =
 class HedvigViewModelProcessor(
   private val codeGenerator: CodeGenerator,
   private val logger: KSPLogger,
+  private val isMetadataPass: Boolean,
 ) : SymbolProcessor {
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val (ready, deferred) = resolver
       .getSymbolsWithAnnotation(HEDVIG_VIEW_MODEL_FQ_NAME)
       .filterIsInstance<KSClassDeclaration>()
       .partition { it.validate() }
-    ready.forEach { generate(it) }
+    ready
+      // A KMP module wires both kspCommonMainMetadata (multi-target) and kspAndroid (single-target);
+      // the android leaf pass re-sees commonMain VMs that the metadata pass already generated. Skip
+      // them here so only the metadata pass emits them. Non-KMP modules have no /commonMain/ path, so
+      // this never fires for them.
+      .filterNot { !isMetadataPass && it.isInCommonMain() }
+      .forEach { generate(it) }
     return deferred
   }
 
@@ -222,10 +229,17 @@ private fun KSValueParameter.hasAnnotation(fqName: String): Boolean = annotation
   it.annotationType.resolve().declaration.qualifiedName?.asString() == fqName
 }
 
+private fun KSClassDeclaration.isInCommonMain(): Boolean =
+  containingFile?.filePath?.contains("/commonMain/") == true
+
 private fun KSType.isSavedStateHandle(): Boolean =
   declaration.qualifiedName?.asString() == SAVED_STATE_HANDLE_FQ_NAME
 
 class HedvigViewModelProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-    HedvigViewModelProcessor(environment.codeGenerator, environment.logger)
+    HedvigViewModelProcessor(
+      codeGenerator = environment.codeGenerator,
+      logger = environment.logger,
+      isMetadataPass = environment.platforms.size > 1,
+    )
 }

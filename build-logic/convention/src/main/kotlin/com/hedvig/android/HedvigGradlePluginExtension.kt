@@ -91,14 +91,13 @@ abstract class HedvigGradlePluginExtension @Inject constructor(
    * `@HedvigViewModel`-annotated ViewModels and generates their Metro map contribution (no-arg) or
    * assisted factory, so no VM hand-writes `@ViewModelKey` / `@ContributesIntoMap` / a nested factory.
    *
-   * @param iosShared only meaningful for KMP modules. When true (the default) the VMs live in
-   *   commonMain and their generated DI must be visible to every target, including iOS — so
-   *   generation runs through `kspCommonMainMetadata`. Set false for the rare KMP module whose VMs
-   *   live only in `androidMain` (e.g. a screen iOS never renders); generation then runs through
-   *   `kspAndroid`, exactly like [navKeys]. Non-KMP modules ignore this flag.
+   * For KMP modules both `kspCommonMainMetadata` (commonMain VMs — generated DI must be visible to
+   * every target, including iOS via IosGraph) and `kspAndroid` (androidMain-only VMs, e.g. a screen
+   * iOS never renders) are wired, so a single module may freely mix the two. See [ViewModelsHandler]
+   * for how the resulting double-emission of commonMain VMs is suppressed.
    */
-  fun viewModels(iosShared: Boolean = true) {
-    viewModelsHandler.configure(project, pluginManager, libs, iosShared)
+  fun viewModels() {
+    viewModelsHandler.configure(project, pluginManager, libs)
   }
 
   companion object {
@@ -327,7 +326,7 @@ private abstract class NavKeysHandler {
 }
 
 private abstract class ViewModelsHandler {
-  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs, iosShared: Boolean) {
+  fun configure(project: Project, pluginManager: PluginManager, libs: LibrariesForLibs) {
     pluginManager.apply(libs.plugins.ksp.get().pluginId)
     val processor = project.project(":viewmodel-processor")
     val isMultiplatform = project.extensions.findByType<KotlinMultiplatformExtension>() != null
@@ -337,21 +336,14 @@ private abstract class ViewModelsHandler {
       }
       return
     }
-    if (!iosShared) {
-      // KMP module whose VMs live only in androidMain — generate into the android source set, like
-      // nav-keys. kspAndroid sees commonMain symbols too, so this also covers any commonMain VMs.
-      project.dependencies {
-        add("kspAndroid", processor)
-      }
-      return
-    }
-    // Unlike nav-key serializers (android-only), VM map contributions for commonMain VMs must be
-    // visible to every target — notably iOS via IosGraph. So generate into commonMain through
-    // kspCommonMainMetadata rather than kspAndroid. KSP for KMP does not auto-wire this: the
-    // generated commonMain sources must be added to the source set and every compile task must
-    // depend on the metadata-generation task, or platform compilations won't see (or will race) it.
+    // commonMain VMs must be visible to every target (notably iOS via IosGraph), so they are
+    // generated into commonMain through kspCommonMainMetadata. androidMain-only VMs are invisible to
+    // the metadata pass, so kspAndroid is ALSO wired to cover them. kspAndroid also re-sees commonMain
+    // VMs and would double-emit them, but the processor detects the single-target leaf pass and skips
+    // commonMain symbols there, so only the metadata pass emits them.
     project.dependencies {
       add("kspCommonMainMetadata", processor)
+      add("kspAndroid", processor)
     }
     project.extensions.configure<KotlinMultiplatformExtension> {
       sourceSets.getByName("commonMain").kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")

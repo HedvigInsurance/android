@@ -9,7 +9,7 @@ hedvig {
   serialization()
   compose()
   navKeys()
-  viewModels(iosShared = false)
+  viewModels()
 }
 
 kotlin {

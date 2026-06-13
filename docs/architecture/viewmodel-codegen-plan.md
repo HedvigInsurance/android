@@ -310,6 +310,51 @@ After the spike proves the wiring, **Phase A** (the non-KMP majority, plain `ksp
 8. Script the assisted migration (delete nested factories; migrate the ~40 call sites to `<VM>Factory`).
 9. Verify both targets, delete dead code, update `navigation-and-di.md` with the new convention.
 
+## Per-target KSP: investigated and rejected (spike result)
+
+We later spiked the obvious-looking alternative — drop `kspCommonMainMetadata` and instead wire the
+processor per leaf target (`kspAndroid` + `kspJvm` + `kspIosArm64` + `kspIosSimulatorArm64`), the
+"idiomatic" KMP-KSP setup — to see whether it removes the `iosShared` flag and the mixed-module
+limitation. **It does not. It trades one wall for a worse one.**
+
+Spike on `feature-help-center`: moved `helpCenterEntries()` to `androidMain` (it names generated
+factory types and only `:app` calls it) and switched to per-target ksp. Result:
+- **Android leaf compiled green.** `kspAndroid` generated the factories into the `androidMain` leaf
+  source set; `androidMain` code (the moved entries) resolved them.
+- **iOS leaf failed:** `compileKotlinIosSimulatorArm64` — `Unresolved reference
+  'PuppyArticleViewModelFactory'` in `nativeMain/PuppyGuideViewControllers.kt`. The factory was
+  generated into the `iosSimulatorArm64Main` **leaf**, but the iOS view controllers live in
+  `nativeMain`, an **intermediate** source set (parent of both iOS leaves).
+- **Controlled confirmation:** moving that one file from `nativeMain` down to `iosSimulatorArm64Main`
+  compiled green. So the cause is Kotlin's source-set hierarchy, not KSP wiring: per-target KSP emits
+  only into leaf source sets, and a parent/intermediate source set (`commonMain`, `nativeMain`,
+  `iosMain`) cannot see symbols defined in its descendants.
+
+Follow-up tried: "then just run KSP on the `nativeMain` source set" so the intermediate set itself
+gets the generated code. **KSP has no such task.** Adding to `kspNativeMain` fails at configuration
+(`Configuration with name 'kspNativeMain' not found` — it shows in the `dependencies` report only as
+an unrealized `(n)` placeholder). Listing the real tasks shows KSP attaches to leaf compilations
+(`kspAndroidMain`, `kspKotlinJvm`, `kspKotlinIosArm64`, `kspKotlinIosSimulatorArm64`) plus a *subset*
+of shared-source-set **metadata** compilations — `kspCommonMainKotlinMetadata` and
+`kspJvmAndAndroidMainKotlinMetadata` — but **not** `nativeMain` (nor `appleMain`/`iosMain`). So the
+only KSP-processable ancestor of the native iOS view controllers is `commonMain` itself.
+
+Why `kspCommonMainMetadata` is the right call: it generates into `commonMain`, the common **ancestor**
+of every other source set — android, jvm, `nativeMain`, and the iOS leaves all see it — and it is the
+only shared set KSP will process that sits above the native code. Per-target only ever generates into
+leaves, so any shared code that references a generated factory breaks. This repo has such shared code
+in two distinct places — `commonMain` entries *and* `nativeMain` iOS view controllers — and to make
+per-target work the latter would have to be duplicated into every iOS leaf source set: strictly worse
+than today.
+
+**Final shape:** every KMP module wires *both* `kspCommonMainMetadata` (commonMain VMs, visible to all
+targets incl. iOS) and `kspAndroid` (androidMain-only VMs). `kspAndroid` re-sees commonMain and would
+double-emit, so the processor detects the single-target leaf pass (`environment.platforms.size == 1`)
+and skips commonMain symbols there — only the metadata pass emits them. This started as an `iosShared`
+toggle but was unified: since the dedupe is purely a function of the pass and the source path, the flag
+was always-on dead config and was removed, so a single module may freely mix commonMain + androidMain
+VMs with no per-module configuration.
+
 ## Open spike items
 - Confirm the no-arg generated `@Provides @IntoMap @ViewModelKey(VM::class)` module resolves
   identically to the class-level `@ContributesIntoMap(scope, binding<ViewModel>())` (high confidence;
