@@ -270,8 +270,8 @@ internal class BackstackControllerTest {
     val controller = BackstackController(
       mutableStateListOf(InsurancesKey),
       mutableStateMapOf(),
-      mutableStateOf(null),
-      mutableStateOf(null),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
       isOwnTask = { false },
       escapeToOwnTask = { escaped = it },
     )
@@ -287,8 +287,8 @@ internal class BackstackControllerTest {
     val controller = BackstackController(
       mutableStateListOf(InsurancesKey),
       mutableStateMapOf(),
-      mutableStateOf(null),
-      mutableStateOf(null),
+      mutableStateOf(null), // pendingDeepLink
+      mutableStateOf(null), // stashedSession
       isOwnTask = { true },
       escapeToOwnTask = { escaped = it },
     )
@@ -415,7 +415,7 @@ internal class BackstackControllerTest {
   }
 
   @Test
-  fun `loneDeepLinkChrome stays suppressed when a lone deep screen drills into a child`() {
+  fun `loneDeepLinkChrome shows up bar when a lone deep screen drills into a tab-root child`() {
     val controller = controllerWith(HelpCenterKey, InsurancesKey)
     // Top is a tab root with no own back affordance, but we are still outside the runs model.
     assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
