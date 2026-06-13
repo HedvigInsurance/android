@@ -128,17 +128,26 @@ internal class BackstackController(
   }
 
   /**
-   * Drives the scene decorator (D11). A lone non-Home/non-Login key suppresses the rail: a tab root
-   * gets a decorator-supplied Up-bar, a deep bar-keeper (which renders its own Up) gets nothing.
+   * Drives the scene decorator (D11). The navigation suite (tab bar/rail) may render only while the
+   * stack is inside our runs model: our own task AND rooted at [HomeKey] (or [LoginKey], which never
+   * shows a suite anyway). A lone deep link — or any stack that grew from one before [navigateUp]
+   * re-rooted it at Home — is *outside* that model. The runs helpers in `TopLevelRunLogic` assume
+   * `HomeKey` at index 0 and silently no-op otherwise, so rendering the suite there strands the user
+   * (a dead Home tap). Outside the model we suppress the suite and instead key off the *top* (rendered)
+   * entry: a bare top-level root gets a decorator-supplied Up-bar (it has no back affordance of its
+   * own), a deeper screen gets nothing (it draws its own Up). A lone Home hosted in a foreign task is
+   * itself a top-level root, so it gets the Up-bar — letting the user escape back via Up (see
+   * [navigateUp]).
    */
   val loneDeepLinkChrome: LoneDeepLinkChrome
     get() {
       val first = entries.firstOrNull()
-      val isAlone = entries.size == 1 && first !is HomeKey && first !is LoginKey
-      return when {
-        !isAlone -> LoneDeepLinkChrome.ShowSuite
-        first?.topLevelTabOrNull() != null -> LoneDeepLinkChrome.ShowUpBar
-        else -> LoneDeepLinkChrome.ShowNothing
+      val insideRunsModel = isOwnTask() && (first is HomeKey || first is LoginKey)
+      if (insideRunsModel) return LoneDeepLinkChrome.ShowSuite
+      return if (entries.lastOrNull()?.topLevelTabOrNull() != null) {
+        LoneDeepLinkChrome.ShowUpBar
+      } else {
+        LoneDeepLinkChrome.ShowNothing
       }
     }
 

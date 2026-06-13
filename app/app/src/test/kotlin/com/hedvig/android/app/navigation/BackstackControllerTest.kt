@@ -407,6 +407,45 @@ internal class BackstackControllerTest {
   }
 
   @Test
+  fun `loneDeepLinkChrome stays suppressed when a lone tab root drills into a child`() {
+    // Bug repro: a deep-linked tab root that pushes a child must NOT resurrect the suite — Home is
+    // not at the base, so the runs model (and the Home tab) would silently no-op.
+    val controller = controllerWith(InsurancesKey, HelpCenterKey)
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowNothing)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome stays suppressed when a lone deep screen drills into a child`() {
+    val controller = controllerWith(HelpCenterKey, InsurancesKey)
+    // Top is a tab root with no own back affordance, but we are still outside the runs model.
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowUpBar for a foreign-hosted lone Home`() {
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      isOwnTask = { false },
+    )
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowUpBar)
+  }
+
+  @Test
+  fun `loneDeepLinkChrome is ShowSuite for a lone Home in our own task`() {
+    val controller = BackstackController(
+      mutableStateListOf(HomeKey),
+      mutableStateMapOf(),
+      mutableStateOf(null),
+      mutableStateOf(null),
+      isOwnTask = { true },
+    )
+    assertThat(controller.loneDeepLinkChrome).isEqualTo(LoneDeepLinkChrome.ShowSuite)
+  }
+
+  @Test
   fun `navigateUp from a lone deep link drops the leaf and exposes the rebuilt ancestry`() {
     val controller = controllerWith(InsurancesKey)
     controller.navigateUp()
