@@ -26,7 +26,7 @@ android {
     applicationId = "com.hedvig"
 
     versionCode = 43
-    versionName = "14.3.2"
+    versionName = "14.3.6"
 
     resourceConfigurations.addAll(listOf("en", "sv-rSE"))
   }
@@ -247,7 +247,10 @@ dependencies {
 
   testImplementation(libs.assertK)
   testImplementation(libs.classgraph)
+  testImplementation(libs.coroutines.test)
   testImplementation(libs.junit)
+  testImplementation(projects.coreDatastoreTest)
+  testImplementation(projects.loggingTest)
 
   debugImplementation(libs.androidx.compose.uiTooling)
   debugImplementation(projects.featureImpersonation)
