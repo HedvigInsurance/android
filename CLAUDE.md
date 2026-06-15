@@ -132,12 +132,13 @@ class FeaturePresenter : MoleculePresenter<FeatureEvent, FeatureUiState> {
 
 ### Dependency Injection (Metro)
 
-Metro is a **compile-time** DI framework. There is a single graph, `AppScope`, for the whole app — no subscoping. Bindings are *contributed* from any module and merged into that one graph at compile time.
+Metro is a **compile-time** DI framework. There are two scopes: a global `AppScope` graph for the whole app, plus a per-Activity `ActivityRetainedScope` graph extension (`ActivityRetainedGraph`) created once per `MainActivity` for things that must be 1:1 with one Activity's back stack. Bindings are *contributed* from any module and merged into the graph at compile time.
 
 **Core annotations you will actually use:**
 
 - `@Inject` — constructor (or, on `MainActivity`/Application/Service, field) injection.
-- `@SingleIn(AppScope::class)` — a singleton within the app graph. Apply to anything that must have exactly one instance (stateful services, caches, the back stack controller). Put it *wherever the binding is declared*: on the `@Inject` constructor (e.g. `SessionReconciler`), or on the `@Provides` method when you can't annotate the constructor (e.g. `BackstackController`, whose constructor takes hand-built snapshot holders — it's provided via `BackstackControllerProviders`).
+- `@SingleIn(AppScope::class)` — an app-wide singleton. Apply to anything that must have exactly one instance for the whole process (stateful services, caches). Put it *wherever the binding is declared*: on the `@Inject` constructor, or on the `@Provides` method when you can't annotate the constructor.
+- `@SingleIn(ActivityRetainedScope::class)` — a per-Activity singleton bound in `ActivityRetainedGraph`. Used for things tied to one Activity's back stack (e.g. `SessionReconciler`). The `BackstackController` itself isn't annotated — it's built directly by `NavRetainedViewModel` (a retained `ViewModel`) and passed into the `ActivityRetainedGraph.Factory`, which binds it as `Backstack`. See `docs/architecture/navigation-and-di.md` §I.1 and §II.4.
 - `@ContributesBinding(AppScope::class)` — on an implementation class, binds it to its interface in the graph. The standard way to provide an `Impl` for an interface.
 - `@Provides` inside a `@ContributesTo(AppScope::class) interface` — for bindings you can't annotate a constructor on (framework types, builders, things needing configuration). See `ApplicationMetroProviders`.
 - `@ContributesIntoSet` / `@ContributesIntoMap` — multibindings. Used for sets of `SerializersModule`, deep-link matcher providers, notification senders, and the ViewModel/worker maps.
@@ -172,24 +173,18 @@ val vm: ContractDetailViewModel =
   }
 ```
 
-To register a ViewModel, contribute its factory into the graph map:
+To register a ViewModel, mark it `@HedvigViewModel(scope)` plus its Metro constructor annotation. The `:viewmodel-processor` KSP processor generates the `@ViewModelKey` / `@ContributesIntoMap` / factory boilerplate — you never hand-write it. Almost every ViewModel is `ActivityRetainedScope` (it can inject the per-Activity `Backstack`):
 
 ```kotlin
 @AssistedInject
+@HedvigViewModel(ActivityRetainedScope::class)
 internal class ContractDetailViewModel(
   @Assisted contractId: String,
   useCase: GetContractForContractIdUseCase,
-) : MoleculeViewModel<...>(...) {
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(@Assisted contractId: String): ContractDetailViewModel
-  }
-}
+) : MoleculeViewModel<...>(...)
 ```
 
-A no-arg ViewModel uses `@Inject` + `@ContributesIntoMap(AppScope::class)` + `@ViewModelKey(MyViewModel::class)` instead. The central `AppViewModelFactory` (a `MetroViewModelFactory`) is provided into the composition via `LocalMetroViewModelFactory` in `MainActivity`.
+A no-arg ViewModel uses `@Inject` + `@HedvigViewModel(ActivityRetainedScope::class)` instead. The rare `@HedvigViewModel(AppScope::class)` case is a ViewModel resolved by its own standalone Activity. The module must opt in with `viewModels()` in its `hedvig {}` block. A `MergedMetroViewModelFactory` (merging the app graph's and this Activity's `ActivityRetainedGraph` maps) is provided into the composition via `LocalMetroViewModelFactory` in `MainActivity` (read off `navRetainedViewModel.viewModelFactory`).
 
 **Demo mode** is the one place we need two implementations of the same type. Use the `Provider<T>` fun interface and a `ProdOrDemoProvider<T>` (always `@SingleIn(AppScope::class)`), which picks `demoImpl` vs `prodImpl` off `DemoManager`. Inject `Provider<T>` and call `.provide()`. Do **not** reach for `Provider<T>` for anything else.
 
@@ -254,7 +249,7 @@ fun EntryProviderScope<HedvigNavKey>.insuranceEntries(backstack: Backstack, /* n
 **Multiple back stacks (tabs)** are handled by the "runs model" in `BackstackController`/`TopLevelRunLogic`: Home's run is always at the base of `entries`; side tabs are parked in `parkedRuns` when you switch away and restored when you switch back. Tab state (saveable state + ViewModels) of parked runs is kept alive by the retained `NavEntryDecorator`s, which consult `allLiveContentKeys`.
 
 **Where the heavy logic lives** (read these, don't reinvent):
-- `BackstackController.kt` — app-scoped singleton, owns all nav state, tab switching, login/logout stash, deep-link routing, task-aware Up.
+- `BackstackController.kt` — per-Activity controller (owned by `NavRetainedViewModel`, a retained `ViewModel`; survives config changes, dies with its Activity), owns all nav state, tab switching, login/logout stash, deep-link routing, task-aware Up.
 - `NavigationStateBridge.kt` — the single seam between Activity lifecycle and the controller (seed/restore/persist + escape-to-own-task handoff).
 - `SessionReconciler.kt` — auth↔back-stack reconciliation; gates the splash via `isReady`; forced logout.
 - `HedvigEntryProvider.kt` — all destination registration and cross-feature lambda wiring.
@@ -481,8 +476,8 @@ GitHub Actions workflows (in `.github/workflows/`):
 ## Important Files
 
 - **build-logic/convention/** - Gradle convention plugins (Metro wiring, feature isolation, the `hedvig {}` DSL)
-- **app/app/.../di/AppGraph.kt** - the single Metro graph
-- **app/app/.../navigation/BackstackController.kt** - the single source of navigation truth
+- **app/app/.../di/AppGraph.kt** - the global Metro graph; **app/app/.../di/ActivityRetainedGraph.kt** - the per-Activity graph extension (built by **app/app/.../navigation/NavRetainedViewModel.kt**)
+- **app/app/.../navigation/BackstackController.kt** - the per-Activity source of navigation truth
 - **app/navigation/** - navigation infrastructure + KSP processor
 - **docs/architecture/navigation-and-di.md** - the deep design spec for navigation + DI
 - **settings.gradle.kts** - Module discovery and configuration

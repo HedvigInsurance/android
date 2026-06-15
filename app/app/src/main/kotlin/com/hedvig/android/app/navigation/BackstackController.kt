@@ -48,10 +48,11 @@ internal class BackstackController(
    * caller's task by an external deep link, so an Up press must escape into our own task rather than
    * rebuilding the ancestry in place (which would leave our screens hosted under the foreign app).
    *
-   * Attached by `MainActivity` on resume (not at construction): the controller is owned by a retained
-   * `ViewModel`, so it can outlive `onCreate`/finish boundaries; re-pointing the hook on resume keeps
-   * the finish/relaunch mechanics bound to the live foreground Activity. Defaults to `true` so unit
-   * tests and any pre-attach use stay fully in-process.
+   * Attached by `MainActivity` in `onCreate` (see `attachBackstackTaskHooks`), not at construction: the
+   * controller is owned by this Activity's retained `ViewModel` and is 1:1 with the Activity, so there
+   * is no shared, process-wide controller a backgrounded Activity could steal — the hook is wired once
+   * at creation, with no resume re-attachment needed. Defaults to `true` so unit tests and any
+   * pre-attach use stay fully in-process.
    */
   var isOwnTask: () -> Boolean = { true },
   /**
