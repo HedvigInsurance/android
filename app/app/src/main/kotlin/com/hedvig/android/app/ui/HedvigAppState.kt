@@ -1,9 +1,7 @@
 package com.hedvig.android.app.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -18,7 +16,6 @@ import com.hedvig.android.featureflags.FeatureManager
 import com.hedvig.android.featureflags.flags.Feature
 import com.hedvig.android.navigation.common.CrossSellEligibleDestination
 import com.hedvig.android.navigation.common.TopLevelTab
-import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.notification.badge.data.payment.MissedPaymentNotificationService
 import com.hedvig.android.theme.Theme
 import kotlinx.coroutines.CoroutineScope
@@ -70,16 +67,6 @@ internal class HedvigAppState(
   featureManager: FeatureManager,
   missedPaymentNotificationServiceProvider: Provider<MissedPaymentNotificationService>,
 ) {
-  val navigationSuiteType: NavigationSuiteType
-    get() = when (windowSizeClass.widthSizeClass) {
-      WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
-
-      else -> when (windowSizeClass.heightSizeClass) {
-        WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
-        else -> NavigationSuiteType.NavigationRail
-      }
-    }
-
   /**
    * App kill-switch. If this is enabled we must show nothing in the app but a button to try to update the app
    */

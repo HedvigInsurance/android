@@ -2,6 +2,9 @@ package com.hedvig.android.app.ui
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,6 +23,16 @@ import com.hedvig.android.navigation.common.TopLevelTab
 import com.hedvig.android.navigation.compose.NavigationSuiteType
 import com.hedvig.android.navigation.compose.rememberNavSuiteSceneDecoratorStrategy
 
+private val WindowSizeClass.navigationSuiteType: NavigationSuiteType
+  get() = when (widthSizeClass) {
+    WindowWidthSizeClass.Compact -> NavigationSuiteType.NavigationBar
+
+    else -> when (heightSizeClass) {
+      WindowHeightSizeClass.Expanded -> NavigationSuiteType.NavigationRailXLarge
+      else -> NavigationSuiteType.NavigationRail
+    }
+  }
+
 /**
  * Builds the navigation chrome (bottom bar / rail) as a [SceneDecoratorStrategy]. The badge and
  * top-level-tab state is read inside [chromeContent] on purpose, so changes recompose only the
@@ -34,12 +47,12 @@ internal fun rememberHedvigChromeStrategy(
   return listOf(
     rememberNavSuiteSceneDecoratorStrategy<HedvigNavKey>(
       sharedTransitionScope = sharedTransitionScope,
-      navigationSuiteType = { hedvigAppState.navigationSuiteType },
+      navigationSuiteType = { hedvigAppState.windowSizeClass.navigationSuiteType },
       chromeContent = {
         val showPaymentsBadge by hedvigAppState.showPaymentsBadge.collectAsState()
         val topLevelTabs by hedvigAppState.topLevelTabs.collectAsState()
         NavigationSuiteChrome(
-          navigationSuiteType = hedvigAppState.navigationSuiteType,
+          navigationSuiteType = hedvigAppState.windowSizeClass.navigationSuiteType,
           topLevelTabs = topLevelTabs,
           currentTopLevelTab = hedvigAppState.backstackController.currentTopLevel,
           onNavigateToTopLevelTab = hedvigAppState.backstackController::selectTopLevel,
